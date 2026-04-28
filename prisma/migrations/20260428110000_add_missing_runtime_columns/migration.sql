@@ -1,0 +1,15 @@
+ALTER TABLE "Apartment"
+  ADD COLUMN IF NOT EXISTS "icalUrl" TEXT,
+  ADD COLUMN IF NOT EXISTS "lastSyncAt" TIMESTAMP(3);
+
+ALTER TABLE "Booking"
+  ADD COLUMN IF NOT EXISTS "externalId" TEXT,
+  ADD COLUMN IF NOT EXISTS "source" TEXT;
+
+CREATE UNIQUE INDEX IF NOT EXISTS "Booking_externalId_key" ON "Booking"("externalId");
+
+ALTER TABLE "Message"
+  ADD COLUMN IF NOT EXISTS "readByManagerAt" TIMESTAMP(3);
+
+ALTER TABLE "CleaningTaskMessage"
+  ADD COLUMN IF NOT EXISTS "readByManagerAt" TIMESTAMP(3);

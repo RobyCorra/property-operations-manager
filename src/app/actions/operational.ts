@@ -1,0 +1,666 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { prisma } from "@/src/lib/prisma";
+import { evaluateChecklistFormula } from "@/src/lib/formulas";
+import type { ChecklistItem } from "@prisma/client";
+
+type ChecklistSnapshotItem = {
+  id: string;
+  label: string;
+  type: string;
+  value: number | null;
+  required: boolean;
+  completed: boolean;
+  formula?: string | null;
+};
+
+export async function getCleaningTask(id: string) {
+  return await prisma.cleaningTask.findUnique({
+    where: { id },
+    include: { apartment: true, assignedTo: true }
+  });
+}
+
+/**
+ * Helper to compute the checklist snapshot for a given apartment and date context.
+ */
+export async function computeChecklistSnapshot(db: any, apartmentId: string, taskDate: Date, providedNextBookingId?: string | null) {
+  try {
+    const apartment = await db.apartment.findUnique({
+      where: { id: apartmentId },
+      include: { checklistItems: { orderBy: { order: "asc" } } }
+    });
+
+  if (!apartment) return [];
+
+  // Find next incoming booking for guest count (if not provided)
+  let nextBooking = null;
+  if (providedNextBookingId) {
+    nextBooking = await db.booking.findUnique({
+      where: { id: providedNextBookingId }
+    });
+  } else {
+    nextBooking = await db.booking.findFirst({
+      where: {
+        apartmentId,
+        checkInDate: { gte: taskDate },
+        status: "CONFIRMED"
+      },
+      orderBy: { checkInDate: "asc" }
+    });
+  }
+
+    const context = nextBooking ? {
+      guests: nextBooking.totalGuests,
+      bathrooms: apartment.bathrooms || 0,
+      bedrooms: apartment.bedrooms || 0
+    } : null;
+
+    return apartment.checklistItems.map((item: ChecklistItem) => {
+      let computedValue: number | null = null;
+      if (item.type === "dynamic" && item.formula) {
+        computedValue = evaluateChecklistFormula(item.formula, context);
+      }
+
+      return {
+        id: item.id,
+        label: item.label,
+        type: item.type,
+        value: computedValue,
+        required: item.required,
+        completed: false
+      };
+    });
+  } catch (error) {
+    console.error("Error computing checklist snapshot:", error);
+    return [];
+  }
+}
+
+/**
+ * Shared logic to resolve the ONE cleaning task that handles a turnover.
+ * It follows the rule: One Turnover Window = One Cleaning Task.
+ */
+async function resolveTurnoverCleaning(db: any, booking: any, targetDate: Date, flowName: string) {
+    console.log(`[BOOKING->CLEANING] resolveTurnoverCleaning: Finding task for Booking=${booking.id} | Appt=${booking.apartmentId} | TargetDate=${targetDate.toISOString()} | Flow=${flowName}`);
+    
+    let task = await db.cleaningTask.findFirst({
+      where: { bookingId: booking.id }
+    });
+
+    if (!task) {
+      task = await db.cleaningTask.findFirst({
+        where: {
+          apartmentId: booking.apartmentId,
+          bookingId: null,
+          status: "PENDING",
+          date: targetDate,
+        }
+      });
+    }
+
+    if (task) {
+        task = await db.cleaningTask.update({
+          where: { id: task.id },
+          data: {
+            apartmentId: booking.apartmentId,
+            bookingId: booking.id,
+            date: targetDate,
+          }
+        });
+        console.log(`[BOOKING->CLEANING] resolveTurnoverCleaning: RESOLVED existing task ${task.id} (Date: ${task.date.toISOString()}) for Flow=${flowName}`);
+    } else {
+        // 2. Create if not found
+        console.log(`[BOOKING->CLEANING] resolveTurnoverCleaning: NO task found on ${targetDate.toISOString()}. Creating new one.`);
+        task = await db.cleaningTask.create({
+            data: {
+                apartmentId: booking.apartmentId,
+                bookingId: booking.id,
+                date: targetDate,
+                status: "PENDING",
+                checklistProgress: []
+            }
+        });
+        console.log(`[BOOKING->CLEANING] resolveTurnoverCleaning: CREATED task ${task.id} for Flow=${flowName}`);
+    }
+
+    return task;
+}
+
+/**
+ * Core logic to synchronize a CleaningTask based on a Booking's status and dates.
+ * This is the ONLY entry point for operational cleaning management.
+ */
+export async function syncCleaningTaskFromBooking(bookingId: string, tx?: any) {
+  const db = tx || prisma;
+  try {
+    const booking = await db.booking.findUnique({
+      where: { id: bookingId },
+      include: { apartment: true }
+    });
+
+    if (!booking) {
+        console.log(`[BOOKING->CLEANING] Sync aborted: Booking ${bookingId} not found.`);
+        return;
+    }
+
+    console.log(`[BOOKING->CLEANING] Starting sync for ${bookingId} | Source: ${booking.source} | Guests: ${booking.totalGuests}`);
+
+    // 0. Skip operational logic for iCal/Airbnb (Read-only visualization)
+    if (booking.source === 'airbnb' || booking.source === 'ical') {
+        console.log(`[BOOKING->CLEANING] Skipping operational sync for iCal/Airbnb source: ${bookingId}`);
+        return;
+    }
+
+    // 1. Handle Cancelled Booking
+    if (booking.status === "CANCELLED") {
+      const existingTask = await db.cleaningTask.findUnique({
+        where: { bookingId: booking.id }
+      });
+
+      if (existingTask && existingTask.status === "PENDING") {
+        await db.cleaningTask.update({
+          where: { id: existingTask.id },
+          data: { status: "CANCELLED" }
+        });
+      }
+      return;
+    }
+
+    // 2. TARGET: THE TURNOVER (Post-Checkout)
+    // Every booking is responsible for the cleaning task after its checkout.
+    const checkoutDate = new Date(booking.checkOutDate);
+    
+    // Find/Create the transition task on the check-out date
+    const turnoverTask = await resolveTurnoverCleaning(db, booking, checkoutDate, "[TURNOVER-FIX]");
+
+    // Get old guests for logging
+    const oldProgress = (turnoverTask.checklistProgress as any[]) || [];
+    const oldGuestsItem = oldProgress.find(i => i.label.toLowerCase().includes("ospiti") || (i.type === "dynamic" && i.formula));
+    const oldGuests = oldGuestsItem?.value || "0";
+
+    const snapshot = await computeChecklistSnapshot(db, booking.apartmentId, turnoverTask.date, booking.id) as ChecklistSnapshotItem[];
+    const mergedSnapshot = oldProgress.length > 0
+      ? snapshot.map((newItem: any) => {
+          const existingMatch = oldProgress.find(oldItem => oldItem.id === newItem.id)
+            || oldProgress.find(oldItem => oldItem.label === newItem.label);
+
+          return {
+            ...newItem,
+            completed: existingMatch ? !!existingMatch.completed : false
+          };
+        })
+      : snapshot;
+    
+    // Extract new guests for logging
+    const newGuestsItem = snapshot.find(i => i.label.toLowerCase().includes("ospiti") || (i.type === "dynamic" && i.formula));
+    const newGuests = newGuestsItem?.value || booking.totalGuests;
+
+    console.log(`[TURNOVER-FIX] Booking=${booking.id} | CheckOut=${checkoutDate.toISOString()} | Guests: ${oldGuests} -> ${newGuests}`);
+
+    await db.cleaningTask.update({
+        where: { id: turnoverTask.id },
+        data: { 
+          checklistProgress: mergedSnapshot 
+        }
+    });
+
+    console.log(`[TURNOVER-FIX] Sync complete. Turnover Task ${turnoverTask.id} updated for booking ${booking.id}`);
+
+  } catch (error) {
+    console.error("Error syncing cleaning task from booking:", error);
+  }
+}
+/**
+ * Dynamically enriches a single cleaning task or an array of tasks with the next incoming booking.
+ */
+export async function enrichCleaningTaskWithNextBooking<T>(task: T & { apartmentId: string; date: Date }): Promise<T & { nextBooking: any }> {
+  const nextBooking = await prisma.booking.findFirst({
+    where: {
+      apartmentId: task.apartmentId,
+      checkInDate: { gte: task.date },
+      status: { in: ["ACTIVE", "CONFIRMED"] }
+    },
+    orderBy: { checkInDate: "asc" }
+  });
+  return { ...task, nextBooking };
+}
+
+export async function enrichCleaningTasksWithNextBooking<T>(tasks: (T & { apartmentId: string; date: Date })[]): Promise<(T & { nextBooking: any })[]> {
+  return Promise.all(tasks.map(task => enrichCleaningTaskWithNextBooking(task)));
+}
+
+export async function createCleaningTask(prevState: any, formData: FormData) {
+  const apartmentId = formData.get("apartmentId") as string;
+  const assignedToId = formData.get("assignedToId") as string;
+  const dateStr = formData.get("date") as string;
+  const timeStr = formData.get("time") as string;
+  const notes = formData.get("notes") as string;
+
+  if (!apartmentId || !dateStr || !timeStr) {
+    return { error: "Appartamento, data e ora sono obbligatori." };
+  }
+
+  const taskDate = new Date(`${dateStr}T${timeStr}`);
+  const checklistProgress = await computeChecklistSnapshot(prisma, apartmentId, taskDate);
+
+  await prisma.cleaningTask.create({
+    data: {
+      apartmentId,
+      assignedToId: assignedToId || null,
+      date: taskDate,
+      notes: notes || null,
+      status: "PENDING",
+      checklistProgress,
+    },
+  });
+
+  revalidatePath("/dashboard/manager/cleanings");
+  revalidatePath("/dashboard/cleaner");
+  redirect("/dashboard/manager/cleanings");
+}
+
+export async function updateCleaningTask(id: string, prevState: any, formData: FormData) {
+  const apartmentId = formData.get("apartmentId") as string;
+  const assignedToId = formData.get("assignedToId") as string;
+  const dateStr = formData.get("date") as string;
+  const timeStr = formData.get("time") as string;
+  const notes = formData.get("notes") as string;
+  const status = formData.get("status") as string;
+
+  if (!id || !apartmentId || !dateStr || !timeStr) {
+    return { error: "ID, Appartamento, data e ora sono obbligatori." };
+  }
+
+  const taskDate = new Date(`${dateStr}T${timeStr}`);
+
+  await prisma.cleaningTask.update({
+    where: { id },
+    data: {
+      apartmentId,
+      assignedToId: assignedToId || null,
+      date: taskDate,
+      notes: notes || null,
+      status: status || "PENDING",
+    },
+  });
+
+  revalidatePath("/dashboard/manager/cleanings");
+  revalidatePath("/dashboard/cleaner");
+  redirect("/dashboard/manager/cleanings");
+}
+
+export async function deleteCleaningTask(id: string) {
+  await prisma.cleaningTask.delete({ where: { id } });
+  revalidatePath("/dashboard/manager/cleanings");
+  revalidatePath("/dashboard/cleaner");
+}
+
+export async function createMaintenanceTicket(prevState: any, formData: FormData) {
+  const apartmentId = formData.get("apartmentId") as string;
+  const assignedToId = formData.get("assignedToId") as string;
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const priority = formData.get("priority") as string;
+  const scheduledStartStr = formData.get("scheduledStart") as string;
+  const scheduledEndStr = formData.get("scheduledEnd") as string;
+
+  if (!apartmentId || !title || !priority || !scheduledStartStr || !scheduledEndStr) {
+    return { error: "Appartamento, titolo, priorità e date dell'intervento sono obbligatori." };
+  }
+
+  const scheduledStart = new Date(scheduledStartStr);
+  const scheduledEnd = new Date(scheduledEndStr);
+
+  if (scheduledEnd <= scheduledStart) {
+    return { error: "La data di fine non può essere precedente o uguale alla data di inizio." };
+  }
+
+  const ticket = await prisma.maintenanceTicket.create({
+    data: {
+      apartmentId,
+      assignedToId: assignedToId || null,
+      title,
+      description: description || "",
+      priority,
+      status: "OPEN",
+      scheduledStart,
+      scheduledEnd,
+    },
+  });
+
+  // Handle attachments if any
+  await uploadMaintenanceAttachment(ticket.id, formData);
+
+  revalidatePath("/dashboard/manager/maintenance");
+  revalidatePath("/dashboard/maintenance");
+  redirect("/dashboard/manager/maintenance");
+}
+
+export async function updateMaintenanceTicket(id: string, prevState: any, formData: FormData) {
+  const apartmentId = formData.get("apartmentId") as string;
+  const assignedToId = formData.get("assignedToId") as string;
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const priority = formData.get("priority") as string;
+  const status = formData.get("status") as string;
+  const scheduledStartStr = formData.get("scheduledStart") as string;
+  const scheduledEndStr = formData.get("scheduledEnd") as string;
+
+  if (!id || !apartmentId || !title || !priority || !scheduledStartStr || !scheduledEndStr) {
+    return { error: "ID, Appartamento, titolo, priorità e date intervento sono obbligatori." };
+  }
+
+  const scheduledStart = new Date(scheduledStartStr);
+  const scheduledEnd = new Date(scheduledEndStr);
+
+  if (scheduledEnd <= scheduledStart) {
+    return { error: "La data di fine non può essere precedente o uguale alla data di inizio." };
+  }
+
+  await prisma.maintenanceTicket.update({
+    where: { id },
+    data: {
+      apartmentId,
+      assignedToId: assignedToId || null,
+      title,
+      description: description || "",
+      priority,
+      status: status || "OPEN",
+      scheduledStart,
+      scheduledEnd,
+    },
+  });
+
+  // Handle new attachments if any
+  await uploadMaintenanceAttachment(id, formData);
+
+  revalidatePath("/dashboard/manager/maintenance");
+  revalidatePath("/dashboard/maintenance");
+  redirect("/dashboard/manager/maintenance");
+}
+
+export async function deleteMaintenanceTicket(id: string) {
+  await prisma.maintenanceTicket.delete({ where: { id } });
+  revalidatePath("/dashboard/manager/maintenance");
+  revalidatePath("/dashboard/maintenance");
+}
+
+export async function updateCleaningStatus(id: string, nextStatus: string) {
+  const task = await prisma.cleaningTask.findUnique({ where: { id } });
+  if (!task) throw new Error("Task non trovata.");
+
+  // Validation: PENDING -> IN_PROGRESS -> COMPLETED
+  const transitions: Record<string, string> = {
+    "PENDING": "IN_PROGRESS",
+    "IN_PROGRESS": "COMPLETED"
+  };
+
+  if (transitions[task.status] !== nextStatus) {
+    throw new Error(`Transizione non valida: ${task.status} -> ${nextStatus}`);
+  }
+
+  // INITIALIZATION: Copy checklist blueprint to task progress ONLY when starting for the first time
+  let checklistProgressUpdate = undefined;
+  const currentProgress = (task.checklistProgress as any[]) || [];
+  
+  if (nextStatus === "IN_PROGRESS" && task.status === "PENDING" && currentProgress.length === 0) {
+    const snapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date);
+    if (snapshot.length > 0) {
+      checklistProgressUpdate = snapshot;
+    }
+  }
+
+  // VALIDATION: Quality Checklist check
+  if (nextStatus === "COMPLETED" && task.checklistProgress) {
+    const items = task.checklistProgress as any[];
+    const incompleteRequired = items.filter(i => i.required && !i.completed);
+    
+    if (incompleteRequired.length > 0) {
+      throw new Error(`Impossibile completare: ${incompleteRequired.length} punti obbligatori non smarcati.`);
+    }
+  }
+
+  await prisma.cleaningTask.update({
+    where: { id },
+    data: { 
+      status: nextStatus,
+      ...(checklistProgressUpdate && { checklistProgress: checklistProgressUpdate })
+    },
+  });
+
+  // Trigger Notification for Manager if completed
+  if (nextStatus === "COMPLETED") {
+    const apartment = await prisma.apartment.findUnique({
+      where: { id: task.apartmentId },
+      select: { name: true }
+    });
+    
+    await prisma.notification.create({
+      data: {
+        type: "CLEANING",
+        title: "Pulizia Completata",
+        message: `L'intervento di pulizia presso ${apartment?.name || 'un appartamento'} è stato completato.`,
+        apartmentId: task.apartmentId,
+      }
+    });
+  }
+
+  revalidatePath("/dashboard/cleaner");
+  revalidatePath("/dashboard/manager");
+}
+
+export async function updateMaintenanceStatus(id: string, nextStatus: string) {
+  const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
+  if (!ticket) throw new Error("Ticket non trovato.");
+
+  const transitions: Record<string, string> = {
+    "OPEN": "IN_PROGRESS",
+    "IN_PROGRESS": "RESOLVED"
+  };
+
+  if (transitions[ticket.status] !== nextStatus) {
+    throw new Error(`Transizione non valida: ${ticket.status} -> ${nextStatus}`);
+  }
+
+  const data: any = { status: nextStatus };
+  if (nextStatus === "IN_PROGRESS") {
+    data.startedAt = ticket.startedAt || new Date();
+  }
+  if (nextStatus === "RESOLVED") {
+    data.resolvedAt = new Date();
+  }
+
+  await prisma.maintenanceTicket.update({
+    where: { id },
+    data,
+  });
+
+  // Trigger Notification for Manager if resolved
+  if (nextStatus === "RESOLVED") {
+    const apartment = await prisma.apartment.findUnique({
+      where: { id: ticket.apartmentId },
+      select: { name: true }
+    });
+
+    await prisma.notification.create({
+      data: {
+        type: "MAINTENANCE",
+        title: "Manutenzione Risolta",
+        message: `Il ticket "${ticket.title}" presso ${apartment?.name || 'un appartamento'} è stato risolto.`,
+        apartmentId: ticket.apartmentId,
+      }
+    });
+  }
+
+  revalidatePath("/dashboard/maintenance");
+  revalidatePath("/dashboard/manager/maintenance"); // Added manager maintenance path
+  revalidatePath("/dashboard/manager");
+}
+
+export async function reopenMaintenanceTicket(id: string) {
+  const cookieStore = await cookies();
+  if (cookieStore.get("role")?.value !== "MANAGER") {
+    throw new Error("Operazione consentita solo ai manager.");
+  }
+
+  const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
+  if (!ticket) throw new Error("Ticket non trovato.");
+  if (ticket.status !== "RESOLVED") {
+    throw new Error(`Transizione non valida: ${ticket.status} -> OPEN`);
+  }
+
+  await prisma.maintenanceTicket.update({
+    where: { id },
+    data: {
+      status: "OPEN",
+      resolvedAt: null,
+    },
+  });
+
+  revalidatePath("/dashboard/maintenance");
+  revalidatePath("/dashboard/manager/maintenance");
+  revalidatePath(`/dashboard/manager/maintenance/${id}/edit`);
+  revalidatePath("/dashboard/manager");
+}
+
+import { uploadMaintenanceAttachment, uploadCleaningAttachment } from "./upload";
+
+export async function resolveMaintenanceTicket(id: string, formData: FormData) {
+  try {
+    // 1. Upload attachments
+    await uploadMaintenanceAttachment(id, formData);
+    
+    // 2. Update status
+    await updateMaintenanceStatus(id, "RESOLVED");
+    
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error resolving ticket:", error);
+    return { error: error.message || "Errore durante la risoluzione del ticket." };
+  }
+}
+
+export async function createTicketMessage(ticketId: string, prevState: any, formData: FormData) {
+  const text = formData.get("text") as string;
+  const role = formData.get("role") as string; // MANAGER or MAINTENANCE
+  const senderName = formData.get("senderName") as string;
+
+  if (!ticketId || !role || !senderName) {
+    return { error: "Dati mancanti per il messaggio." };
+  }
+
+  if (!text && !(formData.get("files") as File)?.size) {
+    return { error: "Il messaggio non può essere vuoto." };
+  }
+
+  try {
+    // 1. Handle file attachment in message if any
+    let attachmentId = null;
+    const uploadResult = await uploadMaintenanceAttachment(ticketId, formData);
+    if (uploadResult.success && uploadResult.attachments && uploadResult.attachments.length > 0) {
+      attachmentId = uploadResult.attachments[0].id;
+    }
+
+    // 2. Create message
+    await prisma.message.create({
+      data: {
+        text: text || "",
+        role: role,
+        senderName: senderName,
+        maintenanceTicketId: ticketId,
+        attachmentId: attachmentId,
+      },
+    });
+
+    revalidatePath("/dashboard/maintenance");
+    revalidatePath("/dashboard/manager/maintenance");
+    revalidatePath(`/dashboard/manager/maintenance/${ticketId}/edit`);
+    revalidatePath("/dashboard/manager"); // Aggiorna il badge nella navbar
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error creating message:", error);
+    return { error: "Impossibile inviare il messaggio." };
+  }
+}
+
+export async function createCleaningTaskMessage(taskId: string, prevState: any, formData: FormData) {
+  const text = formData.get("text") as string;
+  const role = formData.get("role") as string; // MANAGER or CLEANER
+  const senderName = formData.get("senderName") as string;
+
+  if (!taskId || !role || !senderName) {
+    return { error: "Dati mancanti per il messaggio." };
+  }
+
+  if (!text && !(formData.get("files") as File)?.size) {
+    return { error: "Il messaggio non può essere vuoto." };
+  }
+
+  try {
+    // 1. Handle file attachment in message if any
+    let attachmentId = null;
+    const uploadResult = await uploadCleaningAttachment(taskId, formData);
+    if (uploadResult.success && uploadResult.attachments && uploadResult.attachments.length > 0) {
+      attachmentId = uploadResult.attachments[0].id;
+    }
+
+    // 2. Create message
+    await prisma.cleaningTaskMessage.create({
+      data: {
+        text: text || "",
+        role: role,
+        senderName: senderName,
+        cleaningTaskId: taskId,
+        attachmentId: attachmentId,
+        readByManagerAt: null,
+      },
+    });
+
+    revalidatePath("/dashboard/cleaner");
+    revalidatePath("/dashboard/manager/cleanings");
+    revalidatePath(`/dashboard/manager/cleanings/${taskId}/edit`);
+    revalidatePath("/dashboard/manager"); // Aggiorna il badge nella navbar
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error creating message:", error);
+    return { error: "Impossibile inviare il messaggio." };
+  }
+}
+
+export async function getCleaningTaskMessages(taskId: string) {
+  return await prisma.cleaningTaskMessage.findMany({
+    where: { cleaningTaskId: taskId },
+    orderBy: { createdAt: "asc" },
+    include: { attachment: true }
+  });
+}
+
+export async function getApartmentBookings(apartmentId: string) {
+  return await prisma.booking.findMany({
+    where: { apartmentId, status: { not: "CANCELLED" } },
+    orderBy: { checkInDate: "asc" },
+  });
+}
+
+export async function getApartmentSchedule(apartmentId: string) {
+  const [bookings, cleanings, tickets] = await Promise.all([
+    prisma.booking.findMany({
+      where: { apartmentId, status: { not: "CANCELLED" } },
+      orderBy: { checkInDate: "asc" },
+    }),
+    prisma.cleaningTask.findMany({
+      where: { apartmentId, status: { not: "CANCELLED" } },
+      orderBy: { date: "asc" },
+    }),
+    prisma.maintenanceTicket.findMany({
+      where: { apartmentId, status: { not: "RESOLVED" } },
+      orderBy: { scheduledStart: "asc" },
+    }),
+  ]);
+
+  return { bookings, cleanings, tickets };
+}
