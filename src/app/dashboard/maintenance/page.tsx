@@ -9,17 +9,45 @@ import SafeDate from "@/src/components/safe-date";
 import MaintenanceResolutionForm from "@/src/components/maintenance-resolution-form";
 import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
+import AccessInstructionsCard from "@/src/components/access-instructions-card";
+import ExpandableMaintenanceCard from "@/src/components/expandable-maintenance-card";
 import {
   LogOut, 
   Navigation, 
-  KeyRound, 
   CalendarDays, 
   MessageSquare, 
-  CircleCheck,
-  Info,
-  Clock
+  CircleCheck
 } from "@/src/components/icons";
 import { ScrollText } from "lucide-react";
+
+type AttachmentLink = {
+  id: string;
+  url: string;
+  fileName: string;
+  fileType: string | null;
+};
+
+function linkedAttachments({
+  attachments,
+  messages,
+}: {
+  attachments: AttachmentLink[];
+  messages: { attachment?: AttachmentLink | null }[];
+}) {
+  const byId = new Map<string, AttachmentLink>();
+
+  for (const attachment of attachments) {
+    byId.set(attachment.id, attachment);
+  }
+
+  for (const message of messages) {
+    if (message.attachment) {
+      byId.set(message.attachment.id, message.attachment);
+    }
+  }
+
+  return [...byId.values()];
+}
 
 
 export default async function MaintenanceDashboardPage({
@@ -44,6 +72,7 @@ export default async function MaintenanceDashboardPage({
         where: { status: { in: isHistoryView ? ["RESOLVED"] : ["OPEN", "IN_PROGRESS"] } },
         include: { 
           apartment: true,
+          attachments: true,
           messages: {
             orderBy: { createdAt: "asc" },
             include: { attachment: true }
@@ -115,165 +144,178 @@ export default async function MaintenanceDashboardPage({
           </div>
 
           <div className="grid grid-cols-1 gap-10">
-            {user.maintenanceTickets.map((ticket) => (
-              <div key={ticket.id} className="bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-white/40 shadow-2xl shadow-black/5 overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
-                {/* Left side: Ticket info */}
-                <div className="w-full lg:w-1/2 p-10 flex flex-col overflow-y-auto border-b lg:border-b-0 lg:border-r border-slate-200/40">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className={`inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${priorityColors[ticket.priority] || "bg-slate-100 text-slate-500"}`}>
-                      {ticket.priority}
-                    </span>
-                    <div className="flex items-center gap-2 px-4 py-1.5 bg-slate-100/50 rounded-full text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        <div className={`w-1.5 h-1.5 rounded-full ${ticket.status === 'IN_PROGRESS' ? 'bg-orange-500 animate-pulse' : 'bg-slate-300'}`} />
-                        {ticket.status}
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-2xl font-semibold text-slate-900 tracking-tight uppercase mb-1">{ticket.title}</h3>
-                  <p className="text-sm text-slate-500 font-medium mb-8">{ticket.apartment.name} <span className="mx-2 text-slate-300">/</span> {ticket.apartment.address}</p>
-                  
-                  {/* Access Instructions Block */}
-                  {ticket.apartment.accessInstructions ? (
-                    <div className="bg-violet-500/5 border border-violet-500/10 p-5 rounded-3xl flex gap-5 mb-6">
-                      <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shrink-0 border border-violet-500/10 text-violet-600 shadow-sm">
-                        <KeyRound size={20} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[9px] font-black text-violet-600 uppercase tracking-widest mb-1">Istruzioni Accesso</p>
-                        <p className="text-sm text-slate-700 font-medium leading-relaxed">
-                          {ticket.apartment.accessInstructions}
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-slate-50 border border-slate-100 p-4 rounded-[2rem] text-xs text-slate-400 font-medium uppercase tracking-tight mb-6">
-                      Accedere con le istruzioni standard o contattare il manager.
-                    </div>
-                  )}
+            {user.maintenanceTickets.map((ticket) => {
+              const ticketAttachments = linkedAttachments({ attachments: ticket.attachments, messages: ticket.messages });
 
-                  {/* Scheduled Intervention Block */}
-                  {ticket.scheduledStart ? (
-                    <div className="bg-emerald-500/5 border border-emerald-500/10 p-5 rounded-3xl flex gap-5 mb-6">
-                      <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shrink-0 border border-emerald-500/10 text-emerald-600 shadow-sm">
-                        <CalendarDays size={20} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-1">Programmazione Intervento</p>
-                        <div className="text-sm text-slate-900 font-bold leading-tight flex flex-wrap gap-2">
-                          <SafeDate date={ticket.scheduledStart} format={{ day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }} />
-                          {ticket.scheduledEnd && (
-                            <>
-                              <span className="text-slate-300">→</span>
-                              <SafeDate date={ticket.scheduledEnd} format={{ hour: '2-digit', minute: '2-digit' }} />
-                            </>
-                          )}
+              return (
+                <ExpandableMaintenanceCard
+                  key={ticket.id}
+                  className="space-y-5 rounded-[2.5rem] border border-white/60 bg-white/55 p-5 shadow-2xl shadow-black/5 backdrop-blur-xl lg:p-7"
+                  headerMain={(
+                    <div className="min-w-0 space-y-3">
+                      <h3 className="truncate text-2xl font-semibold uppercase tracking-tight text-slate-900">{ticket.title}</h3>
+                      <p className="mt-1 text-sm font-medium text-slate-500">
+                        {ticket.apartment.name} <span className="mx-2 text-slate-300">/</span> {ticket.apartment.address}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className={`inline-flex px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${priorityColors[ticket.priority] || "bg-slate-100 text-slate-500"}`}>
+                          {ticket.priority}
+                        </span>
+                        <div className="flex items-center gap-2 rounded-full bg-slate-100/70 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                          <div className={`h-1.5 w-1.5 rounded-full ${ticket.status === "IN_PROGRESS" ? "bg-orange-500 animate-pulse" : "bg-slate-300"}`} />
+                          {ticket.status}
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    <div className="bg-slate-50 border border-slate-100 p-4 rounded-[2rem] text-xs text-slate-400 font-medium uppercase tracking-tight mb-6">
-                      Intervento non ancora pianificato.
+                  )}
+                  headerMeta={(
+                    <div className="flex flex-col items-start gap-2 lg:items-end">
+                      {ticket.scheduledStart ? (
+                        <div className="flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-white shadow-lg shadow-slate-200">
+                          <CalendarDays size={14} />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-white/90">
+                            <SafeDate date={ticket.scheduledStart} format={{ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }} />
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="rounded-full bg-slate-100 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                          Non pianificato
+                        </div>
+                      )}
                     </div>
                   )}
+                  expandedContent={(
+                    <>
+                      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                        <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
+                          <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Azione</p>
+                          {!isHistoryView && ticket.status === "OPEN" && (
+                            <StatusUpdateButton
+                              id={ticket.id}
+                              nextStatus="IN_PROGRESS"
+                              label="Avvia Intervento"
+                              action={updateMaintenanceStatus}
+                              className="w-full bg-gradient-to-r from-violet-600 to-blue-500 text-white text-xs font-black uppercase tracking-widest py-5 rounded-full transition-all duration-300 shadow-xl shadow-violet-200 hover:shadow-2xl hover:scale-[1.03] active:scale-95"
+                            />
+                          )}
+                          {!isHistoryView && ticket.status === "IN_PROGRESS" && (
+                            <MaintenanceResolutionForm ticketId={ticket.id} />
+                          )}
+                          {(isHistoryView || ticket.status === "RESOLVED") && (
+                            <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-xs font-black uppercase tracking-widest text-emerald-700">
+                              Ticket risolto
+                            </div>
+                          )}
+                          <div className="mt-4 space-y-2 rounded-2xl bg-slate-50 p-4">
+                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                              <CalendarDays size={14} />
+                              Programmazione Intervento
+                            </div>
+                            {ticket.scheduledStart ? (
+                              <div className="flex flex-wrap gap-2 text-sm font-bold text-slate-900">
+                                <SafeDate date={ticket.scheduledStart} format={{ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }} />
+                                {ticket.scheduledEnd && (
+                                  <>
+                                    <span className="text-slate-300">→</span>
+                                    <SafeDate date={ticket.scheduledEnd} format={{ hour: "2-digit", minute: "2-digit" }} />
+                                  </>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-xs font-medium uppercase tracking-tight text-slate-400">Intervento non ancora pianificato.</p>
+                            )}
+                            {(ticket.startedAt || ticket.resolvedAt) && (
+                              <div className="space-y-1 pt-2 text-xs font-bold text-slate-600">
+                                {ticket.startedAt && <p>Inizio: <SafeDate date={ticket.startedAt} format={{ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }} /></p>}
+                                {ticket.resolvedAt && <p>Chiusura: <SafeDate date={ticket.resolvedAt} format={{ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }} /></p>}
+                              </div>
+                            )}
+                          </div>
+                          <a
+                            href={`https://www.google.com/maps/dir/?api=1&destination=${ticket.apartment.latitude},${ticket.apartment.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-4 flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-700 transition-colors hover:text-violet-600"
+                          >
+                            <Navigation size={14} />
+                            Percorso
+                          </a>
+                        </div>
 
-                  {(ticket.startedAt || ticket.resolvedAt) && (
-                    <div className="bg-white/60 border border-slate-200/50 p-5 rounded-3xl flex gap-5 mb-6 shadow-sm">
-                      <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shrink-0 border border-slate-100 text-slate-500 shadow-sm">
-                        <Clock size={20} />
+                        <AccessInstructionsCard accessInstructions={ticket.apartment.accessInstructions} />
                       </div>
-                      <div className="min-w-0 space-y-1">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Tempi Intervento</p>
-                        {ticket.startedAt && (
-                          <p className="text-xs text-slate-700 font-bold">
-                            Inizio: <SafeDate date={ticket.startedAt} format={{ day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }} />
-                          </p>
-                        )}
-                        {ticket.resolvedAt && (
-                          <p className="text-xs text-slate-700 font-bold">
-                            Chiusura: <SafeDate date={ticket.resolvedAt} format={{ day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }} />
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
 
-                  {ticket.description && (
-                    <div className="bg-white/60 p-5 rounded-3xl text-sm text-slate-600 mb-8 border border-slate-200/50 shadow-sm overflow-hidden">
-                      <div className="flex items-center gap-2 mb-3">
-                          <Info size={14} className="text-slate-400" />
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Dettaglio Segnalazione</p>
+                      <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
+                        <div className="mb-4 flex items-center gap-2">
+                          <span className="text-lg">🛠️</span>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Intervento</p>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                          <div className="rounded-2xl bg-slate-50 p-4">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Problema riconosciuto</p>
+                            <p className="mt-1 text-sm font-bold text-slate-900">{ticket.title}</p>
+                          </div>
+                          <div className="rounded-2xl bg-slate-50 p-4">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Descrizione / note intervento</p>
+                            <p className="mt-1 whitespace-pre-wrap text-sm font-medium leading-relaxed text-slate-700">
+                              {ticket.description || "Nessuna descrizione inserita."}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <p className="leading-relaxed font-medium italic">"{ticket.description}"</p>
-                    </div>
-                  )}
 
-                  <div className="mt-auto pt-6 flex flex-col gap-4">
-                    <div className="flex items-center justify-between px-2">
-                      <div className="flex items-center gap-2 text-slate-400">
-                          <Clock size={12} />
-                          <p className="text-[10px] font-bold uppercase tracking-widest pt-0.5">
-                            Aprile <SafeDate date={ticket.createdAt} format={{ day: 'numeric', year: 'numeric' }} />
-                          </p>
-                      </div>
-                      <a 
-                        href={`https://www.google.com/maps/dir/?api=1&destination=${ticket.apartment.latitude},${ticket.apartment.longitude}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2 hover:text-violet-600 transition-colors"
-                      >
-                        <Navigation size={14} />
-                        Percorso
-                      </a>
-                    </div>
-                    
-                    {!isHistoryView && (
-                      <div className="flex gap-2">
-                        {ticket.status === "OPEN" && (
-                          <StatusUpdateButton 
-                            id={ticket.id} 
-                            nextStatus="IN_PROGRESS" 
-                            label="Avvia Intervento" 
-                            action={updateMaintenanceStatus}
-                            className="w-full bg-gradient-to-r from-violet-600 to-blue-500 text-white text-xs font-black uppercase tracking-widest py-5 rounded-full transition-all duration-300 shadow-xl shadow-violet-200 hover:shadow-2xl hover:scale-[1.03] active:scale-95" 
+                      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                        {!isHistoryView && (
+                          <AIAssistant
+                            role="MAINTENANCE"
+                            type="maintenance"
+                            apartmentId={ticket.apartmentId}
+                            maintenanceTicketId={ticket.id}
+                            initialMessages={ticket.aiAssistantMessages}
+                            compact
                           />
                         )}
-                        {ticket.status === "IN_PROGRESS" && (
-                          <MaintenanceResolutionForm ticketId={ticket.id} />
+                        <div className={`${isHistoryView ? "lg:col-span-2" : ""} rounded-3xl border border-slate-100 bg-white/70 p-4 shadow-sm`}>
+                          <div className="mb-3 flex items-center gap-2">
+                            <MessageSquare size={16} className="text-violet-600" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chat</p>
+                          </div>
+                          <TicketConversation
+                            entityId={ticket.id}
+                            initialMessages={ticket.messages}
+                            currentUserRole="MAINTENANCE"
+                            currentUserName={user.name}
+                            submitAction={createTicketMessage}
+                            heightClass="h-[380px]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
+                        <div className="mb-3 flex items-center gap-2">
+                          <span className="text-lg">📎</span>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Allegati collegati</p>
+                        </div>
+                        {ticketAttachments.length > 0 ? (
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            {ticketAttachments.map((attachment) => (
+                              <div key={attachment.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
+                                <p className="truncate text-sm font-bold text-slate-700">{attachment.fileName}</p>
+                                <a href={attachment.url} target="_blank" rel="noreferrer" className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-700 shadow-sm">
+                                  Apri
+                                </a>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-400">Nessun allegato collegato.</p>
                         )}
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right side: Conversation Box */}
-                <div className="w-full lg:w-1/2 flex flex-col overflow-hidden bg-slate-50/30">
-                  <div className="px-6 py-4 border-b border-slate-200/40 flex items-center gap-3">
-                    <MessageSquare size={16} className="text-violet-600" />
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Comunicazioni Dirette</p>
-                  </div>
-                  <div className="flex-1 p-6 overflow-hidden flex flex-col">
-                    <TicketConversation 
-                      entityId={ticket.id}
-                      initialMessages={ticket.messages}
-                      currentUserRole="MAINTENANCE"
-                      currentUserName={user.name}
-                      submitAction={createTicketMessage}
-                    />
-                  </div>
-                </div>
-                {!isHistoryView && (
-                  <div className="w-full p-6 border-t border-slate-200/40 bg-white/30">
-                    <AIAssistant
-                      role="MAINTENANCE"
-                      type="maintenance"
-                      apartmentId={ticket.apartmentId}
-                      maintenanceTicketId={ticket.id}
-                      initialMessages={ticket.aiAssistantMessages}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+                    </>
+                  )}
+                />
+              );
+            })}
 
             {user.maintenanceTickets.length === 0 && (
               <div className="bg-white/40 backdrop-blur-xl p-20 rounded-[3rem] border border-slate-200 border-dashed text-center">

@@ -1,5 +1,8 @@
 "use server";
 
+import { mkdir, writeFile } from "fs/promises";
+import { join } from "path";
+import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
@@ -9,123 +12,203 @@ function textValue(formData: FormData, key: string) {
   return (formData.get(key) as string | null) ?? "";
 }
 
-function checkedValue(formData: FormData, key: string) {
-  return formData.get(key) === "on";
-}
-
 function objectValue(value: unknown) {
   return value && typeof value === "object" && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {};
 }
 
-function indexedTextValues(formData: FormData, prefix: string, field: string) {
-  const values = new Map<number, string>();
-  const pattern = new RegExp(`^${prefix}\\.([0-9]+)\\.${field}$`);
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
-  for (const [key, value] of formData.entries()) {
+function indexesForPrefix(formData: FormData, prefix: string) {
+  const indexes = new Set<number>();
+  const pattern = new RegExp(`^${escapeRegExp(prefix)}\\.([0-9]+)\\.`);
+
+  for (const key of formData.keys()) {
     const match = key.match(pattern);
     if (match) {
-      values.set(Number(match[1]), typeof value === "string" ? value : "");
+      indexes.add(Number(match[1]));
     }
   }
 
-  return values;
+  return [...indexes].sort((a, b) => a - b);
 }
 
-function buildProducts(formData: FormData) {
-  const prefix = "technicalProfile.products";
-  const fields = [
-    "name",
-    "category",
-    "brand",
-    "model",
-    "serialNumber",
-    "location",
-    "purchaseDate",
-    "warrantyUntil",
-    "maintenanceNotes",
-    "recurringIssues",
-    "manualUrl",
-    "notesForAI",
-  ];
-  const valuesByField = Object.fromEntries(
-    fields.map((field) => [field, indexedTextValues(formData, prefix, field)])
-  ) as Record<string, Map<number, string>>;
-  const indexes = new Set<number>();
-
-  for (const values of Object.values(valuesByField)) {
-    for (const index of values.keys()) {
-      indexes.add(index);
-    }
-  }
-
-  return [...indexes]
-    .sort((a, b) => a - b)
-    .map((index) => Object.fromEntries(
-      fields.map((field) => [field, valuesByField[field].get(index)?.trim() ?? ""])
-    ))
-    .filter((product) => Object.values(product).some((value) => value !== ""));
+function fileValue(formData: FormData, key: string) {
+  const value = formData.get(key);
+  return value instanceof File && value.size > 0 ? value : null;
 }
 
-function buildTechnicalProfile(formData: FormData, existingTechnicalProfile?: unknown) {
+function sanitizeFileName(fileName: string) {
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+async function saveApartmentUpload(apartmentId: string, file: File) {
+  const uploadDir = join(process.cwd(), "public", "uploads", "apartments", apartmentId);
+  await mkdir(uploadDir, { recursive: true });
+
+  const storedFileName = `${Date.now()}-${randomUUID()}-${sanitizeFileName(file.name)}`;
+  const path = join(uploadDir, storedFileName);
+  const bytes = await file.arrayBuffer();
+  await writeFile(path, Buffer.from(bytes));
+
+  return `/uploads/apartments/${apartmentId}/${storedFileName}`;
+}
+
+type TechnicalProfileAttachment = {
+  filename: string;
+  url: string;
+  mimeType: string;
+  size: number | null;
+  category: string;
+  notes: string;
+  extractedText: string;
+};
+
+async function buildAttachments(formData: FormData, prefix: string, apartmentId: string) {
+  return indexesForPrefix(formData, prefix)
+    .reduce<Promise<TechnicalProfileAttachment[]>>(async (currentPromise, index) => {
+      const current = await currentPromise;
+      const file = fileValue(formData, `${prefix}.${index}.file`);
+      const driveUrl = textValue(formData, `${prefix}.${index}.driveUrl`).trim();
+      const existingUrl = textValue(formData, `${prefix}.${index}.url`).trim();
+      const notes = textValue(formData, `${prefix}.${index}.notes`).trim();
+      const category = textValue(formData, `${prefix}.${index}.category`).trim() || "OTHER";
+      const extractedText = textValue(formData, `${prefix}.${index}.extractedText`).trim();
+
+      if (file) {
+        const url = await saveApartmentUpload(apartmentId, file);
+        return [
+          ...current,
+          {
+            filename: file.name,
+            url,
+            mimeType: file.type || "application/octet-stream",
+            size: file.size,
+            category,
+            notes,
+            extractedText,
+          },
+        ];
+      }
+
+      const url = driveUrl || existingUrl;
+      const filename = textValue(formData, `${prefix}.${index}.filename`).trim() || (driveUrl ? "Google Drive link" : "");
+      const mimeType = textValue(formData, `${prefix}.${index}.mimeType`).trim();
+      const sizeText = textValue(formData, `${prefix}.${index}.size`).trim();
+      const size = sizeText ? parseInt(sizeText, 10) : null;
+
+      if (!url && !filename && !notes && category === "OTHER" && !extractedText) {
+        return current;
+      }
+
+      return [
+        ...current,
+        {
+          filename,
+          url,
+          mimeType,
+          size: Number.isNaN(size) ? null : size,
+          category,
+          notes,
+          extractedText,
+        },
+      ];
+    }, Promise.resolve([] as TechnicalProfileAttachment[]));
+}
+
+async function buildTechnicalItems(formData: FormData, prefix: string, apartmentId: string) {
+  return indexesForPrefix(formData, prefix)
+    .reduce<Promise<{
+      name: string;
+      type: string;
+      brand: string;
+      model: string;
+      location: string;
+      notes: string;
+      recurringIssues: string;
+      attachments: Awaited<ReturnType<typeof buildAttachments>>;
+    }[]>>(async (currentPromise, index) => {
+      const current = await currentPromise;
+      const item = {
+      name: textValue(formData, `${prefix}.${index}.name`).trim(),
+      type: textValue(formData, `${prefix}.${index}.type`).trim(),
+      brand: textValue(formData, `${prefix}.${index}.brand`).trim(),
+      model: textValue(formData, `${prefix}.${index}.model`).trim(),
+      location: textValue(formData, `${prefix}.${index}.location`).trim(),
+      notes: textValue(formData, `${prefix}.${index}.notes`).trim(),
+      recurringIssues: textValue(formData, `${prefix}.${index}.recurringIssues`).trim(),
+      attachments: await buildAttachments(formData, `${prefix}.${index}.attachments`, apartmentId),
+      };
+      const { attachments, ...textFields } = item;
+      return Object.values(textFields).some((value) => value !== "") || attachments.length > 0
+        ? [...current, item]
+        : current;
+    }, Promise.resolve([] as {
+      name: string;
+      type: string;
+      brand: string;
+      model: string;
+      location: string;
+      notes: string;
+      recurringIssues: string;
+      attachments: TechnicalProfileAttachment[];
+    }[]));
+}
+
+async function buildRecurringIssues(formData: FormData, apartmentId: string) {
+  const prefix = "technicalProfile.recurringIssues";
+
+  return indexesForPrefix(formData, prefix)
+    .reduce<Promise<{
+      title: string;
+      category: string;
+      relatedItem: string;
+      symptoms: string;
+      solution: string;
+      whenToCall: string;
+      notesForAI: string;
+      attachments: Awaited<ReturnType<typeof buildAttachments>>;
+    }[]>>(async (currentPromise, index) => {
+      const current = await currentPromise;
+      const issue = {
+      title: textValue(formData, `${prefix}.${index}.title`).trim(),
+      category: textValue(formData, `${prefix}.${index}.category`).trim(),
+      relatedItem: textValue(formData, `${prefix}.${index}.relatedItem`).trim(),
+      symptoms: textValue(formData, `${prefix}.${index}.symptoms`).trim(),
+      solution: textValue(formData, `${prefix}.${index}.solution`).trim(),
+      whenToCall: textValue(formData, `${prefix}.${index}.whenToCall`).trim(),
+      notesForAI: textValue(formData, `${prefix}.${index}.notesForAI`).trim(),
+      attachments: await buildAttachments(formData, `${prefix}.${index}.attachments`, apartmentId),
+      };
+      const { attachments, ...textFields } = issue;
+      return Object.values(textFields).some((value) => value !== "") || attachments.length > 0
+        ? [...current, issue]
+        : current;
+    }, Promise.resolve([] as {
+      title: string;
+      category: string;
+      relatedItem: string;
+      symptoms: string;
+      solution: string;
+      whenToCall: string;
+      notesForAI: string;
+      attachments: TechnicalProfileAttachment[];
+    }[]));
+}
+
+async function buildTechnicalProfile(formData: FormData, apartmentId: string, existingTechnicalProfile?: unknown) {
   const existing = objectValue(existingTechnicalProfile);
-  const existingBuilding = objectValue(existing.building);
-  const existingSystems = objectValue(existing.systems);
-  const existingAppliances = objectValue(existing.appliances);
-  const existingSmartHome = objectValue(existing.smartHome);
-  const existingRecurringIssues = objectValue(existing.recurringIssues);
 
   return {
     ...existing,
-    building: {
-      ...existingBuilding,
-      floor: textValue(formData, "technicalProfile.building.floor"),
-      hasElevator: checkedValue(formData, "technicalProfile.building.hasElevator"),
-      accessNotes: textValue(formData, "technicalProfile.building.accessNotes"),
-    },
-    systems: {
-      ...existingSystems,
-      heatingType: textValue(formData, "technicalProfile.systems.heatingType"),
-      coolingType: textValue(formData, "technicalProfile.systems.coolingType"),
-      hotWaterType: textValue(formData, "technicalProfile.systems.hotWaterType"),
-      electricalPanelLocation: textValue(formData, "technicalProfile.systems.electricalPanelLocation"),
-      waterShutoffLocation: textValue(formData, "technicalProfile.systems.waterShutoffLocation"),
-      gasShutoffLocation: textValue(formData, "technicalProfile.systems.gasShutoffLocation"),
-      wifiRouterLocation: textValue(formData, "technicalProfile.systems.wifiRouterLocation"),
-    },
-    appliances: {
-      ...existingAppliances,
-      washingMachine: checkedValue(formData, "technicalProfile.appliances.washingMachine"),
-      dishwasher: checkedValue(formData, "technicalProfile.appliances.dishwasher"),
-      oven: checkedValue(formData, "technicalProfile.appliances.oven"),
-      microwave: checkedValue(formData, "technicalProfile.appliances.microwave"),
-      fridge: checkedValue(formData, "technicalProfile.appliances.fridge"),
-      coffeeMachine: checkedValue(formData, "technicalProfile.appliances.coffeeMachine"),
-      stove: checkedValue(formData, "technicalProfile.appliances.stove"),
-    },
-    smartHome: {
-      ...existingSmartHome,
-      smartLock: checkedValue(formData, "technicalProfile.smartHome.smartLock"),
-      smartThermostat: checkedValue(formData, "technicalProfile.smartHome.smartThermostat"),
-      doorSensors: checkedValue(formData, "technicalProfile.smartHome.doorSensors"),
-      windowSensors: checkedValue(formData, "technicalProfile.smartHome.windowSensors"),
-      energySensors: checkedValue(formData, "technicalProfile.smartHome.energySensors"),
-      leakSensors: checkedValue(formData, "technicalProfile.smartHome.leakSensors"),
-      noiseSensor: checkedValue(formData, "technicalProfile.smartHome.noiseSensor"),
-    },
-    recurringIssues: {
-      ...existingRecurringIssues,
-      slowDrains: checkedValue(formData, "technicalProfile.recurringIssues.slowDrains"),
-      badSmells: checkedValue(formData, "technicalProfile.recurringIssues.badSmells"),
-      hotWaterIssues: checkedValue(formData, "technicalProfile.recurringIssues.hotWaterIssues"),
-      acIssues: checkedValue(formData, "technicalProfile.recurringIssues.acIssues"),
-      electricalIssues: checkedValue(formData, "technicalProfile.recurringIssues.electricalIssues"),
-      humidityMold: checkedValue(formData, "technicalProfile.recurringIssues.humidityMold"),
-      lockIssues: checkedValue(formData, "technicalProfile.recurringIssues.lockIssues"),
-      wifiIssues: checkedValue(formData, "technicalProfile.recurringIssues.wifiIssues"),
-    },
-    products: buildProducts(formData),
+    systems: await buildTechnicalItems(formData, "technicalProfile.systems", apartmentId),
+    appliances: await buildTechnicalItems(formData, "technicalProfile.appliances", apartmentId),
+    smartHome: await buildTechnicalItems(formData, "technicalProfile.smartHome", apartmentId),
+    recurringIssues: await buildRecurringIssues(formData, apartmentId),
+    generalAttachments: await buildAttachments(formData, "technicalProfile.generalAttachments", apartmentId),
     aiNotes: textValue(formData, "technicalProfile.aiNotes"),
   };
 }
@@ -144,6 +227,7 @@ function optionalIntValue(formData: FormData, key: string) {
 }
 
 export async function createApartment(formData: FormData) {
+  const id = randomUUID();
   const name = formData.get("name") as string;
   const address = formData.get("address") as string;
   const latitude = parseFloat(formData.get("latitude") as string);
@@ -159,6 +243,7 @@ export async function createApartment(formData: FormData) {
 
   const apartment = await prisma.apartment.create({
     data: {
+      id,
       name,
       address,
       latitude,
@@ -167,9 +252,9 @@ export async function createApartment(formData: FormData) {
       bedrooms: isNaN(bedrooms) ? 0 : bedrooms,
       bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
       maxGuests: isNaN(maxGuests) ? 1 : maxGuests,
-      accessInstructions: formData.get("accessInstructions") as string,
+      accessInstructions: null,
       icalUrl: formData.get("icalUrl") as string,
-      technicalProfile: buildTechnicalProfile(formData),
+      technicalProfile: await buildTechnicalProfile(formData, id),
       // Automatically add default checklist items
       checklistItems: {
         create: DEFAULT_CHECKLIST.map((item, index) => ({
@@ -202,7 +287,7 @@ export async function updateApartment(formData: FormData) {
 
   const existingApartment = await prisma.apartment.findUnique({
     where: { id },
-    select: { technicalProfile: true },
+    select: { technicalProfile: true, accessInstructions: true },
   });
 
   await prisma.apartment.update({
@@ -216,9 +301,9 @@ export async function updateApartment(formData: FormData) {
       bedrooms: isNaN(bedrooms) ? 0 : bedrooms,
       bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
       maxGuests: isNaN(maxGuests) ? 1 : maxGuests,
-      accessInstructions: formData.get("accessInstructions") as string,
+      accessInstructions: existingApartment?.accessInstructions ?? null,
       icalUrl: formData.get("icalUrl") as string,
-      technicalProfile: buildTechnicalProfile(formData, existingApartment?.technicalProfile),
+      technicalProfile: await buildTechnicalProfile(formData, id, existingApartment?.technicalProfile),
     },
   });
 

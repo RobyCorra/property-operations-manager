@@ -1,5 +1,6 @@
 import ManagerNavbar from "@/src/components/manager-navbar";
 import { getUnreadMessagesCount } from "../../actions/messages";
+import { logoutAction } from "@/src/app/actions/auth";
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
   const unreadCount = await getUnreadMessagesCount();
@@ -27,6 +28,14 @@ export default async function ManagerLayout({ children }: { children: React.Reac
                 <span className="text-xl">⚙️</span>
                 <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">Impostazioni</span>
              </div>
+             <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600 shadow-sm transition-colors hover:border-rose-100 hover:text-rose-600"
+                >
+                  Logout
+                </button>
+             </form>
              <div className="w-[1px] h-6 bg-slate-200" />
              <div className="flex items-center gap-3">
                 <div className="text-right hidden sm:block">

@@ -20,6 +20,7 @@ type AIAssistantProps = {
   cleaningTaskId?: string | null;
   maintenanceTicketId?: string | null;
   initialMessages?: PersistedAIMessage[];
+  compact?: boolean;
 };
 
 export default function AIAssistant({
@@ -29,6 +30,7 @@ export default function AIAssistant({
   cleaningTaskId,
   maintenanceTicketId,
   initialMessages = [],
+  compact = false,
 }: AIAssistantProps) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>(
@@ -66,11 +68,11 @@ export default function AIAssistant({
   }
 
   return (
-    <div className="mt-4 p-4 border rounded-lg">
-      <h3 className="font-semibold mb-2">Chiedi aiuto IA</h3>
+    <div className={`border border-slate-100 bg-white/70 ${compact ? "rounded-3xl p-4" : "mt-4 rounded-lg p-4"}`}>
+      <h3 className="font-semibold mb-2">{compact ? "🤖 AI Assistente" : "Chiedi aiuto IA"}</h3>
 
       <input
-        className="w-full border p-2 rounded mb-2"
+        className="w-full border border-slate-200 p-2 rounded-2xl mb-2 text-sm outline-none focus:ring-2 focus:ring-black"
         placeholder="Descrivi il problema..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -84,13 +86,13 @@ export default function AIAssistant({
 
       <button
         onClick={handleAsk}
-        className="px-3 py-1 bg-black text-white rounded"
+        className="px-4 py-2 bg-black text-white rounded-full text-xs font-black uppercase tracking-widest"
       >
         {loading ? "Caricamento..." : "Chiedi"}
       </button>
 
       {messages.length > 0 && (
-        <div className="mt-3 max-h-80 overflow-y-auto space-y-2">
+        <div className={`mt-3 overflow-y-auto space-y-2 ${compact ? "max-h-56" : "max-h-80"}`}>
           {messages.map((message, index) => (
             <div
               key={index}

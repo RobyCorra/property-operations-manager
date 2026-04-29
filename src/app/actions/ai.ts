@@ -18,7 +18,7 @@ type AIContext = {
 
 const HISTORY_DAYS = 90;
 const MAX_HISTORY_TEXT_LENGTH = 5000;
-const MAX_PRODUCTS_ATTACHMENTS_TEXT_LENGTH = 5000;
+const MAX_TECHNICAL_KNOWLEDGE_TEXT_LENGTH = 5000;
 
 function compactTechnicalProfile(value: unknown): unknown {
   if (Array.isArray(value)) {
@@ -135,15 +135,15 @@ ${messageLines.length > 0 ? messageLines.join("\n") : "- Nessuna conversazione I
   return `${historyText.slice(0, MAX_HISTORY_TEXT_LENGTH)}\n...storico operativo abbreviato per lunghezza.`;
 }
 
-function getTechnicalProducts(technicalProfile: unknown) {
+function arraySection(technicalProfile: unknown, key: string) {
   if (!technicalProfile || typeof technicalProfile !== "object" || Array.isArray(technicalProfile)) {
     return [];
   }
 
-  const products = (technicalProfile as { products?: unknown }).products;
+  const section = (technicalProfile as Record<string, unknown>)[key];
 
-  return Array.isArray(products)
-    ? products.filter((product) => product && typeof product === "object" && !Array.isArray(product)) as Record<string, unknown>[]
+  return Array.isArray(section)
+    ? section.filter((item) => item && typeof item === "object" && !Array.isArray(item)) as Record<string, unknown>[]
     : [];
 }
 
@@ -151,52 +151,104 @@ function stringField(value: unknown) {
   return typeof value === "string" ? value : "";
 }
 
-function formatProductsAndAttachments({
-  products,
-  apartmentAttachments,
-}: {
-  products: Record<string, unknown>[];
-  apartmentAttachments: {
-    filename: string;
-    category: string;
-    notes: string | null;
-    extractedText: string | null;
-  }[];
-}) {
-  const productLines = products.map((product) => {
+function formatAttachmentLines(attachments: unknown, maxExtractedText = 300) {
+  if (!Array.isArray(attachments)) {
+    return [];
+  }
+
+  return attachments
+    .filter((attachment) => attachment && typeof attachment === "object" && !Array.isArray(attachment))
+    .map((attachment) => {
+      const item = attachment as Record<string, unknown>;
+      return `allegato: ${stringField(item.filename) || "n/d"} | category: ${stringField(item.category) || "n/d"} | url: ${stringField(item.url) || "n/d"} | notes: ${truncateText(stringField(item.notes), 180) || "n/d"} | extractedText: ${truncateText(stringField(item.extractedText), maxExtractedText) || "n/d"}`;
+    });
+}
+
+function formatTechnicalSection(title: string, items: Record<string, unknown>[]) {
+  const lines = items.map((item) => {
     const parts = [
-      `nome: ${stringField(product.name) || "n/d"}`,
-      `categoria: ${stringField(product.category) || "n/d"}`,
-      `marca: ${stringField(product.brand) || "n/d"}`,
-      `modello: ${stringField(product.model) || "n/d"}`,
-      `serialNumber: ${stringField(product.serialNumber) || "n/d"}`,
-      `posizione: ${stringField(product.location) || "n/d"}`,
-      `note manutenzione: ${truncateText(stringField(product.maintenanceNotes), 160) || "n/d"}`,
-      `problemi ricorrenti: ${truncateText(stringField(product.recurringIssues), 160) || "n/d"}`,
-      `manualUrl: ${stringField(product.manualUrl) || "n/d"}`,
-      `notesForAI: ${truncateText(stringField(product.notesForAI), 160) || "n/d"}`,
+      `nome: ${stringField(item.name) || "n/d"}`,
+      `tipo: ${stringField(item.type) || "n/d"}`,
+      `marca: ${stringField(item.brand) || "n/d"}`,
+      `modello: ${stringField(item.model) || "n/d"}`,
+      `posizione: ${stringField(item.location) || "n/d"}`,
+      `note: ${truncateText(stringField(item.notes), 220) || "n/d"}`,
+      `problemi ricorrenti: ${truncateText(stringField(item.recurringIssues), 220) || "n/d"}`,
+      ...formatAttachmentLines(item.attachments),
     ];
 
     return `- ${parts.join(" | ")}`;
   });
 
-  const attachmentLines = apartmentAttachments.map((attachment) => (
-    `- filename: ${attachment.filename} | category: ${attachment.category} | notes: ${truncateText(attachment.notes, 180) || "n/d"} | extractedText: ${truncateText(attachment.extractedText, 300) || "n/d"}`
+  return `${title}\n${lines.length > 0 ? lines.join("\n") : "- Nessun elemento registrato."}`;
+}
+
+function formatRecurringIssuesSection(items: Record<string, unknown>[]) {
+  const lines = items.map((item) => {
+    const parts = [
+      `titolo: ${stringField(item.title) || "n/d"}`,
+      `categoria: ${stringField(item.category) || "n/d"}`,
+      `elemento collegato: ${stringField(item.relatedItem) || "n/d"}`,
+      `sintomi: ${truncateText(stringField(item.symptoms), 220) || "n/d"}`,
+      `soluzione: ${truncateText(stringField(item.solution), 220) || "n/d"}`,
+      `quando chiamare tecnico: ${truncateText(stringField(item.whenToCall), 180) || "n/d"}`,
+      `note IA: ${truncateText(stringField(item.notesForAI), 220) || "n/d"}`,
+      ...formatAttachmentLines(item.attachments),
+    ];
+
+    return `- ${parts.join(" | ")}`;
+  });
+
+  return `SEZIONE PROBLEMI RICORRENTI\n${lines.length > 0 ? lines.join("\n") : "- Nessun problema ricorrente registrato."}`;
+}
+
+function formatGeneralAttachmentsSection({
+  technicalProfile,
+  apartmentAttachments,
+}: {
+  technicalProfile: unknown;
+  apartmentAttachments: {
+    filename: string;
+    url: string | null;
+    category: string;
+    notes: string | null;
+    extractedText: string | null;
+  }[];
+}) {
+  const generalAttachmentLines = formatAttachmentLines(arraySection(technicalProfile, "generalAttachments"), 400).map((line) => `- ${line}`);
+  const persistedAttachmentLines = apartmentAttachments.map((attachment) => (
+    `- allegato tecnico: ${attachment.filename} | category: ${attachment.category} | url: ${attachment.url || "n/d"} | notes: ${truncateText(attachment.notes, 180) || "n/d"} | extractedText: ${truncateText(attachment.extractedText, 400) || "n/d"}`
   ));
 
-  const detailsText = `
-PRODOTTI PRESENTI NELL'APPARTAMENTO
-${productLines.length > 0 ? productLines.join("\n") : "- Nessun prodotto registrato."}
+  return `SEZIONE ALLEGATI GENERALI\n${[...generalAttachmentLines, ...persistedAttachmentLines].length > 0 ? [...generalAttachmentLines, ...persistedAttachmentLines].join("\n") : "- Nessun allegato generale registrato."}`;
+}
 
-ALLEGATI APPARTAMENTO
-${attachmentLines.length > 0 ? attachmentLines.join("\n") : "- Nessun allegato registrato."}
-`.trim();
+function formatStructuredTechnicalKnowledge({
+  technicalProfile,
+  apartmentAttachments,
+}: {
+  technicalProfile: unknown;
+  apartmentAttachments: {
+    filename: string;
+    url: string | null;
+    category: string;
+    notes: string | null;
+    extractedText: string | null;
+  }[];
+}) {
+  const detailsText = [
+    formatTechnicalSection("SEZIONE IMPIANTI", arraySection(technicalProfile, "systems")),
+    formatTechnicalSection("SEZIONE ELETTRODOMESTICI", arraySection(technicalProfile, "appliances")),
+    formatTechnicalSection("SEZIONE DOMOTICA", arraySection(technicalProfile, "smartHome")),
+    formatRecurringIssuesSection(arraySection(technicalProfile, "recurringIssues")),
+    formatGeneralAttachmentsSection({ technicalProfile, apartmentAttachments }),
+  ].join("\n\n");
 
-  if (detailsText.length <= MAX_PRODUCTS_ATTACHMENTS_TEXT_LENGTH) {
+  if (detailsText.length <= MAX_TECHNICAL_KNOWLEDGE_TEXT_LENGTH) {
     return detailsText;
   }
 
-  return `${detailsText.slice(0, MAX_PRODUCTS_ATTACHMENTS_TEXT_LENGTH)}\n...prodotti e allegati abbreviati per lunghezza.`;
+  return `${detailsText.slice(0, MAX_TECHNICAL_KNOWLEDGE_TEXT_LENGTH)}\n...scheda tecnica strutturata abbreviata per lunghezza.`;
 }
 
 export async function askAI(messages: AIMessage[], context: AIContext) {
@@ -261,6 +313,7 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
           take: 20,
           select: {
             filename: true,
+            url: true,
             category: true,
             notes: true,
             extractedText: true,
@@ -270,8 +323,8 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
     : [null, [], [], [], []];
 
   const technicalProfileText = formatTechnicalProfile(apartment?.technicalProfile);
-  const productsAndAttachmentsText = formatProductsAndAttachments({
-    products: getTechnicalProducts(apartment?.technicalProfile),
+  const structuredTechnicalKnowledgeText = formatStructuredTechnicalKnowledge({
+    technicalProfile: apartment?.technicalProfile,
     apartmentAttachments,
   });
   const operationalHistoryText = formatOperationalHistory({
@@ -289,7 +342,7 @@ Tipo intervento: ${context.type}
 DATI APPARTAMENTO:
 ${technicalProfileText}
 
-${productsAndAttachmentsText}
+${structuredTechnicalKnowledgeText}
 
 ${operationalHistoryText}
 

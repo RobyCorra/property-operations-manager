@@ -24,9 +24,10 @@ interface Props {
   currentUserRole: string;
   currentUserName: string;
   submitAction: (id: string, prevState: any, formData: FormData) => Promise<any>;
+  heightClass?: string;
 }
 
-export default function TicketConversation({ entityId, initialMessages, currentUserRole, currentUserName, submitAction }: Props) {
+export default function TicketConversation({ entityId, initialMessages, currentUserRole, currentUserName, submitAction, heightClass = "h-[500px]" }: Props) {
   const [isPending, startTransition] = useTransition();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -72,7 +73,7 @@ export default function TicketConversation({ entityId, initialMessages, currentU
   };
 
   return (
-    <div className="flex flex-col h-[500px] border border-gray-100 rounded-2xl overflow-hidden bg-gray-50/30">
+    <div className={`flex flex-col ${heightClass} border border-gray-100 rounded-2xl overflow-hidden bg-gray-50/30`}>
       {/* Messages List */}
       <div 
         ref={scrollRef}
