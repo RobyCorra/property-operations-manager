@@ -20,6 +20,32 @@ export interface Activity {
   title?: string;
 }
 
+type ActivityCleaning = {
+  id: string;
+  apartmentId: string;
+  status: string;
+  date: Date;
+  createdAt: Date;
+  assignedToId: string | null;
+  notes: string | null;
+  apartment: { name: string };
+  assignedTo: { name: string } | null;
+};
+
+type ActivityTicket = {
+  id: string;
+  apartmentId: string;
+  status: string;
+  priority: string;
+  scheduledStart: Date | null;
+  createdAt: Date;
+  assignedToId: string | null;
+  title: string;
+  description: string;
+  apartment: { name: string };
+  assignedTo: { name: string } | null;
+};
+
 export async function getTeamActivityHistory(filters: {
   collaboratorId?: string;
   apartmentId?: string;
@@ -85,7 +111,7 @@ export async function getTeamActivityHistory(filters: {
       : Promise.resolve([]),
   ]);
 
-  const mappedCleanings: Activity[] = cleanings.map(c => ({
+  const mappedCleanings: Activity[] = cleanings.map((c: ActivityCleaning) => ({
     id: c.id,
     type: 'CLEANING',
     collaboratorName: c.assignedTo?.name || 'Non assegnato',
@@ -99,7 +125,7 @@ export async function getTeamActivityHistory(filters: {
     notes: c.notes,
   }));
 
-  const mappedTickets: Activity[] = tickets.map(t => ({
+  const mappedTickets: Activity[] = tickets.map((t: ActivityTicket) => ({
     id: t.id,
     type: 'MAINTENANCE',
     collaboratorName: t.assignedTo?.name || 'Non assegnato',
