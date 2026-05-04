@@ -8,6 +8,30 @@ import StatusUpdateButton from "@/src/components/status-update-button";
 import AIAssistant from "@/src/components/ai-assistant";
 import { updateMaintenanceTicket, createTicketMessage, reopenMaintenanceTicket } from "@/src/app/actions/operational";
 
+type AttachmentView = {
+  id: string;
+  url: string;
+  filename?: string | null;
+  fileName?: string | null;
+  name?: string | null;
+  fileType?: string | null;
+  mimeType?: string | null;
+  createdAt?: Date | string | null;
+};
+
+type TicketView = {
+  id: string;
+  title?: string | null;
+  description?: string | null;
+  status?: string | null;
+  priority?: string | null;
+  apartmentId?: string | null;
+  assignedToId?: string | null;
+  scheduledStart?: Date | string | null;
+  scheduledEnd?: Date | string | null;
+  attachments: AttachmentView[];
+};
+
 export default async function EditMaintenancePage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -96,7 +120,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Allegati Correnti</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {ticket.attachments.map((att) => (
+                  {ticket.attachments.map((att: AttachmentView) => (
                     <a 
                       key={att.id} 
                       href={att.url} 
@@ -105,7 +129,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
                       className="group relative h-24 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center"
                     >
                       {att.fileType?.startsWith('image/') ? (
-                        <img src={att.url} alt={att.fileName} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                        <img src={att.url} alt={att.fileName ?? att.filename ?? att.name ?? "Allegato"} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                       ) : (
                         <div className="text-center p-2">
                           <span className="text-2xl">📄</span>
