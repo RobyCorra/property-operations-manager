@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { syncCleaningTaskFromBooking } from "./operational";
 
+type PrismaTx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
 export async function createBooking(prevState: any, formData: FormData) {
   const apartmentId = formData.get("apartmentId") as string;
   const totalGuests = parseInt(formData.get("totalGuests") as string, 10);
@@ -81,7 +83,7 @@ export async function createBooking(prevState: any, formData: FormData) {
 
   // 4. Create Booking & Actions within Transaction
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: PrismaTx) => {
       // --- LOG 2: BEFORE BOOKING CREATE ---
       console.log("[FORENSIC] 2. BEFORE BOOKING CREATE entering transaction...");
 
@@ -208,7 +210,7 @@ export async function updateBooking(id: string, prevState: any, formData: FormDa
 
   // 4. Update Booking & Sync within transaction
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: PrismaTx) => {
       await tx.booking.update({
         where: { id },
         data: {
