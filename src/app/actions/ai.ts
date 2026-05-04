@@ -26,6 +26,149 @@ type ApartmentChecklistItemForAI = {
   formula: string | null;
 };
 
+type ApartmentBookingForAI = {
+  apartmentId?: string;
+  guestName: string | null;
+  totalGuests: number;
+  checkInDate: Date;
+  checkOutDate: Date;
+  status: string | null;
+  source: string | null;
+  externalId?: string | null;
+  apartment?: {
+    name: string;
+  };
+};
+
+type ApartmentBookingWithApartmentForAI = ApartmentBookingForAI & {
+  apartment: {
+    name: string;
+  };
+};
+
+type OperationalAttachmentForAI = {
+  fileName: string;
+  fileType: string | null;
+  url: string;
+  createdAt: Date;
+};
+
+type OperationalMessageForAI = {
+  createdAt: Date;
+  role: string;
+  senderName: string;
+  text: string | null;
+  attachment?: OperationalAttachmentForAI | null;
+};
+
+type AIAssistantMessageForAI = {
+  createdAt: Date;
+  role: "USER" | "ASSISTANT";
+  userRole: string;
+  content: string;
+};
+
+type AssignedUserForAI = {
+  name: string;
+  role: string;
+  email?: string;
+} | null;
+
+type CleaningTaskForAI = {
+  apartmentId: string;
+  date: Date;
+  status: string;
+  createdAt: Date;
+  assignedTo: AssignedUserForAI;
+  booking: {
+    guestName: string | null;
+    totalGuests: number;
+    checkInDate: Date;
+    checkOutDate: Date;
+    source?: string | null;
+    status?: string | null;
+  } | null;
+  notes: string | null;
+  checklistProgress: unknown;
+  messages: OperationalMessageForAI[];
+  attachments: OperationalAttachmentForAI[];
+  aiAssistantMessages?: AIAssistantMessageForAI[];
+  apartment?: {
+    id?: string;
+    name: string;
+    address?: string;
+  };
+};
+
+type CleaningTaskWithAIMessagesForAI = CleaningTaskForAI & {
+  aiAssistantMessages: AIAssistantMessageForAI[];
+};
+
+type CleaningTaskWithApartmentForAI = CleaningTaskForAI & {
+  apartment: {
+    id?: string;
+    name: string;
+    address?: string;
+  };
+};
+
+type MaintenanceTicketForAI = {
+  apartmentId: string;
+  createdAt: Date;
+  status: string;
+  priority: string;
+  title: string;
+  description: string;
+  assignedTo: AssignedUserForAI;
+  scheduledStart: Date | null;
+  scheduledEnd?: Date | null;
+  startedAt?: Date | null;
+  resolvedAt: Date | null;
+  messages: OperationalMessageForAI[];
+  attachments: OperationalAttachmentForAI[];
+  aiAssistantMessages?: AIAssistantMessageForAI[];
+  apartment?: {
+    id?: string;
+    name: string;
+    address?: string;
+  };
+};
+
+type MaintenanceTicketWithAIMessagesForAI = MaintenanceTicketForAI & {
+  aiAssistantMessages: AIAssistantMessageForAI[];
+};
+
+type MaintenanceTicketWithApartmentForAI = MaintenanceTicketForAI & {
+  apartment: {
+    id?: string;
+    name: string;
+    address?: string;
+  };
+};
+
+type ApartmentAttachmentForAI = {
+  filename: string;
+  url: string | null;
+  mimeType: string | null;
+  size: number | null;
+  category: string;
+  notes: string | null;
+  extractedText: string | null;
+  createdAt: Date;
+};
+
+type ManagerApartmentForAI = {
+  id: string;
+  name: string;
+  address: string;
+  maxGuests: number;
+  bedrooms: number;
+  bathrooms: number;
+  squareMeters: number;
+  technicalProfile: unknown;
+  apartmentAttachments: ApartmentAttachmentForAI[];
+};
+
 
 const HISTORY_DAYS = 90;
 const MAX_HISTORY_TEXT_LENGTH = 5000;
@@ -984,12 +1127,12 @@ export async function buildApartmentAIContext(apartmentId: string) {
     `- ${item.order}. ${item.label} | obbligatorio: ${item.required ? "si" : "no"} | tipo: ${item.type} | formula: ${item.formula || "n/d"}`
   ));
 
-  const bookingLines = apartment.bookings.map((booking) => (
+  const bookingLines = apartment.bookings.map((booking: ApartmentBookingForAI) => (
     `- ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospite: ${booking.guestName || "n/d"} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "manuale"} | externalId: ${booking.externalId || "n/d"}`
   ));
 
-  const cleaningLines = apartment.cleaningTasks.map((task) => {
-    const messageLines = task.messages.map((message) => {
+  const cleaningLines = apartment.cleaningTasks.map((task: CleaningTaskWithAIMessagesForAI) => {
+    const messageLines = task.messages.map((message: OperationalMessageForAI) => {
       const attachment = message.attachment
         ? ` | allegato messaggio: ${formatOperationalDocuments([message.attachment])}`
         : "";
@@ -1000,8 +1143,8 @@ export async function buildApartmentAIContext(apartmentId: string) {
     return `- ${formatDate(task.date)} | stato: ${task.status} | creata: ${formatDateTime(task.createdAt)} | assegnato: ${task.assignedTo?.name || "non assegnato"} (${task.assignedTo?.role || "n/d"}) | booking: ${task.booking?.guestName || "n/d"} ${task.booking ? `${formatDate(task.booking.checkInDate)} -> ${formatDate(task.booking.checkOutDate)} fonte ${task.booking.source || "n/d"}` : ""} | note: ${truncateText(task.notes, 300) || "n/d"} | checklistProgress: ${compactJsonText(task.checklistProgress, 1200)} | allegati: ${formatOperationalDocuments(task.attachments)} | messaggi: ${messageLines.length > 0 ? messageLines.join(" || ") : "nessun messaggio"} | richieste IA: ${formatAIMessages(task.aiAssistantMessages)}`;
   });
 
-  const ticketLines = apartment.maintenanceTickets.map((ticket) => {
-    const messageLines = ticket.messages.map((message) => {
+  const ticketLines = apartment.maintenanceTickets.map((ticket: MaintenanceTicketWithAIMessagesForAI) => {
+    const messageLines = ticket.messages.map((message: OperationalMessageForAI) => {
       const attachment = message.attachment
         ? ` | allegato messaggio: ${formatOperationalDocuments([message.attachment])}`
         : "";
@@ -1013,19 +1156,19 @@ export async function buildApartmentAIContext(apartmentId: string) {
   });
 
   const operationalSummaryText = formatOperationalHistory({
-    maintenanceTickets: apartment.maintenanceTickets.map((ticket) => ({
+    maintenanceTickets: apartment.maintenanceTickets.map((ticket: MaintenanceTicketForAI) => ({
       createdAt: ticket.createdAt,
       status: ticket.status,
       priority: ticket.priority,
       title: ticket.title,
       description: ticket.description,
     })),
-    cleaningTasks: apartment.cleaningTasks.map((task) => ({
+    cleaningTasks: apartment.cleaningTasks.map((task: CleaningTaskForAI) => ({
       date: task.date,
       status: task.status,
       notes: task.notes,
     })),
-    aiAssistantMessages: apartment.aiAssistantMessages.map((message) => ({
+    aiAssistantMessages: apartment.aiAssistantMessages.map((message: AIAssistantMessageForAI) => ({
       createdAt: message.createdAt,
       role: message.role,
       content: message.content,
@@ -1038,10 +1181,10 @@ export async function buildApartmentAIContext(apartmentId: string) {
   const technicalRecurringIssues = arraySection(apartment.technicalProfile, "recurringIssues");
   const technicalGeneralAttachments = arraySection(apartment.technicalProfile, "generalAttachments");
 
-  const cleaningAICount = apartment.cleaningTasks.reduce((total, task) => total + task.aiAssistantMessages.length, 0);
-  const maintenanceAICount = apartment.maintenanceTickets.reduce((total, ticket) => total + ticket.aiAssistantMessages.length, 0);
-  const cleaningAttachmentCount = apartment.cleaningTasks.reduce((total, task) => total + task.attachments.length, 0);
-  const maintenanceAttachmentCount = apartment.maintenanceTickets.reduce((total, ticket) => total + ticket.attachments.length, 0);
+  const cleaningAICount = apartment.cleaningTasks.reduce((total: number, task: CleaningTaskWithAIMessagesForAI) => total + task.aiAssistantMessages.length, 0);
+  const maintenanceAICount = apartment.maintenanceTickets.reduce((total: number, ticket: MaintenanceTicketWithAIMessagesForAI) => total + ticket.aiAssistantMessages.length, 0);
+  const cleaningAttachmentCount = apartment.cleaningTasks.reduce((total: number, task: CleaningTaskForAI) => total + task.attachments.length, 0);
+  const maintenanceAttachmentCount = apartment.maintenanceTickets.reduce((total: number, ticket: MaintenanceTicketForAI) => total + ticket.attachments.length, 0);
   const technicalAttachmentCount = technicalGeneralAttachments.length
     + countTechnicalAttachments(technicalSystems)
     + countTechnicalAttachments(technicalAppliances)
@@ -1087,16 +1230,16 @@ STORICO PULIZIE
 ${limitSection(cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia caricata.", 6500)}
 
 MESSAGGI E RICHIESTE IA PULIZIE
-${limitSection(apartment.cleaningTasks.flatMap((task) => task.aiAssistantMessages.map((message) => `- Pulizia ${formatDate(task.date)} | ${formatDateTime(message.createdAt)} ${message.role} (${message.userRole}): ${truncateText(message.content, 260) || "n/d"}`)).join("\n") || "- Nessuna richiesta IA collegata alle pulizie.", 3500)}
+${limitSection(apartment.cleaningTasks.flatMap((task: CleaningTaskWithAIMessagesForAI) => task.aiAssistantMessages.map((message: AIAssistantMessageForAI) => `- Pulizia ${formatDate(task.date)} | ${formatDateTime(message.createdAt)} ${message.role} (${message.userRole}): ${truncateText(message.content, 260) || "n/d"}`)).join("\n") || "- Nessuna richiesta IA collegata alle pulizie.", 3500)}
 
 STORICO MANUTENZIONI
 ${limitSection(ticketLines.length > 0 ? ticketLines.join("\n") : "- Nessuna manutenzione caricata.", 6500)}
 
 MESSAGGI E RICHIESTE IA MANUTENZIONI
-${limitSection(apartment.maintenanceTickets.flatMap((ticket) => ticket.aiAssistantMessages.map((message) => `- Ticket ${ticket.title} | ${formatDateTime(message.createdAt)} ${message.role} (${message.userRole}): ${truncateText(message.content, 260) || "n/d"}`)).join("\n") || "- Nessuna richiesta IA collegata alle manutenzioni.", 3500)}
+${limitSection(apartment.maintenanceTickets.flatMap((ticket: MaintenanceTicketWithAIMessagesForAI) => ticket.aiAssistantMessages.map((message: AIAssistantMessageForAI) => `- Ticket ${ticket.title} | ${formatDateTime(message.createdAt)} ${message.role} (${message.userRole}): ${truncateText(message.content, 260) || "n/d"}`)).join("\n") || "- Nessuna richiesta IA collegata alle manutenzioni.", 3500)}
 
 STORICO CONVERSAZIONI IA APPARTAMENTO
-${limitSection(apartment.aiAssistantMessages.map((message) => `- ${formatDateTime(message.createdAt)} ${message.role} (${message.userRole}): ${truncateText(message.content, 300) || "n/d"}`).join("\n") || "- Nessuna conversazione IA diretta sull'appartamento.", 4000)}
+${limitSection(apartment.aiAssistantMessages.map((message: AIAssistantMessageForAI) => `- ${formatDateTime(message.createdAt)} ${message.role} (${message.userRole}): ${truncateText(message.content, 300) || "n/d"}`).join("\n") || "- Nessuna conversazione IA diretta sull'appartamento.", 4000)}
 `.trim();
 
   return limitText(contextText, MAX_APARTMENT_AI_CONTEXT_TEXT_LENGTH);
@@ -1196,19 +1339,19 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
     { now, apartmentId }
   );
 
-  const bookingLines = apartment.bookings.map((booking) => (
+  const bookingLines = apartment.bookings.map((booking: ApartmentBookingForAI) => (
     `- ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospite: ${booking.guestName || "n/d"} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
   ));
 
-  const cleaningLines = apartment.cleaningTasks.map((task) => (
+  const cleaningLines = apartment.cleaningTasks.map((task: CleaningTaskForAI) => (
     `- ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} | note: ${truncateText(task.notes, 180) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 500)} | booking: ${task.booking?.guestName || "n/d"} | messaggi: ${formatManagerMessages(task.messages)} | allegati: ${formatOperationalAttachmentLines(task.attachments)}`
   ));
 
-  const ticketLines = apartment.maintenanceTickets.map((ticket) => (
+  const ticketLines = apartment.maintenanceTickets.map((ticket: MaintenanceTicketForAI) => (
     `- ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"} | programmato: ${formatDateTime(ticket.scheduledStart)} | risolto: ${formatDateTime(ticket.resolvedAt)} | messaggi: ${formatManagerMessages(ticket.messages)} | allegati: ${formatOperationalAttachmentLines(ticket.attachments)}`
   ));
 
-  const attachmentLines = apartment.apartmentAttachments.map((attachment) => {
+  const attachmentLines = apartment.apartmentAttachments.map((attachment: ApartmentAttachmentForAI) => {
     const linkApribile = formatInternalFileUrl(attachment.url);
     return `- ${attachment.filename} | Documento interno caricato nella scheda appartamento | categoria: ${attachment.category} | tipo: ${attachment.mimeType || "n/d"} | dimensione: ${attachment.size ?? "n/d"} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | note: ${truncateText(attachment.notes, 180) || "n/d"} | extractedText: ${truncateText(attachment.extractedText, 450) || "n/d"}`;
   });
@@ -1351,10 +1494,10 @@ async function buildGeneralManagerContext(now: Date) {
     }),
   ]);
 
-  const apartmentLines = apartments.map((apartment) => {
-    const apartmentBookings = bookings.filter((booking) => booking.apartmentId === apartment.id);
-    const apartmentCleanings = cleanings.filter((task) => task.apartmentId === apartment.id);
-    const apartmentTickets = tickets.filter((ticket) => ticket.apartmentId === apartment.id);
+  const apartmentLines = apartments.map((apartment: ManagerApartmentForAI) => {
+    const apartmentBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.apartmentId === apartment.id);
+    const apartmentCleanings = cleanings.filter((task: CleaningTaskForAI) => task.apartmentId === apartment.id);
+    const apartmentTickets = tickets.filter((ticket: MaintenanceTicketForAI) => ticket.apartmentId === apartment.id);
     const status = getApartmentOperationalStatus(
       now,
       apartmentBookings,
@@ -1363,7 +1506,7 @@ async function buildGeneralManagerContext(now: Date) {
       { now, apartmentId: apartment.id }
     );
     const attachmentSummary = apartment.apartmentAttachments
-      .map((attachment) => {
+      .map((attachment: ApartmentAttachmentForAI) => {
         const linkApribile = formatInternalFileUrl(attachment.url);
         return `${attachment.filename} (${attachment.category}) Documento interno caricato nella scheda appartamento linkApribile: ${linkApribile} markdownLink: ${formatInternalMarkdownLink(linkApribile)} note: ${truncateText(attachment.notes, 80) || "n/d"} extractedText: ${truncateText(attachment.extractedText, 120) || "n/d"}`;
       })
@@ -1372,35 +1515,35 @@ async function buildGeneralManagerContext(now: Date) {
     return `- ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
   });
 
-  const checkinsToday = bookings.filter((booking) => formatDateKey(booking.checkInDate) === formatDateKey(todayStart));
-  const checkoutsToday = bookings.filter((booking) => formatDateKey(booking.checkOutDate) === formatDateKey(todayStart));
-  const upcomingCheckins = bookings.filter((booking) => booking.checkInDate >= tomorrowStart && booking.checkInDate < next7Days);
-  const activeBookings = bookings.filter((booking) => booking.checkInDate <= now && booking.checkOutDate > now);
+  const checkinsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkInDate) === formatDateKey(todayStart));
+  const checkoutsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkOutDate) === formatDateKey(todayStart));
+  const upcomingCheckins = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate >= tomorrowStart && booking.checkInDate < next7Days);
+  const activeBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate <= now && booking.checkOutDate > now);
 
-  const bookingLine = (booking: (typeof bookings)[number]) => (
+  const bookingLine = (booking: ApartmentBookingWithApartmentForAI) => (
     `- ${booking.apartment.name} | ospite: ${booking.guestName || "n/d"} | ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
   );
 
-  const cleaningLines = cleanings.map((task) => (
+  const cleaningLines = cleanings.map((task: CleaningTaskWithApartmentForAI) => (
     `- ${task.apartment.name} | ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} | note: ${truncateText(task.notes, 160) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 450)} | booking: ${task.booking?.guestName || "n/d"} (${task.booking?.totalGuests ?? "n/d"} ospiti) | messaggi: ${formatManagerMessages(task.messages)} | allegati: ${formatOperationalAttachmentLines(task.attachments)}`
   ));
 
-  const ticketLines = tickets.map((ticket) => (
+  const ticketLines = tickets.map((ticket: MaintenanceTicketWithApartmentForAI) => (
     `- ${ticket.apartment.name} | ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"} | programmato: ${formatDateTime(ticket.scheduledStart)} | risolto: ${formatDateTime(ticket.resolvedAt)} | messaggi: ${formatManagerMessages(ticket.messages)} | allegati: ${formatOperationalAttachmentLines(ticket.attachments)}`
   ));
 
   const recentMessageLines = [
-    ...cleanings.flatMap((task) => task.messages.map((message) => (
+    ...cleanings.flatMap((task: CleaningTaskWithApartmentForAI) => task.messages.map((message: OperationalMessageForAI) => (
       `- Pulizia | ${task.apartment.name} | ${formatDateTime(message.createdAt)} | ${message.senderName} (${message.role}): ${truncateText(message.text, 160) || "n/d"}`
     ))),
-    ...tickets.flatMap((ticket) => ticket.messages.map((message) => (
+    ...tickets.flatMap((ticket: MaintenanceTicketWithApartmentForAI) => ticket.messages.map((message: OperationalMessageForAI) => (
       `- Manutenzione | ${ticket.apartment.name} | ${ticket.title} | ${formatDateTime(message.createdAt)} | ${message.senderName} (${message.role}): ${truncateText(message.text, 160) || "n/d"}`
     ))),
   ]
     .slice(0, 40);
 
   const recurringIssueLines = apartments
-    .flatMap((apartment) => arraySection(apartment.technicalProfile, "recurringIssues").map((issue) => (
+    .flatMap((apartment: ManagerApartmentForAI) => arraySection(apartment.technicalProfile, "recurringIssues").map((issue: Record<string, unknown>) => (
       `- ${apartment.name} | ${stringField(issue.title) || "Problema ricorrente"} | sintomi: ${truncateText(stringField(issue.symptoms), 160) || "n/d"} | soluzione: ${truncateText(stringField(issue.solution), 160) || "n/d"} | note IA: ${truncateText(stringField(issue.notesForAI), 160) || "n/d"}`
     )))
     .slice(0, 30);
