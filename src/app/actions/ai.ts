@@ -18,6 +18,14 @@ type AIContext = {
   maintenanceTicketId?: string | null;
 };
 
+type ApartmentChecklistItemForAI = {
+  order: number;
+  label: string;
+  required: boolean;
+  type: string;
+  formula: string | null;
+};
+
 
 const HISTORY_DAYS = 90;
 const MAX_HISTORY_TEXT_LENGTH = 5000;
@@ -972,7 +980,7 @@ export async function buildApartmentAIContext(apartmentId: string) {
     "apartmentAttachments",
   ]);
 
-  const checklistLines = apartment.checklistItems.map((item) => (
+  const checklistLines = apartment.checklistItems.map((item: ApartmentChecklistItemForAI) => (
     `- ${item.order}. ${item.label} | obbligatorio: ${item.required ? "si" : "no"} | tipo: ${item.type} | formula: ${item.formula || "n/d"}`
   ));
 
