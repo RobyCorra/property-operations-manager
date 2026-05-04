@@ -11,6 +11,7 @@ import AIAssistant from "@/src/components/ai-assistant";
 import SafeDate from "@/src/components/safe-date";
 import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableCleaningCard from "@/src/components/expandable-cleaning-card";
+import RecalculateCleaningChecklistButton from "@/src/components/recalculate-cleaning-checklist-button";
 import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import {
   LogOut, 
@@ -227,12 +228,18 @@ export default async function CleanerDashboardPage() {
                   expandedContent={(
                     <div className="space-y-5">
                       <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
-                        <div className="mb-4 flex items-center gap-3">
-                          <ClipboardList size={18} className="text-violet-600" />
-                          <h4 className="text-sm font-semibold uppercase tracking-tight text-slate-900">Checklist Qualità</h4>
+                        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="flex items-center gap-3">
+                            <ClipboardList size={18} className="text-violet-600" />
+                            <h4 className="text-sm font-semibold uppercase tracking-tight text-slate-900">Checklist Qualità</h4>
+                          </div>
+                          {task.status === "IN_PROGRESS" && (
+                            <RecalculateCleaningChecklistButton taskId={task.id} />
+                          )}
                         </div>
                         {task.status === "IN_PROGRESS" ? (
                           <ChecklistInteractive
+                            key={JSON.stringify(checklist)}
                             taskId={task.id}
                             initialItems={checklist}
                           />

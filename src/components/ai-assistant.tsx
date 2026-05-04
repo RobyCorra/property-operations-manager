@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { askAI } from "@/src/app/actions/ai";
 
 type ChatMessage = {
@@ -55,6 +56,8 @@ export default function AIAssistant({
     setInput("");
     setLoading(true);
 
+    console.log("[AI UI DEBUG] apartmentId inviato:", apartmentId);
+
     const res = await askAI(nextMessages, {
       role,
       type,
@@ -105,7 +108,26 @@ export default function AIAssistant({
                     : "bg-gray-100 text-slate-900"
                 }`}
               >
-                {message.content}
+                {message.role === "assistant" ? (
+                  <ReactMarkdown
+                    components={{
+                      a: ({ href, children }) => (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline font-medium"
+                        >
+                          {children}
+                        </a>
+                      ),
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                ) : (
+                  message.content
+                )}
               </div>
             </div>
           ))}

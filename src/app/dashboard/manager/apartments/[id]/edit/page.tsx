@@ -4,6 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { updateApartment } from "@/src/app/actions/apartment";
 import ApartmentForm from "@/src/components/apartment-form";
+import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 
 interface EditApartmentPageProps {
   params: Promise<{ id: string }>;
@@ -40,8 +41,13 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
           <Link href="/dashboard/manager/apartments" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block">
             &larr; Torna agli appartamenti
           </Link>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Modifica Appartamento</h1>
-          <p className="text-gray-500 mt-1">Aggiorna i dettagli della proprietà: {apartment.name}</p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Modifica Appartamento</h1>
+              <p className="text-gray-500 mt-1">Aggiorna i dettagli della proprietà: {apartment.name}</p>
+            </div>
+            <ManagerAIChatLauncher apartmentId={apartment.id} apartmentName={apartment.name} />
+          </div>
         </div>
 
         {/* Form Container */}

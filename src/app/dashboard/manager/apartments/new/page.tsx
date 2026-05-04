@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createApartment } from "@/src/app/actions/apartment";
-import ApartmentForm from "@/src/components/apartment-form";
+import ApartmentCreateWizard from "@/src/components/apartment-create-wizard";
 
 export default async function NewApartmentPage() {
   const cookieStore = await cookies();
@@ -25,8 +25,7 @@ export default async function NewApartmentPage() {
           <p className="text-gray-500 mt-1">Censisci una nuova proprietà per l'operatività</p>
         </div>
 
-        {/* Form Container */}
-        <ApartmentForm action={createApartment} title="Aggiungi Appartamento" />
+        <ApartmentCreateWizard action={createApartment} />
 
       </div>
     </main>

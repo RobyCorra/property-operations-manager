@@ -13,6 +13,7 @@ export interface OperationalEvent {
   status: string;
   statusLabel?: string;
   actorName?: string;
+  isLateCleaning?: boolean;
 }
 
 interface Props {

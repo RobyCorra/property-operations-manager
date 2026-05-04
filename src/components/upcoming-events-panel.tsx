@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { OperationalEvent, EventType } from "./operational-event-card";
-import SafeDate from "./safe-date";
 import Link from "next/link";
 
 interface Props {
@@ -20,6 +19,7 @@ import {
   CircleCheck,
   LayoutDashboard,
   ChevronRight,
+  AlertTriangle,
 } from "lucide-react";
 
 const TYPE_CONFIG: Record<EventType | "ALL", { label: string; icon: React.ReactNode; color: string; bg: string }> = {
@@ -56,10 +56,10 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
   // Grouping Logic
   const groups = useMemo(() => {
     const today = new Date(serverDate);
-    today.setUTCHours(0,0,0,0);
+    today.setHours(0,0,0,0);
     
     const tomorrow = new Date(today);
-    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
     const res = {
       TODAY: [] as OperationalEvent[],
@@ -69,7 +69,7 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
 
     filteredEvents.forEach(e => {
       const d = new Date(e.date);
-      d.setUTCHours(0,0,0,0);
+      d.setHours(0,0,0,0);
 
       if (d.getTime() === today.getTime()) {
         res.TODAY.push(e);
@@ -122,7 +122,7 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
             <div className="relative">
               <select 
                 value={filter}
-                onChange={(e) => setFilter(e.target.value as any)}
+                onChange={(e) => setFilter(e.target.value as EventType | "ALL")}
                 className="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
               >
                 {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
@@ -142,9 +142,9 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
               </div>
             ) : (
               <>
-                {groups.TODAY.length > 0 && <GroupSection title="Oggi" events={groups.TODAY} serverDate={serverDate} />}
-                {groups.TOMORROW.length > 0 && <GroupSection title="Domani" events={groups.TOMORROW} serverDate={serverDate} />}
-                {groups.FUTURE.length > 0 && <GroupSection title="Prossimi Giorni" events={groups.FUTURE} serverDate={serverDate} />}
+                {groups.TODAY.length > 0 && <GroupSection title="Oggi" events={groups.TODAY} />}
+                {groups.TOMORROW.length > 0 && <GroupSection title="Domani" events={groups.TOMORROW} />}
+                {groups.FUTURE.length > 0 && <GroupSection title="Prossimi Giorni" events={groups.FUTURE} />}
               </>
             )}
           </div>
@@ -154,7 +154,7 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
   );
 }
 
-function GroupSection({ title, events, serverDate }: { title: string; events: OperationalEvent[]; serverDate: string }) {
+function GroupSection({ title, events }: { title: string; events: OperationalEvent[] }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 px-2">
@@ -163,15 +163,16 @@ function GroupSection({ title, events, serverDate }: { title: string; events: Op
       </div>
       <div className="space-y-2">
         {events.map(event => (
-          <EventListItem key={event.id} event={event} serverDate={serverDate} />
+          <EventListItem key={event.id} event={event} />
         ))}
       </div>
     </div>
   );
 }
 
-function EventListItem({ event, serverDate }: { event: OperationalEvent; serverDate: string }) {
+function EventListItem({ event }: { event: OperationalEvent }) {
   const config = TYPE_CONFIG[event.type];
+  const showLateBadge = event.type === "CLEANING" && event.isLateCleaning;
   
   // Format Date: "22 Apr"
   const dateFormatted = event.date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
@@ -218,6 +219,12 @@ function EventListItem({ event, serverDate }: { event: OperationalEvent; serverD
             {actorLabelMap[event.type]}: <span className="text-slate-900">{event.actorName || "Da assegnare"}</span>
           </span>
         </div>
+        {showLateBadge && (
+          <div className="mt-2 inline-flex w-fit items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-rose-700">
+            <AlertTriangle size={11} />
+            In ritardo
+          </div>
+        )}
       </div>
 
       <div className="text-slate-300 group-hover:text-violet-600 transition-colors shrink-0">

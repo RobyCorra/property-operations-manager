@@ -17,6 +17,22 @@ type ChecklistSnapshotItem = {
   formula?: string | null;
 };
 
+type ExistingChecklistProgressItem = Partial<ChecklistSnapshotItem> & Record<string, unknown>;
+
+const isExistingChecklistProgressItem = (item: unknown): item is ExistingChecklistProgressItem => {
+  return typeof item === "object" && item !== null;
+};
+
+const toSafePositiveInt = (value: unknown, fallback = 1) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 1) return fallback;
+  return Math.max(1, Math.round(parsed));
+};
+
+const isIncomingBookingForTask = (booking: { apartmentId: string; checkInDate: Date }, apartmentId: string, taskDate: Date) => {
+  return booking.apartmentId === apartmentId && new Date(booking.checkInDate).getTime() >= taskDate.getTime();
+};
+
 export async function getCleaningTask(id: string) {
   return await prisma.cleaningTask.findUnique({
     where: { id },
@@ -36,28 +52,37 @@ export async function computeChecklistSnapshot(db: any, apartmentId: string, tas
 
   if (!apartment) return [];
 
-  // Find next incoming booking for guest count (if not provided)
+  // Find incoming booking for formula context.
   let nextBooking = null;
   if (providedNextBookingId) {
-    nextBooking = await db.booking.findUnique({
+    const linkedBooking = await db.booking.findUnique({
       where: { id: providedNextBookingId }
     });
-  } else {
+    nextBooking = linkedBooking && isIncomingBookingForTask(linkedBooking, apartmentId, taskDate)
+      ? linkedBooking
+      : null;
+  }
+
+  if (!nextBooking) {
     nextBooking = await db.booking.findFirst({
       where: {
         apartmentId,
         checkInDate: { gte: taskDate },
-        status: "CONFIRMED"
+        status: { in: ["ACTIVE", "CONFIRMED"] }
       },
       orderBy: { checkInDate: "asc" }
     });
   }
 
     const context = nextBooking ? {
-      guests: nextBooking.totalGuests,
-      bathrooms: apartment.bathrooms || 0,
-      bedrooms: apartment.bedrooms || 0
-    } : null;
+      guests: toSafePositiveInt(nextBooking.totalGuests),
+      bathrooms: toSafePositiveInt(apartment.bathrooms),
+      bedrooms: toSafePositiveInt(apartment.bedrooms)
+    } : {
+      guests: 1,
+      bathrooms: toSafePositiveInt(apartment.bathrooms),
+      bedrooms: toSafePositiveInt(apartment.bedrooms)
+    };
 
     return apartment.checklistItems.map((item: ChecklistItem) => {
       let computedValue: number | null = null;
@@ -71,7 +96,8 @@ export async function computeChecklistSnapshot(db: any, apartmentId: string, tas
         type: item.type,
         value: computedValue,
         required: item.required,
-        completed: false
+        completed: false,
+        formula: item.formula
       };
     });
   } catch (error) {
@@ -182,6 +208,7 @@ export async function syncCleaningTaskFromBooking(bookingId: string, tx?: any) {
     const oldGuestsItem = oldProgress.find(i => i.label.toLowerCase().includes("ospiti") || (i.type === "dynamic" && i.formula));
     const oldGuests = oldGuestsItem?.value || "0";
 
+    const shouldRefreshChecklist = turnoverTask.status === "PENDING" || oldProgress.length === 0;
     const snapshot = await computeChecklistSnapshot(db, booking.apartmentId, turnoverTask.date, booking.id) as ChecklistSnapshotItem[];
     const mergedSnapshot = oldProgress.length > 0
       ? snapshot.map((newItem: any) => {
@@ -201,12 +228,14 @@ export async function syncCleaningTaskFromBooking(bookingId: string, tx?: any) {
 
     console.log(`[TURNOVER-FIX] Booking=${booking.id} | CheckOut=${checkoutDate.toISOString()} | Guests: ${oldGuests} -> ${newGuests}`);
 
-    await db.cleaningTask.update({
-        where: { id: turnoverTask.id },
-        data: { 
-          checklistProgress: mergedSnapshot 
-        }
-    });
+    if (shouldRefreshChecklist) {
+      await db.cleaningTask.update({
+          where: { id: turnoverTask.id },
+          data: {
+            checklistProgress: mergedSnapshot
+          }
+      });
+    }
 
     console.log(`[TURNOVER-FIX] Sync complete. Turnover Task ${turnoverTask.id} updated for booking ${booking.id}`);
 
@@ -291,6 +320,61 @@ export async function updateCleaningTask(id: string, prevState: any, formData: F
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath("/dashboard/cleaner");
   redirect("/dashboard/manager/cleanings");
+}
+
+export async function recalculateCleaningChecklist(taskId: string) {
+  const task = await prisma.cleaningTask.findUnique({
+    where: { id: taskId },
+    select: {
+      id: true,
+      apartmentId: true,
+      date: true,
+      bookingId: true,
+      checklistProgress: true,
+    }
+  });
+
+  if (!task) {
+    throw new Error("Pulizia non trovata.");
+  }
+
+  const snapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date, task.bookingId) as ChecklistSnapshotItem[];
+  const rawProgress = Array.isArray(task.checklistProgress) ? task.checklistProgress as unknown[] : [];
+  const currentProgress = rawProgress.filter(isExistingChecklistProgressItem);
+
+  const mergedSnapshot = snapshot.map((newItem) => {
+    const existingMatch = currentProgress.find((oldItem) => oldItem.id === newItem.id)
+      || currentProgress.find((oldItem) => oldItem.label === newItem.label);
+
+    if (!existingMatch) {
+      return newItem;
+    }
+
+    return {
+      ...existingMatch,
+      id: newItem.id,
+      label: newItem.label,
+      type: newItem.type,
+      required: newItem.required,
+      formula: newItem.formula,
+      value: newItem.value,
+      completed: !!existingMatch.completed,
+    };
+  });
+
+  await prisma.cleaningTask.update({
+    where: { id: task.id },
+    data: {
+      checklistProgress: mergedSnapshot,
+    },
+  });
+
+  revalidatePath("/dashboard/cleaner");
+  revalidatePath("/dashboard/manager/cleanings");
+  revalidatePath(`/dashboard/manager/cleanings/${task.id}/edit`);
+  revalidatePath("/dashboard/manager");
+
+  return { success: true, count: mergedSnapshot.length };
 }
 
 export async function deleteCleaningTask(id: string) {
@@ -408,7 +492,7 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
   const currentProgress = (task.checklistProgress as any[]) || [];
   
   if (nextStatus === "IN_PROGRESS" && task.status === "PENDING" && currentProgress.length === 0) {
-    const snapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date);
+    const snapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date, task.bookingId);
     if (snapshot.length > 0) {
       checklistProgressUpdate = snapshot;
     }

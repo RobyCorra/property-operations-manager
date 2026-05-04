@@ -10,7 +10,7 @@ import React, {
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { formatDateKey, getApartmentOperationalStatus, type ApartmentStatus } from "@/src/lib/apartment-status";
+import { getApartmentOperationalStatus, type ApartmentStatus } from "@/src/lib/apartment-status";
 import type { CleaningTask as PrismaCleaningTask, MaintenanceTicket as PrismaMaintenanceTicket, Prisma } from "@prisma/client";
 import { deleteBooking } from "@/src/app/actions/booking";
 import {
@@ -66,6 +66,7 @@ interface MaintenanceTicket {
   priority: string;
   createdAt: Date | string;
   scheduledStart?: Date | string | null;
+  scheduledEnd?: Date | string | null;
   description?: string;
   assignedTo?: { id: string; name: string } | null;
   apartment?: { name: string; address: string };
@@ -81,25 +82,131 @@ interface Apartment {
 interface TimelineCalendarProps {
   apartments: Apartment[];
   bookings: Booking[];
-  cleanings: CleaningTask[];
-  tickets: MaintenanceTicket[];
+  cleaningTasks: CleaningTask[];
+  maintenanceTickets: MaintenanceTicket[];
   serverDate: string;
 }
 
+type CalendarEvent = {
+  id: string;
+  type: "booking" | "cleaning" | "maintenance";
+  title: string;
+  apartmentName?: string;
+  start: Date;
+  end: Date;
+  status?: string;
+  priority?: string;
+  apartmentId: string;
+  data: Booking | CleaningTask | MaintenanceTicket;
+};
+
 const DAY_WIDTH = 100;
-const DAYS_COUNT = 30;
+const MIN_DAYS_COUNT = 30;
 const APARTMENT_COL_WIDTH = 250;
 
-export default function TimelineCalendar({ apartments, bookings, cleanings, tickets, serverDate }: TimelineCalendarProps) {
+function toLocalDateKey(value: Date | string) {
+  const date = new Date(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function dateFromLocalKey(key: string) {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function addLocalDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setHours(0, 0, 0, 0);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function diffLocalDays(start: Date, end: Date) {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  startDate.setHours(0, 0, 0, 0);
+  endDate.setHours(0, 0, 0, 0);
+  return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, serverDate }: TimelineCalendarProps) {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<{ type: 'booking' | 'cleaning' | 'maintenance', data: any } | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Client-side clock for real-time 15:00 transition
   const [currentClientTime, setCurrentClientTime] = useState(() => new Date(serverDate));
+
+  const bookingEvents = useMemo<CalendarEvent[]>(() => (
+    bookings
+      .filter((booking) => booking.status !== "CANCELLED")
+      .map((booking) => ({
+        id: booking.id,
+        type: "booking" as const,
+        title: `Prenotazione - ${booking.apartment?.name || "Appartamento"}`,
+        apartmentName: booking.apartment?.name || "",
+        start: new Date(booking.checkInDate),
+        end: new Date(booking.checkOutDate),
+        status: booking.status,
+        apartmentId: booking.apartmentId,
+        data: booking,
+      }))
+      .filter((event) => !isNaN(event.start.getTime()))
+  ), [bookings]);
+
+  const cleaningEvents = useMemo<CalendarEvent[]>(() => (
+    cleaningTasks
+      .filter((task) => task.status !== "CANCELLED")
+      .map((task) => ({
+        id: task.id,
+        type: "cleaning" as const,
+        title: `Pulizia - ${task.apartment?.name || "Appartamento"}`,
+        apartmentName: task.apartment?.name || "",
+        start: new Date(task.date),
+        end: new Date(task.date),
+        status: task.status,
+        apartmentId: task.apartmentId,
+        data: task,
+      }))
+      .filter((event) => !isNaN(event.start.getTime()))
+  ), [cleaningTasks]);
+
+  const maintenanceEvents = useMemo<CalendarEvent[]>(() => (
+    maintenanceTickets
+      .filter((ticket) => ticket.status !== "CANCELLED")
+      .map((ticket) => {
+        const start = new Date(ticket.scheduledStart || ticket.createdAt);
+        const end = new Date(ticket.scheduledEnd || ticket.scheduledStart || ticket.createdAt);
+
+        return {
+          id: ticket.id,
+          type: "maintenance" as const,
+          title: `Manutenzione - ${ticket.apartment?.name || "Appartamento"}`,
+          apartmentName: ticket.apartment?.name || "",
+          start,
+          end,
+          status: ticket.status,
+          priority: ticket.priority,
+          apartmentId: ticket.apartmentId,
+          data: ticket,
+        };
+      })
+      .filter((event) => !isNaN(event.start.getTime()))
+  ), [maintenanceTickets]);
+
+  const calendarEvents = useMemo<CalendarEvent[]>(() => (
+    [
+      ...bookingEvents,
+      ...cleaningEvents,
+      ...maintenanceEvents,
+    ]
+      .sort((a, b) => a.start.getTime() - b.start.getTime())
+  ), [bookingEvents, cleaningEvents, maintenanceEvents]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -156,54 +263,116 @@ export default function TimelineCalendar({ apartments, bookings, cleanings, tick
     setShowDeleteConfirm(false);
   }, [selectedEvent]);
 
-  // Initialize from props to stay deterministic during hydration
-  const [startDate, setStartDate] = useState(() => {
-    const d = new Date(serverDate);
-    d.setUTCHours(0, 0, 0, 0);
-    d.setUTCDate(d.getUTCDate() - 2);
-    return d;
-  });
+  const startDate = useMemo(() => {
+    const today = dateFromLocalKey(toLocalDateKey(serverDate));
+    const defaultStart = addLocalDays(today, -7);
+    const eventStartDates = calendarEvents
+      .map((event) => dateFromLocalKey(toLocalDateKey(event.start)))
+      .filter((date) => !isNaN(date.getTime()));
+
+    if (eventStartDates.length === 0) {
+      return defaultStart;
+    }
+
+    const earliestEventDate = new Date(Math.min(...eventStartDates.map((date) => date.getTime())));
+    return earliestEventDate < defaultStart ? earliestEventDate : defaultStart;
+  }, [calendarEvents, serverDate]);
 
   const days = useMemo(() => {
-    return Array.from({ length: DAYS_COUNT }).map((_, i) => {
-      const d = new Date(startDate);
-      d.setUTCDate(d.getUTCDate() + i);
-      return d;
+    const today = dateFromLocalKey(toLocalDateKey(serverDate));
+    const defaultEnd = addLocalDays(today, MIN_DAYS_COUNT - 1);
+    const eventDates = calendarEvents
+      .flatMap((event) => [event.start, event.end])
+      .map((date) => dateFromLocalKey(toLocalDateKey(date)))
+      .filter((date) => !isNaN(date.getTime()));
+
+    const latestEventDate = eventDates.length > 0
+      ? addLocalDays(new Date(Math.max(...eventDates.map((date) => date.getTime()))), 7)
+      : defaultEnd;
+    const endDate = latestEventDate > defaultEnd ? latestEventDate : defaultEnd;
+    const daysCount = Math.max(MIN_DAYS_COUNT, diffLocalDays(startDate, endDate) + 1);
+
+    return Array.from({ length: daysCount }).map((_, i) => {
+      return addLocalDays(startDate, i);
     });
-  }, [startDate]);
+  }, [calendarEvents, serverDate, startDate]);
+
+  const timelineDayWidth = DAY_WIDTH;
+
+  const firstVisibleEventPosition = useMemo(() => {
+    const today = dateFromLocalKey(toLocalDateKey(serverDate));
+    const eventDates = calendarEvents
+      .map((event) => event.start)
+      .map((date) => dateFromLocalKey(toLocalDateKey(date)))
+      .filter((date) => !isNaN(date.getTime()) && date >= today)
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    const targetDate = eventDates[0] ?? today;
+    const diffDays = diffLocalDays(startDate, targetDate);
+    return Math.max(0, diffDays * timelineDayWidth - timelineDayWidth);
+  }, [calendarEvents, serverDate, startDate, timelineDayWidth]);
 
   const getPosition = (dateStr: Date | string, offset: boolean = false) => {
-    const date = new Date(dateStr);
-    date.setUTCHours(0, 0, 0, 0);
-    const diffTime = date.getTime() - startDate.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays * DAY_WIDTH + (offset ? DAY_WIDTH / 2 : 0);
+    const date = dateFromLocalKey(toLocalDateKey(dateStr));
+    const diffDays = diffLocalDays(startDate, date);
+    return diffDays * timelineDayWidth + (offset ? timelineDayWidth / 2 : 0);
   };
 
   const getWidth = (startDateStr: Date | string, endDateStr: Date | string) => {
-    const start = new Date(startDateStr);
-    const end = new Date(endDateStr);
-    start.setUTCHours(0, 0, 0, 0);
-    end.setUTCHours(0, 0, 0, 0);
-    const diffTime = end.getTime() - start.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(0.5, diffDays) * DAY_WIDTH;
+    const start = dateFromLocalKey(toLocalDateKey(startDateStr));
+    const end = dateFromLocalKey(toLocalDateKey(endDateStr));
+    const diffDays = diffLocalDays(start, end);
+    return Math.max(0.5, diffDays) * timelineDayWidth;
   };
 
-  // Center scroll on "Today" (day index 2)
+  const isUrgentOpenTicket = (ticket: MaintenanceTicket) => (
+    ticket.priority === "URGENT" && ["OPEN", "IN_PROGRESS"].includes(ticket.status)
+  );
+
+  const isCleaningLate = (cleaning: CleaningTask) => (
+    cleaning.status !== "COMPLETED" && toLocalDateKey(cleaning.date) <= toLocalDateKey(currentClientTime)
+  );
+
+  const isBookingNotReady = (booking: Booking) => {
+    const checkInKey = toLocalDateKey(booking.checkInDate);
+    const hasOpenCleaningBeforeCheckIn = cleaningTasks.some((task) => (
+      task.apartmentId === booking.apartmentId &&
+      ["PENDING", "IN_PROGRESS"].includes(task.status) &&
+      toLocalDateKey(task.date) <= checkInKey
+    ));
+    const hasUrgentOpenTicket = maintenanceTickets.some((ticket) => (
+      ticket.apartmentId === booking.apartmentId && isUrgentOpenTicket(ticket)
+    ));
+
+    return hasOpenCleaningBeforeCheckIn || hasUrgentOpenTicket;
+  };
+
+  const alertSummary = useMemo(() => {
+    return {
+      lateCleanings: cleaningTasks.filter((task) => (
+        task.status !== "COMPLETED" &&
+        toLocalDateKey(task.date) <= toLocalDateKey(currentClientTime)
+      )).length,
+      cleaningsInProgress: cleaningTasks.filter((task) => task.status === "IN_PROGRESS").length,
+      urgentTickets: maintenanceTickets.filter((ticket) => (
+        ticket.priority === "URGENT" && ["OPEN", "IN_PROGRESS"].includes(ticket.status)
+      )).length,
+    };
+  }, [cleaningTasks, maintenanceTickets, currentClientTime]);
+
+  // Center scroll on the first loaded event, falling back to today.
   useEffect(() => {
-    setMounted(true);
     if (scrollRef.current) {
-      scrollRef.current.scrollLeft = 2 * DAY_WIDTH - 20;
+      scrollRef.current.scrollLeft = firstVisibleEventPosition;
     }
-  }, []);
+  }, [firstVisibleEventPosition]);
 
   const formatDate = (dateInput: Date | string) => {
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return "";
-    const day = String(d.getUTCDate()).padStart(2, "0");
-    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
-    const year = d.getUTCFullYear();
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
@@ -250,25 +419,48 @@ export default function TimelineCalendar({ apartments, bookings, cleanings, tick
     });
   };
 
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+
+    console.log("[TimelineCalendar] bookings", bookings.length);
+    console.log("[TimelineCalendar] cleaningTasks", cleaningTasks.length);
+    console.log("[TimelineCalendar] maintenanceTickets", maintenanceTickets.length);
+    console.log("[TimelineCalendar] calendarEvents", calendarEvents.length);
+  }, [bookings.length, cleaningTasks.length, maintenanceTickets.length, calendarEvents.length]);
+
   return (
     <>
     <div className="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl shadow-black/5 overflow-hidden font-sans transition-all duration-200 ease-in-out">
       <div className="p-8 border-b border-white/20">
         <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Programma Operativo</h2>
-        <p className="text-sm text-slate-500 mt-1">Timeline dei prossimi 30 giorni (clicca su un evento per dettagli)</p>
+        <p className="text-sm text-slate-500 mt-1">Timeline operativa con prenotazioni, pulizie e manutenzioni (clicca su un evento per dettagli)</p>
+        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-orange-700">Pulizie in ritardo</p>
+            <p className="mt-1 text-2xl font-semibold text-orange-700">{alertSummary.lateCleanings}</p>
+          </div>
+          <div className="rounded-2xl border border-violet-500/20 bg-violet-500/10 px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-violet-700">Pulizie in corso</p>
+            <p className="mt-1 text-2xl font-semibold text-violet-700">{alertSummary.cleaningsInProgress}</p>
+          </div>
+          <div className="rounded-2xl border border-red-600/25 bg-red-600/10 px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-red-800">Ticket urgenti</p>
+            <p className="mt-1 text-2xl font-semibold text-red-800">{alertSummary.urgentTickets}</p>
+          </div>
+        </div>
       </div>
 
-      <div className="flex overflow-hidden relative" style={{ height: "auto", minHeight: "400px" }}>
+      <div className="flex overflow-hidden relative" style={{ height: "auto", minHeight: "440px" }}>
         {/* Apartment List (Fixed Left) */}
         <div 
           className="z-20 bg-white/40 backdrop-blur-xl border-r border-white/20 flex-shrink-0"
           style={{ width: APARTMENT_COL_WIDTH }}
         >
-          <div className="h-14 border-b border-white/20 flex items-center px-8">
+          <div className="h-16 border-b border-white/20 flex items-center px-8">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Appartamento</span>
           </div>
           {apartments.map((apt) => (
-            <div key={apt.id} className="h-24 border-b border-white/20 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/10">
+            <div key={apt.id} className="h-28 border-b border-white/20 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/10">
               <span className="text-base font-semibold text-slate-900 truncate tracking-tight">{apt.name}</span>
               <span className="text-[10px] text-slate-500 uppercase font-semibold mt-1 tracking-wider">{apt.status}</span>
             </div>
@@ -282,21 +474,27 @@ export default function TimelineCalendar({ apartments, bookings, cleanings, tick
           style={{ cursor: "grab" }}
         >
           {/* Header Dates */}
-          <div className="flex h-14 border-b border-white/20 sticky top-0 bg-white/40 backdrop-blur-xl z-10">
+          <div className="flex h-16 border-b border-white/20 sticky top-0 bg-white/40 backdrop-blur-xl z-10">
             {days.map((day, i) => {
-              const isToday = i === 2;
+              const isToday = toLocalDateKey(day) === toLocalDateKey(serverDate);
               const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+              const previousDay = days[i - 1];
+              const isNewMonth = i === 0 || previousDay.getMonth() !== day.getMonth();
+              const monthLabel = day.toLocaleDateString("it-IT", { month: "short" });
               return (
                 <div 
                   key={i} 
-                  className={`flex-shrink-0 border-r border-white/10 flex flex-col items-center justify-center ${isToday ? "bg-violet-500/5 shadow-inner" : ""}`}
-                  style={{ width: DAY_WIDTH }}
+                  className={`flex-shrink-0 border-r border-white/10 flex flex-col items-center justify-center gap-0.5 ${isToday ? "bg-violet-500/5 shadow-inner" : ""}`}
+                  style={{ width: timelineDayWidth }}
                 >
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider ${isToday ? "text-violet-600" : "text-slate-400"}`}>
-                    {weekDays[day.getUTCDay()]}
+                  <span className={`h-3 text-[9px] font-bold uppercase tracking-wide ${isNewMonth ? "text-slate-500" : "text-transparent"}`}>
+                    {isNewMonth ? monthLabel : "·"}
                   </span>
-                  <span className={`text-sm font-semibold ${isToday ? "text-violet-700" : "text-slate-900"}`}>
-                    {day.getUTCDate()}
+                  <span className={`text-[10px] font-semibold uppercase tracking-wider ${isToday ? "text-violet-600" : "text-slate-400"}`}>
+                    {weekDays[day.getDay()]}
+                  </span>
+                  <span className={`text-base font-semibold leading-none ${isToday ? "text-violet-700" : "text-slate-900"}`}>
+                    {day.getDate()}
                   </span>
                 </div>
               );
@@ -304,135 +502,178 @@ export default function TimelineCalendar({ apartments, bookings, cleanings, tick
           </div>
 
           {/* Rows */}
-          <div className="relative" style={{ width: DAYS_COUNT * DAY_WIDTH }}>
+          <div className="relative" style={{ width: days.length * timelineDayWidth }}>
             {/* Background Grid Lines */}
             <div className="absolute inset-0 flex pointer-events-none">
-              {Array.from({ length: DAYS_COUNT }).map((_, i) => (
-                <div key={i} className="h-full border-r border-white/10 flex-shrink-0" style={{ width: DAY_WIDTH }} />
-              ))}
+              {days.map((day, i) => {
+                const isToday = toLocalDateKey(day) === toLocalDateKey(serverDate);
+
+                return (
+                  <div
+                    key={i}
+                    className={`h-full border-r flex-shrink-0 ${isToday ? "border-violet-300/70 bg-violet-500/5" : "border-white/10"}`}
+                    style={{ width: timelineDayWidth }}
+                  />
+                );
+              })}
             </div>
 
             {apartments.map((apt) => (
-              <div key={apt.id} className="h-24 border-b border-white/20 relative group hover:bg-white/5 transition-colors">
-                {/* Booking Blocks */}
-                {bookings.filter(b => b.apartmentId === apt.id).map(b => {
-                  const todayKey = formatDateKey(currentClientTime);
-                  const checkInKey = formatDateKey(b.checkInDate);
-                  const checkOutKey = formatDateKey(b.checkOutDate);
-                  const statusTargetDate = todayKey >= checkInKey && todayKey < checkOutKey
-                    ? currentClientTime
-                    : b.checkInDate;
-                  const apartmentBookings = bookings
-                    .filter(bx => bx.apartmentId === apt.id)
-                    .map(bx => ({
-                      id: bx.id,
-                      createdAt: new Date(),
-                      apartmentId: bx.apartmentId,
-                      status: bx.status ?? null,
-                      guestName: bx.guestName ?? null,
-                      totalGuests: bx.totalGuests ?? 0,
-                      checkInDate: new Date(bx.checkInDate),
-                      checkOutDate: new Date(bx.checkOutDate),
-                      externalId: bx.externalId ?? null,
-                      source: bx.source ?? null,
-                    }));
-                  const apartmentCleanings: PrismaCleaningTask[] = cleanings
-                    .filter(cx => cx.apartmentId === apt.id)
-                    .map(cx => ({
-                      id: cx.id,
-                      createdAt: new Date(),
-                      apartmentId: cx.apartmentId,
-                      date: new Date(cx.date),
-                      status: cx.status,
-                      assignedToId: cx.assignedTo?.id ?? null,
-                      notes: cx.notes ?? null,
-                      bookingId: null,
-                      checklistProgress: cx.checklistProgress ?? null,
-                    }));
-                  const apartmentTickets: PrismaMaintenanceTicket[] = tickets
-                    .filter(tx => tx.apartmentId === apt.id)
-                    .map(tx => ({
-                      id: tx.id,
-                      apartmentId: tx.apartmentId,
-                      title: tx.title,
-                      description: tx.description ?? "",
-                      status: tx.status,
-                      priority: tx.priority,
-                      createdAt: new Date(tx.createdAt),
-                      assignedToId: tx.assignedTo?.id ?? null,
-                      scheduledStart: tx.scheduledStart ? new Date(tx.scheduledStart) : null,
-                      scheduledEnd: null,
-                      startedAt: null,
-                      resolvedAt: null,
-                    }));
+              <div key={apt.id} className="h-28 border-b border-white/20 relative group hover:bg-white/5 transition-colors">
+                {calendarEvents.filter((event) => event.apartmentId === apt.id).map((event) => {
+                  if (event.type === "booking") {
+                    const booking = event.data as Booking;
+                    const todayKey = toLocalDateKey(currentClientTime);
+                    const checkInKey = toLocalDateKey(booking.checkInDate);
+                    const checkOutKey = toLocalDateKey(booking.checkOutDate);
+                    const statusTargetDate = todayKey >= checkInKey && todayKey < checkOutKey
+                      ? currentClientTime
+                      : booking.checkInDate;
+                    const apartmentBookings = bookings
+                      .filter((item) => item.status !== "CANCELLED" && item.apartmentId === apt.id)
+                      .map((item) => ({
+                        id: item.id,
+                        createdAt: new Date(),
+                        apartmentId: item.apartmentId,
+                        status: item.status ?? null,
+                        guestName: item.guestName ?? null,
+                        totalGuests: item.totalGuests ?? 0,
+                        checkInDate: new Date(item.checkInDate),
+                        checkOutDate: new Date(item.checkOutDate),
+                        externalId: item.externalId ?? null,
+                        source: item.source ?? null,
+                      }));
+                    const apartmentCleanings: PrismaCleaningTask[] = cleaningTasks
+                      .filter((item) => item.status !== "CANCELLED" && item.apartmentId === apt.id)
+                      .map((item) => ({
+                        id: item.id,
+                        createdAt: new Date(),
+                        apartmentId: item.apartmentId,
+                        date: new Date(item.date),
+                        status: item.status,
+                        assignedToId: item.assignedTo?.id ?? null,
+                        notes: item.notes ?? null,
+                        bookingId: null,
+                        checklistProgress: item.checklistProgress ?? null,
+                      }));
+                    const apartmentTickets: PrismaMaintenanceTicket[] = maintenanceTickets
+                      .filter((item) => item.status !== "CANCELLED" && item.apartmentId === apt.id)
+                      .map((item) => ({
+                        id: item.id,
+                        apartmentId: item.apartmentId,
+                        title: item.title,
+                        description: item.description ?? "",
+                        status: item.status,
+                        priority: item.priority,
+                        createdAt: new Date(item.createdAt),
+                        assignedToId: item.assignedTo?.id ?? null,
+                        scheduledStart: item.scheduledStart ? new Date(item.scheduledStart) : null,
+                        scheduledEnd: item.scheduledEnd ? new Date(item.scheduledEnd) : null,
+                        startedAt: null,
+                        resolvedAt: null,
+                      }));
 
-                  const bookingStatus = getApartmentOperationalStatus(
-                    statusTargetDate,
-                    apartmentBookings,
-                    apartmentCleanings,
-                    apartmentTickets,
-                    { now: currentClientTime }
-                  );
+                    const bookingStatus = getApartmentOperationalStatus(
+                      statusTargetDate,
+                      apartmentBookings,
+                      apartmentCleanings,
+                      apartmentTickets,
+                      { now: currentClientTime }
+                    );
 
-                  const bgColors: Record<string, string> = {
-                    GREEN: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-                    BLUE: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-                    RED: "bg-red-500/10 text-red-600 border-red-500/20"
-                  };
+                    const bgColors: Record<string, string> = {
+                      GREEN: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+                      BLUE: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+                      RED: "bg-red-500/10 text-red-600 border-red-500/20"
+                    };
+                    const bookingNotReady = isBookingNotReady(booking);
+                    const bookingColor = bookingNotReady
+                      ? "bg-red-500/20 text-red-700 border-red-500/40 shadow-red-100"
+                      : bgColors[bookingStatus.color] || "bg-slate-500/10 text-slate-600 border-slate-500/20";
 
-                  return (
-                    <div 
-                      key={b.id}
-                      onClick={() => setSelectedEvent({ type: 'booking', data: b })}
-                      className={`absolute top-4 h-8 rounded-full border flex items-center px-4 shadow-sm z-10 transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-95 cursor-pointer text-[11px] font-semibold tracking-tight whitespace-nowrap overflow-hidden ${bgColors[bookingStatus.color] || "bg-slate-500/10 text-slate-600 border-slate-500/20"}`}
-                      title={`Clicca per dettagli`}
-                      style={{ 
-                        left: getPosition(b.checkInDate, true), 
-                        width: getWidth(b.checkInDate, b.checkOutDate) - 4,
-                      }}
-                    >
-                      <LogIn size={12} className="mr-2 opacity-70" /> {b.totalGuests ?? 0} osp.
-                    </div>
-                  );
-                })}
+                    return (
+                      <div
+                        key={`${event.type}-${event.id}`}
+                        onClick={() => setSelectedEvent({ type: "booking", data: booking })}
+                        className={`absolute top-4 h-8 rounded-full border flex items-center gap-2 px-4 shadow-sm z-10 transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-95 cursor-pointer text-[11px] font-semibold tracking-tight whitespace-nowrap overflow-hidden ${bookingColor}`}
+                        title={bookingNotReady ? `${event.title} - NON PRONTO` : event.title}
+                        style={{
+                          left: getPosition(event.start, true),
+                          width: Math.max(timelineDayWidth - 8, getWidth(event.start, event.end) - 4),
+                        }}
+                      >
+                        <LogIn size={12} className="opacity-70" /> {booking.totalGuests ?? 0} osp.
+                        {bookingNotReady ? (
+                          <span className="rounded-full bg-red-600 px-2 py-0.5 text-[9px] font-bold uppercase text-white">
+                            Non pronto
+                          </span>
+                        ) : null}
+                      </div>
+                    );
+                  }
 
-                {/* Cleaning Blocks */}
-                {cleanings.filter(c => c.apartmentId === apt.id).map(c => {
-                  const statusColors: Record<string, string> = {
-                    "PENDING": "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
-                    "IN_PROGRESS": "bg-violet-500/10 text-violet-600 border-violet-500/20",
-                    "COMPLETED": "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                  };
-                  return (
-                    <div 
-                      key={c.id}
-                      onClick={() => setSelectedEvent({ type: 'cleaning', data: c })}
-                      className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center ${statusColors[c.status] || "bg-slate-400/10 text-slate-500 border-slate-400/20"}`}
-                      title={`Clicca per dettagli`}
-                      style={{ 
-                        left: getPosition(c.date) + 6, 
-                        width: DAY_WIDTH - 12
-                      }}
-                    >
-                      <Paintbrush size={12} className="mr-1.5 opacity-70" /> PULIZIA
-                    </div>
-                  );
-                })}
+                  if (event.type === "cleaning") {
+                    const cleaning = event.data as CleaningTask;
+                    const statusColors: Record<string, string> = {
+                      PENDING: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+                      IN_PROGRESS: "bg-violet-500/10 text-violet-600 border-violet-500/20",
+                      COMPLETED: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+                    };
+                    const cleaningLate = isCleaningLate(cleaning);
+                    const cleaningColor = cleaningLate
+                      ? "bg-orange-500/20 text-orange-700 border-orange-500/40 shadow-orange-100"
+                      : statusColors[cleaning.status] || "bg-slate-400/10 text-slate-500 border-slate-400/20";
 
-                {/* Maintenance Blocks */}
-                {tickets.filter(t => t.apartmentId === apt.id && t.scheduledStart).map(t => {
-                  const eventDate = t.scheduledStart!;
-                  return (
-                    <div 
-                      key={t.id}
-                      onClick={() => setSelectedEvent({ type: 'maintenance', data: t })}
-                      className={`absolute bottom-2 h-2.5 w-2.5 rounded-full z-10 cursor-pointer transition-all duration-200 hover:scale-150 active:scale-90 shadow-sm border ${t.status === "RESOLVED" ? "bg-white border-white/40" : "bg-red-500 border-red-600/50 shadow-red-200"}`}
-                      title={`Clicca per dettagli`}
-                      style={{ 
-                        left: getPosition(eventDate) + 12
-                      }}
-                    ></div>
-                  );
+                    return (
+                      <div
+                        key={`${event.type}-${event.id}`}
+                        onClick={() => setSelectedEvent({ type: "cleaning", data: cleaning })}
+                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 ${cleaningColor}`}
+                        title={cleaningLate ? `${event.title} - IN RITARDO` : event.title}
+                        style={{
+                          left: getPosition(event.start) + 6,
+                          width: Math.max(10, timelineDayWidth - 12),
+                        }}
+                      >
+                        <Paintbrush size={12} className="opacity-70" /> PULIZIA
+                        {cleaningLate ? <span className="text-[9px] font-bold uppercase">In ritardo</span> : null}
+                      </div>
+                    );
+                  }
+
+                  if (event.type === "maintenance") {
+                    const ticket = event.data as MaintenanceTicket;
+                    const priorityColors: Record<string, string> = {
+                      URGENT: "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100",
+                      HIGH: "bg-orange-500/15 text-orange-700 border-orange-500/30 shadow-orange-100",
+                      MEDIUM: "bg-violet-500/15 text-violet-700 border-violet-500/30 shadow-violet-100",
+                      LOW: "bg-sky-500/15 text-sky-700 border-sky-500/30 shadow-sky-100",
+                    };
+                    const urgentOpenTicket = isUrgentOpenTicket(ticket);
+                    const ticketColor = ticket.status === "RESOLVED"
+                      ? "bg-slate-200 text-slate-600 border-slate-300"
+                      : urgentOpenTicket
+                      ? "bg-red-600/20 text-red-800 border-red-600/50 shadow-red-200"
+                      : priorityColors[ticket.priority] || "bg-slate-500/15 text-slate-700 border-slate-500/30 shadow-slate-100";
+
+                    return (
+                      <div
+                        key={`${event.type}-${event.id}`}
+                        onClick={() => setSelectedEvent({ type: "maintenance", data: ticket })}
+                        className={`absolute bottom-2 h-6 rounded-full z-20 cursor-pointer transition-all duration-200 hover:scale-[1.05] active:scale-95 shadow-sm border flex items-center justify-center px-2 text-[9px] font-semibold uppercase tracking-tight whitespace-nowrap overflow-hidden ${ticketColor}`}
+                        title={`${ticket.title} - ${ticket.status} - ${ticket.priority}`}
+                        style={{
+                          left: getPosition(event.start) + 6,
+                          width: Math.max(10, timelineDayWidth - 12, getWidth(event.start, event.end) - 12),
+                        }}
+                      >
+                        {urgentOpenTicket ? <span className="mr-1">⚠️</span> : <Wrench size={11} className="mr-1 opacity-70" />}
+                        TICKET
+                      </div>
+                    );
+                  }
+
+                  return null;
                 })}
               </div>
             ))}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { Apartment } from "@prisma/client";
 import { ChevronRight } from "@/src/components/icons";
 
@@ -48,6 +48,28 @@ type TechnicalProfile = {
 };
 
 type TechnicalSectionKey = "systems" | "appliances" | "smartHome";
+type FormSectionKey = "main" | "calendar" | "technical" | "attachments" | "ai";
+type SectionRowProps = {
+  title: string;
+  count: number;
+  icon: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+  className?: string;
+};
+
+type ItemCardProps = {
+  title: string;
+  subtitle: string;
+  icon: string;
+  badge: {
+    label: string;
+    className: string;
+  };
+  children: ReactNode;
+  defaultOpen?: boolean;
+  variant?: "default" | "warning";
+};
 
 interface ApartmentFormProps {
   initialData?: Apartment;
@@ -58,6 +80,13 @@ interface ApartmentFormProps {
 const inputClass = "w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent";
 const cardClass = "space-y-4 rounded-xl border border-gray-100 bg-gray-50/60 p-4";
 const attachmentCategories = ["MANUAL", "WARRANTY", "PHOTO", "TECHNICAL_SHEET", "INSTALLER_INSTRUCTIONS", "OTHER"];
+const formSections: { key: FormSectionKey; label: string; icon: string }[] = [
+  { key: "main", label: "Dati principali", icon: "🏠" },
+  { key: "calendar", label: "Calendario / iCal", icon: "📅" },
+  { key: "technical", label: "Scheda tecnica", icon: "🛠" },
+  { key: "attachments", label: "Allegati", icon: "📎" },
+  { key: "ai", label: "Note IA", icon: "🤖" },
+];
 
 const emptyAttachment: TechnicalAttachment = {
   filename: "",
@@ -121,6 +150,79 @@ const legacyIssueLabels: Record<string, string> = {
   lockIssues: "Problemi serratura",
   wifiIssues: "Problemi Wi-Fi",
 };
+
+function SectionRow({ title, count, icon, children, defaultOpen = false, className = "" }: SectionRowProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <section className={`overflow-hidden rounded-2xl border border-white/20 bg-white/40 shadow-sm backdrop-blur-xl ${className}`}>
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((current) => !current)}
+        className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-white/60 focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+      >
+        <span className="flex min-w-0 items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/70 text-lg shadow-sm ring-1 ring-white/40">{icon}</span>
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-semibold text-gray-900">{title}</span>
+            <span className="mt-0.5 block text-xs font-medium text-gray-500">{count} elementi</span>
+          </span>
+        </span>
+        <ChevronRight className={`h-4 w-4 shrink-0 text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />
+      </button>
+      <div className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+        <div className="overflow-hidden">
+          <div className="space-y-4 border-t border-white/20 px-5 py-4">{children}</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ItemCard({ title, subtitle, icon, badge, children, defaultOpen = false, variant = "default" }: ItemCardProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <article className={`rounded-2xl border p-4 shadow-sm backdrop-blur transition-all duration-200 hover:shadow-md ${
+      variant === "warning" ? "border-yellow-200/70 bg-yellow-50/70" : "border-white/20 bg-white/60"
+    }`}>
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((current) => !current)}
+        className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-xl text-left focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+      >
+        <span className="flex min-w-0 items-start gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/70 text-lg shadow-sm ring-1 ring-white/50">{icon}</span>
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-semibold text-gray-900">{title}</span>
+            <span className="mt-1 block truncate text-xs font-medium text-gray-500">{subtitle}</span>
+          </span>
+        </span>
+        <span className="flex shrink-0 items-center gap-3">
+          <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${badge.className}`}>
+            {badge.label}
+          </span>
+          <ChevronRight className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />
+        </span>
+      </button>
+      <div className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+        <div className="overflow-hidden">
+          <div className="pt-4">{children}</div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ItemDetail({ children }: { children: ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-white/20 bg-white/50 p-4 shadow-inner">
+      {children}
+    </div>
+  );
+}
 
 function asRecord(value: unknown) {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -330,16 +432,12 @@ function TechnicalItemsSection({
   prefix,
   items,
   setItems,
-  isOpen,
-  onToggle,
 }: {
   title: string;
   addLabel: string;
   prefix: TechnicalSectionKey;
   items: TechnicalItem[];
   setItems: Dispatch<SetStateAction<TechnicalItem[]>>;
-  isOpen: boolean;
-  onToggle: () => void;
 }) {
   const updateItem = (index: number, key: keyof TechnicalItem, value: string) => {
     setItems((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, [key]: value } : item));
@@ -357,14 +455,15 @@ function TechnicalItemsSection({
     }));
   };
 
-  return (
-    <div className="space-y-4 rounded-xl border border-gray-100 p-4">
-      <button type="button" onClick={onToggle} className="flex w-full items-center justify-between gap-3 text-left">
-        <h3 className="text-sm font-semibold text-gray-800">{title}</h3>
-        <ChevronRight className={`h-4 w-4 text-gray-500 transition-transform ${isOpen ? "rotate-90" : ""}`} />
-      </button>
+  const sectionIcon: Record<TechnicalSectionKey, string> = {
+    systems: "🛠",
+    appliances: "🔌",
+    smartHome: "🏠",
+  };
 
-      <div hidden={!isOpen} className="space-y-4">
+  return (
+    <SectionRow title={title} count={items.length} icon={sectionIcon[prefix]}>
+      <div className="space-y-4">
         <div className="flex justify-end">
           <button type="button" onClick={() => setItems((current) => [...current, { ...emptyTechnicalItem }])} className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
             {addLabel}
@@ -376,35 +475,51 @@ function TechnicalItemsSection({
         ) : (
           <div className="space-y-4">
             {items.map((item, itemIndex) => (
-              <div key={itemIndex} className={cardClass}>
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-gray-800">{item.name || `${title} ${itemIndex + 1}`}</p>
-                  <button type="button" onClick={() => setItems((current) => current.filter((_, index) => index !== itemIndex))} className="rounded-full px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
-                    Elimina
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Nome" name={`technicalProfile.${prefix}.${itemIndex}.name`} value={item.name} onChange={(value) => updateItem(itemIndex, "name", value)} />
-                  <Field label="Tipo" name={`technicalProfile.${prefix}.${itemIndex}.type`} value={item.type} onChange={(value) => updateItem(itemIndex, "type", value)} />
-                  <Field label="Marca" name={`technicalProfile.${prefix}.${itemIndex}.brand`} value={item.brand} onChange={(value) => updateItem(itemIndex, "brand", value)} />
-                  <Field label="Modello" name={`technicalProfile.${prefix}.${itemIndex}.model`} value={item.model} onChange={(value) => updateItem(itemIndex, "model", value)} />
-                  <Field label="Posizione" name={`technicalProfile.${prefix}.${itemIndex}.location`} value={item.location} onChange={(value) => updateItem(itemIndex, "location", value)} />
-                  <Field label="Problemi ricorrenti" name={`technicalProfile.${prefix}.${itemIndex}.recurringIssues`} value={item.recurringIssues} onChange={(value) => updateItem(itemIndex, "recurringIssues", value)} />
-                  <Field label="Note" name={`technicalProfile.${prefix}.${itemIndex}.notes`} value={item.notes} multiline onChange={(value) => updateItem(itemIndex, "notes", value)} className="md:col-span-2" />
-                </div>
-                <AttachmentList
-                  baseName={`technicalProfile.${prefix}.${itemIndex}.attachments`}
-                  attachments={item.attachments}
-                  onAdd={() => setItems((current) => current.map((currentItem, index) => index === itemIndex ? { ...currentItem, attachments: [...currentItem.attachments, { ...emptyAttachment }] } : currentItem))}
-                  onRemove={(attachmentIndex) => setItems((current) => current.map((currentItem, index) => index === itemIndex ? { ...currentItem, attachments: currentItem.attachments.filter((_, currentAttachmentIndex) => currentAttachmentIndex !== attachmentIndex) } : currentItem))}
-                  onChange={(attachmentIndex, key, value) => updateAttachment(itemIndex, attachmentIndex, key, value)}
-                />
-              </div>
+              <ItemCard
+                key={itemIndex}
+                title={item.name || `${title} ${itemIndex + 1}`}
+                subtitle={[item.brand || item.model, item.location].filter(Boolean).join(" • ") || item.type || "Dettagli tecnici"}
+                icon={sectionIcon[prefix]}
+                badge={item.recurringIssues ? {
+                  label: "Attenzione",
+                  className: "bg-yellow-100 text-yellow-800",
+                } : {
+                  label: "OK",
+                  className: "bg-emerald-100 text-emerald-700",
+                }}
+              >
+                <ItemDetail>
+                  <div className={cardClass}>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-800">{item.name || `${title} ${itemIndex + 1}`}</p>
+                    <button type="button" onClick={() => setItems((current) => current.filter((_, index) => index !== itemIndex))} className="rounded-full px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
+                      Elimina
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field label="Nome" name={`technicalProfile.${prefix}.${itemIndex}.name`} value={item.name} onChange={(value) => updateItem(itemIndex, "name", value)} />
+                    <Field label="Tipo" name={`technicalProfile.${prefix}.${itemIndex}.type`} value={item.type} onChange={(value) => updateItem(itemIndex, "type", value)} />
+                    <Field label="Marca" name={`technicalProfile.${prefix}.${itemIndex}.brand`} value={item.brand} onChange={(value) => updateItem(itemIndex, "brand", value)} />
+                    <Field label="Modello" name={`technicalProfile.${prefix}.${itemIndex}.model`} value={item.model} onChange={(value) => updateItem(itemIndex, "model", value)} />
+                    <Field label="Posizione" name={`technicalProfile.${prefix}.${itemIndex}.location`} value={item.location} onChange={(value) => updateItem(itemIndex, "location", value)} />
+                    <Field label="Problemi ricorrenti" name={`technicalProfile.${prefix}.${itemIndex}.recurringIssues`} value={item.recurringIssues} onChange={(value) => updateItem(itemIndex, "recurringIssues", value)} />
+                    <Field label="Note" name={`technicalProfile.${prefix}.${itemIndex}.notes`} value={item.notes} multiline onChange={(value) => updateItem(itemIndex, "notes", value)} className="md:col-span-2" />
+                  </div>
+                  <AttachmentList
+                    baseName={`technicalProfile.${prefix}.${itemIndex}.attachments`}
+                    attachments={item.attachments}
+                    onAdd={() => setItems((current) => current.map((currentItem, index) => index === itemIndex ? { ...currentItem, attachments: [...currentItem.attachments, { ...emptyAttachment }] } : currentItem))}
+                    onRemove={(attachmentIndex) => setItems((current) => current.map((currentItem, index) => index === itemIndex ? { ...currentItem, attachments: currentItem.attachments.filter((_, currentAttachmentIndex) => currentAttachmentIndex !== attachmentIndex) } : currentItem))}
+                    onChange={(attachmentIndex, key, value) => updateAttachment(itemIndex, attachmentIndex, key, value)}
+                  />
+                  </div>
+                </ItemDetail>
+              </ItemCard>
             ))}
           </div>
         )}
       </div>
-    </div>
+    </SectionRow>
   );
 }
 
@@ -432,46 +547,64 @@ function RecurringIssuesSection({
   };
 
   return (
-    <div className="space-y-4 rounded-xl border border-gray-100 p-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h3 className="text-sm font-semibold text-gray-800">Problemi ricorrenti</h3>
-        <button type="button" onClick={() => setIssues((current) => [...current, { ...emptyRecurringIssue }])} className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
-          + Aggiungi problema
-        </button>
-      </div>
-      {issues.length === 0 ? (
-        <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-500">Nessun problema inserito.</p>
-      ) : (
-        <div className="space-y-4">
-          {issues.map((issue, issueIndex) => (
-            <div key={issueIndex} className={cardClass}>
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-gray-800">{issue.title || `Problema ${issueIndex + 1}`}</p>
-                <button type="button" onClick={() => setIssues((current) => current.filter((_, index) => index !== issueIndex))} className="rounded-full px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
-                  Elimina
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="Titolo" name={`technicalProfile.recurringIssues.${issueIndex}.title`} value={issue.title} onChange={(value) => updateIssue(issueIndex, "title", value)} />
-                <Field label="Categoria" name={`technicalProfile.recurringIssues.${issueIndex}.category`} value={issue.category} onChange={(value) => updateIssue(issueIndex, "category", value)} />
-                <Field label="Elemento collegato" name={`technicalProfile.recurringIssues.${issueIndex}.relatedItem`} value={issue.relatedItem} onChange={(value) => updateIssue(issueIndex, "relatedItem", value)} />
-                <Field label="Quando chiamare tecnico" name={`technicalProfile.recurringIssues.${issueIndex}.whenToCall`} value={issue.whenToCall} onChange={(value) => updateIssue(issueIndex, "whenToCall", value)} />
-                <Field label="Sintomi" name={`technicalProfile.recurringIssues.${issueIndex}.symptoms`} value={issue.symptoms} multiline onChange={(value) => updateIssue(issueIndex, "symptoms", value)} />
-                <Field label="Soluzione" name={`technicalProfile.recurringIssues.${issueIndex}.solution`} value={issue.solution} multiline onChange={(value) => updateIssue(issueIndex, "solution", value)} />
-                <Field label="Note IA" name={`technicalProfile.recurringIssues.${issueIndex}.notesForAI`} value={issue.notesForAI} multiline onChange={(value) => updateIssue(issueIndex, "notesForAI", value)} className="md:col-span-2" />
-              </div>
-              <AttachmentList
-                baseName={`technicalProfile.recurringIssues.${issueIndex}.attachments`}
-                attachments={issue.attachments}
-                onAdd={() => setIssues((current) => current.map((currentIssue, index) => index === issueIndex ? { ...currentIssue, attachments: [...currentIssue.attachments, { ...emptyAttachment }] } : currentIssue))}
-                onRemove={(attachmentIndex) => setIssues((current) => current.map((currentIssue, index) => index === issueIndex ? { ...currentIssue, attachments: currentIssue.attachments.filter((_, currentAttachmentIndex) => currentAttachmentIndex !== attachmentIndex) } : currentIssue))}
-                onChange={(attachmentIndex, key, value) => updateAttachment(issueIndex, attachmentIndex, key, value)}
-              />
-            </div>
-          ))}
+    <SectionRow title="Problemi ricorrenti" count={issues.length} icon="⚠️">
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <button type="button" onClick={() => setIssues((current) => [...current, { ...emptyRecurringIssue }])} className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+            + Aggiungi problema
+          </button>
         </div>
-      )}
-    </div>
+        {issues.length === 0 ? (
+          <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-500">Nessun problema inserito.</p>
+        ) : (
+          <div className="space-y-4">
+            {issues.map((issue, issueIndex) => (
+              <ItemCard
+                key={issueIndex}
+                title={issue.title || `Problema ${issueIndex + 1}`}
+                subtitle={issue.symptoms || issue.relatedItem || "Descrizione non inserita"}
+                icon="⚠️"
+                variant="warning"
+                badge={issue.whenToCall ? {
+                  label: "Prioritario",
+                  className: "bg-red-100 text-red-700",
+                } : {
+                  label: "Warning",
+                  className: "bg-yellow-100 text-yellow-800",
+                }}
+              >
+                <ItemDetail>
+                  <div className={cardClass}>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-gray-800">{issue.title || `Problema ${issueIndex + 1}`}</p>
+                    <button type="button" onClick={() => setIssues((current) => current.filter((_, index) => index !== issueIndex))} className="rounded-full px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
+                      Elimina
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field label="Titolo" name={`technicalProfile.recurringIssues.${issueIndex}.title`} value={issue.title} onChange={(value) => updateIssue(issueIndex, "title", value)} />
+                    <Field label="Categoria" name={`technicalProfile.recurringIssues.${issueIndex}.category`} value={issue.category} onChange={(value) => updateIssue(issueIndex, "category", value)} />
+                    <Field label="Elemento collegato" name={`technicalProfile.recurringIssues.${issueIndex}.relatedItem`} value={issue.relatedItem} onChange={(value) => updateIssue(issueIndex, "relatedItem", value)} />
+                    <Field label="Quando chiamare tecnico" name={`technicalProfile.recurringIssues.${issueIndex}.whenToCall`} value={issue.whenToCall} onChange={(value) => updateIssue(issueIndex, "whenToCall", value)} />
+                    <Field label="Sintomi" name={`technicalProfile.recurringIssues.${issueIndex}.symptoms`} value={issue.symptoms} multiline onChange={(value) => updateIssue(issueIndex, "symptoms", value)} />
+                    <Field label="Soluzione" name={`technicalProfile.recurringIssues.${issueIndex}.solution`} value={issue.solution} multiline onChange={(value) => updateIssue(issueIndex, "solution", value)} />
+                    <Field label="Note IA" name={`technicalProfile.recurringIssues.${issueIndex}.notesForAI`} value={issue.notesForAI} multiline onChange={(value) => updateIssue(issueIndex, "notesForAI", value)} className="md:col-span-2" />
+                  </div>
+                  <AttachmentList
+                    baseName={`technicalProfile.recurringIssues.${issueIndex}.attachments`}
+                    attachments={issue.attachments}
+                    onAdd={() => setIssues((current) => current.map((currentIssue, index) => index === issueIndex ? { ...currentIssue, attachments: [...currentIssue.attachments, { ...emptyAttachment }] } : currentIssue))}
+                    onRemove={(attachmentIndex) => setIssues((current) => current.map((currentIssue, index) => index === issueIndex ? { ...currentIssue, attachments: currentIssue.attachments.filter((_, currentAttachmentIndex) => currentAttachmentIndex !== attachmentIndex) } : currentIssue))}
+                    onChange={(attachmentIndex, key, value) => updateAttachment(issueIndex, attachmentIndex, key, value)}
+                  />
+                  </div>
+                </ItemDetail>
+              </ItemCard>
+            ))}
+          </div>
+        )}
+      </div>
+    </SectionRow>
   );
 }
 
@@ -520,111 +653,134 @@ function AttachmentList({
 
 export default function ApartmentForm({ initialData, action, title }: ApartmentFormProps) {
   const technicalProfile = (initialData?.technicalProfile as TechnicalProfile | null) ?? {};
+  const [activeSection, setActiveSection] = useState<FormSectionKey>("main");
   const [systems, setSystems] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.systems));
   const [appliances, setAppliances] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.appliances, legacyApplianceLabels));
   const [smartHome, setSmartHome] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.smartHome, legacySmartHomeLabels));
   const [recurringIssues, setRecurringIssues] = useState<RecurringIssueItem[]>(normalizeRecurringIssues(technicalProfile.recurringIssues));
   const [generalAttachments, setGeneralAttachments] = useState<TechnicalAttachment[]>(normalizeAttachments(technicalProfile.generalAttachments));
-  const [openSections, setOpenSections] = useState<Record<TechnicalSectionKey, boolean>>({
-    systems: true,
-    appliances: true,
-    smartHome: true,
-  });
-
-  const toggleSection = (section: TechnicalSectionKey) => {
-    setOpenSections((current) => ({
-      ...current,
-      [section]: !current[section],
-    }));
-  };
 
   return (
-    <section className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden p-6 md:p-8">
-      <form action={action} className="space-y-6">
+    <section className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
+      <form action={action} className="relative">
         {initialData && <input type="hidden" name="id" value={initialData.id} />}
 
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Informazioni Base</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nome Proprietà *</label>
-              <input required type="text" id="name" name="name" defaultValue={initialData?.name} placeholder="Es. Domus Colosseo" className={inputClass} />
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr]">
+          <aside className="border-b border-gray-100 bg-gray-50/60 p-4 lg:border-b-0 lg:border-r">
+            <div className="flex gap-2 overflow-x-auto lg:sticky lg:top-24 lg:flex-col lg:overflow-visible">
+              {formSections.map((section) => (
+                <button
+                  key={section.key}
+                  type="button"
+                  onClick={() => setActiveSection(section.key)}
+                  className={`flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition-colors ${
+                    activeSection === section.key
+                      ? "bg-black text-white shadow-sm"
+                      : "bg-white text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <span>{section.icon}</span>
+                  <span>{section.label}</span>
+                </button>
+              ))}
             </div>
-            <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Indirizzo Fisico *</label>
-              <input required type="text" id="address" name="address" defaultValue={initialData?.address} placeholder="Via Roma 10, Roma" className={inputClass} />
+          </aside>
+
+          <div className="min-w-0 p-6 pb-28 md:p-8 md:pb-28">
+            <div hidden={activeSection !== "main"} className="space-y-8">
+              <div className="space-y-4">
+                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Informazioni Base</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nome Proprietà *</label>
+                    <input required type="text" id="name" name="name" defaultValue={initialData?.name} placeholder="Es. Domus Colosseo" className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Indirizzo Fisico *</label>
+                    <input required type="text" id="address" name="address" defaultValue={initialData?.address} placeholder="Via Roma 10, Roma" className={inputClass} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-2">
+                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Geolocalizzazione</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-1">Latitudine *</label>
+                    <input required type="number" step="any" id="latitude" name="latitude" defaultValue={initialData?.latitude} placeholder="Es. 41.8902" className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-1">Longitudine *</label>
+                    <input required type="number" step="any" id="longitude" name="longitude" defaultValue={initialData?.longitude} placeholder="Es. 12.4922" className={inputClass} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-2">
+                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Caratteristiche</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <label htmlFor="squareMeters" className="block text-sm font-medium text-gray-700 mb-1">Superficie (m2)</label>
+                    <input required type="number" min="0" id="squareMeters" name="squareMeters" defaultValue={initialData?.squareMeters ?? 50} className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-700 mb-1">Stanze</label>
+                    <input required type="number" min="0" id="bedrooms" name="bedrooms" defaultValue={initialData?.bedrooms ?? 1} className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="bathrooms" className="block text-sm font-medium text-gray-700 mb-1">Bagni</label>
+                    <input required type="number" min="0" id="bathrooms" name="bathrooms" defaultValue={initialData?.bathrooms ?? 1} className={inputClass} />
+                  </div>
+                  <div>
+                    <label htmlFor="maxGuests" className="block text-sm font-medium text-gray-700 mb-1">Ospiti Max</label>
+                    <input required type="number" min="1" id="maxGuests" name="maxGuests" defaultValue={initialData?.maxGuests ?? 2} className={inputClass} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div hidden={activeSection !== "calendar"} className="space-y-4">
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Sincronizzazione iCal</h2>
+              <div>
+                <label htmlFor="icalUrl" className="block text-sm font-medium text-gray-700 mb-1">Airbnb iCal URL</label>
+                <input type="url" id="icalUrl" name="icalUrl" defaultValue={initialData?.icalUrl ?? ""} placeholder="https://www.airbnb.com/calendar/ical/..." className={inputClass} />
+                <p className="text-xs text-gray-400 mt-1">Incolla qui l'URL iCal di Airbnb per sincronizzare automaticamente le prenotazioni.</p>
+              </div>
+            </div>
+
+            <div hidden={activeSection !== "technical"} className="space-y-4">
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Scheda Tecnica Appartamento</h2>
+              <TechnicalItemsSection title="Impianti" addLabel="+ Aggiungi impianto" prefix="systems" items={systems} setItems={setSystems} />
+              <TechnicalItemsSection title="Elettrodomestici" addLabel="+ Aggiungi elettrodomestico" prefix="appliances" items={appliances} setItems={setAppliances} />
+              <TechnicalItemsSection title="Domotica" addLabel="+ Aggiungi dispositivo domotico" prefix="smartHome" items={smartHome} setItems={setSmartHome} />
+              <RecurringIssuesSection issues={recurringIssues} setIssues={setRecurringIssues} />
+            </div>
+
+            <div hidden={activeSection !== "attachments"} className="space-y-4">
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Allegati</h2>
+              <div className="space-y-4 rounded-xl border border-gray-100 p-4">
+                <h3 className="text-sm font-semibold text-gray-800">Allegati generali</h3>
+                <AttachmentList
+                  baseName="technicalProfile.generalAttachments"
+                  attachments={generalAttachments}
+                  onAdd={() => setGeneralAttachments((current) => [...current, { ...emptyAttachment }])}
+                  onRemove={(index) => setGeneralAttachments((current) => current.filter((_, currentIndex) => currentIndex !== index))}
+                  onChange={(index, key, value) => setGeneralAttachments((current) => current.map((attachment, currentIndex) => currentIndex === index ? { ...attachment, [key]: value } : attachment))}
+                />
+              </div>
+            </div>
+
+            <div hidden={activeSection !== "ai"} className="space-y-4">
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Note IA</h2>
+              <div className="space-y-4 rounded-xl border border-gray-100 p-4">
+                <h3 className="text-sm font-semibold text-gray-800">Note per IA</h3>
+                <textarea id="technicalProfile.aiNotes" name="technicalProfile.aiNotes" defaultValue={technicalProfile.aiNotes ?? ""} rows={4} placeholder="Note operative utili per cleaner, manutentori e manager..." className={inputClass} />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="space-y-4 pt-2">
-          <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Geolocalizzazione</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-1">Latitudine *</label>
-              <input required type="number" step="any" id="latitude" name="latitude" defaultValue={initialData?.latitude} placeholder="Es. 41.8902" className={inputClass} />
-            </div>
-            <div>
-              <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-1">Longitudine *</label>
-              <input required type="number" step="any" id="longitude" name="longitude" defaultValue={initialData?.longitude} placeholder="Es. 12.4922" className={inputClass} />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4 pt-2">
-          <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Caratteristiche</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <label htmlFor="squareMeters" className="block text-sm font-medium text-gray-700 mb-1">Superficie (m2)</label>
-              <input required type="number" min="0" id="squareMeters" name="squareMeters" defaultValue={initialData?.squareMeters ?? 50} className={inputClass} />
-            </div>
-            <div>
-              <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-700 mb-1">Stanze</label>
-              <input required type="number" min="0" id="bedrooms" name="bedrooms" defaultValue={initialData?.bedrooms ?? 1} className={inputClass} />
-            </div>
-            <div>
-              <label htmlFor="bathrooms" className="block text-sm font-medium text-gray-700 mb-1">Bagni</label>
-              <input required type="number" min="0" id="bathrooms" name="bathrooms" defaultValue={initialData?.bathrooms ?? 1} className={inputClass} />
-            </div>
-            <div>
-              <label htmlFor="maxGuests" className="block text-sm font-medium text-gray-700 mb-1">Ospiti Max</label>
-              <input required type="number" min="1" id="maxGuests" name="maxGuests" defaultValue={initialData?.maxGuests ?? 2} className={inputClass} />
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4 pt-2">
-          <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Scheda Tecnica Appartamento</h2>
-          <TechnicalItemsSection title="Impianti" addLabel="+ Aggiungi impianto" prefix="systems" items={systems} setItems={setSystems} isOpen={openSections.systems} onToggle={() => toggleSection("systems")} />
-          <TechnicalItemsSection title="Elettrodomestici" addLabel="+ Aggiungi elettrodomestico" prefix="appliances" items={appliances} setItems={setAppliances} isOpen={openSections.appliances} onToggle={() => toggleSection("appliances")} />
-          <TechnicalItemsSection title="Domotica" addLabel="+ Aggiungi dispositivo domotico" prefix="smartHome" items={smartHome} setItems={setSmartHome} isOpen={openSections.smartHome} onToggle={() => toggleSection("smartHome")} />
-          <RecurringIssuesSection issues={recurringIssues} setIssues={setRecurringIssues} />
-          <div className="space-y-4 rounded-xl border border-gray-100 p-4">
-            <h3 className="text-sm font-semibold text-gray-800">Allegati generali</h3>
-            <AttachmentList
-              baseName="technicalProfile.generalAttachments"
-              attachments={generalAttachments}
-              onAdd={() => setGeneralAttachments((current) => [...current, { ...emptyAttachment }])}
-              onRemove={(index) => setGeneralAttachments((current) => current.filter((_, currentIndex) => currentIndex !== index))}
-              onChange={(index, key, value) => setGeneralAttachments((current) => current.map((attachment, currentIndex) => currentIndex === index ? { ...attachment, [key]: value } : attachment))}
-            />
-          </div>
-          <div className="space-y-4 rounded-xl border border-gray-100 p-4">
-            <h3 className="text-sm font-semibold text-gray-800">Note per IA</h3>
-            <textarea id="technicalProfile.aiNotes" name="technicalProfile.aiNotes" defaultValue={technicalProfile.aiNotes ?? ""} rows={4} placeholder="Note operative utili per cleaner, manutentori e manager..." className={inputClass} />
-          </div>
-        </div>
-
-        <div className="space-y-4 pt-2">
-          <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Sincronizzazione iCal</h2>
-          <div>
-            <label htmlFor="icalUrl" className="block text-sm font-medium text-gray-700 mb-1">Airbnb iCal URL</label>
-            <input type="url" id="icalUrl" name="icalUrl" defaultValue={initialData?.icalUrl ?? ""} placeholder="https://www.airbnb.com/calendar/ical/..." className={inputClass} />
-            <p className="text-xs text-gray-400 mt-1">Incolla qui l'URL iCal di Airbnb per sincronizzare automaticamente le prenotazioni.</p>
-          </div>
-        </div>
-
-        <div className="pt-4 flex items-center justify-end gap-3 mt-8">
+        <div className="sticky bottom-0 z-20 flex items-center justify-end gap-3 border-t border-gray-100 bg-white/90 px-6 py-4 backdrop-blur md:px-8">
           <Link href="/dashboard/manager/apartments" className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
             Annulla
           </Link>

@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { DEFAULT_CHECKLIST } from "@/src/lib/constants";
+import { generateUniqueApartmentCode } from "@/src/lib/apartment-code";
 
 function textValue(formData: FormData, key: string) {
   return (formData.get(key) as string | null) ?? "";
@@ -201,9 +202,11 @@ async function buildRecurringIssues(formData: FormData, apartmentId: string) {
 
 async function buildTechnicalProfile(formData: FormData, apartmentId: string, existingTechnicalProfile?: unknown) {
   const existing = objectValue(existingTechnicalProfile);
+  const guestAccess = textValue(formData, "technicalProfile.guestAccess").trim();
 
   return {
     ...existing,
+    ...(guestAccess ? { guestAccess } : {}),
     systems: await buildTechnicalItems(formData, "technicalProfile.systems", apartmentId),
     appliances: await buildTechnicalItems(formData, "technicalProfile.appliances", apartmentId),
     smartHome: await buildTechnicalItems(formData, "technicalProfile.smartHome", apartmentId),
@@ -245,6 +248,7 @@ export async function createApartment(formData: FormData) {
     data: {
       id,
       name,
+      apartmentCode: await generateUniqueApartmentCode(name),
       address,
       latitude,
       longitude,
@@ -267,7 +271,7 @@ export async function createApartment(formData: FormData) {
   });
 
   revalidatePath("/dashboard/manager/apartments");
-  redirect("/dashboard/manager/apartments");
+  redirect(`/dashboard/manager/apartments/${apartment.id}/edit`);
 }
 
 export async function updateApartment(formData: FormData) {
@@ -294,6 +298,7 @@ export async function updateApartment(formData: FormData) {
     where: { id },
     data: {
       name,
+      apartmentCode: await generateUniqueApartmentCode(name, id),
       address,
       latitude,
       longitude,

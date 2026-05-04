@@ -2,7 +2,49 @@
 
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
+import { randomUUID } from "crypto";
 import { prisma } from "@/src/lib/prisma";
+
+const apartmentAttachmentCategories = ["MANUAL", "WARRANTY", "PHOTO", "TECHNICAL_SHEET", "INSTALLER_INSTRUCTIONS", "OTHER"];
+
+function sanitizeFileName(fileName: string) {
+  return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+export async function uploadApartmentWizardAttachment(formData: FormData) {
+  const file = formData.get("file");
+
+  if (!(file instanceof File) || file.size === 0) {
+    return { success: false, error: "Seleziona un file valido." };
+  }
+
+  const categoryValue = formData.get("category");
+  const category = typeof categoryValue === "string" && apartmentAttachmentCategories.includes(categoryValue)
+    ? categoryValue
+    : "OTHER";
+  const notesValue = formData.get("notes");
+  const notes = typeof notesValue === "string" ? notesValue : "";
+  const uploadDir = join(process.cwd(), "public", "uploads", "apartments", "temp");
+  await mkdir(uploadDir, { recursive: true });
+
+  const storedFileName = `${Date.now()}-${randomUUID()}-${sanitizeFileName(file.name)}`;
+  const path = join(uploadDir, storedFileName);
+  const bytes = await file.arrayBuffer();
+  await writeFile(path, Buffer.from(bytes));
+
+  return {
+    success: true,
+    attachment: {
+      filename: file.name,
+      url: `/uploads/apartments/temp/${storedFileName}`,
+      mimeType: file.type || "application/octet-stream",
+      size: file.size,
+      category,
+      notes,
+      extractedText: "",
+    },
+  };
+}
 
 export async function uploadMaintenanceAttachment(ticketId: string, formData: FormData) {
   const files = formData.getAll("files") as File[];

@@ -3,13 +3,13 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import { getNotifications } from "@/src/app/actions/notification";
-import SafeDate from "@/src/components/safe-date";
 
 import TimelineCalendar from "@/src/components/timeline-calendar";
 import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
 import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
+import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 import { formatDateKey, getApartmentOperationalStatus, APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
 import { 
   Brush, 
@@ -19,11 +19,22 @@ import {
   WifiOff, 
   MessageSquare,
   CircleDot,
-  Navigation
+  Navigation,
+  AlertTriangle
 } from "@/src/components/icons";
 
-const isMaintenanceActive = (ticket: any) => {
+const isMaintenanceActive = (ticket: { status: string }) => {
   return ticket.status !== "RESOLVED" && ticket.status !== "CANCELLED";
+};
+
+const apartmentStatusLegendKeys = ["GREEN", "BLUE", "RED"] as const;
+
+const formatLocalDateKey = (date: Date | string) => {
+  const value = new Date(date);
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 export default async function ManagerDashboardPage() {
@@ -35,7 +46,7 @@ export default async function ManagerDashboardPage() {
   }
 
   // Fetch all necessary data
-  const [apartments, bookings, cleanings, tickets, initialNotifications, messages, cleaningMessages] = await Promise.all([
+  const [apartments, bookings, cleanings, tickets, calendarTickets, initialNotifications, messages, cleaningMessages] = await Promise.all([
     prisma.apartment.findMany(),
     prisma.booking.findMany({ 
       where: { status: { not: "CANCELLED" } },
@@ -58,6 +69,11 @@ export default async function ManagerDashboardPage() {
       where: { status: { in: ["OPEN", "IN_PROGRESS"] } },
       include: { apartment: true, assignedTo: true }
     }),
+    prisma.maintenanceTicket.findMany({
+      where: { status: { not: "CANCELLED" } },
+      include: { apartment: true, assignedTo: true },
+      orderBy: { createdAt: "desc" },
+    }),
     getNotifications(),
     prisma.message.findMany({
       take: 3,
@@ -74,6 +90,10 @@ export default async function ManagerDashboardPage() {
   const now = new Date();
   const serverDate = now.toISOString();
   const todayStr = now.toISOString().split('T')[0];
+  const todayLocalStr = formatLocalDateKey(now);
+  const lateCleaningCutoff = new Date(now);
+  lateCleaningCutoff.setHours(10, 30, 0, 0);
+  const isPastLateCleaningCutoff = now.getTime() > lateCleaningCutoff.getTime();
 
   // Logic for Recent Messages with Keyword detection for icons
   const recentMessages = [
@@ -132,9 +152,14 @@ export default async function ManagerDashboardPage() {
   });
 
   const cleaningsToday = cleanings.filter(c => {
-    const cleaningDate = new Date(c.date).toISOString().split('T')[0];
-    return cleaningDate === todayStr;
+    const cleaningDate = formatLocalDateKey(c.date);
+    return cleaningDate === todayLocalStr;
   });
+
+  const lateCleanings = isPastLateCleaningCutoff
+    ? cleaningsToday.filter(c => c.status === "PENDING")
+    : [];
+  const lateCleaningIds = new Set(lateCleanings.map((cleaning) => cleaning.id));
 
   const ticketsToday = tickets.filter(t => {
     const scheduledStart = t.scheduledStart ? new Date(t.scheduledStart).toISOString().split('T')[0] : null;
@@ -153,7 +178,8 @@ export default async function ManagerDashboardPage() {
       subject: "Intervento di Pulizia",
       status: c.status,
       statusLabel: c.status === "PENDING" ? "Da Fare" : c.status === "IN_PROGRESS" ? "In Corso" : "Completata",
-      actorName: c.assignedTo?.name || "Non assegnato"
+      actorName: c.assignedTo?.name || "Non assegnato",
+      isLateCleaning: lateCleaningIds.has(c.id)
     });
   });
 
@@ -258,6 +284,7 @@ export default async function ManagerDashboardPage() {
           <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal">
             {new Date(serverDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
+          <ManagerAIChatLauncher />
         </div>
       </div>
 
@@ -302,7 +329,7 @@ export default async function ManagerDashboardPage() {
           </div>
         </div>
       {/* 5. SUMMARY BANNERS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
         <div className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[180px] flex flex-col justify-between transition-all hover:shadow-violet-500/10">
             <div className="flex justify-between items-start">
                 <p className="text-xs uppercase tracking-wide text-slate-500">Check-in oggi</p>
@@ -326,6 +353,25 @@ export default async function ManagerDashboardPage() {
             <div>
                 <p className="text-2xl font-semibold text-slate-900 tracking-tight">{cleaningsToday.length}</p>
                 <p className="text-sm text-slate-500 mt-1">Interventi previsti</p>
+            </div>
+        </div>
+
+        <div className={`backdrop-blur-xl rounded-[28px] shadow-2xl p-6 min-h-[180px] flex flex-col justify-between transition-all ${
+          lateCleanings.length > 0
+            ? "bg-rose-50/80 shadow-rose-500/10 ring-1 ring-rose-200/70"
+            : "bg-white/50 shadow-violet-500/5 hover:shadow-violet-500/10"
+        }`}>
+            <div className="flex justify-between items-start">
+                <p className={`text-xs uppercase tracking-wide ${lateCleanings.length > 0 ? "text-rose-600" : "text-slate-500"}`}>Pulizie in ritardo</p>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  lateCleanings.length > 0 ? "bg-rose-100 text-rose-600" : "bg-slate-50 text-slate-400"
+                }`}>
+                    <AlertTriangle size={16} />
+                </div>
+            </div>
+            <div>
+                <p className={`text-2xl font-semibold tracking-tight ${lateCleanings.length > 0 ? "text-rose-700" : "text-slate-900"}`}>{lateCleanings.length}</p>
+                <p className="text-sm text-slate-500 mt-1">Pending dopo le 10:30</p>
             </div>
         </div>
 
@@ -386,8 +432,8 @@ export default async function ManagerDashboardPage() {
               <TimelineCalendar 
                 apartments={apartmentsData}
                 bookings={calendarBookings}
-                cleanings={cleanings}
-                tickets={tickets}
+                cleaningTasks={cleanings}
+                maintenanceTickets={calendarTickets}
                 serverDate={serverDate}
               />
             </div>
@@ -410,8 +456,8 @@ export default async function ManagerDashboardPage() {
                     
                     {/* Compact Legend overlay */}
                     <div className="absolute bottom-4 left-4 right-4 flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                        {['GREEN', 'BLUE', 'RED'].map((key) => {
-                            const meta = (APARTMENT_STATUS_META as any)[key];
+                        {apartmentStatusLegendKeys.map((key) => {
+                            const meta = APARTMENT_STATUS_META[key];
                             return (
                                 <div key={key} className="flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-white/20 whitespace-nowrap">
                                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: meta.hex }} />
