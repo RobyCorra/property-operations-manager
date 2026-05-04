@@ -29,6 +29,58 @@ const cleaningStatusLabel: Record<string, string> = {
   COMPLETED: "Completato",
 };
 
+type CleanerTaskNextBooking = {
+  guestName: string | null;
+  totalGuests: number;
+  checkInDate: Date;
+};
+
+type CleanerTaskChecklistItem = {
+  id: string;
+  label: string;
+  type: string;
+  value: number | null;
+  required: boolean;
+  completed: boolean;
+  formula?: string | null;
+};
+
+type CleanerDashboardTask = {
+  id: string;
+  apartmentId: string;
+  date: Date;
+  bookingId: string | null;
+  checklistProgress: unknown;
+  nextBooking: CleanerTaskNextBooking | null;
+  apartment: {
+    name: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    accessInstructions: string | null;
+  };
+  status: string;
+  notes: string | null;
+  booking: {
+    guestName: string | null;
+    checkOutDate: Date;
+    totalGuests?: number | null;
+  } | null;
+  aiAssistantMessages: {
+    createdAt: Date;
+    role: "USER" | "ASSISTANT";
+    userRole: string;
+    content: string;
+  }[];
+  messages: {
+    createdAt: Date;
+    role: string;
+    senderName: string;
+    text: string | null;
+    attachment?: unknown;
+  }[];
+};
+
 export default async function CleanerDashboardPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -64,13 +116,13 @@ export default async function CleanerDashboardPage() {
   }
 
   // Enrich tasks with next booking dynamically
-  const enrichedTasks = await enrichCleaningTasksWithNextBooking(user.cleaningTasks);
+  const enrichedTasks = await enrichCleaningTasksWithNextBooking(user.cleaningTasks) as CleanerDashboardTask[];
 
-  const tasksWithChecklists = await Promise.all(enrichedTasks.map(async (task) => {
+  const tasksWithChecklists = await Promise.all(enrichedTasks.map(async (task: CleanerDashboardTask) => {
     const computedSnapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date, task.bookingId);
     
     const checklistItems = Array.isArray(task.checklistProgress) && task.checklistProgress.length > 0
-      ? task.checklistProgress
+      ? task.checklistProgress as CleanerTaskChecklistItem[]
       : computedSnapshot;
 
     return { ...task, checklistItems };
