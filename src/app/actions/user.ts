@@ -1,10 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import bcrypt from "bcryptjs";
+
+type Role = "MANAGER" | "CLEANER" | "MAINTENANCE";
 
 export async function createUser(prevState: any, formData: FormData) {
   const name = formData.get("name") as string;
