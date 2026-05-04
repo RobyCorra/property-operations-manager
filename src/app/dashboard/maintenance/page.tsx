@@ -330,7 +330,7 @@ export default async function MaintenanceDashboardPage({
                         </div>
                         {ticketAttachments.length > 0 ? (
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            {ticketAttachments.map((attachment) => (
+                            {ticketAttachments.map((attachment: AttachmentLink) => (
                               <div key={attachment.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
                                 <p className="truncate text-sm font-bold text-slate-700">{attachment.fileName}</p>
                                 <a href={attachment.url} target="_blank" rel="noreferrer" className="shrink-0 rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-700 shadow-sm">
