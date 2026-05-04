@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { prisma } from "@/src/lib/prisma";
 import { evaluateChecklistFormula } from "@/src/lib/formulas";
-import type { ChecklistItem } from "@prisma/client";
 
 type ChecklistSnapshotItem = {
   id: string;
@@ -15,6 +14,14 @@ type ChecklistSnapshotItem = {
   required: boolean;
   completed: boolean;
   formula?: string | null;
+};
+
+type ChecklistItemRecord = {
+  id: string;
+  label: string;
+  type: string;
+  required: boolean;
+  formula: string | null;
 };
 
 type ExistingChecklistProgressItem = Partial<ChecklistSnapshotItem> & Record<string, unknown>;
@@ -84,7 +91,7 @@ export async function computeChecklistSnapshot(db: any, apartmentId: string, tas
       bedrooms: toSafePositiveInt(apartment.bedrooms)
     };
 
-    return apartment.checklistItems.map((item: ChecklistItem) => {
+    return apartment.checklistItems.map((item: ChecklistItemRecord) => {
       let computedValue: number | null = null;
       if (item.type === "dynamic" && item.formula) {
         computedValue = evaluateChecklistFormula(item.formula, context);
