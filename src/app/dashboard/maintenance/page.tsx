@@ -27,6 +27,38 @@ type AttachmentLink = {
   fileType: string | null;
 };
 
+type MaintenanceTicketView = {
+  id: string;
+  apartmentId: string;
+  title: string;
+  description: string;
+  priority: string;
+  status: string;
+  scheduledStart: Date | null;
+  scheduledEnd: Date | null;
+  startedAt: Date | null;
+  resolvedAt: Date | null;
+  createdAt: Date;
+  updatedAt?: Date | null;
+  apartment: {
+    name: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    accessInstructions: string | null;
+  };
+  attachments: AttachmentLink[];
+  messages: {
+    attachment?: AttachmentLink | null;
+  }[];
+  aiAssistantMessages: {
+    createdAt: Date;
+    role: "USER" | "ASSISTANT";
+    userRole: string;
+    content: string;
+  }[];
+};
+
 function linkedAttachments({
   attachments,
   messages,
@@ -144,7 +176,7 @@ export default async function MaintenanceDashboardPage({
           </div>
 
           <div className="grid grid-cols-1 gap-10">
-            {user.maintenanceTickets.map((ticket) => {
+            {user.maintenanceTickets.map((ticket: MaintenanceTicketView) => {
               const ticketAttachments = linkedAttachments({ attachments: ticket.attachments, messages: ticket.messages });
 
               return (
