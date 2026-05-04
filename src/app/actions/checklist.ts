@@ -14,6 +14,18 @@ type ChecklistSnapshotItem = {
   completed: boolean;
 };
 
+type ChecklistProgressItem = ChecklistSnapshotItem & Record<string, unknown>;
+type ChecklistProgressUpdateItem = {
+  id: string;
+  label: string;
+  type: string;
+  value?: number | null;
+  required: boolean;
+  completed: boolean;
+  formula?: string | null;
+};
+type DefaultChecklistItem = (typeof DEFAULT_CHECKLIST)[number];
+
 /**
  * Synchronization helper: updates the checklistProgress snapshot in all
  * PENDING or IN_PROGRESS cleaning tasks for a specific apartment
@@ -31,11 +43,13 @@ async function syncPendentCleaningTasks(apartmentId: string) {
 
   for (const task of activeTasks) {
     const newSnapshot = await computeChecklistSnapshot(prisma, apartmentId, task.date, task.bookingId) as ChecklistSnapshotItem[];
-    const oldSnapshot = (task.checklistProgress as any[]) || [];
+    const oldSnapshot = Array.isArray(task.checklistProgress)
+      ? (task.checklistProgress as ChecklistProgressItem[])
+      : [];
     
     // Merge strategy: preserve completion status for items with identical labels
-    const mergedSnapshot = newSnapshot.map(newItem => {
-      const existingMatch = oldSnapshot.find(oldItem => oldItem.label === newItem.label);
+    const mergedSnapshot = newSnapshot.map((newItem: ChecklistSnapshotItem) => {
+      const existingMatch = oldSnapshot.find((oldItem: ChecklistProgressItem) => oldItem.label === newItem.label);
       return {
         ...newItem,
         completed: existingMatch ? !!existingMatch.completed : false
@@ -139,7 +153,7 @@ export async function deleteChecklistItem(id: string, apartmentId: string) {
  * Updates the checklist progress for a specific cleaning task.
  * Items is expected to be the full array of checklist objects with updated 'completed' status.
  */
-export async function updateTaskChecklist(taskId: string, items: any[]) {
+export async function updateTaskChecklist(taskId: string, items: ChecklistProgressUpdateItem[]) {
   await prisma.cleaningTask.update({
     where: { id: taskId },
     data: {
@@ -165,7 +179,7 @@ export async function generateDefaultChecklist(apartmentId: string) {
 
   // Create standard items
   await prisma.checklistItem.createMany({
-    data: DEFAULT_CHECKLIST.map((item: any, index: number) => ({
+    data: DEFAULT_CHECKLIST.map((item: DefaultChecklistItem, index: number) => ({
       apartmentId,
       label: item.label,
       type: item.type || "static",
@@ -187,12 +201,12 @@ export async function syncChecklistWithDefaults(apartmentId: string) {
   
   // Normalize existing labels for robust comparison (lowercase + trimmed)
   const existingLabels = new Set(
-    existingItems.map(item => item.label.toLowerCase().trim())
+    existingItems.map((item: { label: string }) => item.label.toLowerCase().trim())
   );
   
   // Find missing standard items by comparing sanitized labels
   const missingItems = DEFAULT_CHECKLIST.filter(
-    std => !existingLabels.has(std.label.toLowerCase().trim())
+    (std: DefaultChecklistItem) => !existingLabels.has(std.label.toLowerCase().trim())
   );
   
   if (missingItems.length === 0) {
@@ -210,7 +224,7 @@ export async function syncChecklistWithDefaults(apartmentId: string) {
   // Create only missing items (Additive Only)
   // We do not modify, delete, or overwrite any existing items.
   await prisma.checklistItem.createMany({
-    data: missingItems.map((item: any) => ({
+    data: missingItems.map((item: DefaultChecklistItem) => ({
       apartmentId,
       label: item.label,
       type: item.type || "static",
