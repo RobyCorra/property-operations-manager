@@ -49,6 +49,29 @@ type ActionState = {
   success?: boolean;
 } | null;
 
+type BookingJson = {
+  id: string;
+  guestName?: string | null;
+  checkInDate: string | Date;
+  checkOutDate: string | Date;
+  [key: string]: unknown;
+};
+
+type CleaningJson = {
+  id: string;
+  date: string | Date;
+  status: string;
+  [key: string]: unknown;
+};
+
+type TicketJson = {
+  id: string;
+  scheduledStart?: string | Date | null;
+  scheduledEnd?: string | Date | null;
+  title: string;
+  [key: string]: unknown;
+};
+
 export default function OperationalForm({ type, apartments, personnel, action, initialData }: OperationalFormProps) {
   const isEditing = !!initialData;
   // If editing, we use the action bound with the ID. 
@@ -71,9 +94,9 @@ export default function OperationalForm({ type, apartments, personnel, action, i
         .then((data) => {
           // Normalize dates from JSON response strings to Date objects if needed
           const normalized = {
-            bookings: data.bookings.map(b => ({ ...b, guestName: b.guestName ?? "", checkInDate: new Date(b.checkInDate), checkOutDate: new Date(b.checkOutDate) })),
-            cleanings: data.cleanings.map(c => ({ ...c, date: new Date(c.date) })),
-            tickets: data.tickets.map(t => ({ ...t, scheduledStart: t.scheduledStart ? new Date(t.scheduledStart) : null, scheduledEnd: t.scheduledEnd ? new Date(t.scheduledEnd) : null }))
+            bookings: data.bookings.map((b: BookingJson) => ({ ...b, guestName: b.guestName ?? "", checkInDate: new Date(b.checkInDate), checkOutDate: new Date(b.checkOutDate) })),
+            cleanings: data.cleanings.map((c: CleaningJson) => ({ ...c, date: new Date(c.date) })),
+            tickets: data.tickets.map((t: TicketJson) => ({ ...t, scheduledStart: t.scheduledStart ? new Date(t.scheduledStart) : null, scheduledEnd: t.scheduledEnd ? new Date(t.scheduledEnd) : null }))
           };
           setSchedule(normalized);
         })
