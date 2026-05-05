@@ -8,7 +8,7 @@ const globalForPrisma = globalThis as unknown as {
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error("DATABASE_URL non è definita nel file .env");
+  throw new Error("DATABASE_URL non è definita nelle variabili ambiente");
 }
 
 const adapter = new PrismaPg({ connectionString });
