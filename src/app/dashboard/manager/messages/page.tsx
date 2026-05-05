@@ -25,6 +25,23 @@ type MaintenanceThreadSource = {
   }[];
 };
 
+type CleaningThreadSource = {
+  id: string;
+  date: Date | string;
+  createdAt: Date;
+  apartment: {
+    name: string;
+  };
+  assignedTo: {
+    name: string;
+  } | null;
+  messages: {
+    role: string;
+    readByManagerAt: Date | null;
+    createdAt: Date;
+  }[];
+};
+
 export default async function ManagerMessagesPage({
   searchParams,
 }: {
@@ -82,7 +99,7 @@ export default async function ManagerMessagesPage({
       updatedAt: t.messages[t.messages.length - 1]?.createdAt || t.createdAt,
       hasUnread: t.messages.some(m => m.role !== "MANAGER" && m.readByManagerAt === null),
     })),
-    ...cleaningTasks.map((c) => ({
+    ...cleaningTasks.map((c: CleaningThreadSource) => ({
       id: c.id,
       type: "CLEANING" as const,
       apartmentName: c.apartment.name,
@@ -92,7 +109,7 @@ export default async function ManagerMessagesPage({
       messages: c.messages,
       updatedAt: c.messages[c.messages.length - 1]?.createdAt || c.createdAt,
       date: c.date,
-      hasUnread: c.messages.some(m => m.role !== "MANAGER" && m.readByManagerAt === null),
+      hasUnread: c.messages.some((m: CleaningThreadSource["messages"][number]) => m.role !== "MANAGER" && m.readByManagerAt === null),
     })),
   ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
