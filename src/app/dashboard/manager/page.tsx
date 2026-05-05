@@ -114,6 +114,13 @@ type ApartmentView = {
   longitude: number;
 };
 
+type ApartmentStatusCounts = {
+  ready: number;
+  notReady: number;
+  occupied: number;
+  [key: string]: number;
+};
+
 export default async function ManagerDashboardPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -311,8 +318,8 @@ export default async function ManagerDashboardPage() {
       openTickets: aptTickets.filter((t: TicketView) => isMaintenanceActive(t)).length,
     };
   });
-  const apartmentStatusCounts = apartments.reduce(
-    (counts, apartment) => {
+  const apartmentStatusCounts = apartments.reduce<ApartmentStatusCounts>(
+    (counts: ApartmentStatusCounts, apartment: ApartmentView) => {
       const aptBookings = bookings.filter((b: BookingView) => b.apartmentId === apartment.id);
       const aptCleanings = cleanings.filter((c: CleaningView) => c.apartmentId === apartment.id);
       const aptTickets = tickets.filter((t: TicketView) => t.apartmentId === apartment.id);
