@@ -1,5 +1,9 @@
 import { prisma } from "@/src/lib/prisma";
 
+type ExistingApartmentCode = {
+  apartmentCode?: string | null;
+};
+
 export function generateApartmentCode(name: string) {
   return name
     .toUpperCase()
@@ -20,7 +24,7 @@ export async function generateUniqueApartmentCode(name: string, excludeApartment
   });
   const existingCodes = new Set(
     existingApartments
-      .map((apartment) => apartment.apartmentCode)
+      .map((apartment: ExistingApartmentCode) => apartment.apartmentCode)
       .filter((code): code is string => Boolean(code))
   );
 
