@@ -25,7 +25,7 @@ export async function generateUniqueApartmentCode(name: string, excludeApartment
   const existingCodes = new Set(
     existingApartments
       .map((apartment: ExistingApartmentCode) => apartment.apartmentCode)
-      .filter((code): code is string => Boolean(code))
+      .filter((code: string | null | undefined): code is string => Boolean(code))
   );
 
   if (!existingCodes.has(baseCode)) {
