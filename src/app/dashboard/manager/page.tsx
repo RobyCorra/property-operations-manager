@@ -63,6 +63,49 @@ type CleaningMessageView = {
   };
 };
 
+type BookingView = {
+  id: string;
+  apartmentId: string;
+  checkInDate: Date | string;
+  checkOutDate: Date | string;
+  guestName: string | null;
+  status: string | null;
+  source?: string | null;
+  externalId?: string | null;
+  apartment: {
+    name: string;
+    address: string;
+  };
+};
+
+type CleaningView = {
+  id: string;
+  apartmentId: string;
+  date: Date | string;
+  status: string;
+  apartment: {
+    name: string;
+  };
+  assignedTo: {
+    name: string;
+  } | null;
+};
+
+type TicketView = {
+  id: string;
+  apartmentId: string;
+  scheduledStart: Date | string | null;
+  createdAt: Date | string;
+  title: string;
+  status: string;
+  apartment: {
+    name: string;
+  };
+  assignedTo: {
+    name: string;
+  } | null;
+};
+
 export default async function ManagerDashboardPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -172,22 +215,22 @@ export default async function ManagerDashboardPage() {
   ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 5);
 
   // Logic for Check-ins Today
-  const checkinsToday = bookings.filter(b => {
+  const checkinsToday = bookings.filter((b: BookingView) => {
     const checkin = new Date(b.checkInDate).toISOString().split('T')[0];
     return checkin === todayStr;
   });
 
-  const cleaningsToday = cleanings.filter(c => {
+  const cleaningsToday = cleanings.filter((c: CleaningView) => {
     const cleaningDate = formatLocalDateKey(c.date);
     return cleaningDate === todayLocalStr;
   });
 
   const lateCleanings = isPastLateCleaningCutoff
-    ? cleaningsToday.filter(c => c.status === "PENDING")
+    ? cleaningsToday.filter((c: CleaningView) => c.status === "PENDING")
     : [];
   const lateCleaningIds = new Set(lateCleanings.map((cleaning) => cleaning.id));
 
-  const ticketsToday = tickets.filter(t => {
+  const ticketsToday = tickets.filter((t: TicketView) => {
     const scheduledStart = t.scheduledStart ? new Date(t.scheduledStart).toISOString().split('T')[0] : null;
     const createdAt = new Date(t.createdAt).toISOString().split('T')[0];
     return scheduledStart === todayStr || createdAt === todayStr || t.status === "OPEN" || t.status === "IN_PROGRESS";
@@ -195,7 +238,7 @@ export default async function ManagerDashboardPage() {
 
   // Data Normalization for Timeline
   const allEvents: OperationalEvent[] = [];
-  cleanings.forEach(c => {
+  cleanings.forEach((c: CleaningView) => {
     allEvents.push({
       id: `clean-${c.id}`,
       type: "CLEANING",
@@ -209,7 +252,7 @@ export default async function ManagerDashboardPage() {
     });
   });
 
-  tickets.forEach(t => {
+  tickets.forEach((t: TicketView) => {
     if (t.scheduledStart) {
       allEvents.push({
         id: `maint-${t.id}`,
@@ -224,7 +267,7 @@ export default async function ManagerDashboardPage() {
     }
   });
 
-  bookings.forEach(b => {
+  bookings.forEach((b: BookingView) => {
     allEvents.push({
       id: `in-${b.id}`,
       type: "CHECKIN",
@@ -248,25 +291,25 @@ export default async function ManagerDashboardPage() {
   allEvents.sort((a, b) => a.date.getTime() - b.date.getTime());
 
   const apartmentsData = apartments.map((apartment) => {
-    const aptBookings = bookings.filter((b) => b.apartmentId === apartment.id);
-    const aptCleanings = cleanings.filter((c) => c.apartmentId === apartment.id);
-    const aptTickets = tickets.filter((t) => t.apartmentId === apartment.id);
+    const aptBookings = bookings.filter((b: BookingView) => b.apartmentId === apartment.id);
+    const aptCleanings = cleanings.filter((c: CleaningView) => c.apartmentId === apartment.id);
+    const aptTickets = tickets.filter((t: TicketView) => t.apartmentId === apartment.id);
     const statusInfo = getApartmentOperationalStatus(serverDate, aptBookings, aptCleanings, aptTickets, { now });
     return {
       ...apartment,
       status: statusInfo.color,
       statusLabel: statusInfo.label,
       statusReason: statusInfo.reason,
-      openTickets: aptTickets.filter((t) => isMaintenanceActive(t)).length,
+      openTickets: aptTickets.filter((t: TicketView) => isMaintenanceActive(t)).length,
     };
   });
   const apartmentStatusCounts = apartments.reduce(
     (counts, apartment) => {
-      const aptBookings = bookings.filter((b) => b.apartmentId === apartment.id);
-      const aptCleanings = cleanings.filter((c) => c.apartmentId === apartment.id);
-      const aptTickets = tickets.filter((t) => t.apartmentId === apartment.id);
+      const aptBookings = bookings.filter((b: BookingView) => b.apartmentId === apartment.id);
+      const aptCleanings = cleanings.filter((c: CleaningView) => c.apartmentId === apartment.id);
+      const aptTickets = tickets.filter((t: TicketView) => t.apartmentId === apartment.id);
       const activeOrNextBooking = aptBookings
-        .filter((booking) => formatDateKey(booking.checkOutDate) >= todayStr)
+        .filter((booking: BookingView) => formatDateKey(booking.checkOutDate) >= todayStr)
         .sort((a, b) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
       let statusTargetDate: Date | string = serverDate;
 
@@ -293,7 +336,7 @@ export default async function ManagerDashboardPage() {
     },
     { ready: 0, notReady: 0, occupied: 0 }
   );
-  const calendarBookings = bookings.map((booking) => ({
+  const calendarBookings = bookings.map((booking: BookingView) => ({
     ...booking,
     guestName: booking.guestName ?? "",
     status: booking.status ?? undefined,
