@@ -106,6 +106,14 @@ type TicketView = {
   } | null;
 };
 
+type ApartmentView = {
+  id: string;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+};
+
 export default async function ManagerDashboardPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -290,7 +298,7 @@ export default async function ManagerDashboardPage() {
 
   allEvents.sort((a, b) => a.date.getTime() - b.date.getTime());
 
-  const apartmentsData = apartments.map((apartment) => {
+  const apartmentsData = apartments.map((apartment: ApartmentView) => {
     const aptBookings = bookings.filter((b: BookingView) => b.apartmentId === apartment.id);
     const aptCleanings = cleanings.filter((c: CleaningView) => c.apartmentId === apartment.id);
     const aptTickets = tickets.filter((t: TicketView) => t.apartmentId === apartment.id);
