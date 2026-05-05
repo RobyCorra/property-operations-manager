@@ -37,6 +37,32 @@ const formatLocalDateKey = (date: Date | string) => {
   return `${year}-${month}-${day}`;
 };
 
+type MaintenanceMessageView = {
+  id: string;
+  text: string | null;
+  createdAt: Date;
+  senderName: string | null;
+  maintenanceTicketId?: string | null;
+  maintenanceTicket: {
+    apartment: {
+      name: string;
+    };
+  };
+};
+
+type CleaningMessageView = {
+  id: string;
+  text: string | null;
+  createdAt: Date;
+  senderName: string | null;
+  cleaningTaskId?: string | null;
+  cleaningTask: {
+    apartment: {
+      name: string;
+    };
+  };
+};
+
 export default async function ManagerDashboardPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -97,7 +123,7 @@ export default async function ManagerDashboardPage() {
 
   // Logic for Recent Messages with Keyword detection for icons
   const recentMessages = [
-    ...messages.map(m => {
+    ...messages.map((m: MaintenanceMessageView) => {
         let icon = <MessageSquare size={16} />;
         let colorClass = "bg-violet-500/10 text-violet-600";
         const text = (m.text || "").toLowerCase();
@@ -120,7 +146,7 @@ export default async function ManagerDashboardPage() {
             colorClass
         }
     }),
-    ...cleaningMessages.map(m => {
+    ...cleaningMessages.map((m: CleaningMessageView) => {
         let icon = <MessageSquare size={16} />;
         let colorClass = "bg-violet-500/10 text-violet-600";
         const text = (m.text || "").toLowerCase();
