@@ -11,7 +11,6 @@ import React, {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getApartmentOperationalStatus, type ApartmentStatus } from "@/src/lib/apartment-status";
-import type { Prisma } from "@prisma/client";
 import { deleteBooking } from "@/src/app/actions/booking";
 import {
   deleteCleaningTask,
@@ -34,6 +33,10 @@ import {
 } from "./icons";
 import { Users } from "lucide-react";
 
+type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+type JsonObject = { [key: string]: JsonValue };
+type JsonArray = JsonValue[];
+
 interface Booking {
   id: string;
   apartmentId: string;
@@ -54,7 +57,7 @@ interface CleaningTask {
   status: string;
   notes?: string | null;
   assignedTo?: { id: string; name: string } | null;
-  checklistProgress?: Prisma.JsonValue;
+  checklistProgress?: unknown;
   apartment?: { name: string; address: string };
 }
 
@@ -65,7 +68,7 @@ type PrismaCleaningTask = {
   date: Date;
   status: string;
   notes: string | null;
-  checklistProgress: Prisma.JsonValue;
+  checklistProgress: unknown;
   createdAt: Date;
   assignedToId: string | null;
 };
@@ -602,9 +605,9 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                     const bookingStatus = getApartmentOperationalStatus(
                       statusTargetDate,
-                      apartmentBookings,
-                      apartmentCleanings,
-                      apartmentTickets,
+                      apartmentBookings as any,
+                      apartmentCleanings as any,
+                      apartmentTickets as any,
                       { now: currentClientTime }
                     );
 

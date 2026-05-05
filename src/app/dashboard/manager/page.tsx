@@ -37,6 +37,10 @@ const formatLocalDateKey = (date: Date | string) => {
   return `${year}-${month}-${day}`;
 };
 
+type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+type JsonObject = { [key: string]: JsonValue };
+type JsonArray = JsonValue[];
+
 type MaintenanceMessageView = {
   id: string;
   text: string | null;
@@ -83,6 +87,7 @@ type CleaningView = {
   apartmentId: string;
   date: Date | string;
   status: string;
+  checklistProgress: unknown;
   apartment: {
     name: string;
   };
