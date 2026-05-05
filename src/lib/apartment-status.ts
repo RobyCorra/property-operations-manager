@@ -1,4 +1,26 @@
-import { MaintenanceTicket, CleaningTask, Booking } from "@prisma/client";
+type Booking = {
+  id: string;
+  apartmentId: string;
+  checkInDate: Date | string;
+  checkOutDate: Date | string;
+  status?: string | null;
+};
+
+type CleaningTask = {
+  id: string;
+  apartmentId: string;
+  date: Date | string;
+  status: string;
+};
+
+type MaintenanceTicket = {
+  id: string;
+  apartmentId: string;
+  status: string;
+  priority: string;
+  scheduledStart?: Date | string | null;
+  scheduledEnd?: Date | string | null;
+};
 
 export type ApartmentStatusColor = "GREEN" | "BLUE" | "RED";
 
