@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  password           String
+  role               Role
+  createdAt          DateTime            @default(now())
+  name               String
+  cleaningTasks      CleaningTask[]
+  maintenanceTickets MaintenanceTicket[]
+}
+
+model Apartment {
+  id                   String                @id @default(uuid())
+  name                 String
+  apartmentCode        String?               @unique
+  address              String
+  latitude             Float
+  longitude            Float
+  squareMeters         Int
+  bedrooms             Int
+  bathrooms            Int
+  maxGuests            Int
+  accessInstructions   String?
+  icalUrl              String?
+  lastSyncAt           DateTime?
+  technicalProfile     Json?
+  createdAt            DateTime              @default(now())
+  bookings             Booking[]
+  checklistItems       ChecklistItem[]
+  cleaningTasks        CleaningTask[]
+  maintenanceTickets   MaintenanceTicket[]
+  notifications        Notification[]
+  aiAssistantMessages  AIAssistantMessage[]
+  apartmentAttachments ApartmentAttachment[]
+}
+
+model ChecklistItem {
+  id          String    @id @default(uuid())
+  apartmentId String
+  label       String
+  required    Boolean   @default(true)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  formula     String?
+  type        String    @default("static")
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String     @id @default(uuid())
+  type        String
+  title       String
+  message     String
+  isRead      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  apartmentId String?
+  apartment   Apartment? @relation(fields: [apartmentId], references: [id])
+}
+
+model Booking {
+  id           String        @id @default(uuid())
+  apartmentId  String
+  guestName    String?
+  totalGuests  Int
+  checkInDate  DateTime
+  checkOutDate DateTime
+  status       String?
+  externalId   String?       @unique
+  source       String?
+  createdAt    DateTime      @default(now())
+  apartment    Apartment     @relation(fields: [apartmentId], references: [id])
+  cleaningTask CleaningTask?
+}
+
+model CleaningTask {
+  id                  String                @id @default(uuid())
+  apartmentId         String
+  date                DateTime
+  status              String
+  createdAt           DateTime              @default(now())
+  assignedToId        String?
+  notes               String?
+  bookingId           String?               @unique
+  booking             Booking?              @relation(fields: [bookingId], references: [id])
+  checklistProgress   Json?                 @default("[]")
+  apartment           Apartment             @relation(fields: [apartmentId], references: [id])
+  assignedTo          User?                 @relation(fields: [assignedToId], references: [id])
+  messages            CleaningTaskMessage[]
+  attachments         Attachment[]
+  aiAssistantMessages AIAssistantMessage[]
+}
+
+model MaintenanceTicket {
+  id                  String               @id @default(uuid())
+  apartmentId         String
+  title               String
+  description         String
+  status              String
+  priority            String
+  createdAt           DateTime             @default(now())
+  assignedToId        String?
+  scheduledStart      DateTime?
+  scheduledEnd        DateTime?
+  startedAt           DateTime?
+  resolvedAt          DateTime?
+  apartment           Apartment            @relation(fields: [apartmentId], references: [id])
+  assignedTo          User?                @relation(fields: [assignedToId], references: [id])
+  attachments         Attachment[]
+  messages            Message[]
+  aiAssistantMessages AIAssistantMessage[]
+}
+
+model AIAssistantMessage {
+  id                  String                 @id @default(uuid())
+  role                AIAssistantMessageRole
+  content             String
+  userRole            Role
+  apartmentId         String?
+  cleaningTaskId      String?
+  maintenanceTicketId String?
+  createdAt           DateTime               @default(now())
+  apartment           Apartment?             @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
+  cleaningTask        CleaningTask?          @relation(fields: [cleaningTaskId], references: [id], onDelete: Cascade)
+  maintenanceTicket   MaintenanceTicket?     @relation(fields: [maintenanceTicketId], references: [id], onDelete: Cascade)
+
+  @@index([apartmentId])
+  @@index([cleaningTaskId])
+  @@index([maintenanceTicketId])
+  @@index([createdAt])
+}
+
+model Attachment {
+  id                  String                @id @default(uuid())
+  url                 String
+  fileName            String                @default("attachment")
+  fileType            String?
+  createdAt           DateTime              @default(now())
+  maintenanceTicketId String?
+  maintenanceTicket   MaintenanceTicket?    @relation(fields: [maintenanceTicketId], references: [id], onDelete: Cascade)
+  cleaningTaskId      String?
+  cleaningTask        CleaningTask?         @relation(fields: [cleaningTaskId], references: [id], onDelete: Cascade)
+  messages            Message[]
+  cleaningMessages    CleaningTaskMessage[]
+}
+
+model ApartmentAttachment {
+  id            String    @id @default(uuid())
+  apartmentId   String
+  apartment     Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  filename      String
+  url           String?
+  mimeType      String?
+  size          Int?
+  category      String    @default("OTHER")
+  extractedText String?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([apartmentId])
+  @@index([category])
+}
+
+model Message {
+  id                  String            @id @default(uuid())
+  text                String?
+  role                String
+  senderName          String
+  createdAt           DateTime          @default(now())
+  maintenanceTicketId String
+  maintenanceTicket   MaintenanceTicket @relation(fields: [maintenanceTicketId], references: [id], onDelete: Cascade)
+  attachmentId        String?
+  attachment          Attachment?       @relation(fields: [attachmentId], references: [id])
+  readByManagerAt     DateTime?
+}
+
+model CleaningTaskMessage {
+  id              String       @id @default(uuid())
+  text            String?
+  role            String
+  senderName      String
+  createdAt       DateTime     @default(now())
+  cleaningTaskId  String
+  cleaningTask    CleaningTask @relation(fields: [cleaningTaskId], references: [id], onDelete: Cascade)
+  attachmentId    String?
+  attachment      Attachment?  @relation(fields: [attachmentId], references: [id])
+  readByManagerAt DateTime?
+}
+
+enum Role {
+  MANAGER
+  CLEANER
+  MAINTENANCE
+}
+
+enum AIAssistantMessageRole {
+  USER
+  ASSISTANT
+}
