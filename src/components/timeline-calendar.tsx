@@ -11,7 +11,7 @@ import React, {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getApartmentOperationalStatus, type ApartmentStatus } from "@/src/lib/apartment-status";
-import type { CleaningTask as PrismaCleaningTask, MaintenanceTicket as PrismaMaintenanceTicket, Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { deleteBooking } from "@/src/app/actions/booking";
 import {
   deleteCleaningTask,
@@ -58,6 +58,18 @@ interface CleaningTask {
   apartment?: { name: string; address: string };
 }
 
+type PrismaCleaningTask = {
+  id: string;
+  apartmentId: string;
+  bookingId: string | null;
+  date: Date;
+  status: string;
+  notes: string | null;
+  checklistProgress: Prisma.JsonValue;
+  createdAt: Date;
+  assignedToId: string | null;
+};
+
 interface MaintenanceTicket {
   id: string;
   apartmentId: string;
@@ -71,6 +83,21 @@ interface MaintenanceTicket {
   assignedTo?: { id: string; name: string } | null;
   apartment?: { name: string; address: string };
 }
+
+type PrismaMaintenanceTicket = {
+  id: string;
+  apartmentId: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  scheduledStart: Date | null;
+  scheduledEnd: Date | null;
+  createdAt: Date;
+  startedAt: Date | null;
+  resolvedAt: Date | null;
+  assignedToId: string | null;
+};
 
 interface Apartment {
   id: string;
