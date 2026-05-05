@@ -16,6 +16,14 @@ import {
 } from "@/src/components/icons";
 import { Shield, CheckCircle } from "lucide-react";
 
+type UserView = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  role: string;
+  createdAt: Date | string;
+};
+
 export default async function UsersListPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -79,7 +87,7 @@ export default async function UsersListPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100/50">
-                {users.map((u) => (
+                {users.map((u: UserView) => (
                   <tr key={u.id} className="hover:bg-white/40 transition-all duration-200 group">
                     <td className="px-10 py-6">
                         <div className="flex items-center gap-4">
