@@ -8,6 +8,23 @@ import MarkReadTrigger from "@/src/components/mark-read-trigger";
 import Link from "next/link";
 import MessagesDashboard from "@/src/components/messages-dashboard";
 
+type MaintenanceThreadSource = {
+  id: string;
+  title: string;
+  createdAt: Date;
+  apartment: {
+    name: string;
+  };
+  assignedTo: {
+    name: string;
+  } | null;
+  messages: {
+    createdAt: Date;
+    role: string;
+    readByManagerAt: Date | null;
+  }[];
+};
+
 export default async function ManagerMessagesPage({
   searchParams,
 }: {
@@ -54,7 +71,7 @@ export default async function ManagerMessagesPage({
 
   // 3. Normalize data
   const threads = [
-    ...maintenanceTickets.map((t) => ({
+    ...maintenanceTickets.map((t: MaintenanceThreadSource) => ({
       id: t.id,
       type: "MAINTENANCE" as const,
       apartmentName: t.apartment.name,
