@@ -325,7 +325,7 @@ export default async function ManagerDashboardPage() {
       const aptTickets = tickets.filter((t: TicketView) => t.apartmentId === apartment.id);
       const activeOrNextBooking = aptBookings
         .filter((booking: BookingView) => formatDateKey(booking.checkOutDate) >= todayStr)
-        .sort((a, b) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
+        .sort((a: BookingView, b: BookingView) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
       let statusTargetDate: Date | string = serverDate;
 
       if (activeOrNextBooking) {
