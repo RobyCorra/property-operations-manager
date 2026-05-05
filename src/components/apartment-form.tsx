@@ -3,8 +3,21 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
-import type { Apartment } from "@prisma/client";
 import { ChevronRight } from "@/src/components/icons";
+
+type Apartment = {
+  id: string;
+  name?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  squareMeters?: number | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  maxGuests?: number | null;
+  icalUrl?: string | null;
+  technicalProfile?: unknown;
+};
 
 type TechnicalAttachment = {
   filename: string;
