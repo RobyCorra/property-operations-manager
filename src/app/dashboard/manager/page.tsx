@@ -228,7 +228,7 @@ export default async function ManagerDashboardPage() {
   const lateCleanings = isPastLateCleaningCutoff
     ? cleaningsToday.filter((c: CleaningView) => c.status === "PENDING")
     : [];
-  const lateCleaningIds = new Set(lateCleanings.map((cleaning) => cleaning.id));
+  const lateCleaningIds = new Set(lateCleanings.map((cleaning: CleaningView) => cleaning.id));
 
   const ticketsToday = tickets.filter((t: TicketView) => {
     const scheduledStart = t.scheduledStart ? new Date(t.scheduledStart).toISOString().split('T')[0] : null;
