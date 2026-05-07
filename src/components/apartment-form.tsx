@@ -86,7 +86,7 @@ type ItemCardProps = {
 
 interface ApartmentFormProps {
   initialData?: Apartment;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<void | { success: boolean; error?: string }>;
   title: string;
 }
 
@@ -667,6 +667,7 @@ function AttachmentList({
 export default function ApartmentForm({ initialData, action, title }: ApartmentFormProps) {
   const technicalProfile = (initialData?.technicalProfile as TechnicalProfile | null) ?? {};
   const [activeSection, setActiveSection] = useState<FormSectionKey>("main");
+  const [formError, setFormError] = useState("");
   const [systems, setSystems] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.systems));
   const [appliances, setAppliances] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.appliances, legacyApplianceLabels));
   const [smartHome, setSmartHome] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.smartHome, legacySmartHomeLabels));
@@ -675,7 +676,18 @@ export default function ApartmentForm({ initialData, action, title }: ApartmentF
 
   return (
     <section className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
-      <form action={action} className="relative">
+      <form
+        action={async (formData) => {
+          setFormError("");
+          const result = await action(formData);
+
+          if (result?.success === false) {
+            setFormError(result.error || "Errore durante il salvataggio.");
+          }
+        }}
+        encType="multipart/form-data"
+        className="relative"
+      >
         {initialData && <input type="hidden" name="id" value={initialData.id} />}
 
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr]">
@@ -797,6 +809,11 @@ export default function ApartmentForm({ initialData, action, title }: ApartmentF
           <Link href="/dashboard/manager/apartments" className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
             Annulla
           </Link>
+          {formError && (
+            <p className="mr-auto max-w-md rounded-lg border border-red-100 bg-red-50 px-4 py-2 text-sm font-medium text-red-700">
+              {formError}
+            </p>
+          )}
           <button type="submit" className="rounded-full bg-black px-8 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900">
             {initialData ? "Aggiorna Proprietà" : "Salva Proprietà"}
           </button>

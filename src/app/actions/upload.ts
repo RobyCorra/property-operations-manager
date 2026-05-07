@@ -1,15 +1,12 @@
 "use server";
 
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { randomUUID } from "crypto";
 import { prisma } from "@/src/lib/prisma";
+import {
+  hasValidAttachmentFiles,
+  storeAttachmentFile,
+} from "@/src/lib/server/attachment-storage";
 
 const apartmentAttachmentCategories = ["MANUAL", "WARRANTY", "PHOTO", "TECHNICAL_SHEET", "INSTALLER_INSTRUCTIONS", "OTHER"];
-
-function sanitizeFileName(fileName: string) {
-  return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
-}
 
 export async function uploadApartmentWizardAttachment(formData: FormData) {
   const file = formData.get("file");
@@ -24,45 +21,40 @@ export async function uploadApartmentWizardAttachment(formData: FormData) {
     : "OTHER";
   const notesValue = formData.get("notes");
   const notes = typeof notesValue === "string" ? notesValue : "";
-  const uploadDir = join(process.cwd(), "public", "uploads", "apartments", "temp");
-  await mkdir(uploadDir, { recursive: true });
 
-  const storedFileName = `${Date.now()}-${randomUUID()}-${sanitizeFileName(file.name)}`;
-  const path = join(uploadDir, storedFileName);
-  const bytes = await file.arrayBuffer();
-  await writeFile(path, Buffer.from(bytes));
+  const uploadResult = await storeAttachmentFile(file, "apartment-wizard", "temp");
+  if (!uploadResult.success) {
+    return { success: false, error: uploadResult.error, statusCode: uploadResult.statusCode };
+  }
+  const storedFile = uploadResult.file;
 
   return {
     success: true,
+    id: null,
+    url: storedFile.url,
+    hasExtractedText: uploadResult.hasExtractedText,
     attachment: {
-      filename: file.name,
-      url: `/uploads/apartments/temp/${storedFileName}`,
-      mimeType: file.type || "application/octet-stream",
-      size: file.size,
+      filename: storedFile.filename,
+      url: storedFile.url,
+      mimeType: storedFile.mimeType,
+      size: storedFile.size,
       category,
       notes,
-      extractedText: "",
+      extractedText: storedFile.extractedText ?? "",
     },
   };
 }
 
-export async function uploadMaintenanceAttachment(ticketId: string, formData: FormData) {
+export async function uploadMaintenanceAttachment(
+  ticketId: string,
+  formData: FormData,
+  options: { messageId?: string } = {}
+) {
   const files = formData.getAll("files") as File[];
   
-  if (!files || files.length === 0) {
-    console.log(`[Upload] No files found for ticket ${ticketId}`);
+  if (!files || files.length === 0 || !hasValidAttachmentFiles(files)) {
+    console.log(`[Upload] No attachments found for ticket ${ticketId}`);
     return { success: true, count: 0 };
-  }
-
-  // Ensure directories exist
-  const baseUploadDir = join(process.cwd(), "public", "uploads", "maintenance");
-  const ticketUploadDir = join(baseUploadDir, ticketId);
-  
-  try {
-    console.log(`[Upload] Ensuring directory exists: ${ticketUploadDir}`);
-    await mkdir(ticketUploadDir, { recursive: true });
-  } catch (err) {
-    console.error(`[Upload] Error creating directory:`, err);
   }
 
   const attachmentUrls: string[] = [];
@@ -71,39 +63,61 @@ export async function uploadMaintenanceAttachment(ticketId: string, formData: Fo
   for (const file of files) {
     // Basic validation
     if (!file || file.size === 0 || !file.name) {
-      console.log(`[Upload] Skipping empty or invalid file`);
+      console.log("[Upload] Skipping empty or invalid attachment");
       continue;
     }
 
     try {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      const uploadResult = await storeAttachmentFile(file, "maintenance", ticketId);
+      if (!uploadResult.success) {
+        return { success: false, error: uploadResult.error, statusCode: uploadResult.statusCode, count: attachmentUrls.length, urls: attachmentUrls, attachments: createdAttachments };
+      }
 
-      // Sanitize fileName
-      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-      const fileName = `${Date.now()}-${sanitizedName}`;
-      const path = join(ticketUploadDir, fileName);
-      
-      console.log(`[Upload] Writing file to: ${path}`);
-      await writeFile(path, buffer);
-      
-      const url = `/uploads/maintenance/${ticketId}/${fileName}`;
+      const storedFile = uploadResult.file;
+      const url = storedFile.url;
       attachmentUrls.push(url);
 
       // Create database record with metadata
-      const attachment = await prisma.attachment.create({
-        data: {
-          url,
-          fileName: file.name,
-          fileType: file.type || "application/octet-stream",
-          maintenanceTicketId: ticketId,
-        },
+      const attachment = await prisma.$transaction(async (tx) => {
+        const createdAttachment = await tx.attachment.create({
+          data: {
+            url,
+            fileName: storedFile.filename,
+            fileType: storedFile.mimeType,
+            size: storedFile.size,
+            category: "OTHER",
+            extractedText: storedFile.extractedText,
+            maintenanceTicketId: options.messageId ? null : ticketId,
+          },
+        });
+
+        if (options.messageId) {
+          await tx.message.update({
+            where: { id: options.messageId },
+            data: { attachmentId: createdAttachment.id },
+          });
+        }
+
+        return createdAttachment;
       });
-      
+
       createdAttachments.push(attachment);
-      console.log(`[Upload] Successfully saved: ${url}`);
+      console.log("[Upload] Maintenance attachment saved", {
+        id: attachment.id,
+        filename: attachment.fileName,
+        mimeType: attachment.fileType,
+        size: file.size,
+        uploadType: "maintenance",
+      });
     } catch (err) {
       console.error(`[Upload] Failed to process file ${file.name}:`, err);
+      return {
+        success: false,
+        error: "Errore durante il caricamento allegato su storage persistente.",
+        count: attachmentUrls.length,
+        urls: attachmentUrls,
+        attachments: createdAttachments,
+      };
     }
   }
 
@@ -111,27 +125,23 @@ export async function uploadMaintenanceAttachment(ticketId: string, formData: Fo
     success: true, 
     count: attachmentUrls.length, 
     urls: attachmentUrls,
-    attachments: createdAttachments 
+    attachments: createdAttachments,
+    id: createdAttachments[0]?.id ?? null,
+    url: attachmentUrls[0] ?? null,
+    hasExtractedText: createdAttachments.some((attachment) => Boolean(attachment.extractedText)),
   };
 }
 
-export async function uploadCleaningAttachment(taskId: string, formData: FormData) {
+export async function uploadCleaningAttachment(
+  taskId: string,
+  formData: FormData,
+  options: { messageId?: string } = {}
+) {
   const files = formData.getAll("files") as File[];
   
-  if (!files || files.length === 0) {
-    console.log(`[Upload] No files found for cleaning task ${taskId}`);
+  if (!files || files.length === 0 || !hasValidAttachmentFiles(files)) {
+    console.log(`[Upload] No attachments found for cleaning task ${taskId}`);
     return { success: true, count: 0 };
-  }
-
-  // Ensure directories exist
-  const baseUploadDir = join(process.cwd(), "public", "uploads", "cleaning");
-  const taskUploadDir = join(baseUploadDir, taskId);
-  
-  try {
-    console.log(`[Upload] Ensuring directory exists: ${taskUploadDir}`);
-    await mkdir(taskUploadDir, { recursive: true });
-  } catch (err) {
-    console.error(`[Upload] Error creating directory:`, err);
   }
 
   const attachmentUrls: string[] = [];
@@ -140,39 +150,61 @@ export async function uploadCleaningAttachment(taskId: string, formData: FormDat
   for (const file of files) {
     // Basic validation
     if (!file || file.size === 0 || !file.name) {
-      console.log(`[Upload] Skipping empty or invalid file`);
+      console.log("[Upload] Skipping empty or invalid attachment");
       continue;
     }
 
     try {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      const uploadResult = await storeAttachmentFile(file, "cleaning", taskId);
+      if (!uploadResult.success) {
+        return { success: false, error: uploadResult.error, statusCode: uploadResult.statusCode, count: attachmentUrls.length, urls: attachmentUrls, attachments: createdAttachments };
+      }
 
-      // Sanitize fileName
-      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-      const fileName = `${Date.now()}-${sanitizedName}`;
-      const path = join(taskUploadDir, fileName);
-      
-      console.log(`[Upload] Writing file to: ${path}`);
-      await writeFile(path, buffer);
-      
-      const url = `/uploads/cleaning/${taskId}/${fileName}`;
+      const storedFile = uploadResult.file;
+      const url = storedFile.url;
       attachmentUrls.push(url);
 
       // Create database record with metadata
-      const attachment = await prisma.attachment.create({
-        data: {
-          url,
-          fileName: file.name,
-          fileType: file.type || "application/octet-stream",
-          cleaningTaskId: taskId,
-        },
+      const attachment = await prisma.$transaction(async (tx) => {
+        const createdAttachment = await tx.attachment.create({
+          data: {
+            url,
+            fileName: storedFile.filename,
+            fileType: storedFile.mimeType,
+            size: storedFile.size,
+            category: "OTHER",
+            extractedText: storedFile.extractedText,
+            cleaningTaskId: options.messageId ? null : taskId,
+          },
+        });
+
+        if (options.messageId) {
+          await tx.cleaningTaskMessage.update({
+            where: { id: options.messageId },
+            data: { attachmentId: createdAttachment.id },
+          });
+        }
+
+        return createdAttachment;
       });
-      
+
       createdAttachments.push(attachment);
-      console.log(`[Upload] Successfully saved: ${url}`);
+      console.log("[Upload] Cleaning attachment saved", {
+        id: attachment.id,
+        filename: attachment.fileName,
+        mimeType: attachment.fileType,
+        size: file.size,
+        uploadType: "cleaning",
+      });
     } catch (err) {
       console.error(`[Upload] Failed to process file ${file.name}:`, err);
+      return {
+        success: false,
+        error: "Errore durante il caricamento allegato su storage persistente.",
+        count: attachmentUrls.length,
+        urls: attachmentUrls,
+        attachments: createdAttachments,
+      };
     }
   }
 
@@ -180,6 +212,9 @@ export async function uploadCleaningAttachment(taskId: string, formData: FormDat
     success: true, 
     count: attachmentUrls.length, 
     urls: attachmentUrls,
-    attachments: createdAttachments 
+    attachments: createdAttachments,
+    id: createdAttachments[0]?.id ?? null,
+    url: attachmentUrls[0] ?? null,
+    hasExtractedText: createdAttachments.some((attachment) => Boolean(attachment.extractedText)),
   };
 }

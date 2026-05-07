@@ -5,8 +5,8 @@ import Link from "next/link";
 import OperationalForm from "@/src/components/operational-form";
 import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
-import SafeDate from "@/src/components/safe-date";
 import { updateCleaningTask, createCleaningTaskMessage, getCleaningTaskMessages, enrichCleaningTaskWithNextBooking } from "@/src/app/actions/operational";
+import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 export default async function EditCleaningPage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
@@ -53,9 +53,9 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
 
           <div className="mt-4 flex flex-col sm:flex-row gap-4 items-stretch">
             <div className="p-3 bg-white rounded-xl border border-gray-100 shadow-sm flex-1">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pianificazione</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Orario pianificato</p>
               <p className="text-sm font-bold text-gray-700">
-                🧹 Pulizia: <SafeDate date={task.date} isExplicit={true} />
+                🧹 Pulizia: {formatRomeDateTimeDisplay(task.date)}
               </p>
             </div>
 
@@ -70,6 +70,22 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
               ) : (
                 <p className="text-xs text-gray-500">Nessun arrivo successivo programmato</p>
               )}
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-3 bg-emerald-50/60 border border-emerald-100 rounded-xl shadow-sm">
+              <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest mb-1">Inizio intervento reale</p>
+              <p className="text-sm font-bold text-gray-700">
+                {task.startedAt ? formatRomeDateTimeDisplay(task.startedAt) : "Non avviato"}
+              </p>
+            </div>
+
+            <div className="p-3 bg-blue-50/60 border border-blue-100 rounded-xl shadow-sm">
+              <p className="text-[10px] font-bold text-blue-700 uppercase tracking-widest mb-1">Fine intervento reale</p>
+              <p className="text-sm font-bold text-gray-700">
+                {task.completedAt ? formatRomeDateTimeDisplay(task.completedAt) : "Non completato"}
+              </p>
             </div>
           </div>
         </div>

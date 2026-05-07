@@ -14,6 +14,8 @@ export interface Activity {
   priority?: string;
   date: Date;
   createdAt: Date;
+  startedAt?: Date | null;
+  completedAt?: Date | null;
   assignedToId: string | null;
   notes?: string | null;
   description?: string | null;
@@ -26,6 +28,8 @@ type ActivityCleaning = {
   status: string;
   date: Date;
   createdAt: Date;
+  startedAt: Date | null;
+  completedAt: Date | null;
   assignedToId: string | null;
   notes: string | null;
   apartment: { name: string };
@@ -121,6 +125,8 @@ export async function getTeamActivityHistory(filters: {
     status: c.status,
     date: c.date,
     createdAt: c.createdAt,
+    startedAt: c.startedAt,
+    completedAt: c.completedAt,
     assignedToId: c.assignedToId,
     notes: c.notes,
   }));

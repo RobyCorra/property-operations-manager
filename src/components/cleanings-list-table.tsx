@@ -5,6 +5,7 @@ import Link from "next/link";
 import UnifiedFilters, { FilterField } from "./unified-filters";
 import DeleteOperationalButton from "./delete-operational-button";
 import SafeDate from "./safe-date";
+import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
 import { 
   CalendarDays, 
   Building2, 
@@ -178,7 +179,9 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-3">
                         <CalendarDays size={14} className="text-slate-300" />
-                        <SafeDate date={task.date} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-sm font-semibold text-slate-900 tracking-tight" />
+                        <span className="text-sm font-semibold text-slate-900 tracking-tight">
+                          {formatRomeDateDisplay(task.date)}
+                        </span>
                     </div>
                   </td>
                   <td className="px-10 py-6">

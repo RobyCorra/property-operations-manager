@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import SafeDate from "./safe-date";
+import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 interface Message {
   id: string;
@@ -186,7 +187,7 @@ export default function MessagesListThreads({ initialThreads, apartments, select
 
               {thread.type === "CLEANING" && thread.date && (
                 <p className="text-[10px] font-bold text-emerald-600 mb-2">
-                  📅 Pulizia: <SafeDate date={thread.date} isExplicit={true} serverDate={serverDate} />
+                  📅 Pulizia: {formatRomeDateTimeDisplay(thread.date)}
                 </p>
               )}
               

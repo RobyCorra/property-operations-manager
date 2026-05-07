@@ -3,6 +3,7 @@
 import { useActionState, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { getApartmentSchedule } from "@/src/app/actions/operational";
+import { formatRomeDateInputValue, formatRomeTimeInputValue } from "@/src/lib/rome-datetime";
 
 interface ApartmentSchedule {
   bookings: Booking[];
@@ -197,28 +198,28 @@ export default function OperationalForm({ type, apartments, personnel, action, i
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="apartmentId" className="block text-sm font-medium text-gray-700 mb-1">Appartamento *</label>
-              <select 
-                required 
-                id="apartmentId" 
-                name="apartmentId" 
-                value={selectedApartment}
-                onChange={(e) => setSelectedApartment(e.target.value)}
-                className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
-              >
-                <option value="">Seleziona...</option>
-                {apartments.map((apt) => (
-                  <option key={apt.id} value={apt.id}>{apt.name}</option>
+                  <select 
+                    required 
+                    id="apartmentId" 
+                    name="apartmentId" 
+                    value={selectedApartment}
+                    onChange={(e) => setSelectedApartment(e.target.value)}
+                    className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                  >
+                    <option value="">Seleziona...</option>
+                    {apartments.map((apt) => (
+                      <option key={apt.id} value={apt.id}>{apt.name}</option>
                 ))}
               </select>
             </div>
             <div>
               <label htmlFor="assignedToId" className="block text-sm font-medium text-gray-700 mb-1">Assegna a</label>
-              <select 
-                id="assignedToId" 
-                name="assignedToId" 
+                <select 
+                  id="assignedToId" 
+                  name="assignedToId" 
                 defaultValue={initialData?.assignedToId || ""}
-                className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-              >
+                  className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                >
                 <option value="">Nessun assegnatario</option>
                 {personnel.map((p) => (
                   <option key={p.id} value={p.id}>{p.name}</option>
@@ -257,37 +258,37 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
                     <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Data Intervento *</label>
-                    <input 
-                      required 
-                      type="date" 
-                      id="date" 
-                      name="date" 
-                      defaultValue={initialData?.date ? new Date(initialData.date).toISOString().split('T')[0] : ""}
-                      className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all" 
+                    <input
+                      required
+                      type="date"
+                      id="date"
+                      name="date"
+                      defaultValue={initialData?.date ? formatRomeDateInputValue(initialData.date) : ""}
+                      className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
                     />
                   </div>
                   <div className="flex-1">
                     <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">Ora Intervento *</label>
-                    <input 
-                      required 
-                      type="time" 
-                      id="time" 
-                      name="time" 
-                      defaultValue={initialData?.date ? new Date(initialData.date).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', hour12: false }) : "10:00"}
-                      className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all" 
+                    <input
+                      required
+                      type="time"
+                      id="time"
+                      name="time"
+                      defaultValue={initialData?.date ? formatRomeTimeInputValue(initialData.date) : "10:00"}
+                      className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
                 <div>
                   <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">Note / Istruzioni</label>
-                  <input 
-                    type="text" 
-                    id="notes" 
-                    name="notes" 
+                    <input 
+                      type="text" 
+                      id="notes" 
+                      name="notes" 
                     defaultValue={initialData?.notes || ""}
-                    placeholder="Es. Pulizia profonda, cambio lenzuola" 
-                    className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent" 
-                  />
+                      placeholder="Es. Pulizia profonda, cambio lenzuola" 
+                      className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent" 
+                    />
                 </div>
               </div>
               {isEditing && (
@@ -304,6 +305,9 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                     <option value="COMPLETED">Completata</option>
                   </select>
                 </div>
+              )}
+              {isEditing && (
+                <input type="hidden" name="cleaningTaskId" value={initialData.id} />
               )}
             </div>
           ) : (

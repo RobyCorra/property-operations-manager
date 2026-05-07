@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { logoutAction } from "@/src/app/actions/auth";
 import { 
   LayoutDashboard, 
   Building2, 
@@ -91,10 +92,15 @@ export default function ManagerNavbar({ unreadCount = 0 }: { unreadCount?: numbe
             </div>
           </div>
           
-          <button className="flex items-center gap-3 p-3 rounded-2xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all group">
-            <LogOut size={20} />
-            <span className="text-xs font-bold uppercase tracking-widest">Logout</span>
-          </button>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="flex w-full items-center gap-3 p-3 rounded-2xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all group"
+            >
+              <LogOut size={20} />
+              <span className="text-xs font-bold uppercase tracking-widest">Logout</span>
+            </button>
+          </form>
         </div>
       </div>
     </aside>

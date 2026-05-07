@@ -4,7 +4,9 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { prisma } from "@/src/lib/prisma";
+import type { Prisma } from "@/src/generated/prisma/client";
 import { evaluateChecklistFormula } from "@/src/lib/formulas";
+import { parseRomeDateTime, preserveRomeTimeOnDate, setRomeTimeOnDate } from "@/src/lib/rome-datetime";
 
 type ChecklistSnapshotItem = {
   id: string;
@@ -39,6 +41,8 @@ const toSafePositiveInt = (value: unknown, fallback = 1) => {
 const isIncomingBookingForTask = (booking: { apartmentId: string; checkInDate: Date }, apartmentId: string, taskDate: Date) => {
   return booking.apartmentId === apartmentId && new Date(booking.checkInDate).getTime() >= taskDate.getTime();
 };
+
+const DEFAULT_CLEANING_TIME = "10:00";
 
 export async function getCleaningTask(id: string) {
   return await prisma.cleaningTask.findUnique({
@@ -141,7 +145,7 @@ async function resolveTurnoverCleaning(db: any, booking: any, targetDate: Date, 
           data: {
             apartmentId: booking.apartmentId,
             bookingId: booking.id,
-            date: targetDate,
+            date: preserveRomeTimeOnDate(targetDate, task.date),
           }
         });
         console.log(`[BOOKING->CLEANING] resolveTurnoverCleaning: RESOLVED existing task ${task.id} (Date: ${task.date.toISOString()}) for Flow=${flowName}`);
@@ -152,7 +156,7 @@ async function resolveTurnoverCleaning(db: any, booking: any, targetDate: Date, 
             data: {
                 apartmentId: booking.apartmentId,
                 bookingId: booking.id,
-                date: targetDate,
+                date: setRomeTimeOnDate(targetDate, DEFAULT_CLEANING_TIME),
                 status: "PENDING",
                 checklistProgress: []
             }
@@ -276,11 +280,13 @@ export async function createCleaningTask(prevState: any, formData: FormData) {
   const timeStr = formData.get("time") as string;
   const notes = formData.get("notes") as string;
 
-  if (!apartmentId || !dateStr || !timeStr) {
-    return { error: "Appartamento, data e ora sono obbligatori." };
+  const effectiveTimeStr = timeStr || DEFAULT_CLEANING_TIME;
+
+  if (!apartmentId || !dateStr) {
+    return { error: "Appartamento e data sono obbligatori." };
   }
 
-  const taskDate = new Date(`${dateStr}T${timeStr}`);
+  const taskDate = parseRomeDateTime(dateStr, effectiveTimeStr);
   const checklistProgress = await computeChecklistSnapshot(prisma, apartmentId, taskDate);
 
   await prisma.cleaningTask.create({
@@ -294,12 +300,15 @@ export async function createCleaningTask(prevState: any, formData: FormData) {
     },
   });
 
+  revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath("/dashboard/cleaner");
   redirect("/dashboard/manager/cleanings");
 }
 
 export async function updateCleaningTask(id: string, prevState: any, formData: FormData) {
+  const formTaskId = formData.get("cleaningTaskId") as string;
+  const targetId = id || formTaskId;
   const apartmentId = formData.get("apartmentId") as string;
   const assignedToId = formData.get("assignedToId") as string;
   const dateStr = formData.get("date") as string;
@@ -307,14 +316,19 @@ export async function updateCleaningTask(id: string, prevState: any, formData: F
   const notes = formData.get("notes") as string;
   const status = formData.get("status") as string;
 
-  if (!id || !apartmentId || !dateStr || !timeStr) {
+  if (!targetId || !apartmentId || !dateStr || !timeStr) {
     return { error: "ID, Appartamento, data e ora sono obbligatori." };
   }
 
-  const taskDate = new Date(`${dateStr}T${timeStr}`);
+  const taskDate = parseRomeDateTime(dateStr, timeStr);
+
+  const beforeUpdate = await prisma.cleaningTask.findUnique({
+    where: { id: targetId },
+    select: { id: true, date: true, apartmentId: true, assignedToId: true, notes: true, status: true }
+  });
 
   await prisma.cleaningTask.update({
-    where: { id },
+    where: { id: targetId },
     data: {
       apartmentId,
       assignedToId: assignedToId || null,
@@ -324,6 +338,12 @@ export async function updateCleaningTask(id: string, prevState: any, formData: F
     },
   });
 
+  const afterUpdate = await prisma.cleaningTask.findUnique({
+    where: { id: targetId },
+    select: { id: true, date: true, apartmentId: true, assignedToId: true, notes: true, status: true }
+  });
+
+  revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath("/dashboard/cleaner");
   redirect("/dashboard/manager/cleanings");
@@ -424,7 +444,10 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
   });
 
   // Handle attachments if any
-  await uploadMaintenanceAttachment(ticket.id, formData);
+  const uploadResult = await uploadMaintenanceAttachment(ticket.id, formData);
+  if (!uploadResult.success) {
+    return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+  }
 
   revalidatePath("/dashboard/manager/maintenance");
   revalidatePath("/dashboard/maintenance");
@@ -467,7 +490,10 @@ export async function updateMaintenanceTicket(id: string, prevState: any, formDa
   });
 
   // Handle new attachments if any
-  await uploadMaintenanceAttachment(id, formData);
+  const uploadResult = await uploadMaintenanceAttachment(id, formData);
+  if (!uploadResult.success) {
+    return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+  }
 
   revalidatePath("/dashboard/manager/maintenance");
   revalidatePath("/dashboard/maintenance");
@@ -494,15 +520,28 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     throw new Error(`Transizione non valida: ${task.status} -> ${nextStatus}`);
   }
 
-  // INITIALIZATION: Copy checklist blueprint to task progress ONLY when starting for the first time
-  let checklistProgressUpdate = undefined;
+  const updateData: {
+    status: string;
+    startedAt?: Date | null;
+    completedAt?: Date | null;
+    checklistProgress?: Prisma.InputJsonValue;
+  } = { status: nextStatus };
+
   const currentProgress = (task.checklistProgress as any[]) || [];
   
   if (nextStatus === "IN_PROGRESS" && task.status === "PENDING" && currentProgress.length === 0) {
     const snapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date, task.bookingId);
     if (snapshot.length > 0) {
-      checklistProgressUpdate = snapshot;
+      updateData.checklistProgress = snapshot;
     }
+  }
+
+  if (nextStatus === "IN_PROGRESS" && !task.startedAt) {
+    updateData.startedAt = new Date();
+  }
+
+  if (nextStatus === "COMPLETED") {
+    updateData.completedAt = task.completedAt || new Date();
   }
 
   // VALIDATION: Quality Checklist check
@@ -517,10 +556,7 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
 
   await prisma.cleaningTask.update({
     where: { id },
-    data: { 
-      status: nextStatus,
-      ...(checklistProgressUpdate && { checklistProgress: checklistProgressUpdate })
-    },
+    data: updateData,
   });
 
   // Trigger Notification for Manager if completed
@@ -542,6 +578,9 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
 
   revalidatePath("/dashboard/cleaner");
   revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/cleanings");
+  revalidatePath(`/dashboard/manager/cleanings/${id}/edit`);
+  revalidatePath("/dashboard/manager/users/history");
 }
 
 export async function updateMaintenanceStatus(id: string, nextStatus: string) {
@@ -562,7 +601,7 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
     data.startedAt = ticket.startedAt || new Date();
   }
   if (nextStatus === "RESOLVED") {
-    data.resolvedAt = new Date();
+    data.resolvedAt = ticket.resolvedAt || new Date();
   }
 
   await prisma.maintenanceTicket.update({
@@ -590,6 +629,7 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   revalidatePath("/dashboard/maintenance");
   revalidatePath("/dashboard/manager/maintenance"); // Added manager maintenance path
   revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/users/history");
 }
 
 export async function reopenMaintenanceTicket(id: string) {
@@ -616,6 +656,7 @@ export async function reopenMaintenanceTicket(id: string) {
   revalidatePath("/dashboard/manager/maintenance");
   revalidatePath(`/dashboard/manager/maintenance/${id}/edit`);
   revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/users/history");
 }
 
 import { uploadMaintenanceAttachment, uploadCleaningAttachment } from "./upload";
@@ -623,7 +664,10 @@ import { uploadMaintenanceAttachment, uploadCleaningAttachment } from "./upload"
 export async function resolveMaintenanceTicket(id: string, formData: FormData) {
   try {
     // 1. Upload attachments
-    await uploadMaintenanceAttachment(id, formData);
+    const uploadResult = await uploadMaintenanceAttachment(id, formData);
+    if (!uploadResult.success) {
+      return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+    }
     
     // 2. Update status
     await updateMaintenanceStatus(id, "RESOLVED");
@@ -649,23 +693,20 @@ export async function createTicketMessage(ticketId: string, prevState: any, form
   }
 
   try {
-    // 1. Handle file attachment in message if any
-    let attachmentId = null;
-    const uploadResult = await uploadMaintenanceAttachment(ticketId, formData);
-    if (uploadResult.success && uploadResult.attachments && uploadResult.attachments.length > 0) {
-      attachmentId = uploadResult.attachments[0].id;
-    }
-
-    // 2. Create message
-    await prisma.message.create({
+    const message = await prisma.message.create({
       data: {
         text: text || "",
         role: role,
         senderName: senderName,
         maintenanceTicketId: ticketId,
-        attachmentId: attachmentId,
       },
     });
+
+    const uploadResult = await uploadMaintenanceAttachment(ticketId, formData, { messageId: message.id });
+    if (!uploadResult.success) {
+      await prisma.message.delete({ where: { id: message.id } });
+      return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+    }
 
     revalidatePath("/dashboard/maintenance");
     revalidatePath("/dashboard/manager/maintenance");
@@ -692,24 +733,21 @@ export async function createCleaningTaskMessage(taskId: string, prevState: any, 
   }
 
   try {
-    // 1. Handle file attachment in message if any
-    let attachmentId = null;
-    const uploadResult = await uploadCleaningAttachment(taskId, formData);
-    if (uploadResult.success && uploadResult.attachments && uploadResult.attachments.length > 0) {
-      attachmentId = uploadResult.attachments[0].id;
-    }
-
-    // 2. Create message
-    await prisma.cleaningTaskMessage.create({
+    const message = await prisma.cleaningTaskMessage.create({
       data: {
         text: text || "",
         role: role,
         senderName: senderName,
         cleaningTaskId: taskId,
-        attachmentId: attachmentId,
         readByManagerAt: null,
       },
     });
+
+    const uploadResult = await uploadCleaningAttachment(taskId, formData, { messageId: message.id });
+    if (!uploadResult.success) {
+      await prisma.cleaningTaskMessage.delete({ where: { id: message.id } });
+      return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+    }
 
     revalidatePath("/dashboard/cleaner");
     revalidatePath("/dashboard/manager/cleanings");

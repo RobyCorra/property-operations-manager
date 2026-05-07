@@ -49,7 +49,7 @@ type WizardData = {
 };
 
 type ApartmentCreateWizardProps = {
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<void | { success: boolean; error?: string }>;
 };
 
 const totalSteps = 10;
@@ -307,12 +307,16 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
     }
 
     startTransition(() => {
-      void action(payload);
+      void action(payload).then((result) => {
+        if (result?.success === false) {
+          setError(result.error || "Errore durante la creazione dell'appartamento.");
+        }
+      });
     });
   };
 
   return (
-    <form onSubmit={handleCreate} className="rounded-[2rem] border border-white/60 bg-white/70 p-6 shadow-2xl shadow-black/5 backdrop-blur-xl md:p-8">
+    <form onSubmit={handleCreate} encType="multipart/form-data" className="rounded-[2rem] border border-white/60 bg-white/70 p-6 shadow-2xl shadow-black/5 backdrop-blur-xl md:p-8">
       <div className="mb-8">
         <div className="mb-3 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
           <span>{stepTitle}</span>

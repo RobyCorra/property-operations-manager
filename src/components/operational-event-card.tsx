@@ -1,6 +1,7 @@
 "use client";
 
 import SafeDate from "./safe-date";
+import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 export type EventType = "CHECKIN" | "CHECKOUT" | "CLEANING" | "MAINTENANCE";
 
@@ -45,7 +46,7 @@ export default function OperationalEventCard({ event, serverDate }: Props) {
             <span className="w-1 h-1 rounded-full bg-slate-200"></span>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
               {event.type === "CLEANING" ? (
-                <SafeDate date={event.date} serverDate={serverDate} isExplicit={true} className="text-[10px]" />
+                <span className="text-[10px]">{formatRomeDateTimeDisplay(event.date)}</span>
               ) : hasTime ? (
                 <SafeDate date={event.date} serverDate={serverDate} format={{ hour: '2-digit', minute: '2-digit' }} />
               ) : (

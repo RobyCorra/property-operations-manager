@@ -5,12 +5,12 @@ import { logoutAction } from "@/src/app/actions/auth";
 import { updateMaintenanceStatus, createTicketMessage } from "@/src/app/actions/operational";
 import StatusUpdateButton from "@/src/components/status-update-button";
 import { prisma } from "@/src/lib/prisma";
-import SafeDate from "@/src/components/safe-date";
 import MaintenanceResolutionForm from "@/src/components/maintenance-resolution-form";
 import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
 import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableMaintenanceCard from "@/src/components/expandable-maintenance-card";
+import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import {
   LogOut, 
   Navigation, 
@@ -206,7 +206,7 @@ export default async function MaintenanceDashboardPage({
                         <div className="flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-white shadow-lg shadow-slate-200">
                           <CalendarDays size={14} />
                           <span className="text-[10px] font-black uppercase tracking-widest text-white/90">
-                            <SafeDate date={ticket.scheduledStart} format={{ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }} />
+                            {formatRomeDateTimeDisplay(ticket.scheduledStart)}
                           </span>
                         </div>
                       ) : (
@@ -241,15 +241,15 @@ export default async function MaintenanceDashboardPage({
                           <div className="mt-4 space-y-2 rounded-2xl bg-slate-50 p-4">
                             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
                               <CalendarDays size={14} />
-                              Programmazione Intervento
+                              Orario pianificato
                             </div>
                             {ticket.scheduledStart ? (
                               <div className="flex flex-wrap gap-2 text-sm font-bold text-slate-900">
-                                <SafeDate date={ticket.scheduledStart} format={{ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }} />
+                                <span>{formatRomeDateTimeDisplay(ticket.scheduledStart)}</span>
                                 {ticket.scheduledEnd && (
                                   <>
                                     <span className="text-slate-300">→</span>
-                                    <SafeDate date={ticket.scheduledEnd} format={{ hour: "2-digit", minute: "2-digit" }} />
+                                    <span>{formatRomeDateTimeDisplay(ticket.scheduledEnd)}</span>
                                   </>
                                 )}
                               </div>
@@ -258,8 +258,8 @@ export default async function MaintenanceDashboardPage({
                             )}
                             {(ticket.startedAt || ticket.resolvedAt) && (
                               <div className="space-y-1 pt-2 text-xs font-bold text-slate-600">
-                                {ticket.startedAt && <p>Inizio: <SafeDate date={ticket.startedAt} format={{ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }} /></p>}
-                                {ticket.resolvedAt && <p>Chiusura: <SafeDate date={ticket.resolvedAt} format={{ day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }} /></p>}
+                                {ticket.startedAt && <p>Inizio intervento reale: <span>{formatRomeDateTimeDisplay(ticket.startedAt)}</span></p>}
+                                {ticket.resolvedAt && <p>Fine intervento reale: <span>{formatRomeDateTimeDisplay(ticket.resolvedAt)}</span></p>}
                               </div>
                             )}
                           </div>

@@ -87,6 +87,8 @@ model CleaningTask {
   date                DateTime
   status              String
   createdAt           DateTime              @default(now())
+  startedAt           DateTime?
+  completedAt         DateTime?
   assignedToId        String?
   notes               String?
   bookingId           String?               @unique
@@ -143,6 +145,9 @@ model Attachment {
   url                 String
   fileName            String                @default("attachment")
   fileType            String?
+  size                Int?
+  category            String                @default("OTHER")
+  extractedText       String?
   createdAt           DateTime              @default(now())
   maintenanceTicketId String?
   maintenanceTicket   MaintenanceTicket?    @relation(fields: [maintenanceTicketId], references: [id], onDelete: Cascade)
@@ -150,6 +155,10 @@ model Attachment {
   cleaningTask        CleaningTask?         @relation(fields: [cleaningTaskId], references: [id], onDelete: Cascade)
   messages            Message[]
   cleaningMessages    CleaningTaskMessage[]
+
+  @@index([maintenanceTicketId])
+  @@index([cleaningTaskId])
+  @@index([category])
 }
 
 model ApartmentAttachment {

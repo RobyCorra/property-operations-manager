@@ -1,13 +1,12 @@
 "use server";
 
-import { mkdir, writeFile } from "fs/promises";
-import { join } from "path";
 import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { DEFAULT_CHECKLIST } from "@/src/lib/constants";
 import { generateUniqueApartmentCode } from "@/src/lib/apartment-code";
+import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
 
 function textValue(formData: FormData, key: string) {
   return (formData.get(key) as string | null) ?? "";
@@ -42,22 +41,6 @@ function fileValue(formData: FormData, key: string) {
   return value instanceof File && value.size > 0 ? value : null;
 }
 
-function sanitizeFileName(fileName: string) {
-  return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
-}
-
-async function saveApartmentUpload(apartmentId: string, file: File) {
-  const uploadDir = join(process.cwd(), "public", "uploads", "apartments", apartmentId);
-  await mkdir(uploadDir, { recursive: true });
-
-  const storedFileName = `${Date.now()}-${randomUUID()}-${sanitizeFileName(file.name)}`;
-  const path = join(uploadDir, storedFileName);
-  const bytes = await file.arrayBuffer();
-  await writeFile(path, Buffer.from(bytes));
-
-  return `/uploads/apartments/${apartmentId}/${storedFileName}`;
-}
-
 type TechnicalProfileAttachment = {
   filename: string;
   url: string;
@@ -67,6 +50,39 @@ type TechnicalProfileAttachment = {
   notes: string;
   extractedText: string;
 };
+
+export type ApartmentActionResult = {
+  success: false;
+  error: string;
+};
+
+function actionError(error: unknown, fallback: string): ApartmentActionResult {
+  return {
+    success: false,
+    error: error instanceof Error && error.message ? error.message : fallback,
+  };
+}
+
+function logApartmentAttachmentUpload({
+  apartmentId,
+  file,
+  category,
+  notes,
+}: {
+  apartmentId: string;
+  file: File | null;
+  category: string;
+  notes: string;
+}) {
+  console.log("[ApartmentAttachmentUpload] Received attachment form data", {
+    apartmentId,
+    filename: file?.name ?? null,
+    size: file?.size ?? null,
+    mimeType: file?.type || null,
+    category,
+    hasNotes: notes.trim().length > 0,
+  });
+}
 
 async function buildAttachments(formData: FormData, prefix: string, apartmentId: string) {
   return indexesForPrefix(formData, prefix)
@@ -80,17 +96,28 @@ async function buildAttachments(formData: FormData, prefix: string, apartmentId:
       const extractedText = textValue(formData, `${prefix}.${index}.extractedText`).trim();
 
       if (file) {
-        const url = await saveApartmentUpload(apartmentId, file);
+        logApartmentAttachmentUpload({ apartmentId, file, category, notes });
+
+        if (!apartmentId) {
+          throw new Error("ID appartamento mancante: impossibile caricare l'allegato.");
+        }
+
+        const uploadResult = await storeAttachmentFile(file, "apartment", apartmentId);
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error);
+        }
+        const storedFile = uploadResult.file;
+
         return [
           ...current,
           {
-            filename: file.name,
-            url,
-            mimeType: file.type || "application/octet-stream",
-            size: file.size,
+            filename: storedFile.filename,
+            url: storedFile.url,
+            mimeType: storedFile.mimeType,
+            size: storedFile.size,
             category,
             notes,
-            extractedText,
+            extractedText: storedFile.extractedText ?? extractedText,
           },
         ];
       }
@@ -230,87 +257,115 @@ function optionalIntValue(formData: FormData, key: string) {
 }
 
 export async function createApartment(formData: FormData) {
-  const id = randomUUID();
-  const name = formData.get("name") as string;
-  const address = formData.get("address") as string;
-  const latitude = parseFloat(formData.get("latitude") as string);
-  const longitude = parseFloat(formData.get("longitude") as string);
-  const squareMeters = parseInt(formData.get("squareMeters") as string, 10);
-  const bedrooms = parseInt(formData.get("bedrooms") as string, 10);
-  const bathrooms = parseInt(formData.get("bathrooms") as string, 10);
-  const maxGuests = parseInt(formData.get("maxGuests") as string, 10);
+  let apartmentId: string;
 
-  if (!name || !address || isNaN(latitude) || isNaN(longitude)) {
-    throw new Error("Dati obbligatori mancanti o invalidi.");
+  try {
+    const id = randomUUID();
+    const name = formData.get("name") as string;
+    const address = formData.get("address") as string;
+    const latitude = parseFloat(formData.get("latitude") as string);
+    const longitude = parseFloat(formData.get("longitude") as string);
+    const squareMeters = parseInt(formData.get("squareMeters") as string, 10);
+    const bedrooms = parseInt(formData.get("bedrooms") as string, 10);
+    const bathrooms = parseInt(formData.get("bathrooms") as string, 10);
+    const maxGuests = parseInt(formData.get("maxGuests") as string, 10);
+
+    if (!name || !address || isNaN(latitude) || isNaN(longitude)) {
+      return { success: false, error: "Dati obbligatori mancanti o invalidi." };
+    }
+
+    const technicalProfile = await buildTechnicalProfile(formData, id);
+    const directAttachments = Array.isArray(technicalProfile.generalAttachments)
+      ? technicalProfile.generalAttachments
+      : [];
+
+    const apartment = await prisma.apartment.create({
+      data: {
+        id,
+        name,
+        apartmentCode: await generateUniqueApartmentCode(name),
+        address,
+        latitude,
+        longitude,
+        squareMeters: isNaN(squareMeters) ? 0 : squareMeters,
+        bedrooms: isNaN(bedrooms) ? 0 : bedrooms,
+        bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
+        maxGuests: isNaN(maxGuests) ? 1 : maxGuests,
+        accessInstructions: null,
+        icalUrl: formData.get("icalUrl") as string,
+        technicalProfile,
+        apartmentAttachments: directAttachments.length > 0 ? {
+          create: directAttachments.map((attachment) => ({
+            filename: attachment.filename || "Allegato",
+            url: attachment.url || null,
+            mimeType: attachment.mimeType || null,
+            size: attachment.size,
+            category: attachment.category || "OTHER",
+            extractedText: attachment.extractedText || null,
+            notes: attachment.notes || null,
+          })),
+        } : undefined,
+        // Automatically add default checklist items
+        checklistItems: {
+          create: DEFAULT_CHECKLIST.map((item, index) => ({
+            label: item.label,
+            required: item.required,
+            order: index,
+          })),
+        },
+      },
+    });
+
+    apartmentId = apartment.id;
+  } catch (error) {
+    return actionError(error, "Errore durante il salvataggio dell'appartamento.");
   }
 
-  const apartment = await prisma.apartment.create({
-    data: {
-      id,
-      name,
-      apartmentCode: await generateUniqueApartmentCode(name),
-      address,
-      latitude,
-      longitude,
-      squareMeters: isNaN(squareMeters) ? 0 : squareMeters,
-      bedrooms: isNaN(bedrooms) ? 0 : bedrooms,
-      bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
-      maxGuests: isNaN(maxGuests) ? 1 : maxGuests,
-      accessInstructions: null,
-      icalUrl: formData.get("icalUrl") as string,
-      technicalProfile: await buildTechnicalProfile(formData, id),
-      // Automatically add default checklist items
-      checklistItems: {
-        create: DEFAULT_CHECKLIST.map((item, index) => ({
-          label: item.label,
-          required: item.required,
-          order: index,
-        })),
-      },
-    },
-  });
-
   revalidatePath("/dashboard/manager/apartments");
-  redirect(`/dashboard/manager/apartments/${apartment.id}/edit`);
+  redirect(`/dashboard/manager/apartments/${apartmentId}/edit`);
 }
 
 export async function updateApartment(formData: FormData) {
-  const id = formData.get("id") as string;
-  const name = formData.get("name") as string;
-  const address = formData.get("address") as string;
-  const latitude = parseFloat(formData.get("latitude") as string);
-  const longitude = parseFloat(formData.get("longitude") as string);
-  const squareMeters = parseInt(formData.get("squareMeters") as string, 10);
-  const bedrooms = parseInt(formData.get("bedrooms") as string, 10);
-  const bathrooms = parseInt(formData.get("bathrooms") as string, 10);
-  const maxGuests = parseInt(formData.get("maxGuests") as string, 10);
+  try {
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+    const address = formData.get("address") as string;
+    const latitude = parseFloat(formData.get("latitude") as string);
+    const longitude = parseFloat(formData.get("longitude") as string);
+    const squareMeters = parseInt(formData.get("squareMeters") as string, 10);
+    const bedrooms = parseInt(formData.get("bedrooms") as string, 10);
+    const bathrooms = parseInt(formData.get("bathrooms") as string, 10);
+    const maxGuests = parseInt(formData.get("maxGuests") as string, 10);
 
-  if (!id || !name || !address || isNaN(latitude) || isNaN(longitude)) {
-    throw new Error("Dati obbligatori mancanti o invalidi.");
+    if (!id || !name || !address || isNaN(latitude) || isNaN(longitude)) {
+      return { success: false, error: "Dati obbligatori mancanti o invalidi." };
+    }
+
+    const existingApartment = await prisma.apartment.findUnique({
+      where: { id },
+      select: { technicalProfile: true, accessInstructions: true },
+    });
+
+    await prisma.apartment.update({
+      where: { id },
+      data: {
+        name,
+        apartmentCode: await generateUniqueApartmentCode(name, id),
+        address,
+        latitude,
+        longitude,
+        squareMeters: isNaN(squareMeters) ? 0 : squareMeters,
+        bedrooms: isNaN(bedrooms) ? 0 : bedrooms,
+        bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
+        maxGuests: isNaN(maxGuests) ? 1 : maxGuests,
+        accessInstructions: existingApartment?.accessInstructions ?? null,
+        icalUrl: formData.get("icalUrl") as string,
+        technicalProfile: await buildTechnicalProfile(formData, id, existingApartment?.technicalProfile),
+      },
+    });
+  } catch (error) {
+    return actionError(error, "Errore durante l'aggiornamento dell'appartamento.");
   }
-
-  const existingApartment = await prisma.apartment.findUnique({
-    where: { id },
-    select: { technicalProfile: true, accessInstructions: true },
-  });
-
-  await prisma.apartment.update({
-    where: { id },
-    data: {
-      name,
-      apartmentCode: await generateUniqueApartmentCode(name, id),
-      address,
-      latitude,
-      longitude,
-      squareMeters: isNaN(squareMeters) ? 0 : squareMeters,
-      bedrooms: isNaN(bedrooms) ? 0 : bedrooms,
-      bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
-      maxGuests: isNaN(maxGuests) ? 1 : maxGuests,
-      accessInstructions: existingApartment?.accessInstructions ?? null,
-      icalUrl: formData.get("icalUrl") as string,
-      technicalProfile: await buildTechnicalProfile(formData, id, existingApartment?.technicalProfile),
-    },
-  });
 
   revalidatePath("/dashboard/manager/apartments");
   redirect("/dashboard/manager/apartments");
@@ -344,62 +399,103 @@ export async function deleteApartment(formData: FormData) {
 }
 
 export async function createApartmentAttachment(formData: FormData) {
-  const apartmentId = textValue(formData, "apartmentId");
-  const filename = textValue(formData, "filename").trim();
+  try {
+    const apartmentId = textValue(formData, "apartmentId");
+    const file = fileValue(formData, "file");
+    const filename = textValue(formData, "filename").trim();
+    const category = attachmentCategory(formData);
+    const notes = textValue(formData, "notes");
 
-  if (!apartmentId || !filename) {
-    throw new Error("Appartamento e nome file sono obbligatori.");
+    logApartmentAttachmentUpload({ apartmentId, file, category, notes });
+
+    if (!apartmentId) {
+      return { success: false, error: "ID appartamento mancante: impossibile caricare l'allegato." };
+    }
+
+    if (!filename && !file) {
+      return { success: false, error: "Seleziona un file valido o inserisci un nome allegato." };
+    }
+
+    const uploadResult = file ? await storeAttachmentFile(file, "apartment", apartmentId) : null;
+    if (uploadResult && !uploadResult.success) {
+      return { success: false, error: uploadResult.error };
+    }
+    const storedFile = uploadResult?.success ? uploadResult.file : null;
+
+    const attachment = await prisma.apartmentAttachment.create({
+      data: {
+        apartmentId,
+        filename: storedFile?.filename || filename,
+        url: storedFile?.url || textValue(formData, "url") || null,
+        mimeType: storedFile?.mimeType || textValue(formData, "mimeType") || null,
+        size: storedFile?.size ?? optionalIntValue(formData, "size"),
+        category,
+        notes: notes || null,
+        extractedText: storedFile?.extractedText ?? (textValue(formData, "extractedText") || null),
+      },
+      select: { id: true },
+    });
+
+    revalidatePath(`/dashboard/manager/apartments/${apartmentId}/edit`);
+    revalidatePath("/dashboard/manager/apartments");
+    return { success: true, attachmentId: attachment.id };
+  } catch (error) {
+    return actionError(error, "Errore durante il caricamento dell'allegato.");
   }
-
-  await prisma.apartmentAttachment.create({
-    data: {
-      apartmentId,
-      filename,
-      url: textValue(formData, "url") || null,
-      mimeType: textValue(formData, "mimeType") || null,
-      size: optionalIntValue(formData, "size"),
-      category: attachmentCategory(formData),
-      notes: textValue(formData, "notes") || null,
-      extractedText: textValue(formData, "extractedText") || null,
-    },
-  });
-
-  revalidatePath(`/dashboard/manager/apartments/${apartmentId}/edit`);
-  revalidatePath("/dashboard/manager/apartments");
 }
 
 export async function updateApartmentAttachment(formData: FormData) {
-  const id = textValue(formData, "id");
-  const filename = textValue(formData, "filename").trim();
+  try {
+    const id = textValue(formData, "id");
+    const file = fileValue(formData, "file");
+    const filename = textValue(formData, "filename").trim();
+    const category = attachmentCategory(formData);
+    const notes = textValue(formData, "notes");
 
-  if (!id || !filename) {
-    throw new Error("ID allegato e nome file sono obbligatori.");
+    if (!id) {
+      return { success: false, error: "ID allegato mancante." };
+    }
+
+    if (!filename && !file) {
+      return { success: false, error: "Seleziona un file valido o inserisci un nome allegato." };
+    }
+
+    const existingAttachment = await prisma.apartmentAttachment.findUnique({
+      where: { id },
+      select: { apartmentId: true },
+    });
+
+    if (!existingAttachment) {
+      return { success: false, error: "Allegato non trovato." };
+    }
+
+    logApartmentAttachmentUpload({ apartmentId: existingAttachment.apartmentId, file, category, notes });
+
+    const uploadResult = file ? await storeAttachmentFile(file, "apartment", existingAttachment.apartmentId) : null;
+    if (uploadResult && !uploadResult.success) {
+      return { success: false, error: uploadResult.error };
+    }
+    const storedFile = uploadResult?.success ? uploadResult.file : null;
+
+    await prisma.apartmentAttachment.update({
+      where: { id },
+      data: {
+        filename: storedFile?.filename || filename,
+        url: storedFile?.url || textValue(formData, "url") || null,
+        mimeType: storedFile?.mimeType || textValue(formData, "mimeType") || null,
+        size: storedFile?.size ?? optionalIntValue(formData, "size"),
+        category,
+        notes: notes || null,
+        extractedText: storedFile?.extractedText ?? (textValue(formData, "extractedText") || null),
+      },
+    });
+
+    revalidatePath(`/dashboard/manager/apartments/${existingAttachment.apartmentId}/edit`);
+    revalidatePath("/dashboard/manager/apartments");
+    return { success: true, attachmentId: id };
+  } catch (error) {
+    return actionError(error, "Errore durante l'aggiornamento dell'allegato.");
   }
-
-  const existingAttachment = await prisma.apartmentAttachment.findUnique({
-    where: { id },
-    select: { apartmentId: true },
-  });
-
-  if (!existingAttachment) {
-    throw new Error("Allegato non trovato.");
-  }
-
-  await prisma.apartmentAttachment.update({
-    where: { id },
-    data: {
-      filename,
-      url: textValue(formData, "url") || null,
-      mimeType: textValue(formData, "mimeType") || null,
-      size: optionalIntValue(formData, "size"),
-      category: attachmentCategory(formData),
-      notes: textValue(formData, "notes") || null,
-      extractedText: textValue(formData, "extractedText") || null,
-    },
-  });
-
-  revalidatePath(`/dashboard/manager/apartments/${existingAttachment.apartmentId}/edit`);
-  revalidatePath("/dashboard/manager/apartments");
 }
 
 export async function deleteApartmentAttachment(formData: FormData) {

@@ -13,6 +13,7 @@ import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableCleaningCard from "@/src/components/expandable-cleaning-card";
 import RecalculateCleaningChecklistButton from "@/src/components/recalculate-cleaning-checklist-button";
 import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
+import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import {
   LogOut, 
   Navigation, 
@@ -49,6 +50,8 @@ type CleanerDashboardTask = {
   id: string;
   apartmentId: string;
   date: Date;
+  startedAt: Date | null;
+  completedAt: Date | null;
   bookingId: string | null;
   checklistProgress: unknown;
   nextBooking: CleanerTaskNextBooking | null;
@@ -187,7 +190,7 @@ export default async function CleanerDashboardPage() {
                     <div className="flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-white shadow-lg shadow-slate-200">
                       <CalendarDays size={14} />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/90">
-                        <SafeDate date={task.date} serverDate={serverDate} format={{ day: "numeric", month: "long" }} />
+                        {formatRomeDateDisplay(task.date)}
                       </span>
                     </div>
                   )}
@@ -214,8 +217,22 @@ export default async function CleanerDashboardPage() {
                             Data intervento
                           </div>
                           <p className="text-sm font-bold text-slate-900">
-                            <SafeDate date={task.date} serverDate={serverDate} isExplicit={true} />
+                            {formatRomeDateTimeDisplay(task.date)}
                           </p>
+                        </div>
+                        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <div className="rounded-2xl bg-emerald-50 p-4">
+                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-emerald-700">Inizio intervento reale</p>
+                            <p className="text-sm font-bold text-slate-900">
+                              {task.startedAt ? formatRomeDateTimeDisplay(task.startedAt) : "Non avviato"}
+                            </p>
+                          </div>
+                          <div className="rounded-2xl bg-blue-50 p-4">
+                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-blue-700">Fine intervento reale</p>
+                            <p className="text-sm font-bold text-slate-900">
+                              {task.completedAt ? formatRomeDateTimeDisplay(task.completedAt) : "Non completato"}
+                            </p>
+                          </div>
                         </div>
                       </div>
 

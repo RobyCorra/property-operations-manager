@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition, useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { createTicketMessage } from "@/src/app/actions/operational";
 import SafeDate from "@/src/components/safe-date";
 
@@ -30,6 +31,7 @@ interface Props {
 export default function TicketConversation({ entityId, initialMessages, currentUserRole, currentUserName, submitAction, heightClass = "h-[500px]" }: Props) {
   const [isPending, startTransition] = useTransition();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,6 +60,7 @@ export default function TicketConversation({ entityId, initialMessages, currentU
         if (result.success) {
           formRef.current?.reset();
           setSelectedFileName(null);
+          router.refresh();
         } else if (result.error) {
           setError(result.error);
         }

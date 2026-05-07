@@ -32,6 +32,7 @@ import {
   UserCircle 
 } from "./icons";
 import { Users } from "lucide-react";
+import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 type JsonObject = { [key: string]: JsonValue };
@@ -764,7 +765,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 <DetailItem 
                                     icon={<CalendarDays size={22} className="text-violet-600" />} 
                                     label="Quando" 
-                                    value={formatDateTime(selectedEvent.type === 'booking' ? selectedEvent.data.checkInDate : (selectedEvent.data.date || selectedEvent.data.scheduledStart))} 
+                                    value={
+                                      selectedEvent.type === "cleaning"
+                                        ? formatRomeDateTimeDisplay(selectedEvent.data.date)
+                                        : formatDateTime(selectedEvent.type === 'booking'
+                                            ? selectedEvent.data.checkInDate
+                                            : (selectedEvent.data.date || selectedEvent.data.scheduledStart))
+                                    } 
                                 />
                                 <DetailItem 
                                     icon={<MapPin size={22} className="text-violet-600" />} 

@@ -187,6 +187,8 @@ exports.Prisma.CleaningTaskScalarFieldEnum = {
   date: 'date',
   status: 'status',
   createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
   assignedToId: 'assignedToId',
   notes: 'notes',
   bookingId: 'bookingId',
@@ -224,6 +226,9 @@ exports.Prisma.AttachmentScalarFieldEnum = {
   url: 'url',
   fileName: 'fileName',
   fileType: 'fileType',
+  size: 'size',
+  category: 'category',
+  extractedText: 'extractedText',
   createdAt: 'createdAt',
   maintenanceTicketId: 'maintenanceTicketId',
   cleaningTaskId: 'cleaningTaskId'

@@ -7,6 +7,7 @@ import TicketConversation from "@/src/components/ticket-conversation";
 import StatusUpdateButton from "@/src/components/status-update-button";
 import AIAssistant from "@/src/components/ai-assistant";
 import { updateMaintenanceTicket, createTicketMessage, reopenMaintenanceTicket } from "@/src/app/actions/operational";
+import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 type AttachmentView = {
   id: string;
@@ -82,6 +83,34 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
               <span>📋</span> Informazioni Intervento
             </h2>
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 space-y-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Orari Intervento</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                <div className="rounded-xl bg-gray-50 p-3">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Orario pianificato</p>
+                  <p className="mt-1 font-semibold text-gray-800">
+                    {ticket.scheduledStart ? formatRomeDateTimeDisplay(ticket.scheduledStart) : "Non pianificato"}
+                  </p>
+                  {ticket.scheduledEnd && (
+                    <p className="mt-1 text-xs text-gray-500">
+                      Fine pianificata: {formatRomeDateTimeDisplay(ticket.scheduledEnd)}
+                    </p>
+                  )}
+                </div>
+                <div className="rounded-xl bg-gray-50 p-3">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Inizio intervento reale</p>
+                  <p className="mt-1 font-semibold text-gray-800">
+                    {ticket.startedAt ? formatRomeDateTimeDisplay(ticket.startedAt) : "Non avviato"}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-gray-50 p-3">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Fine intervento reale</p>
+                  <p className="mt-1 font-semibold text-gray-800">
+                    {ticket.resolvedAt ? formatRomeDateTimeDisplay(ticket.resolvedAt) : "Non completato"}
+                  </p>
+                </div>
+              </div>
+            </div>
             {role === "MANAGER" && ticket.status === "RESOLVED" && (
               <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                 <div>

@@ -8143,6 +8143,8 @@ export namespace Prisma {
     date: Date | null
     status: string | null
     createdAt: Date | null
+    startedAt: Date | null
+    completedAt: Date | null
     assignedToId: string | null
     notes: string | null
     bookingId: string | null
@@ -8154,6 +8156,8 @@ export namespace Prisma {
     date: Date | null
     status: string | null
     createdAt: Date | null
+    startedAt: Date | null
+    completedAt: Date | null
     assignedToId: string | null
     notes: string | null
     bookingId: string | null
@@ -8165,6 +8169,8 @@ export namespace Prisma {
     date: number
     status: number
     createdAt: number
+    startedAt: number
+    completedAt: number
     assignedToId: number
     notes: number
     bookingId: number
@@ -8179,6 +8185,8 @@ export namespace Prisma {
     date?: true
     status?: true
     createdAt?: true
+    startedAt?: true
+    completedAt?: true
     assignedToId?: true
     notes?: true
     bookingId?: true
@@ -8190,6 +8198,8 @@ export namespace Prisma {
     date?: true
     status?: true
     createdAt?: true
+    startedAt?: true
+    completedAt?: true
     assignedToId?: true
     notes?: true
     bookingId?: true
@@ -8201,6 +8211,8 @@ export namespace Prisma {
     date?: true
     status?: true
     createdAt?: true
+    startedAt?: true
+    completedAt?: true
     assignedToId?: true
     notes?: true
     bookingId?: true
@@ -8286,6 +8298,8 @@ export namespace Prisma {
     date: Date
     status: string
     createdAt: Date
+    startedAt: Date | null
+    completedAt: Date | null
     assignedToId: string | null
     notes: string | null
     bookingId: string | null
@@ -8315,6 +8329,8 @@ export namespace Prisma {
     date?: boolean
     status?: boolean
     createdAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     assignedToId?: boolean
     notes?: boolean
     bookingId?: boolean
@@ -8334,6 +8350,8 @@ export namespace Prisma {
     date?: boolean
     status?: boolean
     createdAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     assignedToId?: boolean
     notes?: boolean
     bookingId?: boolean
@@ -8349,6 +8367,8 @@ export namespace Prisma {
     date?: boolean
     status?: boolean
     createdAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     assignedToId?: boolean
     notes?: boolean
     bookingId?: boolean
@@ -8364,13 +8384,15 @@ export namespace Prisma {
     date?: boolean
     status?: boolean
     createdAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
     assignedToId?: boolean
     notes?: boolean
     bookingId?: boolean
     checklistProgress?: boolean
   }
 
-  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress", ExtArgs["result"]["cleaningTask"]>
+  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress", ExtArgs["result"]["cleaningTask"]>
   export type CleaningTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -8407,6 +8429,8 @@ export namespace Prisma {
       date: Date
       status: string
       createdAt: Date
+      startedAt: Date | null
+      completedAt: Date | null
       assignedToId: string | null
       notes: string | null
       bookingId: string | null
@@ -8845,6 +8869,8 @@ export namespace Prisma {
     readonly date: FieldRef<"CleaningTask", 'DateTime'>
     readonly status: FieldRef<"CleaningTask", 'String'>
     readonly createdAt: FieldRef<"CleaningTask", 'DateTime'>
+    readonly startedAt: FieldRef<"CleaningTask", 'DateTime'>
+    readonly completedAt: FieldRef<"CleaningTask", 'DateTime'>
     readonly assignedToId: FieldRef<"CleaningTask", 'String'>
     readonly notes: FieldRef<"CleaningTask", 'String'>
     readonly bookingId: FieldRef<"CleaningTask", 'String'>
@@ -11826,8 +11852,18 @@ export namespace Prisma {
 
   export type AggregateAttachment = {
     _count: AttachmentCountAggregateOutputType | null
+    _avg: AttachmentAvgAggregateOutputType | null
+    _sum: AttachmentSumAggregateOutputType | null
     _min: AttachmentMinAggregateOutputType | null
     _max: AttachmentMaxAggregateOutputType | null
+  }
+
+  export type AttachmentAvgAggregateOutputType = {
+    size: number | null
+  }
+
+  export type AttachmentSumAggregateOutputType = {
+    size: number | null
   }
 
   export type AttachmentMinAggregateOutputType = {
@@ -11835,6 +11871,9 @@ export namespace Prisma {
     url: string | null
     fileName: string | null
     fileType: string | null
+    size: number | null
+    category: string | null
+    extractedText: string | null
     createdAt: Date | null
     maintenanceTicketId: string | null
     cleaningTaskId: string | null
@@ -11845,6 +11884,9 @@ export namespace Prisma {
     url: string | null
     fileName: string | null
     fileType: string | null
+    size: number | null
+    category: string | null
+    extractedText: string | null
     createdAt: Date | null
     maintenanceTicketId: string | null
     cleaningTaskId: string | null
@@ -11855,6 +11897,9 @@ export namespace Prisma {
     url: number
     fileName: number
     fileType: number
+    size: number
+    category: number
+    extractedText: number
     createdAt: number
     maintenanceTicketId: number
     cleaningTaskId: number
@@ -11862,11 +11907,22 @@ export namespace Prisma {
   }
 
 
+  export type AttachmentAvgAggregateInputType = {
+    size?: true
+  }
+
+  export type AttachmentSumAggregateInputType = {
+    size?: true
+  }
+
   export type AttachmentMinAggregateInputType = {
     id?: true
     url?: true
     fileName?: true
     fileType?: true
+    size?: true
+    category?: true
+    extractedText?: true
     createdAt?: true
     maintenanceTicketId?: true
     cleaningTaskId?: true
@@ -11877,6 +11933,9 @@ export namespace Prisma {
     url?: true
     fileName?: true
     fileType?: true
+    size?: true
+    category?: true
+    extractedText?: true
     createdAt?: true
     maintenanceTicketId?: true
     cleaningTaskId?: true
@@ -11887,6 +11946,9 @@ export namespace Prisma {
     url?: true
     fileName?: true
     fileType?: true
+    size?: true
+    category?: true
+    extractedText?: true
     createdAt?: true
     maintenanceTicketId?: true
     cleaningTaskId?: true
@@ -11931,6 +11993,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: AttachmentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AttachmentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AttachmentMinAggregateInputType
@@ -11961,6 +12035,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: AttachmentCountAggregateInputType | true
+    _avg?: AttachmentAvgAggregateInputType
+    _sum?: AttachmentSumAggregateInputType
     _min?: AttachmentMinAggregateInputType
     _max?: AttachmentMaxAggregateInputType
   }
@@ -11970,10 +12046,15 @@ export namespace Prisma {
     url: string
     fileName: string
     fileType: string | null
+    size: number | null
+    category: string
+    extractedText: string | null
     createdAt: Date
     maintenanceTicketId: string | null
     cleaningTaskId: string | null
     _count: AttachmentCountAggregateOutputType | null
+    _avg: AttachmentAvgAggregateOutputType | null
+    _sum: AttachmentSumAggregateOutputType | null
     _min: AttachmentMinAggregateOutputType | null
     _max: AttachmentMaxAggregateOutputType | null
   }
@@ -11997,6 +12078,9 @@ export namespace Prisma {
     url?: boolean
     fileName?: boolean
     fileType?: boolean
+    size?: boolean
+    category?: boolean
+    extractedText?: boolean
     createdAt?: boolean
     maintenanceTicketId?: boolean
     cleaningTaskId?: boolean
@@ -12012,6 +12096,9 @@ export namespace Prisma {
     url?: boolean
     fileName?: boolean
     fileType?: boolean
+    size?: boolean
+    category?: boolean
+    extractedText?: boolean
     createdAt?: boolean
     maintenanceTicketId?: boolean
     cleaningTaskId?: boolean
@@ -12024,6 +12111,9 @@ export namespace Prisma {
     url?: boolean
     fileName?: boolean
     fileType?: boolean
+    size?: boolean
+    category?: boolean
+    extractedText?: boolean
     createdAt?: boolean
     maintenanceTicketId?: boolean
     cleaningTaskId?: boolean
@@ -12036,12 +12126,15 @@ export namespace Prisma {
     url?: boolean
     fileName?: boolean
     fileType?: boolean
+    size?: boolean
+    category?: boolean
+    extractedText?: boolean
     createdAt?: boolean
     maintenanceTicketId?: boolean
     cleaningTaskId?: boolean
   }
 
-  export type AttachmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "url" | "fileName" | "fileType" | "createdAt" | "maintenanceTicketId" | "cleaningTaskId", ExtArgs["result"]["attachment"]>
+  export type AttachmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "url" | "fileName" | "fileType" | "size" | "category" | "extractedText" | "createdAt" | "maintenanceTicketId" | "cleaningTaskId", ExtArgs["result"]["attachment"]>
   export type AttachmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     maintenanceTicket?: boolean | Attachment$maintenanceTicketArgs<ExtArgs>
     cleaningTask?: boolean | Attachment$cleaningTaskArgs<ExtArgs>
@@ -12071,6 +12164,9 @@ export namespace Prisma {
       url: string
       fileName: string
       fileType: string | null
+      size: number | null
+      category: string
+      extractedText: string | null
       createdAt: Date
       maintenanceTicketId: string | null
       cleaningTaskId: string | null
@@ -12505,6 +12601,9 @@ export namespace Prisma {
     readonly url: FieldRef<"Attachment", 'String'>
     readonly fileName: FieldRef<"Attachment", 'String'>
     readonly fileType: FieldRef<"Attachment", 'String'>
+    readonly size: FieldRef<"Attachment", 'Int'>
+    readonly category: FieldRef<"Attachment", 'String'>
+    readonly extractedText: FieldRef<"Attachment", 'String'>
     readonly createdAt: FieldRef<"Attachment", 'DateTime'>
     readonly maintenanceTicketId: FieldRef<"Attachment", 'String'>
     readonly cleaningTaskId: FieldRef<"Attachment", 'String'>
@@ -16542,6 +16641,8 @@ export namespace Prisma {
     date: 'date',
     status: 'status',
     createdAt: 'createdAt',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
     assignedToId: 'assignedToId',
     notes: 'notes',
     bookingId: 'bookingId',
@@ -16588,6 +16689,9 @@ export namespace Prisma {
     url: 'url',
     fileName: 'fileName',
     fileType: 'fileType',
+    size: 'size',
+    category: 'category',
+    extractedText: 'extractedText',
     createdAt: 'createdAt',
     maintenanceTicketId: 'maintenanceTicketId',
     cleaningTaskId: 'cleaningTaskId'
@@ -17214,6 +17318,8 @@ export namespace Prisma {
     date?: DateTimeFilter<"CleaningTask"> | Date | string
     status?: StringFilter<"CleaningTask"> | string
     createdAt?: DateTimeFilter<"CleaningTask"> | Date | string
+    startedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     assignedToId?: StringNullableFilter<"CleaningTask"> | string | null
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableFilter<"CleaningTask"> | string | null
@@ -17232,6 +17338,8 @@ export namespace Prisma {
     date?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
     assignedToId?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     bookingId?: SortOrderInput | SortOrder
@@ -17254,6 +17362,8 @@ export namespace Prisma {
     date?: DateTimeFilter<"CleaningTask"> | Date | string
     status?: StringFilter<"CleaningTask"> | string
     createdAt?: DateTimeFilter<"CleaningTask"> | Date | string
+    startedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     assignedToId?: StringNullableFilter<"CleaningTask"> | string | null
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CleaningTask">
@@ -17271,6 +17381,8 @@ export namespace Prisma {
     date?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
     assignedToId?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     bookingId?: SortOrderInput | SortOrder
@@ -17289,6 +17401,8 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"CleaningTask"> | Date | string
     status?: StringWithAggregatesFilter<"CleaningTask"> | string
     createdAt?: DateTimeWithAggregatesFilter<"CleaningTask"> | Date | string
+    startedAt?: DateTimeNullableWithAggregatesFilter<"CleaningTask"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"CleaningTask"> | Date | string | null
     assignedToId?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
     notes?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
@@ -17481,6 +17595,9 @@ export namespace Prisma {
     url?: StringFilter<"Attachment"> | string
     fileName?: StringFilter<"Attachment"> | string
     fileType?: StringNullableFilter<"Attachment"> | string | null
+    size?: IntNullableFilter<"Attachment"> | number | null
+    category?: StringFilter<"Attachment"> | string
+    extractedText?: StringNullableFilter<"Attachment"> | string | null
     createdAt?: DateTimeFilter<"Attachment"> | Date | string
     maintenanceTicketId?: StringNullableFilter<"Attachment"> | string | null
     cleaningTaskId?: StringNullableFilter<"Attachment"> | string | null
@@ -17495,6 +17612,9 @@ export namespace Prisma {
     url?: SortOrder
     fileName?: SortOrder
     fileType?: SortOrderInput | SortOrder
+    size?: SortOrderInput | SortOrder
+    category?: SortOrder
+    extractedText?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrderInput | SortOrder
     cleaningTaskId?: SortOrderInput | SortOrder
@@ -17512,6 +17632,9 @@ export namespace Prisma {
     url?: StringFilter<"Attachment"> | string
     fileName?: StringFilter<"Attachment"> | string
     fileType?: StringNullableFilter<"Attachment"> | string | null
+    size?: IntNullableFilter<"Attachment"> | number | null
+    category?: StringFilter<"Attachment"> | string
+    extractedText?: StringNullableFilter<"Attachment"> | string | null
     createdAt?: DateTimeFilter<"Attachment"> | Date | string
     maintenanceTicketId?: StringNullableFilter<"Attachment"> | string | null
     cleaningTaskId?: StringNullableFilter<"Attachment"> | string | null
@@ -17526,12 +17649,17 @@ export namespace Prisma {
     url?: SortOrder
     fileName?: SortOrder
     fileType?: SortOrderInput | SortOrder
+    size?: SortOrderInput | SortOrder
+    category?: SortOrder
+    extractedText?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrderInput | SortOrder
     cleaningTaskId?: SortOrderInput | SortOrder
     _count?: AttachmentCountOrderByAggregateInput
+    _avg?: AttachmentAvgOrderByAggregateInput
     _max?: AttachmentMaxOrderByAggregateInput
     _min?: AttachmentMinOrderByAggregateInput
+    _sum?: AttachmentSumOrderByAggregateInput
   }
 
   export type AttachmentScalarWhereWithAggregatesInput = {
@@ -17542,6 +17670,9 @@ export namespace Prisma {
     url?: StringWithAggregatesFilter<"Attachment"> | string
     fileName?: StringWithAggregatesFilter<"Attachment"> | string
     fileType?: StringNullableWithAggregatesFilter<"Attachment"> | string | null
+    size?: IntNullableWithAggregatesFilter<"Attachment"> | number | null
+    category?: StringWithAggregatesFilter<"Attachment"> | string
+    extractedText?: StringNullableWithAggregatesFilter<"Attachment"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Attachment"> | Date | string
     maintenanceTicketId?: StringNullableWithAggregatesFilter<"Attachment"> | string | null
     cleaningTaskId?: StringNullableWithAggregatesFilter<"Attachment"> | string | null
@@ -18249,6 +18380,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
@@ -18265,6 +18398,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -18279,6 +18414,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
@@ -18295,6 +18432,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18310,6 +18449,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -18321,6 +18462,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -18331,6 +18474,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18531,6 +18676,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
@@ -18543,6 +18691,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     cleaningTaskId?: string | null
@@ -18555,6 +18706,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
@@ -18567,6 +18721,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18579,6 +18736,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     cleaningTaskId?: string | null
@@ -18589,6 +18749,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -18597,6 +18760,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19439,6 +19605,8 @@ export namespace Prisma {
     date?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     assignedToId?: SortOrder
     notes?: SortOrder
     bookingId?: SortOrder
@@ -19451,6 +19619,8 @@ export namespace Prisma {
     date?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     assignedToId?: SortOrder
     notes?: SortOrder
     bookingId?: SortOrder
@@ -19462,6 +19632,8 @@ export namespace Prisma {
     date?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
     assignedToId?: SortOrder
     notes?: SortOrder
     bookingId?: SortOrder
@@ -19577,14 +19749,32 @@ export namespace Prisma {
     _max?: NestedEnumAIAssistantMessageRoleFilter<$PrismaModel>
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type AttachmentCountOrderByAggregateInput = {
     id?: SortOrder
     url?: SortOrder
     fileName?: SortOrder
     fileType?: SortOrder
+    size?: SortOrder
+    category?: SortOrder
+    extractedText?: SortOrder
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrder
     cleaningTaskId?: SortOrder
+  }
+
+  export type AttachmentAvgOrderByAggregateInput = {
+    size?: SortOrder
   }
 
   export type AttachmentMaxOrderByAggregateInput = {
@@ -19592,6 +19782,9 @@ export namespace Prisma {
     url?: SortOrder
     fileName?: SortOrder
     fileType?: SortOrder
+    size?: SortOrder
+    category?: SortOrder
+    extractedText?: SortOrder
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrder
     cleaningTaskId?: SortOrder
@@ -19602,12 +19795,19 @@ export namespace Prisma {
     url?: SortOrder
     fileName?: SortOrder
     fileType?: SortOrder
+    size?: SortOrder
+    category?: SortOrder
+    extractedText?: SortOrder
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrder
     cleaningTaskId?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
+  export type AttachmentSumOrderByAggregateInput = {
+    size?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
     notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -19615,7 +19815,12 @@ export namespace Prisma {
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type ApartmentAttachmentCountOrderByAggregateInput = {
@@ -19666,22 +19871,6 @@ export namespace Prisma {
 
   export type ApartmentAttachmentSumOrderByAggregateInput = {
     size?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type MaintenanceTicketScalarRelationFilter = {
@@ -20679,6 +20868,14 @@ export namespace Prisma {
     connect?: CleaningTaskMessageWhereUniqueInput | CleaningTaskMessageWhereUniqueInput[]
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput = {
     create?: XOR<MaintenanceTicketCreateWithoutAttachmentsInput, MaintenanceTicketUncheckedCreateWithoutAttachmentsInput>
     connectOrCreate?: MaintenanceTicketCreateOrConnectWithoutAttachmentsInput
@@ -20759,14 +20956,6 @@ export namespace Prisma {
     create?: XOR<ApartmentCreateWithoutApartmentAttachmentsInput, ApartmentUncheckedCreateWithoutApartmentAttachmentsInput>
     connectOrCreate?: ApartmentCreateOrConnectWithoutApartmentAttachmentsInput
     connect?: ApartmentWhereUniqueInput
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type ApartmentUpdateOneRequiredWithoutApartmentAttachmentsNestedInput = {
@@ -21116,6 +21305,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
@@ -21131,6 +21322,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -21218,6 +21411,8 @@ export namespace Prisma {
     date?: DateTimeFilter<"CleaningTask"> | Date | string
     status?: StringFilter<"CleaningTask"> | string
     createdAt?: DateTimeFilter<"CleaningTask"> | Date | string
+    startedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     assignedToId?: StringNullableFilter<"CleaningTask"> | string | null
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableFilter<"CleaningTask"> | string | null
@@ -21329,6 +21524,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
@@ -21343,6 +21540,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -21968,6 +22167,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
@@ -21983,6 +22184,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -22071,6 +22274,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
@@ -22086,6 +22291,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -22238,6 +22445,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
     messages?: MessageCreateNestedManyWithoutAttachmentInput
@@ -22249,6 +22459,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     messages?: MessageUncheckedCreateNestedManyWithoutAttachmentInput
@@ -22476,6 +22689,9 @@ export namespace Prisma {
     url?: StringFilter<"Attachment"> | string
     fileName?: StringFilter<"Attachment"> | string
     fileType?: StringNullableFilter<"Attachment"> | string | null
+    size?: IntNullableFilter<"Attachment"> | number | null
+    category?: StringFilter<"Attachment"> | string
+    extractedText?: StringNullableFilter<"Attachment"> | string | null
     createdAt?: DateTimeFilter<"Attachment"> | Date | string
     maintenanceTicketId?: StringNullableFilter<"Attachment"> | string | null
     cleaningTaskId?: StringNullableFilter<"Attachment"> | string | null
@@ -22580,6 +22796,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
     messages?: MessageCreateNestedManyWithoutAttachmentInput
@@ -22591,6 +22810,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     cleaningTaskId?: string | null
     messages?: MessageUncheckedCreateNestedManyWithoutAttachmentInput
@@ -22877,6 +23099,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
@@ -22892,6 +23116,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -23019,6 +23245,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
@@ -23034,6 +23262,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23131,6 +23361,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
@@ -23146,6 +23378,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -23280,6 +23514,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
@@ -23295,6 +23531,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23491,6 +23729,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
@@ -23502,6 +23743,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     cleaningTaskId?: string | null
@@ -23574,6 +23818,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
@@ -23585,6 +23832,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23596,6 +23846,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
@@ -23611,6 +23863,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -23629,6 +23883,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
@@ -23640,6 +23897,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     cleaningTaskId?: string | null
@@ -23667,6 +23927,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
@@ -23682,6 +23944,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23706,6 +23970,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
@@ -23717,6 +23984,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23729,6 +23999,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -23753,6 +24025,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
@@ -23768,6 +24042,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -23782,6 +24058,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -23862,6 +24140,8 @@ export namespace Prisma {
     date: Date | string
     status: string
     createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -23987,6 +24267,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
@@ -24001,6 +24283,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24015,6 +24299,8 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24180,6 +24466,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicketId?: string | null
   }
@@ -24229,6 +24518,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
     messages?: MessageUpdateManyWithoutAttachmentNestedInput
@@ -24240,6 +24532,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
@@ -24251,6 +24546,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -24290,6 +24588,9 @@ export namespace Prisma {
     url: string
     fileName?: string
     fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
     createdAt?: Date | string
     cleaningTaskId?: string | null
   }
@@ -24319,6 +24620,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
     messages?: MessageUpdateManyWithoutAttachmentNestedInput
@@ -24330,6 +24634,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
@@ -24341,6 +24648,9 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
   }

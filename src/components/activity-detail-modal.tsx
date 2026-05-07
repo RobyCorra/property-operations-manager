@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getActivityDetails } from "@/src/app/actions/activity";
 import { createCleaningTaskMessage, createTicketMessage } from "@/src/app/actions/operational";
 import TicketConversation from "./ticket-conversation";
-import SafeDate from "./safe-date";
+import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 interface Props {
   id: string;
@@ -55,7 +55,7 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
               </h2>
             </div>
             <p className="text-sm text-gray-400 font-medium tracking-tight">
-               Intervento presso {data?.apartment.address} &middot; <SafeDate date={type === 'CLEANING' ? data?.date : data?.scheduledStart || data?.createdAt} format={{ day: 'numeric', month: 'long', year: 'numeric' }} />
+               Intervento presso {data?.apartment.address} &middot; {type === "CLEANING" ? formatRomeDateTimeDisplay(data?.date) : formatRomeDateTimeDisplay(data?.scheduledStart || data?.createdAt)}
             </p>
           </div>
           <button 
@@ -94,6 +94,50 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
                     </div>
                   )}
                 </div>
+
+                {type === "CLEANING" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Orario pianificato</p>
+                      <p className="text-sm font-bold text-gray-700">{formatRomeDateTimeDisplay(data.date)}</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Inizio intervento reale</p>
+                      <p className="text-sm font-bold text-gray-700">
+                        {data.startedAt ? formatRomeDateTimeDisplay(data.startedAt) : "Non avviato"}
+                      </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Fine intervento reale</p>
+                      <p className="text-sm font-bold text-gray-700">
+                        {data.completedAt ? formatRomeDateTimeDisplay(data.completedAt) : "Non completato"}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {type === "MAINTENANCE" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Orario pianificato</p>
+                      <p className="text-sm font-bold text-gray-700">
+                        {data.scheduledStart ? formatRomeDateTimeDisplay(data.scheduledStart) : "Non pianificato"}
+                      </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Inizio intervento reale</p>
+                      <p className="text-sm font-bold text-gray-700">
+                        {data.startedAt ? formatRomeDateTimeDisplay(data.startedAt) : "Non avviato"}
+                      </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Fine intervento reale</p>
+                      <p className="text-sm font-bold text-gray-700">
+                        {data.resolvedAt ? formatRomeDateTimeDisplay(data.resolvedAt) : "Non completato"}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Notes/Description */}
                 {(data.notes || data.description) && (

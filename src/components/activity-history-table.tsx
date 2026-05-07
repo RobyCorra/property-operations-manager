@@ -2,8 +2,8 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { Activity, getTeamActivityHistory } from "@/src/app/actions/activity";
-import SafeDate from "./safe-date";
 import ActivityDetailModal from "./activity-detail-modal";
+import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 interface Props {
   initialActivities: Activity[];
@@ -222,7 +222,7 @@ export default function ActivityHistoryTable({
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                       <SafeDate date={activity.date} format={{ day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }} className="text-xs font-bold text-gray-600" />
+                       <span className="text-xs font-bold text-gray-600">{formatRomeDateTimeDisplay(activity.date)}</span>
                     </td>
                     <td className="px-8 py-6 text-right">
                       <button 

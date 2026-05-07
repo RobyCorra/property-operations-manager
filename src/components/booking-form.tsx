@@ -2,8 +2,7 @@
 
 import { useActionState, useState, useEffect } from "react";
 import Link from "next/link";
-import { createBooking, updateBooking, getApartmentBookings } from "@/src/app/actions/booking";
-import AvailabilityPicker from "./availability-picker";
+import { createBooking, updateBooking } from "@/src/app/actions/booking";
 
 interface ApartmentOption {
   id: string;
@@ -25,6 +24,33 @@ interface BookingFormProps {
   serverDate: string;
 }
 
+const formatDateToISO = (date: Date | null) => {
+  if (!date) return "";
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const formatInputDateLabel = (value: string) => {
+  if (!value) return "";
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return new Intl.DateTimeFormat("it-IT", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+};
+
+const addDaysToInputDate = (value: string, days: number) => {
+  if (!value) return "";
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + days);
+  return formatDateToISO(date);
+};
+
 export default function BookingForm({ apartments, initialData, serverDate }: BookingFormProps) {
   const isEditing = !!initialData;
   const action = isEditing 
@@ -34,58 +60,22 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
   const [state, formAction, isPending] = useActionState(action, null);
   
   const [apartmentId, setApartmentId] = useState(initialData?.apartmentId || "");
-  const [occupiedRanges, setOccupiedRanges] = useState<any[]>([]);
-  const [selectedRange, setSelectedRange] = useState<{ from: Date | null; to: Date | null }>({ 
-    from: initialData?.checkInDate || null, 
-    to: initialData?.checkOutDate || null 
-  });
-  const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
+  const [checkInDate, setCheckInDate] = useState(() => formatDateToISO(initialData?.checkInDate ?? null));
+  const [checkOutDate, setCheckOutDate] = useState(() => formatDateToISO(initialData?.checkOutDate ?? null));
 
   useEffect(() => {
-    async function loadAvailability() {
-      if (!apartmentId) {
-        setOccupiedRanges([]);
-        return;
-      }
-
-      setIsLoadingAvailability(true);
-      try {
-        const bookings = await getApartmentBookings(apartmentId);
-        // If editing, filter out the current booking from occupied ranges to allow moving it within the same window
-        const filteredBookings = isEditing && apartmentId === initialData?.apartmentId
-          ? bookings.filter((b: any) => {
-              const bIn = new Date(b.checkInDate).getTime();
-              const bOut = new Date(b.checkOutDate).getTime();
-              const iIn = new Date(initialData.checkInDate).getTime();
-              const iOut = new Date(initialData.checkOutDate).getTime();
-              return !(bIn === iIn && bOut === iOut);
-            })
-          : bookings;
-        
-        setOccupiedRanges(filteredBookings);
-      } catch (error) {
-        console.error("Failed to fetch availability:", error);
-      } finally {
-        setIsLoadingAvailability(false);
-      }
+    if (apartmentId !== initialData?.apartmentId) {
+      setCheckInDate("");
+      setCheckOutDate("");
     }
+  }, [apartmentId, initialData?.apartmentId]);
 
-    loadAvailability();
-    // Only reset range if apartment changed and it's not the initial load of the edit form
-    if (!isEditing || apartmentId !== initialData?.apartmentId) {
-      if (apartmentId !== initialData?.apartmentId) {
-        setSelectedRange({ from: null, to: null });
-      }
-    }
-  }, [apartmentId]);
-
-  const formatToISODate = (date: Date | null) => {
-    if (!date) return "";
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
+  const checkInMin = !isEditing ? formatDateToISO(new Date(serverDate)) : "";
+  const checkOutMin = checkInDate ? addDaysToInputDate(checkInDate, 1) : "";
+  const rangeSummary = checkInDate && checkOutDate
+    ? `Dal giorno ${formatInputDateLabel(checkInDate)} al giorno ${formatInputDateLabel(checkOutDate)}`
+    : "Seleziona check-in e check-out";
+  const isDateRangeInvalid = !!(checkInDate && checkOutDate && checkOutDate <= checkInDate);
 
   return (
     <section className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden p-6 md:p-8">
@@ -150,32 +140,66 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
 
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Periodo di Soggiorno * 
-                {isLoadingAvailability && <span className="ml-2 text-[10px] text-gray-400 animate-pulse">Caricamento disponibilità...</span>}
+                Periodo di Soggiorno *
               </label>
-              
-              <AvailabilityPicker 
-                occupiedRanges={occupiedRanges}
-                onRangeSelect={setSelectedRange}
-                initialRange={isEditing && apartmentId === initialData?.apartmentId ? { from: initialData.checkInDate, to: initialData.checkOutDate } : undefined}
-                serverDate={serverDate}
-              />
 
-              {/* Hidden inputs to preserve form data for the server action */}
-              <input 
-                type="hidden" 
-                name="checkInDate" 
-                value={formatToISODate(selectedRange.from)} 
-              />
-              <input 
-                type="hidden" 
-                name="checkOutDate" 
-                value={formatToISODate(selectedRange.to)} 
-              />
+              <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Check-in *
+                    </label>
+                    <input
+                      required
+                      type="date"
+                      id="checkInDate"
+                      name="checkInDate"
+                      value={checkInDate}
+                      min={checkInMin || undefined}
+                      onChange={(e) => {
+                        const nextValue = e.target.value;
+                        setCheckInDate(nextValue);
+                        if (checkOutDate && nextValue && checkOutDate <= nextValue) {
+                          setCheckOutDate("");
+                        }
+                      }}
+                      className="w-full rounded-xl border-gray-200 border px-4 py-3 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all bg-white"
+                    />
+                  </div>
 
-              {!apartmentId && (
-                <p className="text-[10px] text-gray-400">Seleziona un appartamento per vedere la disponibilità live</p>
-              )}
+                  <div>
+                    <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Check-out *
+                    </label>
+                    <input
+                      required
+                      type="date"
+                      id="checkOutDate"
+                      name="checkOutDate"
+                      value={checkOutDate}
+                      min={checkOutMin || undefined}
+                      onChange={(e) => setCheckOutDate(e.target.value)}
+                      className="w-full rounded-xl border-gray-200 border px-4 py-3 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-xl bg-white border border-gray-100 px-4 py-3 text-sm text-gray-600">
+                  <span className="font-medium text-gray-900">Riepilogo:</span> {rangeSummary}
+                </div>
+
+                {isDateRangeInvalid && (
+                  <p className="text-sm text-amber-700">
+                    Il check-out deve essere successivo al check-in.
+                  </p>
+                )}
+
+                {!apartmentId && (
+                  <p className="text-[10px] text-gray-400">
+                    Seleziona un appartamento per completare la prenotazione
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -186,7 +210,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
           </Link>
           <button 
             type="submit" 
-            disabled={isPending || !selectedRange.from || !selectedRange.to}
+            disabled={isPending || !apartmentId || !checkInDate || !checkOutDate || isDateRangeInvalid}
             className="rounded-full bg-black px-10 py-3 text-sm font-medium text-white shadow-md transition-all hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
             {isPending ? "Salvataggio..." : isEditing ? "Aggiorna Prenotazione" : "Crea Prenotazione"}
