@@ -50,6 +50,9 @@ type OperationalAttachmentForAI = {
   fileName: string;
   fileType: string | null;
   url: string;
+  size?: number | null;
+  category?: string | null;
+  extractedText?: string | null;
   createdAt: Date;
 };
 
@@ -474,6 +477,10 @@ function stringField(value: unknown) {
 function formatInternalFileUrl(url: string | null | undefined) {
   if (!url) return "n/d";
 
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
   const uploadsIndex = url.indexOf("/uploads/");
 
   if (uploadsIndex >= 0) {
@@ -666,6 +673,9 @@ function formatOperationalAttachmentLines(
     fileName: string;
     fileType: string | null;
     url: string;
+    size?: number | null;
+    category?: string | null;
+    extractedText?: string | null;
     createdAt: Date;
   }[]
 ) {
@@ -673,10 +683,17 @@ function formatOperationalAttachmentLines(
     return "nessun allegato";
   }
 
+  let extractedTextBudget = 8000;
+
   return attachments
     .map((attachment) => {
       const linkApribile = formatInternalFileUrl(attachment.url);
-      return `${attachment.fileName} | Documento interno caricato nella scheda appartamento | tipo: ${attachment.fileType || "n/d"} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | data: ${formatDate(attachment.createdAt)}`;
+      const text = attachment.extractedText && extractedTextBudget > 0
+        ? truncateText(attachment.extractedText, Math.min(2000, extractedTextBudget))
+        : "";
+      extractedTextBudget -= text.length;
+
+      return `${attachment.fileName} | tipo: ${attachment.fileType || "n/d"} | categoria: ${attachment.category || "n/d"} | dimensione: ${attachment.size ?? "n/d"} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | data: ${formatDate(attachment.createdAt)} | testo estratto: ${text || "Allegato presente, testo non estratto o non leggibile direttamente."}`;
     })
     .join(" || ");
 }
@@ -737,11 +754,22 @@ function formatApartmentDocumentLines(
   return attachments
     .map((attachment) => {
       const linkApribile = formatInternalFileUrl(attachment.url);
-      const extractedText = attachment.extractedText
-        ? truncateText(attachment.extractedText, 900)
+      const hasExtractedText = Boolean(attachment.extractedText?.trim());
+      const extractedText = hasExtractedText
+        ? truncateText(attachment.extractedText, 2000)
         : "Allegato presente, testo non estratto o non leggibile direttamente.";
 
-      return `- ${attachment.filename} | tipo: ${attachment.mimeType || "n/d"} | categoria: ${attachment.category} | dimensione: ${attachment.size ?? "n/d"} | data: ${formatDate(attachment.createdAt)} | descrizione/note: ${truncateText(attachment.notes, 220) || "n/d"} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | testo estratto: ${extractedText}`;
+      return [
+        `- filename: ${attachment.filename}`,
+        `category: ${attachment.category}`,
+        `notes: ${truncateText(attachment.notes, 220) || "n/d"}`,
+        `mimeType: ${attachment.mimeType || "n/d"}`,
+        `createdAt: ${formatDateTime(attachment.createdAt)}`,
+        `extractedText disponibile: ${hasExtractedText ? "si" : "no"}`,
+        `linkApribile: ${linkApribile}`,
+        `markdownLink: ${formatInternalMarkdownLink(linkApribile)}`,
+        `extractedText: ${extractedText}`,
+      ].join(" | ");
     })
     .join("\n");
 }
@@ -751,6 +779,9 @@ function formatOperationalDocuments(
     fileName: string;
     fileType: string | null;
     url: string;
+    size?: number | null;
+    category?: string | null;
+    extractedText?: string | null;
     createdAt: Date;
   }[]
 ) {
@@ -758,10 +789,17 @@ function formatOperationalDocuments(
     return "nessun allegato";
   }
 
+  let extractedTextBudget = 8000;
+
   return attachments
     .map((attachment) => {
       const linkApribile = formatInternalFileUrl(attachment.url);
-      return `${attachment.fileName} | tipo: ${attachment.fileType || "n/d"} | data: ${formatDate(attachment.createdAt)} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | testo estratto: Allegato presente, testo non estratto o non leggibile direttamente`;
+      const text = attachment.extractedText && extractedTextBudget > 0
+        ? truncateText(attachment.extractedText, Math.min(2000, extractedTextBudget))
+        : "";
+      extractedTextBudget -= text.length;
+
+      return `${attachment.fileName} | tipo: ${attachment.fileType || "n/d"} | categoria: ${attachment.category || "n/d"} | dimensione: ${attachment.size ?? "n/d"} | data: ${formatDate(attachment.createdAt)} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | testo estratto: ${text || "Allegato presente, testo non estratto o non leggibile direttamente"}`;
     })
     .join(" || ");
 }
@@ -1023,7 +1061,17 @@ export async function buildApartmentAIContext(apartmentId: string) {
     include: {
       apartmentAttachments: {
         orderBy: { createdAt: "desc" },
-        take: 30,
+        take: 20,
+        select: {
+          filename: true,
+          url: true,
+          category: true,
+          notes: true,
+          extractedText: true,
+          mimeType: true,
+          size: true,
+          createdAt: true,
+        },
       },
       checklistItems: {
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
@@ -1047,13 +1095,13 @@ export async function buildApartmentAIContext(apartmentId: string) {
               role: true,
               senderName: true,
               text: true,
-              attachment: { select: { fileName: true, fileType: true, url: true, createdAt: true } },
+              attachment: { select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true } },
             },
           },
           attachments: {
             orderBy: { createdAt: "desc" },
             take: 20,
-            select: { fileName: true, fileType: true, url: true, createdAt: true },
+            select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true },
           },
           aiAssistantMessages: {
             orderBy: { createdAt: "desc" },
@@ -1075,13 +1123,13 @@ export async function buildApartmentAIContext(apartmentId: string) {
               role: true,
               senderName: true,
               text: true,
-              attachment: { select: { fileName: true, fileType: true, url: true, createdAt: true } },
+              attachment: { select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true } },
             },
           },
           attachments: {
             orderBy: { createdAt: "desc" },
             take: 20,
-            select: { fileName: true, fileType: true, url: true, createdAt: true },
+            select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true },
           },
           aiAssistantMessages: {
             orderBy: { createdAt: "desc" },
@@ -1206,6 +1254,13 @@ export async function buildApartmentAIContext(apartmentId: string) {
   console.log("[DEBUG AI CONTEXT] numero domotica trovata:", technicalSmartHome.length);
   console.log("[DEBUG AI CONTEXT] nomi domotica:", technicalSmartHome.map((item, index) => technicalItemName(item, `Elemento ${index + 1}`)));
   console.log("[DEBUG AI CONTEXT] numero allegati totali trovati:", totalAttachmentCount);
+  console.log("[DEBUG AI CONTEXT] apartment attachments caricati:", apartment.apartmentAttachments.length);
+  console.log("[DEBUG AI CONTEXT] apartment attachment filenames:", apartment.apartmentAttachments.map((attachment: ApartmentAttachmentForAI) => attachment.filename));
+  console.log("[DEBUG AI CONTEXT] apartment attachment extraction:", apartment.apartmentAttachments.map((attachment: ApartmentAttachmentForAI) => ({
+    filename: attachment.filename,
+    hasExtractedText: Boolean(attachment.extractedText?.trim()),
+    extractedTextLength: attachment.extractedText?.length ?? 0,
+  })));
 
   const contextText = `
 DATI COMPLETI APPARTAMENTO
@@ -1214,8 +1269,8 @@ ${apartmentBaseText}
 
 ${formatCompleteTechnicalProfileForAI(apartment.technicalProfile)}
 
-DOCUMENTI E ALLEGATI
-${limitSection(formatApartmentDocumentLines(apartment.apartmentAttachments), 4500)}
+ALLEGATI APPARTAMENTO:
+${limitSection(formatApartmentDocumentLines(apartment.apartmentAttachments), 12000)}
 
 CHECKLIST / NOTE OPERATIVE MASTER
 ${checklistLines.length > 0 ? checklistLines.join("\n") : "- Nessuna checklist master registrata."}
@@ -1241,6 +1296,8 @@ ${limitSection(apartment.maintenanceTickets.flatMap((ticket: MaintenanceTicketWi
 STORICO CONVERSAZIONI IA APPARTAMENTO
 ${limitSection(apartment.aiAssistantMessages.map((message: AIAssistantMessageForAI) => `- ${formatDateTime(message.createdAt)} ${message.role} (${message.userRole}): ${truncateText(message.content, 300) || "n/d"}`).join("\n") || "- Nessuna conversazione IA diretta sull'appartamento.", 4000)}
 `.trim();
+
+  console.log("[DEBUG AI CONTEXT] context contiene ALLEGATI APPARTAMENTO:", contextText.includes("ALLEGATI APPARTAMENTO"));
 
   return limitText(contextText, MAX_APARTMENT_AI_CONTEXT_TEXT_LENGTH);
 }
@@ -1296,7 +1353,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
           attachments: {
             orderBy: { createdAt: "desc" },
             take: 10,
-            select: { fileName: true, fileType: true, url: true, createdAt: true },
+            select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true },
           },
         },
       },
@@ -1320,7 +1377,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
           attachments: {
             orderBy: { createdAt: "desc" },
             take: 10,
-            select: { fileName: true, fileType: true, url: true, createdAt: true },
+            select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true },
           },
         },
       },
@@ -1462,7 +1519,7 @@ async function buildGeneralManagerContext(now: Date) {
         attachments: {
           orderBy: { createdAt: "desc" },
           take: 10,
-          select: { fileName: true, fileType: true, url: true, createdAt: true },
+          select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true },
         },
       },
     }),
@@ -1488,7 +1545,7 @@ async function buildGeneralManagerContext(now: Date) {
         attachments: {
           orderBy: { createdAt: "desc" },
           take: 10,
-          select: { fileName: true, fileType: true, url: true, createdAt: true },
+          select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true },
         },
       },
     }),
@@ -1603,6 +1660,13 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
 
   console.log("[DEBUG AI] apartmentId ricevuto:", context.apartmentId || "n/d");
   console.log("[DEBUG AI] apartmentId risolto:", resolvedApartmentId || "n/d");
+  if (!resolvedApartmentId) {
+    console.log("[DEBUG AI] apartmentId assente: la chat non puo caricare allegati specifici appartamento", {
+      contextType: context.type,
+      hasCleaningTaskId: Boolean(context.cleaningTaskId),
+      hasMaintenanceTicketId: Boolean(context.maintenanceTicketId),
+    });
+  }
 
   const isInternalQuery = /appartamento|scheda|impianti|elettrodomestici|domotica|pulizie|manutenzione|booking|ospiti|check-in|check-out/i.test(userMessage);
   const isRealWebSearchQuery = shouldUseWebSearch(userMessage);
@@ -1718,6 +1782,8 @@ Se serve:
 - suggerisci aprire ticket
 - suggerisci segnalare al manager
 `;
+
+  console.log("[AI FINAL CONTEXT CHECK] prompt contiene ALLEGATI APPARTAMENTO:", systemPrompt.includes("ALLEGATI APPARTAMENTO"));
 
   const lastUserMessage = [...messages].reverse().find((message) => message.role === "user");
   if (lastUserMessage) {
