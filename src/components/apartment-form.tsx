@@ -702,15 +702,31 @@ function AttachmentList({
 
 function AccessCodeField({ label, name, value, onChange, mono, secret }: { label: string; name: string; value: string; onChange: (v: string) => void; mono: boolean; secret: boolean }) {
   const [visible, setVisible] = useState(false);
-  const inputClass = `flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black${mono ? " font-mono tracking-wider" : ""}`;
   return (
     <div>
       <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
-      <div className="flex items-center gap-2">
-        <input type={secret && !visible ? "password" : "text"} name={name} value={value} onChange={(e) => onChange(e.target.value)} placeholder="—" className={inputClass} />
+      <div className="relative">
+        <input
+          type={secret && !visible ? "password" : "text"}
+          name={name}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="—"
+          autoComplete="off"
+          className={`w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-black${mono ? " font-mono tracking-wider" : ""}${secret ? " pr-10" : ""}`}
+        />
         {secret && (
-          <button type="button" onClick={() => setVisible((v) => !v)} className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
-            {visible ? "🙈" : "👁"}
+          <button
+            type="button"
+            onClick={() => setVisible((v) => !v)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            title={visible ? "Nascondi" : "Mostra"}
+          >
+            {visible ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            )}
           </button>
         )}
       </div>
