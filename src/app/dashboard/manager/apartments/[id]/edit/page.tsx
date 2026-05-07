@@ -4,6 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { updateApartment } from "@/src/app/actions/apartment";
 import ApartmentForm from "@/src/components/apartment-form";
+import ApartmentAttachmentsPanel from "@/src/components/apartment-attachments-panel";
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 
 interface EditApartmentPageProps {
@@ -50,11 +51,17 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
           </div>
         </div>
 
+        {/* Allegati */}
+        <ApartmentAttachmentsPanel
+          apartmentId={apartment.id}
+          initialAttachments={apartment.apartmentAttachments}
+        />
+
         {/* Form Container */}
-        <ApartmentForm 
-          initialData={apartment} 
-          action={updateApartment} 
-          title="Modifica Appartamento" 
+        <ApartmentForm
+          initialData={apartment}
+          action={updateApartment}
+          title="Modifica Appartamento"
         />
 
       </div>

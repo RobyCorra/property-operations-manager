@@ -521,3 +521,39 @@ export async function deleteApartmentAttachment(formData: FormData) {
   revalidatePath(`/dashboard/manager/apartments/${existingAttachment.apartmentId}/edit`);
   revalidatePath("/dashboard/manager/apartments");
 }
+
+export async function saveApartmentAttachmentFromBlob(formData: FormData) {
+  try {
+    const apartmentId = textValue(formData, "apartmentId");
+    const url = textValue(formData, "url");
+    const filename = textValue(formData, "filename");
+    const mimeType = textValue(formData, "mimeType") || null;
+    const size = optionalIntValue(formData, "size");
+    const category = attachmentCategory(formData);
+    const notes = textValue(formData, "notes") || null;
+
+    if (!apartmentId || !url || !filename) {
+      return { success: false, error: "Dati mancanti." };
+    }
+
+    const attachment = await prisma.apartmentAttachment.create({
+      data: { apartmentId, filename, url, mimeType, size, category, notes },
+      select: { id: true, filename: true, url: true, mimeType: true, size: true, category: true, notes: true, createdAt: true },
+    });
+
+    revalidatePath(`/dashboard/manager/apartments/${apartmentId}/edit`);
+    return { success: true, attachment };
+  } catch (error) {
+    return actionError(error, "Errore durante il salvataggio dell'allegato.");
+  }
+}
+
+export async function deleteApartmentAttachmentById(id: string) {
+  const existing = await prisma.apartmentAttachment.findUnique({
+    where: { id },
+    select: { apartmentId: true },
+  });
+  if (!existing) return;
+  await prisma.apartmentAttachment.delete({ where: { id } });
+  revalidatePath(`/dashboard/manager/apartments/${existing.apartmentId}/edit`);
+}
