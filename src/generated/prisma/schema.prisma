@@ -170,6 +170,7 @@ model ApartmentAttachment {
   mimeType      String?
   size          Int?
   category      String    @default("OTHER")
+  linkedTo      String?
   extractedText String?
   notes         String?
   createdAt     DateTime  @default(now())

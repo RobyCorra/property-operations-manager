@@ -98,7 +98,6 @@ const formSections: { key: FormSectionKey; label: string; icon: string }[] = [
   { key: "main", label: "Dati principali", icon: "🏠" },
   { key: "calendar", label: "Calendario / iCal", icon: "📅" },
   { key: "technical", label: "Scheda tecnica", icon: "🛠" },
-  { key: "attachments", label: "Allegati", icon: "📎" },
   { key: "ai", label: "Note IA", icon: "🤖" },
 ];
 
@@ -545,13 +544,6 @@ function TechnicalItemsSection({
                     <Field label="Problemi ricorrenti" name={`technicalProfile.${prefix}.${itemIndex}.recurringIssues`} value={item.recurringIssues} onChange={(value) => updateItem(itemIndex, "recurringIssues", value)} />
                     <Field label="Note" name={`technicalProfile.${prefix}.${itemIndex}.notes`} value={item.notes} multiline onChange={(value) => updateItem(itemIndex, "notes", value)} className="md:col-span-2" />
                   </div>
-                  <AttachmentList
-                    baseName={`technicalProfile.${prefix}.${itemIndex}.attachments`}
-                    attachments={item.attachments}
-                    onAdd={() => setItems((current) => current.map((currentItem, index) => index === itemIndex ? { ...currentItem, attachments: [...currentItem.attachments, { ...emptyAttachment }] } : currentItem))}
-                    onRemove={(attachmentIndex) => setItems((current) => current.map((currentItem, index) => index === itemIndex ? { ...currentItem, attachments: currentItem.attachments.filter((_, currentAttachmentIndex) => currentAttachmentIndex !== attachmentIndex) } : currentItem))}
-                    onChange={(attachmentIndex, key, value) => updateAttachment(itemIndex, attachmentIndex, key, value)}
-                  />
                   </div>
                 </ItemDetail>
               </ItemCard>
@@ -630,13 +622,6 @@ function RecurringIssuesSection({
                     <Field label="Soluzione" name={`technicalProfile.recurringIssues.${issueIndex}.solution`} value={issue.solution} multiline onChange={(value) => updateIssue(issueIndex, "solution", value)} />
                     <Field label="Note IA" name={`technicalProfile.recurringIssues.${issueIndex}.notesForAI`} value={issue.notesForAI} multiline onChange={(value) => updateIssue(issueIndex, "notesForAI", value)} className="md:col-span-2" />
                   </div>
-                  <AttachmentList
-                    baseName={`technicalProfile.recurringIssues.${issueIndex}.attachments`}
-                    attachments={issue.attachments}
-                    onAdd={() => setIssues((current) => current.map((currentIssue, index) => index === issueIndex ? { ...currentIssue, attachments: [...currentIssue.attachments, { ...emptyAttachment }] } : currentIssue))}
-                    onRemove={(attachmentIndex) => setIssues((current) => current.map((currentIssue, index) => index === issueIndex ? { ...currentIssue, attachments: currentIssue.attachments.filter((_, currentAttachmentIndex) => currentAttachmentIndex !== attachmentIndex) } : currentIssue))}
-                    onChange={(attachmentIndex, key, value) => updateAttachment(issueIndex, attachmentIndex, key, value)}
-                  />
                   </div>
                 </ItemDetail>
               </ItemCard>

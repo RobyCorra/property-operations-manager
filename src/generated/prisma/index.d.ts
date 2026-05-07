@@ -13140,6 +13140,7 @@ export namespace Prisma {
     mimeType: string | null
     size: number | null
     category: string | null
+    linkedTo: string | null
     extractedText: string | null
     notes: string | null
     createdAt: Date | null
@@ -13154,6 +13155,7 @@ export namespace Prisma {
     mimeType: string | null
     size: number | null
     category: string | null
+    linkedTo: string | null
     extractedText: string | null
     notes: string | null
     createdAt: Date | null
@@ -13168,6 +13170,7 @@ export namespace Prisma {
     mimeType: number
     size: number
     category: number
+    linkedTo: number
     extractedText: number
     notes: number
     createdAt: number
@@ -13192,6 +13195,7 @@ export namespace Prisma {
     mimeType?: true
     size?: true
     category?: true
+    linkedTo?: true
     extractedText?: true
     notes?: true
     createdAt?: true
@@ -13206,6 +13210,7 @@ export namespace Prisma {
     mimeType?: true
     size?: true
     category?: true
+    linkedTo?: true
     extractedText?: true
     notes?: true
     createdAt?: true
@@ -13220,6 +13225,7 @@ export namespace Prisma {
     mimeType?: true
     size?: true
     category?: true
+    linkedTo?: true
     extractedText?: true
     notes?: true
     createdAt?: true
@@ -13321,6 +13327,7 @@ export namespace Prisma {
     mimeType: string | null
     size: number | null
     category: string
+    linkedTo: string | null
     extractedText: string | null
     notes: string | null
     createdAt: Date
@@ -13354,6 +13361,7 @@ export namespace Prisma {
     mimeType?: boolean
     size?: boolean
     category?: boolean
+    linkedTo?: boolean
     extractedText?: boolean
     notes?: boolean
     createdAt?: boolean
@@ -13369,6 +13377,7 @@ export namespace Prisma {
     mimeType?: boolean
     size?: boolean
     category?: boolean
+    linkedTo?: boolean
     extractedText?: boolean
     notes?: boolean
     createdAt?: boolean
@@ -13384,6 +13393,7 @@ export namespace Prisma {
     mimeType?: boolean
     size?: boolean
     category?: boolean
+    linkedTo?: boolean
     extractedText?: boolean
     notes?: boolean
     createdAt?: boolean
@@ -13399,13 +13409,14 @@ export namespace Prisma {
     mimeType?: boolean
     size?: boolean
     category?: boolean
+    linkedTo?: boolean
     extractedText?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ApartmentAttachmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "filename" | "url" | "mimeType" | "size" | "category" | "extractedText" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["apartmentAttachment"]>
+  export type ApartmentAttachmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "filename" | "url" | "mimeType" | "size" | "category" | "linkedTo" | "extractedText" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["apartmentAttachment"]>
   export type ApartmentAttachmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
   }
@@ -13429,6 +13440,7 @@ export namespace Prisma {
       mimeType: string | null
       size: number | null
       category: string
+      linkedTo: string | null
       extractedText: string | null
       notes: string | null
       createdAt: Date
@@ -13864,6 +13876,7 @@ export namespace Prisma {
     readonly mimeType: FieldRef<"ApartmentAttachment", 'String'>
     readonly size: FieldRef<"ApartmentAttachment", 'Int'>
     readonly category: FieldRef<"ApartmentAttachment", 'String'>
+    readonly linkedTo: FieldRef<"ApartmentAttachment", 'String'>
     readonly extractedText: FieldRef<"ApartmentAttachment", 'String'>
     readonly notes: FieldRef<"ApartmentAttachment", 'String'>
     readonly createdAt: FieldRef<"ApartmentAttachment", 'DateTime'>
@@ -16708,6 +16721,7 @@ export namespace Prisma {
     mimeType: 'mimeType',
     size: 'size',
     category: 'category',
+    linkedTo: 'linkedTo',
     extractedText: 'extractedText',
     notes: 'notes',
     createdAt: 'createdAt',
@@ -17689,6 +17703,7 @@ export namespace Prisma {
     mimeType?: StringNullableFilter<"ApartmentAttachment"> | string | null
     size?: IntNullableFilter<"ApartmentAttachment"> | number | null
     category?: StringFilter<"ApartmentAttachment"> | string
+    linkedTo?: StringNullableFilter<"ApartmentAttachment"> | string | null
     extractedText?: StringNullableFilter<"ApartmentAttachment"> | string | null
     notes?: StringNullableFilter<"ApartmentAttachment"> | string | null
     createdAt?: DateTimeFilter<"ApartmentAttachment"> | Date | string
@@ -17704,6 +17719,7 @@ export namespace Prisma {
     mimeType?: SortOrderInput | SortOrder
     size?: SortOrderInput | SortOrder
     category?: SortOrder
+    linkedTo?: SortOrderInput | SortOrder
     extractedText?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -17722,6 +17738,7 @@ export namespace Prisma {
     mimeType?: StringNullableFilter<"ApartmentAttachment"> | string | null
     size?: IntNullableFilter<"ApartmentAttachment"> | number | null
     category?: StringFilter<"ApartmentAttachment"> | string
+    linkedTo?: StringNullableFilter<"ApartmentAttachment"> | string | null
     extractedText?: StringNullableFilter<"ApartmentAttachment"> | string | null
     notes?: StringNullableFilter<"ApartmentAttachment"> | string | null
     createdAt?: DateTimeFilter<"ApartmentAttachment"> | Date | string
@@ -17737,6 +17754,7 @@ export namespace Prisma {
     mimeType?: SortOrderInput | SortOrder
     size?: SortOrderInput | SortOrder
     category?: SortOrder
+    linkedTo?: SortOrderInput | SortOrder
     extractedText?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -17759,6 +17777,7 @@ export namespace Prisma {
     mimeType?: StringNullableWithAggregatesFilter<"ApartmentAttachment"> | string | null
     size?: IntNullableWithAggregatesFilter<"ApartmentAttachment"> | number | null
     category?: StringWithAggregatesFilter<"ApartmentAttachment"> | string
+    linkedTo?: StringNullableWithAggregatesFilter<"ApartmentAttachment"> | string | null
     extractedText?: StringNullableWithAggregatesFilter<"ApartmentAttachment"> | string | null
     notes?: StringNullableWithAggregatesFilter<"ApartmentAttachment"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ApartmentAttachment"> | Date | string
@@ -18775,6 +18794,7 @@ export namespace Prisma {
     mimeType?: string | null
     size?: number | null
     category?: string
+    linkedTo?: string | null
     extractedText?: string | null
     notes?: string | null
     createdAt?: Date | string
@@ -18790,6 +18810,7 @@ export namespace Prisma {
     mimeType?: string | null
     size?: number | null
     category?: string
+    linkedTo?: string | null
     extractedText?: string | null
     notes?: string | null
     createdAt?: Date | string
@@ -18803,6 +18824,7 @@ export namespace Prisma {
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableIntFieldUpdateOperationsInput | number | null
     category?: StringFieldUpdateOperationsInput | string
+    linkedTo?: NullableStringFieldUpdateOperationsInput | string | null
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18818,6 +18840,7 @@ export namespace Prisma {
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableIntFieldUpdateOperationsInput | number | null
     category?: StringFieldUpdateOperationsInput | string
+    linkedTo?: NullableStringFieldUpdateOperationsInput | string | null
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18832,6 +18855,7 @@ export namespace Prisma {
     mimeType?: string | null
     size?: number | null
     category?: string
+    linkedTo?: string | null
     extractedText?: string | null
     notes?: string | null
     createdAt?: Date | string
@@ -18845,6 +18869,7 @@ export namespace Prisma {
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableIntFieldUpdateOperationsInput | number | null
     category?: StringFieldUpdateOperationsInput | string
+    linkedTo?: NullableStringFieldUpdateOperationsInput | string | null
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18859,6 +18884,7 @@ export namespace Prisma {
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableIntFieldUpdateOperationsInput | number | null
     category?: StringFieldUpdateOperationsInput | string
+    linkedTo?: NullableStringFieldUpdateOperationsInput | string | null
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19831,6 +19857,7 @@ export namespace Prisma {
     mimeType?: SortOrder
     size?: SortOrder
     category?: SortOrder
+    linkedTo?: SortOrder
     extractedText?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
@@ -19849,6 +19876,7 @@ export namespace Prisma {
     mimeType?: SortOrder
     size?: SortOrder
     category?: SortOrder
+    linkedTo?: SortOrder
     extractedText?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
@@ -19863,6 +19891,7 @@ export namespace Prisma {
     mimeType?: SortOrder
     size?: SortOrder
     category?: SortOrder
+    linkedTo?: SortOrder
     extractedText?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
@@ -21670,6 +21699,7 @@ export namespace Prisma {
     mimeType?: string | null
     size?: number | null
     category?: string
+    linkedTo?: string | null
     extractedText?: string | null
     notes?: string | null
     createdAt?: Date | string
@@ -21683,6 +21713,7 @@ export namespace Prisma {
     mimeType?: string | null
     size?: number | null
     category?: string
+    linkedTo?: string | null
     extractedText?: string | null
     notes?: string | null
     createdAt?: Date | string
@@ -21879,6 +21910,7 @@ export namespace Prisma {
     mimeType?: StringNullableFilter<"ApartmentAttachment"> | string | null
     size?: IntNullableFilter<"ApartmentAttachment"> | number | null
     category?: StringFilter<"ApartmentAttachment"> | string
+    linkedTo?: StringNullableFilter<"ApartmentAttachment"> | string | null
     extractedText?: StringNullableFilter<"ApartmentAttachment"> | string | null
     notes?: StringNullableFilter<"ApartmentAttachment"> | string | null
     createdAt?: DateTimeFilter<"ApartmentAttachment"> | Date | string
@@ -24188,6 +24220,7 @@ export namespace Prisma {
     mimeType?: string | null
     size?: number | null
     category?: string
+    linkedTo?: string | null
     extractedText?: string | null
     notes?: string | null
     createdAt?: Date | string
@@ -24419,6 +24452,7 @@ export namespace Prisma {
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableIntFieldUpdateOperationsInput | number | null
     category?: StringFieldUpdateOperationsInput | string
+    linkedTo?: NullableStringFieldUpdateOperationsInput | string | null
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24432,6 +24466,7 @@ export namespace Prisma {
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableIntFieldUpdateOperationsInput | number | null
     category?: StringFieldUpdateOperationsInput | string
+    linkedTo?: NullableStringFieldUpdateOperationsInput | string | null
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24445,6 +24480,7 @@ export namespace Prisma {
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
     size?: NullableIntFieldUpdateOperationsInput | number | null
     category?: StringFieldUpdateOperationsInput | string
+    linkedTo?: NullableStringFieldUpdateOperationsInput | string | null
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

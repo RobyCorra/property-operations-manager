@@ -4,11 +4,33 @@ import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { updateApartment } from "@/src/app/actions/apartment";
 import ApartmentForm from "@/src/components/apartment-form";
-import ApartmentAttachmentsPanel from "@/src/components/apartment-attachments-panel";
+import ApartmentAttachmentsPanel, { type ApartmentItem } from "@/src/components/apartment-attachments-panel";
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 
 interface EditApartmentPageProps {
   params: Promise<{ id: string }>;
+}
+
+function extractItems(profile: unknown): ApartmentItem[] {
+  if (!profile || typeof profile !== "object") return [];
+  const p = profile as Record<string, unknown>;
+  const items: ApartmentItem[] = [];
+  const sections: { key: string; label: string }[] = [
+    { key: "systems", label: "Impianto" },
+    { key: "appliances", label: "Elettrodomestico" },
+    { key: "smartHome", label: "Domotica" },
+  ];
+  for (const { key, label } of sections) {
+    const section = p[key];
+    if (Array.isArray(section)) {
+      for (const item of section) {
+        if (item && typeof item === "object" && "name" in item && typeof item.name === "string" && item.name.trim()) {
+          items.push({ label, name: item.name.trim() });
+        }
+      }
+    }
+  }
+  return items;
 }
 
 export default async function EditApartmentPage({ params }: EditApartmentPageProps) {
@@ -33,10 +55,12 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
     notFound();
   }
 
+  const items = extractItems(apartment.technicalProfile);
+
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <div className="max-w-3xl mx-auto space-y-8">
-        
+
         {/* Header */}
         <div>
           <Link href="/dashboard/manager/apartments" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block">
@@ -55,6 +79,7 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
         <ApartmentAttachmentsPanel
           apartmentId={apartment.id}
           initialAttachments={apartment.apartmentAttachments}
+          items={items}
         />
 
         {/* Form Container */}

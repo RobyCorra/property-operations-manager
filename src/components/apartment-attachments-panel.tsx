@@ -14,13 +14,17 @@ type Attachment = {
   mimeType: string | null;
   size: number | null;
   category: string;
+  linkedTo: string | null;
   notes: string | null;
   createdAt: Date;
 };
 
+export type ApartmentItem = { label: string; name: string };
+
 interface Props {
   apartmentId: string;
   initialAttachments: Attachment[];
+  items: ApartmentItem[];
 }
 
 const CATEGORIES: Record<string, string> = {
@@ -52,21 +56,33 @@ function fileIcon(mimeType: string | null) {
 
 function formatSize(bytes: number | null) {
   if (!bytes) return "";
-  if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachments }: Props) {
+export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachments, items }: Props) {
   const [attachments, setAttachments] = useState<Attachment[]>(initialAttachments);
+  const [activeFilter, setActiveFilter] = useState<string>("ALL");
   const [showForm, setShowForm] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "saving" | "error">("idle");
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<{ url: string; filename: string; mimeType: string; size: number } | null>(null);
   const [category, setCategory] = useState("OTHER");
+  const [linkedTo, setLinkedTo] = useState("");
   const [notes, setNotes] = useState("");
-  const [deletingId, startDeleteTransition] = useTransition();
+  const [, startDeleteTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const filteredAttachments = activeFilter === "ALL"
+    ? attachments
+    : attachments.filter((a) => a.category === activeFilter);
+
+  const categoryCounts = attachments.reduce<Record<string, number>>((acc, a) => {
+    acc[a.category] = (acc[a.category] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const activeCategories = Object.keys(categoryCounts);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -99,12 +115,14 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
     formData.append("mimeType", pendingFile.mimeType);
     formData.append("size", String(pendingFile.size));
     formData.append("category", category);
+    formData.append("linkedTo", linkedTo);
     formData.append("notes", notes);
     const result = await saveApartmentAttachmentFromBlob(formData);
     if (result.success && result.attachment) {
       setAttachments((prev) => [result.attachment as Attachment, ...prev]);
       setPendingFile(null);
       setCategory("OTHER");
+      setLinkedTo("");
       setNotes("");
       setShowForm(false);
     } else {
@@ -116,6 +134,7 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
   const handleCancel = () => {
     setPendingFile(null);
     setCategory("OTHER");
+    setLinkedTo("");
     setNotes("");
     setShowForm(false);
     setUploadError(null);
@@ -168,6 +187,27 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
         />
       </div>
 
+      {/* Filter bar */}
+      {attachments.length > 0 && (
+        <div className="flex gap-2 px-6 pt-4 pb-0 flex-wrap">
+          <button
+            onClick={() => setActiveFilter("ALL")}
+            className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${activeFilter === "ALL" ? "bg-black text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+          >
+            Tutti ({attachments.length})
+          </button>
+          {activeCategories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveFilter(cat === activeFilter ? "ALL" : cat)}
+              className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${activeFilter === cat ? "bg-black text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+            >
+              {CATEGORIES[cat] ?? cat} ({categoryCounts[cat]})
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Upload error */}
       {uploadError && (
         <div className="mx-6 mt-4 rounded-lg bg-red-50 px-4 py-2 text-xs font-medium text-red-700">
@@ -180,7 +220,7 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
         <div className="mx-6 mt-4 rounded-xl border border-blue-100 bg-blue-50/50 p-4 space-y-3">
           <p className="text-xs font-semibold text-blue-800">
             📎 {pendingFile.filename}
-            <span className="ml-2 font-normal text-blue-500">{formatSize(pendingFile.size)}</span>
+            <span className="ml-2 font-normal text-blue-500">{formatSize(pendingFile.size)} · caricato ✓</span>
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -196,12 +236,41 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Note (opzionale)</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Collegato a <span className="text-gray-400 font-normal">(opzionale)</span>
+              </label>
+              <select
+                value={linkedTo}
+                onChange={(e) => setLinkedTo(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
+              >
+                <option value="">— Generale —</option>
+                {items.length > 0 && (
+                  <>
+                    {["Impianto", "Elettrodomestico", "Domotica"].map((sectionLabel) => {
+                      const sectionItems = items.filter((i) => i.label === sectionLabel);
+                      if (sectionItems.length === 0) return null;
+                      return (
+                        <optgroup key={sectionLabel} label={sectionLabel + "i"}>
+                          {sectionItems.map((item) => (
+                            <option key={item.name} value={item.name}>{item.name}</option>
+                          ))}
+                        </optgroup>
+                      );
+                    })}
+                  </>
+                )}
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Note <span className="text-gray-400 font-normal">(opzionale)</span>
+              </label>
               <input
                 type="text"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Es. Caldaia marca X, 2023"
+                placeholder="Es. Manuale d'uso, anno 2023"
                 className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
               />
             </div>
@@ -213,9 +282,9 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
               disabled={uploadStatus === "saving"}
               className="flex items-center gap-1.5 rounded-full bg-black px-4 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-50"
             >
-              {uploadStatus === "saving" ? (
+              {uploadStatus === "saving" && (
                 <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              ) : null}
+              )}
               Salva allegato
             </button>
             <button
@@ -231,15 +300,19 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
 
       {/* Attachments grid */}
       <div className="p-6">
-        {attachments.length === 0 && !showForm ? (
+        {filteredAttachments.length === 0 && !showForm ? (
           <div className="flex flex-col items-center justify-center py-10 text-center text-gray-400">
             <span className="text-4xl mb-3">📂</span>
-            <p className="text-sm font-medium">Nessun allegato caricato</p>
-            <p className="text-xs mt-1">Clicca &quot;Carica file&quot; per aggiungere manuali, garanzie e foto</p>
+            <p className="text-sm font-medium">
+              {activeFilter === "ALL" ? "Nessun allegato caricato" : `Nessun allegato nella categoria ${CATEGORIES[activeFilter] ?? activeFilter}`}
+            </p>
+            {activeFilter === "ALL" && (
+              <p className="text-xs mt-1">Clicca &quot;Carica file&quot; per aggiungere manuali, garanzie e foto</p>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {attachments.map((att) => (
+            {filteredAttachments.map((att) => (
               <div
                 key={att.id}
                 className="group flex flex-col gap-3 rounded-xl border border-gray-100 bg-gray-50/60 p-4 transition-all hover:border-gray-200 hover:bg-white hover:shadow-sm"
@@ -258,8 +331,13 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
                         <span className="text-[10px] text-gray-400">{formatSize(att.size)}</span>
                       )}
                     </div>
+                    {att.linkedTo && (
+                      <p className="mt-1 text-[10px] text-gray-500 flex items-center gap-1 truncate" title={att.linkedTo}>
+                        🔗 {att.linkedTo}
+                      </p>
+                    )}
                     {att.notes && (
-                      <p className="mt-1 text-[10px] text-gray-500 truncate" title={att.notes}>
+                      <p className="mt-0.5 text-[10px] text-gray-400 truncate" title={att.notes}>
                         {att.notes}
                       </p>
                     )}

@@ -531,14 +531,15 @@ export async function saveApartmentAttachmentFromBlob(formData: FormData) {
     const size = optionalIntValue(formData, "size");
     const category = attachmentCategory(formData);
     const notes = textValue(formData, "notes") || null;
+    const linkedTo = textValue(formData, "linkedTo") || null;
 
     if (!apartmentId || !url || !filename) {
       return { success: false, error: "Dati mancanti." };
     }
 
     const attachment = await prisma.apartmentAttachment.create({
-      data: { apartmentId, filename, url, mimeType, size, category, notes },
-      select: { id: true, filename: true, url: true, mimeType: true, size: true, category: true, notes: true, createdAt: true },
+      data: { apartmentId, filename, url, mimeType, size, category, notes, linkedTo },
+      select: { id: true, filename: true, url: true, mimeType: true, size: true, category: true, notes: true, linkedTo: true, createdAt: true },
     });
 
     revalidatePath(`/dashboard/manager/apartments/${apartmentId}/edit`);

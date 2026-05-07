@@ -242,6 +242,7 @@ exports.Prisma.ApartmentAttachmentScalarFieldEnum = {
   mimeType: 'mimeType',
   size: 'size',
   category: 'category',
+  linkedTo: 'linkedTo',
   extractedText: 'extractedText',
   notes: 'notes',
   createdAt: 'createdAt',
