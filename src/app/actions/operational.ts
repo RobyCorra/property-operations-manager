@@ -688,7 +688,8 @@ export async function createTicketMessage(ticketId: string, prevState: any, form
     return { error: "Dati mancanti per il messaggio." };
   }
 
-  if (!text && !(formData.get("files") as File)?.size) {
+  const blobUrl = formData.get("blobUrl") as string | null;
+  if (!text && !blobUrl && !(formData.get("files") as File)?.size) {
     return { error: "Il messaggio non può essere vuoto." };
   }
 
@@ -702,10 +703,20 @@ export async function createTicketMessage(ticketId: string, prevState: any, form
       },
     });
 
-    const uploadResult = await uploadMaintenanceAttachment(ticketId, formData, { messageId: message.id });
-    if (!uploadResult.success) {
-      await prisma.message.delete({ where: { id: message.id } });
-      return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+    if (blobUrl) {
+      const filename = formData.get("blobFilename") as string ?? "allegato";
+      const mimeType = formData.get("blobMimeType") as string ?? "application/octet-stream";
+      const size = parseInt(formData.get("blobSize") as string ?? "0", 10);
+      const attachment = await prisma.attachment.create({
+        data: { url: blobUrl, fileName: filename, fileType: mimeType, size, category: "OTHER", maintenanceTicketId: ticketId },
+      });
+      await prisma.message.update({ where: { id: message.id }, data: { attachmentId: attachment.id } });
+    } else {
+      const uploadResult = await uploadMaintenanceAttachment(ticketId, formData, { messageId: message.id });
+      if (!uploadResult.success) {
+        await prisma.message.delete({ where: { id: message.id } });
+        return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+      }
     }
 
     revalidatePath("/dashboard/maintenance");
@@ -728,7 +739,8 @@ export async function createCleaningTaskMessage(taskId: string, prevState: any, 
     return { error: "Dati mancanti per il messaggio." };
   }
 
-  if (!text && !(formData.get("files") as File)?.size) {
+  const blobUrl = formData.get("blobUrl") as string | null;
+  if (!text && !blobUrl && !(formData.get("files") as File)?.size) {
     return { error: "Il messaggio non può essere vuoto." };
   }
 
@@ -743,10 +755,20 @@ export async function createCleaningTaskMessage(taskId: string, prevState: any, 
       },
     });
 
-    const uploadResult = await uploadCleaningAttachment(taskId, formData, { messageId: message.id });
-    if (!uploadResult.success) {
-      await prisma.cleaningTaskMessage.delete({ where: { id: message.id } });
-      return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+    if (blobUrl) {
+      const filename = formData.get("blobFilename") as string ?? "allegato";
+      const mimeType = formData.get("blobMimeType") as string ?? "application/octet-stream";
+      const size = parseInt(formData.get("blobSize") as string ?? "0", 10);
+      const attachment = await prisma.attachment.create({
+        data: { url: blobUrl, fileName: filename, fileType: mimeType, size, category: "OTHER", cleaningTaskId: taskId },
+      });
+      await prisma.cleaningTaskMessage.update({ where: { id: message.id }, data: { attachmentId: attachment.id } });
+    } else {
+      const uploadResult = await uploadCleaningAttachment(taskId, formData, { messageId: message.id });
+      if (!uploadResult.success) {
+        await prisma.cleaningTaskMessage.delete({ where: { id: message.id } });
+        return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+      }
     }
 
     revalidatePath("/dashboard/cleaner");

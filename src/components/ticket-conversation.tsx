@@ -4,6 +4,7 @@ import { useTransition, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createTicketMessage } from "@/src/app/actions/operational";
 import SafeDate from "@/src/components/safe-date";
+import { upload } from "@vercel/blob/client";
 
 interface Message {
   id: string;
@@ -37,6 +38,7 @@ export default function TicketConversation({ entityId, initialMessages, currentU
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -52,7 +54,29 @@ export default function TicketConversation({ entityId, initialMessages, currentU
     formData.append("senderName", currentUserName);
 
     const tempText = formData.get("text") as string;
-    if (!tempText && !(formData.get("files") as File)?.size) return;
+    const file = formData.get("files") as File | null;
+    if (!tempText && !file?.size) return;
+
+    if (file && file.size > 0) {
+      setIsUploading(true);
+      try {
+        const blob = await upload(
+          `uploads/tickets/${entityId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
+          file,
+          { access: "public", handleUploadUrl: "/api/blob-upload" }
+        );
+        formData.delete("files");
+        formData.append("blobUrl", blob.url);
+        formData.append("blobFilename", file.name);
+        formData.append("blobMimeType", file.type || "application/octet-stream");
+        formData.append("blobSize", String(file.size));
+      } catch {
+        setError("Errore durante il caricamento del file. Riprova.");
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
 
     startTransition(async () => {
       try {
@@ -142,13 +166,13 @@ export default function TicketConversation({ entityId, initialMessages, currentU
 
         {selectedFileName && (
           <div className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-[10px] font-bold animate-in fade-in slide-in-from-bottom-2 ${
-            isPending ? 'bg-gray-100 text-gray-500' : 'bg-blue-50 text-blue-700'
+            isUploading ? 'bg-blue-100 text-blue-600' : isPending ? 'bg-gray-100 text-gray-500' : 'bg-blue-50 text-blue-700'
           }`}>
             <span className="truncate">
-              {isPending ? '📤 Inviando: ' : '📎 '}
+              {isUploading ? '📤 Caricamento: ' : isPending ? '📤 Inviando: ' : '📎 '}
               {selectedFileName}
             </span>
-            {!isPending && (
+            {!isPending && !isUploading && (
               <button 
                 type="button" 
                 onClick={() => {
@@ -189,10 +213,10 @@ export default function TicketConversation({ entityId, initialMessages, currentU
           
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || isUploading}
             className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white hover:bg-gray-800 transition-all shadow-md shadow-gray-200 disabled:opacity-50"
           >
-            {isPending ? (
+            {isPending || isUploading ? (
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <span className="text-lg">↗️</span>

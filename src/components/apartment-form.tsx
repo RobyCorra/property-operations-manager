@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { ChevronRight } from "@/src/components/icons";
+import { upload } from "@vercel/blob/client";
 
 type Apartment = {
   id: string;
@@ -359,6 +360,29 @@ function AttachmentFields({
   attachment: TechnicalAttachment;
   onChange: (key: keyof TechnicalAttachment, value: string) => void;
 }) {
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadStatus("uploading");
+    try {
+      const blob = await upload(
+        `uploads/apartment/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
+        file,
+        { access: "public", handleUploadUrl: "/api/blob-upload" }
+      );
+      onChange("url", blob.url);
+      onChange("filename", file.name);
+      onChange("mimeType", file.type || "application/octet-stream");
+      onChange("size", String(file.size));
+      setUploadStatus("done");
+    } catch {
+      setUploadStatus("error");
+    }
+    e.target.value = "";
+  };
+
   return (
     <div className="space-y-4 rounded-lg border border-gray-100 bg-white p-4">
       <input type="hidden" name={`${baseName}.filename`} value={attachment.filename} />
@@ -380,7 +404,10 @@ function AttachmentFields({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">File</label>
-          <input type="file" name={`${baseName}.file`} className={inputClass} />
+          <input type="file" onChange={handleFileChange} className={inputClass} disabled={uploadStatus === "uploading"} />
+          {uploadStatus === "uploading" && <p className="mt-1 text-xs text-blue-600">Caricamento in corso...</p>}
+          {uploadStatus === "done" && <p className="mt-1 text-xs text-green-600">File caricato ✓ — clicca &quot;Carica allegato&quot; per salvare</p>}
+          {uploadStatus === "error" && <p className="mt-1 text-xs text-red-600">Errore caricamento. Riprova.</p>}
         </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
