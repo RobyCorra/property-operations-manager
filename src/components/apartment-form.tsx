@@ -1,10 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { ChevronRight } from "@/src/components/icons";
 import { upload } from "@vercel/blob/client";
+import { saveApartmentAttachmentFromBlob, deleteApartmentAttachmentById } from "@/src/app/actions/apartment";
+
+type AccessInfo = {
+  doorCode?: string | null;
+  safeCode?: string | null;
+  buildingCode?: string | null;
+  floor?: string | null;
+  wifiNetwork?: string | null;
+  wifiPassword?: string | null;
+  directions?: string | null;
+  checkInNotes?: string | null;
+  parking?: string | null;
+};
+
+type AccessMediaFile = {
+  id: string;
+  filename: string;
+  url: string | null;
+  mimeType: string | null;
+  size: number | null;
+};
 
 type Apartment = {
   id: string;
@@ -18,6 +39,7 @@ type Apartment = {
   maxGuests?: number | null;
   icalUrl?: string | null;
   technicalProfile?: unknown;
+  accessInfo?: unknown;
 };
 
 type TechnicalAttachment = {
@@ -62,7 +84,7 @@ type TechnicalProfile = {
 };
 
 type TechnicalSectionKey = "systems" | "appliances" | "smartHome";
-type FormSectionKey = "main" | "calendar" | "technical" | "attachments" | "ai";
+type FormSectionKey = "main" | "calendar" | "technical" | "attachments" | "ai" | "access";
 type SectionRowProps = {
   title: string;
   count: number;
@@ -89,6 +111,7 @@ interface ApartmentFormProps {
   initialData?: Apartment;
   action: (formData: FormData) => Promise<void | { success: boolean; error?: string }>;
   title: string;
+  initialAccessMedia?: AccessMediaFile[];
 }
 
 const inputClass = "w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent";
@@ -99,6 +122,7 @@ const formSections: { key: FormSectionKey; label: string; icon: string }[] = [
   { key: "calendar", label: "Calendario / iCal", icon: "📅" },
   { key: "technical", label: "Scheda tecnica", icon: "🛠" },
   { key: "ai", label: "Note IA", icon: "🤖" },
+  { key: "access", label: "Accesso", icon: "🔑" },
 ];
 
 const emptyAttachment: TechnicalAttachment = {
@@ -676,8 +700,27 @@ function AttachmentList({
   );
 }
 
-export default function ApartmentForm({ initialData, action, title }: ApartmentFormProps) {
+function AccessCodeField({ label, name, value, onChange, mono, secret }: { label: string; name: string; value: string; onChange: (v: string) => void; mono: boolean; secret: boolean }) {
+  const [visible, setVisible] = useState(false);
+  const inputClass = `flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black${mono ? " font-mono tracking-wider" : ""}`;
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
+      <div className="flex items-center gap-2">
+        <input type={secret && !visible ? "password" : "text"} name={name} value={value} onChange={(e) => onChange(e.target.value)} placeholder="—" className={inputClass} />
+        {secret && (
+          <button type="button" onClick={() => setVisible((v) => !v)} className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-500 hover:bg-gray-50">
+            {visible ? "🙈" : "👁"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function ApartmentForm({ initialData, action, title, initialAccessMedia = [] }: ApartmentFormProps) {
   const technicalProfile = (initialData?.technicalProfile as TechnicalProfile | null) ?? {};
+  const rawAccessInfo = (initialData?.accessInfo as AccessInfo | null) ?? {};
   const [activeSection, setActiveSection] = useState<FormSectionKey>("main");
   const [formError, setFormError] = useState("");
   const [systems, setSystems] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.systems));
@@ -685,6 +728,56 @@ export default function ApartmentForm({ initialData, action, title }: ApartmentF
   const [smartHome, setSmartHome] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.smartHome, legacySmartHomeLabels));
   const [recurringIssues, setRecurringIssues] = useState<RecurringIssueItem[]>(normalizeRecurringIssues(technicalProfile.recurringIssues));
   const [generalAttachments, setGeneralAttachments] = useState<TechnicalAttachment[]>(normalizeAttachments(technicalProfile.generalAttachments));
+
+  // Access section state
+  const [accessInfo, setAccessInfo] = useState<AccessInfo>(rawAccessInfo);
+  const [accessMedia, setAccessMedia] = useState<AccessMediaFile[]>(initialAccessMedia);
+  const [accessOpen, setAccessOpen] = useState({ codes: true, instructions: true, media: true });
+  const [mediaUploading, setMediaUploading] = useState(false);
+  const [mediaError, setMediaError] = useState<string | null>(null);
+  const [, startDeleteMedia] = useTransition();
+  const mediaInputRef = useRef<HTMLInputElement>(null);
+
+  const setAccess = (key: keyof AccessInfo) => (value: string) =>
+    setAccessInfo((prev) => ({ ...prev, [key]: value }));
+
+  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !initialData?.id) return;
+    setMediaError(null);
+    setMediaUploading(true);
+    try {
+      const blob = await upload(
+        `uploads/apartment/${initialData.id}/access/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
+        file,
+        { access: "public", handleUploadUrl: "/api/blob-upload" }
+      );
+      const fd = new FormData();
+      fd.append("apartmentId", initialData.id);
+      fd.append("url", blob.url);
+      fd.append("filename", file.name);
+      fd.append("mimeType", file.type);
+      fd.append("size", String(file.size));
+      fd.append("category", "ACCESS");
+      const result = await saveApartmentAttachmentFromBlob(fd);
+      if (result.success && result.attachment) {
+        setAccessMedia((prev) => [result.attachment as AccessMediaFile, ...prev]);
+      } else {
+        setMediaError("Errore durante il salvataggio.");
+      }
+    } catch {
+      setMediaError("Errore durante il caricamento. Riprova.");
+    }
+    setMediaUploading(false);
+    e.target.value = "";
+  };
+
+  const handleDeleteMedia = (id: string) => {
+    startDeleteMedia(async () => {
+      await deleteApartmentAttachmentById(id);
+      setAccessMedia((prev) => prev.filter((m) => m.id !== id));
+    });
+  };
 
   return (
     <section className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
@@ -814,6 +907,107 @@ export default function ApartmentForm({ initialData, action, title }: ApartmentF
                 <textarea id="technicalProfile.aiNotes" name="technicalProfile.aiNotes" defaultValue={technicalProfile.aiNotes ?? ""} rows={4} placeholder="Note operative utili per cleaner, manutentori e manager..." className={inputClass} />
               </div>
             </div>
+
+            {/* ── ACCESSO ── */}
+            <div hidden={activeSection !== "access"} className="space-y-3">
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Accesso appartamento</h2>
+
+              {/* Codici */}
+              <div className="rounded-xl border border-gray-100 overflow-hidden">
+                <button type="button" onClick={() => setAccessOpen((s) => ({ ...s, codes: !s.codes }))} className="w-full flex items-center justify-between px-4 py-3 bg-gray-50/60 hover:bg-gray-100/60 transition-colors text-left">
+                  <div className="flex items-center gap-2"><span>🔐</span><span className="text-sm font-medium text-gray-800">Codici di accesso</span></div>
+                  <span className="text-gray-400 text-xs">{accessOpen.codes ? "▲" : "▼"}</span>
+                </button>
+                {accessOpen.codes && (
+                  <div className="px-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-100">
+                    {([
+                      { key: "doorCode" as const, label: "Codice porta / smart lock", mono: true, secret: true },
+                      { key: "safeCode" as const, label: "Codice cassetta chiavi", mono: true, secret: true },
+                      { key: "buildingCode" as const, label: "Codice portone / citofono", mono: true, secret: true },
+                      { key: "floor" as const, label: "Piano / interno", mono: false, secret: false },
+                      { key: "wifiNetwork" as const, label: "Rete Wi-Fi", mono: true, secret: false },
+                      { key: "wifiPassword" as const, label: "Password Wi-Fi", mono: true, secret: true },
+                    ] as const).map(({ key, label, mono, secret }) => (
+                      <AccessCodeField key={key} label={label} name={`accessInfo.${key}`} value={accessInfo[key] ?? ""} onChange={setAccess(key)} mono={mono} secret={secret} />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Istruzioni */}
+              <div className="rounded-xl border border-gray-100 overflow-hidden">
+                <button type="button" onClick={() => setAccessOpen((s) => ({ ...s, instructions: !s.instructions }))} className="w-full flex items-center justify-between px-4 py-3 bg-gray-50/60 hover:bg-gray-100/60 transition-colors text-left">
+                  <div className="flex items-center gap-2"><span>📋</span><span className="text-sm font-medium text-gray-800">Istruzioni</span></div>
+                  <span className="text-gray-400 text-xs">{accessOpen.instructions ? "▲" : "▼"}</span>
+                </button>
+                {accessOpen.instructions && (
+                  <div className="px-4 py-4 space-y-4 border-t border-gray-100">
+                    {([
+                      { key: "directions" as const, label: "Come raggiungere l'appartamento", placeholder: "Es. Dall'ingresso principale girare a destra..." },
+                      { key: "checkInNotes" as const, label: "Note check-in / check-out", placeholder: "Es. Check-in dalle 15:00, chiavi nella cassetta all'uscita..." },
+                      { key: "parking" as const, label: "Parcheggio", placeholder: "Es. ZTL attiva, parcheggio P1 a 200m..." },
+                    ] as const).map(({ key, label, placeholder }) => (
+                      <div key={key}>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
+                        <textarea name={`accessInfo.${key}`} rows={2} value={accessInfo[key] ?? ""} onChange={(e) => setAccess(key)(e.target.value)} placeholder={placeholder} className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-black resize-none" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Foto e video */}
+              <div className="rounded-xl border border-gray-100 overflow-hidden">
+                <button type="button" onClick={() => setAccessOpen((s) => ({ ...s, media: !s.media }))} className="w-full flex items-center justify-between px-4 py-3 bg-gray-50/60 hover:bg-gray-100/60 transition-colors text-left">
+                  <div className="flex items-center gap-2">
+                    <span>📸</span>
+                    <span className="text-sm font-medium text-gray-800">Foto e video accesso</span>
+                    {accessMedia.length > 0 && <span className="rounded-full bg-blue-50 text-blue-700 px-2 py-0.5 text-[10px] font-semibold">{accessMedia.length} file</span>}
+                  </div>
+                  <span className="text-gray-400 text-xs">{accessOpen.media ? "▲" : "▼"}</span>
+                </button>
+                {accessOpen.media && (
+                  <div className="px-4 py-4 border-t border-gray-100 space-y-3">
+                    {mediaError && <p className="text-xs text-red-600">⚠️ {mediaError}</p>}
+                    {accessMedia.length === 0 ? (
+                      <div onClick={() => mediaInputRef.current?.click()} className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 py-8 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors">
+                        <span className="text-3xl mb-1">📸</span>
+                        <p className="text-xs font-medium text-gray-500">Carica foto o video dell'accesso</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">Cassetta chiavi, portone, video istruzioni...</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-2">
+                        {accessMedia.map((file) => (
+                          <div key={file.id} className="group relative rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex flex-col">
+                            <a href={file.url ?? "#"} target="_blank" rel="noreferrer" className="block aspect-video relative">
+                              {file.mimeType?.startsWith("video/") ? (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-lg">▶</div>
+                                </div>
+                              ) : (
+                                <img src={file.url ?? ""} alt={file.filename} className="absolute inset-0 w-full h-full object-cover" />
+                              )}
+                            </a>
+                            <div className="px-2 py-1 bg-white border-t border-gray-100 flex items-center justify-between gap-1">
+                              <p className="text-[9px] text-gray-500 truncate">{file.filename}</p>
+                              <button type="button" onClick={() => handleDeleteMedia(file.id)} className="shrink-0 w-4 h-4 rounded-full bg-red-100 text-red-500 text-[9px] flex items-center justify-center hover:bg-red-200">✕</button>
+                            </div>
+                          </div>
+                        ))}
+                        <div onClick={() => mediaInputRef.current?.click()} className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 aspect-video cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors">
+                          <span className="text-xl text-gray-300">+</span>
+                        </div>
+                      </div>
+                    )}
+                    <button type="button" onClick={() => mediaInputRef.current?.click()} disabled={mediaUploading} className="flex items-center gap-1.5 rounded-full bg-black px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-50">
+                      {mediaUploading ? <><span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Caricamento...</> : "↑ Carica foto/video"}
+                    </button>
+                    <input ref={mediaInputRef} type="file" className="hidden" accept=".jpg,.jpeg,.png,.webp,.mp4,.mov,.webm" onChange={handleMediaUpload} />
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
 

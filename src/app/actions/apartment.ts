@@ -346,6 +346,18 @@ export async function updateApartment(formData: FormData) {
       select: { technicalProfile: true, accessInstructions: true },
     });
 
+    const accessInfo = {
+      doorCode: textValue(formData, "accessInfo.doorCode") || null,
+      safeCode: textValue(formData, "accessInfo.safeCode") || null,
+      buildingCode: textValue(formData, "accessInfo.buildingCode") || null,
+      floor: textValue(formData, "accessInfo.floor") || null,
+      wifiNetwork: textValue(formData, "accessInfo.wifiNetwork") || null,
+      wifiPassword: textValue(formData, "accessInfo.wifiPassword") || null,
+      directions: textValue(formData, "accessInfo.directions") || null,
+      checkInNotes: textValue(formData, "accessInfo.checkInNotes") || null,
+      parking: textValue(formData, "accessInfo.parking") || null,
+    };
+
     await prisma.apartment.update({
       where: { id },
       data: {
@@ -359,6 +371,7 @@ export async function updateApartment(formData: FormData) {
         bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
         maxGuests: isNaN(maxGuests) ? 1 : maxGuests,
         accessInstructions: existingApartment?.accessInstructions ?? null,
+        accessInfo,
         icalUrl: formData.get("icalUrl") as string,
         technicalProfile: await buildTechnicalProfile(formData, id, existingApartment?.technicalProfile),
       },
