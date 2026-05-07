@@ -9,6 +9,9 @@ const ALLOWED_CONTENT_TYPES = [
   "image/png",
   "image/webp",
   "text/plain",
+  "video/mp4",
+  "video/quicktime",
+  "video/webm",
 ];
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -19,7 +22,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       request,
       onBeforeGenerateToken: async () => ({
         allowedContentTypes: ALLOWED_CONTENT_TYPES,
-        maximumSizeInBytes: 10 * 1024 * 1024,
+        maximumSizeInBytes: 200 * 1024 * 1024,
       }),
       onUploadCompleted: async () => {},
     });

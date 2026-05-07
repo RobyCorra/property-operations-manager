@@ -30,6 +30,7 @@ model Apartment {
   bathrooms            Int
   maxGuests            Int
   accessInstructions   String?
+  accessInfo           Json?
   icalUrl              String?
   lastSyncAt           DateTime?
   technicalProfile     Json?

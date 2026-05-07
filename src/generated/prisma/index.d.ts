@@ -3351,6 +3351,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions: number
+    accessInfo: number
     icalUrl: number
     lastSyncAt: number
     technicalProfile: number
@@ -3423,6 +3424,7 @@ export namespace Prisma {
     bathrooms?: true
     maxGuests?: true
     accessInstructions?: true
+    accessInfo?: true
     icalUrl?: true
     lastSyncAt?: true
     technicalProfile?: true
@@ -3528,6 +3530,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions: string | null
+    accessInfo: JsonValue | null
     icalUrl: string | null
     lastSyncAt: Date | null
     technicalProfile: JsonValue | null
@@ -3565,6 +3568,7 @@ export namespace Prisma {
     bathrooms?: boolean
     maxGuests?: boolean
     accessInstructions?: boolean
+    accessInfo?: boolean
     icalUrl?: boolean
     lastSyncAt?: boolean
     technicalProfile?: boolean
@@ -3591,6 +3595,7 @@ export namespace Prisma {
     bathrooms?: boolean
     maxGuests?: boolean
     accessInstructions?: boolean
+    accessInfo?: boolean
     icalUrl?: boolean
     lastSyncAt?: boolean
     technicalProfile?: boolean
@@ -3609,6 +3614,7 @@ export namespace Prisma {
     bathrooms?: boolean
     maxGuests?: boolean
     accessInstructions?: boolean
+    accessInfo?: boolean
     icalUrl?: boolean
     lastSyncAt?: boolean
     technicalProfile?: boolean
@@ -3627,13 +3633,14 @@ export namespace Prisma {
     bathrooms?: boolean
     maxGuests?: boolean
     accessInstructions?: boolean
+    accessInfo?: boolean
     icalUrl?: boolean
     lastSyncAt?: boolean
     technicalProfile?: boolean
     createdAt?: boolean
   }
 
-  export type ApartmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "apartmentCode" | "address" | "latitude" | "longitude" | "squareMeters" | "bedrooms" | "bathrooms" | "maxGuests" | "accessInstructions" | "icalUrl" | "lastSyncAt" | "technicalProfile" | "createdAt", ExtArgs["result"]["apartment"]>
+  export type ApartmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "apartmentCode" | "address" | "latitude" | "longitude" | "squareMeters" | "bedrooms" | "bathrooms" | "maxGuests" | "accessInstructions" | "accessInfo" | "icalUrl" | "lastSyncAt" | "technicalProfile" | "createdAt", ExtArgs["result"]["apartment"]>
   export type ApartmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bookings?: boolean | Apartment$bookingsArgs<ExtArgs>
     checklistItems?: boolean | Apartment$checklistItemsArgs<ExtArgs>
@@ -3670,6 +3677,7 @@ export namespace Prisma {
       bathrooms: number
       maxGuests: number
       accessInstructions: string | null
+      accessInfo: Prisma.JsonValue | null
       icalUrl: string | null
       lastSyncAt: Date | null
       technicalProfile: Prisma.JsonValue | null
@@ -4115,6 +4123,7 @@ export namespace Prisma {
     readonly bathrooms: FieldRef<"Apartment", 'Int'>
     readonly maxGuests: FieldRef<"Apartment", 'Int'>
     readonly accessInstructions: FieldRef<"Apartment", 'String'>
+    readonly accessInfo: FieldRef<"Apartment", 'Json'>
     readonly icalUrl: FieldRef<"Apartment", 'String'>
     readonly lastSyncAt: FieldRef<"Apartment", 'DateTime'>
     readonly technicalProfile: FieldRef<"Apartment", 'Json'>
@@ -16596,6 +16605,7 @@ export namespace Prisma {
     bathrooms: 'bathrooms',
     maxGuests: 'maxGuests',
     accessInstructions: 'accessInstructions',
+    accessInfo: 'accessInfo',
     icalUrl: 'icalUrl',
     lastSyncAt: 'lastSyncAt',
     technicalProfile: 'technicalProfile',
@@ -16991,6 +17001,7 @@ export namespace Prisma {
     bathrooms?: IntFilter<"Apartment"> | number
     maxGuests?: IntFilter<"Apartment"> | number
     accessInstructions?: StringNullableFilter<"Apartment"> | string | null
+    accessInfo?: JsonNullableFilter<"Apartment">
     icalUrl?: StringNullableFilter<"Apartment"> | string | null
     lastSyncAt?: DateTimeNullableFilter<"Apartment"> | Date | string | null
     technicalProfile?: JsonNullableFilter<"Apartment">
@@ -17016,6 +17027,7 @@ export namespace Prisma {
     bathrooms?: SortOrder
     maxGuests?: SortOrder
     accessInstructions?: SortOrderInput | SortOrder
+    accessInfo?: SortOrderInput | SortOrder
     icalUrl?: SortOrderInput | SortOrder
     lastSyncAt?: SortOrderInput | SortOrder
     technicalProfile?: SortOrderInput | SortOrder
@@ -17044,6 +17056,7 @@ export namespace Prisma {
     bathrooms?: IntFilter<"Apartment"> | number
     maxGuests?: IntFilter<"Apartment"> | number
     accessInstructions?: StringNullableFilter<"Apartment"> | string | null
+    accessInfo?: JsonNullableFilter<"Apartment">
     icalUrl?: StringNullableFilter<"Apartment"> | string | null
     lastSyncAt?: DateTimeNullableFilter<"Apartment"> | Date | string | null
     technicalProfile?: JsonNullableFilter<"Apartment">
@@ -17069,6 +17082,7 @@ export namespace Prisma {
     bathrooms?: SortOrder
     maxGuests?: SortOrder
     accessInstructions?: SortOrderInput | SortOrder
+    accessInfo?: SortOrderInput | SortOrder
     icalUrl?: SortOrderInput | SortOrder
     lastSyncAt?: SortOrderInput | SortOrder
     technicalProfile?: SortOrderInput | SortOrder
@@ -17095,6 +17109,7 @@ export namespace Prisma {
     bathrooms?: IntWithAggregatesFilter<"Apartment"> | number
     maxGuests?: IntWithAggregatesFilter<"Apartment"> | number
     accessInstructions?: StringNullableWithAggregatesFilter<"Apartment"> | string | null
+    accessInfo?: JsonNullableWithAggregatesFilter<"Apartment">
     icalUrl?: StringNullableWithAggregatesFilter<"Apartment"> | string | null
     lastSyncAt?: DateTimeNullableWithAggregatesFilter<"Apartment"> | Date | string | null
     technicalProfile?: JsonNullableWithAggregatesFilter<"Apartment">
@@ -18013,6 +18028,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -18038,6 +18054,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -18063,6 +18080,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -18088,6 +18106,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -18113,6 +18132,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -18131,6 +18151,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -18149,6 +18170,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -19199,17 +19221,6 @@ export namespace Prisma {
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
   }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -19232,6 +19243,17 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type BookingListRelationFilter = {
@@ -19301,6 +19323,7 @@ export namespace Prisma {
     bathrooms?: SortOrder
     maxGuests?: SortOrder
     accessInstructions?: SortOrder
+    accessInfo?: SortOrder
     icalUrl?: SortOrder
     lastSyncAt?: SortOrder
     technicalProfile?: SortOrder
@@ -19408,20 +19431,6 @@ export namespace Prisma {
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
   }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
@@ -19447,6 +19456,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -21234,20 +21257,6 @@ export namespace Prisma {
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
   }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -21270,6 +21279,20 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -21929,6 +21952,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -21953,6 +21977,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -21993,6 +22018,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22017,6 +22043,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22041,6 +22068,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22065,6 +22093,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22105,6 +22134,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22129,6 +22159,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22153,6 +22184,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22177,6 +22209,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22254,6 +22287,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22278,6 +22312,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22376,6 +22411,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22400,6 +22436,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22600,6 +22637,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22624,6 +22662,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22757,6 +22796,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22781,6 +22821,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22944,6 +22985,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -22968,6 +23010,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -23085,6 +23128,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -23109,6 +23153,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -23225,6 +23270,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -23249,6 +23295,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -23617,6 +23664,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -23641,6 +23689,7 @@ export namespace Prisma {
     bathrooms: number
     maxGuests: number
     accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: string | null
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -23681,6 +23730,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
@@ -23705,6 +23755,7 @@ export namespace Prisma {
     bathrooms?: IntFieldUpdateOperationsInput | number
     maxGuests?: IntFieldUpdateOperationsInput | number
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
     icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue

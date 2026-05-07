@@ -1,0 +1,1 @@
+ALTER TABLE "Apartment" ADD COLUMN IF NOT EXISTS "accessInfo" JSONB;

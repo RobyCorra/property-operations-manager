@@ -558,3 +558,32 @@ export async function deleteApartmentAttachmentById(id: string) {
   await prisma.apartmentAttachment.delete({ where: { id } });
   revalidatePath(`/dashboard/manager/apartments/${existing.apartmentId}/edit`);
 }
+
+export async function saveApartmentAccess(formData: FormData) {
+  try {
+    const id = textValue(formData, "id");
+    if (!id) return { success: false, error: "ID appartamento mancante." };
+
+    const accessInfo = {
+      doorCode: textValue(formData, "doorCode") || null,
+      safeCode: textValue(formData, "safeCode") || null,
+      buildingCode: textValue(formData, "buildingCode") || null,
+      floor: textValue(formData, "floor") || null,
+      wifiNetwork: textValue(formData, "wifiNetwork") || null,
+      wifiPassword: textValue(formData, "wifiPassword") || null,
+      directions: textValue(formData, "directions") || null,
+      checkInNotes: textValue(formData, "checkInNotes") || null,
+      parking: textValue(formData, "parking") || null,
+    };
+
+    await prisma.apartment.update({
+      where: { id },
+      data: { accessInfo },
+    });
+
+    revalidatePath(`/dashboard/manager/apartments/${id}/edit`);
+    return { success: true };
+  } catch (error) {
+    return actionError(error, "Errore durante il salvataggio delle informazioni di accesso.");
+  }
+}

@@ -141,6 +141,7 @@ exports.Prisma.ApartmentScalarFieldEnum = {
   bathrooms: 'bathrooms',
   maxGuests: 'maxGuests',
   accessInstructions: 'accessInstructions',
+  accessInfo: 'accessInfo',
   icalUrl: 'icalUrl',
   lastSyncAt: 'lastSyncAt',
   technicalProfile: 'technicalProfile',

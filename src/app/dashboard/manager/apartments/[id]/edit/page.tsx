@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import { updateApartment } from "@/src/app/actions/apartment";
 import ApartmentForm from "@/src/components/apartment-form";
 import ApartmentAttachmentsPanel, { type ApartmentItem } from "@/src/components/apartment-attachments-panel";
+import ApartmentAccessPanel from "@/src/components/apartment-access-panel";
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 
 interface EditApartmentPageProps {
@@ -56,6 +57,8 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
   }
 
   const items = extractItems(apartment.technicalProfile);
+  const accessMedia = apartment.apartmentAttachments.filter((a) => a.category === "ACCESS");
+  const generalAttachments = apartment.apartmentAttachments.filter((a) => a.category !== "ACCESS");
 
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
@@ -75,10 +78,17 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
           </div>
         </div>
 
+        {/* Accesso */}
+        <ApartmentAccessPanel
+          apartmentId={apartment.id}
+          initialAccessInfo={(apartment.accessInfo as Record<string, string | null>) ?? {}}
+          initialMedia={accessMedia}
+        />
+
         {/* Allegati */}
         <ApartmentAttachmentsPanel
           apartmentId={apartment.id}
-          initialAttachments={apartment.apartmentAttachments}
+          initialAttachments={generalAttachments}
           items={items}
         />
 
