@@ -423,8 +423,10 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
     return { error: "Appartamento, titolo, priorità e date dell'intervento sono obbligatori." };
   }
 
-  const scheduledStart = new Date(scheduledStartStr);
-  const scheduledEnd = new Date(scheduledEndStr);
+  const [startDate, startTime] = scheduledStartStr.split("T");
+  const [endDate, endTime] = scheduledEndStr.split("T");
+  const scheduledStart = parseRomeDateTime(startDate, startTime);
+  const scheduledEnd = parseRomeDateTime(endDate, endTime);
 
   if (scheduledEnd <= scheduledStart) {
     return { error: "La data di fine non può essere precedente o uguale alla data di inizio." };
@@ -468,8 +470,10 @@ export async function updateMaintenanceTicket(id: string, prevState: any, formDa
     return { error: "ID, Appartamento, titolo, priorità e date intervento sono obbligatori." };
   }
 
-  const scheduledStart = new Date(scheduledStartStr);
-  const scheduledEnd = new Date(scheduledEndStr);
+  const [startDate, startTime] = scheduledStartStr.split("T");
+  const [endDate, endTime] = scheduledEndStr.split("T");
+  const scheduledStart = parseRomeDateTime(startDate, startTime);
+  const scheduledEnd = parseRomeDateTime(endDate, endTime);
 
   if (scheduledEnd <= scheduledStart) {
     return { error: "La data di fine non può essere precedente o uguale alla data di inizio." };

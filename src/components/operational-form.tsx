@@ -177,12 +177,9 @@ export default function OperationalForm({ type, apartments, personnel, action, i
     }
   };
 
-  // Helper to format Date to datetime-local input (YYYY-MM-DDTHH:mm)
   const formatDateTime = (date?: Date | null) => {
     if (!date) return "";
-    const d = new Date(date);
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0, 16);
+    return `${formatRomeDateInputValue(date)}T${formatRomeTimeInputValue(date)}`;
   };
 
   return (
