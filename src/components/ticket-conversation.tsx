@@ -100,11 +100,11 @@ export default function TicketConversation({ entityId, initialMessages, currentU
   };
 
   return (
-    <div className={`flex flex-col ${heightClass} border border-gray-100 rounded-2xl overflow-hidden bg-gray-50/30`}>
+    <div className={`flex flex-col ${heightClass} border border-gray-100 rounded-2xl bg-gray-50/30`}>
       {/* Messages List */}
-      <div 
+      <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
+        className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth min-h-0"
       >
         {initialMessages.length === 0 && (
           <div className="flex justify-center items-center h-full text-gray-400 text-xs">
