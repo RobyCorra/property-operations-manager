@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { upload } from "@vercel/blob/client";
 import { updateTaskChecklist } from "@/src/app/actions/checklist";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
-import { Camera, ChevronRight, SkipForward, CheckCircle2, Loader2 } from "lucide-react";
+import { Camera, ChevronRight, ChevronLeft, SkipForward, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 
 interface ChecklistItem {
   id: string;
@@ -43,7 +43,17 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const currentItem = items[currentIndex];
   const completedCount = items.filter((i) => i.completed).length;
   const allDone = currentIndex >= items.length;
-  const allRequiredDone = items.filter((i) => i.required).every((i) => i.completed);
+  // ALL items must be completed — no skipped, no pending
+  const allItemsCompleted = items.every((i) => i.completed);
+  const incompleteItems = items
+    .map((item, idx) => ({ ...item, idx }))
+    .filter((i) => !i.completed);
+
+  const clearPhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    if (photoInputRef.current) photoInputRef.current.value = "";
+  };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -53,10 +63,17 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     setUploadError(null);
   };
 
-  const removePhoto = () => {
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    if (photoInputRef.current) photoInputRef.current.value = "";
+  const goBack = () => {
+    if (currentIndex <= 0) return;
+    clearPhoto();
+    setJustCompleted(null);
+    setCurrentIndex((prev) => prev - 1);
+  };
+
+  const goToItem = (idx: number) => {
+    clearPhoto();
+    setJustCompleted(null);
+    setCurrentIndex(idx);
   };
 
   const advance = async (completed: boolean) => {
@@ -94,14 +111,15 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     try {
       await updateTaskChecklist(taskId, updatedItems);
     } catch {
-      // progress saved locally, DB sync best-effort
+      // best-effort DB sync
     }
 
     setJustCompleted(completed ? currentItem.label : null);
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    if (photoInputRef.current) photoInputRef.current.value = "";
-    setCurrentIndex((prev) => prev + 1);
+    clearPhoto();
+
+    // Go to next unprocessed item, or completion screen if all processed
+    const nextIdx = updatedItems.findIndex((item, idx) => idx > currentIndex && !item.completed && !item.skipped);
+    setCurrentIndex(nextIdx === -1 ? updatedItems.length : nextIdx);
     setIsSaving(false);
   };
 
@@ -118,6 +136,65 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   // ── Completion screen ──────────────────────────────────────────────────────
   if (allDone) {
     const photosWithUrls = items.filter((i) => i.photoUrl);
+
+    // Some items not completed — force resolution
+    if (!allItemsCompleted) {
+      return (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5 mb-4">
+            <div className="flex items-start gap-3 mb-4">
+              <AlertCircle size={20} className="text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-bold text-amber-800">Intervento non completabile</p>
+                <p className="text-xs text-amber-600 mt-0.5">
+                  {incompleteItems.length} {incompleteItems.length === 1 ? "punto non è stato" : "punti non sono stati"} completato/i.
+                  Risolvi tutti i punti per poter chiudere l'intervento.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {incompleteItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-white border border-amber-100 px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-slate-800 truncate">
+                      {item.label}
+                      {item.required && <span className="text-rose-500 ml-1">*</span>}
+                    </p>
+                    <p className="text-[10px] text-amber-500 font-bold mt-0.5">
+                      {item.skipped ? "Saltato" : "Non completato"}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => goToItem(item.idx)}
+                    className="shrink-0 flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 transition-all"
+                  >
+                    Risolvi <ChevronRight size={11} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            disabled
+            className="w-full py-4 rounded-2xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed"
+          >
+            ✓ Intervento Completato
+          </button>
+          <p className="text-[10px] text-slate-400 mt-2 text-center">
+            Completa tutti i punti per sbloccare questa azione.
+          </p>
+        </div>
+      );
+    }
+
+    // All completed 🎉
     return (
       <div className="text-center py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="text-6xl mb-4">🎉</div>
@@ -145,21 +222,11 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           </div>
         )}
 
-        {!allRequiredDone && (
-          <p className="text-xs text-amber-600 font-bold bg-amber-50 px-4 py-2 rounded-full mb-4 inline-block border border-amber-100">
-            ⚠️ Alcuni punti obbligatori non sono stati completati
-          </p>
-        )}
-
         <button
           type="button"
           onClick={handleComplete}
-          disabled={!allRequiredDone || isCompletingTask}
-          className={`w-full py-4 rounded-2xl text-sm font-bold transition-all shadow-xl active:scale-95 ${
-            allRequiredDone
-              ? "bg-black text-white hover:bg-gray-800"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-          }`}
+          disabled={isCompletingTask}
+          className="w-full py-4 rounded-2xl text-sm font-bold bg-black text-white hover:bg-gray-800 transition-all shadow-xl active:scale-95 disabled:opacity-50"
         >
           {isCompletingTask ? (
             <span className="flex items-center justify-center gap-2">
@@ -246,7 +313,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
             </div>
             <button
               type="button"
-              onClick={removePhoto}
+              onClick={clearPhoto}
               className="w-7 h-7 rounded-full bg-rose-100 text-rose-500 text-[10px] flex items-center justify-center hover:bg-rose-200 shrink-0"
             >
               ✕
@@ -274,21 +341,35 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3">
+      <div className="flex gap-2">
+        {/* Indietro */}
+        <button
+          type="button"
+          onClick={goBack}
+          disabled={currentIndex === 0 || isSaving}
+          className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronLeft size={13} />
+          Indietro
+        </button>
+
+        {/* Salta */}
         <button
           type="button"
           onClick={() => advance(false)}
           disabled={isSaving}
-          className="flex-1 flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+          className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-50 transition-colors"
         >
           <SkipForward size={13} />
           Salta
         </button>
+
+        {/* Fatto */}
         <button
           type="button"
           onClick={() => advance(true)}
           disabled={isSaving || isUploading}
-          className="flex-[2] flex items-center justify-center gap-2 rounded-full bg-black py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-black/10"
+          className="flex-1 flex items-center justify-center gap-2 rounded-full bg-black py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-black/10"
         >
           {isSaving || isUploading ? (
             <>
