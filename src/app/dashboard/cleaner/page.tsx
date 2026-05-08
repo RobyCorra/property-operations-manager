@@ -15,11 +15,10 @@ import RecalculateCleaningChecklistButton from "@/src/components/recalculate-cle
 import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import {
-  LogOut, 
-  Navigation, 
-  Paintbrush, 
-  CircleCheck, 
-  CalendarDays, 
+  LogOut,
+  Navigation,
+  Paintbrush,
+  CalendarDays,
   MessageSquare
 } from "@/src/components/icons";
 import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
@@ -98,9 +97,9 @@ export default async function CleanerDashboardPage() {
     include: {
       cleaningTasks: {
         where: { status: { in: ["PENDING", "IN_PROGRESS"] } },
-        include: { 
+        include: {
           apartment: true,
-          booking: true,    // Triggering checkout booking
+          booking: true,
           messages: {
             orderBy: { createdAt: "asc" },
             include: { attachment: true }
@@ -118,12 +117,11 @@ export default async function CleanerDashboardPage() {
     redirect("/login");
   }
 
-  // Enrich tasks with next booking dynamically
   const enrichedTasks = await enrichCleaningTasksWithNextBooking(user.cleaningTasks) as CleanerDashboardTask[];
 
   const tasksWithChecklists = await Promise.all(enrichedTasks.map(async (task: CleanerDashboardTask) => {
     const computedSnapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date, task.bookingId);
-    
+
     const checklistItems = Array.isArray(task.checklistProgress) && task.checklistProgress.length > 0
       ? task.checklistProgress as CleanerTaskChecklistItem[]
       : computedSnapshot;
@@ -134,17 +132,20 @@ export default async function CleanerDashboardPage() {
   const serverDate = new Date().toISOString();
 
   return (
-    <main className="min-h-screen bg-[#faf8ff] p-6 lg:p-10 font-sans text-slate-900">
+    <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-5xl mx-auto space-y-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+
+        {/* Header */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">
-                Ciao, {user.name} <span className="text-violet-600">.</span>
+              Ciao, {user.name} <span className="text-violet-600">.</span>
             </h1>
             <p className="text-slate-500 text-sm mt-1 font-medium tracking-normal">Ecco i tuoi interventi di pulizia in programma</p>
           </div>
-          <div className="flex items-center gap-4">
-            <Link 
+          {/* Desktop-only nav buttons */}
+          <div className="hidden md:flex items-center gap-4">
+            <Link
               href="/dashboard/history"
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
             >
@@ -159,13 +160,14 @@ export default async function CleanerDashboardPage() {
           </div>
         </div>
 
+        {/* Tasks */}
         <section className="space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <h2 className="text-lg font-semibold text-slate-900 tracking-tight uppercase">Interventi Assegnati</h2>
             <div className="h-px flex-1 bg-slate-200/50"></div>
           </div>
 
-          <div className="grid grid-cols-1 gap-10">
+          <div className="grid grid-cols-1 gap-6">
             {tasksWithChecklists.map((task) => {
               const checklist = task.checklistItems;
 
@@ -180,55 +182,61 @@ export default async function CleanerDashboardPage() {
                           <div className={`h-1.5 w-1.5 rounded-full ${task.status === "IN_PROGRESS" ? "bg-white animate-pulse" : "bg-slate-400"}`} />
                           {cleaningStatusLabel[task.status] ?? task.status}
                         </span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">ID: {task.id.slice(0, 8)}</span>
                       </div>
-                      <h3 className="truncate text-2xl font-semibold uppercase tracking-tight text-slate-900">{task.apartment.name}</h3>
-                      <p className="mt-1 text-sm font-medium text-slate-500">{task.apartment.address}</p>
+                      <h3 className="text-2xl font-semibold uppercase tracking-tight text-slate-900 line-clamp-1">{task.apartment.name}</h3>
+                      <p className="mt-1 text-sm font-medium text-slate-500 truncate">{task.apartment.address}</p>
+                      {/* Date shown inline on mobile */}
+                      <div className="mt-3 flex items-center gap-2 lg:hidden">
+                        <CalendarDays size={13} className="text-slate-400" />
+                        <span className="text-xs font-bold text-slate-700">{formatRomeDateDisplay(task.date)}</span>
+                      </div>
                     </div>
                   )}
                   headerMeta={(
-                    <div className="flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-white shadow-lg shadow-slate-200">
+                    /* Date pill — desktop only */
+                    <div className="hidden lg:flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-white shadow-lg shadow-slate-200">
                       <CalendarDays size={14} />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/90">
                         {formatRomeDateDisplay(task.date)}
                       </span>
                     </div>
                   )}
+                  actionRow={(
+                    task.status === "PENDING" ? (
+                      <StatusUpdateButton
+                        id={task.id}
+                        nextStatus="IN_PROGRESS"
+                        label="▶  Avvia Intervento"
+                        action={updateCleaningStatus}
+                        className="w-full bg-gradient-to-r from-violet-600 to-blue-500 text-white text-xs font-black uppercase tracking-widest py-4 rounded-full transition-all duration-300 shadow-xl shadow-violet-200 hover:shadow-2xl hover:scale-[1.03] active:scale-95"
+                      />
+                    ) : (
+                      <div className="w-full rounded-full bg-violet-50 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-violet-700">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500 animate-pulse mr-2 align-middle" />
+                        Intervento in corso
+                      </div>
+                    )
+                  )}
                   compactContent={(
-                    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      {/* Tempi */}
                       <div className="h-full rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
-                        <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Azione</p>
-                        {task.status === "PENDING" ? (
-                          <StatusUpdateButton
-                            id={task.id}
-                            nextStatus="IN_PROGRESS"
-                            label="Avvia Intervento"
-                            action={updateCleaningStatus}
-                            className="w-full bg-gradient-to-r from-violet-600 to-blue-500 text-white text-xs font-black uppercase tracking-widest py-5 rounded-full transition-all duration-300 shadow-xl shadow-violet-200 hover:shadow-2xl hover:scale-[1.03] active:scale-95"
-                          />
-                        ) : (
-                          <div className="rounded-2xl bg-violet-50 px-4 py-3 text-xs font-black uppercase tracking-widest text-violet-700">
-                            Intervento in corso
-                          </div>
-                        )}
-                        <div className="mt-4 rounded-2xl bg-slate-50 p-4">
-                          <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                            <Paintbrush size={14} className="text-violet-600" />
-                            Data intervento
-                          </div>
-                          <p className="text-sm font-bold text-slate-900">
-                            {formatRomeDateTimeDisplay(task.date)}
-                          </p>
+                        <div className="mb-4 flex items-center gap-2">
+                          <Paintbrush size={14} className="text-violet-600" />
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tempi intervento</p>
                         </div>
-                        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <p className="text-sm font-bold text-slate-900 mb-4">
+                          {formatRomeDateTimeDisplay(task.date)}
+                        </p>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                           <div className="rounded-2xl bg-emerald-50 p-4">
-                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-emerald-700">Inizio intervento reale</p>
+                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-emerald-700">Inizio reale</p>
                             <p className="text-sm font-bold text-slate-900">
                               {task.startedAt ? formatRomeDateTimeDisplay(task.startedAt) : "Non avviato"}
                             </p>
                           </div>
                           <div className="rounded-2xl bg-blue-50 p-4">
-                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-blue-700">Fine intervento reale</p>
+                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-blue-700">Fine reale</p>
                             <p className="text-sm font-bold text-slate-900">
                               {task.completedAt ? formatRomeDateTimeDisplay(task.completedAt) : "Non completato"}
                             </p>
@@ -238,6 +246,7 @@ export default async function CleanerDashboardPage() {
 
                       <AccessInstructionsCard accessInstructions={task.apartment.accessInstructions} />
 
+                      {/* Intervento */}
                       <div className="h-full rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
                         <div className="mb-4 flex items-center gap-2">
                           <span className="text-lg">🧹</span>
@@ -250,11 +259,9 @@ export default async function CleanerDashboardPage() {
                             <span className="line-clamp-2 font-medium italic">"{task.notes}"</span>
                           </div>
                         )}
-                        <p className="mt-3 rounded-2xl border border-slate-100 border-dashed bg-slate-50/70 px-4 py-3 text-sm font-medium text-slate-500">
-                          {task.status === "IN_PROGRESS" ? "Apri scheda completa per vedere checklist" : "Avvia intervento per vedere checklist"}
-                        </p>
                       </div>
 
+                      {/* Logistica */}
                       <div className="h-full rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
                         <div className="mb-4 flex items-center gap-2">
                           <span className="text-lg">📍</span>
@@ -262,7 +269,7 @@ export default async function CleanerDashboardPage() {
                         </div>
                         <div className="space-y-3">
                           {task.booking ? (
-                            <p className="truncate text-sm font-bold text-slate-900">
+                            <p className="text-sm font-bold text-slate-900">
                               <span className="text-rose-500">Uscita:</span> {task.booking.guestName}
                               <span className="ml-2 text-[10px] font-medium text-slate-500">
                                 Out: <SafeDate date={task.booking.checkOutDate} serverDate={serverDate} format={{ day: "numeric", month: "short" }} />
@@ -272,7 +279,7 @@ export default async function CleanerDashboardPage() {
                             <p className="text-sm font-bold text-slate-900"><span className="text-rose-500">Uscita:</span> Evento manuale</p>
                           )}
                           {task.nextBooking ? (
-                            <p className="truncate text-sm font-bold text-slate-900">
+                            <p className="text-sm font-bold text-slate-900">
                               <span className="text-emerald-600">Arrivo:</span> {task.nextBooking.guestName} ({task.nextBooking.totalGuests} osp)
                               <span className="ml-2 text-[10px] font-medium text-slate-500">
                                 In: <SafeDate date={task.nextBooking.checkInDate} serverDate={serverDate} format={{ day: "numeric", month: "short" }} />
@@ -354,20 +361,44 @@ export default async function CleanerDashboardPage() {
                 <div className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-2xl border border-slate-100">
                   <Sparkles size={48} className="text-violet-500" />
                 </div>
-                <h3 className="text-2xl font-semibold text-slate-900 tracking-tight uppercase uppercase">Tutto Sotto Controllo</h3>
+                <h3 className="text-2xl font-semibold text-slate-900 tracking-tight uppercase">Tutto Sotto Controllo</h3>
                 <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal mb-10">Non ci sono interventi di pulizia assegnati a te al momento.</p>
-                <Link 
-                    href="/dashboard/history"
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all hover:scale-[1.03] active:scale-95 shadow-xl shadow-slate-200"
+                <Link
+                  href="/dashboard/history"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all hover:scale-[1.03] active:scale-95 shadow-xl shadow-slate-200"
                 >
-                    <ScrollText size={14} />
-                    Vedi Storico
+                  <ScrollText size={14} />
+                  Vedi Storico
                 </Link>
               </div>
             )}
           </div>
         </section>
       </div>
+
+      {/* Bottom nav — mobile only */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-stretch border-t border-slate-200 bg-white/95 backdrop-blur-md md:hidden">
+        <Link
+          href="/dashboard/cleaner"
+          className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-violet-600"
+        >
+          <ClipboardList size={20} />
+          <span className="text-[9px] font-black uppercase tracking-widest">Tasks</span>
+        </Link>
+        <Link
+          href="/dashboard/history"
+          className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-slate-700"
+        >
+          <ScrollText size={20} />
+          <span className="text-[9px] font-black uppercase tracking-widest">Storico</span>
+        </Link>
+        <form action={logoutAction} className="flex flex-1">
+          <button type="submit" className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-rose-500">
+            <LogOut size={20} />
+            <span className="text-[9px] font-black uppercase tracking-widest">Esci</span>
+          </button>
+        </form>
+      </nav>
     </main>
   );
 }
