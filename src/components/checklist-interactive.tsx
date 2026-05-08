@@ -1,16 +1,21 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useRef } from "react";
+import { upload } from "@vercel/blob/client";
 import { updateTaskChecklist } from "@/src/app/actions/checklist";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
+import { Camera, ChevronRight, SkipForward, CheckCircle2, Loader2 } from "lucide-react";
 
 interface ChecklistItem {
   id: string;
   label: string;
   type: string;
-  value?: number;
+  value?: number | null;
   required: boolean;
   completed: boolean;
+  formula?: string | null;
+  photoUrl?: string | null;
+  skipped?: boolean;
 }
 
 interface ChecklistInteractiveProps {
@@ -20,139 +25,284 @@ interface ChecklistInteractiveProps {
 
 export default function ChecklistInteractive({ taskId, initialItems }: ChecklistInteractiveProps) {
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
+
+  const firstUnprocessed = initialItems.findIndex((i) => !i.completed && !i.skipped);
+  const [currentIndex, setCurrentIndex] = useState(
+    firstUnprocessed === -1 ? initialItems.length : firstUnprocessed
+  );
+
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isUpdatingStatus, startStatusTransition] = useTransition();
+  const [isCompletingTask, setIsCompletingTask] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [justCompleted, setJustCompleted] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
-  const toggleItem = async (id: string) => {
-    const previousItems = items;
+  const currentItem = items[currentIndex];
+  const completedCount = items.filter((i) => i.completed).length;
+  const allDone = currentIndex >= items.length;
+  const allRequiredDone = items.filter((i) => i.required).every((i) => i.completed);
 
-    const updatedItems = previousItems.map((item) =>
-      item.id === id ? { ...item, completed: !item.completed } : item
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setUploadError(null);
+  };
+
+  const removePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    if (photoInputRef.current) photoInputRef.current.value = "";
+  };
+
+  const advance = async (completed: boolean) => {
+    setIsSaving(true);
+    setUploadError(null);
+
+    let photoUrl: string | null = null;
+
+    if (completed && photoFile) {
+      setIsUploading(true);
+      try {
+        const blob = await upload(
+          `uploads/cleaning/${taskId}/checklist/${currentItem.id}/${Date.now()}-${photoFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
+          photoFile,
+          { access: "public", handleUploadUrl: "/api/blob-upload" }
+        );
+        photoUrl = blob.url;
+      } catch {
+        setUploadError("Errore upload foto. Riprova o procedi senza.");
+        setIsUploading(false);
+        setIsSaving(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
+    const updatedItems = items.map((item, idx) =>
+      idx === currentIndex
+        ? { ...item, completed, skipped: !completed, photoUrl: photoUrl ?? item.photoUrl ?? null }
+        : item
     );
 
     setItems(updatedItems);
 
     try {
       await updateTaskChecklist(taskId, updatedItems);
-    } catch (error) {
-      console.error("Failed to save checklist:", error);
-      setItems(previousItems);
-      alert("Errore durante il salvataggio della checklist.");
+    } catch {
+      // progress saved locally, DB sync best-effort
+    }
+
+    setJustCompleted(completed ? currentItem.label : null);
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    if (photoInputRef.current) photoInputRef.current.value = "";
+    setCurrentIndex((prev) => prev + 1);
+    setIsSaving(false);
+  };
+
+  const handleComplete = async () => {
+    setIsCompletingTask(true);
+    try {
+      await updateCleaningStatus(taskId, "COMPLETED");
+    } catch (err: unknown) {
+      alert((err as Error).message || "Errore durante il completamento.");
+      setIsCompletingTask(false);
     }
   };
 
-  const handleComplete = () => {
-    startStatusTransition(async () => {
-      try {
-        await updateCleaningStatus(taskId, "COMPLETED");
-      } catch (err: any) {
-        alert(err.message || "Errore durante il completamento.");
-      }
-    });
-  };
+  // ── Completion screen ──────────────────────────────────────────────────────
+  if (allDone) {
+    const photosWithUrls = items.filter((i) => i.photoUrl);
+    return (
+      <div className="text-center py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="text-6xl mb-4">🎉</div>
+        <h3 className="text-xl font-bold text-slate-900 mb-1">Checklist completata!</h3>
+        <p className="text-sm text-slate-500 mb-6">
+          {completedCount} / {items.length} punti verificati
+        </p>
 
-  const allRequiredDone =
-    items.length === 0 || items.filter((i) => i.required).every((i) => i.completed);
-
-  const getStatusLabel = () => {
-    if (isUpdatingStatus) return { text: "Completamento...", color: "text-gray-400", pulse: true };
-    if (!allRequiredDone) return { text: "Checklist Obbligatoria", color: "text-amber-600", pulse: false };
-    return { text: "Pronta per la Chiusura", color: "text-emerald-600", pulse: true };
-  };
-
-  const statusLabel = getStatusLabel();
-
-  return (
-    <div className="mt-6 border-t border-gray-100 pt-6 animate-in fade-in slide-in-from-top-4 duration-500">
-      <div className="mb-6 flex items-center justify-between bg-gray-50/50 p-4 rounded-2xl border border-gray-100 border-dashed">
-        <div className="flex items-center gap-3">
-          <span
-            className={`flex h-2 w-2 rounded-full ${statusLabel.pulse ? "animate-ping" : ""} ${statusLabel.text === "Pronta per la Chiusura" ? "bg-emerald-500" : "bg-amber-500"
-              }`}
-          />
-          <span className={`text-xs font-black uppercase tracking-widest ${statusLabel.color}`}>
-            {statusLabel.text}
-          </span>
-        </div>
-        <div className="text-[10px] font-bold text-gray-400 bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm uppercase tracking-tighter">
-          Step Attuale
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between mb-4 px-1">
-        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
-          {isSaving ? "🔄 Salvataggio..." : "📋 Quality Checklist"}
-        </h4>
-        {items.length > 0 && (
-          <span className="text-[10px] font-medium text-gray-400">
-            Completa i punti obbligatori (*)
-          </span>
-        )}
-      </div>
-
-      <div className="space-y-3">
-        {items.map((item) => (
-          <label
-            key={item.id}
-            onClick={(e) => e.stopPropagation()}
-            className={`flex items-start gap-3 p-4 rounded-2xl border transition-all cursor-pointer ${item.completed
-              ? "bg-emerald-50/50 border-emerald-100 shadow-sm"
-              : "bg-white border-gray-100 hover:border-gray-200"
-              }`}
-          >
-            <input
-              type="checkbox"
-              checked={item.completed}
-              onChange={() => toggleItem(item.id)}
-              className="mt-0.5 w-5 h-5 accent-emerald-600 rounded-lg border-gray-300 transition-all transform active:scale-90"
-            />
-            <div className="flex-1">
-              <span
-                className={`text-sm font-semibold transition-colors ${item.completed ? "text-emerald-900" : "text-gray-900"
-                  }`}
-              >
-                {item.type === "dynamic" ? `${item.label}: ${item.value ?? "N/A"}` : item.label}{" "}
-                {item.required && <span className="text-red-500 ml-0.5 font-black">*</span>}
-              </span>
-            </div>
-          </label>
-        ))}
-
-        {items.length === 0 && (
-          <div className="p-8 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200 text-center">
-            <p className="text-gray-500 text-xs font-medium">
-              Nessun punto di controllo configurato per questo appartamento.
+        {photosWithUrls.length > 0 && (
+          <div className="mb-6">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
+              📸 {photosWithUrls.length} foto allegate
             </p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {photosWithUrls.map((item) => (
+                <a key={item.id} href={item.photoUrl!} target="_blank" rel="noreferrer">
+                  <img
+                    src={item.photoUrl!}
+                    alt={item.label}
+                    className="w-16 h-16 object-cover rounded-xl border border-slate-100 shadow-sm hover:scale-105 transition-transform"
+                  />
+                </a>
+              ))}
+            </div>
           </div>
         )}
-      </div>
 
-      <div className="mt-8 pt-6 border-t border-gray-50 flex flex-col items-center gap-4">
         {!allRequiredDone && (
-          <p className="text-[11px] text-red-500 font-bold bg-red-50 px-4 py-2 rounded-full border border-red-100 animate-pulse">
-            ⚠️ Smarca tutti i punti obbligatori per completare
+          <p className="text-xs text-amber-600 font-bold bg-amber-50 px-4 py-2 rounded-full mb-4 inline-block border border-amber-100">
+            ⚠️ Alcuni punti obbligatori non sono stati completati
           </p>
         )}
 
         <button
           type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleComplete();
-          }}
-          disabled={!allRequiredDone || isUpdatingStatus}
-          className={`w-full py-4 rounded-2xl text-sm font-bold transition-all shadow-xl shadow-gray-100 active:scale-95 ${allRequiredDone
-            ? "bg-black text-white hover:bg-gray-800"
-            : "bg-gray-100 text-gray-400 cursor-not-allowed opacity-60"
-            } ${isUpdatingStatus ? "animate-pulse" : ""}`}
+          onClick={handleComplete}
+          disabled={!allRequiredDone || isCompletingTask}
+          className={`w-full py-4 rounded-2xl text-sm font-bold transition-all shadow-xl active:scale-95 ${
+            allRequiredDone
+              ? "bg-black text-white hover:bg-gray-800"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+          }`}
         >
-          {isUpdatingStatus ? "Completamento in corso..." : "Intervento Completato"}
+          {isCompletingTask ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 size={16} className="animate-spin" /> Completamento...
+            </span>
+          ) : (
+            "✓ Intervento Completato"
+          )}
         </button>
-
-        <p className="text-[10px] text-gray-400 font-medium">
-          Una volta completato, il Manager riceverà una notifica immediata.
+        <p className="text-[10px] text-slate-400 mt-3">
+          Il Manager riceverà una notifica immediata.
         </p>
+      </div>
+    );
+  }
+
+  // ── Step view ──────────────────────────────────────────────────────────────
+  const progress = Math.round((currentIndex / items.length) * 100);
+  const itemLabel =
+    currentItem.type === "dynamic"
+      ? `${currentItem.label}: ${currentItem.value ?? "N/A"}`
+      : currentItem.label;
+
+  return (
+    <div className="animate-in fade-in duration-300">
+      {/* Progress bar */}
+      <div className="mb-5">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            Punto {currentIndex + 1} di {items.length}
+          </span>
+          <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
+        </div>
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-violet-500 rounded-full transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Previous step confirmation */}
+      {justCompleted && (
+        <div className="mb-3 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 animate-in fade-in slide-in-from-top-2 duration-300">
+          <CheckCircle2 size={13} />
+          <span className="truncate">"{justCompleted}" completato</span>
+        </div>
+      )}
+
+      {/* Item card */}
+      <div className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm mb-4 text-center">
+        <div className="text-5xl mb-4">{currentItem.required ? "✅" : "☑️"}</div>
+        <h3 className="text-lg font-bold text-slate-900 leading-snug">
+          {itemLabel}
+          {currentItem.required && <span className="text-rose-500 ml-1 text-base">*</span>}
+        </h3>
+        {currentItem.required && (
+          <p className="text-[10px] text-rose-400 font-bold uppercase tracking-widest mt-2">Obbligatorio</p>
+        )}
+      </div>
+
+      {/* Photo section */}
+      <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-4">
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
+          📸 Foto di verifica{!currentItem.required && " (opzionale)"}
+        </p>
+
+        {uploadError && (
+          <p className="text-xs text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mb-3 border border-rose-100">
+            ⚠️ {uploadError}
+          </p>
+        )}
+
+        {photoPreview ? (
+          <div className="flex items-center gap-3">
+            <img
+              src={photoPreview}
+              alt="Anteprima"
+              className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
+              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">✓ Pronta per l'invio</p>
+            </div>
+            <button
+              type="button"
+              onClick={removePhoto}
+              className="w-7 h-7 rounded-full bg-rose-100 text-rose-500 text-[10px] flex items-center justify-center hover:bg-rose-200 shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => photoInputRef.current?.click()}
+            className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 py-4 text-sm font-bold text-slate-500 hover:border-slate-400 hover:bg-white transition-colors"
+          >
+            <Camera size={18} />
+            Scatta / carica foto
+          </button>
+        )}
+
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={handlePhotoSelect}
+        />
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={() => advance(false)}
+          disabled={isSaving}
+          className="flex-1 flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+        >
+          <SkipForward size={13} />
+          Salta
+        </button>
+        <button
+          type="button"
+          onClick={() => advance(true)}
+          disabled={isSaving || isUploading}
+          className="flex-[2] flex items-center justify-center gap-2 rounded-full bg-black py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-black/10"
+        >
+          {isSaving || isUploading ? (
+            <>
+              <Loader2 size={13} className="animate-spin" />
+              {isUploading ? "Caricamento..." : "Salvataggio..."}
+            </>
+          ) : (
+            <>
+              <CheckCircle2 size={13} />
+              Fatto
+              <ChevronRight size={13} />
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

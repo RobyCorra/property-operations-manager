@@ -23,6 +23,8 @@ type ChecklistProgressUpdateItem = {
   required: boolean;
   completed: boolean;
   formula?: string | null;
+  photoUrl?: string | null;
+  skipped?: boolean;
 };
 type DefaultChecklistItem = (typeof DEFAULT_CHECKLIST)[number];
 
