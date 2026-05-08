@@ -2,21 +2,17 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import SafeDate from "./safe-date";
 import TicketConversation from "./ticket-conversation";
-import { 
-  Wrench, 
-  Paintbrush, 
-  Search, 
-  Building2, 
-  Filter, 
-  CalendarDays, 
-  RefreshCw, 
-  User, 
+import {
+  Wrench,
+  Brush,
+  Search,
   MessageSquare,
   ArrowRight,
-  CircleCheck,
-  ChevronRight
+  User,
+  Building2,
+  CalendarDays,
+  Clock,
 } from "./icons";
 
 interface Message {
@@ -32,13 +28,20 @@ interface Thread {
   id: string;
   type: "MAINTENANCE" | "CLEANING";
   apartmentName: string;
+  apartmentAddress: string;
   assignedUser: string;
   title: string;
+  description: string;
+  status: string;
+  priority: string | null;
+  scheduledStart: string | null;
+  scheduledEnd: string | null;
+  date?: string;
+  checklistProgress?: { completed: boolean }[] | null;
   lastMessage: Message;
   messages: Message[];
   updatedAt: Date;
   hasUnread: boolean;
-  date?: Date;
 }
 
 interface Props {
@@ -51,272 +54,426 @@ interface Props {
   submitAction: any;
 }
 
-export default function MessagesDashboard({ 
-  threads: initialThreads, 
-  apartments, 
-  selectedId, 
-  selectedType, 
-  serverDate, 
+function relativeTime(date: Date): string {
+  const now = new Date();
+  const d = new Date(date);
+  const diffDays = Math.floor((now.getTime() - d.getTime()) / 86400000);
+  if (diffDays === 0) return d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  if (diffDays === 1) return "Ieri";
+  if (diffDays < 7) return d.toLocaleDateString("it-IT", { weekday: "short" });
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
+}
+
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  PENDING:     { label: "In attesa",   color: "bg-slate-100 text-slate-600" },
+  IN_PROGRESS: { label: "In corso",    color: "bg-blue-50 text-blue-600" },
+  COMPLETED:   { label: "Completato",  color: "bg-emerald-50 text-emerald-600" },
+  OPEN:        { label: "Aperto",      color: "bg-amber-50 text-amber-600" },
+  RESOLVED:    { label: "Risolto",     color: "bg-emerald-50 text-emerald-600" },
+  CANCELLED:   { label: "Annullato",   color: "bg-slate-100 text-slate-500" },
+};
+
+const PRIORITY_LABELS: Record<string, { label: string; color: string }> = {
+  LOW:      { label: "Bassa",   color: "bg-slate-100 text-slate-500" },
+  MEDIUM:   { label: "Media",   color: "bg-amber-50 text-amber-600" },
+  HIGH:     { label: "Alta",    color: "bg-orange-50 text-orange-600" },
+  URGENT:   { label: "Urgente", color: "bg-rose-50 text-rose-600" },
+};
+
+type FilterType = "ALL" | "MAINTENANCE" | "CLEANING" | "UNREAD";
+
+export default function MessagesDashboard({
+  threads: initialThreads,
+  apartments,
+  selectedId,
+  selectedType,
   userName,
-  submitAction 
+  submitAction,
 }: Props) {
-  const [filters, setFilters] = useState<Record<string, string>>({
-    search: "",
-    type: "",
-    apartmentId: "",
-    unread: "",
-    date: "",
-  });
-
-  const handleFilterChange = (id: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const handleReset = () => {
-    setFilters({ search: "", type: "", apartmentId: "", unread: "", date: "" });
-  };
-
-  const formatDateKey = (d: Date | string) => {
-    const date = new Date(d);
-    return date.toISOString().split('T')[0];
-  };
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<FilterType>("ALL");
 
   const filteredThreads = useMemo(() => {
     return initialThreads.filter((t) => {
-      const matchesSearch = !filters.search || 
-        t.apartmentName.toLowerCase().includes(filters.search.toLowerCase()) || 
-        t.assignedUser.toLowerCase().includes(filters.search.toLowerCase()) ||
-        (t.lastMessage?.text || "").toLowerCase().includes(filters.search.toLowerCase());
-      
-      const matchesType = !filters.type || t.type === filters.type;
-      const matchesApartment = !filters.apartmentId || t.apartmentName === apartments.find(a => a.id === filters.apartmentId)?.name;
-      const matchesUnread = !filters.unread || (filters.unread === "unread" ? t.hasUnread : !t.hasUnread);
-      
-      const matchesDate = !filters.date || (
-        t.date && formatDateKey(t.date) === filters.date
-      ) || (
-        formatDateKey(t.updatedAt) === filters.date
-      );
-
-      return matchesSearch && matchesType && matchesApartment && matchesUnread && matchesDate;
+      const matchesSearch =
+        !search ||
+        t.apartmentName.toLowerCase().includes(search.toLowerCase()) ||
+        t.assignedUser.toLowerCase().includes(search.toLowerCase()) ||
+        (t.lastMessage?.text || "").toLowerCase().includes(search.toLowerCase());
+      const matchesFilter =
+        filter === "ALL" ||
+        (filter === "UNREAD" && t.hasUnread) ||
+        (filter === "MAINTENANCE" && t.type === "MAINTENANCE") ||
+        (filter === "CLEANING" && t.type === "CLEANING");
+      return matchesSearch && matchesFilter;
     });
-  }, [initialThreads, filters, apartments]);
+  }, [initialThreads, search, filter]);
 
   const selectedThread = initialThreads.find(
     (t) => t.id === selectedId && t.type === selectedType
   );
 
+  const unreadCount = initialThreads.filter((t) => t.hasUnread).length;
+
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-[#faf8ff]">
-      {/* Header Pagina */}
-      <div className="px-10 pt-10 pb-6">
-        <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">Messaggi</h1>
-        <p className="text-slate-500 font-medium mt-1 text-sm tracking-wide">Centro Comunicazioni Operative</p>
-      </div>
+    <div className="flex h-[calc(100vh-80px)] bg-white">
 
-      {/* TOP BAR FILTRI */}
-      <div className="px-10 pb-6">
-        <div className="max-w-[1700px] mx-auto bg-white/40 backdrop-blur-xl border border-white/40 rounded-[2rem] shadow-2xl shadow-black/5 px-8 py-5 flex items-center gap-6">
-            <div className="flex-1 min-w-[250px] relative group">
-                <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors" />
-                <input 
-                    type="text"
-                    placeholder="Cerca nei messaggi..."
-                    value={filters.search}
-                    onChange={(e) => handleFilterChange("search", e.target.value)}
-                    className="w-full bg-white/60 border border-slate-100 rounded-full pl-14 pr-6 py-4 text-sm font-semibold focus:ring-2 focus:ring-violet-500/20 transition-all outline-none text-slate-700 shadow-sm"
-                />
-            </div>
+      {/* ── COL 1: Thread list ─────────────────────────────── */}
+      <div className="w-[300px] flex flex-col border-r border-slate-100 shrink-0">
 
-            <div className="hidden lg:flex items-center gap-4">
-                <select
-                    className="bg-white/60 border border-slate-100 rounded-full px-6 py-4 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-violet-500/20 transition-all appearance-none cursor-pointer hover:bg-white text-slate-600 outline-none shadow-sm"
-                    value={filters.type}
-                    onChange={(e) => handleFilterChange("type", e.target.value)}
-                >
-                    <option value="">Tutti i Ruoli</option>
-                    <option value="MAINTENANCE">Manutenzione</option>
-                    <option value="CLEANING">Pulizia</option>
-                </select>
+        {/* Header */}
+        <div className="px-4 pt-5 pb-3 border-b border-slate-100">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-base font-black text-slate-900 tracking-tight">Messaggi</span>
+            {unreadCount > 0 && (
+              <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                {unreadCount} non {unreadCount === 1 ? "letto" : "letti"}
+              </span>
+            )}
+          </div>
 
-                <select
-                    className="max-w-[200px] truncate bg-white/60 border border-slate-100 rounded-full px-6 py-4 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-violet-500/20 transition-all appearance-none cursor-pointer hover:bg-white text-slate-600 outline-none shadow-sm"
-                    value={filters.apartmentId}
-                    onChange={(e) => handleFilterChange("apartmentId", e.target.value)}
-                >
-                    <option value="">Appartamenti</option>
-                    {apartments.map((apt) => (
-                        <option key={apt.id} value={apt.id}>{apt.name}</option>
-                    ))}
-                </select>
+          {/* Search */}
+          <div className="relative mb-2">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cerca..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-slate-50 rounded-lg pl-8 pr-3 py-2 text-xs font-medium outline-none text-slate-700 placeholder:text-slate-400 border border-slate-100 focus:border-violet-300 focus:bg-white transition-colors"
+            />
+          </div>
 
-                <select
-                    className="bg-white/60 border border-slate-100 rounded-full px-6 py-4 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-violet-500/20 transition-all appearance-none cursor-pointer hover:bg-white text-slate-600 outline-none shadow-sm"
-                    value={filters.unread}
-                    onChange={(e) => handleFilterChange("unread", e.target.value)}
-                >
-                    <option value="">Tutti i messaggi</option>
-                    <option value="unread">Non letti</option>
-                    <option value="read">Letti</option>
-                </select>
-
-                <div className="relative group">
-                    <CalendarDays size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-hover:text-violet-600 pointer-events-none" />
-                    <input 
-                        type="date"
-                        className="bg-white/60 border border-slate-100 rounded-full pl-14 pr-6 py-4 text-[10px] font-black uppercase tracking-widest focus:ring-2 focus:ring-violet-500/20 transition-all cursor-pointer hover:bg-white text-slate-600 outline-none shadow-sm"
-                        value={filters.date}
-                        onChange={(e) => handleFilterChange("date", e.target.value)}
-                    />
-                </div>
-            </div>
-
-            <button 
-                onClick={handleReset}
-                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors flex items-center gap-3 px-8 py-4 border border-slate-100 rounded-full bg-white/60 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
-            >
-                <RefreshCw size={14} />
-                Reset
-            </button>
-        </div>
-      </div>
-
-      <div className="flex-1 flex overflow-hidden border-t border-slate-200/50 bg-white/20 backdrop-blur-xl">
-        {/* Sidebar: Lista Threads */}
-        <div className="w-[480px] border-r border-slate-200/50 flex flex-col bg-white/20">
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
-            {filteredThreads.map((thread) => {
-              const isActive = selectedId === thread.id && selectedType === thread.type;
+          {/* Filter pills */}
+          <div className="flex gap-1">
+            {(["ALL", "MAINTENANCE", "CLEANING", "UNREAD"] as FilterType[]).map((f) => {
+              const labels: Record<FilterType, string> = {
+                ALL: "Tutti", MAINTENANCE: "Manut.", CLEANING: "Pulizie", UNREAD: "Non letti",
+              };
+              const isActive = filter === f;
               return (
-                <Link
-                  key={`${thread.type}-${thread.id}`}
-                  href={`/dashboard/manager/messages?id=${thread.id}&type=${thread.type}`}
-                  className={`flex flex-col p-10 border-b border-slate-100 transition-all relative group ${
-                    isActive ? "bg-white shadow-xl z-10" : "hover:bg-white/60"
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFilter(f)}
+                  className={`flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wide transition-colors ${
+                    isActive
+                      ? f === "UNREAD"
+                        ? "bg-rose-500 text-white"
+                        : "bg-slate-900 text-white"
+                      : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                   }`}
                 >
-                  {thread.hasUnread && (
-                    <div className="absolute top-10 right-10 w-3 h-3 bg-rose-500 rounded-full shadow-lg shadow-rose-200 animate-pulse border-2 border-white" />
-                  )}
-
-                  <div className="flex justify-between items-center mb-5">
-                    <span className={`text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full border flex items-center gap-2 ${
-                      thread.type === "MAINTENANCE" ? "bg-amber-50 text-amber-600 border-amber-100" : "bg-violet-50 text-violet-600 border-violet-100"
-                    }`}>
-                      {thread.type === "MAINTENANCE" ? <Wrench size={10} /> : <Paintbrush size={10} />}
-                      {thread.type === "MAINTENANCE" ? "Manutenzione" : "Pulizia"}
-                    </span>
-                    {!thread.hasUnread && (
-                      <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-tight opacity-60">
-                        <CalendarDays size={10} />
-                        {new Date(thread.updatedAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <h3 className={`text-xl font-semibold tracking-tight transition-colors mb-1 uppercase ${isActive ? "text-slate-900" : "text-slate-700 group-hover:text-slate-900"}`}>
-                    {thread.apartmentName}
-                  </h3>
-                  <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4">
-                    <User size={12} className="text-slate-300" />
-                    <span>{thread.assignedUser}</span>
-                    <span className="text-slate-200 px-1">•</span>
-                    <span>{thread.title}</span>
-                  </div>
-
-                  {thread.type === "CLEANING" && thread.date && (
-                    <p className="text-[10px] font-black text-emerald-600 mb-5 bg-emerald-50 w-fit px-4 py-2 rounded-full border border-emerald-100 uppercase tracking-widest flex items-center gap-2">
-                       <CircleCheck size={12} />
-                       {new Date(thread.date).toLocaleDateString('it-IT')}
-                    </p>
-                  )}
-                  
-                  <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 text-slate-400 group-hover:bg-violet-100 group-hover:text-violet-600 transition-colors">
-                          <MessageSquare size={14} />
-                      </div>
-                      <p className="text-sm text-slate-500 line-clamp-2 font-medium opacity-80 leading-relaxed pt-0.5">
-                        <span className="font-bold text-slate-700">{thread.lastMessage?.senderName}:</span> {thread.lastMessage?.text || "Documento allegato..."}
-                      </p>
-                  </div>
-                </Link>
+                  {labels[f]}
+                </button>
               );
             })}
-
-            {filteredThreads.length === 0 && (
-              <div className="p-20 text-center text-slate-400">
-                <MessageSquare size={64} className="mx-auto mb-6 opacity-10" />
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Nessun messaggio trovato</p>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Main Content: Chat View */}
-        <div className="flex-1 flex flex-col bg-white shadow-2xl relative">
-          {selectedThread ? (
-            <div className="flex flex-col h-full">
-              {/* Thread Header */}
-              <div className="px-14 py-10 border-b border-slate-100 flex items-center justify-between bg-white z-10">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-4 mb-1">
-                    <h2 className="text-4xl font-semibold text-slate-900 tracking-tight uppercase">{selectedThread.apartmentName}</h2>
-                    <div className={`px-5 py-2 rounded-full text-[10px] font-black text-white uppercase tracking-widest shadow-lg flex items-center gap-2 ${
-                        selectedThread.type === 'MAINTENANCE' ? 'bg-amber-500 shadow-amber-200' : 'bg-violet-600 shadow-violet-200'
-                    }`}>
-                      {selectedThread.type === "MAINTENANCE" ? <Wrench size={10} /> : <Paintbrush size={10} />}
-                      {selectedThread.type === "MAINTENANCE" ? "Manutenzione" : "Pulizia"}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-slate-500 font-medium uppercase tracking-wide">
-                     <User size={14} className="text-slate-300" />
-                     <span>Inviato a <span className="text-slate-900 font-bold">{selectedThread.assignedUser}</span> per <span className="text-violet-600 font-bold underline decoration-violet-200 underline-offset-4">{selectedThread.title.toLowerCase()}</span></span>
-                  </div>
-                </div>
-                
-                <Link 
-                  href={selectedThread.type === "MAINTENANCE" 
-                    ? `/dashboard/manager/maintenance/${selectedThread.id}/edit`
-                    : `/dashboard/manager/cleanings/${selectedThread.id}/edit`
-                  }
-                  className="group flex items-center gap-4 text-[10px] font-black text-slate-900 uppercase tracking-widest border border-slate-100 px-10 py-5 rounded-full bg-white hover:bg-slate-900 hover:text-white transition-all shadow-sm hover:shadow-xl active:scale-95"
+        {/* Thread list */}
+        <div className="flex-1 overflow-y-auto">
+          {filteredThreads.map((thread) => {
+            const isActive = selectedId === thread.id && selectedType === thread.type;
+            const isMaintenance = thread.type === "MAINTENANCE";
+            return (
+              <Link
+                key={`${thread.type}-${thread.id}`}
+                href={`/dashboard/manager/messages?id=${thread.id}&type=${thread.type}`}
+                className={`flex gap-3 px-4 py-3.5 border-b border-slate-50 transition-colors relative group ${
+                  isActive
+                    ? "bg-violet-50 border-l-[3px] border-l-violet-500"
+                    : thread.hasUnread
+                    ? "bg-rose-50/40 border-l-[3px] border-l-rose-400 hover:bg-rose-50"
+                    : "border-l-[3px] border-l-transparent hover:bg-slate-50"
+                }`}
+              >
+                {/* Avatar */}
+                <div
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 mt-0.5 ${
+                    isActive
+                      ? isMaintenance ? "bg-amber-500 shadow-lg shadow-amber-200" : "bg-violet-600 shadow-lg shadow-violet-200"
+                      : isMaintenance ? "bg-amber-100" : "bg-violet-100"
+                  }`}
                 >
-                  Vedi Intervento
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
+                  {isMaintenance
+                    ? <Wrench size={16} className={isActive ? "text-white" : "text-amber-600"} />
+                    : <Brush size={16} className={isActive ? "text-white" : "text-violet-600"} />
+                  }
+                </div>
 
-              {/* Chat Body */}
-              <div className="flex-1 overflow-hidden flex flex-col p-10 bg-[#fcfcfd]">
-                <TicketConversation 
-                  entityId={selectedThread.id}
-                  initialMessages={selectedThread.messages}
-                  currentUserRole="MANAGER"
-                  currentUserName={userName}
-                  submitAction={submitAction}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="flex-1 flex items-center justify-center bg-slate-50/10">
-              <div className="text-center space-y-8 max-w-[400px]">
-                <div className="w-32 h-32 bg-white rounded-[3rem] shadow-2xl border border-white flex items-center justify-center mx-auto mb-10 group hover:scale-110 transition-transform duration-500">
-                  <MessageSquare size={54} className="text-violet-600 animate-pulse" />
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-1 mb-0.5">
+                    <span className={`text-sm truncate ${thread.hasUnread ? "font-black text-slate-900" : "font-semibold text-slate-700"}`}>
+                      {thread.apartmentName}
+                    </span>
+                    <span className="text-[10px] text-slate-400 shrink-0 font-medium">
+                      {relativeTime(thread.updatedAt)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <span className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full ${
+                      isMaintenance ? "text-amber-600 bg-amber-50" : "text-violet-600 bg-violet-50"
+                    }`}>
+                      {isMaintenance ? "Manutenzione" : "Pulizia"}
+                    </span>
+                    <span className="text-[10px] text-slate-400 truncate">· {thread.assignedUser}</span>
+                  </div>
+                  <p className={`text-xs truncate ${thread.hasUnread ? "font-semibold text-slate-700" : "text-slate-400 font-medium"}`}>
+                    {thread.lastMessage?.text || "Allegato..."}
+                  </p>
                 </div>
-                <div className="space-y-3">
-                    <h2 className="text-3xl font-semibold text-slate-900 tracking-tight uppercase">Seleziona una chat</h2>
-                    <p className="text-slate-400 font-bold text-[11px] uppercase tracking-widest leading-relaxed">Scegli una conversazione dalla lista per monitorare gli interventi e rispondere al tuo team.</p>
-                </div>
-                <div className="flex items-center justify-center gap-2 text-[10px] font-black text-violet-500 uppercase tracking-widest opacity-30 pt-4">
-                    <Building2 size={12} />
-                    <span>Control Room Messaggi</span>
-                </div>
-              </div>
+
+                {/* Unread badge */}
+                {thread.hasUnread && (
+                  <div className="flex flex-col items-end justify-center shrink-0">
+                    <span className="w-5 h-5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-sm">
+                      {thread.messages.filter((m) => m.role !== "MANAGER" && m.readByManagerAt === null).length}
+                    </span>
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+
+          {filteredThreads.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 text-center px-6">
+              <MessageSquare size={32} className="text-slate-200 mb-3" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Nessuna conversazione
+              </p>
             </div>
           )}
         </div>
       </div>
+
+      {/* ── COL 2: Chat ────────────────────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0 bg-[#faf8ff]">
+        {selectedThread ? (
+          <>
+            {/* Chat header */}
+            <div className="h-[60px] bg-white border-b border-slate-100 flex items-center px-5 gap-3 shrink-0">
+              <div
+                className={`w-9 h-9 rounded-2xl flex items-center justify-center shadow-md shrink-0 ${
+                  selectedThread.type === "MAINTENANCE"
+                    ? "bg-amber-500 shadow-amber-200"
+                    : "bg-violet-600 shadow-violet-200"
+                }`}
+              >
+                {selectedThread.type === "MAINTENANCE"
+                  ? <Wrench size={15} className="text-white" />
+                  : <Brush size={15} className="text-white" />
+                }
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-black text-slate-900 truncate">
+                    {selectedThread.apartmentName}
+                  </span>
+                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${
+                    selectedThread.type === "MAINTENANCE"
+                      ? "text-amber-600 bg-amber-50 border-amber-100"
+                      : "text-violet-600 bg-violet-50 border-violet-100"
+                  }`}>
+                    {selectedThread.type === "MAINTENANCE" ? "Manutenzione" : "Pulizia"}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-400 font-medium truncate">
+                  {selectedThread.assignedUser}
+                </p>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-hidden flex flex-col p-4">
+              <TicketConversation
+                entityId={selectedThread.id}
+                initialMessages={selectedThread.messages}
+                currentUserRole="MANAGER"
+                currentUserName={userName}
+                submitAction={submitAction}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center space-y-4 max-w-xs">
+              <div className="w-20 h-20 bg-white rounded-3xl shadow-xl border border-slate-100 flex items-center justify-center mx-auto">
+                <MessageSquare size={36} className="text-violet-400" />
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-slate-900 tracking-tight">Seleziona una chat</h2>
+                <p className="text-xs text-slate-400 font-medium mt-1">
+                  Scegli una conversazione dalla lista
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── COL 3: Info panel ──────────────────────────────── */}
+      <div className="w-[280px] flex flex-col border-l border-slate-100 bg-white shrink-0">
+        {selectedThread ? (
+          <div className="flex flex-col h-full overflow-y-auto">
+
+            {/* Panel header */}
+            <div className="px-5 pt-5 pb-4 border-b border-slate-100">
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                {selectedThread.type === "MAINTENANCE" ? "Scheda Manutenzione" : "Scheda Pulizia"}
+              </p>
+              <h3 className="text-sm font-black text-slate-900 leading-snug mb-3">
+                {selectedThread.type === "MAINTENANCE" ? selectedThread.title : "Pulizia Appartamento"}
+              </h3>
+
+              {/* Status + Priority */}
+              <div className="flex flex-wrap gap-1.5">
+                {STATUS_LABELS[selectedThread.status] && (
+                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${STATUS_LABELS[selectedThread.status].color}`}>
+                    {STATUS_LABELS[selectedThread.status].label}
+                  </span>
+                )}
+                {selectedThread.priority && PRIORITY_LABELS[selectedThread.priority] && (
+                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${PRIORITY_LABELS[selectedThread.priority].color}`}>
+                    {PRIORITY_LABELS[selectedThread.priority].label}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="px-5 py-4 space-y-4 flex-1">
+
+              {/* Apartment */}
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                  <Building2 size={13} className="text-slate-500" />
+                </div>
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Appartamento</p>
+                  <p className="text-xs font-bold text-slate-800 mt-0.5">{selectedThread.apartmentName}</p>
+                  {selectedThread.apartmentAddress && (
+                    <p className="text-[10px] text-slate-400 mt-0.5">{selectedThread.apartmentAddress}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Assigned */}
+              <div className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                  <User size={13} className="text-slate-500" />
+                </div>
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Assegnato a</p>
+                  <p className="text-xs font-bold text-slate-800 mt-0.5">{selectedThread.assignedUser}</p>
+                </div>
+              </div>
+
+              {/* Date / Scheduled */}
+              {selectedThread.type === "CLEANING" && selectedThread.date && (
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center shrink-0">
+                    <CalendarDays size={13} className="text-violet-500" />
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Data pulizia</p>
+                    <p className="text-xs font-bold text-slate-800 mt-0.5">
+                      {new Date(selectedThread.date).toLocaleDateString("it-IT", {
+                        weekday: "short", day: "numeric", month: "long",
+                      })}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {selectedThread.type === "MAINTENANCE" && selectedThread.scheduledStart && (
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                    <Clock size={13} className="text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Intervento programmato</p>
+                    <p className="text-xs font-bold text-slate-800 mt-0.5">
+                      {new Date(selectedThread.scheduledStart).toLocaleDateString("it-IT", {
+                        day: "numeric", month: "short",
+                      })}
+                    </p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">
+                      {new Date(selectedThread.scheduledStart).toLocaleTimeString("it-IT", {
+                        hour: "2-digit", minute: "2-digit",
+                      })}
+                      {selectedThread.scheduledEnd && (
+                        <> → {new Date(selectedThread.scheduledEnd).toLocaleTimeString("it-IT", {
+                          hour: "2-digit", minute: "2-digit",
+                        })}</>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              {selectedThread.description && (
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Note</p>
+                  <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 rounded-xl p-3 border border-slate-100">
+                    {selectedThread.description}
+                  </p>
+                </div>
+              )}
+
+              {/* Checklist progress (cleaning) */}
+              {selectedThread.type === "CLEANING" && selectedThread.checklistProgress && selectedThread.checklistProgress.length > 0 && (() => {
+                const total = selectedThread.checklistProgress.length;
+                const done = selectedThread.checklistProgress.filter((i) => i.completed).length;
+                const pct = Math.round((done / total) * 100);
+                return (
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Checklist</p>
+                      <span className="text-[10px] font-black text-slate-600">{done}/{total}</span>
+                    </div>
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-violet-500 rounded-full transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-1">{pct}% completato</p>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* CTA */}
+            <div className="px-5 pb-5 pt-3 border-t border-slate-100 mt-auto">
+              <Link
+                href={
+                  selectedThread.type === "MAINTENANCE"
+                    ? `/dashboard/manager/maintenance/${selectedThread.id}/edit`
+                    : `/dashboard/manager/cleanings/${selectedThread.id}/edit`
+                }
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-violet-600 transition-colors shadow-sm"
+              >
+                Apri scheda
+                <ArrowRight size={12} />
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center px-5">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <Building2 size={20} className="text-slate-300" />
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">
+                Dettagli intervento
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
