@@ -10,17 +10,10 @@ import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
-import {
-  KeyRound,
-  WifiOff,
-  MessageSquare,
-} from "@/src/components/icons";
 
 const isMaintenanceActive = (ticket: { status: string }) => {
   return ticket.status !== "RESOLVED" && ticket.status !== "CANCELLED";
 };
-
-const apartmentStatusLegendKeys = ["GREEN", "BLUE", "RED"] as const;
 
 const formatLocalDateKey = (date: Date | string) => {
   const value = new Date(date);
@@ -28,36 +21,6 @@ const formatLocalDateKey = (date: Date | string) => {
   const month = String(value.getMonth() + 1).padStart(2, "0");
   const day = String(value.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-};
-
-type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
-type JsonObject = { [key: string]: JsonValue };
-type JsonArray = JsonValue[];
-
-type MaintenanceMessageView = {
-  id: string;
-  text: string | null;
-  createdAt: Date;
-  senderName: string | null;
-  maintenanceTicketId?: string | null;
-  maintenanceTicket: {
-    apartment: {
-      name: string;
-    };
-  };
-};
-
-type CleaningMessageView = {
-  id: string;
-  text: string | null;
-  createdAt: Date;
-  senderName: string | null;
-  cleaningTaskId?: string | null;
-  cleaningTask: {
-    apartment: {
-      name: string;
-    };
-  };
 };
 
 type BookingView = {
@@ -120,7 +83,7 @@ export default async function CalendarioOperativoPage() {
     redirect("/login");
   }
 
-  const [apartments, bookings, cleanings, tickets, calendarTickets, initialNotifications, messages, cleaningMessages] = await Promise.all([
+  const [apartments, bookings, cleanings, tickets, calendarTickets, initialNotifications] = await Promise.all([
     prisma.apartment.findMany(),
     prisma.booking.findMany({
       where: { status: { not: "CANCELLED" } },
@@ -149,16 +112,6 @@ export default async function CalendarioOperativoPage() {
       orderBy: { createdAt: "desc" },
     }),
     getNotifications(),
-    prisma.message.findMany({
-      take: 3,
-      orderBy: { createdAt: 'desc' },
-      include: { maintenanceTicket: { include: { apartment: true } } }
-    }),
-    prisma.cleaningTaskMessage.findMany({
-      take: 3,
-      orderBy: { createdAt: 'desc' },
-      include: { cleaningTask: { include: { apartment: true } } }
-    })
   ]);
 
   const now = new Date();
@@ -168,55 +121,6 @@ export default async function CalendarioOperativoPage() {
   const lateCleaningCutoff = new Date(now);
   lateCleaningCutoff.setHours(10, 30, 0, 0);
   const isPastLateCleaningCutoff = now.getTime() > lateCleaningCutoff.getTime();
-
-  const recentMessages = [
-    ...messages.map((m: MaintenanceMessageView) => {
-      let icon = <MessageSquare size={16} />;
-      let colorClass = "bg-violet-500/10 text-violet-600";
-      const text = (m.text || "").toLowerCase();
-      if (text.includes("wifi") || text.includes("internet")) {
-        icon = <WifiOff size={16} />;
-        colorClass = "bg-rose-500/10 text-rose-600";
-      } else if (text.includes("chiav") || text.includes("key") || text.includes("accesso")) {
-        icon = <KeyRound size={16} />;
-        colorClass = "bg-sky-500/10 text-sky-600";
-      }
-      return {
-        id: m.id,
-        text: m.text,
-        createdAt: m.createdAt,
-        senderName: m.senderName,
-        apartmentName: m.maintenanceTicket.apartment.name,
-        type: "MAINTENANCE",
-        entityId: m.maintenanceTicketId,
-        icon,
-        colorClass
-      };
-    }),
-    ...cleaningMessages.map((m: CleaningMessageView) => {
-      let icon = <MessageSquare size={16} />;
-      let colorClass = "bg-violet-500/10 text-violet-600";
-      const text = (m.text || "").toLowerCase();
-      if (text.includes("wifi") || text.includes("internet")) {
-        icon = <WifiOff size={16} />;
-        colorClass = "bg-rose-500/10 text-rose-600";
-      } else if (text.includes("chiav") || text.includes("key") || text.includes("accesso")) {
-        icon = <KeyRound size={16} />;
-        colorClass = "bg-sky-500/10 text-sky-600";
-      }
-      return {
-        id: m.id,
-        text: m.text,
-        createdAt: m.createdAt,
-        senderName: m.senderName,
-        apartmentName: m.cleaningTask.apartment.name,
-        type: "CLEANING",
-        entityId: m.cleaningTaskId,
-        icon,
-        colorClass
-      };
-    })
-  ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 5);
 
   const checkinsToday = bookings.filter((b: BookingView) => {
     const checkin = new Date(b.checkInDate).toISOString().split('T')[0];

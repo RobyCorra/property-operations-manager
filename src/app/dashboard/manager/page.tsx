@@ -16,8 +16,6 @@ import {
   Ticket,
   Search,
   KeyRound,
-  WifiOff,
-  MessageSquare,
   Navigation,
 } from "@/src/components/icons";
 
@@ -33,36 +31,6 @@ const formatLocalDateKey = (date: Date | string) => {
   const month = String(value.getMonth() + 1).padStart(2, "0");
   const day = String(value.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-};
-
-type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
-type JsonObject = { [key: string]: JsonValue };
-type JsonArray = JsonValue[];
-
-type MaintenanceMessageView = {
-  id: string;
-  text: string | null;
-  createdAt: Date;
-  senderName: string | null;
-  maintenanceTicketId?: string | null;
-  maintenanceTicket: {
-    apartment: {
-      name: string;
-    };
-  };
-};
-
-type CleaningMessageView = {
-  id: string;
-  text: string | null;
-  createdAt: Date;
-  senderName: string | null;
-  cleaningTaskId?: string | null;
-  cleaningTask: {
-    apartment: {
-      name: string;
-    };
-  };
 };
 
 type BookingView = {
@@ -126,7 +94,7 @@ export default async function ManagerDashboardPage() {
   }
 
   // Fetch all necessary data
-  const [apartments, bookings, cleanings, tickets, initialNotifications, messages, cleaningMessages] = await Promise.all([
+  const [apartments, bookings, cleanings, tickets, initialNotifications] = await Promise.all([
     prisma.apartment.findMany(),
     prisma.booking.findMany({
       where: { status: { not: "CANCELLED" } },
@@ -150,16 +118,6 @@ export default async function ManagerDashboardPage() {
       include: { apartment: true, assignedTo: true }
     }),
     getNotifications(),
-    prisma.message.findMany({
-      take: 3,
-      orderBy: { createdAt: 'desc' },
-      include: { maintenanceTicket: { include: { apartment: true } } }
-    }),
-    prisma.cleaningTaskMessage.findMany({
-      take: 3,
-      orderBy: { createdAt: 'desc' },
-      include: { cleaningTask: { include: { apartment: true } } }
-    })
   ]);
 
   const now = new Date();
@@ -169,56 +127,6 @@ export default async function ManagerDashboardPage() {
   const lateCleaningCutoff = new Date(now);
   lateCleaningCutoff.setHours(10, 30, 0, 0);
   const isPastLateCleaningCutoff = now.getTime() > lateCleaningCutoff.getTime();
-
-  // Logic for Recent Messages with Keyword detection for icons
-  const recentMessages = [
-    ...messages.map((m: MaintenanceMessageView) => {
-        let icon = <MessageSquare size={16} />;
-        let colorClass = "bg-violet-500/10 text-violet-600";
-        const text = (m.text || "").toLowerCase();
-        if (text.includes("wifi") || text.includes("internet")) {
-            icon = <WifiOff size={16} />;
-            colorClass = "bg-rose-500/10 text-rose-600";
-        } else if (text.includes("chiav") || text.includes("key") || text.includes("accesso")) {
-            icon = <KeyRound size={16} />;
-            colorClass = "bg-sky-500/10 text-sky-600";
-        }
-        return {
-            id: m.id,
-            text: m.text,
-            createdAt: m.createdAt,
-            senderName: m.senderName,
-            apartmentName: m.maintenanceTicket.apartment.name,
-            type: "MAINTENANCE",
-            entityId: m.maintenanceTicketId,
-            icon,
-            colorClass
-        }
-    }),
-    ...cleaningMessages.map((m: CleaningMessageView) => {
-        let icon = <MessageSquare size={16} />;
-        let colorClass = "bg-violet-500/10 text-violet-600";
-        const text = (m.text || "").toLowerCase();
-        if (text.includes("wifi") || text.includes("internet")) {
-            icon = <WifiOff size={16} />;
-            colorClass = "bg-rose-500/10 text-rose-600";
-        } else if (text.includes("chiav") || text.includes("key") || text.includes("accesso")) {
-            icon = <KeyRound size={16} />;
-            colorClass = "bg-sky-500/10 text-sky-600";
-        }
-        return {
-            id: m.id,
-            text: m.text,
-            createdAt: m.createdAt,
-            senderName: m.senderName,
-            apartmentName: m.cleaningTask.apartment.name,
-            type: "CLEANING",
-            entityId: m.cleaningTaskId,
-            icon,
-            colorClass
-        }
-    })
-  ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 5);
 
   // Logic for Check-ins Today
   const checkinsToday = bookings.filter((b: BookingView) => {
