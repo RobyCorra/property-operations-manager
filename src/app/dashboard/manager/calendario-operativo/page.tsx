@@ -4,6 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getNotifications } from "@/src/app/actions/notification";
 
 import TimelineCalendar from "@/src/components/timeline-calendar";
+import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
 import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
@@ -350,6 +351,40 @@ export default async function CalendarioOperativoPage() {
     { ready: 0, notReady: 0, occupied: 0 }
   );
 
+  // KPI popup items
+  const checkinsKpi: KpiPopupItem[] = checkinsToday.map((b: BookingView) => ({
+    id: b.id,
+    label: b.guestName || "Ospite",
+    sublabel: b.apartment.name,
+    href: `/dashboard/manager/bookings/${b.id}`,
+  }));
+  const cleaningsTodayKpi: KpiPopupItem[] = cleaningsToday.map((c: CleaningView) => ({
+    id: c.id,
+    label: c.apartment.name,
+    sublabel: c.assignedTo?.name || "Non assegnato",
+    href: `/dashboard/manager/cleanings/${c.id}`,
+  }));
+  const lateCleaningsKpi: KpiPopupItem[] = lateCleanings.map((c: CleaningView) => ({
+    id: c.id,
+    label: c.apartment.name,
+    sublabel: c.assignedTo?.name || "Non assegnato",
+    href: `/dashboard/manager/cleanings/${c.id}`,
+  }));
+  const cleaningsInProgressKpi: KpiPopupItem[] = cleaningsToday
+    .filter((c: CleaningView) => c.status === "IN_PROGRESS")
+    .map((c: CleaningView) => ({
+      id: c.id,
+      label: c.apartment.name,
+      sublabel: c.assignedTo?.name || "Non assegnato",
+      href: `/dashboard/manager/cleanings/${c.id}`,
+    }));
+  const urgentTicketsKpi: KpiPopupItem[] = tickets.map((t: TicketView) => ({
+    id: t.id,
+    label: t.title,
+    sublabel: t.apartment.name,
+    href: `/dashboard/manager/maintenance/${t.id}`,
+  }));
+
   const calendarBookings = bookings.map((booking: BookingView) => ({
     ...booking,
     guestName: booking.guestName ?? "",
@@ -383,88 +418,13 @@ export default async function CalendarioOperativoPage() {
         </div>
 
         {/* KPI CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
-          <div className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[180px] flex flex-col justify-between transition-all hover:shadow-violet-500/10">
-            <div className="flex justify-between items-start">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Check-in oggi</p>
-              <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
-                <KeyRound size={16} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-slate-900 tracking-tight">{checkinsToday.length}</p>
-              <p className="text-sm text-slate-500 mt-1">Arrivi confermati</p>
-            </div>
-          </div>
-
-          <div className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[180px] flex flex-col justify-between transition-all hover:shadow-violet-500/10">
-            <div className="flex justify-between items-start">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Pulizie oggi</p>
-              <div className="w-8 h-8 rounded-full bg-violet-50 text-violet-600 flex items-center justify-center">
-                <Brush size={16} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-slate-900 tracking-tight">{cleaningsToday.length}</p>
-              <p className="text-sm text-slate-500 mt-1">Interventi previsti</p>
-            </div>
-          </div>
-
-          <div className={`backdrop-blur-xl rounded-[28px] shadow-2xl p-6 min-h-[180px] flex flex-col justify-between transition-all ${
-            lateCleanings.length > 0
-              ? "bg-rose-50/80 shadow-rose-500/10 ring-1 ring-rose-200/70"
-              : "bg-white/50 shadow-violet-500/5 hover:shadow-violet-500/10"
-          }`}>
-            <div className="flex justify-between items-start">
-              <p className={`text-xs uppercase tracking-wide ${lateCleanings.length > 0 ? "text-rose-600" : "text-slate-500"}`}>Pulizie in ritardo</p>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                lateCleanings.length > 0 ? "bg-rose-100 text-rose-600" : "bg-slate-50 text-slate-400"
-              }`}>
-                <AlertTriangle size={16} />
-              </div>
-            </div>
-            <div>
-              <p className={`text-2xl font-semibold tracking-tight ${lateCleanings.length > 0 ? "text-rose-700" : "text-slate-900"}`}>{lateCleanings.length}</p>
-              <p className="text-sm text-slate-500 mt-1">Pending dopo le 10:30</p>
-            </div>
-          </div>
-
-          <div className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[180px] flex flex-col justify-between transition-all hover:shadow-violet-500/10">
-            <div className="flex justify-between items-start">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Ticket in carico</p>
-              <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center">
-                <Ticket size={16} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-semibold text-slate-900 tracking-tight">{ticketsToday.length}</p>
-              <p className="text-sm text-slate-500 mt-1">Segnalazioni aperte</p>
-            </div>
-          </div>
-
-          <div className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[180px] flex flex-col justify-between transition-all hover:shadow-violet-500/10">
-            <div className="flex justify-between items-start">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Stato Apt.</p>
-              <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <CircleDot size={16} />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
-                <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-emerald-500" />Pronto</span>
-                <span>{apartmentStatusCounts.ready}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
-                <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-blue-500" />Non Pronto</span>
-                <span>{apartmentStatusCounts.notReady}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm font-semibold text-slate-700">
-                <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-red-500" />Occupato</span>
-                <span>{apartmentStatusCounts.occupied}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DashboardKpiCards
+          checkinsToday={checkinsKpi}
+          cleaningsToday={cleaningsTodayKpi}
+          lateCleanings={lateCleaningsKpi}
+          cleaningsInProgress={cleaningsInProgressKpi}
+          urgentTickets={urgentTicketsKpi}
+        />
 
         {/* CALENDARIO OPERATIVO SECTION */}
         <div className="space-y-6">
