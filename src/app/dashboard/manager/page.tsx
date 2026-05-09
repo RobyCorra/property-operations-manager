@@ -10,17 +10,15 @@ import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
-import { formatDateKey, getApartmentOperationalStatus, APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
-import { 
-  Brush, 
-  Ticket, 
-  Search, 
-  KeyRound, 
-  WifiOff, 
+import { getApartmentOperationalStatus, APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
+import {
+  Brush,
+  Ticket,
+  Search,
+  KeyRound,
+  WifiOff,
   MessageSquare,
-  CircleDot,
   Navigation,
-  AlertTriangle
 } from "@/src/components/icons";
 
 const isMaintenanceActive = (ticket: { status: string }) => {
@@ -117,13 +115,6 @@ type ApartmentView = {
   address: string;
   latitude: number;
   longitude: number;
-};
-
-type ApartmentStatusCounts = {
-  ready: number;
-  notReady: number;
-  occupied: number;
-  [key: string]: number;
 };
 
 export default async function ManagerDashboardPage() {
@@ -245,12 +236,6 @@ export default async function ManagerDashboardPage() {
     : [];
   const lateCleaningIds = new Set(lateCleanings.map((cleaning: CleaningView) => cleaning.id));
 
-  const ticketsToday = tickets.filter((t: TicketView) => {
-    const scheduledStart = t.scheduledStart ? new Date(t.scheduledStart).toISOString().split('T')[0] : null;
-    const createdAt = new Date(t.createdAt).toISOString().split('T')[0];
-    return scheduledStart === todayStr || createdAt === todayStr || t.status === "OPEN" || t.status === "IN_PROGRESS";
-  });
-
   // Data Normalization for Timeline
   const allEvents: OperationalEvent[] = [];
   cleanings.forEach((c: CleaningView) => {
@@ -318,39 +303,6 @@ export default async function ManagerDashboardPage() {
       openTickets: aptTickets.filter((t: TicketView) => isMaintenanceActive(t)).length,
     };
   });
-  const apartmentStatusCounts = apartments.reduce<ApartmentStatusCounts>(
-    (counts: ApartmentStatusCounts, apartment: ApartmentView) => {
-      const aptBookings = bookings.filter((b: BookingView) => b.apartmentId === apartment.id);
-      const aptCleanings = cleanings.filter((c: CleaningView) => c.apartmentId === apartment.id);
-      const aptTickets = tickets.filter((t: TicketView) => t.apartmentId === apartment.id);
-      const activeOrNextBooking = aptBookings
-        .filter((booking: BookingView) => formatDateKey(booking.checkOutDate) >= todayStr)
-        .sort((a: BookingView, b: BookingView) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
-      let statusTargetDate: Date | string = serverDate;
-
-      if (activeOrNextBooking) {
-        const checkInKey = formatDateKey(activeOrNextBooking.checkInDate);
-        const checkOutKey = formatDateKey(activeOrNextBooking.checkOutDate);
-        statusTargetDate = todayStr >= checkInKey && todayStr < checkOutKey
-          ? serverDate
-          : activeOrNextBooking.checkInDate;
-      }
-
-      const calendarStatus = getApartmentOperationalStatus(
-        statusTargetDate,
-        aptBookings,
-        aptCleanings,
-        aptTickets,
-        { now }
-      );
-
-      if (calendarStatus.color === "GREEN") counts.ready += 1;
-      if (calendarStatus.color === "BLUE") counts.notReady += 1;
-      if (calendarStatus.color === "RED") counts.occupied += 1;
-      return counts;
-    },
-    { ready: 0, notReady: 0, occupied: 0 }
-  );
   // KPI popup items
   const checkinsKpi: KpiPopupItem[] = checkinsToday.map((b: BookingView) => ({
     id: b.id,
