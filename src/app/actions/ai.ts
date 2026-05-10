@@ -173,6 +173,143 @@ type ManagerApartmentForAI = {
 };
 
 
+type AIIntent =
+  | "PULIZIE"
+  | "MANUTENZIONE"
+  | "PRENOTAZIONI"
+  | "SCHEDA_TECNICA"
+  | "ALLEGATI"
+  | "GENERALE";
+
+function classifyIntent(query: string): AIIntent {
+  const q = query
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+
+  if (/pulizia|pulizie|pulito|pulita|cleaner|pulitrice|checklist pulizia|spazzare|lavare|aspirare|detergente|disinfettare|riassettare|rassettare/.test(q)) {
+    return "PULIZIE";
+  }
+
+  if (/ticket|manutenzione|guasto|rotto|rotta|rompere|riparazione|tecnico|tecnica|intervento|urgente|urgenza|segnalazione|perdita|perdite|infiltrazione|allagamento|corto circuito|blackout|blackout/.test(q)) {
+    return "MANUTENZIONE";
+  }
+
+  if (/prenotazione|prenotazioni|check.in|check.out|ospite|ospiti|booking|arrivo|partenza|disponibilit|calendario|soggiorno|notte|notti|airbnb|ical/.test(q)) {
+    return "PRENOTAZIONI";
+  }
+
+  if (/impianto|impianti|elettrodomestic|caldaia|condizionator|climatizzazion|domotica|quadro|contatore|gas|acqua calda|boiler|lavatrice|lavastoviglie|frigo|frigorifero|forno|microonde|router|wifi|wi-fi|citofono|videocitofono|serratura|termostato/.test(q)) {
+    return "SCHEDA_TECNICA";
+  }
+
+  if (/allegato|allegati|documento|documenti|manuale|manuali|pdf|file|foto|immagine|fattura|contratto|certificato|libretto|garanzia|scheda tecnica/.test(q)) {
+    return "ALLEGATI";
+  }
+
+  return "GENERALE";
+}
+
+const SYSTEM_PROMPTS: Record<AIIntent, string> = {
+  PULIZIE: `
+Sei un assistente specializzato nella gestione delle pulizie di appartamenti turistici.
+Il tuo unico dominio sono le pulizie: stato task, checklist, assegnazioni, note, messaggi del personale.
+
+Regole operative che DEVI rispettare:
+- Non resettare checklistProgress se l'utente ha già fatto spunte
+- Preserva sempre le spunte già completate
+- Non creare pulizie duplicate per lo stesso appartamento e stessa data
+- Le prenotazioni iCal/Airbnb sono read-only per le pulizie operative
+
+Rispondi:
+- Citando direttamente lo stato della pulizia e la data
+- Segnalando se una pulizia è in ritardo rispetto al check-in
+- Suggerendo di aprire ticket se trovi danni durante la pulizia
+- Massimo 5 punti pratici, niente teoria
+`.trim(),
+
+  MANUTENZIONE: `
+Sei un assistente specializzato nella gestione delle manutenzioni e dei ticket di intervento.
+Il tuo unico dominio sono i ticket: stato, priorità, assegnazioni, messaggi tecnici, storico interventi.
+
+Regole operative che DEVI rispettare:
+- Ticket urgente OPEN o IN_PROGRESS blocca la disponibilità dell'appartamento
+- Ticket futuro non urgente NON blocca la disponibilità
+- Il bottone "Avvia intervento" cambia stato da OPEN a IN_PROGRESS senza rompere chat o allegati
+- Segnala "Possibile problema ricorrente" se il problema attuale è simile allo storico
+
+Rispondi:
+- Citando titolo, stato e priorità del ticket rilevante
+- Segnalando se ci sono ticket urgenti aperti
+- Suggerendo assegnazione tecnico se mancante
+- Massimo 5 punti pratici, niente teoria
+`.trim(),
+
+  PRENOTAZIONI: `
+Sei un assistente specializzato nelle prenotazioni e nel calendario operativo di appartamenti turistici.
+Il tuo unico dominio sono le prenotazioni: date, ospiti, check-in/check-out, disponibilità, fonte.
+
+Regole operative che DEVI rispettare:
+- Le prenotazioni manuali sono la fonte operativa principale
+- Le prenotazioni importate da iCal/Airbnb sono read-only
+- Segnala conflitti di date se presenti nel contesto
+
+Rispondi:
+- Con date precise (check-in, check-out, numero ospiti)
+- Segnalando check-in/check-out imminenti (oggi o nei prossimi 7 giorni)
+- Indicando la fonte della prenotazione (manuale, Airbnb, iCal)
+- Massimo 5 punti pratici, niente teoria
+`.trim(),
+
+  SCHEDA_TECNICA: `
+Sei un assistente specializzato nella conoscenza tecnica degli appartamenti: impianti, elettrodomestici, domotica, problemi ricorrenti.
+Il tuo unico dominio è la scheda tecnica: sistemi, apparecchi, posizioni, procedure, soluzioni note.
+
+Rispondi:
+- Citando nome, marca, modello e posizione dell'elemento tecnico richiesto
+- Riportando la soluzione nota se presente nella sezione "Problemi ricorrenti"
+- Indicando quando chiamare un tecnico se specificato nella scheda
+- Se esiste un allegato (manuale, libretto) mostralo con link cliccabile Markdown: [Scarica il documento](url)
+- Massimo 5 punti pratici, niente teoria
+`.trim(),
+
+  ALLEGATI: `
+Sei un assistente specializzato nel recupero di documenti e allegati degli appartamenti.
+Il tuo unico dominio sono gli allegati: manuali, PDF, foto, certificati, documenti tecnici.
+
+Regole sui link che DEVI rispettare:
+- Usa SEMPRE il valore "linkApribile" esatto dal contesto, non modificarlo mai
+- Rendi ogni link cliccabile in Markdown: [Scarica il documento](linkApribile)
+- Se il contesto include "markdownLink", copialo esattamente nella risposta
+- Non inventare domini o URL
+- Documenti in /uploads/ sono interni alla scheda appartamento
+
+Rispondi:
+- Elencando tutti gli allegati rilevanti con nome file e categoria
+- Includendo sempre il link cliccabile per ogni documento
+- Specificando se il testo è stato estratto o se il documento va aperto
+- Massimo 5 punti pratici, niente teoria
+`.trim(),
+
+  GENERALE: `
+Sei un assistente operativo per la gestione di appartamenti turistici a Roma.
+Puoi rispondere su appartamenti, prenotazioni, pulizie, manutenzioni, calendario e stato operativo.
+
+Regole operative che DEVI rispettare:
+- Appartamento NON pronto: pulizia pending/in_progress prima del check-in O ticket urgente OPEN/IN_PROGRESS
+- Prenotazione futura non pronta = BLU
+- Pulizia completata e nessun ticket urgente = VERDE
+- Dopo le 15:00 del check-in = ROSSO (occupato)
+- Ticket urgente immediato o scaduto blocca l'appartamento
+
+Rispondi:
+- Dando priorità a rischi operativi imminenti (oggi e prossimi 7 giorni)
+- Segnalando appartamenti non pronti con motivazione
+- Suggerendo le prossime azioni concrete
+- Massimo 5 punti pratici, niente teoria
+`.trim(),
+};
+
 const HISTORY_DAYS = 90;
 const MAX_HISTORY_TEXT_LENGTH = 5000;
 const MAX_TECHNICAL_KNOWLEDGE_TEXT_LENGTH = 5000;
@@ -1656,6 +1793,11 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
     });
 
     const userMessage = messages[messages.length - 1]?.content || "";
+
+  // Intent classification — deve stare PRIMA di tutto il resto
+  const intent = classifyIntent(userMessage);
+  console.log("[AI INTENT]", { intent, query: userMessage.slice(0, 120) });
+
     const resolvedApartmentId = await resolveApartmentIdFromAIContext(context, userMessage);
 
   console.log("[DEBUG AI] apartmentId ricevuto:", context.apartmentId || "n/d");
@@ -1668,26 +1810,18 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
     });
   }
 
-  const isInternalQuery = /appartamento|scheda|impianti|elettrodomestici|domotica|pulizie|manutenzione|booking|ospiti|check-in|check-out/i.test(userMessage);
+  // Perplexity solo per dominio GENERALE con trigger espliciti — mai per domini operativi interni
   const isRealWebSearchQuery = shouldUseWebSearch(userMessage);
   const shouldUsePerplexity =
-    context.type === "MANAGER_DASHBOARD"
-      ? !isInternalQuery || isRealWebSearchQuery
-      : false;
+    context.type === "MANAGER_DASHBOARD" && intent === "GENERALE" && isRealWebSearchQuery;
   let perplexityContext: string | null = null;
   let usedWeb = false;
 
   console.log("[PERPLEXITY FINAL DECISION]", {
-    isInternalQuery,
+    intent,
+    isRealWebSearchQuery,
     shouldUsePerplexity,
     contextType: context.type,
-  });
-
-  console.log("[PERPLEXITY DEBUG]", {
-    enabled: Boolean(process.env.PERPLEXITY_API_KEY),
-    contextType: context.type,
-    shouldUsePerplexity,
-    query: userMessage.slice(0, 200),
   });
 
   if (shouldUsePerplexity) {
@@ -1699,7 +1833,6 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
     used: Boolean(perplexityContext),
     length: perplexityContext?.length ?? 0,
   });
-  console.log("[PERPLEXITY RAW OUTPUT]", perplexityContext?.slice(0, 500));
   const formattedPerplexityContext = perplexityContext
     ? formatLinksAsMarkdown(perplexityContext)
     : null;
@@ -1712,13 +1845,14 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
     ? await buildManagerOperationalContext(context, now)
     : "";
 
+  const intentPrompt = SYSTEM_PROMPTS[intent];
+
   const systemPrompt = `
-Sei un assistente operativo per case vacanza.
+${intentPrompt}
 
-Utente: ${context.role}
-Tipo intervento: ${context.type}
+Utente: ${context.role} | Dominio rilevato: ${intent}
 
-${managerOperationalContextText}
+${managerOperationalContextText ? `CONTESTO OPERATIVO GENERALE\n${managerOperationalContextText}` : ""}
 
 ${formattedPerplexityContext ? `
 ================ RICERCA WEB AGGIORNATA DA PERPLEXITY ================
@@ -1728,59 +1862,14 @@ ${formattedPerplexityContext}
 
 ${apartmentAIContextText}
 
-ISTRUZIONI:
-- Se è presente la sezione RICERCA WEB AGGIORNATA DA PERPLEXITY, DEVI usarla per rispondere.
-- Non ignorare le informazioni della sezione RICERCA WEB AGGIORNATA DA PERPLEXITY.
-- Se la domanda richiede link, video, tutorial, guide o risorse esterne, devi includerli se presenti nella ricerca web.
-- Se disponibili, restituisci link diretti presenti nei dati, per esempio YouTube o pagine tutorial.
-- Quando includi link nella risposta, devono essere sempre formattati in Markdown, esempio: [Apri video](https://youtube.com/...)
-- Se includi link YouTube o youtu.be, usa il formato: 🎥 [Guarda video](URL)
-- Non mostrare URL nudi nella risposta finale.
-- Se la sezione RICERCA WEB AGGIORNATA DA PERPLEXITY esiste, NON rispondere "Non trovo questa informazione nei dati disponibili" per richieste web, video, tutorial, link o guide.
-- Usa SEMPRE questi dati se rilevanti
-- Non rispondere in modo generico se hai informazioni
-- Se conosci il sistema, rispondi direttamente
-- Se il problema attuale è simile allo storico, segnala "Possibile problema ricorrente"
-- Se non ci sono elementi simili, non inventare ricorrenze
-- Se il dato richiesto non è presente nel contesto, rispondi chiaramente: "Non trovo questa informazione nei dati disponibili."
-- Per il manager dai priorità operative, rischi e prossime azioni
-- Se trovi allegati, manuali o documenti nel contesto interno, specifica che sono documenti caricati nella scheda appartamento
-- Se un allegato interno ha url relativo che inizia con /uploads/, puoi mostrarlo come link interno disponibile dalla cartella pubblica uploads
-- Quando citi documenti interni, mantieni il link esattamente come fornito nel contesto
-- Quando mostri un documento interno, usa ESATTAMENTE il valore "linkApribile" presente nel contesto
-- Quando mostri un documento interno, rendi sempre il link cliccabile in Markdown: [Scarica il documento](linkApribile)
-- Usa esattamente il valore linkApribile presente nel contesto
-- Se nel contesto è presente markdownLink, copialo esattamente nella risposta
-- Non mostrare il link come testo semplice
-- Non modificare mai il linkApribile
-- Non sostituire mai il dominio dei link interni e non trasformare /uploads/ in un dominio esterno
-- Non inventare domini per i documenti interni
-- Non inventare domini esterni o placeholder per i documenti interni
-- Se il documento è in /uploads/, presentalo come documento interno caricato nella scheda appartamento
-- Se il link inizia con /uploads/ oppure http://localhost:3000/uploads/, presentalo come link apribile
-- Se linkApribile inizia con http://localhost:3000/uploads/, usalo esattamente così
-- Per manuali, allegati, documenti, schede tecniche, impianti, climatizzazione, condizionatori o elettrodomestici NON usare Perplexity
-
-ISTRUZIONI AGGIUNTIVE:
-- Se nel contesto sono presenti DOCUMENTI / ALLEGATI APPARTAMENTO e la domanda riguarda manuali, documenti o impianti, devi SEMPRE mostrare i documenti disponibili
-- Non rispondere "Non trovo questa informazione" se esiste almeno un allegato
-- Quando presenti un documento, scrivi che è un documento interno, mostra il nome file e usa il markdownLink se presente
-- Non cercare manuali interni sul web
-- Se non trovi il documento esatto ma esistono allegati, mostra comunque quelli disponibili come alternativa
-- Se l'utente chiede una lista completa, non riassumere
-- Se l'utente chiede una lista completa, non omettere elementi
-- Se l'utente chiede una lista completa, elenca tutti gli elementi presenti nel contesto
-- Se la domanda chiede impianti, elettrodomestici e domotica, devi riportare ogni elemento di IMPIANTI, ELETTRODOMESTICI e DOMOTICA presente nella sezione SCHEDA TECNICA COMPLETA
-
-Rispondi:
-- massimo 5 punti
-- se l'utente chiede un riepilogo completo della scheda tecnica, includi tutti gli elementi di IMPIANTI, ELETTRODOMESTICI, DOMOTICA, PRODOTTI e PROBLEMI RICORRENTI presenti nel contesto, anche se superi 5 punti
-- pratico
-- niente teoria
-
-Se serve:
-- suggerisci aprire ticket
-- suggerisci segnalare al manager
+REGOLE GENERALI SUI LINK (sempre valide):
+- Usa SEMPRE il valore "linkApribile" esatto dal contesto, non modificarlo mai
+- Rendi ogni link cliccabile in Markdown: [Scarica il documento](linkApribile)
+- Se il contesto include "markdownLink", copialo esattamente nella risposta
+- Non inventare URL, domini o placeholder
+- Link YouTube: usa il formato 🎥 [Guarda video](URL)
+- Se la sezione RICERCA WEB DA PERPLEXITY è presente, usala per domande su risorse esterne, normative, prezzi, guide
+- Se il dato richiesto non è nel contesto: "Non trovo questa informazione nei dati disponibili."
 `;
 
   console.log("[AI FINAL CONTEXT CHECK] prompt contiene ALLEGATI APPARTAMENTO:", systemPrompt.includes("ALLEGATI APPARTAMENTO"));
