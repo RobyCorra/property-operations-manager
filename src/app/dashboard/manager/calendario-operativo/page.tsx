@@ -1,15 +1,20 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import Link from "next/link";
 import { getNotifications } from "@/src/app/actions/notification";
 
 import TimelineCalendar from "@/src/components/timeline-calendar";
-import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
 import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
+import {
+  Brush,
+  Ticket,
+  KeyRound,
+} from "@/src/components/icons";
 
 const isMaintenanceActive = (ticket: { status: string }) => {
   return ticket.status !== "RESOLVED" && ticket.status !== "CANCELLED";
@@ -116,16 +121,10 @@ export default async function CalendarioOperativoPage() {
 
   const now = new Date();
   const serverDate = now.toISOString();
-  const todayStr = now.toISOString().split('T')[0];
   const todayLocalStr = formatLocalDateKey(now);
   const lateCleaningCutoff = new Date(now);
   lateCleaningCutoff.setHours(10, 30, 0, 0);
   const isPastLateCleaningCutoff = now.getTime() > lateCleaningCutoff.getTime();
-
-  const checkinsToday = bookings.filter((b: BookingView) => {
-    const checkin = new Date(b.checkInDate).toISOString().split('T')[0];
-    return checkin === todayStr;
-  });
 
   const cleaningsToday = cleanings.filter((c: CleaningView) => {
     const cleaningDate = formatLocalDateKey(c.date);
@@ -204,40 +203,6 @@ export default async function CalendarioOperativoPage() {
     };
   });
 
-  // KPI popup items
-  const checkinsKpi: KpiPopupItem[] = checkinsToday.map((b: BookingView) => ({
-    id: b.id,
-    label: b.guestName || "Ospite",
-    sublabel: b.apartment.name,
-    href: `/dashboard/manager/bookings/${b.id}/edit`,
-  }));
-  const cleaningsTodayKpi: KpiPopupItem[] = cleaningsToday.map((c: CleaningView) => ({
-    id: c.id,
-    label: c.apartment.name,
-    sublabel: c.assignedTo?.name || "Non assegnato",
-    href: `/dashboard/manager/cleanings/${c.id}/edit`,
-  }));
-  const lateCleaningsKpi: KpiPopupItem[] = lateCleanings.map((c: CleaningView) => ({
-    id: c.id,
-    label: c.apartment.name,
-    sublabel: c.assignedTo?.name || "Non assegnato",
-    href: `/dashboard/manager/cleanings/${c.id}/edit`,
-  }));
-  const cleaningsInProgressKpi: KpiPopupItem[] = cleaningsToday
-    .filter((c: CleaningView) => c.status === "IN_PROGRESS")
-    .map((c: CleaningView) => ({
-      id: c.id,
-      label: c.apartment.name,
-      sublabel: c.assignedTo?.name || "Non assegnato",
-      href: `/dashboard/manager/cleanings/${c.id}/edit`,
-    }));
-  const urgentTicketsKpi: KpiPopupItem[] = tickets.map((t: TicketView) => ({
-    id: t.id,
-    label: t.title,
-    sublabel: t.apartment.name,
-    href: `/dashboard/manager/maintenance/${t.id}/edit`,
-  }));
-
   const calendarBookings = bookings.map((booking: BookingView) => ({
     ...booking,
     guestName: booking.guestName ?? "",
@@ -268,16 +233,30 @@ export default async function CalendarioOperativoPage() {
           <div className="flex justify-center">
             <NotificationBell initialNotifications={initialNotifications} serverDate={serverDate} />
           </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/dashboard/manager/cleanings/new"
+              className="flex items-center gap-2 px-3 py-3 bg-gradient-to-r from-violet-600 to-blue-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-violet-200 hover:shadow-xl hover:scale-[1.03] active:scale-95 whitespace-nowrap"
+            >
+              <Brush size={14} />
+              Nuova Pulizia
+            </Link>
+            <Link
+              href="/dashboard/manager/maintenance/new"
+              className="flex items-center gap-2 px-3 py-3 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-slate-200 hover:shadow-xl hover:scale-[1.03] active:scale-95 whitespace-nowrap"
+            >
+              <Ticket size={14} />
+              Nuovo Ticket
+            </Link>
+            <Link
+              href="/dashboard/manager/bookings/new"
+              className="flex items-center gap-2 px-3 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95 whitespace-nowrap"
+            >
+              <KeyRound size={14} />
+              Nuova Prenotazione
+            </Link>
+          </div>
         </div>
-
-        {/* KPI CARDS */}
-        <DashboardKpiCards
-          checkinsToday={checkinsKpi}
-          cleaningsToday={cleaningsTodayKpi}
-          lateCleanings={lateCleaningsKpi}
-          cleaningsInProgress={cleaningsInProgressKpi}
-          urgentTickets={urgentTicketsKpi}
-        />
 
         {/* CALENDARIO OPERATIVO SECTION */}
         <div className="space-y-6">
