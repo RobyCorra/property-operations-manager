@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createApartment } from "@/src/app/actions/apartment";
 import ApartmentCreateWizard from "@/src/components/apartment-create-wizard";
+import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 
 export default async function NewApartmentPage() {
   const cookieStore = await cookies();
@@ -23,6 +24,7 @@ export default async function NewApartmentPage() {
           </Link>
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Aggiungi Appartamento</h1>
           <p className="text-gray-500 mt-1">Censisci una nuova proprietà per l'operatività</p>
+          <ManagerAIChatLauncher />
         </div>
 
         <ApartmentCreateWizard action={createApartment} />
