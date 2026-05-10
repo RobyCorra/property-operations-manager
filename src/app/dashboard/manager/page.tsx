@@ -216,19 +216,19 @@ export default async function ManagerDashboardPage() {
     id: b.id,
     label: b.guestName || "Ospite",
     sublabel: b.apartment.name,
-    href: `/dashboard/manager/bookings/${b.id}`,
+    href: `/dashboard/manager/bookings/${b.id}/edit`,
   }));
   const cleaningsTodayKpi: KpiPopupItem[] = cleaningsToday.map((c: CleaningView) => ({
     id: c.id,
     label: c.apartment.name,
     sublabel: c.assignedTo?.name || "Non assegnato",
-    href: `/dashboard/manager/cleanings/${c.id}`,
+    href: `/dashboard/manager/cleanings/${c.id}/edit`,
   }));
   const lateCleaningsKpi: KpiPopupItem[] = lateCleanings.map((c: CleaningView) => ({
     id: c.id,
     label: c.apartment.name,
     sublabel: c.assignedTo?.name || "Non assegnato",
-    href: `/dashboard/manager/cleanings/${c.id}`,
+    href: `/dashboard/manager/cleanings/${c.id}/edit`,
   }));
   const cleaningsInProgressKpi: KpiPopupItem[] = cleaningsToday
     .filter((c: CleaningView) => c.status === "IN_PROGRESS")
@@ -236,13 +236,13 @@ export default async function ManagerDashboardPage() {
       id: c.id,
       label: c.apartment.name,
       sublabel: c.assignedTo?.name || "Non assegnato",
-      href: `/dashboard/manager/cleanings/${c.id}`,
+      href: `/dashboard/manager/cleanings/${c.id}/edit`,
     }));
   const urgentTicketsKpi: KpiPopupItem[] = tickets.map((t: TicketView) => ({
     id: t.id,
     label: t.title,
     sublabel: t.apartment.name,
-    href: `/dashboard/manager/maintenance/${t.id}`,
+    href: `/dashboard/manager/maintenance/${t.id}/edit`,
   }));
 
   return (
