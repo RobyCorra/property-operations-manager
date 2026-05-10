@@ -378,18 +378,6 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
     return hasOpenCleaningBeforeCheckIn || hasUrgentOpenTicket;
   };
 
-  const alertSummary = useMemo(() => {
-    return {
-      lateCleanings: cleaningTasks.filter((task) => (
-        task.status !== "COMPLETED" &&
-        toLocalDateKey(task.date) <= toLocalDateKey(currentClientTime)
-      )).length,
-      cleaningsInProgress: cleaningTasks.filter((task) => task.status === "IN_PROGRESS").length,
-      urgentTickets: maintenanceTickets.filter((ticket) => (
-        ticket.priority === "URGENT" && ["OPEN", "IN_PROGRESS"].includes(ticket.status)
-      )).length,
-    };
-  }, [cleaningTasks, maintenanceTickets, currentClientTime]);
 
   // Center scroll on the first loaded event, falling back to today.
   useEffect(() => {
@@ -462,24 +450,6 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
   return (
     <>
     <div className="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl shadow-black/5 overflow-hidden font-sans transition-all duration-200 ease-in-out">
-      <div className="p-8 border-b border-white/20">
-        <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Programma Operativo</h2>
-        <p className="text-sm text-slate-500 mt-1">Timeline operativa con prenotazioni, pulizie e manutenzioni (clicca su un evento per dettagli)</p>
-        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
-          <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-orange-700">Pulizie in ritardo</p>
-            <p className="mt-1 text-2xl font-semibold text-orange-700">{alertSummary.lateCleanings}</p>
-          </div>
-          <div className="rounded-2xl border border-violet-500/20 bg-violet-500/10 px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-violet-700">Pulizie in corso</p>
-            <p className="mt-1 text-2xl font-semibold text-violet-700">{alertSummary.cleaningsInProgress}</p>
-          </div>
-          <div className="rounded-2xl border border-red-600/25 bg-red-600/10 px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-red-800">Ticket urgenti</p>
-            <p className="mt-1 text-2xl font-semibold text-red-800">{alertSummary.urgentTickets}</p>
-          </div>
-        </div>
-      </div>
 
       <div className="flex overflow-hidden relative" style={{ height: "auto", minHeight: "440px" }}>
         {/* Apartment List (Fixed Left) */}
