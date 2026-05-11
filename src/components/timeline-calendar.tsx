@@ -457,7 +457,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
           className="z-20 bg-white/60 backdrop-blur-xl border-r border-slate-200/80 flex-shrink-0"
           style={{ width: APARTMENT_COL_WIDTH }}
         >
-          <div className="h-16 border-b border-slate-200/80 flex items-center px-8">
+          <div className="h-16 border-b-2 border-slate-200/70 flex items-center px-8">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Appartamento</span>
           </div>
           {apartments.map((apt) => {
@@ -490,7 +490,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
           style={{ cursor: "grab" }}
         >
           {/* Header Dates */}
-          <div className="flex h-16 border-b border-white/20 sticky top-0 bg-white/40 backdrop-blur-xl z-10">
+          <div className="flex h-16 border-b-2 border-slate-200/70 sticky top-0 bg-white/40 backdrop-blur-xl z-10">
             {days.map((day, i) => {
               const isToday = toLocalDateKey(day) === toLocalDateKey(serverDate);
               const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
