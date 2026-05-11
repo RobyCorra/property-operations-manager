@@ -417,6 +417,9 @@ export async function deleteApartment(formData: FormData) {
     throw new Error("Impossibile eliminare l'appartamento: esistono prenotazioni, task di pulizia o ticket di manutenzione collegati.");
   }
 
+  // Rimuove notifiche collegate (FK senza cascade)
+  await prisma.notification.deleteMany({ where: { apartmentId: id } });
+
   await prisma.apartment.delete({
     where: { id },
   });
