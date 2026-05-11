@@ -22,14 +22,14 @@ type MaintenanceTicket = {
   scheduledEnd?: Date | string | null;
 };
 
-export type ApartmentStatusColor = "GREEN" | "BLUE" | "RED";
+export type ApartmentStatusColor = "GREEN" | "BLUE" | "VIOLET" | "YELLOW" | "RED";
 
 export interface ApartmentStatusResult {
-  status: "ready" | "not_ready" | "occupied";
+  status: "ready" | "not_ready" | "in_progress" | "awaiting_review" | "occupied";
   available: boolean;
   color: ApartmentStatusColor;
-  label: "Pronto" | "Non pronto" | "Occupato";
-  reason: "urgent_ticket" | "cleaning_pending" | "cleaning_completed" | "occupied_after_15" | "ready";
+  label: "Pronto" | "Non pronto" | "In corso" | "In verifica" | "Occupato";
+  reason: "urgent_ticket" | "cleaning_pending" | "cleaning_in_progress" | "cleaning_awaiting_review" | "occupied_after_15" | "ready";
 }
 
 export const STATUS_UI: Record<ApartmentStatusColor, { label: string; tailwind: string; hex: string }> = {
@@ -43,11 +43,21 @@ export const STATUS_UI: Record<ApartmentStatusColor, { label: string; tailwind: 
     tailwind: "bg-blue-100 text-blue-800 border-blue-200",
     hex: "#3b82f6",
   },
+  VIOLET: {
+    label: "In corso",
+    tailwind: "bg-violet-100 text-violet-800 border-violet-200",
+    hex: "#8b5cf6",
+  },
+  YELLOW: {
+    label: "In verifica",
+    tailwind: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    hex: "#eab308",
+  },
   RED: {
     label: "Occupato",
     tailwind: "bg-red-100 text-red-800 border-red-200",
     hex: "#ef4444",
-  }
+  },
 };
 
 /**
@@ -110,53 +120,54 @@ export function getApartmentOperationalStatus(
   const isOngoingStay = relevantBooking && formatDateKey(relevantBooking.checkInDate) < todayKey;
   
   const pendingCleaning = cleanings.find(c => {
-    if (c.status === "CANCELLED" || c.status === "COMPLETED") return false;
+    if (c.status === "CANCELLED" || c.status === "APPROVED") return false;
     const cleanDateKey = formatDateKey(c.date);
-    return (c.status === "PENDING" || c.status === "IN_PROGRESS") && cleanDateKey <= dateKey;
+    return c.status === "PENDING" && cleanDateKey <= dateKey;
+  });
+
+  const inProgressCleaning = cleanings.find(c => {
+    if (c.status === "CANCELLED") return false;
+    const cleanDateKey = formatDateKey(c.date);
+    return c.status === "IN_PROGRESS" && cleanDateKey <= dateKey;
+  });
+
+  const awaitingReviewCleaning = cleanings.find(c => {
+    if (c.status === "CANCELLED") return false;
+    const cleanDateKey = formatDateKey(c.date);
+    return (c.status === "COMPLETED" || c.status === "AWAITING_REVIEW") && cleanDateKey <= dateKey;
   });
 
   const openUrgentTicket = tickets.find(t => {
-    if (t.status === "CANCELLED" || t.status === "RESOLVED") return false;
+    if (t.status === "CANCELLED" || t.status === "RESOLVED" || t.status === "APPROVED") return false;
     return (t.status === "OPEN" || t.status === "IN_PROGRESS") && t.priority === "URGENT";
   });
 
-  // --- 2. GERARCHIA DI STATO (STRETTA) ---
+  // --- 2. GERARCHIA DI STATO (5 livelli) ---
 
   // PRIORITÀ 1: OCCUPATO (RED)
-  // Soggiorno in corso oggi OR (Check-in oggi dopo le 15:00)
   const isOccupiedNow = (isOngoingStay && isToday) || (isCheckInDay && isToday && getMadridHour(now) >= 15);
-  
+
   if (isOccupiedNow) {
-    return {
-      status: "occupied",
-      available: false,
-      color: "RED",
-      label: "Occupato",
-      reason: "occupied_after_15"
-    };
+    return { status: "occupied", available: false, color: "RED", label: "Occupato", reason: "occupied_after_15" };
   }
 
-  // PRIORITÀ 2: NON PRONTO (BLUE)
-  // Pulizia da fare OPPURE Ticket manutenzione urgente aperto
+  // PRIORITÀ 2: NON PRONTO (BLUE) — pulizia PENDING o ticket urgente aperto
   if (pendingCleaning || openUrgentTicket) {
-    return {
-      status: "not_ready",
-      available: false,
-      color: "BLUE",
-      label: "Non pronto",
-      reason: openUrgentTicket ? "urgent_ticket" : "cleaning_pending"
-    };
+    return { status: "not_ready", available: false, color: "BLUE", label: "Non pronto", reason: openUrgentTicket ? "urgent_ticket" : "cleaning_pending" };
   }
 
-  // PRIORITÀ 3: PRONTO (GREEN)
-  // Tutto il resto
-  return {
-    status: "ready",
-    available: true,
-    color: "GREEN",
-    label: "Pronto",
-    reason: "ready"
-  };
+  // PRIORITÀ 3: IN CORSO (VIOLET) — pulizia IN_PROGRESS
+  if (inProgressCleaning) {
+    return { status: "in_progress", available: false, color: "VIOLET", label: "In corso", reason: "cleaning_in_progress" };
+  }
+
+  // PRIORITÀ 4: IN VERIFICA (YELLOW) — pulizia COMPLETED o AWAITING_REVIEW
+  if (awaitingReviewCleaning) {
+    return { status: "awaiting_review", available: false, color: "YELLOW", label: "In verifica", reason: "cleaning_awaiting_review" };
+  }
+
+  // PRIORITÀ 5: PRONTO (GREEN)
+  return { status: "ready", available: true, color: "GREEN", label: "Pronto", reason: "ready" };
 }
 
 /**
@@ -164,9 +175,11 @@ export function getApartmentOperationalStatus(
  */
 export type ApartmentStatus = ApartmentStatusColor;
 export const APARTMENT_STATUS_META = {
-    GREEN: { label: "Pronto", tailwind: STATUS_UI.GREEN.tailwind, hex: STATUS_UI.GREEN.hex },
-    BLUE: { label: "Non pronto", tailwind: STATUS_UI.BLUE.tailwind, hex: STATUS_UI.BLUE.hex },
-    RED: { label: "Occupato", tailwind: STATUS_UI.RED.tailwind, hex: STATUS_UI.RED.hex }
+  GREEN:  { label: "Pronto",      tailwind: STATUS_UI.GREEN.tailwind,  hex: STATUS_UI.GREEN.hex },
+  BLUE:   { label: "Non pronto",  tailwind: STATUS_UI.BLUE.tailwind,   hex: STATUS_UI.BLUE.hex },
+  VIOLET: { label: "In corso",    tailwind: STATUS_UI.VIOLET.tailwind, hex: STATUS_UI.VIOLET.hex },
+  YELLOW: { label: "In verifica", tailwind: STATUS_UI.YELLOW.tailwind, hex: STATUS_UI.YELLOW.hex },
+  RED:    { label: "Occupato",    tailwind: STATUS_UI.RED.tailwind,    hex: STATUS_UI.RED.hex },
 } as any;
 
 export function getTodayUTC(): Date {

@@ -8,14 +8,17 @@ datasource db {
 }
 
 model User {
-  id                 String              @id @default(uuid())
-  email              String              @unique
-  password           String
-  role               Role
-  createdAt          DateTime            @default(now())
-  name               String
-  cleaningTasks      CleaningTask[]
-  maintenanceTickets MaintenanceTicket[]
+  id                   String                @id @default(uuid())
+  email                String                @unique
+  password             String
+  role                 Role
+  createdAt            DateTime              @default(now())
+  name                 String
+  cleaningTasks        CleaningTask[]
+  maintenanceTickets   MaintenanceTicket[]
+  supervisorReviews    SupervisorReview[]    @relation("SupervisorReviews")
+  supervisedApartments ApartmentSupervisor[]
+  ownedApartments      ApartmentOwner[]
 }
 
 model Apartment {
@@ -42,6 +45,8 @@ model Apartment {
   notifications        Notification[]
   aiAssistantMessages  AIAssistantMessage[]
   apartmentAttachments ApartmentAttachment[]
+  supervisors          ApartmentSupervisor[]
+  owners               ApartmentOwner[]
 }
 
 model ChecklistItem {
@@ -95,11 +100,13 @@ model CleaningTask {
   bookingId           String?               @unique
   booking             Booking?              @relation(fields: [bookingId], references: [id])
   checklistProgress   Json?                 @default("[]")
+  correctionProgress  Json?
   apartment           Apartment             @relation(fields: [apartmentId], references: [id])
   assignedTo          User?                 @relation(fields: [assignedToId], references: [id])
   messages            CleaningTaskMessage[]
   attachments         Attachment[]
   aiAssistantMessages AIAssistantMessage[]
+  supervisorReviews   SupervisorReview[]
 }
 
 model MaintenanceTicket {
@@ -115,11 +122,13 @@ model MaintenanceTicket {
   scheduledEnd        DateTime?
   startedAt           DateTime?
   resolvedAt          DateTime?
+  correctionProgress  Json?
   apartment           Apartment            @relation(fields: [apartmentId], references: [id])
   assignedTo          User?                @relation(fields: [assignedToId], references: [id])
   attachments         Attachment[]
   messages            Message[]
   aiAssistantMessages AIAssistantMessage[]
+  supervisorReviews   SupervisorReview[]
 }
 
 model AIAssistantMessage {
@@ -207,10 +216,48 @@ model CleaningTaskMessage {
   readByManagerAt DateTime?
 }
 
+model SupervisorReview {
+  id                  String             @id @default(uuid())
+  supervisorId        String
+  supervisor          User               @relation("SupervisorReviews", fields: [supervisorId], references: [id])
+  cleaningTaskId      String?
+  cleaningTask        CleaningTask?      @relation(fields: [cleaningTaskId], references: [id], onDelete: Cascade)
+  maintenanceTicketId String?
+  maintenanceTicket   MaintenanceTicket? @relation(fields: [maintenanceTicketId], references: [id], onDelete: Cascade)
+  decision            String
+  notes               String?
+  correctionItems     Json?
+  createdAt           DateTime           @default(now())
+
+  @@index([cleaningTaskId])
+  @@index([maintenanceTicketId])
+  @@index([supervisorId])
+}
+
+model ApartmentSupervisor {
+  apartmentId String
+  userId      String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([apartmentId, userId])
+}
+
+model ApartmentOwner {
+  apartmentId String
+  userId      String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([apartmentId, userId])
+}
+
 enum Role {
   MANAGER
   CLEANER
   MAINTENANCE
+  SUPERVISOR
+  OWNER
 }
 
 enum AIAssistantMessageRole {

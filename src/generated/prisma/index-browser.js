@@ -193,7 +193,8 @@ exports.Prisma.CleaningTaskScalarFieldEnum = {
   assignedToId: 'assignedToId',
   notes: 'notes',
   bookingId: 'bookingId',
-  checklistProgress: 'checklistProgress'
+  checklistProgress: 'checklistProgress',
+  correctionProgress: 'correctionProgress'
 };
 
 exports.Prisma.MaintenanceTicketScalarFieldEnum = {
@@ -208,7 +209,8 @@ exports.Prisma.MaintenanceTicketScalarFieldEnum = {
   scheduledStart: 'scheduledStart',
   scheduledEnd: 'scheduledEnd',
   startedAt: 'startedAt',
-  resolvedAt: 'resolvedAt'
+  resolvedAt: 'resolvedAt',
+  correctionProgress: 'correctionProgress'
 };
 
 exports.Prisma.AIAssistantMessageScalarFieldEnum = {
@@ -272,6 +274,27 @@ exports.Prisma.CleaningTaskMessageScalarFieldEnum = {
   readByManagerAt: 'readByManagerAt'
 };
 
+exports.Prisma.SupervisorReviewScalarFieldEnum = {
+  id: 'id',
+  supervisorId: 'supervisorId',
+  cleaningTaskId: 'cleaningTaskId',
+  maintenanceTicketId: 'maintenanceTicketId',
+  decision: 'decision',
+  notes: 'notes',
+  correctionItems: 'correctionItems',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ApartmentSupervisorScalarFieldEnum = {
+  apartmentId: 'apartmentId',
+  userId: 'userId'
+};
+
+exports.Prisma.ApartmentOwnerScalarFieldEnum = {
+  apartmentId: 'apartmentId',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -300,7 +323,9 @@ exports.Prisma.NullsOrder = {
 exports.Role = exports.$Enums.Role = {
   MANAGER: 'MANAGER',
   CLEANER: 'CLEANER',
-  MAINTENANCE: 'MAINTENANCE'
+  MAINTENANCE: 'MAINTENANCE',
+  SUPERVISOR: 'SUPERVISOR',
+  OWNER: 'OWNER'
 };
 
 exports.AIAssistantMessageRole = exports.$Enums.AIAssistantMessageRole = {
@@ -320,7 +345,10 @@ exports.Prisma.ModelName = {
   Attachment: 'Attachment',
   ApartmentAttachment: 'ApartmentAttachment',
   Message: 'Message',
-  CleaningTaskMessage: 'CleaningTaskMessage'
+  CleaningTaskMessage: 'CleaningTaskMessage',
+  SupervisorReview: 'SupervisorReview',
+  ApartmentSupervisor: 'ApartmentSupervisor',
+  ApartmentOwner: 'ApartmentOwner'
 };
 
 /**

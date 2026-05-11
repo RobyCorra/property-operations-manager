@@ -73,6 +73,21 @@ export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
  * 
  */
 export type CleaningTaskMessage = $Result.DefaultSelection<Prisma.$CleaningTaskMessagePayload>
+/**
+ * Model SupervisorReview
+ * 
+ */
+export type SupervisorReview = $Result.DefaultSelection<Prisma.$SupervisorReviewPayload>
+/**
+ * Model ApartmentSupervisor
+ * 
+ */
+export type ApartmentSupervisor = $Result.DefaultSelection<Prisma.$ApartmentSupervisorPayload>
+/**
+ * Model ApartmentOwner
+ * 
+ */
+export type ApartmentOwner = $Result.DefaultSelection<Prisma.$ApartmentOwnerPayload>
 
 /**
  * Enums
@@ -81,7 +96,9 @@ export namespace $Enums {
   export const Role: {
   MANAGER: 'MANAGER',
   CLEANER: 'CLEANER',
-  MAINTENANCE: 'MAINTENANCE'
+  MAINTENANCE: 'MAINTENANCE',
+  SUPERVISOR: 'SUPERVISOR',
+  OWNER: 'OWNER'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -344,6 +361,36 @@ export class PrismaClient<
     * ```
     */
   get cleaningTaskMessage(): Prisma.CleaningTaskMessageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.supervisorReview`: Exposes CRUD operations for the **SupervisorReview** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SupervisorReviews
+    * const supervisorReviews = await prisma.supervisorReview.findMany()
+    * ```
+    */
+  get supervisorReview(): Prisma.SupervisorReviewDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.apartmentSupervisor`: Exposes CRUD operations for the **ApartmentSupervisor** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ApartmentSupervisors
+    * const apartmentSupervisors = await prisma.apartmentSupervisor.findMany()
+    * ```
+    */
+  get apartmentSupervisor(): Prisma.ApartmentSupervisorDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.apartmentOwner`: Exposes CRUD operations for the **ApartmentOwner** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ApartmentOwners
+    * const apartmentOwners = await prisma.apartmentOwner.findMany()
+    * ```
+    */
+  get apartmentOwner(): Prisma.ApartmentOwnerDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -789,7 +836,10 @@ export namespace Prisma {
     Attachment: 'Attachment',
     ApartmentAttachment: 'ApartmentAttachment',
     Message: 'Message',
-    CleaningTaskMessage: 'CleaningTaskMessage'
+    CleaningTaskMessage: 'CleaningTaskMessage',
+    SupervisorReview: 'SupervisorReview',
+    ApartmentSupervisor: 'ApartmentSupervisor',
+    ApartmentOwner: 'ApartmentOwner'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -805,7 +855,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage"
+      modelProps: "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1697,6 +1747,228 @@ export namespace Prisma {
           }
         }
       }
+      SupervisorReview: {
+        payload: Prisma.$SupervisorReviewPayload<ExtArgs>
+        fields: Prisma.SupervisorReviewFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SupervisorReviewFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SupervisorReviewFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>
+          }
+          findFirst: {
+            args: Prisma.SupervisorReviewFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SupervisorReviewFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>
+          }
+          findMany: {
+            args: Prisma.SupervisorReviewFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>[]
+          }
+          create: {
+            args: Prisma.SupervisorReviewCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>
+          }
+          createMany: {
+            args: Prisma.SupervisorReviewCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SupervisorReviewCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>[]
+          }
+          delete: {
+            args: Prisma.SupervisorReviewDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>
+          }
+          update: {
+            args: Prisma.SupervisorReviewUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>
+          }
+          deleteMany: {
+            args: Prisma.SupervisorReviewDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SupervisorReviewUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SupervisorReviewUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>[]
+          }
+          upsert: {
+            args: Prisma.SupervisorReviewUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SupervisorReviewPayload>
+          }
+          aggregate: {
+            args: Prisma.SupervisorReviewAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSupervisorReview>
+          }
+          groupBy: {
+            args: Prisma.SupervisorReviewGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SupervisorReviewGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SupervisorReviewCountArgs<ExtArgs>
+            result: $Utils.Optional<SupervisorReviewCountAggregateOutputType> | number
+          }
+        }
+      }
+      ApartmentSupervisor: {
+        payload: Prisma.$ApartmentSupervisorPayload<ExtArgs>
+        fields: Prisma.ApartmentSupervisorFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ApartmentSupervisorFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ApartmentSupervisorFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>
+          }
+          findFirst: {
+            args: Prisma.ApartmentSupervisorFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ApartmentSupervisorFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>
+          }
+          findMany: {
+            args: Prisma.ApartmentSupervisorFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>[]
+          }
+          create: {
+            args: Prisma.ApartmentSupervisorCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>
+          }
+          createMany: {
+            args: Prisma.ApartmentSupervisorCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ApartmentSupervisorCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>[]
+          }
+          delete: {
+            args: Prisma.ApartmentSupervisorDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>
+          }
+          update: {
+            args: Prisma.ApartmentSupervisorUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>
+          }
+          deleteMany: {
+            args: Prisma.ApartmentSupervisorDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ApartmentSupervisorUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ApartmentSupervisorUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>[]
+          }
+          upsert: {
+            args: Prisma.ApartmentSupervisorUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentSupervisorPayload>
+          }
+          aggregate: {
+            args: Prisma.ApartmentSupervisorAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateApartmentSupervisor>
+          }
+          groupBy: {
+            args: Prisma.ApartmentSupervisorGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ApartmentSupervisorGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ApartmentSupervisorCountArgs<ExtArgs>
+            result: $Utils.Optional<ApartmentSupervisorCountAggregateOutputType> | number
+          }
+        }
+      }
+      ApartmentOwner: {
+        payload: Prisma.$ApartmentOwnerPayload<ExtArgs>
+        fields: Prisma.ApartmentOwnerFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ApartmentOwnerFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ApartmentOwnerFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>
+          }
+          findFirst: {
+            args: Prisma.ApartmentOwnerFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ApartmentOwnerFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>
+          }
+          findMany: {
+            args: Prisma.ApartmentOwnerFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>[]
+          }
+          create: {
+            args: Prisma.ApartmentOwnerCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>
+          }
+          createMany: {
+            args: Prisma.ApartmentOwnerCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ApartmentOwnerCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>[]
+          }
+          delete: {
+            args: Prisma.ApartmentOwnerDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>
+          }
+          update: {
+            args: Prisma.ApartmentOwnerUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>
+          }
+          deleteMany: {
+            args: Prisma.ApartmentOwnerDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ApartmentOwnerUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ApartmentOwnerUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>[]
+          }
+          upsert: {
+            args: Prisma.ApartmentOwnerUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentOwnerPayload>
+          }
+          aggregate: {
+            args: Prisma.ApartmentOwnerAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateApartmentOwner>
+          }
+          groupBy: {
+            args: Prisma.ApartmentOwnerGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ApartmentOwnerGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ApartmentOwnerCountArgs<ExtArgs>
+            result: $Utils.Optional<ApartmentOwnerCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1817,6 +2089,9 @@ export namespace Prisma {
     apartmentAttachment?: ApartmentAttachmentOmit
     message?: MessageOmit
     cleaningTaskMessage?: CleaningTaskMessageOmit
+    supervisorReview?: SupervisorReviewOmit
+    apartmentSupervisor?: ApartmentSupervisorOmit
+    apartmentOwner?: ApartmentOwnerOmit
   }
 
   /* Types for Logging */
@@ -1899,11 +2174,17 @@ export namespace Prisma {
   export type UserCountOutputType = {
     cleaningTasks: number
     maintenanceTickets: number
+    supervisorReviews: number
+    supervisedApartments: number
+    ownedApartments: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     cleaningTasks?: boolean | UserCountOutputTypeCountCleaningTasksArgs
     maintenanceTickets?: boolean | UserCountOutputTypeCountMaintenanceTicketsArgs
+    supervisorReviews?: boolean | UserCountOutputTypeCountSupervisorReviewsArgs
+    supervisedApartments?: boolean | UserCountOutputTypeCountSupervisedApartmentsArgs
+    ownedApartments?: boolean | UserCountOutputTypeCountOwnedApartmentsArgs
   }
 
   // Custom InputTypes
@@ -1931,6 +2212,27 @@ export namespace Prisma {
     where?: MaintenanceTicketWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSupervisorReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupervisorReviewWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountSupervisedApartmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApartmentSupervisorWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOwnedApartmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApartmentOwnerWhereInput
+  }
+
 
   /**
    * Count Type ApartmentCountOutputType
@@ -1944,6 +2246,8 @@ export namespace Prisma {
     notifications: number
     aiAssistantMessages: number
     apartmentAttachments: number
+    supervisors: number
+    owners: number
   }
 
   export type ApartmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1954,6 +2258,8 @@ export namespace Prisma {
     notifications?: boolean | ApartmentCountOutputTypeCountNotificationsArgs
     aiAssistantMessages?: boolean | ApartmentCountOutputTypeCountAiAssistantMessagesArgs
     apartmentAttachments?: boolean | ApartmentCountOutputTypeCountApartmentAttachmentsArgs
+    supervisors?: boolean | ApartmentCountOutputTypeCountSupervisorsArgs
+    owners?: boolean | ApartmentCountOutputTypeCountOwnersArgs
   }
 
   // Custom InputTypes
@@ -2016,6 +2322,20 @@ export namespace Prisma {
     where?: ApartmentAttachmentWhereInput
   }
 
+  /**
+   * ApartmentCountOutputType without action
+   */
+  export type ApartmentCountOutputTypeCountSupervisorsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApartmentSupervisorWhereInput
+  }
+
+  /**
+   * ApartmentCountOutputType without action
+   */
+  export type ApartmentCountOutputTypeCountOwnersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApartmentOwnerWhereInput
+  }
+
 
   /**
    * Count Type CleaningTaskCountOutputType
@@ -2025,12 +2345,14 @@ export namespace Prisma {
     messages: number
     attachments: number
     aiAssistantMessages: number
+    supervisorReviews: number
   }
 
   export type CleaningTaskCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     messages?: boolean | CleaningTaskCountOutputTypeCountMessagesArgs
     attachments?: boolean | CleaningTaskCountOutputTypeCountAttachmentsArgs
     aiAssistantMessages?: boolean | CleaningTaskCountOutputTypeCountAiAssistantMessagesArgs
+    supervisorReviews?: boolean | CleaningTaskCountOutputTypeCountSupervisorReviewsArgs
   }
 
   // Custom InputTypes
@@ -2065,6 +2387,13 @@ export namespace Prisma {
     where?: AIAssistantMessageWhereInput
   }
 
+  /**
+   * CleaningTaskCountOutputType without action
+   */
+  export type CleaningTaskCountOutputTypeCountSupervisorReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupervisorReviewWhereInput
+  }
+
 
   /**
    * Count Type MaintenanceTicketCountOutputType
@@ -2074,12 +2403,14 @@ export namespace Prisma {
     attachments: number
     messages: number
     aiAssistantMessages: number
+    supervisorReviews: number
   }
 
   export type MaintenanceTicketCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     attachments?: boolean | MaintenanceTicketCountOutputTypeCountAttachmentsArgs
     messages?: boolean | MaintenanceTicketCountOutputTypeCountMessagesArgs
     aiAssistantMessages?: boolean | MaintenanceTicketCountOutputTypeCountAiAssistantMessagesArgs
+    supervisorReviews?: boolean | MaintenanceTicketCountOutputTypeCountSupervisorReviewsArgs
   }
 
   // Custom InputTypes
@@ -2112,6 +2443,13 @@ export namespace Prisma {
    */
   export type MaintenanceTicketCountOutputTypeCountAiAssistantMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AIAssistantMessageWhereInput
+  }
+
+  /**
+   * MaintenanceTicketCountOutputType without action
+   */
+  export type MaintenanceTicketCountOutputTypeCountSupervisorReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupervisorReviewWhereInput
   }
 
 
@@ -2333,6 +2671,9 @@ export namespace Prisma {
     name?: boolean
     cleaningTasks?: boolean | User$cleaningTasksArgs<ExtArgs>
     maintenanceTickets?: boolean | User$maintenanceTicketsArgs<ExtArgs>
+    supervisorReviews?: boolean | User$supervisorReviewsArgs<ExtArgs>
+    supervisedApartments?: boolean | User$supervisedApartmentsArgs<ExtArgs>
+    ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2367,6 +2708,9 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     cleaningTasks?: boolean | User$cleaningTasksArgs<ExtArgs>
     maintenanceTickets?: boolean | User$maintenanceTicketsArgs<ExtArgs>
+    supervisorReviews?: boolean | User$supervisorReviewsArgs<ExtArgs>
+    supervisedApartments?: boolean | User$supervisedApartmentsArgs<ExtArgs>
+    ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2377,6 +2721,9 @@ export namespace Prisma {
     objects: {
       cleaningTasks: Prisma.$CleaningTaskPayload<ExtArgs>[]
       maintenanceTickets: Prisma.$MaintenanceTicketPayload<ExtArgs>[]
+      supervisorReviews: Prisma.$SupervisorReviewPayload<ExtArgs>[]
+      supervisedApartments: Prisma.$ApartmentSupervisorPayload<ExtArgs>[]
+      ownedApartments: Prisma.$ApartmentOwnerPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2781,6 +3128,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     cleaningTasks<T extends User$cleaningTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$cleaningTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CleaningTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     maintenanceTickets<T extends User$maintenanceTicketsArgs<ExtArgs> = {}>(args?: Subset<T, User$maintenanceTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceTicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supervisorReviews<T extends User$supervisorReviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$supervisorReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supervisedApartments<T extends User$supervisedApartmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$supervisedApartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ownedApartments<T extends User$ownedApartmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedApartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3257,6 +3607,78 @@ export namespace Prisma {
   }
 
   /**
+   * User.supervisorReviews
+   */
+  export type User$supervisorReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    where?: SupervisorReviewWhereInput
+    orderBy?: SupervisorReviewOrderByWithRelationInput | SupervisorReviewOrderByWithRelationInput[]
+    cursor?: SupervisorReviewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupervisorReviewScalarFieldEnum | SupervisorReviewScalarFieldEnum[]
+  }
+
+  /**
+   * User.supervisedApartments
+   */
+  export type User$supervisedApartmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    where?: ApartmentSupervisorWhereInput
+    orderBy?: ApartmentSupervisorOrderByWithRelationInput | ApartmentSupervisorOrderByWithRelationInput[]
+    cursor?: ApartmentSupervisorWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApartmentSupervisorScalarFieldEnum | ApartmentSupervisorScalarFieldEnum[]
+  }
+
+  /**
+   * User.ownedApartments
+   */
+  export type User$ownedApartmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    where?: ApartmentOwnerWhereInput
+    orderBy?: ApartmentOwnerOrderByWithRelationInput | ApartmentOwnerOrderByWithRelationInput[]
+    cursor?: ApartmentOwnerWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApartmentOwnerScalarFieldEnum | ApartmentOwnerScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3580,6 +4002,8 @@ export namespace Prisma {
     notifications?: boolean | Apartment$notificationsArgs<ExtArgs>
     aiAssistantMessages?: boolean | Apartment$aiAssistantMessagesArgs<ExtArgs>
     apartmentAttachments?: boolean | Apartment$apartmentAttachmentsArgs<ExtArgs>
+    supervisors?: boolean | Apartment$supervisorsArgs<ExtArgs>
+    owners?: boolean | Apartment$ownersArgs<ExtArgs>
     _count?: boolean | ApartmentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["apartment"]>
 
@@ -3649,6 +4073,8 @@ export namespace Prisma {
     notifications?: boolean | Apartment$notificationsArgs<ExtArgs>
     aiAssistantMessages?: boolean | Apartment$aiAssistantMessagesArgs<ExtArgs>
     apartmentAttachments?: boolean | Apartment$apartmentAttachmentsArgs<ExtArgs>
+    supervisors?: boolean | Apartment$supervisorsArgs<ExtArgs>
+    owners?: boolean | Apartment$ownersArgs<ExtArgs>
     _count?: boolean | ApartmentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApartmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3664,6 +4090,8 @@ export namespace Prisma {
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       aiAssistantMessages: Prisma.$AIAssistantMessagePayload<ExtArgs>[]
       apartmentAttachments: Prisma.$ApartmentAttachmentPayload<ExtArgs>[]
+      supervisors: Prisma.$ApartmentSupervisorPayload<ExtArgs>[]
+      owners: Prisma.$ApartmentOwnerPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4083,6 +4511,8 @@ export namespace Prisma {
     notifications<T extends Apartment$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiAssistantMessages<T extends Apartment$aiAssistantMessagesArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$aiAssistantMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssistantMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     apartmentAttachments<T extends Apartment$apartmentAttachmentsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$apartmentAttachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supervisors<T extends Apartment$supervisorsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$supervisorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    owners<T extends Apartment$ownersArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$ownersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4686,6 +5116,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ApartmentAttachmentScalarFieldEnum | ApartmentAttachmentScalarFieldEnum[]
+  }
+
+  /**
+   * Apartment.supervisors
+   */
+  export type Apartment$supervisorsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    where?: ApartmentSupervisorWhereInput
+    orderBy?: ApartmentSupervisorOrderByWithRelationInput | ApartmentSupervisorOrderByWithRelationInput[]
+    cursor?: ApartmentSupervisorWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApartmentSupervisorScalarFieldEnum | ApartmentSupervisorScalarFieldEnum[]
+  }
+
+  /**
+   * Apartment.owners
+   */
+  export type Apartment$ownersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    where?: ApartmentOwnerWhereInput
+    orderBy?: ApartmentOwnerOrderByWithRelationInput | ApartmentOwnerOrderByWithRelationInput[]
+    cursor?: ApartmentOwnerWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApartmentOwnerScalarFieldEnum | ApartmentOwnerScalarFieldEnum[]
   }
 
   /**
@@ -8184,6 +8662,7 @@ export namespace Prisma {
     notes: number
     bookingId: number
     checklistProgress: number
+    correctionProgress: number
     _all: number
   }
 
@@ -8226,6 +8705,7 @@ export namespace Prisma {
     notes?: true
     bookingId?: true
     checklistProgress?: true
+    correctionProgress?: true
     _all?: true
   }
 
@@ -8313,6 +8793,7 @@ export namespace Prisma {
     notes: string | null
     bookingId: string | null
     checklistProgress: JsonValue | null
+    correctionProgress: JsonValue | null
     _count: CleaningTaskCountAggregateOutputType | null
     _min: CleaningTaskMinAggregateOutputType | null
     _max: CleaningTaskMaxAggregateOutputType | null
@@ -8344,12 +8825,14 @@ export namespace Prisma {
     notes?: boolean
     bookingId?: boolean
     checklistProgress?: boolean
+    correctionProgress?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
     messages?: boolean | CleaningTask$messagesArgs<ExtArgs>
     attachments?: boolean | CleaningTask$attachmentsArgs<ExtArgs>
     aiAssistantMessages?: boolean | CleaningTask$aiAssistantMessagesArgs<ExtArgs>
+    supervisorReviews?: boolean | CleaningTask$supervisorReviewsArgs<ExtArgs>
     _count?: boolean | CleaningTaskCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["cleaningTask"]>
 
@@ -8365,6 +8848,7 @@ export namespace Prisma {
     notes?: boolean
     bookingId?: boolean
     checklistProgress?: boolean
+    correctionProgress?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -8382,6 +8866,7 @@ export namespace Prisma {
     notes?: boolean
     bookingId?: boolean
     checklistProgress?: boolean
+    correctionProgress?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -8399,9 +8884,10 @@ export namespace Prisma {
     notes?: boolean
     bookingId?: boolean
     checklistProgress?: boolean
+    correctionProgress?: boolean
   }
 
-  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress", ExtArgs["result"]["cleaningTask"]>
+  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress", ExtArgs["result"]["cleaningTask"]>
   export type CleaningTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -8409,6 +8895,7 @@ export namespace Prisma {
     messages?: boolean | CleaningTask$messagesArgs<ExtArgs>
     attachments?: boolean | CleaningTask$attachmentsArgs<ExtArgs>
     aiAssistantMessages?: boolean | CleaningTask$aiAssistantMessagesArgs<ExtArgs>
+    supervisorReviews?: boolean | CleaningTask$supervisorReviewsArgs<ExtArgs>
     _count?: boolean | CleaningTaskCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CleaningTaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8431,6 +8918,7 @@ export namespace Prisma {
       messages: Prisma.$CleaningTaskMessagePayload<ExtArgs>[]
       attachments: Prisma.$AttachmentPayload<ExtArgs>[]
       aiAssistantMessages: Prisma.$AIAssistantMessagePayload<ExtArgs>[]
+      supervisorReviews: Prisma.$SupervisorReviewPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8444,6 +8932,7 @@ export namespace Prisma {
       notes: string | null
       bookingId: string | null
       checklistProgress: Prisma.JsonValue | null
+      correctionProgress: Prisma.JsonValue | null
     }, ExtArgs["result"]["cleaningTask"]>
     composites: {}
   }
@@ -8844,6 +9333,7 @@ export namespace Prisma {
     messages<T extends CleaningTask$messagesArgs<ExtArgs> = {}>(args?: Subset<T, CleaningTask$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CleaningTaskMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     attachments<T extends CleaningTask$attachmentsArgs<ExtArgs> = {}>(args?: Subset<T, CleaningTask$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiAssistantMessages<T extends CleaningTask$aiAssistantMessagesArgs<ExtArgs> = {}>(args?: Subset<T, CleaningTask$aiAssistantMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssistantMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supervisorReviews<T extends CleaningTask$supervisorReviewsArgs<ExtArgs> = {}>(args?: Subset<T, CleaningTask$supervisorReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8884,6 +9374,7 @@ export namespace Prisma {
     readonly notes: FieldRef<"CleaningTask", 'String'>
     readonly bookingId: FieldRef<"CleaningTask", 'String'>
     readonly checklistProgress: FieldRef<"CleaningTask", 'Json'>
+    readonly correctionProgress: FieldRef<"CleaningTask", 'Json'>
   }
     
 
@@ -9395,6 +9886,30 @@ export namespace Prisma {
   }
 
   /**
+   * CleaningTask.supervisorReviews
+   */
+  export type CleaningTask$supervisorReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    where?: SupervisorReviewWhereInput
+    orderBy?: SupervisorReviewOrderByWithRelationInput | SupervisorReviewOrderByWithRelationInput[]
+    cursor?: SupervisorReviewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupervisorReviewScalarFieldEnum | SupervisorReviewScalarFieldEnum[]
+  }
+
+  /**
    * CleaningTask without action
    */
   export type CleaningTaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9466,6 +9981,7 @@ export namespace Prisma {
     scheduledEnd: number
     startedAt: number
     resolvedAt: number
+    correctionProgress: number
     _all: number
   }
 
@@ -9513,6 +10029,7 @@ export namespace Prisma {
     scheduledEnd?: true
     startedAt?: true
     resolvedAt?: true
+    correctionProgress?: true
     _all?: true
   }
 
@@ -9601,6 +10118,7 @@ export namespace Prisma {
     scheduledEnd: Date | null
     startedAt: Date | null
     resolvedAt: Date | null
+    correctionProgress: JsonValue | null
     _count: MaintenanceTicketCountAggregateOutputType | null
     _min: MaintenanceTicketMinAggregateOutputType | null
     _max: MaintenanceTicketMaxAggregateOutputType | null
@@ -9633,11 +10151,13 @@ export namespace Prisma {
     scheduledEnd?: boolean
     startedAt?: boolean
     resolvedAt?: boolean
+    correctionProgress?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | MaintenanceTicket$assignedToArgs<ExtArgs>
     attachments?: boolean | MaintenanceTicket$attachmentsArgs<ExtArgs>
     messages?: boolean | MaintenanceTicket$messagesArgs<ExtArgs>
     aiAssistantMessages?: boolean | MaintenanceTicket$aiAssistantMessagesArgs<ExtArgs>
+    supervisorReviews?: boolean | MaintenanceTicket$supervisorReviewsArgs<ExtArgs>
     _count?: boolean | MaintenanceTicketCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["maintenanceTicket"]>
 
@@ -9654,6 +10174,7 @@ export namespace Prisma {
     scheduledEnd?: boolean
     startedAt?: boolean
     resolvedAt?: boolean
+    correctionProgress?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | MaintenanceTicket$assignedToArgs<ExtArgs>
   }, ExtArgs["result"]["maintenanceTicket"]>
@@ -9671,6 +10192,7 @@ export namespace Prisma {
     scheduledEnd?: boolean
     startedAt?: boolean
     resolvedAt?: boolean
+    correctionProgress?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | MaintenanceTicket$assignedToArgs<ExtArgs>
   }, ExtArgs["result"]["maintenanceTicket"]>
@@ -9688,15 +10210,17 @@ export namespace Prisma {
     scheduledEnd?: boolean
     startedAt?: boolean
     resolvedAt?: boolean
+    correctionProgress?: boolean
   }
 
-  export type MaintenanceTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "title" | "description" | "status" | "priority" | "createdAt" | "assignedToId" | "scheduledStart" | "scheduledEnd" | "startedAt" | "resolvedAt", ExtArgs["result"]["maintenanceTicket"]>
+  export type MaintenanceTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "title" | "description" | "status" | "priority" | "createdAt" | "assignedToId" | "scheduledStart" | "scheduledEnd" | "startedAt" | "resolvedAt" | "correctionProgress", ExtArgs["result"]["maintenanceTicket"]>
   export type MaintenanceTicketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | MaintenanceTicket$assignedToArgs<ExtArgs>
     attachments?: boolean | MaintenanceTicket$attachmentsArgs<ExtArgs>
     messages?: boolean | MaintenanceTicket$messagesArgs<ExtArgs>
     aiAssistantMessages?: boolean | MaintenanceTicket$aiAssistantMessagesArgs<ExtArgs>
+    supervisorReviews?: boolean | MaintenanceTicket$supervisorReviewsArgs<ExtArgs>
     _count?: boolean | MaintenanceTicketCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type MaintenanceTicketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9716,6 +10240,7 @@ export namespace Prisma {
       attachments: Prisma.$AttachmentPayload<ExtArgs>[]
       messages: Prisma.$MessagePayload<ExtArgs>[]
       aiAssistantMessages: Prisma.$AIAssistantMessagePayload<ExtArgs>[]
+      supervisorReviews: Prisma.$SupervisorReviewPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9730,6 +10255,7 @@ export namespace Prisma {
       scheduledEnd: Date | null
       startedAt: Date | null
       resolvedAt: Date | null
+      correctionProgress: Prisma.JsonValue | null
     }, ExtArgs["result"]["maintenanceTicket"]>
     composites: {}
   }
@@ -10129,6 +10655,7 @@ export namespace Prisma {
     attachments<T extends MaintenanceTicket$attachmentsArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicket$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     messages<T extends MaintenanceTicket$messagesArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicket$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiAssistantMessages<T extends MaintenanceTicket$aiAssistantMessagesArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicket$aiAssistantMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssistantMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    supervisorReviews<T extends MaintenanceTicket$supervisorReviewsArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicket$supervisorReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10170,6 +10697,7 @@ export namespace Prisma {
     readonly scheduledEnd: FieldRef<"MaintenanceTicket", 'DateTime'>
     readonly startedAt: FieldRef<"MaintenanceTicket", 'DateTime'>
     readonly resolvedAt: FieldRef<"MaintenanceTicket", 'DateTime'>
+    readonly correctionProgress: FieldRef<"MaintenanceTicket", 'Json'>
   }
     
 
@@ -10659,6 +11187,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AIAssistantMessageScalarFieldEnum | AIAssistantMessageScalarFieldEnum[]
+  }
+
+  /**
+   * MaintenanceTicket.supervisorReviews
+   */
+  export type MaintenanceTicket$supervisorReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    where?: SupervisorReviewWhereInput
+    orderBy?: SupervisorReviewOrderByWithRelationInput | SupervisorReviewOrderByWithRelationInput[]
+    cursor?: SupervisorReviewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SupervisorReviewScalarFieldEnum | SupervisorReviewScalarFieldEnum[]
   }
 
   /**
@@ -16568,6 +17120,3222 @@ export namespace Prisma {
 
 
   /**
+   * Model SupervisorReview
+   */
+
+  export type AggregateSupervisorReview = {
+    _count: SupervisorReviewCountAggregateOutputType | null
+    _min: SupervisorReviewMinAggregateOutputType | null
+    _max: SupervisorReviewMaxAggregateOutputType | null
+  }
+
+  export type SupervisorReviewMinAggregateOutputType = {
+    id: string | null
+    supervisorId: string | null
+    cleaningTaskId: string | null
+    maintenanceTicketId: string | null
+    decision: string | null
+    notes: string | null
+    createdAt: Date | null
+  }
+
+  export type SupervisorReviewMaxAggregateOutputType = {
+    id: string | null
+    supervisorId: string | null
+    cleaningTaskId: string | null
+    maintenanceTicketId: string | null
+    decision: string | null
+    notes: string | null
+    createdAt: Date | null
+  }
+
+  export type SupervisorReviewCountAggregateOutputType = {
+    id: number
+    supervisorId: number
+    cleaningTaskId: number
+    maintenanceTicketId: number
+    decision: number
+    notes: number
+    correctionItems: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SupervisorReviewMinAggregateInputType = {
+    id?: true
+    supervisorId?: true
+    cleaningTaskId?: true
+    maintenanceTicketId?: true
+    decision?: true
+    notes?: true
+    createdAt?: true
+  }
+
+  export type SupervisorReviewMaxAggregateInputType = {
+    id?: true
+    supervisorId?: true
+    cleaningTaskId?: true
+    maintenanceTicketId?: true
+    decision?: true
+    notes?: true
+    createdAt?: true
+  }
+
+  export type SupervisorReviewCountAggregateInputType = {
+    id?: true
+    supervisorId?: true
+    cleaningTaskId?: true
+    maintenanceTicketId?: true
+    decision?: true
+    notes?: true
+    correctionItems?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SupervisorReviewAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupervisorReview to aggregate.
+     */
+    where?: SupervisorReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupervisorReviews to fetch.
+     */
+    orderBy?: SupervisorReviewOrderByWithRelationInput | SupervisorReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SupervisorReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupervisorReviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupervisorReviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SupervisorReviews
+    **/
+    _count?: true | SupervisorReviewCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SupervisorReviewMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SupervisorReviewMaxAggregateInputType
+  }
+
+  export type GetSupervisorReviewAggregateType<T extends SupervisorReviewAggregateArgs> = {
+        [P in keyof T & keyof AggregateSupervisorReview]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSupervisorReview[P]>
+      : GetScalarType<T[P], AggregateSupervisorReview[P]>
+  }
+
+
+
+
+  export type SupervisorReviewGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SupervisorReviewWhereInput
+    orderBy?: SupervisorReviewOrderByWithAggregationInput | SupervisorReviewOrderByWithAggregationInput[]
+    by: SupervisorReviewScalarFieldEnum[] | SupervisorReviewScalarFieldEnum
+    having?: SupervisorReviewScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SupervisorReviewCountAggregateInputType | true
+    _min?: SupervisorReviewMinAggregateInputType
+    _max?: SupervisorReviewMaxAggregateInputType
+  }
+
+  export type SupervisorReviewGroupByOutputType = {
+    id: string
+    supervisorId: string
+    cleaningTaskId: string | null
+    maintenanceTicketId: string | null
+    decision: string
+    notes: string | null
+    correctionItems: JsonValue | null
+    createdAt: Date
+    _count: SupervisorReviewCountAggregateOutputType | null
+    _min: SupervisorReviewMinAggregateOutputType | null
+    _max: SupervisorReviewMaxAggregateOutputType | null
+  }
+
+  type GetSupervisorReviewGroupByPayload<T extends SupervisorReviewGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SupervisorReviewGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SupervisorReviewGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SupervisorReviewGroupByOutputType[P]>
+            : GetScalarType<T[P], SupervisorReviewGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SupervisorReviewSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    supervisorId?: boolean
+    cleaningTaskId?: boolean
+    maintenanceTicketId?: boolean
+    decision?: boolean
+    notes?: boolean
+    correctionItems?: boolean
+    createdAt?: boolean
+    supervisor?: boolean | UserDefaultArgs<ExtArgs>
+    cleaningTask?: boolean | SupervisorReview$cleaningTaskArgs<ExtArgs>
+    maintenanceTicket?: boolean | SupervisorReview$maintenanceTicketArgs<ExtArgs>
+  }, ExtArgs["result"]["supervisorReview"]>
+
+  export type SupervisorReviewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    supervisorId?: boolean
+    cleaningTaskId?: boolean
+    maintenanceTicketId?: boolean
+    decision?: boolean
+    notes?: boolean
+    correctionItems?: boolean
+    createdAt?: boolean
+    supervisor?: boolean | UserDefaultArgs<ExtArgs>
+    cleaningTask?: boolean | SupervisorReview$cleaningTaskArgs<ExtArgs>
+    maintenanceTicket?: boolean | SupervisorReview$maintenanceTicketArgs<ExtArgs>
+  }, ExtArgs["result"]["supervisorReview"]>
+
+  export type SupervisorReviewSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    supervisorId?: boolean
+    cleaningTaskId?: boolean
+    maintenanceTicketId?: boolean
+    decision?: boolean
+    notes?: boolean
+    correctionItems?: boolean
+    createdAt?: boolean
+    supervisor?: boolean | UserDefaultArgs<ExtArgs>
+    cleaningTask?: boolean | SupervisorReview$cleaningTaskArgs<ExtArgs>
+    maintenanceTicket?: boolean | SupervisorReview$maintenanceTicketArgs<ExtArgs>
+  }, ExtArgs["result"]["supervisorReview"]>
+
+  export type SupervisorReviewSelectScalar = {
+    id?: boolean
+    supervisorId?: boolean
+    cleaningTaskId?: boolean
+    maintenanceTicketId?: boolean
+    decision?: boolean
+    notes?: boolean
+    correctionItems?: boolean
+    createdAt?: boolean
+  }
+
+  export type SupervisorReviewOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "supervisorId" | "cleaningTaskId" | "maintenanceTicketId" | "decision" | "notes" | "correctionItems" | "createdAt", ExtArgs["result"]["supervisorReview"]>
+  export type SupervisorReviewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    supervisor?: boolean | UserDefaultArgs<ExtArgs>
+    cleaningTask?: boolean | SupervisorReview$cleaningTaskArgs<ExtArgs>
+    maintenanceTicket?: boolean | SupervisorReview$maintenanceTicketArgs<ExtArgs>
+  }
+  export type SupervisorReviewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    supervisor?: boolean | UserDefaultArgs<ExtArgs>
+    cleaningTask?: boolean | SupervisorReview$cleaningTaskArgs<ExtArgs>
+    maintenanceTicket?: boolean | SupervisorReview$maintenanceTicketArgs<ExtArgs>
+  }
+  export type SupervisorReviewIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    supervisor?: boolean | UserDefaultArgs<ExtArgs>
+    cleaningTask?: boolean | SupervisorReview$cleaningTaskArgs<ExtArgs>
+    maintenanceTicket?: boolean | SupervisorReview$maintenanceTicketArgs<ExtArgs>
+  }
+
+  export type $SupervisorReviewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SupervisorReview"
+    objects: {
+      supervisor: Prisma.$UserPayload<ExtArgs>
+      cleaningTask: Prisma.$CleaningTaskPayload<ExtArgs> | null
+      maintenanceTicket: Prisma.$MaintenanceTicketPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      supervisorId: string
+      cleaningTaskId: string | null
+      maintenanceTicketId: string | null
+      decision: string
+      notes: string | null
+      correctionItems: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["supervisorReview"]>
+    composites: {}
+  }
+
+  type SupervisorReviewGetPayload<S extends boolean | null | undefined | SupervisorReviewDefaultArgs> = $Result.GetResult<Prisma.$SupervisorReviewPayload, S>
+
+  type SupervisorReviewCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SupervisorReviewFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SupervisorReviewCountAggregateInputType | true
+    }
+
+  export interface SupervisorReviewDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SupervisorReview'], meta: { name: 'SupervisorReview' } }
+    /**
+     * Find zero or one SupervisorReview that matches the filter.
+     * @param {SupervisorReviewFindUniqueArgs} args - Arguments to find a SupervisorReview
+     * @example
+     * // Get one SupervisorReview
+     * const supervisorReview = await prisma.supervisorReview.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SupervisorReviewFindUniqueArgs>(args: SelectSubset<T, SupervisorReviewFindUniqueArgs<ExtArgs>>): Prisma__SupervisorReviewClient<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SupervisorReview that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SupervisorReviewFindUniqueOrThrowArgs} args - Arguments to find a SupervisorReview
+     * @example
+     * // Get one SupervisorReview
+     * const supervisorReview = await prisma.supervisorReview.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SupervisorReviewFindUniqueOrThrowArgs>(args: SelectSubset<T, SupervisorReviewFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SupervisorReviewClient<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SupervisorReview that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupervisorReviewFindFirstArgs} args - Arguments to find a SupervisorReview
+     * @example
+     * // Get one SupervisorReview
+     * const supervisorReview = await prisma.supervisorReview.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SupervisorReviewFindFirstArgs>(args?: SelectSubset<T, SupervisorReviewFindFirstArgs<ExtArgs>>): Prisma__SupervisorReviewClient<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SupervisorReview that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupervisorReviewFindFirstOrThrowArgs} args - Arguments to find a SupervisorReview
+     * @example
+     * // Get one SupervisorReview
+     * const supervisorReview = await prisma.supervisorReview.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SupervisorReviewFindFirstOrThrowArgs>(args?: SelectSubset<T, SupervisorReviewFindFirstOrThrowArgs<ExtArgs>>): Prisma__SupervisorReviewClient<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SupervisorReviews that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupervisorReviewFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SupervisorReviews
+     * const supervisorReviews = await prisma.supervisorReview.findMany()
+     * 
+     * // Get first 10 SupervisorReviews
+     * const supervisorReviews = await prisma.supervisorReview.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const supervisorReviewWithIdOnly = await prisma.supervisorReview.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SupervisorReviewFindManyArgs>(args?: SelectSubset<T, SupervisorReviewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SupervisorReview.
+     * @param {SupervisorReviewCreateArgs} args - Arguments to create a SupervisorReview.
+     * @example
+     * // Create one SupervisorReview
+     * const SupervisorReview = await prisma.supervisorReview.create({
+     *   data: {
+     *     // ... data to create a SupervisorReview
+     *   }
+     * })
+     * 
+     */
+    create<T extends SupervisorReviewCreateArgs>(args: SelectSubset<T, SupervisorReviewCreateArgs<ExtArgs>>): Prisma__SupervisorReviewClient<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SupervisorReviews.
+     * @param {SupervisorReviewCreateManyArgs} args - Arguments to create many SupervisorReviews.
+     * @example
+     * // Create many SupervisorReviews
+     * const supervisorReview = await prisma.supervisorReview.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SupervisorReviewCreateManyArgs>(args?: SelectSubset<T, SupervisorReviewCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SupervisorReviews and returns the data saved in the database.
+     * @param {SupervisorReviewCreateManyAndReturnArgs} args - Arguments to create many SupervisorReviews.
+     * @example
+     * // Create many SupervisorReviews
+     * const supervisorReview = await prisma.supervisorReview.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SupervisorReviews and only return the `id`
+     * const supervisorReviewWithIdOnly = await prisma.supervisorReview.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SupervisorReviewCreateManyAndReturnArgs>(args?: SelectSubset<T, SupervisorReviewCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SupervisorReview.
+     * @param {SupervisorReviewDeleteArgs} args - Arguments to delete one SupervisorReview.
+     * @example
+     * // Delete one SupervisorReview
+     * const SupervisorReview = await prisma.supervisorReview.delete({
+     *   where: {
+     *     // ... filter to delete one SupervisorReview
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SupervisorReviewDeleteArgs>(args: SelectSubset<T, SupervisorReviewDeleteArgs<ExtArgs>>): Prisma__SupervisorReviewClient<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SupervisorReview.
+     * @param {SupervisorReviewUpdateArgs} args - Arguments to update one SupervisorReview.
+     * @example
+     * // Update one SupervisorReview
+     * const supervisorReview = await prisma.supervisorReview.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SupervisorReviewUpdateArgs>(args: SelectSubset<T, SupervisorReviewUpdateArgs<ExtArgs>>): Prisma__SupervisorReviewClient<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SupervisorReviews.
+     * @param {SupervisorReviewDeleteManyArgs} args - Arguments to filter SupervisorReviews to delete.
+     * @example
+     * // Delete a few SupervisorReviews
+     * const { count } = await prisma.supervisorReview.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SupervisorReviewDeleteManyArgs>(args?: SelectSubset<T, SupervisorReviewDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupervisorReviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupervisorReviewUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SupervisorReviews
+     * const supervisorReview = await prisma.supervisorReview.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SupervisorReviewUpdateManyArgs>(args: SelectSubset<T, SupervisorReviewUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SupervisorReviews and returns the data updated in the database.
+     * @param {SupervisorReviewUpdateManyAndReturnArgs} args - Arguments to update many SupervisorReviews.
+     * @example
+     * // Update many SupervisorReviews
+     * const supervisorReview = await prisma.supervisorReview.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SupervisorReviews and only return the `id`
+     * const supervisorReviewWithIdOnly = await prisma.supervisorReview.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SupervisorReviewUpdateManyAndReturnArgs>(args: SelectSubset<T, SupervisorReviewUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SupervisorReview.
+     * @param {SupervisorReviewUpsertArgs} args - Arguments to update or create a SupervisorReview.
+     * @example
+     * // Update or create a SupervisorReview
+     * const supervisorReview = await prisma.supervisorReview.upsert({
+     *   create: {
+     *     // ... data to create a SupervisorReview
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SupervisorReview we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SupervisorReviewUpsertArgs>(args: SelectSubset<T, SupervisorReviewUpsertArgs<ExtArgs>>): Prisma__SupervisorReviewClient<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SupervisorReviews.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupervisorReviewCountArgs} args - Arguments to filter SupervisorReviews to count.
+     * @example
+     * // Count the number of SupervisorReviews
+     * const count = await prisma.supervisorReview.count({
+     *   where: {
+     *     // ... the filter for the SupervisorReviews we want to count
+     *   }
+     * })
+    **/
+    count<T extends SupervisorReviewCountArgs>(
+      args?: Subset<T, SupervisorReviewCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SupervisorReviewCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SupervisorReview.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupervisorReviewAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SupervisorReviewAggregateArgs>(args: Subset<T, SupervisorReviewAggregateArgs>): Prisma.PrismaPromise<GetSupervisorReviewAggregateType<T>>
+
+    /**
+     * Group by SupervisorReview.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SupervisorReviewGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SupervisorReviewGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SupervisorReviewGroupByArgs['orderBy'] }
+        : { orderBy?: SupervisorReviewGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SupervisorReviewGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSupervisorReviewGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SupervisorReview model
+   */
+  readonly fields: SupervisorReviewFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SupervisorReview.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SupervisorReviewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    supervisor<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    cleaningTask<T extends SupervisorReview$cleaningTaskArgs<ExtArgs> = {}>(args?: Subset<T, SupervisorReview$cleaningTaskArgs<ExtArgs>>): Prisma__CleaningTaskClient<$Result.GetResult<Prisma.$CleaningTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    maintenanceTicket<T extends SupervisorReview$maintenanceTicketArgs<ExtArgs> = {}>(args?: Subset<T, SupervisorReview$maintenanceTicketArgs<ExtArgs>>): Prisma__MaintenanceTicketClient<$Result.GetResult<Prisma.$MaintenanceTicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SupervisorReview model
+   */
+  interface SupervisorReviewFieldRefs {
+    readonly id: FieldRef<"SupervisorReview", 'String'>
+    readonly supervisorId: FieldRef<"SupervisorReview", 'String'>
+    readonly cleaningTaskId: FieldRef<"SupervisorReview", 'String'>
+    readonly maintenanceTicketId: FieldRef<"SupervisorReview", 'String'>
+    readonly decision: FieldRef<"SupervisorReview", 'String'>
+    readonly notes: FieldRef<"SupervisorReview", 'String'>
+    readonly correctionItems: FieldRef<"SupervisorReview", 'Json'>
+    readonly createdAt: FieldRef<"SupervisorReview", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SupervisorReview findUnique
+   */
+  export type SupervisorReviewFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which SupervisorReview to fetch.
+     */
+    where: SupervisorReviewWhereUniqueInput
+  }
+
+  /**
+   * SupervisorReview findUniqueOrThrow
+   */
+  export type SupervisorReviewFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which SupervisorReview to fetch.
+     */
+    where: SupervisorReviewWhereUniqueInput
+  }
+
+  /**
+   * SupervisorReview findFirst
+   */
+  export type SupervisorReviewFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which SupervisorReview to fetch.
+     */
+    where?: SupervisorReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupervisorReviews to fetch.
+     */
+    orderBy?: SupervisorReviewOrderByWithRelationInput | SupervisorReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupervisorReviews.
+     */
+    cursor?: SupervisorReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupervisorReviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupervisorReviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupervisorReviews.
+     */
+    distinct?: SupervisorReviewScalarFieldEnum | SupervisorReviewScalarFieldEnum[]
+  }
+
+  /**
+   * SupervisorReview findFirstOrThrow
+   */
+  export type SupervisorReviewFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which SupervisorReview to fetch.
+     */
+    where?: SupervisorReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupervisorReviews to fetch.
+     */
+    orderBy?: SupervisorReviewOrderByWithRelationInput | SupervisorReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SupervisorReviews.
+     */
+    cursor?: SupervisorReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupervisorReviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupervisorReviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupervisorReviews.
+     */
+    distinct?: SupervisorReviewScalarFieldEnum | SupervisorReviewScalarFieldEnum[]
+  }
+
+  /**
+   * SupervisorReview findMany
+   */
+  export type SupervisorReviewFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * Filter, which SupervisorReviews to fetch.
+     */
+    where?: SupervisorReviewWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SupervisorReviews to fetch.
+     */
+    orderBy?: SupervisorReviewOrderByWithRelationInput | SupervisorReviewOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SupervisorReviews.
+     */
+    cursor?: SupervisorReviewWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SupervisorReviews from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SupervisorReviews.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupervisorReviews.
+     */
+    distinct?: SupervisorReviewScalarFieldEnum | SupervisorReviewScalarFieldEnum[]
+  }
+
+  /**
+   * SupervisorReview create
+   */
+  export type SupervisorReviewCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SupervisorReview.
+     */
+    data: XOR<SupervisorReviewCreateInput, SupervisorReviewUncheckedCreateInput>
+  }
+
+  /**
+   * SupervisorReview createMany
+   */
+  export type SupervisorReviewCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SupervisorReviews.
+     */
+    data: SupervisorReviewCreateManyInput | SupervisorReviewCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SupervisorReview createManyAndReturn
+   */
+  export type SupervisorReviewCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * The data used to create many SupervisorReviews.
+     */
+    data: SupervisorReviewCreateManyInput | SupervisorReviewCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SupervisorReview update
+   */
+  export type SupervisorReviewUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SupervisorReview.
+     */
+    data: XOR<SupervisorReviewUpdateInput, SupervisorReviewUncheckedUpdateInput>
+    /**
+     * Choose, which SupervisorReview to update.
+     */
+    where: SupervisorReviewWhereUniqueInput
+  }
+
+  /**
+   * SupervisorReview updateMany
+   */
+  export type SupervisorReviewUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SupervisorReviews.
+     */
+    data: XOR<SupervisorReviewUpdateManyMutationInput, SupervisorReviewUncheckedUpdateManyInput>
+    /**
+     * Filter which SupervisorReviews to update
+     */
+    where?: SupervisorReviewWhereInput
+    /**
+     * Limit how many SupervisorReviews to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SupervisorReview updateManyAndReturn
+   */
+  export type SupervisorReviewUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * The data used to update SupervisorReviews.
+     */
+    data: XOR<SupervisorReviewUpdateManyMutationInput, SupervisorReviewUncheckedUpdateManyInput>
+    /**
+     * Filter which SupervisorReviews to update
+     */
+    where?: SupervisorReviewWhereInput
+    /**
+     * Limit how many SupervisorReviews to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * SupervisorReview upsert
+   */
+  export type SupervisorReviewUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SupervisorReview to update in case it exists.
+     */
+    where: SupervisorReviewWhereUniqueInput
+    /**
+     * In case the SupervisorReview found by the `where` argument doesn't exist, create a new SupervisorReview with this data.
+     */
+    create: XOR<SupervisorReviewCreateInput, SupervisorReviewUncheckedCreateInput>
+    /**
+     * In case the SupervisorReview was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SupervisorReviewUpdateInput, SupervisorReviewUncheckedUpdateInput>
+  }
+
+  /**
+   * SupervisorReview delete
+   */
+  export type SupervisorReviewDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+    /**
+     * Filter which SupervisorReview to delete.
+     */
+    where: SupervisorReviewWhereUniqueInput
+  }
+
+  /**
+   * SupervisorReview deleteMany
+   */
+  export type SupervisorReviewDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SupervisorReviews to delete
+     */
+    where?: SupervisorReviewWhereInput
+    /**
+     * Limit how many SupervisorReviews to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SupervisorReview.cleaningTask
+   */
+  export type SupervisorReview$cleaningTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleaningTask
+     */
+    select?: CleaningTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleaningTask
+     */
+    omit?: CleaningTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleaningTaskInclude<ExtArgs> | null
+    where?: CleaningTaskWhereInput
+  }
+
+  /**
+   * SupervisorReview.maintenanceTicket
+   */
+  export type SupervisorReview$maintenanceTicketArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceTicket
+     */
+    select?: MaintenanceTicketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceTicket
+     */
+    omit?: MaintenanceTicketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceTicketInclude<ExtArgs> | null
+    where?: MaintenanceTicketWhereInput
+  }
+
+  /**
+   * SupervisorReview without action
+   */
+  export type SupervisorReviewDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SupervisorReview
+     */
+    select?: SupervisorReviewSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SupervisorReview
+     */
+    omit?: SupervisorReviewOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SupervisorReviewInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ApartmentSupervisor
+   */
+
+  export type AggregateApartmentSupervisor = {
+    _count: ApartmentSupervisorCountAggregateOutputType | null
+    _min: ApartmentSupervisorMinAggregateOutputType | null
+    _max: ApartmentSupervisorMaxAggregateOutputType | null
+  }
+
+  export type ApartmentSupervisorMinAggregateOutputType = {
+    apartmentId: string | null
+    userId: string | null
+  }
+
+  export type ApartmentSupervisorMaxAggregateOutputType = {
+    apartmentId: string | null
+    userId: string | null
+  }
+
+  export type ApartmentSupervisorCountAggregateOutputType = {
+    apartmentId: number
+    userId: number
+    _all: number
+  }
+
+
+  export type ApartmentSupervisorMinAggregateInputType = {
+    apartmentId?: true
+    userId?: true
+  }
+
+  export type ApartmentSupervisorMaxAggregateInputType = {
+    apartmentId?: true
+    userId?: true
+  }
+
+  export type ApartmentSupervisorCountAggregateInputType = {
+    apartmentId?: true
+    userId?: true
+    _all?: true
+  }
+
+  export type ApartmentSupervisorAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApartmentSupervisor to aggregate.
+     */
+    where?: ApartmentSupervisorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentSupervisors to fetch.
+     */
+    orderBy?: ApartmentSupervisorOrderByWithRelationInput | ApartmentSupervisorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ApartmentSupervisorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentSupervisors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentSupervisors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ApartmentSupervisors
+    **/
+    _count?: true | ApartmentSupervisorCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ApartmentSupervisorMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ApartmentSupervisorMaxAggregateInputType
+  }
+
+  export type GetApartmentSupervisorAggregateType<T extends ApartmentSupervisorAggregateArgs> = {
+        [P in keyof T & keyof AggregateApartmentSupervisor]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateApartmentSupervisor[P]>
+      : GetScalarType<T[P], AggregateApartmentSupervisor[P]>
+  }
+
+
+
+
+  export type ApartmentSupervisorGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApartmentSupervisorWhereInput
+    orderBy?: ApartmentSupervisorOrderByWithAggregationInput | ApartmentSupervisorOrderByWithAggregationInput[]
+    by: ApartmentSupervisorScalarFieldEnum[] | ApartmentSupervisorScalarFieldEnum
+    having?: ApartmentSupervisorScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ApartmentSupervisorCountAggregateInputType | true
+    _min?: ApartmentSupervisorMinAggregateInputType
+    _max?: ApartmentSupervisorMaxAggregateInputType
+  }
+
+  export type ApartmentSupervisorGroupByOutputType = {
+    apartmentId: string
+    userId: string
+    _count: ApartmentSupervisorCountAggregateOutputType | null
+    _min: ApartmentSupervisorMinAggregateOutputType | null
+    _max: ApartmentSupervisorMaxAggregateOutputType | null
+  }
+
+  type GetApartmentSupervisorGroupByPayload<T extends ApartmentSupervisorGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ApartmentSupervisorGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ApartmentSupervisorGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ApartmentSupervisorGroupByOutputType[P]>
+            : GetScalarType<T[P], ApartmentSupervisorGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ApartmentSupervisorSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    apartmentId?: boolean
+    userId?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentSupervisor"]>
+
+  export type ApartmentSupervisorSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    apartmentId?: boolean
+    userId?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentSupervisor"]>
+
+  export type ApartmentSupervisorSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    apartmentId?: boolean
+    userId?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentSupervisor"]>
+
+  export type ApartmentSupervisorSelectScalar = {
+    apartmentId?: boolean
+    userId?: boolean
+  }
+
+  export type ApartmentSupervisorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"apartmentId" | "userId", ExtArgs["result"]["apartmentSupervisor"]>
+  export type ApartmentSupervisorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ApartmentSupervisorIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ApartmentSupervisorIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ApartmentSupervisorPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ApartmentSupervisor"
+    objects: {
+      apartment: Prisma.$ApartmentPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      apartmentId: string
+      userId: string
+    }, ExtArgs["result"]["apartmentSupervisor"]>
+    composites: {}
+  }
+
+  type ApartmentSupervisorGetPayload<S extends boolean | null | undefined | ApartmentSupervisorDefaultArgs> = $Result.GetResult<Prisma.$ApartmentSupervisorPayload, S>
+
+  type ApartmentSupervisorCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ApartmentSupervisorFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ApartmentSupervisorCountAggregateInputType | true
+    }
+
+  export interface ApartmentSupervisorDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ApartmentSupervisor'], meta: { name: 'ApartmentSupervisor' } }
+    /**
+     * Find zero or one ApartmentSupervisor that matches the filter.
+     * @param {ApartmentSupervisorFindUniqueArgs} args - Arguments to find a ApartmentSupervisor
+     * @example
+     * // Get one ApartmentSupervisor
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ApartmentSupervisorFindUniqueArgs>(args: SelectSubset<T, ApartmentSupervisorFindUniqueArgs<ExtArgs>>): Prisma__ApartmentSupervisorClient<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ApartmentSupervisor that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ApartmentSupervisorFindUniqueOrThrowArgs} args - Arguments to find a ApartmentSupervisor
+     * @example
+     * // Get one ApartmentSupervisor
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ApartmentSupervisorFindUniqueOrThrowArgs>(args: SelectSubset<T, ApartmentSupervisorFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ApartmentSupervisorClient<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApartmentSupervisor that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentSupervisorFindFirstArgs} args - Arguments to find a ApartmentSupervisor
+     * @example
+     * // Get one ApartmentSupervisor
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ApartmentSupervisorFindFirstArgs>(args?: SelectSubset<T, ApartmentSupervisorFindFirstArgs<ExtArgs>>): Prisma__ApartmentSupervisorClient<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApartmentSupervisor that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentSupervisorFindFirstOrThrowArgs} args - Arguments to find a ApartmentSupervisor
+     * @example
+     * // Get one ApartmentSupervisor
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ApartmentSupervisorFindFirstOrThrowArgs>(args?: SelectSubset<T, ApartmentSupervisorFindFirstOrThrowArgs<ExtArgs>>): Prisma__ApartmentSupervisorClient<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ApartmentSupervisors that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentSupervisorFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ApartmentSupervisors
+     * const apartmentSupervisors = await prisma.apartmentSupervisor.findMany()
+     * 
+     * // Get first 10 ApartmentSupervisors
+     * const apartmentSupervisors = await prisma.apartmentSupervisor.findMany({ take: 10 })
+     * 
+     * // Only select the `apartmentId`
+     * const apartmentSupervisorWithApartmentIdOnly = await prisma.apartmentSupervisor.findMany({ select: { apartmentId: true } })
+     * 
+     */
+    findMany<T extends ApartmentSupervisorFindManyArgs>(args?: SelectSubset<T, ApartmentSupervisorFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ApartmentSupervisor.
+     * @param {ApartmentSupervisorCreateArgs} args - Arguments to create a ApartmentSupervisor.
+     * @example
+     * // Create one ApartmentSupervisor
+     * const ApartmentSupervisor = await prisma.apartmentSupervisor.create({
+     *   data: {
+     *     // ... data to create a ApartmentSupervisor
+     *   }
+     * })
+     * 
+     */
+    create<T extends ApartmentSupervisorCreateArgs>(args: SelectSubset<T, ApartmentSupervisorCreateArgs<ExtArgs>>): Prisma__ApartmentSupervisorClient<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ApartmentSupervisors.
+     * @param {ApartmentSupervisorCreateManyArgs} args - Arguments to create many ApartmentSupervisors.
+     * @example
+     * // Create many ApartmentSupervisors
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ApartmentSupervisorCreateManyArgs>(args?: SelectSubset<T, ApartmentSupervisorCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ApartmentSupervisors and returns the data saved in the database.
+     * @param {ApartmentSupervisorCreateManyAndReturnArgs} args - Arguments to create many ApartmentSupervisors.
+     * @example
+     * // Create many ApartmentSupervisors
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ApartmentSupervisors and only return the `apartmentId`
+     * const apartmentSupervisorWithApartmentIdOnly = await prisma.apartmentSupervisor.createManyAndReturn({
+     *   select: { apartmentId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ApartmentSupervisorCreateManyAndReturnArgs>(args?: SelectSubset<T, ApartmentSupervisorCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ApartmentSupervisor.
+     * @param {ApartmentSupervisorDeleteArgs} args - Arguments to delete one ApartmentSupervisor.
+     * @example
+     * // Delete one ApartmentSupervisor
+     * const ApartmentSupervisor = await prisma.apartmentSupervisor.delete({
+     *   where: {
+     *     // ... filter to delete one ApartmentSupervisor
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ApartmentSupervisorDeleteArgs>(args: SelectSubset<T, ApartmentSupervisorDeleteArgs<ExtArgs>>): Prisma__ApartmentSupervisorClient<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ApartmentSupervisor.
+     * @param {ApartmentSupervisorUpdateArgs} args - Arguments to update one ApartmentSupervisor.
+     * @example
+     * // Update one ApartmentSupervisor
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ApartmentSupervisorUpdateArgs>(args: SelectSubset<T, ApartmentSupervisorUpdateArgs<ExtArgs>>): Prisma__ApartmentSupervisorClient<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ApartmentSupervisors.
+     * @param {ApartmentSupervisorDeleteManyArgs} args - Arguments to filter ApartmentSupervisors to delete.
+     * @example
+     * // Delete a few ApartmentSupervisors
+     * const { count } = await prisma.apartmentSupervisor.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ApartmentSupervisorDeleteManyArgs>(args?: SelectSubset<T, ApartmentSupervisorDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApartmentSupervisors.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentSupervisorUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ApartmentSupervisors
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ApartmentSupervisorUpdateManyArgs>(args: SelectSubset<T, ApartmentSupervisorUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApartmentSupervisors and returns the data updated in the database.
+     * @param {ApartmentSupervisorUpdateManyAndReturnArgs} args - Arguments to update many ApartmentSupervisors.
+     * @example
+     * // Update many ApartmentSupervisors
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ApartmentSupervisors and only return the `apartmentId`
+     * const apartmentSupervisorWithApartmentIdOnly = await prisma.apartmentSupervisor.updateManyAndReturn({
+     *   select: { apartmentId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ApartmentSupervisorUpdateManyAndReturnArgs>(args: SelectSubset<T, ApartmentSupervisorUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ApartmentSupervisor.
+     * @param {ApartmentSupervisorUpsertArgs} args - Arguments to update or create a ApartmentSupervisor.
+     * @example
+     * // Update or create a ApartmentSupervisor
+     * const apartmentSupervisor = await prisma.apartmentSupervisor.upsert({
+     *   create: {
+     *     // ... data to create a ApartmentSupervisor
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ApartmentSupervisor we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ApartmentSupervisorUpsertArgs>(args: SelectSubset<T, ApartmentSupervisorUpsertArgs<ExtArgs>>): Prisma__ApartmentSupervisorClient<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ApartmentSupervisors.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentSupervisorCountArgs} args - Arguments to filter ApartmentSupervisors to count.
+     * @example
+     * // Count the number of ApartmentSupervisors
+     * const count = await prisma.apartmentSupervisor.count({
+     *   where: {
+     *     // ... the filter for the ApartmentSupervisors we want to count
+     *   }
+     * })
+    **/
+    count<T extends ApartmentSupervisorCountArgs>(
+      args?: Subset<T, ApartmentSupervisorCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ApartmentSupervisorCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ApartmentSupervisor.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentSupervisorAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ApartmentSupervisorAggregateArgs>(args: Subset<T, ApartmentSupervisorAggregateArgs>): Prisma.PrismaPromise<GetApartmentSupervisorAggregateType<T>>
+
+    /**
+     * Group by ApartmentSupervisor.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentSupervisorGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ApartmentSupervisorGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ApartmentSupervisorGroupByArgs['orderBy'] }
+        : { orderBy?: ApartmentSupervisorGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ApartmentSupervisorGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetApartmentSupervisorGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ApartmentSupervisor model
+   */
+  readonly fields: ApartmentSupervisorFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ApartmentSupervisor.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ApartmentSupervisorClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    apartment<T extends ApartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApartmentDefaultArgs<ExtArgs>>): Prisma__ApartmentClient<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ApartmentSupervisor model
+   */
+  interface ApartmentSupervisorFieldRefs {
+    readonly apartmentId: FieldRef<"ApartmentSupervisor", 'String'>
+    readonly userId: FieldRef<"ApartmentSupervisor", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ApartmentSupervisor findUnique
+   */
+  export type ApartmentSupervisorFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentSupervisor to fetch.
+     */
+    where: ApartmentSupervisorWhereUniqueInput
+  }
+
+  /**
+   * ApartmentSupervisor findUniqueOrThrow
+   */
+  export type ApartmentSupervisorFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentSupervisor to fetch.
+     */
+    where: ApartmentSupervisorWhereUniqueInput
+  }
+
+  /**
+   * ApartmentSupervisor findFirst
+   */
+  export type ApartmentSupervisorFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentSupervisor to fetch.
+     */
+    where?: ApartmentSupervisorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentSupervisors to fetch.
+     */
+    orderBy?: ApartmentSupervisorOrderByWithRelationInput | ApartmentSupervisorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApartmentSupervisors.
+     */
+    cursor?: ApartmentSupervisorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentSupervisors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentSupervisors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentSupervisors.
+     */
+    distinct?: ApartmentSupervisorScalarFieldEnum | ApartmentSupervisorScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentSupervisor findFirstOrThrow
+   */
+  export type ApartmentSupervisorFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentSupervisor to fetch.
+     */
+    where?: ApartmentSupervisorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentSupervisors to fetch.
+     */
+    orderBy?: ApartmentSupervisorOrderByWithRelationInput | ApartmentSupervisorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApartmentSupervisors.
+     */
+    cursor?: ApartmentSupervisorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentSupervisors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentSupervisors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentSupervisors.
+     */
+    distinct?: ApartmentSupervisorScalarFieldEnum | ApartmentSupervisorScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentSupervisor findMany
+   */
+  export type ApartmentSupervisorFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentSupervisors to fetch.
+     */
+    where?: ApartmentSupervisorWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentSupervisors to fetch.
+     */
+    orderBy?: ApartmentSupervisorOrderByWithRelationInput | ApartmentSupervisorOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ApartmentSupervisors.
+     */
+    cursor?: ApartmentSupervisorWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentSupervisors from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentSupervisors.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentSupervisors.
+     */
+    distinct?: ApartmentSupervisorScalarFieldEnum | ApartmentSupervisorScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentSupervisor create
+   */
+  export type ApartmentSupervisorCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ApartmentSupervisor.
+     */
+    data: XOR<ApartmentSupervisorCreateInput, ApartmentSupervisorUncheckedCreateInput>
+  }
+
+  /**
+   * ApartmentSupervisor createMany
+   */
+  export type ApartmentSupervisorCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ApartmentSupervisors.
+     */
+    data: ApartmentSupervisorCreateManyInput | ApartmentSupervisorCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ApartmentSupervisor createManyAndReturn
+   */
+  export type ApartmentSupervisorCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * The data used to create many ApartmentSupervisors.
+     */
+    data: ApartmentSupervisorCreateManyInput | ApartmentSupervisorCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApartmentSupervisor update
+   */
+  export type ApartmentSupervisorUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ApartmentSupervisor.
+     */
+    data: XOR<ApartmentSupervisorUpdateInput, ApartmentSupervisorUncheckedUpdateInput>
+    /**
+     * Choose, which ApartmentSupervisor to update.
+     */
+    where: ApartmentSupervisorWhereUniqueInput
+  }
+
+  /**
+   * ApartmentSupervisor updateMany
+   */
+  export type ApartmentSupervisorUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ApartmentSupervisors.
+     */
+    data: XOR<ApartmentSupervisorUpdateManyMutationInput, ApartmentSupervisorUncheckedUpdateManyInput>
+    /**
+     * Filter which ApartmentSupervisors to update
+     */
+    where?: ApartmentSupervisorWhereInput
+    /**
+     * Limit how many ApartmentSupervisors to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApartmentSupervisor updateManyAndReturn
+   */
+  export type ApartmentSupervisorUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * The data used to update ApartmentSupervisors.
+     */
+    data: XOR<ApartmentSupervisorUpdateManyMutationInput, ApartmentSupervisorUncheckedUpdateManyInput>
+    /**
+     * Filter which ApartmentSupervisors to update
+     */
+    where?: ApartmentSupervisorWhereInput
+    /**
+     * Limit how many ApartmentSupervisors to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApartmentSupervisor upsert
+   */
+  export type ApartmentSupervisorUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ApartmentSupervisor to update in case it exists.
+     */
+    where: ApartmentSupervisorWhereUniqueInput
+    /**
+     * In case the ApartmentSupervisor found by the `where` argument doesn't exist, create a new ApartmentSupervisor with this data.
+     */
+    create: XOR<ApartmentSupervisorCreateInput, ApartmentSupervisorUncheckedCreateInput>
+    /**
+     * In case the ApartmentSupervisor was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ApartmentSupervisorUpdateInput, ApartmentSupervisorUncheckedUpdateInput>
+  }
+
+  /**
+   * ApartmentSupervisor delete
+   */
+  export type ApartmentSupervisorDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+    /**
+     * Filter which ApartmentSupervisor to delete.
+     */
+    where: ApartmentSupervisorWhereUniqueInput
+  }
+
+  /**
+   * ApartmentSupervisor deleteMany
+   */
+  export type ApartmentSupervisorDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApartmentSupervisors to delete
+     */
+    where?: ApartmentSupervisorWhereInput
+    /**
+     * Limit how many ApartmentSupervisors to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApartmentSupervisor without action
+   */
+  export type ApartmentSupervisorDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentSupervisor
+     */
+    select?: ApartmentSupervisorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentSupervisor
+     */
+    omit?: ApartmentSupervisorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentSupervisorInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ApartmentOwner
+   */
+
+  export type AggregateApartmentOwner = {
+    _count: ApartmentOwnerCountAggregateOutputType | null
+    _min: ApartmentOwnerMinAggregateOutputType | null
+    _max: ApartmentOwnerMaxAggregateOutputType | null
+  }
+
+  export type ApartmentOwnerMinAggregateOutputType = {
+    apartmentId: string | null
+    userId: string | null
+  }
+
+  export type ApartmentOwnerMaxAggregateOutputType = {
+    apartmentId: string | null
+    userId: string | null
+  }
+
+  export type ApartmentOwnerCountAggregateOutputType = {
+    apartmentId: number
+    userId: number
+    _all: number
+  }
+
+
+  export type ApartmentOwnerMinAggregateInputType = {
+    apartmentId?: true
+    userId?: true
+  }
+
+  export type ApartmentOwnerMaxAggregateInputType = {
+    apartmentId?: true
+    userId?: true
+  }
+
+  export type ApartmentOwnerCountAggregateInputType = {
+    apartmentId?: true
+    userId?: true
+    _all?: true
+  }
+
+  export type ApartmentOwnerAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApartmentOwner to aggregate.
+     */
+    where?: ApartmentOwnerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentOwners to fetch.
+     */
+    orderBy?: ApartmentOwnerOrderByWithRelationInput | ApartmentOwnerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ApartmentOwnerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentOwners from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentOwners.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ApartmentOwners
+    **/
+    _count?: true | ApartmentOwnerCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ApartmentOwnerMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ApartmentOwnerMaxAggregateInputType
+  }
+
+  export type GetApartmentOwnerAggregateType<T extends ApartmentOwnerAggregateArgs> = {
+        [P in keyof T & keyof AggregateApartmentOwner]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateApartmentOwner[P]>
+      : GetScalarType<T[P], AggregateApartmentOwner[P]>
+  }
+
+
+
+
+  export type ApartmentOwnerGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApartmentOwnerWhereInput
+    orderBy?: ApartmentOwnerOrderByWithAggregationInput | ApartmentOwnerOrderByWithAggregationInput[]
+    by: ApartmentOwnerScalarFieldEnum[] | ApartmentOwnerScalarFieldEnum
+    having?: ApartmentOwnerScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ApartmentOwnerCountAggregateInputType | true
+    _min?: ApartmentOwnerMinAggregateInputType
+    _max?: ApartmentOwnerMaxAggregateInputType
+  }
+
+  export type ApartmentOwnerGroupByOutputType = {
+    apartmentId: string
+    userId: string
+    _count: ApartmentOwnerCountAggregateOutputType | null
+    _min: ApartmentOwnerMinAggregateOutputType | null
+    _max: ApartmentOwnerMaxAggregateOutputType | null
+  }
+
+  type GetApartmentOwnerGroupByPayload<T extends ApartmentOwnerGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ApartmentOwnerGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ApartmentOwnerGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ApartmentOwnerGroupByOutputType[P]>
+            : GetScalarType<T[P], ApartmentOwnerGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ApartmentOwnerSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    apartmentId?: boolean
+    userId?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentOwner"]>
+
+  export type ApartmentOwnerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    apartmentId?: boolean
+    userId?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentOwner"]>
+
+  export type ApartmentOwnerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    apartmentId?: boolean
+    userId?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentOwner"]>
+
+  export type ApartmentOwnerSelectScalar = {
+    apartmentId?: boolean
+    userId?: boolean
+  }
+
+  export type ApartmentOwnerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"apartmentId" | "userId", ExtArgs["result"]["apartmentOwner"]>
+  export type ApartmentOwnerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ApartmentOwnerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ApartmentOwnerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ApartmentOwnerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ApartmentOwner"
+    objects: {
+      apartment: Prisma.$ApartmentPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      apartmentId: string
+      userId: string
+    }, ExtArgs["result"]["apartmentOwner"]>
+    composites: {}
+  }
+
+  type ApartmentOwnerGetPayload<S extends boolean | null | undefined | ApartmentOwnerDefaultArgs> = $Result.GetResult<Prisma.$ApartmentOwnerPayload, S>
+
+  type ApartmentOwnerCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ApartmentOwnerFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ApartmentOwnerCountAggregateInputType | true
+    }
+
+  export interface ApartmentOwnerDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ApartmentOwner'], meta: { name: 'ApartmentOwner' } }
+    /**
+     * Find zero or one ApartmentOwner that matches the filter.
+     * @param {ApartmentOwnerFindUniqueArgs} args - Arguments to find a ApartmentOwner
+     * @example
+     * // Get one ApartmentOwner
+     * const apartmentOwner = await prisma.apartmentOwner.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ApartmentOwnerFindUniqueArgs>(args: SelectSubset<T, ApartmentOwnerFindUniqueArgs<ExtArgs>>): Prisma__ApartmentOwnerClient<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ApartmentOwner that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ApartmentOwnerFindUniqueOrThrowArgs} args - Arguments to find a ApartmentOwner
+     * @example
+     * // Get one ApartmentOwner
+     * const apartmentOwner = await prisma.apartmentOwner.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ApartmentOwnerFindUniqueOrThrowArgs>(args: SelectSubset<T, ApartmentOwnerFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ApartmentOwnerClient<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApartmentOwner that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentOwnerFindFirstArgs} args - Arguments to find a ApartmentOwner
+     * @example
+     * // Get one ApartmentOwner
+     * const apartmentOwner = await prisma.apartmentOwner.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ApartmentOwnerFindFirstArgs>(args?: SelectSubset<T, ApartmentOwnerFindFirstArgs<ExtArgs>>): Prisma__ApartmentOwnerClient<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApartmentOwner that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentOwnerFindFirstOrThrowArgs} args - Arguments to find a ApartmentOwner
+     * @example
+     * // Get one ApartmentOwner
+     * const apartmentOwner = await prisma.apartmentOwner.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ApartmentOwnerFindFirstOrThrowArgs>(args?: SelectSubset<T, ApartmentOwnerFindFirstOrThrowArgs<ExtArgs>>): Prisma__ApartmentOwnerClient<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ApartmentOwners that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentOwnerFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ApartmentOwners
+     * const apartmentOwners = await prisma.apartmentOwner.findMany()
+     * 
+     * // Get first 10 ApartmentOwners
+     * const apartmentOwners = await prisma.apartmentOwner.findMany({ take: 10 })
+     * 
+     * // Only select the `apartmentId`
+     * const apartmentOwnerWithApartmentIdOnly = await prisma.apartmentOwner.findMany({ select: { apartmentId: true } })
+     * 
+     */
+    findMany<T extends ApartmentOwnerFindManyArgs>(args?: SelectSubset<T, ApartmentOwnerFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ApartmentOwner.
+     * @param {ApartmentOwnerCreateArgs} args - Arguments to create a ApartmentOwner.
+     * @example
+     * // Create one ApartmentOwner
+     * const ApartmentOwner = await prisma.apartmentOwner.create({
+     *   data: {
+     *     // ... data to create a ApartmentOwner
+     *   }
+     * })
+     * 
+     */
+    create<T extends ApartmentOwnerCreateArgs>(args: SelectSubset<T, ApartmentOwnerCreateArgs<ExtArgs>>): Prisma__ApartmentOwnerClient<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ApartmentOwners.
+     * @param {ApartmentOwnerCreateManyArgs} args - Arguments to create many ApartmentOwners.
+     * @example
+     * // Create many ApartmentOwners
+     * const apartmentOwner = await prisma.apartmentOwner.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ApartmentOwnerCreateManyArgs>(args?: SelectSubset<T, ApartmentOwnerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ApartmentOwners and returns the data saved in the database.
+     * @param {ApartmentOwnerCreateManyAndReturnArgs} args - Arguments to create many ApartmentOwners.
+     * @example
+     * // Create many ApartmentOwners
+     * const apartmentOwner = await prisma.apartmentOwner.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ApartmentOwners and only return the `apartmentId`
+     * const apartmentOwnerWithApartmentIdOnly = await prisma.apartmentOwner.createManyAndReturn({
+     *   select: { apartmentId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ApartmentOwnerCreateManyAndReturnArgs>(args?: SelectSubset<T, ApartmentOwnerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ApartmentOwner.
+     * @param {ApartmentOwnerDeleteArgs} args - Arguments to delete one ApartmentOwner.
+     * @example
+     * // Delete one ApartmentOwner
+     * const ApartmentOwner = await prisma.apartmentOwner.delete({
+     *   where: {
+     *     // ... filter to delete one ApartmentOwner
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ApartmentOwnerDeleteArgs>(args: SelectSubset<T, ApartmentOwnerDeleteArgs<ExtArgs>>): Prisma__ApartmentOwnerClient<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ApartmentOwner.
+     * @param {ApartmentOwnerUpdateArgs} args - Arguments to update one ApartmentOwner.
+     * @example
+     * // Update one ApartmentOwner
+     * const apartmentOwner = await prisma.apartmentOwner.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ApartmentOwnerUpdateArgs>(args: SelectSubset<T, ApartmentOwnerUpdateArgs<ExtArgs>>): Prisma__ApartmentOwnerClient<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ApartmentOwners.
+     * @param {ApartmentOwnerDeleteManyArgs} args - Arguments to filter ApartmentOwners to delete.
+     * @example
+     * // Delete a few ApartmentOwners
+     * const { count } = await prisma.apartmentOwner.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ApartmentOwnerDeleteManyArgs>(args?: SelectSubset<T, ApartmentOwnerDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApartmentOwners.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentOwnerUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ApartmentOwners
+     * const apartmentOwner = await prisma.apartmentOwner.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ApartmentOwnerUpdateManyArgs>(args: SelectSubset<T, ApartmentOwnerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApartmentOwners and returns the data updated in the database.
+     * @param {ApartmentOwnerUpdateManyAndReturnArgs} args - Arguments to update many ApartmentOwners.
+     * @example
+     * // Update many ApartmentOwners
+     * const apartmentOwner = await prisma.apartmentOwner.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ApartmentOwners and only return the `apartmentId`
+     * const apartmentOwnerWithApartmentIdOnly = await prisma.apartmentOwner.updateManyAndReturn({
+     *   select: { apartmentId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ApartmentOwnerUpdateManyAndReturnArgs>(args: SelectSubset<T, ApartmentOwnerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ApartmentOwner.
+     * @param {ApartmentOwnerUpsertArgs} args - Arguments to update or create a ApartmentOwner.
+     * @example
+     * // Update or create a ApartmentOwner
+     * const apartmentOwner = await prisma.apartmentOwner.upsert({
+     *   create: {
+     *     // ... data to create a ApartmentOwner
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ApartmentOwner we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ApartmentOwnerUpsertArgs>(args: SelectSubset<T, ApartmentOwnerUpsertArgs<ExtArgs>>): Prisma__ApartmentOwnerClient<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ApartmentOwners.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentOwnerCountArgs} args - Arguments to filter ApartmentOwners to count.
+     * @example
+     * // Count the number of ApartmentOwners
+     * const count = await prisma.apartmentOwner.count({
+     *   where: {
+     *     // ... the filter for the ApartmentOwners we want to count
+     *   }
+     * })
+    **/
+    count<T extends ApartmentOwnerCountArgs>(
+      args?: Subset<T, ApartmentOwnerCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ApartmentOwnerCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ApartmentOwner.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentOwnerAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ApartmentOwnerAggregateArgs>(args: Subset<T, ApartmentOwnerAggregateArgs>): Prisma.PrismaPromise<GetApartmentOwnerAggregateType<T>>
+
+    /**
+     * Group by ApartmentOwner.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentOwnerGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ApartmentOwnerGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ApartmentOwnerGroupByArgs['orderBy'] }
+        : { orderBy?: ApartmentOwnerGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ApartmentOwnerGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetApartmentOwnerGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ApartmentOwner model
+   */
+  readonly fields: ApartmentOwnerFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ApartmentOwner.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ApartmentOwnerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    apartment<T extends ApartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApartmentDefaultArgs<ExtArgs>>): Prisma__ApartmentClient<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ApartmentOwner model
+   */
+  interface ApartmentOwnerFieldRefs {
+    readonly apartmentId: FieldRef<"ApartmentOwner", 'String'>
+    readonly userId: FieldRef<"ApartmentOwner", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ApartmentOwner findUnique
+   */
+  export type ApartmentOwnerFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentOwner to fetch.
+     */
+    where: ApartmentOwnerWhereUniqueInput
+  }
+
+  /**
+   * ApartmentOwner findUniqueOrThrow
+   */
+  export type ApartmentOwnerFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentOwner to fetch.
+     */
+    where: ApartmentOwnerWhereUniqueInput
+  }
+
+  /**
+   * ApartmentOwner findFirst
+   */
+  export type ApartmentOwnerFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentOwner to fetch.
+     */
+    where?: ApartmentOwnerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentOwners to fetch.
+     */
+    orderBy?: ApartmentOwnerOrderByWithRelationInput | ApartmentOwnerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApartmentOwners.
+     */
+    cursor?: ApartmentOwnerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentOwners from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentOwners.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentOwners.
+     */
+    distinct?: ApartmentOwnerScalarFieldEnum | ApartmentOwnerScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentOwner findFirstOrThrow
+   */
+  export type ApartmentOwnerFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentOwner to fetch.
+     */
+    where?: ApartmentOwnerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentOwners to fetch.
+     */
+    orderBy?: ApartmentOwnerOrderByWithRelationInput | ApartmentOwnerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApartmentOwners.
+     */
+    cursor?: ApartmentOwnerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentOwners from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentOwners.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentOwners.
+     */
+    distinct?: ApartmentOwnerScalarFieldEnum | ApartmentOwnerScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentOwner findMany
+   */
+  export type ApartmentOwnerFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentOwners to fetch.
+     */
+    where?: ApartmentOwnerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentOwners to fetch.
+     */
+    orderBy?: ApartmentOwnerOrderByWithRelationInput | ApartmentOwnerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ApartmentOwners.
+     */
+    cursor?: ApartmentOwnerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentOwners from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentOwners.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentOwners.
+     */
+    distinct?: ApartmentOwnerScalarFieldEnum | ApartmentOwnerScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentOwner create
+   */
+  export type ApartmentOwnerCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ApartmentOwner.
+     */
+    data: XOR<ApartmentOwnerCreateInput, ApartmentOwnerUncheckedCreateInput>
+  }
+
+  /**
+   * ApartmentOwner createMany
+   */
+  export type ApartmentOwnerCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ApartmentOwners.
+     */
+    data: ApartmentOwnerCreateManyInput | ApartmentOwnerCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ApartmentOwner createManyAndReturn
+   */
+  export type ApartmentOwnerCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * The data used to create many ApartmentOwners.
+     */
+    data: ApartmentOwnerCreateManyInput | ApartmentOwnerCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApartmentOwner update
+   */
+  export type ApartmentOwnerUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ApartmentOwner.
+     */
+    data: XOR<ApartmentOwnerUpdateInput, ApartmentOwnerUncheckedUpdateInput>
+    /**
+     * Choose, which ApartmentOwner to update.
+     */
+    where: ApartmentOwnerWhereUniqueInput
+  }
+
+  /**
+   * ApartmentOwner updateMany
+   */
+  export type ApartmentOwnerUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ApartmentOwners.
+     */
+    data: XOR<ApartmentOwnerUpdateManyMutationInput, ApartmentOwnerUncheckedUpdateManyInput>
+    /**
+     * Filter which ApartmentOwners to update
+     */
+    where?: ApartmentOwnerWhereInput
+    /**
+     * Limit how many ApartmentOwners to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApartmentOwner updateManyAndReturn
+   */
+  export type ApartmentOwnerUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * The data used to update ApartmentOwners.
+     */
+    data: XOR<ApartmentOwnerUpdateManyMutationInput, ApartmentOwnerUncheckedUpdateManyInput>
+    /**
+     * Filter which ApartmentOwners to update
+     */
+    where?: ApartmentOwnerWhereInput
+    /**
+     * Limit how many ApartmentOwners to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApartmentOwner upsert
+   */
+  export type ApartmentOwnerUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ApartmentOwner to update in case it exists.
+     */
+    where: ApartmentOwnerWhereUniqueInput
+    /**
+     * In case the ApartmentOwner found by the `where` argument doesn't exist, create a new ApartmentOwner with this data.
+     */
+    create: XOR<ApartmentOwnerCreateInput, ApartmentOwnerUncheckedCreateInput>
+    /**
+     * In case the ApartmentOwner was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ApartmentOwnerUpdateInput, ApartmentOwnerUncheckedUpdateInput>
+  }
+
+  /**
+   * ApartmentOwner delete
+   */
+  export type ApartmentOwnerDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+    /**
+     * Filter which ApartmentOwner to delete.
+     */
+    where: ApartmentOwnerWhereUniqueInput
+  }
+
+  /**
+   * ApartmentOwner deleteMany
+   */
+  export type ApartmentOwnerDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApartmentOwners to delete
+     */
+    where?: ApartmentOwnerWhereInput
+    /**
+     * Limit how many ApartmentOwners to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApartmentOwner without action
+   */
+  export type ApartmentOwnerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentOwner
+     */
+    select?: ApartmentOwnerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentOwner
+     */
+    omit?: ApartmentOwnerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentOwnerInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16669,7 +20437,8 @@ export namespace Prisma {
     assignedToId: 'assignedToId',
     notes: 'notes',
     bookingId: 'bookingId',
-    checklistProgress: 'checklistProgress'
+    checklistProgress: 'checklistProgress',
+    correctionProgress: 'correctionProgress'
   };
 
   export type CleaningTaskScalarFieldEnum = (typeof CleaningTaskScalarFieldEnum)[keyof typeof CleaningTaskScalarFieldEnum]
@@ -16687,7 +20456,8 @@ export namespace Prisma {
     scheduledStart: 'scheduledStart',
     scheduledEnd: 'scheduledEnd',
     startedAt: 'startedAt',
-    resolvedAt: 'resolvedAt'
+    resolvedAt: 'resolvedAt',
+    correctionProgress: 'correctionProgress'
   };
 
   export type MaintenanceTicketScalarFieldEnum = (typeof MaintenanceTicketScalarFieldEnum)[keyof typeof MaintenanceTicketScalarFieldEnum]
@@ -16767,6 +20537,36 @@ export namespace Prisma {
   };
 
   export type CleaningTaskMessageScalarFieldEnum = (typeof CleaningTaskMessageScalarFieldEnum)[keyof typeof CleaningTaskMessageScalarFieldEnum]
+
+
+  export const SupervisorReviewScalarFieldEnum: {
+    id: 'id',
+    supervisorId: 'supervisorId',
+    cleaningTaskId: 'cleaningTaskId',
+    maintenanceTicketId: 'maintenanceTicketId',
+    decision: 'decision',
+    notes: 'notes',
+    correctionItems: 'correctionItems',
+    createdAt: 'createdAt'
+  };
+
+  export type SupervisorReviewScalarFieldEnum = (typeof SupervisorReviewScalarFieldEnum)[keyof typeof SupervisorReviewScalarFieldEnum]
+
+
+  export const ApartmentSupervisorScalarFieldEnum: {
+    apartmentId: 'apartmentId',
+    userId: 'userId'
+  };
+
+  export type ApartmentSupervisorScalarFieldEnum = (typeof ApartmentSupervisorScalarFieldEnum)[keyof typeof ApartmentSupervisorScalarFieldEnum]
+
+
+  export const ApartmentOwnerScalarFieldEnum: {
+    apartmentId: 'apartmentId',
+    userId: 'userId'
+  };
+
+  export type ApartmentOwnerScalarFieldEnum = (typeof ApartmentOwnerScalarFieldEnum)[keyof typeof ApartmentOwnerScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -16935,6 +20735,9 @@ export namespace Prisma {
     name?: StringFilter<"User"> | string
     cleaningTasks?: CleaningTaskListRelationFilter
     maintenanceTickets?: MaintenanceTicketListRelationFilter
+    supervisorReviews?: SupervisorReviewListRelationFilter
+    supervisedApartments?: ApartmentSupervisorListRelationFilter
+    ownedApartments?: ApartmentOwnerListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -16946,6 +20749,9 @@ export namespace Prisma {
     name?: SortOrder
     cleaningTasks?: CleaningTaskOrderByRelationAggregateInput
     maintenanceTickets?: MaintenanceTicketOrderByRelationAggregateInput
+    supervisorReviews?: SupervisorReviewOrderByRelationAggregateInput
+    supervisedApartments?: ApartmentSupervisorOrderByRelationAggregateInput
+    ownedApartments?: ApartmentOwnerOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -16960,6 +20766,9 @@ export namespace Prisma {
     name?: StringFilter<"User"> | string
     cleaningTasks?: CleaningTaskListRelationFilter
     maintenanceTickets?: MaintenanceTicketListRelationFilter
+    supervisorReviews?: SupervisorReviewListRelationFilter
+    supervisedApartments?: ApartmentSupervisorListRelationFilter
+    ownedApartments?: ApartmentOwnerListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -17013,6 +20822,8 @@ export namespace Prisma {
     notifications?: NotificationListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
     apartmentAttachments?: ApartmentAttachmentListRelationFilter
+    supervisors?: ApartmentSupervisorListRelationFilter
+    owners?: ApartmentOwnerListRelationFilter
   }
 
   export type ApartmentOrderByWithRelationInput = {
@@ -17039,6 +20850,8 @@ export namespace Prisma {
     notifications?: NotificationOrderByRelationAggregateInput
     aiAssistantMessages?: AIAssistantMessageOrderByRelationAggregateInput
     apartmentAttachments?: ApartmentAttachmentOrderByRelationAggregateInput
+    supervisors?: ApartmentSupervisorOrderByRelationAggregateInput
+    owners?: ApartmentOwnerOrderByRelationAggregateInput
   }
 
   export type ApartmentWhereUniqueInput = Prisma.AtLeast<{
@@ -17068,6 +20881,8 @@ export namespace Prisma {
     notifications?: NotificationListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
     apartmentAttachments?: ApartmentAttachmentListRelationFilter
+    supervisors?: ApartmentSupervisorListRelationFilter
+    owners?: ApartmentOwnerListRelationFilter
   }, "id" | "apartmentCode">
 
   export type ApartmentOrderByWithAggregationInput = {
@@ -17353,12 +21168,14 @@ export namespace Prisma {
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CleaningTask">
+    correctionProgress?: JsonNullableFilter<"CleaningTask">
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     messages?: CleaningTaskMessageListRelationFilter
     attachments?: AttachmentListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
+    supervisorReviews?: SupervisorReviewListRelationFilter
   }
 
   export type CleaningTaskOrderByWithRelationInput = {
@@ -17373,12 +21190,14 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     bookingId?: SortOrderInput | SortOrder
     checklistProgress?: SortOrderInput | SortOrder
+    correctionProgress?: SortOrderInput | SortOrder
     booking?: BookingOrderByWithRelationInput
     apartment?: ApartmentOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
     messages?: CleaningTaskMessageOrderByRelationAggregateInput
     attachments?: AttachmentOrderByRelationAggregateInput
     aiAssistantMessages?: AIAssistantMessageOrderByRelationAggregateInput
+    supervisorReviews?: SupervisorReviewOrderByRelationAggregateInput
   }
 
   export type CleaningTaskWhereUniqueInput = Prisma.AtLeast<{
@@ -17396,12 +21215,14 @@ export namespace Prisma {
     assignedToId?: StringNullableFilter<"CleaningTask"> | string | null
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CleaningTask">
+    correctionProgress?: JsonNullableFilter<"CleaningTask">
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     messages?: CleaningTaskMessageListRelationFilter
     attachments?: AttachmentListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
+    supervisorReviews?: SupervisorReviewListRelationFilter
   }, "id" | "bookingId">
 
   export type CleaningTaskOrderByWithAggregationInput = {
@@ -17416,6 +21237,7 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     bookingId?: SortOrderInput | SortOrder
     checklistProgress?: SortOrderInput | SortOrder
+    correctionProgress?: SortOrderInput | SortOrder
     _count?: CleaningTaskCountOrderByAggregateInput
     _max?: CleaningTaskMaxOrderByAggregateInput
     _min?: CleaningTaskMinOrderByAggregateInput
@@ -17436,6 +21258,7 @@ export namespace Prisma {
     notes?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableWithAggregatesFilter<"CleaningTask">
+    correctionProgress?: JsonNullableWithAggregatesFilter<"CleaningTask">
   }
 
   export type MaintenanceTicketWhereInput = {
@@ -17454,11 +21277,13 @@ export namespace Prisma {
     scheduledEnd?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     startedAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     resolvedAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
+    correctionProgress?: JsonNullableFilter<"MaintenanceTicket">
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     attachments?: AttachmentListRelationFilter
     messages?: MessageListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
+    supervisorReviews?: SupervisorReviewListRelationFilter
   }
 
   export type MaintenanceTicketOrderByWithRelationInput = {
@@ -17474,11 +21299,13 @@ export namespace Prisma {
     scheduledEnd?: SortOrderInput | SortOrder
     startedAt?: SortOrderInput | SortOrder
     resolvedAt?: SortOrderInput | SortOrder
+    correctionProgress?: SortOrderInput | SortOrder
     apartment?: ApartmentOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
     attachments?: AttachmentOrderByRelationAggregateInput
     messages?: MessageOrderByRelationAggregateInput
     aiAssistantMessages?: AIAssistantMessageOrderByRelationAggregateInput
+    supervisorReviews?: SupervisorReviewOrderByRelationAggregateInput
   }
 
   export type MaintenanceTicketWhereUniqueInput = Prisma.AtLeast<{
@@ -17497,11 +21324,13 @@ export namespace Prisma {
     scheduledEnd?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     startedAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     resolvedAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
+    correctionProgress?: JsonNullableFilter<"MaintenanceTicket">
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     attachments?: AttachmentListRelationFilter
     messages?: MessageListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
+    supervisorReviews?: SupervisorReviewListRelationFilter
   }, "id">
 
   export type MaintenanceTicketOrderByWithAggregationInput = {
@@ -17517,6 +21346,7 @@ export namespace Prisma {
     scheduledEnd?: SortOrderInput | SortOrder
     startedAt?: SortOrderInput | SortOrder
     resolvedAt?: SortOrderInput | SortOrder
+    correctionProgress?: SortOrderInput | SortOrder
     _count?: MaintenanceTicketCountOrderByAggregateInput
     _max?: MaintenanceTicketMaxOrderByAggregateInput
     _min?: MaintenanceTicketMinOrderByAggregateInput
@@ -17538,6 +21368,7 @@ export namespace Prisma {
     scheduledEnd?: DateTimeNullableWithAggregatesFilter<"MaintenanceTicket"> | Date | string | null
     startedAt?: DateTimeNullableWithAggregatesFilter<"MaintenanceTicket"> | Date | string | null
     resolvedAt?: DateTimeNullableWithAggregatesFilter<"MaintenanceTicket"> | Date | string | null
+    correctionProgress?: JsonNullableWithAggregatesFilter<"MaintenanceTicket">
   }
 
   export type AIAssistantMessageWhereInput = {
@@ -17945,6 +21776,170 @@ export namespace Prisma {
     readByManagerAt?: DateTimeNullableWithAggregatesFilter<"CleaningTaskMessage"> | Date | string | null
   }
 
+  export type SupervisorReviewWhereInput = {
+    AND?: SupervisorReviewWhereInput | SupervisorReviewWhereInput[]
+    OR?: SupervisorReviewWhereInput[]
+    NOT?: SupervisorReviewWhereInput | SupervisorReviewWhereInput[]
+    id?: StringFilter<"SupervisorReview"> | string
+    supervisorId?: StringFilter<"SupervisorReview"> | string
+    cleaningTaskId?: StringNullableFilter<"SupervisorReview"> | string | null
+    maintenanceTicketId?: StringNullableFilter<"SupervisorReview"> | string | null
+    decision?: StringFilter<"SupervisorReview"> | string
+    notes?: StringNullableFilter<"SupervisorReview"> | string | null
+    correctionItems?: JsonNullableFilter<"SupervisorReview">
+    createdAt?: DateTimeFilter<"SupervisorReview"> | Date | string
+    supervisor?: XOR<UserScalarRelationFilter, UserWhereInput>
+    cleaningTask?: XOR<CleaningTaskNullableScalarRelationFilter, CleaningTaskWhereInput> | null
+    maintenanceTicket?: XOR<MaintenanceTicketNullableScalarRelationFilter, MaintenanceTicketWhereInput> | null
+  }
+
+  export type SupervisorReviewOrderByWithRelationInput = {
+    id?: SortOrder
+    supervisorId?: SortOrder
+    cleaningTaskId?: SortOrderInput | SortOrder
+    maintenanceTicketId?: SortOrderInput | SortOrder
+    decision?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    correctionItems?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    supervisor?: UserOrderByWithRelationInput
+    cleaningTask?: CleaningTaskOrderByWithRelationInput
+    maintenanceTicket?: MaintenanceTicketOrderByWithRelationInput
+  }
+
+  export type SupervisorReviewWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SupervisorReviewWhereInput | SupervisorReviewWhereInput[]
+    OR?: SupervisorReviewWhereInput[]
+    NOT?: SupervisorReviewWhereInput | SupervisorReviewWhereInput[]
+    supervisorId?: StringFilter<"SupervisorReview"> | string
+    cleaningTaskId?: StringNullableFilter<"SupervisorReview"> | string | null
+    maintenanceTicketId?: StringNullableFilter<"SupervisorReview"> | string | null
+    decision?: StringFilter<"SupervisorReview"> | string
+    notes?: StringNullableFilter<"SupervisorReview"> | string | null
+    correctionItems?: JsonNullableFilter<"SupervisorReview">
+    createdAt?: DateTimeFilter<"SupervisorReview"> | Date | string
+    supervisor?: XOR<UserScalarRelationFilter, UserWhereInput>
+    cleaningTask?: XOR<CleaningTaskNullableScalarRelationFilter, CleaningTaskWhereInput> | null
+    maintenanceTicket?: XOR<MaintenanceTicketNullableScalarRelationFilter, MaintenanceTicketWhereInput> | null
+  }, "id">
+
+  export type SupervisorReviewOrderByWithAggregationInput = {
+    id?: SortOrder
+    supervisorId?: SortOrder
+    cleaningTaskId?: SortOrderInput | SortOrder
+    maintenanceTicketId?: SortOrderInput | SortOrder
+    decision?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    correctionItems?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: SupervisorReviewCountOrderByAggregateInput
+    _max?: SupervisorReviewMaxOrderByAggregateInput
+    _min?: SupervisorReviewMinOrderByAggregateInput
+  }
+
+  export type SupervisorReviewScalarWhereWithAggregatesInput = {
+    AND?: SupervisorReviewScalarWhereWithAggregatesInput | SupervisorReviewScalarWhereWithAggregatesInput[]
+    OR?: SupervisorReviewScalarWhereWithAggregatesInput[]
+    NOT?: SupervisorReviewScalarWhereWithAggregatesInput | SupervisorReviewScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SupervisorReview"> | string
+    supervisorId?: StringWithAggregatesFilter<"SupervisorReview"> | string
+    cleaningTaskId?: StringNullableWithAggregatesFilter<"SupervisorReview"> | string | null
+    maintenanceTicketId?: StringNullableWithAggregatesFilter<"SupervisorReview"> | string | null
+    decision?: StringWithAggregatesFilter<"SupervisorReview"> | string
+    notes?: StringNullableWithAggregatesFilter<"SupervisorReview"> | string | null
+    correctionItems?: JsonNullableWithAggregatesFilter<"SupervisorReview">
+    createdAt?: DateTimeWithAggregatesFilter<"SupervisorReview"> | Date | string
+  }
+
+  export type ApartmentSupervisorWhereInput = {
+    AND?: ApartmentSupervisorWhereInput | ApartmentSupervisorWhereInput[]
+    OR?: ApartmentSupervisorWhereInput[]
+    NOT?: ApartmentSupervisorWhereInput | ApartmentSupervisorWhereInput[]
+    apartmentId?: StringFilter<"ApartmentSupervisor"> | string
+    userId?: StringFilter<"ApartmentSupervisor"> | string
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type ApartmentSupervisorOrderByWithRelationInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+    apartment?: ApartmentOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ApartmentSupervisorWhereUniqueInput = Prisma.AtLeast<{
+    apartmentId_userId?: ApartmentSupervisorApartmentIdUserIdCompoundUniqueInput
+    AND?: ApartmentSupervisorWhereInput | ApartmentSupervisorWhereInput[]
+    OR?: ApartmentSupervisorWhereInput[]
+    NOT?: ApartmentSupervisorWhereInput | ApartmentSupervisorWhereInput[]
+    apartmentId?: StringFilter<"ApartmentSupervisor"> | string
+    userId?: StringFilter<"ApartmentSupervisor"> | string
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "apartmentId_userId">
+
+  export type ApartmentSupervisorOrderByWithAggregationInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+    _count?: ApartmentSupervisorCountOrderByAggregateInput
+    _max?: ApartmentSupervisorMaxOrderByAggregateInput
+    _min?: ApartmentSupervisorMinOrderByAggregateInput
+  }
+
+  export type ApartmentSupervisorScalarWhereWithAggregatesInput = {
+    AND?: ApartmentSupervisorScalarWhereWithAggregatesInput | ApartmentSupervisorScalarWhereWithAggregatesInput[]
+    OR?: ApartmentSupervisorScalarWhereWithAggregatesInput[]
+    NOT?: ApartmentSupervisorScalarWhereWithAggregatesInput | ApartmentSupervisorScalarWhereWithAggregatesInput[]
+    apartmentId?: StringWithAggregatesFilter<"ApartmentSupervisor"> | string
+    userId?: StringWithAggregatesFilter<"ApartmentSupervisor"> | string
+  }
+
+  export type ApartmentOwnerWhereInput = {
+    AND?: ApartmentOwnerWhereInput | ApartmentOwnerWhereInput[]
+    OR?: ApartmentOwnerWhereInput[]
+    NOT?: ApartmentOwnerWhereInput | ApartmentOwnerWhereInput[]
+    apartmentId?: StringFilter<"ApartmentOwner"> | string
+    userId?: StringFilter<"ApartmentOwner"> | string
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type ApartmentOwnerOrderByWithRelationInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+    apartment?: ApartmentOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ApartmentOwnerWhereUniqueInput = Prisma.AtLeast<{
+    apartmentId_userId?: ApartmentOwnerApartmentIdUserIdCompoundUniqueInput
+    AND?: ApartmentOwnerWhereInput | ApartmentOwnerWhereInput[]
+    OR?: ApartmentOwnerWhereInput[]
+    NOT?: ApartmentOwnerWhereInput | ApartmentOwnerWhereInput[]
+    apartmentId?: StringFilter<"ApartmentOwner"> | string
+    userId?: StringFilter<"ApartmentOwner"> | string
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "apartmentId_userId">
+
+  export type ApartmentOwnerOrderByWithAggregationInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+    _count?: ApartmentOwnerCountOrderByAggregateInput
+    _max?: ApartmentOwnerMaxOrderByAggregateInput
+    _min?: ApartmentOwnerMinOrderByAggregateInput
+  }
+
+  export type ApartmentOwnerScalarWhereWithAggregatesInput = {
+    AND?: ApartmentOwnerScalarWhereWithAggregatesInput | ApartmentOwnerScalarWhereWithAggregatesInput[]
+    OR?: ApartmentOwnerScalarWhereWithAggregatesInput[]
+    NOT?: ApartmentOwnerScalarWhereWithAggregatesInput | ApartmentOwnerScalarWhereWithAggregatesInput[]
+    apartmentId?: StringWithAggregatesFilter<"ApartmentOwner"> | string
+    userId?: StringWithAggregatesFilter<"ApartmentOwner"> | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -17954,6 +21949,9 @@ export namespace Prisma {
     name: string
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -17965,6 +21963,9 @@ export namespace Prisma {
     name: string
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -17976,6 +21977,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -17987,6 +21991,9 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -18040,6 +22047,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateInput = {
@@ -18066,6 +22075,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUpdateInput = {
@@ -18092,6 +22103,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateInput = {
@@ -18118,6 +22131,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateManyInput = {
@@ -18425,12 +22440,14 @@ export namespace Prisma {
     completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskUncheckedCreateInput = {
@@ -18445,9 +22462,11 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskUpdateInput = {
@@ -18459,12 +22478,14 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateInput = {
@@ -18479,9 +22500,11 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskCreateManyInput = {
@@ -18496,6 +22519,7 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CleaningTaskUpdateManyMutationInput = {
@@ -18507,6 +22531,7 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CleaningTaskUncheckedUpdateManyInput = {
@@ -18521,6 +22546,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketCreateInput = {
@@ -18534,11 +22560,13 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateInput = {
@@ -18554,9 +22582,11 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUpdateInput = {
@@ -18570,11 +22600,13 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateInput = {
@@ -18590,9 +22622,11 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketCreateManyInput = {
@@ -18608,6 +22642,7 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketUpdateManyMutationInput = {
@@ -18621,6 +22656,7 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketUncheckedUpdateManyInput = {
@@ -18636,6 +22672,7 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AIAssistantMessageCreateInput = {
@@ -19063,6 +23100,148 @@ export namespace Prisma {
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type SupervisorReviewCreateInput = {
+    id?: string
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    supervisor: UserCreateNestedOneWithoutSupervisorReviewsInput
+    cleaningTask?: CleaningTaskCreateNestedOneWithoutSupervisorReviewsInput
+    maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutSupervisorReviewsInput
+  }
+
+  export type SupervisorReviewUncheckedCreateInput = {
+    id?: string
+    supervisorId: string
+    cleaningTaskId?: string | null
+    maintenanceTicketId?: string | null
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SupervisorReviewUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supervisor?: UserUpdateOneRequiredWithoutSupervisorReviewsNestedInput
+    cleaningTask?: CleaningTaskUpdateOneWithoutSupervisorReviewsNestedInput
+    maintenanceTicket?: MaintenanceTicketUpdateOneWithoutSupervisorReviewsNestedInput
+  }
+
+  export type SupervisorReviewUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    supervisorId?: StringFieldUpdateOperationsInput | string
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupervisorReviewCreateManyInput = {
+    id?: string
+    supervisorId: string
+    cleaningTaskId?: string | null
+    maintenanceTicketId?: string | null
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SupervisorReviewUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupervisorReviewUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    supervisorId?: StringFieldUpdateOperationsInput | string
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApartmentSupervisorCreateInput = {
+    apartment: ApartmentCreateNestedOneWithoutSupervisorsInput
+    user: UserCreateNestedOneWithoutSupervisedApartmentsInput
+  }
+
+  export type ApartmentSupervisorUncheckedCreateInput = {
+    apartmentId: string
+    userId: string
+  }
+
+  export type ApartmentSupervisorUpdateInput = {
+    apartment?: ApartmentUpdateOneRequiredWithoutSupervisorsNestedInput
+    user?: UserUpdateOneRequiredWithoutSupervisedApartmentsNestedInput
+  }
+
+  export type ApartmentSupervisorUncheckedUpdateInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentSupervisorCreateManyInput = {
+    apartmentId: string
+    userId: string
+  }
+
+  export type ApartmentSupervisorUpdateManyMutationInput = {
+
+  }
+
+  export type ApartmentSupervisorUncheckedUpdateManyInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentOwnerCreateInput = {
+    apartment: ApartmentCreateNestedOneWithoutOwnersInput
+    user: UserCreateNestedOneWithoutOwnedApartmentsInput
+  }
+
+  export type ApartmentOwnerUncheckedCreateInput = {
+    apartmentId: string
+    userId: string
+  }
+
+  export type ApartmentOwnerUpdateInput = {
+    apartment?: ApartmentUpdateOneRequiredWithoutOwnersNestedInput
+    user?: UserUpdateOneRequiredWithoutOwnedApartmentsNestedInput
+  }
+
+  export type ApartmentOwnerUncheckedUpdateInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentOwnerCreateManyInput = {
+    apartmentId: string
+    userId: string
+  }
+
+  export type ApartmentOwnerUpdateManyMutationInput = {
+
+  }
+
+  export type ApartmentOwnerUncheckedUpdateManyInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -19108,11 +23287,41 @@ export namespace Prisma {
     none?: MaintenanceTicketWhereInput
   }
 
+  export type SupervisorReviewListRelationFilter = {
+    every?: SupervisorReviewWhereInput
+    some?: SupervisorReviewWhereInput
+    none?: SupervisorReviewWhereInput
+  }
+
+  export type ApartmentSupervisorListRelationFilter = {
+    every?: ApartmentSupervisorWhereInput
+    some?: ApartmentSupervisorWhereInput
+    none?: ApartmentSupervisorWhereInput
+  }
+
+  export type ApartmentOwnerListRelationFilter = {
+    every?: ApartmentOwnerWhereInput
+    some?: ApartmentOwnerWhereInput
+    none?: ApartmentOwnerWhereInput
+  }
+
   export type CleaningTaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type MaintenanceTicketOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SupervisorReviewOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ApartmentSupervisorOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ApartmentOwnerOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19660,6 +23869,7 @@ export namespace Prisma {
     notes?: SortOrder
     bookingId?: SortOrder
     checklistProgress?: SortOrder
+    correctionProgress?: SortOrder
   }
 
   export type CleaningTaskMaxOrderByAggregateInput = {
@@ -19711,6 +23921,7 @@ export namespace Prisma {
     scheduledEnd?: SortOrder
     startedAt?: SortOrder
     resolvedAt?: SortOrder
+    correctionProgress?: SortOrder
   }
 
   export type MaintenanceTicketMaxOrderByAggregateInput = {
@@ -20006,6 +24217,82 @@ export namespace Prisma {
     readByManagerAt?: SortOrder
   }
 
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type SupervisorReviewCountOrderByAggregateInput = {
+    id?: SortOrder
+    supervisorId?: SortOrder
+    cleaningTaskId?: SortOrder
+    maintenanceTicketId?: SortOrder
+    decision?: SortOrder
+    notes?: SortOrder
+    correctionItems?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SupervisorReviewMaxOrderByAggregateInput = {
+    id?: SortOrder
+    supervisorId?: SortOrder
+    cleaningTaskId?: SortOrder
+    maintenanceTicketId?: SortOrder
+    decision?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SupervisorReviewMinOrderByAggregateInput = {
+    id?: SortOrder
+    supervisorId?: SortOrder
+    cleaningTaskId?: SortOrder
+    maintenanceTicketId?: SortOrder
+    decision?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ApartmentSupervisorApartmentIdUserIdCompoundUniqueInput = {
+    apartmentId: string
+    userId: string
+  }
+
+  export type ApartmentSupervisorCountOrderByAggregateInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type ApartmentSupervisorMaxOrderByAggregateInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type ApartmentSupervisorMinOrderByAggregateInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type ApartmentOwnerApartmentIdUserIdCompoundUniqueInput = {
+    apartmentId: string
+    userId: string
+  }
+
+  export type ApartmentOwnerCountOrderByAggregateInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type ApartmentOwnerMaxOrderByAggregateInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+  }
+
+  export type ApartmentOwnerMinOrderByAggregateInput = {
+    apartmentId?: SortOrder
+    userId?: SortOrder
+  }
+
   export type CleaningTaskCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -20020,6 +24307,27 @@ export namespace Prisma {
     connect?: MaintenanceTicketWhereUniqueInput | MaintenanceTicketWhereUniqueInput[]
   }
 
+  export type SupervisorReviewCreateNestedManyWithoutSupervisorInput = {
+    create?: XOR<SupervisorReviewCreateWithoutSupervisorInput, SupervisorReviewUncheckedCreateWithoutSupervisorInput> | SupervisorReviewCreateWithoutSupervisorInput[] | SupervisorReviewUncheckedCreateWithoutSupervisorInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutSupervisorInput | SupervisorReviewCreateOrConnectWithoutSupervisorInput[]
+    createMany?: SupervisorReviewCreateManySupervisorInputEnvelope
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+  }
+
+  export type ApartmentSupervisorCreateNestedManyWithoutUserInput = {
+    create?: XOR<ApartmentSupervisorCreateWithoutUserInput, ApartmentSupervisorUncheckedCreateWithoutUserInput> | ApartmentSupervisorCreateWithoutUserInput[] | ApartmentSupervisorUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApartmentSupervisorCreateOrConnectWithoutUserInput | ApartmentSupervisorCreateOrConnectWithoutUserInput[]
+    createMany?: ApartmentSupervisorCreateManyUserInputEnvelope
+    connect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+  }
+
+  export type ApartmentOwnerCreateNestedManyWithoutUserInput = {
+    create?: XOR<ApartmentOwnerCreateWithoutUserInput, ApartmentOwnerUncheckedCreateWithoutUserInput> | ApartmentOwnerCreateWithoutUserInput[] | ApartmentOwnerUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutUserInput | ApartmentOwnerCreateOrConnectWithoutUserInput[]
+    createMany?: ApartmentOwnerCreateManyUserInputEnvelope
+    connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+  }
+
   export type CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -20032,6 +24340,27 @@ export namespace Prisma {
     connectOrCreate?: MaintenanceTicketCreateOrConnectWithoutAssignedToInput | MaintenanceTicketCreateOrConnectWithoutAssignedToInput[]
     createMany?: MaintenanceTicketCreateManyAssignedToInputEnvelope
     connect?: MaintenanceTicketWhereUniqueInput | MaintenanceTicketWhereUniqueInput[]
+  }
+
+  export type SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput = {
+    create?: XOR<SupervisorReviewCreateWithoutSupervisorInput, SupervisorReviewUncheckedCreateWithoutSupervisorInput> | SupervisorReviewCreateWithoutSupervisorInput[] | SupervisorReviewUncheckedCreateWithoutSupervisorInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutSupervisorInput | SupervisorReviewCreateOrConnectWithoutSupervisorInput[]
+    createMany?: SupervisorReviewCreateManySupervisorInputEnvelope
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+  }
+
+  export type ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ApartmentSupervisorCreateWithoutUserInput, ApartmentSupervisorUncheckedCreateWithoutUserInput> | ApartmentSupervisorCreateWithoutUserInput[] | ApartmentSupervisorUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApartmentSupervisorCreateOrConnectWithoutUserInput | ApartmentSupervisorCreateOrConnectWithoutUserInput[]
+    createMany?: ApartmentSupervisorCreateManyUserInputEnvelope
+    connect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+  }
+
+  export type ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ApartmentOwnerCreateWithoutUserInput, ApartmentOwnerUncheckedCreateWithoutUserInput> | ApartmentOwnerCreateWithoutUserInput[] | ApartmentOwnerUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutUserInput | ApartmentOwnerCreateOrConnectWithoutUserInput[]
+    createMany?: ApartmentOwnerCreateManyUserInputEnvelope
+    connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -20074,6 +24403,48 @@ export namespace Prisma {
     deleteMany?: MaintenanceTicketScalarWhereInput | MaintenanceTicketScalarWhereInput[]
   }
 
+  export type SupervisorReviewUpdateManyWithoutSupervisorNestedInput = {
+    create?: XOR<SupervisorReviewCreateWithoutSupervisorInput, SupervisorReviewUncheckedCreateWithoutSupervisorInput> | SupervisorReviewCreateWithoutSupervisorInput[] | SupervisorReviewUncheckedCreateWithoutSupervisorInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutSupervisorInput | SupervisorReviewCreateOrConnectWithoutSupervisorInput[]
+    upsert?: SupervisorReviewUpsertWithWhereUniqueWithoutSupervisorInput | SupervisorReviewUpsertWithWhereUniqueWithoutSupervisorInput[]
+    createMany?: SupervisorReviewCreateManySupervisorInputEnvelope
+    set?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    disconnect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    delete?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    update?: SupervisorReviewUpdateWithWhereUniqueWithoutSupervisorInput | SupervisorReviewUpdateWithWhereUniqueWithoutSupervisorInput[]
+    updateMany?: SupervisorReviewUpdateManyWithWhereWithoutSupervisorInput | SupervisorReviewUpdateManyWithWhereWithoutSupervisorInput[]
+    deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+  }
+
+  export type ApartmentSupervisorUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ApartmentSupervisorCreateWithoutUserInput, ApartmentSupervisorUncheckedCreateWithoutUserInput> | ApartmentSupervisorCreateWithoutUserInput[] | ApartmentSupervisorUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApartmentSupervisorCreateOrConnectWithoutUserInput | ApartmentSupervisorCreateOrConnectWithoutUserInput[]
+    upsert?: ApartmentSupervisorUpsertWithWhereUniqueWithoutUserInput | ApartmentSupervisorUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ApartmentSupervisorCreateManyUserInputEnvelope
+    set?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    disconnect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    delete?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    connect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    update?: ApartmentSupervisorUpdateWithWhereUniqueWithoutUserInput | ApartmentSupervisorUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ApartmentSupervisorUpdateManyWithWhereWithoutUserInput | ApartmentSupervisorUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ApartmentSupervisorScalarWhereInput | ApartmentSupervisorScalarWhereInput[]
+  }
+
+  export type ApartmentOwnerUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ApartmentOwnerCreateWithoutUserInput, ApartmentOwnerUncheckedCreateWithoutUserInput> | ApartmentOwnerCreateWithoutUserInput[] | ApartmentOwnerUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutUserInput | ApartmentOwnerCreateOrConnectWithoutUserInput[]
+    upsert?: ApartmentOwnerUpsertWithWhereUniqueWithoutUserInput | ApartmentOwnerUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ApartmentOwnerCreateManyUserInputEnvelope
+    set?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    disconnect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    delete?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    update?: ApartmentOwnerUpdateWithWhereUniqueWithoutUserInput | ApartmentOwnerUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ApartmentOwnerUpdateManyWithWhereWithoutUserInput | ApartmentOwnerUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
+  }
+
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -20100,6 +24471,48 @@ export namespace Prisma {
     update?: MaintenanceTicketUpdateWithWhereUniqueWithoutAssignedToInput | MaintenanceTicketUpdateWithWhereUniqueWithoutAssignedToInput[]
     updateMany?: MaintenanceTicketUpdateManyWithWhereWithoutAssignedToInput | MaintenanceTicketUpdateManyWithWhereWithoutAssignedToInput[]
     deleteMany?: MaintenanceTicketScalarWhereInput | MaintenanceTicketScalarWhereInput[]
+  }
+
+  export type SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput = {
+    create?: XOR<SupervisorReviewCreateWithoutSupervisorInput, SupervisorReviewUncheckedCreateWithoutSupervisorInput> | SupervisorReviewCreateWithoutSupervisorInput[] | SupervisorReviewUncheckedCreateWithoutSupervisorInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutSupervisorInput | SupervisorReviewCreateOrConnectWithoutSupervisorInput[]
+    upsert?: SupervisorReviewUpsertWithWhereUniqueWithoutSupervisorInput | SupervisorReviewUpsertWithWhereUniqueWithoutSupervisorInput[]
+    createMany?: SupervisorReviewCreateManySupervisorInputEnvelope
+    set?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    disconnect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    delete?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    update?: SupervisorReviewUpdateWithWhereUniqueWithoutSupervisorInput | SupervisorReviewUpdateWithWhereUniqueWithoutSupervisorInput[]
+    updateMany?: SupervisorReviewUpdateManyWithWhereWithoutSupervisorInput | SupervisorReviewUpdateManyWithWhereWithoutSupervisorInput[]
+    deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+  }
+
+  export type ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ApartmentSupervisorCreateWithoutUserInput, ApartmentSupervisorUncheckedCreateWithoutUserInput> | ApartmentSupervisorCreateWithoutUserInput[] | ApartmentSupervisorUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApartmentSupervisorCreateOrConnectWithoutUserInput | ApartmentSupervisorCreateOrConnectWithoutUserInput[]
+    upsert?: ApartmentSupervisorUpsertWithWhereUniqueWithoutUserInput | ApartmentSupervisorUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ApartmentSupervisorCreateManyUserInputEnvelope
+    set?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    disconnect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    delete?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    connect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    update?: ApartmentSupervisorUpdateWithWhereUniqueWithoutUserInput | ApartmentSupervisorUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ApartmentSupervisorUpdateManyWithWhereWithoutUserInput | ApartmentSupervisorUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ApartmentSupervisorScalarWhereInput | ApartmentSupervisorScalarWhereInput[]
+  }
+
+  export type ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ApartmentOwnerCreateWithoutUserInput, ApartmentOwnerUncheckedCreateWithoutUserInput> | ApartmentOwnerCreateWithoutUserInput[] | ApartmentOwnerUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutUserInput | ApartmentOwnerCreateOrConnectWithoutUserInput[]
+    upsert?: ApartmentOwnerUpsertWithWhereUniqueWithoutUserInput | ApartmentOwnerUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ApartmentOwnerCreateManyUserInputEnvelope
+    set?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    disconnect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    delete?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    update?: ApartmentOwnerUpdateWithWhereUniqueWithoutUserInput | ApartmentOwnerUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ApartmentOwnerUpdateManyWithWhereWithoutUserInput | ApartmentOwnerUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
   }
 
   export type BookingCreateNestedManyWithoutApartmentInput = {
@@ -20151,6 +24564,20 @@ export namespace Prisma {
     connect?: ApartmentAttachmentWhereUniqueInput | ApartmentAttachmentWhereUniqueInput[]
   }
 
+  export type ApartmentSupervisorCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<ApartmentSupervisorCreateWithoutApartmentInput, ApartmentSupervisorUncheckedCreateWithoutApartmentInput> | ApartmentSupervisorCreateWithoutApartmentInput[] | ApartmentSupervisorUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentSupervisorCreateOrConnectWithoutApartmentInput | ApartmentSupervisorCreateOrConnectWithoutApartmentInput[]
+    createMany?: ApartmentSupervisorCreateManyApartmentInputEnvelope
+    connect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+  }
+
+  export type ApartmentOwnerCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<ApartmentOwnerCreateWithoutApartmentInput, ApartmentOwnerUncheckedCreateWithoutApartmentInput> | ApartmentOwnerCreateWithoutApartmentInput[] | ApartmentOwnerUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutApartmentInput | ApartmentOwnerCreateOrConnectWithoutApartmentInput[]
+    createMany?: ApartmentOwnerCreateManyApartmentInputEnvelope
+    connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+  }
+
   export type BookingUncheckedCreateNestedManyWithoutApartmentInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -20198,6 +24625,20 @@ export namespace Prisma {
     connectOrCreate?: ApartmentAttachmentCreateOrConnectWithoutApartmentInput | ApartmentAttachmentCreateOrConnectWithoutApartmentInput[]
     createMany?: ApartmentAttachmentCreateManyApartmentInputEnvelope
     connect?: ApartmentAttachmentWhereUniqueInput | ApartmentAttachmentWhereUniqueInput[]
+  }
+
+  export type ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<ApartmentSupervisorCreateWithoutApartmentInput, ApartmentSupervisorUncheckedCreateWithoutApartmentInput> | ApartmentSupervisorCreateWithoutApartmentInput[] | ApartmentSupervisorUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentSupervisorCreateOrConnectWithoutApartmentInput | ApartmentSupervisorCreateOrConnectWithoutApartmentInput[]
+    createMany?: ApartmentSupervisorCreateManyApartmentInputEnvelope
+    connect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+  }
+
+  export type ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<ApartmentOwnerCreateWithoutApartmentInput, ApartmentOwnerUncheckedCreateWithoutApartmentInput> | ApartmentOwnerCreateWithoutApartmentInput[] | ApartmentOwnerUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutApartmentInput | ApartmentOwnerCreateOrConnectWithoutApartmentInput[]
+    createMany?: ApartmentOwnerCreateManyApartmentInputEnvelope
+    connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
@@ -20322,6 +24763,34 @@ export namespace Prisma {
     deleteMany?: ApartmentAttachmentScalarWhereInput | ApartmentAttachmentScalarWhereInput[]
   }
 
+  export type ApartmentSupervisorUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<ApartmentSupervisorCreateWithoutApartmentInput, ApartmentSupervisorUncheckedCreateWithoutApartmentInput> | ApartmentSupervisorCreateWithoutApartmentInput[] | ApartmentSupervisorUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentSupervisorCreateOrConnectWithoutApartmentInput | ApartmentSupervisorCreateOrConnectWithoutApartmentInput[]
+    upsert?: ApartmentSupervisorUpsertWithWhereUniqueWithoutApartmentInput | ApartmentSupervisorUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: ApartmentSupervisorCreateManyApartmentInputEnvelope
+    set?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    disconnect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    delete?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    connect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    update?: ApartmentSupervisorUpdateWithWhereUniqueWithoutApartmentInput | ApartmentSupervisorUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: ApartmentSupervisorUpdateManyWithWhereWithoutApartmentInput | ApartmentSupervisorUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: ApartmentSupervisorScalarWhereInput | ApartmentSupervisorScalarWhereInput[]
+  }
+
+  export type ApartmentOwnerUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<ApartmentOwnerCreateWithoutApartmentInput, ApartmentOwnerUncheckedCreateWithoutApartmentInput> | ApartmentOwnerCreateWithoutApartmentInput[] | ApartmentOwnerUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutApartmentInput | ApartmentOwnerCreateOrConnectWithoutApartmentInput[]
+    upsert?: ApartmentOwnerUpsertWithWhereUniqueWithoutApartmentInput | ApartmentOwnerUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: ApartmentOwnerCreateManyApartmentInputEnvelope
+    set?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    disconnect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    delete?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    update?: ApartmentOwnerUpdateWithWhereUniqueWithoutApartmentInput | ApartmentOwnerUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: ApartmentOwnerUpdateManyWithWhereWithoutApartmentInput | ApartmentOwnerUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
+  }
+
   export type BookingUncheckedUpdateManyWithoutApartmentNestedInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -20418,6 +24887,34 @@ export namespace Prisma {
     update?: ApartmentAttachmentUpdateWithWhereUniqueWithoutApartmentInput | ApartmentAttachmentUpdateWithWhereUniqueWithoutApartmentInput[]
     updateMany?: ApartmentAttachmentUpdateManyWithWhereWithoutApartmentInput | ApartmentAttachmentUpdateManyWithWhereWithoutApartmentInput[]
     deleteMany?: ApartmentAttachmentScalarWhereInput | ApartmentAttachmentScalarWhereInput[]
+  }
+
+  export type ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<ApartmentSupervisorCreateWithoutApartmentInput, ApartmentSupervisorUncheckedCreateWithoutApartmentInput> | ApartmentSupervisorCreateWithoutApartmentInput[] | ApartmentSupervisorUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentSupervisorCreateOrConnectWithoutApartmentInput | ApartmentSupervisorCreateOrConnectWithoutApartmentInput[]
+    upsert?: ApartmentSupervisorUpsertWithWhereUniqueWithoutApartmentInput | ApartmentSupervisorUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: ApartmentSupervisorCreateManyApartmentInputEnvelope
+    set?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    disconnect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    delete?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    connect?: ApartmentSupervisorWhereUniqueInput | ApartmentSupervisorWhereUniqueInput[]
+    update?: ApartmentSupervisorUpdateWithWhereUniqueWithoutApartmentInput | ApartmentSupervisorUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: ApartmentSupervisorUpdateManyWithWhereWithoutApartmentInput | ApartmentSupervisorUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: ApartmentSupervisorScalarWhereInput | ApartmentSupervisorScalarWhereInput[]
+  }
+
+  export type ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<ApartmentOwnerCreateWithoutApartmentInput, ApartmentOwnerUncheckedCreateWithoutApartmentInput> | ApartmentOwnerCreateWithoutApartmentInput[] | ApartmentOwnerUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutApartmentInput | ApartmentOwnerCreateOrConnectWithoutApartmentInput[]
+    upsert?: ApartmentOwnerUpsertWithWhereUniqueWithoutApartmentInput | ApartmentOwnerUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: ApartmentOwnerCreateManyApartmentInputEnvelope
+    set?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    disconnect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    delete?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+    update?: ApartmentOwnerUpdateWithWhereUniqueWithoutApartmentInput | ApartmentOwnerUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: ApartmentOwnerUpdateManyWithWhereWithoutApartmentInput | ApartmentOwnerUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
   }
 
   export type ApartmentCreateNestedOneWithoutChecklistItemsInput = {
@@ -20539,6 +25036,13 @@ export namespace Prisma {
     connect?: AIAssistantMessageWhereUniqueInput | AIAssistantMessageWhereUniqueInput[]
   }
 
+  export type SupervisorReviewCreateNestedManyWithoutCleaningTaskInput = {
+    create?: XOR<SupervisorReviewCreateWithoutCleaningTaskInput, SupervisorReviewUncheckedCreateWithoutCleaningTaskInput> | SupervisorReviewCreateWithoutCleaningTaskInput[] | SupervisorReviewUncheckedCreateWithoutCleaningTaskInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutCleaningTaskInput | SupervisorReviewCreateOrConnectWithoutCleaningTaskInput[]
+    createMany?: SupervisorReviewCreateManyCleaningTaskInputEnvelope
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+  }
+
   export type CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput = {
     create?: XOR<CleaningTaskMessageCreateWithoutCleaningTaskInput, CleaningTaskMessageUncheckedCreateWithoutCleaningTaskInput> | CleaningTaskMessageCreateWithoutCleaningTaskInput[] | CleaningTaskMessageUncheckedCreateWithoutCleaningTaskInput[]
     connectOrCreate?: CleaningTaskMessageCreateOrConnectWithoutCleaningTaskInput | CleaningTaskMessageCreateOrConnectWithoutCleaningTaskInput[]
@@ -20558,6 +25062,13 @@ export namespace Prisma {
     connectOrCreate?: AIAssistantMessageCreateOrConnectWithoutCleaningTaskInput | AIAssistantMessageCreateOrConnectWithoutCleaningTaskInput[]
     createMany?: AIAssistantMessageCreateManyCleaningTaskInputEnvelope
     connect?: AIAssistantMessageWhereUniqueInput | AIAssistantMessageWhereUniqueInput[]
+  }
+
+  export type SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput = {
+    create?: XOR<SupervisorReviewCreateWithoutCleaningTaskInput, SupervisorReviewUncheckedCreateWithoutCleaningTaskInput> | SupervisorReviewCreateWithoutCleaningTaskInput[] | SupervisorReviewUncheckedCreateWithoutCleaningTaskInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutCleaningTaskInput | SupervisorReviewCreateOrConnectWithoutCleaningTaskInput[]
+    createMany?: SupervisorReviewCreateManyCleaningTaskInputEnvelope
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
   }
 
   export type BookingUpdateOneWithoutCleaningTaskNestedInput = {
@@ -20630,6 +25141,20 @@ export namespace Prisma {
     deleteMany?: AIAssistantMessageScalarWhereInput | AIAssistantMessageScalarWhereInput[]
   }
 
+  export type SupervisorReviewUpdateManyWithoutCleaningTaskNestedInput = {
+    create?: XOR<SupervisorReviewCreateWithoutCleaningTaskInput, SupervisorReviewUncheckedCreateWithoutCleaningTaskInput> | SupervisorReviewCreateWithoutCleaningTaskInput[] | SupervisorReviewUncheckedCreateWithoutCleaningTaskInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutCleaningTaskInput | SupervisorReviewCreateOrConnectWithoutCleaningTaskInput[]
+    upsert?: SupervisorReviewUpsertWithWhereUniqueWithoutCleaningTaskInput | SupervisorReviewUpsertWithWhereUniqueWithoutCleaningTaskInput[]
+    createMany?: SupervisorReviewCreateManyCleaningTaskInputEnvelope
+    set?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    disconnect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    delete?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    update?: SupervisorReviewUpdateWithWhereUniqueWithoutCleaningTaskInput | SupervisorReviewUpdateWithWhereUniqueWithoutCleaningTaskInput[]
+    updateMany?: SupervisorReviewUpdateManyWithWhereWithoutCleaningTaskInput | SupervisorReviewUpdateManyWithWhereWithoutCleaningTaskInput[]
+    deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+  }
+
   export type CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput = {
     create?: XOR<CleaningTaskMessageCreateWithoutCleaningTaskInput, CleaningTaskMessageUncheckedCreateWithoutCleaningTaskInput> | CleaningTaskMessageCreateWithoutCleaningTaskInput[] | CleaningTaskMessageUncheckedCreateWithoutCleaningTaskInput[]
     connectOrCreate?: CleaningTaskMessageCreateOrConnectWithoutCleaningTaskInput | CleaningTaskMessageCreateOrConnectWithoutCleaningTaskInput[]
@@ -20672,6 +25197,20 @@ export namespace Prisma {
     deleteMany?: AIAssistantMessageScalarWhereInput | AIAssistantMessageScalarWhereInput[]
   }
 
+  export type SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput = {
+    create?: XOR<SupervisorReviewCreateWithoutCleaningTaskInput, SupervisorReviewUncheckedCreateWithoutCleaningTaskInput> | SupervisorReviewCreateWithoutCleaningTaskInput[] | SupervisorReviewUncheckedCreateWithoutCleaningTaskInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutCleaningTaskInput | SupervisorReviewCreateOrConnectWithoutCleaningTaskInput[]
+    upsert?: SupervisorReviewUpsertWithWhereUniqueWithoutCleaningTaskInput | SupervisorReviewUpsertWithWhereUniqueWithoutCleaningTaskInput[]
+    createMany?: SupervisorReviewCreateManyCleaningTaskInputEnvelope
+    set?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    disconnect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    delete?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    update?: SupervisorReviewUpdateWithWhereUniqueWithoutCleaningTaskInput | SupervisorReviewUpdateWithWhereUniqueWithoutCleaningTaskInput[]
+    updateMany?: SupervisorReviewUpdateManyWithWhereWithoutCleaningTaskInput | SupervisorReviewUpdateManyWithWhereWithoutCleaningTaskInput[]
+    deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+  }
+
   export type ApartmentCreateNestedOneWithoutMaintenanceTicketsInput = {
     create?: XOR<ApartmentCreateWithoutMaintenanceTicketsInput, ApartmentUncheckedCreateWithoutMaintenanceTicketsInput>
     connectOrCreate?: ApartmentCreateOrConnectWithoutMaintenanceTicketsInput
@@ -20705,6 +25244,13 @@ export namespace Prisma {
     connect?: AIAssistantMessageWhereUniqueInput | AIAssistantMessageWhereUniqueInput[]
   }
 
+  export type SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput = {
+    create?: XOR<SupervisorReviewCreateWithoutMaintenanceTicketInput, SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput> | SupervisorReviewCreateWithoutMaintenanceTicketInput[] | SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput | SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput[]
+    createMany?: SupervisorReviewCreateManyMaintenanceTicketInputEnvelope
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+  }
+
   export type AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput = {
     create?: XOR<AttachmentCreateWithoutMaintenanceTicketInput, AttachmentUncheckedCreateWithoutMaintenanceTicketInput> | AttachmentCreateWithoutMaintenanceTicketInput[] | AttachmentUncheckedCreateWithoutMaintenanceTicketInput[]
     connectOrCreate?: AttachmentCreateOrConnectWithoutMaintenanceTicketInput | AttachmentCreateOrConnectWithoutMaintenanceTicketInput[]
@@ -20724,6 +25270,13 @@ export namespace Prisma {
     connectOrCreate?: AIAssistantMessageCreateOrConnectWithoutMaintenanceTicketInput | AIAssistantMessageCreateOrConnectWithoutMaintenanceTicketInput[]
     createMany?: AIAssistantMessageCreateManyMaintenanceTicketInputEnvelope
     connect?: AIAssistantMessageWhereUniqueInput | AIAssistantMessageWhereUniqueInput[]
+  }
+
+  export type SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput = {
+    create?: XOR<SupervisorReviewCreateWithoutMaintenanceTicketInput, SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput> | SupervisorReviewCreateWithoutMaintenanceTicketInput[] | SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput | SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput[]
+    createMany?: SupervisorReviewCreateManyMaintenanceTicketInputEnvelope
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
   }
 
   export type ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput = {
@@ -20786,6 +25339,20 @@ export namespace Prisma {
     deleteMany?: AIAssistantMessageScalarWhereInput | AIAssistantMessageScalarWhereInput[]
   }
 
+  export type SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput = {
+    create?: XOR<SupervisorReviewCreateWithoutMaintenanceTicketInput, SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput> | SupervisorReviewCreateWithoutMaintenanceTicketInput[] | SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput | SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput[]
+    upsert?: SupervisorReviewUpsertWithWhereUniqueWithoutMaintenanceTicketInput | SupervisorReviewUpsertWithWhereUniqueWithoutMaintenanceTicketInput[]
+    createMany?: SupervisorReviewCreateManyMaintenanceTicketInputEnvelope
+    set?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    disconnect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    delete?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    update?: SupervisorReviewUpdateWithWhereUniqueWithoutMaintenanceTicketInput | SupervisorReviewUpdateWithWhereUniqueWithoutMaintenanceTicketInput[]
+    updateMany?: SupervisorReviewUpdateManyWithWhereWithoutMaintenanceTicketInput | SupervisorReviewUpdateManyWithWhereWithoutMaintenanceTicketInput[]
+    deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+  }
+
   export type AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput = {
     create?: XOR<AttachmentCreateWithoutMaintenanceTicketInput, AttachmentUncheckedCreateWithoutMaintenanceTicketInput> | AttachmentCreateWithoutMaintenanceTicketInput[] | AttachmentUncheckedCreateWithoutMaintenanceTicketInput[]
     connectOrCreate?: AttachmentCreateOrConnectWithoutMaintenanceTicketInput | AttachmentCreateOrConnectWithoutMaintenanceTicketInput[]
@@ -20826,6 +25393,20 @@ export namespace Prisma {
     update?: AIAssistantMessageUpdateWithWhereUniqueWithoutMaintenanceTicketInput | AIAssistantMessageUpdateWithWhereUniqueWithoutMaintenanceTicketInput[]
     updateMany?: AIAssistantMessageUpdateManyWithWhereWithoutMaintenanceTicketInput | AIAssistantMessageUpdateManyWithWhereWithoutMaintenanceTicketInput[]
     deleteMany?: AIAssistantMessageScalarWhereInput | AIAssistantMessageScalarWhereInput[]
+  }
+
+  export type SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput = {
+    create?: XOR<SupervisorReviewCreateWithoutMaintenanceTicketInput, SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput> | SupervisorReviewCreateWithoutMaintenanceTicketInput[] | SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput[]
+    connectOrCreate?: SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput | SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput[]
+    upsert?: SupervisorReviewUpsertWithWhereUniqueWithoutMaintenanceTicketInput | SupervisorReviewUpsertWithWhereUniqueWithoutMaintenanceTicketInput[]
+    createMany?: SupervisorReviewCreateManyMaintenanceTicketInputEnvelope
+    set?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    disconnect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    delete?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+    update?: SupervisorReviewUpdateWithWhereUniqueWithoutMaintenanceTicketInput | SupervisorReviewUpdateWithWhereUniqueWithoutMaintenanceTicketInput[]
+    updateMany?: SupervisorReviewUpdateManyWithWhereWithoutMaintenanceTicketInput | SupervisorReviewUpdateManyWithWhereWithoutMaintenanceTicketInput[]
+    deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
   }
 
   export type ApartmentCreateNestedOneWithoutAiAssistantMessagesInput = {
@@ -21076,6 +25657,108 @@ export namespace Prisma {
     delete?: AttachmentWhereInput | boolean
     connect?: AttachmentWhereUniqueInput
     update?: XOR<XOR<AttachmentUpdateToOneWithWhereWithoutCleaningMessagesInput, AttachmentUpdateWithoutCleaningMessagesInput>, AttachmentUncheckedUpdateWithoutCleaningMessagesInput>
+  }
+
+  export type UserCreateNestedOneWithoutSupervisorReviewsInput = {
+    create?: XOR<UserCreateWithoutSupervisorReviewsInput, UserUncheckedCreateWithoutSupervisorReviewsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSupervisorReviewsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type CleaningTaskCreateNestedOneWithoutSupervisorReviewsInput = {
+    create?: XOR<CleaningTaskCreateWithoutSupervisorReviewsInput, CleaningTaskUncheckedCreateWithoutSupervisorReviewsInput>
+    connectOrCreate?: CleaningTaskCreateOrConnectWithoutSupervisorReviewsInput
+    connect?: CleaningTaskWhereUniqueInput
+  }
+
+  export type MaintenanceTicketCreateNestedOneWithoutSupervisorReviewsInput = {
+    create?: XOR<MaintenanceTicketCreateWithoutSupervisorReviewsInput, MaintenanceTicketUncheckedCreateWithoutSupervisorReviewsInput>
+    connectOrCreate?: MaintenanceTicketCreateOrConnectWithoutSupervisorReviewsInput
+    connect?: MaintenanceTicketWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutSupervisorReviewsNestedInput = {
+    create?: XOR<UserCreateWithoutSupervisorReviewsInput, UserUncheckedCreateWithoutSupervisorReviewsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSupervisorReviewsInput
+    upsert?: UserUpsertWithoutSupervisorReviewsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSupervisorReviewsInput, UserUpdateWithoutSupervisorReviewsInput>, UserUncheckedUpdateWithoutSupervisorReviewsInput>
+  }
+
+  export type CleaningTaskUpdateOneWithoutSupervisorReviewsNestedInput = {
+    create?: XOR<CleaningTaskCreateWithoutSupervisorReviewsInput, CleaningTaskUncheckedCreateWithoutSupervisorReviewsInput>
+    connectOrCreate?: CleaningTaskCreateOrConnectWithoutSupervisorReviewsInput
+    upsert?: CleaningTaskUpsertWithoutSupervisorReviewsInput
+    disconnect?: CleaningTaskWhereInput | boolean
+    delete?: CleaningTaskWhereInput | boolean
+    connect?: CleaningTaskWhereUniqueInput
+    update?: XOR<XOR<CleaningTaskUpdateToOneWithWhereWithoutSupervisorReviewsInput, CleaningTaskUpdateWithoutSupervisorReviewsInput>, CleaningTaskUncheckedUpdateWithoutSupervisorReviewsInput>
+  }
+
+  export type MaintenanceTicketUpdateOneWithoutSupervisorReviewsNestedInput = {
+    create?: XOR<MaintenanceTicketCreateWithoutSupervisorReviewsInput, MaintenanceTicketUncheckedCreateWithoutSupervisorReviewsInput>
+    connectOrCreate?: MaintenanceTicketCreateOrConnectWithoutSupervisorReviewsInput
+    upsert?: MaintenanceTicketUpsertWithoutSupervisorReviewsInput
+    disconnect?: MaintenanceTicketWhereInput | boolean
+    delete?: MaintenanceTicketWhereInput | boolean
+    connect?: MaintenanceTicketWhereUniqueInput
+    update?: XOR<XOR<MaintenanceTicketUpdateToOneWithWhereWithoutSupervisorReviewsInput, MaintenanceTicketUpdateWithoutSupervisorReviewsInput>, MaintenanceTicketUncheckedUpdateWithoutSupervisorReviewsInput>
+  }
+
+  export type ApartmentCreateNestedOneWithoutSupervisorsInput = {
+    create?: XOR<ApartmentCreateWithoutSupervisorsInput, ApartmentUncheckedCreateWithoutSupervisorsInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutSupervisorsInput
+    connect?: ApartmentWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutSupervisedApartmentsInput = {
+    create?: XOR<UserCreateWithoutSupervisedApartmentsInput, UserUncheckedCreateWithoutSupervisedApartmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSupervisedApartmentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ApartmentUpdateOneRequiredWithoutSupervisorsNestedInput = {
+    create?: XOR<ApartmentCreateWithoutSupervisorsInput, ApartmentUncheckedCreateWithoutSupervisorsInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutSupervisorsInput
+    upsert?: ApartmentUpsertWithoutSupervisorsInput
+    connect?: ApartmentWhereUniqueInput
+    update?: XOR<XOR<ApartmentUpdateToOneWithWhereWithoutSupervisorsInput, ApartmentUpdateWithoutSupervisorsInput>, ApartmentUncheckedUpdateWithoutSupervisorsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutSupervisedApartmentsNestedInput = {
+    create?: XOR<UserCreateWithoutSupervisedApartmentsInput, UserUncheckedCreateWithoutSupervisedApartmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutSupervisedApartmentsInput
+    upsert?: UserUpsertWithoutSupervisedApartmentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSupervisedApartmentsInput, UserUpdateWithoutSupervisedApartmentsInput>, UserUncheckedUpdateWithoutSupervisedApartmentsInput>
+  }
+
+  export type ApartmentCreateNestedOneWithoutOwnersInput = {
+    create?: XOR<ApartmentCreateWithoutOwnersInput, ApartmentUncheckedCreateWithoutOwnersInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutOwnersInput
+    connect?: ApartmentWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutOwnedApartmentsInput = {
+    create?: XOR<UserCreateWithoutOwnedApartmentsInput, UserUncheckedCreateWithoutOwnedApartmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedApartmentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ApartmentUpdateOneRequiredWithoutOwnersNestedInput = {
+    create?: XOR<ApartmentCreateWithoutOwnersInput, ApartmentUncheckedCreateWithoutOwnersInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutOwnersInput
+    upsert?: ApartmentUpsertWithoutOwnersInput
+    connect?: ApartmentWhereUniqueInput
+    update?: XOR<XOR<ApartmentUpdateToOneWithWhereWithoutOwnersInput, ApartmentUpdateWithoutOwnersInput>, ApartmentUncheckedUpdateWithoutOwnersInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutOwnedApartmentsNestedInput = {
+    create?: XOR<UserCreateWithoutOwnedApartmentsInput, UserUncheckedCreateWithoutOwnedApartmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedApartmentsInput
+    upsert?: UserUpsertWithoutOwnedApartmentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedApartmentsInput, UserUpdateWithoutOwnedApartmentsInput>, UserUncheckedUpdateWithoutOwnedApartmentsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -21361,11 +26044,13 @@ export namespace Prisma {
     completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskUncheckedCreateWithoutAssignedToInput = {
@@ -21379,9 +26064,11 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskCreateOrConnectWithoutAssignedToInput = {
@@ -21405,10 +26092,12 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutAssignedToInput = {
@@ -21423,9 +26112,11 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutAssignedToInput = {
@@ -21435,6 +26126,72 @@ export namespace Prisma {
 
   export type MaintenanceTicketCreateManyAssignedToInputEnvelope = {
     data: MaintenanceTicketCreateManyAssignedToInput | MaintenanceTicketCreateManyAssignedToInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type SupervisorReviewCreateWithoutSupervisorInput = {
+    id?: string
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    cleaningTask?: CleaningTaskCreateNestedOneWithoutSupervisorReviewsInput
+    maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutSupervisorReviewsInput
+  }
+
+  export type SupervisorReviewUncheckedCreateWithoutSupervisorInput = {
+    id?: string
+    cleaningTaskId?: string | null
+    maintenanceTicketId?: string | null
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SupervisorReviewCreateOrConnectWithoutSupervisorInput = {
+    where: SupervisorReviewWhereUniqueInput
+    create: XOR<SupervisorReviewCreateWithoutSupervisorInput, SupervisorReviewUncheckedCreateWithoutSupervisorInput>
+  }
+
+  export type SupervisorReviewCreateManySupervisorInputEnvelope = {
+    data: SupervisorReviewCreateManySupervisorInput | SupervisorReviewCreateManySupervisorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ApartmentSupervisorCreateWithoutUserInput = {
+    apartment: ApartmentCreateNestedOneWithoutSupervisorsInput
+  }
+
+  export type ApartmentSupervisorUncheckedCreateWithoutUserInput = {
+    apartmentId: string
+  }
+
+  export type ApartmentSupervisorCreateOrConnectWithoutUserInput = {
+    where: ApartmentSupervisorWhereUniqueInput
+    create: XOR<ApartmentSupervisorCreateWithoutUserInput, ApartmentSupervisorUncheckedCreateWithoutUserInput>
+  }
+
+  export type ApartmentSupervisorCreateManyUserInputEnvelope = {
+    data: ApartmentSupervisorCreateManyUserInput | ApartmentSupervisorCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ApartmentOwnerCreateWithoutUserInput = {
+    apartment: ApartmentCreateNestedOneWithoutOwnersInput
+  }
+
+  export type ApartmentOwnerUncheckedCreateWithoutUserInput = {
+    apartmentId: string
+  }
+
+  export type ApartmentOwnerCreateOrConnectWithoutUserInput = {
+    where: ApartmentOwnerWhereUniqueInput
+    create: XOR<ApartmentOwnerCreateWithoutUserInput, ApartmentOwnerUncheckedCreateWithoutUserInput>
+  }
+
+  export type ApartmentOwnerCreateManyUserInputEnvelope = {
+    data: ApartmentOwnerCreateManyUserInput | ApartmentOwnerCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -21469,6 +26226,7 @@ export namespace Prisma {
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CleaningTask">
+    correctionProgress?: JsonNullableFilter<"CleaningTask">
   }
 
   export type MaintenanceTicketUpsertWithWhereUniqueWithoutAssignedToInput = {
@@ -21503,6 +26261,85 @@ export namespace Prisma {
     scheduledEnd?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     startedAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     resolvedAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
+    correctionProgress?: JsonNullableFilter<"MaintenanceTicket">
+  }
+
+  export type SupervisorReviewUpsertWithWhereUniqueWithoutSupervisorInput = {
+    where: SupervisorReviewWhereUniqueInput
+    update: XOR<SupervisorReviewUpdateWithoutSupervisorInput, SupervisorReviewUncheckedUpdateWithoutSupervisorInput>
+    create: XOR<SupervisorReviewCreateWithoutSupervisorInput, SupervisorReviewUncheckedCreateWithoutSupervisorInput>
+  }
+
+  export type SupervisorReviewUpdateWithWhereUniqueWithoutSupervisorInput = {
+    where: SupervisorReviewWhereUniqueInput
+    data: XOR<SupervisorReviewUpdateWithoutSupervisorInput, SupervisorReviewUncheckedUpdateWithoutSupervisorInput>
+  }
+
+  export type SupervisorReviewUpdateManyWithWhereWithoutSupervisorInput = {
+    where: SupervisorReviewScalarWhereInput
+    data: XOR<SupervisorReviewUpdateManyMutationInput, SupervisorReviewUncheckedUpdateManyWithoutSupervisorInput>
+  }
+
+  export type SupervisorReviewScalarWhereInput = {
+    AND?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+    OR?: SupervisorReviewScalarWhereInput[]
+    NOT?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+    id?: StringFilter<"SupervisorReview"> | string
+    supervisorId?: StringFilter<"SupervisorReview"> | string
+    cleaningTaskId?: StringNullableFilter<"SupervisorReview"> | string | null
+    maintenanceTicketId?: StringNullableFilter<"SupervisorReview"> | string | null
+    decision?: StringFilter<"SupervisorReview"> | string
+    notes?: StringNullableFilter<"SupervisorReview"> | string | null
+    correctionItems?: JsonNullableFilter<"SupervisorReview">
+    createdAt?: DateTimeFilter<"SupervisorReview"> | Date | string
+  }
+
+  export type ApartmentSupervisorUpsertWithWhereUniqueWithoutUserInput = {
+    where: ApartmentSupervisorWhereUniqueInput
+    update: XOR<ApartmentSupervisorUpdateWithoutUserInput, ApartmentSupervisorUncheckedUpdateWithoutUserInput>
+    create: XOR<ApartmentSupervisorCreateWithoutUserInput, ApartmentSupervisorUncheckedCreateWithoutUserInput>
+  }
+
+  export type ApartmentSupervisorUpdateWithWhereUniqueWithoutUserInput = {
+    where: ApartmentSupervisorWhereUniqueInput
+    data: XOR<ApartmentSupervisorUpdateWithoutUserInput, ApartmentSupervisorUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ApartmentSupervisorUpdateManyWithWhereWithoutUserInput = {
+    where: ApartmentSupervisorScalarWhereInput
+    data: XOR<ApartmentSupervisorUpdateManyMutationInput, ApartmentSupervisorUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ApartmentSupervisorScalarWhereInput = {
+    AND?: ApartmentSupervisorScalarWhereInput | ApartmentSupervisorScalarWhereInput[]
+    OR?: ApartmentSupervisorScalarWhereInput[]
+    NOT?: ApartmentSupervisorScalarWhereInput | ApartmentSupervisorScalarWhereInput[]
+    apartmentId?: StringFilter<"ApartmentSupervisor"> | string
+    userId?: StringFilter<"ApartmentSupervisor"> | string
+  }
+
+  export type ApartmentOwnerUpsertWithWhereUniqueWithoutUserInput = {
+    where: ApartmentOwnerWhereUniqueInput
+    update: XOR<ApartmentOwnerUpdateWithoutUserInput, ApartmentOwnerUncheckedUpdateWithoutUserInput>
+    create: XOR<ApartmentOwnerCreateWithoutUserInput, ApartmentOwnerUncheckedCreateWithoutUserInput>
+  }
+
+  export type ApartmentOwnerUpdateWithWhereUniqueWithoutUserInput = {
+    where: ApartmentOwnerWhereUniqueInput
+    data: XOR<ApartmentOwnerUpdateWithoutUserInput, ApartmentOwnerUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ApartmentOwnerUpdateManyWithWhereWithoutUserInput = {
+    where: ApartmentOwnerScalarWhereInput
+    data: XOR<ApartmentOwnerUpdateManyMutationInput, ApartmentOwnerUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ApartmentOwnerScalarWhereInput = {
+    AND?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
+    OR?: ApartmentOwnerScalarWhereInput[]
+    NOT?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
+    apartmentId?: StringFilter<"ApartmentOwner"> | string
+    userId?: StringFilter<"ApartmentOwner"> | string
   }
 
   export type BookingCreateWithoutApartmentInput = {
@@ -21580,11 +26417,13 @@ export namespace Prisma {
     completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskUncheckedCreateWithoutApartmentInput = {
@@ -21598,9 +26437,11 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskCreateOrConnectWithoutApartmentInput = {
@@ -21624,10 +26465,12 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutApartmentInput = {
@@ -21642,9 +26485,11 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutApartmentInput = {
@@ -21750,6 +26595,42 @@ export namespace Prisma {
 
   export type ApartmentAttachmentCreateManyApartmentInputEnvelope = {
     data: ApartmentAttachmentCreateManyApartmentInput | ApartmentAttachmentCreateManyApartmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ApartmentSupervisorCreateWithoutApartmentInput = {
+    user: UserCreateNestedOneWithoutSupervisedApartmentsInput
+  }
+
+  export type ApartmentSupervisorUncheckedCreateWithoutApartmentInput = {
+    userId: string
+  }
+
+  export type ApartmentSupervisorCreateOrConnectWithoutApartmentInput = {
+    where: ApartmentSupervisorWhereUniqueInput
+    create: XOR<ApartmentSupervisorCreateWithoutApartmentInput, ApartmentSupervisorUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type ApartmentSupervisorCreateManyApartmentInputEnvelope = {
+    data: ApartmentSupervisorCreateManyApartmentInput | ApartmentSupervisorCreateManyApartmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ApartmentOwnerCreateWithoutApartmentInput = {
+    user: UserCreateNestedOneWithoutOwnedApartmentsInput
+  }
+
+  export type ApartmentOwnerUncheckedCreateWithoutApartmentInput = {
+    userId: string
+  }
+
+  export type ApartmentOwnerCreateOrConnectWithoutApartmentInput = {
+    where: ApartmentOwnerWhereUniqueInput
+    create: XOR<ApartmentOwnerCreateWithoutApartmentInput, ApartmentOwnerUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type ApartmentOwnerCreateManyApartmentInputEnvelope = {
+    data: ApartmentOwnerCreateManyApartmentInput | ApartmentOwnerCreateManyApartmentInput[]
     skipDuplicates?: boolean
   }
 
@@ -21940,6 +26821,38 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ApartmentAttachment"> | Date | string
   }
 
+  export type ApartmentSupervisorUpsertWithWhereUniqueWithoutApartmentInput = {
+    where: ApartmentSupervisorWhereUniqueInput
+    update: XOR<ApartmentSupervisorUpdateWithoutApartmentInput, ApartmentSupervisorUncheckedUpdateWithoutApartmentInput>
+    create: XOR<ApartmentSupervisorCreateWithoutApartmentInput, ApartmentSupervisorUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type ApartmentSupervisorUpdateWithWhereUniqueWithoutApartmentInput = {
+    where: ApartmentSupervisorWhereUniqueInput
+    data: XOR<ApartmentSupervisorUpdateWithoutApartmentInput, ApartmentSupervisorUncheckedUpdateWithoutApartmentInput>
+  }
+
+  export type ApartmentSupervisorUpdateManyWithWhereWithoutApartmentInput = {
+    where: ApartmentSupervisorScalarWhereInput
+    data: XOR<ApartmentSupervisorUpdateManyMutationInput, ApartmentSupervisorUncheckedUpdateManyWithoutApartmentInput>
+  }
+
+  export type ApartmentOwnerUpsertWithWhereUniqueWithoutApartmentInput = {
+    where: ApartmentOwnerWhereUniqueInput
+    update: XOR<ApartmentOwnerUpdateWithoutApartmentInput, ApartmentOwnerUncheckedUpdateWithoutApartmentInput>
+    create: XOR<ApartmentOwnerCreateWithoutApartmentInput, ApartmentOwnerUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type ApartmentOwnerUpdateWithWhereUniqueWithoutApartmentInput = {
+    where: ApartmentOwnerWhereUniqueInput
+    data: XOR<ApartmentOwnerUpdateWithoutApartmentInput, ApartmentOwnerUncheckedUpdateWithoutApartmentInput>
+  }
+
+  export type ApartmentOwnerUpdateManyWithWhereWithoutApartmentInput = {
+    where: ApartmentOwnerScalarWhereInput
+    data: XOR<ApartmentOwnerUpdateManyMutationInput, ApartmentOwnerUncheckedUpdateManyWithoutApartmentInput>
+  }
+
   export type ApartmentCreateWithoutChecklistItemsInput = {
     id?: string
     name: string
@@ -21963,6 +26876,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutChecklistItemsInput = {
@@ -21988,6 +26903,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutChecklistItemsInput = {
@@ -22029,6 +26946,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutChecklistItemsInput = {
@@ -22054,6 +26973,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateWithoutNotificationsInput = {
@@ -22079,6 +27000,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutNotificationsInput = {
@@ -22104,6 +27027,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutNotificationsInput = {
@@ -22145,6 +27070,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutNotificationsInput = {
@@ -22170,6 +27097,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateWithoutBookingsInput = {
@@ -22195,6 +27124,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutBookingsInput = {
@@ -22220,6 +27151,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutBookingsInput = {
@@ -22236,11 +27169,13 @@ export namespace Prisma {
     completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskUncheckedCreateWithoutBookingInput = {
@@ -22254,9 +27189,11 @@ export namespace Prisma {
     assignedToId?: string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskCreateOrConnectWithoutBookingInput = {
@@ -22298,6 +27235,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutBookingsInput = {
@@ -22323,6 +27262,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type CleaningTaskUpsertWithoutBookingInput = {
@@ -22345,11 +27286,13 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateWithoutBookingInput = {
@@ -22363,9 +27306,11 @@ export namespace Prisma {
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type BookingCreateWithoutCleaningTaskInput = {
@@ -22422,6 +27367,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutCleaningTasksInput = {
@@ -22447,6 +27394,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutCleaningTasksInput = {
@@ -22462,6 +27411,9 @@ export namespace Prisma {
     createdAt?: Date | string
     name: string
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCleaningTasksInput = {
@@ -22472,6 +27424,9 @@ export namespace Prisma {
     createdAt?: Date | string
     name: string
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCleaningTasksInput = {
@@ -22577,6 +27532,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SupervisorReviewCreateWithoutCleaningTaskInput = {
+    id?: string
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    supervisor: UserCreateNestedOneWithoutSupervisorReviewsInput
+    maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutSupervisorReviewsInput
+  }
+
+  export type SupervisorReviewUncheckedCreateWithoutCleaningTaskInput = {
+    id?: string
+    supervisorId: string
+    maintenanceTicketId?: string | null
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SupervisorReviewCreateOrConnectWithoutCleaningTaskInput = {
+    where: SupervisorReviewWhereUniqueInput
+    create: XOR<SupervisorReviewCreateWithoutCleaningTaskInput, SupervisorReviewUncheckedCreateWithoutCleaningTaskInput>
+  }
+
+  export type SupervisorReviewCreateManyCleaningTaskInputEnvelope = {
+    data: SupervisorReviewCreateManyCleaningTaskInput | SupervisorReviewCreateManyCleaningTaskInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BookingUpsertWithoutCleaningTaskInput = {
     update: XOR<BookingUpdateWithoutCleaningTaskInput, BookingUncheckedUpdateWithoutCleaningTaskInput>
     create: XOR<BookingCreateWithoutCleaningTaskInput, BookingUncheckedCreateWithoutCleaningTaskInput>
@@ -22648,6 +27633,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutCleaningTasksInput = {
@@ -22673,6 +27660,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutCleaningTasksInput = {
@@ -22694,6 +27683,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleaningTasksInput = {
@@ -22704,6 +27696,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CleaningTaskMessageUpsertWithWhereUniqueWithoutCleaningTaskInput = {
@@ -22784,6 +27779,22 @@ export namespace Prisma {
     data: XOR<AIAssistantMessageUpdateManyMutationInput, AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskInput>
   }
 
+  export type SupervisorReviewUpsertWithWhereUniqueWithoutCleaningTaskInput = {
+    where: SupervisorReviewWhereUniqueInput
+    update: XOR<SupervisorReviewUpdateWithoutCleaningTaskInput, SupervisorReviewUncheckedUpdateWithoutCleaningTaskInput>
+    create: XOR<SupervisorReviewCreateWithoutCleaningTaskInput, SupervisorReviewUncheckedCreateWithoutCleaningTaskInput>
+  }
+
+  export type SupervisorReviewUpdateWithWhereUniqueWithoutCleaningTaskInput = {
+    where: SupervisorReviewWhereUniqueInput
+    data: XOR<SupervisorReviewUpdateWithoutCleaningTaskInput, SupervisorReviewUncheckedUpdateWithoutCleaningTaskInput>
+  }
+
+  export type SupervisorReviewUpdateManyWithWhereWithoutCleaningTaskInput = {
+    where: SupervisorReviewScalarWhereInput
+    data: XOR<SupervisorReviewUpdateManyMutationInput, SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskInput>
+  }
+
   export type ApartmentCreateWithoutMaintenanceTicketsInput = {
     id?: string
     name: string
@@ -22807,6 +27818,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -22832,6 +27845,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -22847,6 +27862,9 @@ export namespace Prisma {
     createdAt?: Date | string
     name: string
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -22857,6 +27875,9 @@ export namespace Prisma {
     createdAt?: Date | string
     name: string
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -22962,6 +27983,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SupervisorReviewCreateWithoutMaintenanceTicketInput = {
+    id?: string
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    supervisor: UserCreateNestedOneWithoutSupervisorReviewsInput
+    cleaningTask?: CleaningTaskCreateNestedOneWithoutSupervisorReviewsInput
+  }
+
+  export type SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput = {
+    id?: string
+    supervisorId: string
+    cleaningTaskId?: string | null
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput = {
+    where: SupervisorReviewWhereUniqueInput
+    create: XOR<SupervisorReviewCreateWithoutMaintenanceTicketInput, SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput>
+  }
+
+  export type SupervisorReviewCreateManyMaintenanceTicketInputEnvelope = {
+    data: SupervisorReviewCreateManyMaintenanceTicketInput | SupervisorReviewCreateManyMaintenanceTicketInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ApartmentUpsertWithoutMaintenanceTicketsInput = {
     update: XOR<ApartmentUpdateWithoutMaintenanceTicketsInput, ApartmentUncheckedUpdateWithoutMaintenanceTicketsInput>
     create: XOR<ApartmentCreateWithoutMaintenanceTicketsInput, ApartmentUncheckedCreateWithoutMaintenanceTicketsInput>
@@ -22996,6 +28047,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -23021,6 +28074,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutMaintenanceTicketsInput = {
@@ -23042,6 +28097,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -23052,6 +28110,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AttachmentUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
@@ -23116,6 +28177,22 @@ export namespace Prisma {
     data: XOR<AIAssistantMessageUpdateManyMutationInput, AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketInput>
   }
 
+  export type SupervisorReviewUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
+    where: SupervisorReviewWhereUniqueInput
+    update: XOR<SupervisorReviewUpdateWithoutMaintenanceTicketInput, SupervisorReviewUncheckedUpdateWithoutMaintenanceTicketInput>
+    create: XOR<SupervisorReviewCreateWithoutMaintenanceTicketInput, SupervisorReviewUncheckedCreateWithoutMaintenanceTicketInput>
+  }
+
+  export type SupervisorReviewUpdateWithWhereUniqueWithoutMaintenanceTicketInput = {
+    where: SupervisorReviewWhereUniqueInput
+    data: XOR<SupervisorReviewUpdateWithoutMaintenanceTicketInput, SupervisorReviewUncheckedUpdateWithoutMaintenanceTicketInput>
+  }
+
+  export type SupervisorReviewUpdateManyWithWhereWithoutMaintenanceTicketInput = {
+    where: SupervisorReviewScalarWhereInput
+    data: XOR<SupervisorReviewUpdateManyMutationInput, SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketInput>
+  }
+
   export type ApartmentCreateWithoutAiAssistantMessagesInput = {
     id?: string
     name: string
@@ -23139,6 +28216,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
     notifications?: NotificationCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutAiAssistantMessagesInput = {
@@ -23164,6 +28243,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutAiAssistantMessagesInput = {
@@ -23180,11 +28261,13 @@ export namespace Prisma {
     completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskUncheckedCreateWithoutAiAssistantMessagesInput = {
@@ -23199,8 +28282,10 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskCreateOrConnectWithoutAiAssistantMessagesInput = {
@@ -23219,10 +28304,12 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutAiAssistantMessagesInput = {
@@ -23238,8 +28325,10 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutAiAssistantMessagesInput = {
@@ -23281,6 +28370,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
     notifications?: NotificationUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutAiAssistantMessagesInput = {
@@ -23306,6 +28397,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type CleaningTaskUpsertWithoutAiAssistantMessagesInput = {
@@ -23328,11 +28421,13 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateWithoutAiAssistantMessagesInput = {
@@ -23347,8 +28442,10 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type MaintenanceTicketUpsertWithoutAiAssistantMessagesInput = {
@@ -23373,10 +28470,12 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutAiAssistantMessagesInput = {
@@ -23392,8 +28491,10 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketCreateWithoutAttachmentsInput = {
@@ -23407,10 +28508,12 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutAttachmentsInput = {
@@ -23426,8 +28529,10 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutAttachmentsInput = {
@@ -23444,11 +28549,13 @@ export namespace Prisma {
     completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskUncheckedCreateWithoutAttachmentsInput = {
@@ -23463,8 +28570,10 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskCreateOrConnectWithoutAttachmentsInput = {
@@ -23554,10 +28663,12 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutAttachmentsInput = {
@@ -23573,8 +28684,10 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type CleaningTaskUpsertWithoutAttachmentsInput = {
@@ -23597,11 +28710,13 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateWithoutAttachmentsInput = {
@@ -23616,8 +28731,10 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type MessageUpsertWithWhereUniqueWithoutAttachmentInput = {
@@ -23675,6 +28792,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
     notifications?: NotificationCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutApartmentAttachmentsInput = {
@@ -23700,6 +28819,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutApartmentAttachmentsInput = {
@@ -23741,6 +28862,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
     notifications?: NotificationUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutApartmentAttachmentsInput = {
@@ -23766,6 +28889,8 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type MaintenanceTicketCreateWithoutMessagesInput = {
@@ -23779,10 +28904,12 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutMessagesInput = {
@@ -23798,8 +28925,10 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutMessagesInput = {
@@ -23862,10 +28991,12 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutMessagesInput = {
@@ -23881,8 +29012,10 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type AttachmentUpsertWithoutMessagesInput = {
@@ -23933,11 +29066,13 @@ export namespace Prisma {
     completedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     attachments?: AttachmentCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskUncheckedCreateWithoutMessagesInput = {
@@ -23952,8 +29087,10 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
   }
 
   export type CleaningTaskCreateOrConnectWithoutMessagesInput = {
@@ -24014,11 +29151,13 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     attachments?: AttachmentUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateWithoutMessagesInput = {
@@ -24033,8 +29172,10 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type AttachmentUpsertWithoutCleaningMessagesInput = {
@@ -24076,6 +29217,638 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
   }
 
+  export type UserCreateWithoutSupervisorReviewsInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSupervisorReviewsInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSupervisorReviewsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSupervisorReviewsInput, UserUncheckedCreateWithoutSupervisorReviewsInput>
+  }
+
+  export type CleaningTaskCreateWithoutSupervisorReviewsInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    booking?: BookingCreateNestedOneWithoutCleaningTaskInput
+    apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
+    assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
+    messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
+    attachments?: AttachmentCreateNestedManyWithoutCleaningTaskInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutCleaningTaskInput
+  }
+
+  export type CleaningTaskUncheckedCreateWithoutSupervisorReviewsInput = {
+    id?: string
+    apartmentId: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    assignedToId?: string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
+  }
+
+  export type CleaningTaskCreateOrConnectWithoutSupervisorReviewsInput = {
+    where: CleaningTaskWhereUniqueInput
+    create: XOR<CleaningTaskCreateWithoutSupervisorReviewsInput, CleaningTaskUncheckedCreateWithoutSupervisorReviewsInput>
+  }
+
+  export type MaintenanceTicketCreateWithoutSupervisorReviewsInput = {
+    id?: string
+    title: string
+    description: string
+    status: string
+    priority: string
+    createdAt?: Date | string
+    scheduledStart?: Date | string | null
+    scheduledEnd?: Date | string | null
+    startedAt?: Date | string | null
+    resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
+    assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
+    attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
+    messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
+  }
+
+  export type MaintenanceTicketUncheckedCreateWithoutSupervisorReviewsInput = {
+    id?: string
+    apartmentId: string
+    title: string
+    description: string
+    status: string
+    priority: string
+    createdAt?: Date | string
+    assignedToId?: string | null
+    scheduledStart?: Date | string | null
+    scheduledEnd?: Date | string | null
+    startedAt?: Date | string | null
+    resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+  }
+
+  export type MaintenanceTicketCreateOrConnectWithoutSupervisorReviewsInput = {
+    where: MaintenanceTicketWhereUniqueInput
+    create: XOR<MaintenanceTicketCreateWithoutSupervisorReviewsInput, MaintenanceTicketUncheckedCreateWithoutSupervisorReviewsInput>
+  }
+
+  export type UserUpsertWithoutSupervisorReviewsInput = {
+    update: XOR<UserUpdateWithoutSupervisorReviewsInput, UserUncheckedUpdateWithoutSupervisorReviewsInput>
+    create: XOR<UserCreateWithoutSupervisorReviewsInput, UserUncheckedCreateWithoutSupervisorReviewsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSupervisorReviewsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSupervisorReviewsInput, UserUncheckedUpdateWithoutSupervisorReviewsInput>
+  }
+
+  export type UserUpdateWithoutSupervisorReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSupervisorReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type CleaningTaskUpsertWithoutSupervisorReviewsInput = {
+    update: XOR<CleaningTaskUpdateWithoutSupervisorReviewsInput, CleaningTaskUncheckedUpdateWithoutSupervisorReviewsInput>
+    create: XOR<CleaningTaskCreateWithoutSupervisorReviewsInput, CleaningTaskUncheckedCreateWithoutSupervisorReviewsInput>
+    where?: CleaningTaskWhereInput
+  }
+
+  export type CleaningTaskUpdateToOneWithWhereWithoutSupervisorReviewsInput = {
+    where?: CleaningTaskWhereInput
+    data: XOR<CleaningTaskUpdateWithoutSupervisorReviewsInput, CleaningTaskUncheckedUpdateWithoutSupervisorReviewsInput>
+  }
+
+  export type CleaningTaskUpdateWithoutSupervisorReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
+    apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
+    assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
+    messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
+    attachments?: AttachmentUpdateManyWithoutCleaningTaskNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutCleaningTaskNestedInput
+  }
+
+  export type CleaningTaskUncheckedUpdateWithoutSupervisorReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
+  }
+
+  export type MaintenanceTicketUpsertWithoutSupervisorReviewsInput = {
+    update: XOR<MaintenanceTicketUpdateWithoutSupervisorReviewsInput, MaintenanceTicketUncheckedUpdateWithoutSupervisorReviewsInput>
+    create: XOR<MaintenanceTicketCreateWithoutSupervisorReviewsInput, MaintenanceTicketUncheckedCreateWithoutSupervisorReviewsInput>
+    where?: MaintenanceTicketWhereInput
+  }
+
+  export type MaintenanceTicketUpdateToOneWithWhereWithoutSupervisorReviewsInput = {
+    where?: MaintenanceTicketWhereInput
+    data: XOR<MaintenanceTicketUpdateWithoutSupervisorReviewsInput, MaintenanceTicketUncheckedUpdateWithoutSupervisorReviewsInput>
+  }
+
+  export type MaintenanceTicketUpdateWithoutSupervisorReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
+    assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
+    attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
+    messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
+  }
+
+  export type MaintenanceTicketUncheckedUpdateWithoutSupervisorReviewsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+  }
+
+  export type ApartmentCreateWithoutSupervisorsInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bookings?: BookingCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentUncheckedCreateWithoutSupervisorsInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentCreateOrConnectWithoutSupervisorsInput = {
+    where: ApartmentWhereUniqueInput
+    create: XOR<ApartmentCreateWithoutSupervisorsInput, ApartmentUncheckedCreateWithoutSupervisorsInput>
+  }
+
+  export type UserCreateWithoutSupervisedApartmentsInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutSupervisedApartmentsInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutSupervisedApartmentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutSupervisedApartmentsInput, UserUncheckedCreateWithoutSupervisedApartmentsInput>
+  }
+
+  export type ApartmentUpsertWithoutSupervisorsInput = {
+    update: XOR<ApartmentUpdateWithoutSupervisorsInput, ApartmentUncheckedUpdateWithoutSupervisorsInput>
+    create: XOR<ApartmentCreateWithoutSupervisorsInput, ApartmentUncheckedCreateWithoutSupervisorsInput>
+    where?: ApartmentWhereInput
+  }
+
+  export type ApartmentUpdateToOneWithWhereWithoutSupervisorsInput = {
+    where?: ApartmentWhereInput
+    data: XOR<ApartmentUpdateWithoutSupervisorsInput, ApartmentUncheckedUpdateWithoutSupervisorsInput>
+  }
+
+  export type ApartmentUpdateWithoutSupervisorsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookings?: BookingUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type ApartmentUncheckedUpdateWithoutSupervisorsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type UserUpsertWithoutSupervisedApartmentsInput = {
+    update: XOR<UserUpdateWithoutSupervisedApartmentsInput, UserUncheckedUpdateWithoutSupervisedApartmentsInput>
+    create: XOR<UserCreateWithoutSupervisedApartmentsInput, UserUncheckedCreateWithoutSupervisedApartmentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutSupervisedApartmentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutSupervisedApartmentsInput, UserUncheckedUpdateWithoutSupervisedApartmentsInput>
+  }
+
+  export type UserUpdateWithoutSupervisedApartmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutSupervisedApartmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ApartmentCreateWithoutOwnersInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bookings?: BookingCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentUncheckedCreateWithoutOwnersInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentCreateOrConnectWithoutOwnersInput = {
+    where: ApartmentWhereUniqueInput
+    create: XOR<ApartmentCreateWithoutOwnersInput, ApartmentUncheckedCreateWithoutOwnersInput>
+  }
+
+  export type UserCreateWithoutOwnedApartmentsInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutOwnedApartmentsInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutOwnedApartmentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOwnedApartmentsInput, UserUncheckedCreateWithoutOwnedApartmentsInput>
+  }
+
+  export type ApartmentUpsertWithoutOwnersInput = {
+    update: XOR<ApartmentUpdateWithoutOwnersInput, ApartmentUncheckedUpdateWithoutOwnersInput>
+    create: XOR<ApartmentCreateWithoutOwnersInput, ApartmentUncheckedCreateWithoutOwnersInput>
+    where?: ApartmentWhereInput
+  }
+
+  export type ApartmentUpdateToOneWithWhereWithoutOwnersInput = {
+    where?: ApartmentWhereInput
+    data: XOR<ApartmentUpdateWithoutOwnersInput, ApartmentUncheckedUpdateWithoutOwnersInput>
+  }
+
+  export type ApartmentUpdateWithoutOwnersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookings?: BookingUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type ApartmentUncheckedUpdateWithoutOwnersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type UserUpsertWithoutOwnedApartmentsInput = {
+    update: XOR<UserUpdateWithoutOwnedApartmentsInput, UserUncheckedUpdateWithoutOwnedApartmentsInput>
+    create: XOR<UserCreateWithoutOwnedApartmentsInput, UserUncheckedCreateWithoutOwnedApartmentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOwnedApartmentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOwnedApartmentsInput, UserUncheckedUpdateWithoutOwnedApartmentsInput>
+  }
+
+  export type UserUpdateWithoutOwnedApartmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOwnedApartmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type CleaningTaskCreateManyAssignedToInput = {
     id?: string
     apartmentId: string
@@ -24087,6 +29860,7 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketCreateManyAssignedToInput = {
@@ -24101,6 +29875,25 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type SupervisorReviewCreateManySupervisorInput = {
+    id?: string
+    cleaningTaskId?: string | null
+    maintenanceTicketId?: string | null
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ApartmentSupervisorCreateManyUserInput = {
+    apartmentId: string
+  }
+
+  export type ApartmentOwnerCreateManyUserInput = {
+    apartmentId: string
   }
 
   export type CleaningTaskUpdateWithoutAssignedToInput = {
@@ -24112,11 +29905,13 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateWithoutAssignedToInput = {
@@ -24130,9 +29925,11 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToInput = {
@@ -24146,6 +29943,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketUpdateWithoutAssignedToInput = {
@@ -24159,10 +29957,12 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutAssignedToInput = {
@@ -24177,9 +29977,11 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateManyWithoutAssignedToInput = {
@@ -24194,6 +29996,61 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type SupervisorReviewUpdateWithoutSupervisorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cleaningTask?: CleaningTaskUpdateOneWithoutSupervisorReviewsNestedInput
+    maintenanceTicket?: MaintenanceTicketUpdateOneWithoutSupervisorReviewsNestedInput
+  }
+
+  export type SupervisorReviewUncheckedUpdateWithoutSupervisorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupervisorReviewUncheckedUpdateManyWithoutSupervisorInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApartmentSupervisorUpdateWithoutUserInput = {
+    apartment?: ApartmentUpdateOneRequiredWithoutSupervisorsNestedInput
+  }
+
+  export type ApartmentSupervisorUncheckedUpdateWithoutUserInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentSupervisorUncheckedUpdateManyWithoutUserInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentOwnerUpdateWithoutUserInput = {
+    apartment?: ApartmentUpdateOneRequiredWithoutOwnersNestedInput
+  }
+
+  export type ApartmentOwnerUncheckedUpdateWithoutUserInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentOwnerUncheckedUpdateManyWithoutUserInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
   }
 
   export type BookingCreateManyApartmentInput = {
@@ -24229,6 +30086,7 @@ export namespace Prisma {
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketCreateManyApartmentInput = {
@@ -24243,6 +30101,7 @@ export namespace Prisma {
     scheduledEnd?: Date | string | null
     startedAt?: Date | string | null
     resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type NotificationCreateManyApartmentInput = {
@@ -24276,6 +30135,14 @@ export namespace Prisma {
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type ApartmentSupervisorCreateManyApartmentInput = {
+    userId: string
+  }
+
+  export type ApartmentOwnerCreateManyApartmentInput = {
+    userId: string
   }
 
   export type BookingUpdateWithoutApartmentInput = {
@@ -24355,11 +30222,13 @@ export namespace Prisma {
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateWithoutApartmentInput = {
@@ -24373,9 +30242,11 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
   }
 
   export type CleaningTaskUncheckedUpdateManyWithoutApartmentInput = {
@@ -24389,6 +30260,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketUpdateWithoutApartmentInput = {
@@ -24402,10 +30274,12 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutApartmentInput = {
@@ -24420,9 +30294,11 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateManyWithoutApartmentInput = {
@@ -24437,6 +30313,7 @@ export namespace Prisma {
     scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type NotificationUpdateWithoutApartmentInput = {
@@ -24538,6 +30415,30 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ApartmentSupervisorUpdateWithoutApartmentInput = {
+    user?: UserUpdateOneRequiredWithoutSupervisedApartmentsNestedInput
+  }
+
+  export type ApartmentSupervisorUncheckedUpdateWithoutApartmentInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentSupervisorUncheckedUpdateManyWithoutApartmentInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentOwnerUpdateWithoutApartmentInput = {
+    user?: UserUpdateOneRequiredWithoutOwnedApartmentsNestedInput
+  }
+
+  export type ApartmentOwnerUncheckedUpdateWithoutApartmentInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentOwnerUncheckedUpdateManyWithoutApartmentInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type CleaningTaskMessageCreateManyCleaningTaskInput = {
     id?: string
     text?: string | null
@@ -24567,6 +30468,16 @@ export namespace Prisma {
     userRole: $Enums.Role
     apartmentId?: string | null
     maintenanceTicketId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type SupervisorReviewCreateManyCleaningTaskInput = {
+    id?: string
+    supervisorId: string
+    maintenanceTicketId?: string | null
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -24670,6 +30581,36 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SupervisorReviewUpdateWithoutCleaningTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supervisor?: UserUpdateOneRequiredWithoutSupervisorReviewsNestedInput
+    maintenanceTicket?: MaintenanceTicketUpdateOneWithoutSupervisorReviewsNestedInput
+  }
+
+  export type SupervisorReviewUncheckedUpdateWithoutCleaningTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    supervisorId?: StringFieldUpdateOperationsInput | string
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    supervisorId?: StringFieldUpdateOperationsInput | string
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AttachmentCreateManyMaintenanceTicketInput = {
     id?: string
     url: string
@@ -24699,6 +30640,16 @@ export namespace Prisma {
     userRole: $Enums.Role
     apartmentId?: string | null
     cleaningTaskId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type SupervisorReviewCreateManyMaintenanceTicketInput = {
+    id?: string
+    supervisorId: string
+    cleaningTaskId?: string | null
+    decision: string
+    notes?: string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -24799,6 +30750,36 @@ export namespace Prisma {
     userRole?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     apartmentId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupervisorReviewUpdateWithoutMaintenanceTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    supervisor?: UserUpdateOneRequiredWithoutSupervisorReviewsNestedInput
+    cleaningTask?: CleaningTaskUpdateOneWithoutSupervisorReviewsNestedInput
+  }
+
+  export type SupervisorReviewUncheckedUpdateWithoutMaintenanceTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    supervisorId?: StringFieldUpdateOperationsInput | string
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    supervisorId?: StringFieldUpdateOperationsInput | string
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    decision?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    correctionItems?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

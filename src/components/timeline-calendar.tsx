@@ -462,14 +462,18 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
           </div>
           {apartments.map((apt) => {
             const dotColor: Record<string, string> = {
-              GREEN: "bg-emerald-500",
-              BLUE: "bg-blue-500",
-              RED: "bg-red-500",
+              GREEN:  "bg-emerald-500",
+              BLUE:   "bg-blue-500",
+              VIOLET: "bg-violet-500",
+              YELLOW: "bg-yellow-400",
+              RED:    "bg-red-500",
             };
             const dotLabel: Record<string, string> = {
-              GREEN: "Pronto",
-              BLUE: "Non pronto",
-              RED: "Occupato",
+              GREEN:  "Pronto",
+              BLUE:   "Non pronto",
+              VIOLET: "In corso",
+              YELLOW: "In verifica",
+              RED:    "Occupato",
             };
             return (
               <div key={apt.id} className="h-28 border-b-2 border-slate-200/70 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/30">
@@ -606,9 +610,11 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     );
 
                     const bgColors: Record<string, string> = {
-                      GREEN: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-                      BLUE: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-                      RED: "bg-red-500/10 text-red-600 border-red-500/20"
+                      GREEN:  "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+                      BLUE:   "bg-blue-500/10 text-blue-600 border-blue-500/20",
+                      VIOLET: "bg-violet-500/10 text-violet-600 border-violet-500/20",
+                      YELLOW: "bg-yellow-500/10 text-yellow-700 border-yellow-500/20",
+                      RED:    "bg-red-500/10 text-red-600 border-red-500/20",
                     };
                     const bookingNotReady = isBookingNotReady(booking);
                     const bookingColor = bookingNotReady
@@ -739,6 +745,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
       {[
         { color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-700", label: "Pronto" },
         { color: "bg-blue-500/10 border-blue-500/20 text-blue-700", label: "Non pronto" },
+        { color: "bg-violet-500/10 border-violet-500/20 text-violet-700", label: "In corso" },
+        { color: "bg-yellow-500/10 border-yellow-500/20 text-yellow-700", label: "In verifica" },
         { color: "bg-red-500/10 border-red-500/20 text-red-700", label: "Occupato" },
       ].map(({ color, label }) => (
         <div key={label} className="flex items-center gap-1.5">

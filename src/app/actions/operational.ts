@@ -511,7 +511,8 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
   // Validation: PENDING -> IN_PROGRESS -> COMPLETED
   const transitions: Record<string, string> = {
     "PENDING": "IN_PROGRESS",
-    "IN_PROGRESS": "COMPLETED"
+    "IN_PROGRESS": "COMPLETED",
+    "COMPLETED": "AWAITING_REVIEW",
   };
 
   if (transitions[task.status] !== nextStatus) {
@@ -557,28 +558,131 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     data: updateData,
   });
 
-  // Trigger Notification for Manager if completed
-  if (nextStatus === "COMPLETED") {
+  // Notifiche
+  if (nextStatus === "AWAITING_REVIEW") {
     const apartment = await prisma.apartment.findUnique({
       where: { id: task.apartmentId },
-      select: { name: true }
+      select: { name: true },
     });
-    
     await prisma.notification.create({
       data: {
         type: "CLEANING",
-        title: "Pulizia Completata",
-        message: `L'intervento di pulizia presso ${apartment?.name || 'un appartamento'} è stato completato.`,
+        title: "Pulizia in attesa di revisione",
+        message: `La pulizia presso ${apartment?.name || "un appartamento"} è pronta per la revisione del supervisore.`,
         apartmentId: task.apartmentId,
-      }
+      },
     });
   }
 
   revalidatePath("/dashboard/cleaner");
+  revalidatePath("/dashboard/supervisor");
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath(`/dashboard/manager/cleanings/${id}/edit`);
   revalidatePath("/dashboard/manager/users/history");
+}
+
+export async function submitCleaningForReview(id: string) {
+  const task = await prisma.cleaningTask.findUnique({ where: { id } });
+  if (!task) throw new Error("Pulizia non trovata.");
+  if (task.status !== "COMPLETED") throw new Error("La pulizia deve essere completata prima di inviare per revisione.");
+
+  await prisma.cleaningTask.update({
+    where: { id },
+    data: { status: "AWAITING_REVIEW" },
+  });
+
+  const apartment = await prisma.apartment.findUnique({
+    where: { id: task.apartmentId },
+    select: { name: true },
+  });
+  await prisma.notification.create({
+    data: {
+      type: "CLEANING",
+      title: "Pulizia in attesa di revisione",
+      message: `La pulizia presso ${apartment?.name || "un appartamento"} è pronta per la revisione.`,
+      apartmentId: task.apartmentId,
+    },
+  });
+
+  revalidatePath("/dashboard/cleaner");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/cleanings");
+  revalidatePath(`/dashboard/manager/cleanings/${id}/edit`);
+}
+
+export async function approveCleaningReview(cleaningTaskId: string, supervisorId: string) {
+  const task = await prisma.cleaningTask.findUnique({ where: { id: cleaningTaskId } });
+  if (!task) throw new Error("Pulizia non trovata.");
+  if (task.status !== "AWAITING_REVIEW") throw new Error("La pulizia non è in attesa di revisione.");
+
+  await prisma.$transaction([
+    prisma.supervisorReview.create({
+      data: { supervisorId, cleaningTaskId, decision: "APPROVED" },
+    }),
+    prisma.cleaningTask.update({
+      where: { id: cleaningTaskId },
+      data: { status: "APPROVED", completedAt: task.completedAt || new Date(), correctionProgress: [] },
+    }),
+  ]);
+
+  const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      type: "CLEANING",
+      title: "Pulizia approvata",
+      message: `La pulizia presso ${apartment?.name || "un appartamento"} è stata approvata.`,
+      apartmentId: task.apartmentId,
+    },
+  });
+
+  revalidatePath("/dashboard/cleaner");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/cleanings");
+}
+
+export async function rejectCleaningReview(
+  cleaningTaskId: string,
+  supervisorId: string,
+  notes: string,
+  correctionItems: { id: string; label: string; note: string; requiresPhoto: boolean }[]
+) {
+  const task = await prisma.cleaningTask.findUnique({ where: { id: cleaningTaskId } });
+  if (!task) throw new Error("Pulizia non trovata.");
+  if (task.status !== "AWAITING_REVIEW") throw new Error("La pulizia non è in attesa di revisione.");
+
+  const correctionProgress = correctionItems.map(item => ({
+    ...item,
+    completed: false,
+    photoUrl: null,
+  }));
+
+  await prisma.$transaction([
+    prisma.supervisorReview.create({
+      data: { supervisorId, cleaningTaskId, decision: "REJECTED", notes, correctionItems },
+    }),
+    prisma.cleaningTask.update({
+      where: { id: cleaningTaskId },
+      data: { status: "IN_PROGRESS", correctionProgress },
+    }),
+  ]);
+
+  const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      type: "CLEANING",
+      title: "Pulizia rifiutata",
+      message: `La pulizia presso ${apartment?.name || "un appartamento"} richiede correzioni.`,
+      apartmentId: task.apartmentId,
+    },
+  });
+
+  revalidatePath("/dashboard/cleaner");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/cleanings");
 }
 
 export async function updateMaintenanceStatus(id: string, nextStatus: string) {
@@ -625,9 +729,109 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   }
 
   revalidatePath("/dashboard/maintenance");
-  revalidatePath("/dashboard/manager/maintenance"); // Added manager maintenance path
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager/maintenance");
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/users/history");
+}
+
+export async function submitMaintenanceForReview(id: string) {
+  const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
+  if (!ticket) throw new Error("Ticket non trovato.");
+  if (ticket.status !== "RESOLVED") throw new Error("Il ticket deve essere risolto prima di inviare per revisione.");
+
+  await prisma.maintenanceTicket.update({
+    where: { id },
+    data: { status: "AWAITING_REVIEW" },
+  });
+
+  const apartment = await prisma.apartment.findUnique({ where: { id: ticket.apartmentId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      type: "MAINTENANCE",
+      title: "Manutenzione in attesa di revisione",
+      message: `Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è pronto per la revisione.`,
+      apartmentId: ticket.apartmentId,
+    },
+  });
+
+  revalidatePath("/dashboard/maintenance");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/maintenance");
+}
+
+export async function approveMaintenanceReview(maintenanceTicketId: string, supervisorId: string) {
+  const ticket = await prisma.maintenanceTicket.findUnique({ where: { id: maintenanceTicketId } });
+  if (!ticket) throw new Error("Ticket non trovato.");
+  if (ticket.status !== "AWAITING_REVIEW") throw new Error("Il ticket non è in attesa di revisione.");
+
+  await prisma.$transaction([
+    prisma.supervisorReview.create({
+      data: { supervisorId, maintenanceTicketId, decision: "APPROVED" },
+    }),
+    prisma.maintenanceTicket.update({
+      where: { id: maintenanceTicketId },
+      data: { status: "APPROVED", resolvedAt: ticket.resolvedAt || new Date(), correctionProgress: [] },
+    }),
+  ]);
+
+  const apartment = await prisma.apartment.findUnique({ where: { id: ticket.apartmentId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      type: "MAINTENANCE",
+      title: "Manutenzione approvata",
+      message: `Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è stato approvato.`,
+      apartmentId: ticket.apartmentId,
+    },
+  });
+
+  revalidatePath("/dashboard/maintenance");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/maintenance");
+}
+
+export async function rejectMaintenanceReview(
+  maintenanceTicketId: string,
+  supervisorId: string,
+  notes: string,
+  correctionItems: { id: string; label: string; note: string; requiresPhoto: boolean }[]
+) {
+  const ticket = await prisma.maintenanceTicket.findUnique({ where: { id: maintenanceTicketId } });
+  if (!ticket) throw new Error("Ticket non trovato.");
+  if (ticket.status !== "AWAITING_REVIEW") throw new Error("Il ticket non è in attesa di revisione.");
+
+  const correctionProgress = correctionItems.map(item => ({
+    ...item,
+    completed: false,
+    photoUrl: null,
+  }));
+
+  await prisma.$transaction([
+    prisma.supervisorReview.create({
+      data: { supervisorId, maintenanceTicketId, decision: "REJECTED", notes, correctionItems },
+    }),
+    prisma.maintenanceTicket.update({
+      where: { id: maintenanceTicketId },
+      data: { status: "IN_PROGRESS", correctionProgress },
+    }),
+  ]);
+
+  const apartment = await prisma.apartment.findUnique({ where: { id: ticket.apartmentId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      type: "MAINTENANCE",
+      title: "Manutenzione rifiutata",
+      message: `Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} richiede correzioni.`,
+      apartmentId: ticket.apartmentId,
+    },
+  });
+
+  revalidatePath("/dashboard/maintenance");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/maintenance");
 }
 
 export async function reopenMaintenanceTicket(id: string) {
