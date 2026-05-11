@@ -1190,6 +1190,192 @@ async function resolveApartmentIdFromAIContext(context: AIContext, userMessage: 
   return null;
 }
 
+async function buildCleaningContext(apartmentId: string) {
+  const now = new Date();
+  const apartment = await prisma.apartment.findUnique({
+    where: { id: apartmentId },
+    select: {
+      id: true, name: true, address: true, maxGuests: true, bedrooms: true, bathrooms: true,
+      checklistItems: { orderBy: [{ order: "asc" }, { createdAt: "asc" }], take: 100 },
+      bookings: {
+        where: { checkOutDate: { gte: addDays(now, -1) }, checkInDate: { lte: addDays(now, 30) } },
+        orderBy: { checkInDate: "asc" },
+        take: 20,
+        select: { guestName: true, totalGuests: true, checkInDate: true, checkOutDate: true, status: true, source: true },
+      },
+      cleaningTasks: {
+        orderBy: { date: "desc" },
+        take: 30,
+        include: {
+          assignedTo: { select: { name: true, role: true, email: true } },
+          booking: { select: { guestName: true, totalGuests: true, checkInDate: true, checkOutDate: true, source: true, status: true } },
+          messages: { orderBy: { createdAt: "desc" }, take: 20, select: { createdAt: true, role: true, senderName: true, text: true } },
+          attachments: { orderBy: { createdAt: "desc" }, take: 10, select: { fileName: true, fileType: true, url: true, category: true, extractedText: true, createdAt: true } },
+        },
+      },
+    },
+  });
+
+  if (!apartment) return "CONTESTO PULIZIE\n- Appartamento non trovato.";
+
+  const bookingLines = apartment.bookings.map((b) =>
+    `- ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "n/d"}`
+  );
+
+  const checklistLines = apartment.checklistItems.map((item) =>
+    `- ${item.order}. ${item.label} | obbligatorio: ${item.required ? "si" : "no"} | tipo: ${item.type}`
+  );
+
+  const cleaningLines = apartment.cleaningTasks.map((task) => {
+    const msgs = task.messages.map((m) =>
+      `${formatDateTime(m.createdAt)} ${m.senderName} (${m.role}): ${truncateText(m.text, 200) || "n/d"}`
+    );
+    return `- ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} (${task.assignedTo?.role || "n/d"}) | booking: ${task.booking?.guestName || "n/d"} ${task.booking ? `${formatDate(task.booking.checkInDate)} → ${formatDate(task.booking.checkOutDate)}` : ""} | note: ${truncateText(task.notes, 300) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 800)} | allegati: ${formatOperationalAttachmentLines(task.attachments)} | messaggi: ${msgs.length > 0 ? msgs.join(" || ") : "nessuno"}`;
+  });
+
+  return limitText(`CONTESTO PULIZIE — ${apartment.name} (${apartment.address})
+Capacità: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni
+
+PRENOTAZIONI PROSSIME 30 GIORNI
+${bookingLines.length > 0 ? bookingLines.join("\n") : "- Nessuna prenotazione imminente."}
+
+CHECKLIST MASTER
+${checklistLines.length > 0 ? checklistLines.join("\n") : "- Nessuna checklist configurata."}
+
+STORICO PULIZIE
+${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia registrata."}`, 18000);
+}
+
+async function buildMaintenanceContext(apartmentId: string) {
+  const apartment = await prisma.apartment.findUnique({
+    where: { id: apartmentId },
+    select: {
+      id: true, name: true, address: true,
+      maintenanceTickets: {
+        orderBy: { createdAt: "desc" },
+        take: 40,
+        include: {
+          assignedTo: { select: { name: true, role: true, email: true } },
+          messages: { orderBy: { createdAt: "desc" }, take: 20, select: { createdAt: true, role: true, senderName: true, text: true } },
+          attachments: { orderBy: { createdAt: "desc" }, take: 10, select: { fileName: true, fileType: true, url: true, category: true, extractedText: true, createdAt: true } },
+        },
+      },
+    },
+  });
+
+  if (!apartment) return "CONTESTO MANUTENZIONE\n- Appartamento non trovato.";
+
+  const ticketLines = apartment.maintenanceTickets.map((t) => {
+    const msgs = t.messages.map((m) =>
+      `${formatDateTime(m.createdAt)} ${m.senderName} (${m.role}): ${truncateText(m.text, 200) || "n/d"}`
+    );
+    return `- ${formatDate(t.createdAt)} | ${t.priority} | ${t.status} | ${t.title} | descrizione: ${truncateText(t.description, 400) || "n/d"} | tecnico: ${t.assignedTo?.name || "non assegnato"} (${t.assignedTo?.role || "n/d"}) | programmato: ${formatDateTime(t.scheduledStart)} | risolto: ${formatDateTime(t.resolvedAt)} | allegati: ${formatOperationalAttachmentLines(t.attachments)} | messaggi: ${msgs.length > 0 ? msgs.join(" || ") : "nessuno"}`;
+  });
+
+  return limitText(`CONTESTO MANUTENZIONE — ${apartment.name} (${apartment.address})
+
+TICKET MANUTENZIONE
+${ticketLines.length > 0 ? ticketLines.join("\n") : "- Nessun ticket registrato."}`, 18000);
+}
+
+async function buildBookingsContext(apartmentId: string) {
+  const now = new Date();
+  const apartment = await prisma.apartment.findUnique({
+    where: { id: apartmentId },
+    select: {
+      id: true, name: true, address: true, maxGuests: true,
+      bookings: { orderBy: { checkInDate: "desc" }, take: 60 },
+      cleaningTasks: {
+        where: { OR: [{ status: { in: ["PENDING", "IN_PROGRESS"] } }, { date: { gte: addDays(now, -7) } }] },
+        orderBy: { date: "asc" },
+        take: 20,
+        select: { date: true, status: true, assignedTo: { select: { name: true } } },
+      },
+    },
+  });
+
+  if (!apartment) return "CONTESTO PRENOTAZIONI\n- Appartamento non trovato.";
+
+  const bookingLines = apartment.bookings.map((b) =>
+    `- ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "manuale"} | externalId: ${b.externalId || "n/d"}`
+  );
+
+  const cleaningLines = apartment.cleaningTasks.map((t) =>
+    `- ${formatDate(t.date)} | ${t.status} | assegnato: ${t.assignedTo?.name || "non assegnato"}`
+  );
+
+  return limitText(`CONTESTO PRENOTAZIONI — ${apartment.name} (${apartment.address})
+Capacità: ${apartment.maxGuests} ospiti max
+
+PRENOTAZIONI
+${bookingLines.length > 0 ? bookingLines.join("\n") : "- Nessuna prenotazione."}
+
+PULIZIE PROGRAMMATE (stato sintetico)
+${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia programmata."}`, 14000);
+}
+
+async function buildTechnicalContext(apartmentId: string) {
+  const apartment = await prisma.apartment.findUnique({
+    where: { id: apartmentId },
+    select: {
+      id: true, name: true, address: true, maxGuests: true, bedrooms: true, bathrooms: true, squareMeters: true,
+      technicalProfile: true,
+      apartmentAttachments: {
+        orderBy: { createdAt: "desc" },
+        take: 30,
+        select: { filename: true, url: true, category: true, notes: true, extractedText: true, mimeType: true, size: true, createdAt: true },
+      },
+    },
+  });
+
+  if (!apartment) return "CONTESTO SCHEDA TECNICA\n- Appartamento non trovato.";
+
+  return limitText(`CONTESTO SCHEDA TECNICA — ${apartment.name} (${apartment.address})
+Dati base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq
+
+${formatCompleteTechnicalProfileForAI(apartment.technicalProfile)}
+
+ALLEGATI APPARTAMENTO
+${formatApartmentDocumentLines(apartment.apartmentAttachments)}`, 20000);
+}
+
+async function buildAttachmentsContext(apartmentId: string) {
+  const apartment = await prisma.apartment.findUnique({
+    where: { id: apartmentId },
+    select: {
+      id: true, name: true, address: true,
+      technicalProfile: true,
+      apartmentAttachments: {
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: { filename: true, url: true, category: true, notes: true, extractedText: true, mimeType: true, size: true, createdAt: true },
+      },
+    },
+  });
+
+  if (!apartment) return "CONTESTO ALLEGATI\n- Appartamento non trovato.";
+
+  const generalAttachments = formatDetailedGeneralAttachments(apartment.technicalProfile);
+
+  return limitText(`CONTESTO ALLEGATI — ${apartment.name} (${apartment.address})
+
+ALLEGATI APPARTAMENTO (scheda operativa)
+${formatApartmentDocumentLines(apartment.apartmentAttachments)}
+
+${generalAttachments}`, 20000);
+}
+
+async function buildContextForIntent(intent: AIIntent, apartmentId: string): Promise<string> {
+  switch (intent) {
+    case "PULIZIE":       return buildCleaningContext(apartmentId);
+    case "MANUTENZIONE":  return buildMaintenanceContext(apartmentId);
+    case "PRENOTAZIONI":  return buildBookingsContext(apartmentId);
+    case "SCHEDA_TECNICA": return buildTechnicalContext(apartmentId);
+    case "ALLEGATI":      return buildAttachmentsContext(apartmentId);
+    default:              return buildApartmentAIContext(apartmentId);
+  }
+}
+
 export async function buildApartmentAIContext(apartmentId: string) {
   const now = new Date();
 
@@ -1839,8 +2025,8 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
 
   const now = new Date();
   const apartmentAIContextText = resolvedApartmentId
-    ? await buildApartmentAIContext(resolvedApartmentId)
-    : "CONTESTO COMPLETO APPARTAMENTO\n- Nessun apartmentId disponibile o risolvibile dal contesto della chat.";
+    ? await buildContextForIntent(intent, resolvedApartmentId)
+    : "CONTESTO APPARTAMENTO\n- Nessun apartmentId disponibile o risolvibile dal contesto della chat.";
   const managerOperationalContextText = context.type === "MANAGER_DASHBOARD" && !resolvedApartmentId
     ? await buildManagerOperationalContext(context, now)
     : "";
