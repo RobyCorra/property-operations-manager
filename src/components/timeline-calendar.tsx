@@ -501,8 +501,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
               return (
                 <div
                   key={i}
-                  className={`flex-shrink-0 border-r flex flex-col items-center justify-center gap-0.5
-                    ${isToday ? "bg-violet-500/8 border-violet-300/60 shadow-inner" : isWeekend ? "bg-slate-100/60 border-slate-200/70" : "bg-slate-50/30 border-slate-200/50"}`}
+                  className={`flex-shrink-0 border-r border-b-2 border-slate-200/70 flex flex-col items-center justify-center gap-0.5
+                    ${isToday ? "bg-violet-500/8 border-r-violet-300/60" : isWeekend ? "bg-slate-100/60" : "bg-slate-50/30"}`}
                   style={{ width: timelineDayWidth }}
                 >
                   <span className={`h-3 text-[9px] font-bold uppercase tracking-wide ${isNewMonth ? "text-slate-500" : "text-transparent"}`}>
