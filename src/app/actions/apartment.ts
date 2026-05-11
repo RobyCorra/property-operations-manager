@@ -7,6 +7,7 @@ import { prisma } from "@/src/lib/prisma";
 import { DEFAULT_CHECKLIST } from "@/src/lib/constants";
 import { generateUniqueApartmentCode } from "@/src/lib/apartment-code";
 import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
+import { geocodeAddress } from "@/src/lib/geocoding";
 
 function textValue(formData: FormData, key: string) {
   return (formData.get(key) as string | null) ?? "";
@@ -263,14 +264,12 @@ export async function createApartment(formData: FormData) {
     const id = randomUUID();
     const name = formData.get("name") as string;
     const address = formData.get("address") as string;
-    const latitude = parseFloat(formData.get("latitude") as string);
-    const longitude = parseFloat(formData.get("longitude") as string);
     const squareMeters = parseInt(formData.get("squareMeters") as string, 10);
     const bedrooms = parseInt(formData.get("bedrooms") as string, 10);
     const bathrooms = parseInt(formData.get("bathrooms") as string, 10);
     const maxGuests = parseInt(formData.get("maxGuests") as string, 10);
 
-    if (!name || !address || isNaN(latitude) || isNaN(longitude)) {
+    if (!name || !address) {
       return { success: false, error: "Dati obbligatori mancanti o invalidi." };
     }
 
@@ -278,6 +277,10 @@ export async function createApartment(formData: FormData) {
     const apartmentCode = customCode
       ? await generateUniqueApartmentCode(customCode)
       : await generateUniqueApartmentCode(name);
+
+    const geocoded = await geocodeAddress(address);
+    const latitude = geocoded?.lat ?? 0;
+    const longitude = geocoded?.lng ?? 0;
 
     const accessInfo = {
       doorCode: (formData.get("accessInfo.doorCode") as string | null) || null,
