@@ -274,6 +274,17 @@ export async function createApartment(formData: FormData) {
       return { success: false, error: "Dati obbligatori mancanti o invalidi." };
     }
 
+    const customCode = (formData.get("apartmentCode") as string | null)?.trim();
+    const apartmentCode = customCode
+      ? await generateUniqueApartmentCode(customCode)
+      : await generateUniqueApartmentCode(name);
+
+    const accessInfo = {
+      doorCode: (formData.get("accessInfo.doorCode") as string | null) || null,
+      checkInNotes: (formData.get("accessInfo.checkInNotes") as string | null) || null,
+    };
+    const hasAccessInfo = Object.values(accessInfo).some(Boolean);
+
     const technicalProfile = await buildTechnicalProfile(formData, id);
     const directAttachments = Array.isArray(technicalProfile.generalAttachments)
       ? technicalProfile.generalAttachments
@@ -283,7 +294,7 @@ export async function createApartment(formData: FormData) {
       data: {
         id,
         name,
-        apartmentCode: await generateUniqueApartmentCode(name),
+        apartmentCode,
         address,
         latitude,
         longitude,
@@ -292,7 +303,8 @@ export async function createApartment(formData: FormData) {
         bathrooms: isNaN(bathrooms) ? 0 : bathrooms,
         maxGuests: isNaN(maxGuests) ? 1 : maxGuests,
         accessInstructions: null,
-        icalUrl: formData.get("icalUrl") as string,
+        accessInfo: hasAccessInfo ? accessInfo : undefined,
+        icalUrl: (formData.get("icalUrl") as string | null) || "",
         technicalProfile,
         apartmentAttachments: directAttachments.length > 0 ? {
           create: directAttachments.map((attachment) => ({
