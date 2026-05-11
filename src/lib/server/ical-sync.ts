@@ -59,7 +59,7 @@ export async function performApartmentIcalSync(apartmentId: string) {
     const totalGuests = 1;
 
     // 3. Upsert Booking
-    await prisma.booking.upsert({
+    const booking = await prisma.booking.upsert({
       where: { externalId },
       update: {
         checkInDate,
