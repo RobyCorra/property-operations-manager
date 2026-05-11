@@ -615,29 +615,34 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                   if (event.type === "cleaning") {
                     const cleaning = event.data as CleaningTask;
-                    const statusColors: Record<string, string> = {
-                      PENDING: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
-                      IN_PROGRESS: "bg-violet-500/10 text-violet-600 border-violet-500/20",
-                      COMPLETED: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-                    };
                     const cleaningLate = isCleaningLate(cleaning);
-                    const cleaningColor = cleaningLate
+                    const cleaningUnassigned = cleaning.status === "PENDING" && !cleaning.assignedTo;
+
+                    const cleaningColor = cleaning.status === "COMPLETED"
+                      ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                      : cleaning.status === "IN_PROGRESS"
+                      ? "bg-violet-500/10 text-violet-600 border-violet-500/20"
+                      : cleaningUnassigned
+                      ? "bg-rose-500/20 text-rose-700 border-rose-500/40 shadow-rose-100"
+                      : cleaningLate
                       ? "bg-orange-500/20 text-orange-700 border-orange-500/40 shadow-orange-100"
-                      : statusColors[cleaning.status] || "bg-slate-400/10 text-slate-500 border-slate-400/20";
+                      : "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
+
+                    const cleaningLabel = cleaningUnassigned ? "Non assegnata" : cleaningLate ? "In ritardo" : null;
 
                     return (
                       <div
                         key={`${event.type}-${event.id}`}
                         onClick={() => setSelectedEvent({ type: "cleaning", data: cleaning })}
                         className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 ${cleaningColor}`}
-                        title={cleaningLate ? `${event.title} - IN RITARDO` : event.title}
+                        title={cleaningLabel ? `${event.title} - ${cleaningLabel.toUpperCase()}` : event.title}
                         style={{
                           left: getPosition(event.start) + 6,
                           width: Math.max(10, timelineDayWidth - 12),
                         }}
                       >
                         <Paintbrush size={12} className="opacity-70" /> PULIZIA
-                        {cleaningLate ? <span className="text-[9px] font-bold uppercase">In ritardo</span> : null}
+                        {cleaningLabel ? <span className="text-[9px] font-bold uppercase">{cleaningLabel}</span> : null}
                       </div>
                     );
                   }
@@ -681,6 +686,25 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
           </div>
         </div>
       </div>
+    </div>
+
+    {/* Legenda stati pulizie */}
+    <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
+      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pulizie</span>
+      {[
+        { color: "bg-yellow-500/15 border-yellow-500/30 text-yellow-700", label: "In attesa" },
+        { color: "bg-rose-500/20 border-rose-500/40 text-rose-700", label: "Non assegnata" },
+        { color: "bg-orange-500/20 border-orange-500/40 text-orange-700", label: "In ritardo" },
+        { color: "bg-violet-500/10 border-violet-500/20 text-violet-700", label: "In corso" },
+        { color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-700", label: "Completata" },
+      ].map(({ color, label }) => (
+        <div key={label} className="flex items-center gap-1.5">
+          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
+            <Paintbrush size={9} className="opacity-70" />
+            {label}
+          </span>
+        </div>
+      ))}
     </div>
 
     {/* Event Modal Overlay */}
