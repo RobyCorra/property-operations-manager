@@ -1,3 +1,5 @@
+"use client";
+
 import { deleteApartment } from "@/src/app/actions/apartment";
 import { Trash2 } from "./icons";
 
