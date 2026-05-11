@@ -399,14 +399,13 @@ export async function updateApartment(formData: FormData) {
   redirect("/dashboard/manager/apartments");
 }
 
-export async function deleteApartment(formData: FormData) {
+export async function deleteApartment(formData: FormData): Promise<{ success: false; error: string } | void> {
   const id = formData.get("id") as string;
 
   if (!id) {
-    throw new Error("ID Mancante.");
+    return { success: false, error: "ID mancante." };
   }
 
-  // Safety check: check for related records
   const [bookingCount, cleaningCount, maintenanceCount] = await Promise.all([
     prisma.booking.count({ where: { apartmentId: id } }),
     prisma.cleaningTask.count({ where: { apartmentId: id } }),
@@ -414,15 +413,19 @@ export async function deleteApartment(formData: FormData) {
   ]);
 
   if (bookingCount > 0 || cleaningCount > 0 || maintenanceCount > 0) {
-    throw new Error("Impossibile eliminare l'appartamento: esistono prenotazioni, task di pulizia o ticket di manutenzione collegati.");
+    return {
+      success: false,
+      error: `Impossibile eliminare: l'appartamento ha ${bookingCount} prenotazioni, ${cleaningCount} pulizie e ${maintenanceCount} ticket collegati. Eliminali prima.`,
+    };
   }
 
-  // Rimuove notifiche collegate (FK senza cascade)
-  await prisma.notification.deleteMany({ where: { apartmentId: id } });
-
-  await prisma.apartment.delete({
-    where: { id },
-  });
+  try {
+    await prisma.notification.deleteMany({ where: { apartmentId: id } });
+    await prisma.apartment.delete({ where: { id } });
+  } catch (error) {
+    console.error("[DELETE APARTMENT ERROR]", error);
+    return { success: false, error: "Errore durante l'eliminazione. Controlla i log del server." };
+  }
 
   revalidatePath("/dashboard/manager/apartments");
   revalidatePath("/dashboard/manager");

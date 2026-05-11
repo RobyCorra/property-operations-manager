@@ -10,10 +10,9 @@ type DeleteApartmentButtonProps = {
 export default function DeleteApartmentButton({ id }: DeleteApartmentButtonProps) {
   const handleDelete = async (formData: FormData) => {
     if (window.confirm("Sei sicuro di voler eliminare questo appartamento? L'azione è irreversibile.")) {
-      try {
-        await deleteApartment(formData);
-      } catch (error: any) {
-        alert(error.message || "Errore durante l'eliminazione.");
+      const result = await deleteApartment(formData);
+      if (result?.success === false) {
+        alert(result.error);
       }
     }
   };
