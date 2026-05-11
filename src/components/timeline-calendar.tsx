@@ -482,10 +482,12 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
               const previousDay = days[i - 1];
               const isNewMonth = i === 0 || previousDay.getMonth() !== day.getMonth();
               const monthLabel = day.toLocaleDateString("it-IT", { month: "short" });
+              const isWeekend = day.getDay() === 0 || day.getDay() === 6;
               return (
-                <div 
-                  key={i} 
-                  className={`flex-shrink-0 border-r border-white/10 flex flex-col items-center justify-center gap-0.5 ${isToday ? "bg-violet-500/5 shadow-inner" : ""}`}
+                <div
+                  key={i}
+                  className={`flex-shrink-0 border-r flex flex-col items-center justify-center gap-0.5
+                    ${isToday ? "bg-violet-500/8 border-violet-300/60 shadow-inner" : isWeekend ? "bg-slate-100/60 border-slate-200/70" : "bg-slate-50/30 border-slate-200/50"}`}
                   style={{ width: timelineDayWidth }}
                 >
                   <span className={`h-3 text-[9px] font-bold uppercase tracking-wide ${isNewMonth ? "text-slate-500" : "text-transparent"}`}>
@@ -512,7 +514,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                 return (
                   <div
                     key={i}
-                    className={`h-full border-r flex-shrink-0 ${isToday ? "border-violet-300/70 bg-violet-500/5" : "border-white/10"}`}
+                    className={`h-full border-r flex-shrink-0 ${
+                      isToday
+                        ? "border-violet-300/60 bg-violet-500/8"
+                        : (day.getDay() === 0 || day.getDay() === 6)
+                        ? "border-slate-200/70 bg-slate-100/40"
+                        : "border-slate-200/50 bg-slate-50/20"
+                    }`}
                     style={{ width: timelineDayWidth }}
                   />
                 );
@@ -520,7 +528,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             </div>
 
             {apartments.map((apt) => (
-              <div key={apt.id} className="h-28 border-b border-white/20 relative group hover:bg-white/5 transition-colors">
+              <div key={apt.id} className="h-28 border-b border-slate-200/60 relative group hover:bg-white/10 transition-colors">
                 {calendarEvents.filter((event) => event.apartmentId === apt.id).map((event) => {
                   if (event.type === "booking") {
                     const booking = event.data as Booking;
