@@ -453,19 +453,34 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
       <div className="flex overflow-hidden relative" style={{ height: "auto", minHeight: "440px" }}>
         {/* Apartment List (Fixed Left) */}
-        <div 
-          className="z-20 bg-white/40 backdrop-blur-xl border-r border-white/20 flex-shrink-0"
+        <div
+          className="z-20 bg-white/60 backdrop-blur-xl border-r border-slate-200/80 flex-shrink-0"
           style={{ width: APARTMENT_COL_WIDTH }}
         >
-          <div className="h-16 border-b border-white/20 flex items-center px-8">
+          <div className="h-16 border-b border-slate-200/80 flex items-center px-8">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Appartamento</span>
           </div>
-          {apartments.map((apt) => (
-            <div key={apt.id} className="h-28 border-b border-white/20 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/10">
-              <span className="text-base font-semibold text-slate-900 truncate tracking-tight">{apt.name}</span>
-              <span className="text-[10px] text-slate-500 uppercase font-semibold mt-1 tracking-wider">{apt.status}</span>
-            </div>
-          ))}
+          {apartments.map((apt) => {
+            const dotColor: Record<string, string> = {
+              GREEN: "bg-emerald-500",
+              BLUE: "bg-blue-500",
+              RED: "bg-red-500",
+            };
+            const dotLabel: Record<string, string> = {
+              GREEN: "Pronto",
+              BLUE: "Non pronto",
+              RED: "Occupato",
+            };
+            return (
+              <div key={apt.id} className="h-28 border-b-2 border-slate-200/70 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/30">
+                <span className="text-base font-semibold text-slate-900 truncate tracking-tight">{apt.name}</span>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor[apt.status] ?? "bg-slate-400"}`} />
+                  <span className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider">{dotLabel[apt.status] ?? apt.status}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Timeline Content (Scrollable Right) */}
@@ -528,7 +543,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             </div>
 
             {apartments.map((apt) => (
-              <div key={apt.id} className="h-28 border-b border-slate-200/60 relative group hover:bg-white/10 transition-colors">
+              <div key={apt.id} className="h-28 border-b-2 border-slate-200/70 relative group hover:bg-white/10 transition-colors">
                 {calendarEvents.filter((event) => event.apartmentId === apt.id).map((event) => {
                   if (event.type === "booking") {
                     const booking = event.data as Booking;
