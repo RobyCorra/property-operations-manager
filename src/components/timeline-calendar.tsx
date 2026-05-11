@@ -589,7 +589,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     };
                     const bookingNotReady = isBookingNotReady(booking);
                     const bookingColor = bookingNotReady
-                      ? "bg-red-500/20 text-red-700 border-red-500/40 shadow-red-100"
+                      ? "bg-blue-500/10 text-red-700 border-blue-500/20 shadow-blue-100"
                       : bgColors[bookingStatus.color] || "bg-slate-500/10 text-slate-600 border-slate-500/20";
 
                     return (
