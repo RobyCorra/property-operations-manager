@@ -48,11 +48,13 @@ export async function loginAction(prevState: any, formData: FormData) {
   if (user.role === "MANAGER") {
     redirect("/dashboard/manager");
   } else if (user.role === "CLEANER") {
-    // Placeholder redirect for now
     redirect("/dashboard/cleaner");
   } else if (user.role === "MAINTENANCE") {
-    // Placeholder redirect for now
     redirect("/dashboard/maintenance");
+  } else if (user.role === "SUPERVISOR") {
+    redirect("/dashboard/supervisor");
+  } else if (user.role === "OWNER") {
+    redirect("/dashboard/owner");
   }
 
   redirect("/dashboard/manager");

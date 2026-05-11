@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { prisma } from "@/src/lib/prisma";
 import UserForm from "@/src/components/user-form";
 
 export default async function NewUserPage() {
@@ -11,11 +12,15 @@ export default async function NewUserPage() {
     redirect("/login");
   }
 
+  const apartments = await prisma.apartment.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
+
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <div className="max-w-3xl mx-auto space-y-8">
-        
-        {/* Header */}
+
         <div>
           <Link href="/dashboard/manager/users" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block">
             &larr; Torna al team
@@ -24,8 +29,7 @@ export default async function NewUserPage() {
           <p className="text-gray-500 mt-1">Registra un nuovo collaboratore per gestire pulizie o manutenzione</p>
         </div>
 
-        {/* Form Container */}
-        <UserForm />
+        <UserForm apartments={apartments} />
 
       </div>
     </main>

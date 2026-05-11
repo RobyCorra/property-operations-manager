@@ -2,7 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
-import { updateMaintenanceStatus, createTicketMessage } from "@/src/app/actions/operational";
+import { updateMaintenanceStatus, createTicketMessage, submitMaintenanceForReview } from "@/src/app/actions/operational";
+import SubmitForReviewButton from "@/src/components/submit-for-review-button";
 import StatusUpdateButton from "@/src/components/status-update-button";
 import { prisma } from "@/src/lib/prisma";
 import MaintenanceResolutionForm from "@/src/components/maintenance-resolution-form";
@@ -97,7 +98,7 @@ export default async function MaintenanceDashboardPage({
     where: { id: userId },
     include: {
       maintenanceTickets: {
-        where: { status: { in: isHistoryView ? ["RESOLVED"] : ["OPEN", "IN_PROGRESS"] } },
+        where: { status: { in: isHistoryView ? ["RESOLVED", "APPROVED", "CANCELLED"] : ["OPEN", "IN_PROGRESS", "RESOLVED", "AWAITING_REVIEW"] } },
         include: {
           apartment: true,
           attachments: true,
@@ -244,9 +245,20 @@ export default async function MaintenanceDashboardPage({
                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse mr-2 align-middle" />
                         Intervento in corso — apri dettagli per chiudere
                       </div>
-                    ) : isHistoryView || ticket.status === "RESOLVED" ? (
+                    ) : !isHistoryView && ticket.status === "RESOLVED" ? (
+                      <SubmitForReviewButton
+                        id={ticket.id}
+                        action={submitMaintenanceForReview}
+                        label="Invia per revisione"
+                        className="w-full bg-yellow-500 text-white text-xs font-black uppercase tracking-widest py-4 shadow-lg shadow-yellow-200 hover:bg-yellow-600 active:scale-95"
+                      />
+                    ) : !isHistoryView && ticket.status === "AWAITING_REVIEW" ? (
+                      <div className="w-full rounded-full bg-yellow-50 border border-yellow-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-yellow-700">
+                        ⏳ In attesa di revisione
+                      </div>
+                    ) : isHistoryView ? (
                       <div className="w-full rounded-full bg-emerald-50 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-emerald-700">
-                        ✓ Ticket risolto
+                        ✓ Ticket chiuso
                       </div>
                     ) : null
                   )}

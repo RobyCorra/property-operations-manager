@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, Pencil, X, Loader2 } from "lucide-react";
 import OperationalForm from "@/src/components/operational-form";
 import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
-import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage } from "@/src/app/actions/operational";
+import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage, submitCleaningForReview } from "@/src/app/actions/operational";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 interface ChecklistItem {
@@ -58,9 +58,11 @@ interface Props {
 }
 
 const statusConfig: Record<string, { label: string; dot: string; badge: string }> = {
-  PENDING:     { label: "In Attesa",  dot: "bg-slate-400",                    badge: "bg-slate-100 text-slate-600" },
-  IN_PROGRESS: { label: "In Corso",   dot: "bg-violet-500 animate-pulse",     badge: "bg-violet-500/10 text-violet-600" },
-  COMPLETED:   { label: "Completata", dot: "bg-emerald-500",                  badge: "bg-emerald-500/10 text-emerald-700" },
+  PENDING:         { label: "In Attesa",       dot: "bg-slate-400",                    badge: "bg-slate-100 text-slate-600" },
+  IN_PROGRESS:     { label: "In Corso",        dot: "bg-violet-500 animate-pulse",     badge: "bg-violet-500/10 text-violet-600" },
+  COMPLETED:       { label: "Completata",      dot: "bg-emerald-500",                  badge: "bg-emerald-500/10 text-emerald-700" },
+  AWAITING_REVIEW: { label: "In Verifica",     dot: "bg-yellow-500 animate-pulse",     badge: "bg-yellow-500/10 text-yellow-700" },
+  APPROVED:        { label: "Approvata",       dot: "bg-emerald-600",                  badge: "bg-emerald-600/10 text-emerald-800" },
 };
 
 export default function CleaningDetailView({ task, apartments, cleaners, messages, userName }: Props) {
@@ -306,8 +308,24 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             </button>
           )}
           {status === "COMPLETED" && (
+            <button
+              type="button"
+              onClick={() => startTransition(async () => { await submitCleaningForReview(task.id); setStatus("AWAITING_REVIEW"); })}
+              disabled={isPending}
+              className="flex items-center justify-center gap-2 rounded-full bg-yellow-500 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-yellow-200 transition-all hover:bg-yellow-600 active:scale-95 disabled:opacity-50"
+            >
+              {isPending ? <Loader2 size={13} className="animate-spin" /> : "⏫"}
+              Invia per revisione
+            </button>
+          )}
+          {status === "AWAITING_REVIEW" && (
+            <span className="rounded-full bg-yellow-50 border border-yellow-200 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-yellow-700">
+              ⏳ In attesa di revisione
+            </span>
+          )}
+          {status === "APPROVED" && (
             <span className="rounded-full bg-emerald-50 border border-emerald-100 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-700">
-              ✓ Pulizia completata
+              ✓ Approvata
             </span>
           )}
 
