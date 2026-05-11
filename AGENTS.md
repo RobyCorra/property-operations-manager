@@ -32,7 +32,7 @@ Prima di modificare, spiega:
 
 ## Regole operative importanti
 Le prenotazioni manuali sono la fonte operativa principale.
-Le prenotazioni importate da iCal/Airbnb sono read-only per le pulizie operative.
+Le prenotazioni importate da iCal/Airbnb creano automaticamente le pulizie operative (stessa logica delle prenotazioni manuali).
 Non creare pulizie duplicate per lo stesso appartamento e stessa data.
 Non resettare checklistProgress se l’utente ha già fatto spunte.
 Aggiorna checklistProgress solo quando:

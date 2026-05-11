@@ -186,12 +186,6 @@ export async function syncCleaningTaskFromBooking(bookingId: string, tx?: any) {
 
     console.log(`[BOOKING->CLEANING] Starting sync for ${bookingId} | Source: ${booking.source} | Guests: ${booking.totalGuests}`);
 
-    // 0. Skip operational logic for iCal/Airbnb (Read-only visualization)
-    if (booking.source === 'airbnb' || booking.source === 'ical') {
-        console.log(`[BOOKING->CLEANING] Skipping operational sync for iCal/Airbnb source: ${bookingId}`);
-        return;
-    }
-
     // 1. Handle Cancelled Booking
     if (booking.status === "CANCELLED") {
       const existingTask = await db.cleaningTask.findUnique({

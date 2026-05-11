@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { syncCleaningTaskFromBooking } from "@/src/app/actions/operational";
 
 /**
  * Server-only service for iCal synchronization.
@@ -77,7 +78,8 @@ export async function performApartmentIcalSync(apartmentId: string) {
       },
     });
 
-    // 3. Upsert Booking (Informational only, no operational sync)
+    // 3. Sync cleaning task for this booking
+    await syncCleaningTaskFromBooking(booking.id);
   }
 
   // 5. Cleanup
@@ -97,6 +99,7 @@ export async function performApartmentIcalSync(apartmentId: string) {
       where: { id: b.id },
       data: { status: "CANCELLED" }
     });
+    await syncCleaningTaskFromBooking(b.id);
   }
 
   // 6. Update lastSyncAt
