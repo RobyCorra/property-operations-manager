@@ -634,7 +634,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       <div
                         key={`${event.type}-${event.id}`}
                         onClick={() => setSelectedEvent({ type: "cleaning", data: cleaning })}
-                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 ${cleaningColor}`}
+                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${cleaningColor}`}
                         title={cleaningLabel ? `${event.title} - ${cleaningLabel.toUpperCase()}` : event.title}
                         style={{
                           left: getPosition(event.start) + 6,
