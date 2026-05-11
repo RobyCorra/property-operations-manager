@@ -31,7 +31,7 @@ import {
   MapPin, 
   UserCircle 
 } from "./icons";
-import { Users } from "lucide-react";
+import { Users, Home } from "lucide-react";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
@@ -704,6 +704,23 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
         <div key={label} className="flex items-center gap-1.5">
           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
             <Paintbrush size={9} className="opacity-70" />
+            {label}
+          </span>
+        </div>
+      ))}
+    </div>
+
+    {/* Legenda stati appartamenti */}
+    <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
+      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Appartamenti</span>
+      {[
+        { color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-700", label: "Pronto" },
+        { color: "bg-blue-500/10 border-blue-500/20 text-blue-700", label: "Non pronto" },
+        { color: "bg-red-500/10 border-red-500/20 text-red-700", label: "Occupato" },
+      ].map(({ color, label }) => (
+        <div key={label} className="flex items-center gap-1.5">
+          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
+            <Home size={9} className="opacity-70" />
             {label}
           </span>
         </div>
