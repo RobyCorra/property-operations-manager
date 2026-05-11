@@ -116,6 +116,7 @@ interface TimelineCalendarProps {
   cleaningTasks: CleaningTask[];
   maintenanceTickets: MaintenanceTicket[];
   serverDate: string;
+  readOnly?: boolean;
 }
 
 type CalendarEvent = {
@@ -163,7 +164,7 @@ function diffLocalDays(start: Date, end: Date) {
   return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, serverDate }: TimelineCalendarProps) {
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, serverDate, readOnly = false }: TimelineCalendarProps) {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedEvent, setSelectedEvent] = useState<{ type: 'booking' | 'cleaning' | 'maintenance', data: any } | null>(null);
@@ -1019,10 +1020,11 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         )}
                     </div>
 
+                    {!readOnly && (
                     <div className="flex items-center gap-4">
                         {/* Edit Buttons */}
                         {selectedEvent.type === 'booking' && (
-                            <Link 
+                            <Link
                                 href={`/dashboard/manager/bookings/${selectedEvent.data.id}/edit`}
                                 className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl"
                             >
@@ -1030,15 +1032,15 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                             </Link>
                         )}
                         {selectedEvent.type === 'cleaning' && (
-                            <Link 
+                            <Link
                                 href={`/dashboard/manager/cleanings/${selectedEvent.data.id}/edit`}
-                                className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl"
+                                className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibond uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl"
                             >
                                 Modifica pulizia
                             </Link>
                         )}
                         {selectedEvent.type === 'maintenance' && (
-                            <Link 
+                            <Link
                                 href={`/dashboard/manager/maintenance/${selectedEvent.data.id}/edit`}
                                 className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl"
                             >
@@ -1051,13 +1053,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                             <div className="flex items-center gap-4 bg-red-500/10 p-3 pl-6 rounded-full border border-red-500/20 animate-in slide-in-from-right-4 shadow-lg shadow-red-200/50">
                                 <span className="text-xs font-semibold uppercase tracking-wide text-red-600">Eliminare l'evento?</span>
                                 <div className="flex gap-2">
-                                    <button 
+                                    <button
                                         onClick={() => setShowDeleteConfirm(false)}
                                         className="px-4 py-2 bg-white/80 text-slate-500 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white transition-all duration-200"
                                     >
                                         Annulla
                                     </button>
-                                    <button 
+                                    <button
                                         disabled={isPending}
                                         onClick={handleDelete}
                                         className="px-4 py-2 bg-red-600 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-red-500 transition-all duration-200 disabled:opacity-50"
@@ -1067,7 +1069,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 </div>
                             </div>
                         ) : (
-                            <button 
+                            <button
                                 onClick={() => setShowDeleteConfirm(true)}
                                 className="px-8 py-3.5 bg-white/60 text-red-500 border border-red-500/20 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-red-50/50 transition-all duration-200 shadow-md hover:shadow-lg"
                             >
@@ -1075,6 +1077,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                             </button>
                         )}
                     </div>
+                    )}
                 </div>
             </div>
         </div>

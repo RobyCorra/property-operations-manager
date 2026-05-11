@@ -94,6 +94,7 @@ export default async function OwnerDashboardPage() {
             cleaningTasks={cleaningTasks as any}
             maintenanceTickets={maintenanceTickets as any}
             serverDate={serverDate}
+            readOnly
           />
         </div>
       )}
