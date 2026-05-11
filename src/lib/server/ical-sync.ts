@@ -58,7 +58,7 @@ export async function performApartmentIcalSync(apartmentId: string) {
     const totalGuests = 1;
 
     // 3. Upsert Booking
-    const booking = await prisma.booking.upsert({
+    await prisma.booking.upsert({
       where: { externalId },
       update: {
         checkInDate,
@@ -93,10 +93,6 @@ export async function performApartmentIcalSync(apartmentId: string) {
   });
 
   for (const b of missingBookings) {
-    await prisma.booking.update({
-      where: { id: b.id },
-      data: { status: "CANCELLED" }
-    });
     await prisma.booking.update({
       where: { id: b.id },
       data: { status: "CANCELLED" }
