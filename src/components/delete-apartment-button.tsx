@@ -25,6 +25,32 @@ export default function DeleteApartmentButton({ id }: DeleteApartmentButtonProps
     if (result?.success === false) {
       alert(result.error);
       setLoading(false);
+      return;
+    }
+
+    // First call returned counts — related records exist, ask for cascade confirmation
+    if (result && "counts" in result) {
+      const { bookings, cleanings, tickets } = result.counts;
+      const parts: string[] = [];
+      if (bookings > 0) parts.push(`${bookings} prenotazion${bookings === 1 ? "e" : "i"}`);
+      if (cleanings > 0) parts.push(`${cleanings} pulizi${cleanings === 1 ? "a" : "e"}`);
+      if (tickets > 0) parts.push(`${tickets} ticket`);
+      const detail = parts.join(", ");
+
+      if (!window.confirm(`Verranno eliminati anche: ${detail}. Continuare?`)) {
+        setLoading(false);
+        return;
+      }
+
+      const confirmedFormData = new FormData();
+      confirmedFormData.set("id", id);
+      confirmedFormData.set("confirmed", "true");
+
+      const finalResult = await deleteApartment(confirmedFormData);
+      if (finalResult?.success === false) {
+        alert(finalResult.error);
+        setLoading(false);
+      }
     }
   };
 

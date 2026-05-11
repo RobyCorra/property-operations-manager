@@ -399,8 +399,9 @@ export async function updateApartment(formData: FormData) {
   redirect("/dashboard/manager/apartments");
 }
 
-export async function deleteApartment(formData: FormData): Promise<{ success: false; error: string } | void> {
+export async function deleteApartment(formData: FormData): Promise<{ success: false; error: string } | { success: true; counts: { bookings: number; cleanings: number; tickets: number } } | void> {
   const id = formData.get("id") as string;
+  const confirmed = formData.get("confirmed") === "true";
 
   if (!id) {
     return { success: false, error: "ID mancante." };
@@ -412,16 +413,37 @@ export async function deleteApartment(formData: FormData): Promise<{ success: fa
     prisma.maintenanceTicket.count({ where: { apartmentId: id } }),
   ]);
 
-  if (bookingCount > 0 || cleaningCount > 0 || maintenanceCount > 0) {
+  // Prima chiamata: informa l'utente dei dati collegati e chiede conferma
+  if (!confirmed && (bookingCount > 0 || cleaningCount > 0 || maintenanceCount > 0)) {
     return {
-      success: false,
-      error: `Impossibile eliminare: l'appartamento ha ${bookingCount} prenotazioni, ${cleaningCount} pulizie e ${maintenanceCount} ticket collegati. Eliminali prima.`,
+      success: true,
+      counts: { bookings: bookingCount, cleanings: cleaningCount, tickets: maintenanceCount },
     };
   }
 
   try {
-    await prisma.notification.deleteMany({ where: { apartmentId: id } });
-    await prisma.apartment.delete({ where: { id } });
+    await prisma.$transaction(async (tx) => {
+      // 1. Cleaning tasks (cascada: messaggi, allegati, AI messages)
+      const cleaningIds = (await tx.cleaningTask.findMany({ where: { apartmentId: id }, select: { id: true } })).map((c) => c.id);
+      if (cleaningIds.length > 0) {
+        await tx.cleaningTask.deleteMany({ where: { id: { in: cleaningIds } } });
+      }
+
+      // 2. Maintenance tickets (cascada: messaggi, allegati, AI messages)
+      const ticketIds = (await tx.maintenanceTicket.findMany({ where: { apartmentId: id }, select: { id: true } })).map((t) => t.id);
+      if (ticketIds.length > 0) {
+        await tx.maintenanceTicket.deleteMany({ where: { id: { in: ticketIds } } });
+      }
+
+      // 3. Prenotazioni (dopo cleaning tasks per via della FK bookingId)
+      await tx.booking.deleteMany({ where: { apartmentId: id } });
+
+      // 4. Notifiche (FK senza cascade)
+      await tx.notification.deleteMany({ where: { apartmentId: id } });
+
+      // 5. Appartamento (cascada: checklistItems, apartmentAttachments, aiAssistantMessages via SetNull)
+      await tx.apartment.delete({ where: { id } });
+    });
   } catch (error) {
     console.error("[DELETE APARTMENT ERROR]", error);
     return { success: false, error: "Errore durante l'eliminazione. Controlla i log del server." };
