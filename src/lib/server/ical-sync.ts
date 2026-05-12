@@ -33,6 +33,16 @@ export async function performApartmentIcalSync(apartmentId: string) {
     const event = events[k];
     if (!event || event.type !== 'VEVENT' || !event.start || !event.end || !event.uid) continue;
 
+    // Skip Airbnb blocking events ("Not available", "Closed", etc.) — not real bookings
+    const summary = (event.summary || '').toString().trim().toLowerCase();
+    if (
+      summary.includes('not available') ||
+      summary.includes('non disponibile') ||
+      summary.includes('closed') ||
+      summary.includes('blocked') ||
+      summary.includes('unavailable')
+    ) continue;
+
     const externalId = event.uid;
     activeExternalIds.push(externalId);
 
