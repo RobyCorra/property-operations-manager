@@ -685,6 +685,39 @@ export async function rejectCleaningReview(
   revalidatePath("/dashboard/manager/cleanings");
 }
 
+export async function resolveCleaningCorrections(
+  cleaningTaskId: string,
+  resolvedItems: { id: string; completed: boolean; photoUrl: string | null }[]
+) {
+  const task = await prisma.cleaningTask.findUnique({ where: { id: cleaningTaskId } });
+  if (!task) throw new Error("Pulizia non trovata.");
+  if (task.status !== "IN_PROGRESS") throw new Error("La pulizia non è in stato corretto per inviare correzioni.");
+
+  const currentProgress = (task.correctionProgress as { id: string; label: string; note: string; requiresPhoto: boolean; completed: boolean; photoUrl: string | null }[]) || [];
+
+  // Merge resolved state into existing progress
+  const updatedProgress = currentProgress.map(item => {
+    const resolved = resolvedItems.find(r => r.id === item.id);
+    if (!resolved) return item;
+    return { ...item, completed: resolved.completed, photoUrl: resolved.photoUrl ?? item.photoUrl };
+  });
+
+  // Validate: all items must be completed, and requiresPhoto items must have a photoUrl
+  for (const item of updatedProgress) {
+    if (!item.completed) throw new Error(`Segna come risolto: "${item.label}"`);
+    if (item.requiresPhoto && !item.photoUrl) throw new Error(`Foto obbligatoria per: "${item.label}"`);
+  }
+
+  await prisma.cleaningTask.update({
+    where: { id: cleaningTaskId },
+    data: { status: "AWAITING_REVIEW", correctionProgress: updatedProgress },
+  });
+
+  revalidatePath("/dashboard/cleaner");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+}
+
 export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
   if (!ticket) throw new Error("Ticket non trovato.");

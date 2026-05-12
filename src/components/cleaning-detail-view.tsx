@@ -5,6 +5,8 @@ import { ChevronDown, ChevronUp, Pencil, X, Loader2 } from "lucide-react";
 import OperationalForm from "@/src/components/operational-form";
 import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
+import CleaningCorrectionPanel from "@/src/components/cleaning-correction-panel";
+import type { CorrectionItem } from "@/src/components/cleaning-correction-panel";
 import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage, submitCleaningForReview } from "@/src/app/actions/operational";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
@@ -35,6 +37,7 @@ interface CleaningTask {
   status: string;
   notes: string | null;
   checklistProgress: unknown;
+  correctionProgress: unknown;
   nextBooking?: NextBooking | null;
   apartment: { name: string; address: string };
   assignedTo?: { name: string } | null;
@@ -70,6 +73,8 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
   const [photosOpen, setPhotosOpen] = useState(false);
   const [status, setStatus] = useState(task.status);
   const [isPending, startTransition] = useTransition();
+  const correctionItems = Array.isArray(task.correctionProgress) ? task.correctionProgress as CorrectionItem[] : [];
+  const hasCorrections = correctionItems.length > 0;
 
   const checklist = Array.isArray(task.checklistProgress) ? task.checklistProgress as ChecklistItem[] : [];
   const completedCount = checklist.filter((i) => i.completed).length;
@@ -77,6 +82,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
   const progress = total > 0 ? Math.round((completedCount / total) * 100) : 0;
   const photosCount = checklist.filter((i) => i.photoUrl).length;
   const sc = statusConfig[status] ?? statusConfig.PENDING;
+
 
   const handleStatusUpdate = (nextStatus: string) => {
     startTransition(async () => {
@@ -92,6 +98,16 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
 
   return (
     <div className="space-y-6">
+
+      {/* ── CORREZIONI RICHIESTE ───────────────────────────── */}
+      {status === "IN_PROGRESS" && hasCorrections && (
+        <CleaningCorrectionPanel
+          cleaningTaskId={task.id}
+          initialItems={correctionItems}
+          onResolved={() => setStatus("AWAITING_REVIEW")}
+        />
+      )}
+
       {/* Main card */}
       <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
 
@@ -296,7 +312,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               Avvia Pulizia
             </button>
           )}
-          {status === "IN_PROGRESS" && (
+          {status === "IN_PROGRESS" && !hasCorrections && (
             <button
               type="button"
               onClick={() => handleStatusUpdate("COMPLETED")}
@@ -306,6 +322,11 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               {isPending ? <Loader2 size={13} className="animate-spin" /> : "■"}
               Segna Completata
             </button>
+          )}
+          {status === "IN_PROGRESS" && hasCorrections && (
+            <span className="rounded-full bg-rose-50 border border-rose-200 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-rose-600">
+              ⚠ Correggi i punti sopra
+            </span>
           )}
           {status === "COMPLETED" && (
             <button

@@ -22,6 +22,7 @@ import {
   MessageSquare
 } from "@/src/components/icons";
 import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
+import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
 
 const cleaningStatusLabel: Record<string, string> = {
   PENDING: "In Attesa",
@@ -53,6 +54,7 @@ type CleanerDashboardTask = {
   completedAt: Date | null;
   bookingId: string | null;
   checklistProgress: unknown;
+  correctionProgress: unknown;
   nextBooking: CleanerTaskNextBooking | null;
   apartment: {
     name: string;
@@ -170,10 +172,21 @@ export default async function CleanerDashboardPage() {
           <div className="grid grid-cols-1 gap-6">
             {tasksWithChecklists.map((task) => {
               const checklist = task.checklistItems;
+              const correctionItems = Array.isArray(task.correctionProgress) && task.correctionProgress.length > 0
+                ? task.correctionProgress as CorrectionItem[]
+                : [];
+              const hasCorrections = correctionItems.length > 0 && task.status === "IN_PROGRESS";
 
               return (
+                <div key={task.id} className="space-y-4">
+                {/* Pannello correzioni supervisor */}
+                {hasCorrections && (
+                  <CleaningCorrectionPanel
+                    cleaningTaskId={task.id}
+                    initialItems={correctionItems}
+                  />
+                )}
                 <ExpandableCleaningCard
-                  key={task.id}
                   className={`space-y-5 rounded-[2.5rem] border border-white/60 bg-white/55 p-5 shadow-2xl shadow-black/5 backdrop-blur-xl transition-all duration-500 lg:p-7 ${task.status === "IN_PROGRESS" ? "ring-2 ring-violet-500/30 shadow-violet-500/5" : ""}`}
                   headerMain={(
                     <div className="min-w-0">
@@ -353,6 +366,7 @@ export default async function CleanerDashboardPage() {
                     </div>
                   )}
                 />
+                </div>
               );
             })}
 
