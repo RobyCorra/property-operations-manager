@@ -122,18 +122,17 @@ export default async function CalendarioOperativoPage() {
   const now = new Date();
   const serverDate = now.toISOString();
   const todayLocalStr = formatLocalDateKey(now);
-  const lateCleaningCutoff = new Date(now);
-  lateCleaningCutoff.setHours(10, 30, 0, 0);
-  const isPastLateCleaningCutoff = now.getTime() > lateCleaningCutoff.getTime();
-
   const cleaningsToday = cleanings.filter((c: CleaningView) => {
     const cleaningDate = formatLocalDateKey(c.date);
     return cleaningDate === todayLocalStr;
   });
 
-  const lateCleanings = isPastLateCleaningCutoff
-    ? cleaningsToday.filter((c: CleaningView) => c.status === "PENDING")
-    : [];
+  // Late: status PENDING and now > scheduled time + 30 minutes
+  const lateCleanings = cleanings.filter((c: CleaningView) => {
+    if (c.status !== "PENDING") return false;
+    const scheduledTime = new Date(c.date);
+    return now.getTime() > scheduledTime.getTime() + 30 * 60 * 1000;
+  });
   const lateCleaningIds = new Set(lateCleanings.map((cleaning: CleaningView) => cleaning.id));
 
   const allEvents: OperationalEvent[] = [];

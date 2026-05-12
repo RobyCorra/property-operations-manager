@@ -361,9 +361,11 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
     ticket.priority === "URGENT" && ["OPEN", "IN_PROGRESS"].includes(ticket.status)
   );
 
-  const isCleaningLate = (cleaning: CleaningTask) => (
-    cleaning.status === "PENDING" && toLocalDateKey(cleaning.date) <= toLocalDateKey(currentClientTime)
-  );
+  const isCleaningLate = (cleaning: CleaningTask) => {
+    if (cleaning.status !== "PENDING") return false;
+    const scheduledTime = new Date(cleaning.date);
+    return currentClientTime.getTime() > scheduledTime.getTime() + 30 * 60 * 1000;
+  };
 
   const isBookingNotReady = (booking: Booking) => {
     const checkInKey = toLocalDateKey(booking.checkInDate);
