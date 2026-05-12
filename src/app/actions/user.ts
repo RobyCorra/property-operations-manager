@@ -71,26 +71,32 @@ export async function updateUser(prevState: any, formData: FormData) {
     return { error: "La password deve essere di almeno 8 caratteri." };
   }
 
-  await prisma.user.update({ where: { id }, data });
+  // Use a transaction to keep user + apartment assignments atomic
+  await prisma.$transaction(async (tx) => {
+    await tx.user.update({ where: { id }, data });
 
-  // Sync apartment assignments
-  if (role === "SUPERVISOR") {
-    await prisma.apartmentSupervisor.deleteMany({ where: { userId: id } });
-    if (apartmentIds.length > 0) {
-      await prisma.apartmentSupervisor.createMany({
-        data: apartmentIds.map(apartmentId => ({ apartmentId, userId: id })),
-        skipDuplicates: true,
-      });
+    if (role === "SUPERVISOR") {
+      await tx.apartmentSupervisor.deleteMany({ where: { userId: id } });
+      if (apartmentIds.length > 0) {
+        await tx.apartmentSupervisor.createMany({
+          data: apartmentIds.map(apartmentId => ({ apartmentId, userId: id })),
+          skipDuplicates: true,
+        });
+      }
+    } else if (role === "OWNER") {
+      await tx.apartmentOwner.deleteMany({ where: { userId: id } });
+      if (apartmentIds.length > 0) {
+        await tx.apartmentOwner.createMany({
+          data: apartmentIds.map(apartmentId => ({ apartmentId, userId: id })),
+          skipDuplicates: true,
+        });
+      }
+    } else {
+      // If role changed away from SUPERVISOR/OWNER, clean up old assignments
+      await tx.apartmentSupervisor.deleteMany({ where: { userId: id } });
+      await tx.apartmentOwner.deleteMany({ where: { userId: id } });
     }
-  } else if (role === "OWNER") {
-    await prisma.apartmentOwner.deleteMany({ where: { userId: id } });
-    if (apartmentIds.length > 0) {
-      await prisma.apartmentOwner.createMany({
-        data: apartmentIds.map(apartmentId => ({ apartmentId, userId: id })),
-        skipDuplicates: true,
-      });
-    }
-  }
+  });
 
   revalidatePath("/dashboard/manager/users");
   redirect(`/dashboard/manager/users`);
