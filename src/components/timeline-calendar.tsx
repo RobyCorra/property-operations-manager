@@ -652,9 +652,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     const cleaningLate = isCleaningLate(cleaning);
                     const cleaningUnassigned = cleaning.status === "PENDING" && !cleaning.assignedTo;
 
-                    const cleaningColor = (cleaning.status === "COMPLETED" || cleaning.status === "APPROVED")
+                    const cleaningColor = cleaning.status === "APPROVED"
                       ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                      : (cleaning.status === "IN_PROGRESS" || cleaning.status === "AWAITING_REVIEW")
+                      : cleaning.status === "AWAITING_REVIEW"
+                      ? "bg-violet-500/10 text-violet-600 border-violet-500/20"
+                      : cleaning.status === "COMPLETED"
+                      ? "bg-violet-500/20 text-violet-700 border-violet-500/40 shadow-violet-100"
+                      : cleaning.status === "IN_PROGRESS"
                       ? "bg-violet-500/10 text-violet-600 border-violet-500/20"
                       : cleaningUnassigned
                       ? "bg-rose-500/20 text-rose-700 border-rose-500/40 shadow-rose-100"
@@ -662,8 +666,16 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       ? "bg-orange-500/20 text-orange-700 border-orange-500/40 shadow-orange-100"
                       : "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
 
-                    const cleaningLabel = cleaningUnassigned ? "Non assegnata" : cleaningLate ? "In ritardo" : cleaning.status === "AWAITING_REVIEW" ? "Da Revisionare" : null;
-                    const cleaningPulse = cleaning.status === "AWAITING_REVIEW" ? "animate-pulse" : "";
+                    const cleaningLabel = cleaningUnassigned
+                      ? "Non assegnata"
+                      : cleaningLate
+                      ? "In ritardo"
+                      : cleaning.status === "COMPLETED"
+                      ? "Da Approvare"
+                      : cleaning.status === "AWAITING_REVIEW"
+                      ? "Da Revisionare"
+                      : null;
+                    const cleaningPulse = cleaning.status === "COMPLETED" ? "animate-pulse" : "";
 
                     return (
                       <div

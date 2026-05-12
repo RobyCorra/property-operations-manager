@@ -12,7 +12,7 @@ import SafeDate from "@/src/components/safe-date";
 import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableCleaningCard from "@/src/components/expandable-cleaning-card";
 import RecalculateCleaningChecklistButton from "@/src/components/recalculate-cleaning-checklist-button";
-import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot, submitCleaningForReview } from "@/src/app/actions/operational";
+import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import {
   LogOut,
@@ -237,21 +237,8 @@ export default async function CleanerDashboardPage() {
                         Intervento in corso
                       </div>
                     ) : task.status === "COMPLETED" ? (
-                      <div className="flex flex-col gap-2 w-full">
-                        <div className="w-full rounded-full bg-emerald-50 border border-emerald-200 px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-emerald-700">
-                          ✓ Completata — pronta per la revisione
-                        </div>
-                        <form action={async () => {
-                          "use server";
-                          await submitCleaningForReview(task.id);
-                        }}>
-                          <button
-                            type="submit"
-                            className="w-full rounded-full bg-yellow-500 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-yellow-200 hover:bg-yellow-600 active:scale-95 transition-all"
-                          >
-                            ⏫ Invia per Revisione
-                          </button>
-                        </form>
+                      <div className="w-full rounded-full bg-violet-50 border border-violet-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-violet-700">
+                        ✓ Completata — in attesa di approvazione del manager
                       </div>
                     ) : task.status === "AWAITING_REVIEW" ? (
                       <div className="w-full rounded-full bg-yellow-50 border border-yellow-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-yellow-700">
