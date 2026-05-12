@@ -7,16 +7,12 @@ const globalForPrisma = globalThis as unknown as {
   pgPool: Pool | undefined;
 };
 
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error("DATABASE_URL non è definita nelle variabili ambiente");
-}
+const connectionString = process.env.DATABASE_URL ?? "";
 
 const pool =
   globalForPrisma.pgPool ??
   new Pool({
-    connectionString,
+    connectionString: connectionString || undefined,
     max: 1,
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 10_000,
