@@ -4,7 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import SupervisorReviewForm from "@/src/components/supervisor-review-form";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
-import { ArrowLeft, ClipboardList, Home, User, CalendarDays, CheckCircle2, Circle } from "lucide-react";
+import { ArrowLeft, ClipboardList, Home, User, CalendarDays, CheckCircle2, Circle, Camera, AlertTriangle } from "lucide-react";
 
 type ChecklistItem = {
   id: string;
@@ -13,6 +13,15 @@ type ChecklistItem = {
   type?: string;
   value?: number | null;
   required?: boolean;
+};
+
+type CorrectionItem = {
+  id: string;
+  label: string;
+  note: string;
+  requiresPhoto: boolean;
+  completed: boolean;
+  photoUrl: string | null;
 };
 
 export default async function CleaningReviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -51,6 +60,7 @@ export default async function CleaningReviewPage({ params }: { params: Promise<{
 
   const checklist = Array.isArray(task.checklistProgress) ? task.checklistProgress as ChecklistItem[] : [];
   const completedCount = checklist.filter(i => i.completed).length;
+  const corrections = Array.isArray(task.correctionProgress) ? task.correctionProgress as CorrectionItem[] : [];
   const lastReview = task.supervisorReviews[0];
 
   return (
@@ -120,6 +130,63 @@ export default async function CleaningReviewPage({ params }: { params: Promise<{
               {" "}da {lastReview.supervisor.name}
             </p>
             {lastReview.notes && <p className="text-xs text-slate-500 italic">"{lastReview.notes}"</p>}
+          </div>
+        )}
+
+        {/* Correzioni risolte dal cleaner */}
+        {corrections.length > 0 && (
+          <div className="rounded-[2rem] border-2 border-amber-200 bg-amber-50/40 overflow-hidden">
+            <div className="flex items-center gap-3 bg-amber-500 px-5 py-3">
+              <AlertTriangle size={15} className="text-white shrink-0" />
+              <p className="text-[11px] font-black uppercase tracking-widest text-white">
+                Risposte del Cleaner alle correzioni richieste
+              </p>
+            </div>
+            <div className="p-5 space-y-3">
+              {corrections.map((item, idx) => {
+                const resolved = item.completed && (!item.requiresPhoto || item.photoUrl);
+                return (
+                  <div
+                    key={item.id}
+                    className={`rounded-xl border bg-white p-4 ${resolved ? "border-emerald-200" : "border-rose-200"}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-black ${resolved ? "bg-emerald-500 text-white" : "bg-rose-100 text-rose-700"}`}>
+                        {resolved ? "✓" : idx + 1}
+                      </span>
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <p className="text-sm font-semibold text-slate-900">{item.label}</p>
+                        {item.note && <p className="text-xs text-slate-500 italic">"{item.note}"</p>}
+                        <div className="flex items-center gap-2 flex-wrap pt-1">
+                          {item.requiresPhoto && (
+                            <span className="flex items-center gap-1 rounded-full bg-amber-100 border border-amber-200 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-amber-700">
+                              <Camera size={9} /> Foto richiesta
+                            </span>
+                          )}
+                          <span className={`rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${item.completed ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-600"}`}>
+                            {item.completed ? "Segnato come risolto" : "Non ancora risolto"}
+                          </span>
+                        </div>
+                        {/* Foto caricata dal cleaner */}
+                        {item.photoUrl && (
+                          <a href={item.photoUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block group">
+                            <img
+                              src={item.photoUrl}
+                              alt="foto correzione"
+                              className="h-28 w-40 rounded-xl object-cover border border-emerald-200 shadow-sm group-hover:scale-[1.03] transition-transform"
+                            />
+                            <p className="mt-1 text-[10px] font-semibold text-emerald-600">Tocca per ingrandire →</p>
+                          </a>
+                        )}
+                        {item.requiresPhoto && !item.photoUrl && (
+                          <p className="text-[10px] font-semibold text-rose-500 pt-1">⚠ Foto non ancora caricata</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
