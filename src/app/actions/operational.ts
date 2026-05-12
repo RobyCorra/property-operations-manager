@@ -558,20 +558,31 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     data: updateData,
   });
 
-  // Notifiche
+  // Notifiche + auto-message in chat quando va in AWAITING_REVIEW
   if (nextStatus === "AWAITING_REVIEW") {
-    const apartment = await prisma.apartment.findUnique({
-      where: { id: task.apartmentId },
-      select: { name: true },
-    });
-    await prisma.notification.create({
-      data: {
-        type: "CLEANING",
-        title: "Pulizia in attesa di revisione",
-        message: `La pulizia presso ${apartment?.name || "un appartamento"} è pronta per la revisione del supervisore.`,
-        apartmentId: task.apartmentId,
-      },
-    });
+    const [apartment, taskWithCleaner] = await Promise.all([
+      prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true } }),
+      prisma.cleaningTask.findUnique({ where: { id }, include: { assignedTo: { select: { name: true } } } }),
+    ]);
+    await prisma.$transaction([
+      prisma.notification.create({
+        data: {
+          type: "CLEANING",
+          title: "Pulizia in attesa di revisione",
+          message: `La pulizia presso ${apartment?.name || "un appartamento"} è pronta per la revisione.`,
+          apartmentId: task.apartmentId,
+        },
+      }),
+      prisma.cleaningTaskMessage.create({
+        data: {
+          cleaningTaskId: id,
+          role: "SYSTEM",
+          senderName: taskWithCleaner?.assignedTo?.name ?? "Cleaner",
+          text: `⏳ Pulizia completata e inviata per revisione — in attesa di approvazione del manager o del supervisor.`,
+          readByManagerAt: null,
+        },
+      }),
+    ]);
   }
 
   revalidatePath("/dashboard/cleaner");
