@@ -17,7 +17,8 @@ import {
   deleteMaintenanceTicket,
   getCleaningTask,
   updateCleaningStatus,
-  updateMaintenanceStatus
+  updateMaintenanceStatus,
+  submitCleaningForReview
 } from "@/src/app/actions/operational";
 
 import { 
@@ -988,13 +989,27 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     </button>
                                 )}
                                 {selectedEvent.data.status === 'IN_PROGRESS' && (
-                                    <button 
+                                    <button
                                         disabled={isPending}
                                         onClick={() => handleAction(() => updateCleaningStatus(selectedEvent.data.id, 'COMPLETED'))}
                                         className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
                                     >
                                         Segna Completata
                                     </button>
+                                )}
+                                {selectedEvent.data.status === 'COMPLETED' && (
+                                    <button
+                                        disabled={isPending}
+                                        onClick={() => handleAction(() => submitCleaningForReview(selectedEvent.data.id))}
+                                        className="px-8 py-3.5 bg-yellow-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-yellow-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                    >
+                                        Invia per Revisione
+                                    </button>
+                                )}
+                                {selectedEvent.data.status === 'AWAITING_REVIEW' && (
+                                    <span className="px-8 py-3.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold uppercase tracking-wide rounded-full">
+                                        ⏳ In Attesa di Revisione
+                                    </span>
                                 )}
                             </>
                         )}
