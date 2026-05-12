@@ -654,10 +654,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                     const cleaningColor = (cleaning.status === "COMPLETED" || cleaning.status === "APPROVED")
                       ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                      : cleaning.status === "IN_PROGRESS"
+                      : (cleaning.status === "IN_PROGRESS" || cleaning.status === "AWAITING_REVIEW")
                       ? "bg-violet-500/10 text-violet-600 border-violet-500/20"
-                      : cleaning.status === "AWAITING_REVIEW"
-                      ? "bg-yellow-500/20 text-yellow-700 border-yellow-500/30"
                       : cleaningUnassigned
                       ? "bg-rose-500/20 text-rose-700 border-rose-500/40 shadow-rose-100"
                       : cleaningLate

@@ -35,10 +35,10 @@ export default async function SupervisorDashboardPage() {
     ? assignedApartmentIds.length > 0 ? { id: { in: assignedApartmentIds } } : { id: "never-match" }
     : {};
 
-  const [cleaningTasks, maintenanceTickets] = await Promise.all([
+  const [allCleaningTasks, maintenanceTickets] = await Promise.all([
     prisma.cleaningTask.findMany({
       where: {
-        status: "AWAITING_REVIEW",
+        status: { in: ["AWAITING_REVIEW", "IN_PROGRESS"] },
         apartment: apartmentFilter,
       },
       include: {
@@ -50,7 +50,7 @@ export default async function SupervisorDashboardPage() {
     }),
     prisma.maintenanceTicket.findMany({
       where: {
-        status: "AWAITING_REVIEW",
+        status: { in: ["AWAITING_REVIEW", "IN_PROGRESS"] },
         apartment: apartmentFilter,
       },
       include: {
@@ -61,7 +61,24 @@ export default async function SupervisorDashboardPage() {
     }),
   ]);
 
-  const totalToReview = cleaningTasks.length + maintenanceTickets.length;
+  // Split cleanings: those needing review vs those sent back to cleaner for corrections
+  const cleaningTasks = allCleaningTasks.filter(t => t.status === "AWAITING_REVIEW");
+  const correctionPendingTasks = allCleaningTasks.filter(
+    t => t.status === "IN_PROGRESS" &&
+    Array.isArray(t.correctionProgress) &&
+    (t.correctionProgress as unknown[]).length > 0
+  );
+
+  // Split tickets: needing review vs sent back for corrections
+  const ticketsToReview = maintenanceTickets.filter(t => t.status === "AWAITING_REVIEW");
+  const ticketsCorrectionPending = maintenanceTickets.filter(
+    t => t.status === "IN_PROGRESS" &&
+    Array.isArray(t.correctionProgress) &&
+    (t.correctionProgress as unknown[]).length > 0
+  );
+
+  const totalToReview = cleaningTasks.length + ticketsToReview.length;
+  const totalPending = correctionPendingTasks.length + ticketsCorrectionPending.length;
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
@@ -176,17 +193,17 @@ export default async function SupervisorDashboardPage() {
           </section>
         )}
 
-        {/* Maintenance Tickets */}
-        {maintenanceTickets.length > 0 && (
+        {/* Maintenance Tickets — to review */}
+        {ticketsToReview.length > 0 && (
           <section className="space-y-4">
             <div className="flex items-center gap-3">
               <Wrench size={16} className="text-slate-600" />
               <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-700">Manutenzioni in attesa</h2>
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-[10px] font-black text-slate-600">{maintenanceTickets.length}</span>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-[10px] font-black text-slate-600">{ticketsToReview.length}</span>
               <div className="h-px flex-1 bg-slate-200/50" />
             </div>
             <div className="grid gap-4">
-              {maintenanceTickets.map(ticket => (
+              {ticketsToReview.map(ticket => (
                 <Link
                   key={ticket.id}
                   href={`/dashboard/supervisor/review/maintenance/${ticket.id}`}
@@ -211,6 +228,84 @@ export default async function SupervisorDashboardPage() {
                     </div>
                   </div>
                 </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Pulizie — in attesa di correzione dal cleaner */}
+        {correctionPendingTasks.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <ClipboardList size={16} className="text-rose-500" />
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-700">Pulizie — correzioni richieste</h2>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-100 text-[10px] font-black text-rose-600">{correctionPendingTasks.length}</span>
+              <div className="h-px flex-1 bg-slate-200/50" />
+            </div>
+            <div className="grid gap-4">
+              {correctionPendingTasks.map(task => (
+                <div
+                  key={task.id}
+                  className="rounded-[2rem] border border-rose-100 bg-rose-50/40 p-5 shadow-sm backdrop-blur-xl"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 border border-rose-200 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-rose-700">
+                          <Clock size={10} />
+                          In attesa del cleaner
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-semibold uppercase tracking-tight text-slate-900">{task.apartment.name}</h3>
+                      <p className="mt-1 text-xs font-medium text-slate-500">
+                        {formatRomeDateDisplay(task.date)}
+                        {task.assignedTo && <span className="ml-2">· {task.assignedTo.name}</span>}
+                      </p>
+                    </div>
+                    <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-2xl bg-rose-100 border border-rose-200">
+                      <ClipboardList size={18} className="text-rose-500" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Manutenzioni — in attesa di correzione */}
+        {ticketsCorrectionPending.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Wrench size={16} className="text-rose-500" />
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-700">Manutenzioni — correzioni richieste</h2>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-100 text-[10px] font-black text-rose-600">{ticketsCorrectionPending.length}</span>
+              <div className="h-px flex-1 bg-slate-200/50" />
+            </div>
+            <div className="grid gap-4">
+              {ticketsCorrectionPending.map(ticket => (
+                <div
+                  key={ticket.id}
+                  className="rounded-[2rem] border border-rose-100 bg-rose-50/40 p-5 shadow-sm backdrop-blur-xl"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 border border-rose-200 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-rose-700">
+                          <Clock size={10} />
+                          In attesa del tecnico
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-semibold uppercase tracking-tight text-slate-900">{ticket.title}</h3>
+                      <p className="mt-1 text-xs font-medium text-slate-500">
+                        <span className="inline-flex items-center gap-1"><Home size={10} />{ticket.apartment.name}</span>
+                        {ticket.assignedTo && <span className="ml-2">· {ticket.assignedTo.name}</span>}
+                      </p>
+                    </div>
+                    <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-2xl bg-rose-100 border border-rose-200">
+                      <Wrench size={18} className="text-rose-500" />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </section>
