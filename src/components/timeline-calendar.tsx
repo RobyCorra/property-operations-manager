@@ -976,7 +976,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                 {/* Footer Modal */}
                 <div className="p-10 bg-white/40 backdrop-blur-xl border-t border-white/20 flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-4">
-                        {selectedEvent.type === 'cleaning' && (
+                        {!readOnly && selectedEvent.type === 'cleaning' && (
                             <>
                                 {selectedEvent.data.status === 'PENDING' && (
                                     <button 
@@ -998,10 +998,10 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 )}
                             </>
                         )}
-                        {selectedEvent.type === 'maintenance' && (
+                        {!readOnly && selectedEvent.type === 'maintenance' && (
                             <>
                                 {selectedEvent.data.status === 'OPEN' && (
-                                    <button 
+                                    <button
                                         disabled={isPending}
                                         onClick={() => handleAction(() => updateMaintenanceStatus(selectedEvent.data.id, 'IN_PROGRESS'))}
                                         className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"

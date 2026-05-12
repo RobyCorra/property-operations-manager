@@ -4,7 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { logoutAction } from "@/src/app/actions/auth";
 import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
-import { LogOut, ClipboardList, Wrench, Home, Clock } from "lucide-react";
+import { LogOut, ClipboardList, Wrench, Home, Clock, Building2 } from "lucide-react";
 
 export default async function SupervisorDashboardPage() {
   const cookieStore = await cookies();
@@ -19,12 +19,21 @@ export default async function SupervisorDashboardPage() {
   if (!user) redirect("/login");
 
   // For SUPERVISOR: only assigned apartments. For MANAGER: all apartments.
-  const assignedApartmentIds = role === "SUPERVISOR"
-    ? (await prisma.apartmentSupervisor.findMany({ where: { userId }, select: { apartmentId: true } }))
-        .map(a => a.apartmentId)
-    : undefined;
+  let assignedApartments: { id: string; name: string; address: string }[] = [];
+  let assignedApartmentIds: string[] | undefined;
 
-  const apartmentFilter = assignedApartmentIds ? { id: { in: assignedApartmentIds } } : {};
+  if (role === "SUPERVISOR") {
+    const rows = await prisma.apartmentSupervisor.findMany({
+      where: { userId },
+      include: { apartment: { select: { id: true, name: true, address: true } } },
+    });
+    assignedApartments = rows.map(r => r.apartment);
+    assignedApartmentIds = assignedApartments.map(a => a.id);
+  }
+
+  const apartmentFilter = assignedApartmentIds
+    ? assignedApartmentIds.length > 0 ? { id: { in: assignedApartmentIds } } : { id: "never-match" }
+    : {};
 
   const [cleaningTasks, maintenanceTickets] = await Promise.all([
     prisma.cleaningTask.findMany({
@@ -82,6 +91,36 @@ export default async function SupervisorDashboardPage() {
             </form>
           </div>
         </div>
+
+        {/* Assigned apartments — visible only for SUPERVISOR */}
+        {role === "SUPERVISOR" && (
+          <section className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Building2 size={16} className="text-slate-500" />
+              <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-700">Appartamenti assegnati</h2>
+              <div className="h-px flex-1 bg-slate-200/50" />
+            </div>
+            {assignedApartments.length === 0 ? (
+              <div className="rounded-[2rem] border border-dashed border-slate-200 bg-white/30 p-8 text-center">
+                <p className="text-sm text-slate-400 font-medium">Nessun appartamento assegnato al tuo account.<br />Contatta il manager per ricevere un incarico.</p>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {assignedApartments.map(apt => (
+                  <div key={apt.id} className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/55 px-5 py-4 shadow-sm backdrop-blur-xl">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-50 border border-yellow-100">
+                      <Home size={18} className="text-yellow-500" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 uppercase tracking-tight truncate">{apt.name}</p>
+                      <p className="text-xs text-slate-400 font-medium truncate">{apt.address}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
         {totalToReview === 0 && (
           <div className="bg-white/40 backdrop-blur-xl p-20 rounded-[3rem] border border-slate-200 border-dashed text-center">
