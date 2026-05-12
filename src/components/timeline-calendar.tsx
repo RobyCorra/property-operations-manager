@@ -18,7 +18,8 @@ import {
   getCleaningTask,
   updateCleaningStatus,
   updateMaintenanceStatus,
-  submitCleaningForReview
+  submitCleaningForReview,
+  approveCleaningDirectly
 } from "@/src/app/actions/operational";
 
 import { 
@@ -651,10 +652,12 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     const cleaningLate = isCleaningLate(cleaning);
                     const cleaningUnassigned = cleaning.status === "PENDING" && !cleaning.assignedTo;
 
-                    const cleaningColor = cleaning.status === "COMPLETED"
+                    const cleaningColor = (cleaning.status === "COMPLETED" || cleaning.status === "APPROVED")
                       ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                       : cleaning.status === "IN_PROGRESS"
                       ? "bg-violet-500/10 text-violet-600 border-violet-500/20"
+                      : cleaning.status === "AWAITING_REVIEW"
+                      ? "bg-yellow-500/20 text-yellow-700 border-yellow-500/30"
                       : cleaningUnassigned
                       ? "bg-rose-500/20 text-rose-700 border-rose-500/40 shadow-rose-100"
                       : cleaningLate
@@ -998,17 +1001,40 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     </button>
                                 )}
                                 {selectedEvent.data.status === 'COMPLETED' && (
-                                    <button
-                                        disabled={isPending}
-                                        onClick={() => handleAction(() => submitCleaningForReview(selectedEvent.data.id))}
-                                        className="px-8 py-3.5 bg-yellow-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-yellow-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
-                                    >
-                                        Invia per Revisione
-                                    </button>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            disabled={isPending}
+                                            onClick={() => handleAction(() => approveCleaningDirectly(selectedEvent.data.id))}
+                                            className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                        >
+                                            ✓ Approva
+                                        </button>
+                                        <button
+                                            disabled={isPending}
+                                            onClick={() => handleAction(() => submitCleaningForReview(selectedEvent.data.id))}
+                                            className="px-8 py-3.5 bg-yellow-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-yellow-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                        >
+                                            Invia per Revisione
+                                        </button>
+                                    </div>
                                 )}
                                 {selectedEvent.data.status === 'AWAITING_REVIEW' && (
-                                    <span className="px-8 py-3.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold uppercase tracking-wide rounded-full">
-                                        ⏳ In Attesa di Revisione
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            disabled={isPending}
+                                            onClick={() => handleAction(() => approveCleaningDirectly(selectedEvent.data.id))}
+                                            className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                        >
+                                            ✓ Approva
+                                        </button>
+                                        <span className="px-8 py-3.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold uppercase tracking-wide rounded-full">
+                                            ⏳ In Attesa di Revisione
+                                        </span>
+                                    </div>
+                                )}
+                                {selectedEvent.data.status === 'APPROVED' && (
+                                    <span className="px-8 py-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold uppercase tracking-wide rounded-full">
+                                        ✓ Approvata
                                     </span>
                                 )}
                             </>

@@ -612,6 +612,32 @@ export async function submitCleaningForReview(id: string) {
   revalidatePath(`/dashboard/manager/cleanings/${id}/edit`);
 }
 
+// Manager direct approval — sets APPROVED without going through the supervisor review flow
+export async function approveCleaningDirectly(cleaningTaskId: string) {
+  const task = await prisma.cleaningTask.findUnique({ where: { id: cleaningTaskId } });
+  if (!task) throw new Error("Pulizia non trovata.");
+
+  await prisma.cleaningTask.update({
+    where: { id: cleaningTaskId },
+    data: { status: "APPROVED", completedAt: task.completedAt || new Date(), correctionProgress: [] },
+  });
+
+  const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      type: "CLEANING",
+      title: "Pulizia approvata",
+      message: `La pulizia presso ${apartment?.name || "un appartamento"} è stata approvata dal manager.`,
+      apartmentId: task.apartmentId,
+    },
+  });
+
+  revalidatePath("/dashboard/cleaner");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/cleanings");
+}
+
 export async function approveCleaningReview(cleaningTaskId: string, supervisorId: string) {
   const task = await prisma.cleaningTask.findUnique({ where: { id: cleaningTaskId } });
   if (!task) throw new Error("Pulizia non trovata.");

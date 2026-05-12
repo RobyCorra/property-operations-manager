@@ -27,7 +27,9 @@ import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/c
 const cleaningStatusLabel: Record<string, string> = {
   PENDING: "In Attesa",
   IN_PROGRESS: "In Corso",
-  COMPLETED: "Completato",
+  COMPLETED: "Completata",
+  AWAITING_REVIEW: "In Verifica",
+  APPROVED: "Approvata",
 };
 
 type CleanerTaskNextBooking = {
@@ -98,7 +100,7 @@ export default async function CleanerDashboardPage() {
     where: { id: userId },
     include: {
       cleaningTasks: {
-        where: { status: { in: ["PENDING", "IN_PROGRESS"] } },
+        where: { status: { in: ["PENDING", "IN_PROGRESS", "COMPLETED", "AWAITING_REVIEW"] } },
         include: {
           apartment: true,
           booking: true,
@@ -191,8 +193,14 @@ export default async function CleanerDashboardPage() {
                   headerMain={(
                     <div className="min-w-0">
                       <div className="mb-2 flex flex-wrap items-center gap-3">
-                        <span className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] ${task.status === "IN_PROGRESS" ? "bg-violet-500 text-white shadow-lg shadow-violet-200" : "bg-slate-100 text-slate-500"}`}>
-                          <div className={`h-1.5 w-1.5 rounded-full ${task.status === "IN_PROGRESS" ? "bg-white animate-pulse" : "bg-slate-400"}`} />
+                        <span className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] ${
+                          task.status === "IN_PROGRESS" ? "bg-violet-500 text-white shadow-lg shadow-violet-200" :
+                          task.status === "AWAITING_REVIEW" ? "bg-yellow-400 text-white shadow-lg shadow-yellow-100" :
+                          task.status === "COMPLETED" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-100" :
+                          task.status === "APPROVED" ? "bg-emerald-700 text-white" :
+                          "bg-slate-100 text-slate-500"
+                        }`}>
+                          <div className={`h-1.5 w-1.5 rounded-full ${task.status === "IN_PROGRESS" ? "bg-white animate-pulse" : task.status === "AWAITING_REVIEW" ? "bg-white animate-pulse" : "bg-white/70"}`} />
                           {cleaningStatusLabel[task.status] ?? task.status}
                         </span>
                       </div>
@@ -223,12 +231,24 @@ export default async function CleanerDashboardPage() {
                         action={updateCleaningStatus}
                         className="w-full bg-gradient-to-r from-violet-600 to-blue-500 text-white text-xs font-black uppercase tracking-widest py-4 rounded-full transition-all duration-300 shadow-xl shadow-violet-200 hover:shadow-2xl hover:scale-[1.03] active:scale-95"
                       />
-                    ) : (
+                    ) : task.status === "IN_PROGRESS" ? (
                       <div className="w-full rounded-full bg-violet-50 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-violet-700">
                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500 animate-pulse mr-2 align-middle" />
                         Intervento in corso
                       </div>
-                    )
+                    ) : task.status === "COMPLETED" ? (
+                      <div className="w-full rounded-full bg-emerald-50 border border-emerald-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-emerald-700">
+                        ✓ Completata — in attesa di approvazione
+                      </div>
+                    ) : task.status === "AWAITING_REVIEW" ? (
+                      <div className="w-full rounded-full bg-yellow-50 border border-yellow-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-yellow-700">
+                        ⏳ Inviata al supervisor — in attesa di revisione
+                      </div>
+                    ) : task.status === "APPROVED" ? (
+                      <div className="w-full rounded-full bg-emerald-600 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-white">
+                        ✓ Approvata
+                      </div>
+                    ) : null
                   )}
                   compactContent={(
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
