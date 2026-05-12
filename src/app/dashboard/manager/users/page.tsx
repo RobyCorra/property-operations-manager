@@ -4,15 +4,16 @@ import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import DeleteUserButton from "@/src/components/delete-user-button";
 import SafeDate from "@/src/components/safe-date";
-import { 
-  User, 
-  Mail, 
-  Fingerprint, 
-  CalendarDays, 
-  Plus, 
+import {
+  User,
+  Mail,
+  Fingerprint,
+  CalendarDays,
+  Plus,
   Activity,
   Search,
-  MoreVertical
+  MoreVertical,
+  Pencil
 } from "@/src/components/icons";
 import { Shield, CheckCircle } from "lucide-react";
 
@@ -37,9 +38,11 @@ export default async function UsersListPage() {
   });
 
   const roleColors: Record<string, string> = {
-    MANAGER: "bg-slate-900 text-white border-slate-900 shadow-slate-200",
-    CLEANER: "bg-blue-500/10 text-blue-600 border-blue-200/50",
+    MANAGER:     "bg-slate-900 text-white border-slate-900 shadow-slate-200",
+    CLEANER:     "bg-blue-500/10 text-blue-600 border-blue-200/50",
     MAINTENANCE: "bg-amber-500/10 text-amber-600 border-amber-200/50",
+    SUPERVISOR:  "bg-yellow-500/10 text-yellow-700 border-yellow-200/50",
+    OWNER:       "bg-emerald-500/10 text-emerald-700 border-emerald-200/50",
   };
 
   return (
@@ -120,11 +123,17 @@ export default async function UsersListPage() {
                     <td className="px-10 py-6 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {role === "MANAGER" && u.email !== "manager@propertyops.com" && (
+                          <>
+                            <Link
+                              href={`/dashboard/manager/users/${u.id}/edit`}
+                              className="w-10 h-10 flex items-center justify-center rounded-full text-slate-300 hover:text-violet-600 hover:bg-violet-50 transition-all"
+                              title="Modifica utente"
+                            >
+                              <Pencil size={16} />
+                            </Link>
                             <DeleteUserButton id={u.id} />
+                          </>
                         )}
-                        <div className="w-10 h-10 flex items-center justify-center text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <MoreVertical size={16} />
-                        </div>
                       </div>
                     </td>
                   </tr>

@@ -47,6 +47,55 @@ export async function createUser(prevState: any, formData: FormData) {
   redirect("/dashboard/manager/users");
 }
 
+export async function updateUser(prevState: any, formData: FormData) {
+  const id = formData.get("id") as string;
+  const name = formData.get("name") as string;
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const role = formData.get("role") as Role;
+  const apartmentIds = formData.getAll("apartmentIds") as string[];
+
+  if (!id || !name || !email || !role) {
+    return { error: "Tutti i campi obbligatori mancanti." };
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing && existing.id !== id) {
+    return { error: "L'email è già in uso da un altro utente." };
+  }
+
+  const data: any = { name, email, role };
+  if (password && password.length >= 8) {
+    data.password = await bcrypt.hash(password, 10);
+  } else if (password && password.length > 0) {
+    return { error: "La password deve essere di almeno 8 caratteri." };
+  }
+
+  await prisma.user.update({ where: { id }, data });
+
+  // Sync apartment assignments
+  if (role === "SUPERVISOR") {
+    await prisma.apartmentSupervisor.deleteMany({ where: { userId: id } });
+    if (apartmentIds.length > 0) {
+      await prisma.apartmentSupervisor.createMany({
+        data: apartmentIds.map(apartmentId => ({ apartmentId, userId: id })),
+        skipDuplicates: true,
+      });
+    }
+  } else if (role === "OWNER") {
+    await prisma.apartmentOwner.deleteMany({ where: { userId: id } });
+    if (apartmentIds.length > 0) {
+      await prisma.apartmentOwner.createMany({
+        data: apartmentIds.map(apartmentId => ({ apartmentId, userId: id })),
+        skipDuplicates: true,
+      });
+    }
+  }
+
+  revalidatePath("/dashboard/manager/users");
+  redirect(`/dashboard/manager/users`);
+}
+
 export async function deleteUser(formData: FormData) {
   const id = formData.get("id") as string;
   if (!id) return;
