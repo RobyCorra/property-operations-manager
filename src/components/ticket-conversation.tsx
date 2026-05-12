@@ -267,6 +267,18 @@ export default function TicketConversation({
           </div>
         )}
         {initialMessages.map((msg) => {
+          // System messages rendered as centered banners
+          if (msg.role === "SYSTEM") {
+            return (
+              <div key={msg.id} className="flex justify-center my-1">
+                <div className="flex items-center gap-2 rounded-full bg-yellow-50 border border-yellow-200 px-4 py-1.5 max-w-[90%]">
+                  <span className="text-yellow-500 text-xs">⏳</span>
+                  <p className="text-[11px] font-semibold text-yellow-700 text-center">{msg.text}</p>
+                </div>
+              </div>
+            );
+          }
+
           const isMe = msg.role === currentUserRole;
           const isAudio = msg.attachment?.fileType?.startsWith("audio/");
           return (

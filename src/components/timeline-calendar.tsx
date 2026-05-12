@@ -662,13 +662,14 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       ? "bg-orange-500/20 text-orange-700 border-orange-500/40 shadow-orange-100"
                       : "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
 
-                    const cleaningLabel = cleaningUnassigned ? "Non assegnata" : cleaningLate ? "In ritardo" : null;
+                    const cleaningLabel = cleaningUnassigned ? "Non assegnata" : cleaningLate ? "In ritardo" : cleaning.status === "AWAITING_REVIEW" ? "Da Revisionare" : null;
+                    const cleaningPulse = cleaning.status === "AWAITING_REVIEW" ? "animate-pulse" : "";
 
                     return (
                       <div
                         key={`${event.type}-${event.id}`}
                         onClick={() => setSelectedEvent({ type: "cleaning", data: cleaning })}
-                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${cleaningColor}`}
+                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${cleaningColor} ${cleaningPulse}`}
                         title={cleaningLabel ? `${event.title} - ${cleaningLabel.toUpperCase()}` : event.title}
                         style={{
                           left: getPosition(event.start) + 6,

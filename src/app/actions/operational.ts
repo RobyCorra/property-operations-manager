@@ -583,27 +583,42 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
 }
 
 export async function submitCleaningForReview(id: string) {
-  const task = await prisma.cleaningTask.findUnique({ where: { id } });
+  const task = await prisma.cleaningTask.findUnique({
+    where: { id },
+    include: { assignedTo: { select: { name: true } } },
+  });
   if (!task) throw new Error("Pulizia non trovata.");
   if (task.status !== "COMPLETED") throw new Error("La pulizia deve essere completata prima di inviare per revisione.");
-
-  await prisma.cleaningTask.update({
-    where: { id },
-    data: { status: "AWAITING_REVIEW" },
-  });
 
   const apartment = await prisma.apartment.findUnique({
     where: { id: task.apartmentId },
     select: { name: true },
   });
-  await prisma.notification.create({
-    data: {
-      type: "CLEANING",
-      title: "Pulizia in attesa di revisione",
-      message: `La pulizia presso ${apartment?.name || "un appartamento"} è pronta per la revisione.`,
-      apartmentId: task.apartmentId,
-    },
-  });
+
+  await prisma.$transaction([
+    prisma.cleaningTask.update({
+      where: { id },
+      data: { status: "AWAITING_REVIEW" },
+    }),
+    // Auto-message in chat to notify manager
+    prisma.cleaningTaskMessage.create({
+      data: {
+        cleaningTaskId: id,
+        role: "SYSTEM",
+        senderName: task.assignedTo?.name ?? "Cleaner",
+        text: `⏳ Pulizia completata e inviata per revisione — in attesa di approvazione del manager o del supervisor.`,
+        readByManagerAt: null,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        type: "CLEANING",
+        title: "Pulizia in attesa di revisione",
+        message: `La pulizia presso ${apartment?.name || "un appartamento"} è pronta per la revisione.`,
+        apartmentId: task.apartmentId,
+      },
+    }),
+  ]);
 
   revalidatePath("/dashboard/cleaner");
   revalidatePath("/dashboard/supervisor");
