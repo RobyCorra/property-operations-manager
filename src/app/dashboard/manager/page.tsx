@@ -11,6 +11,8 @@ import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 import { getApartmentOperationalStatus, APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
+import MobileDashboard from "@/src/components/mobile-dashboard";
+import type { MobileApartmentData, MobileLateClean, MobileInProgressClean, MobileTodayEvent } from "@/src/components/mobile-dashboard";
 import {
   Brush,
   Ticket,
@@ -210,6 +212,97 @@ export default async function ManagerDashboardPage() {
       openTickets: aptTickets.filter((t: TicketView) => isMaintenanceActive(t)).length,
     };
   });
+  // ── Mobile dashboard data ─────────────────────────────────────────────
+  const mobileApartments: MobileApartmentData[] = apartmentsData.map((a) => ({
+    id: a.id,
+    name: a.name,
+    address: a.address,
+    latitude: a.latitude,
+    longitude: a.longitude,
+    status: a.status,
+    statusLabel: a.statusLabel,
+    openTickets: a.openTickets,
+  }));
+
+  const mobileLateCleanings: MobileLateClean[] = lateCleanings.map((c: CleaningView) => {
+    const d = new Date(c.date);
+    const h = String(d.getHours()).padStart(2, "0");
+    const m = String(d.getMinutes()).padStart(2, "0");
+    return {
+      id: c.id,
+      apartmentName: c.apartment.name,
+      assignedToName: c.assignedTo?.name ?? "Non assegnata",
+      scheduledTime: `${h}:${m}`,
+      href: `/dashboard/manager/cleanings/${c.id}/edit`,
+    };
+  });
+
+  type ChecklistItem = { label: string; completed: boolean };
+  const mobileCleaningsInProgress: MobileInProgressClean[] = cleaningsToday
+    .filter((c: CleaningView) => c.status === "IN_PROGRESS")
+    .map((c: CleaningView) => {
+      const progress = Array.isArray(c.checklistProgress)
+        ? (c.checklistProgress as ChecklistItem[])
+        : [];
+      const d = new Date(c.date);
+      const h = String(d.getHours()).padStart(2, "0");
+      const mm = String(d.getMinutes()).padStart(2, "0");
+      return {
+        id: c.id,
+        apartmentName: c.apartment.name,
+        assignedToName: c.assignedTo?.name ?? "Non assegnata",
+        startTime: `${h}:${mm}`,
+        progressDone: progress.filter((i) => i.completed).length,
+        progressTotal: progress.length,
+        href: `/dashboard/manager/cleanings/${c.id}/edit`,
+      };
+    });
+
+  // Today's pending events for the mobile events drawer
+  const mobileTodayEvents: MobileTodayEvent[] = [];
+  cleaningsToday
+    .filter((c: CleaningView) => c.status === "PENDING" || c.status === "IN_PROGRESS")
+    .forEach((c: CleaningView) => {
+      const d = new Date(c.date);
+      const h = String(d.getHours()).padStart(2, "0");
+      const m = String(d.getMinutes()).padStart(2, "0");
+      mobileTodayEvents.push({
+        id: `clean-${c.id}`,
+        type: "CLEANING",
+        time: `${h}:${m}`,
+        apartmentName: c.apartment.name,
+        subject: "Pulizia",
+        actorName: c.assignedTo?.name ?? "Non assegnata",
+        status: c.status,
+        href: `/dashboard/manager/cleanings/${c.id}/edit`,
+      });
+    });
+  tickets
+    .filter((t: TicketView) => {
+      if (!t.scheduledStart) return false;
+      const scheduledDate = formatLocalDateKey(t.scheduledStart);
+      return scheduledDate === todayLocalStr;
+    })
+    .forEach((t: TicketView) => {
+      mobileTodayEvents.push({
+        id: `maint-${t.id}`,
+        type: "MAINTENANCE",
+        time: null,
+        apartmentName: t.apartment.name,
+        subject: t.title,
+        actorName: t.assignedTo?.name ?? "Non assegnato",
+        status: t.status,
+        href: `/dashboard/manager/maintenance/${t.id}/edit`,
+        isUrgent: true,
+      });
+    });
+
+  const mobileDateLabel = now.toLocaleDateString("it-IT", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
   // KPI popup items
   const checkinsKpi: KpiPopupItem[] = checkinsToday.map((b: BookingView) => ({
     id: b.id,
@@ -245,7 +338,24 @@ export default async function ManagerDashboardPage() {
   }));
 
   return (
-    <div className="p-10 space-y-10 font-sans">
+    <>
+    {/* ── MOBILE LAYOUT (< md) ──────────────────────────────── */}
+    <div className="block md:hidden">
+      <MobileDashboard
+        apartments={mobileApartments}
+        lateCleanings={mobileLateCleanings}
+        cleaningsInProgress={mobileCleaningsInProgress}
+        todayPendingEvents={mobileTodayEvents}
+        checkinsCount={checkinsToday.length}
+        cleaningsCount={cleaningsToday.length}
+        initialNotifications={initialNotifications}
+        serverDate={serverDate}
+        dateLabel={mobileDateLabel}
+      />
+    </div>
+
+    {/* ── DESKTOP LAYOUT (≥ md) ─────────────────────────────── */}
+    <div className="hidden md:block p-10 space-y-10 font-sans">
       {/* 3. PAGE HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
@@ -342,5 +452,6 @@ export default async function ManagerDashboardPage() {
       </div>
       </div>
     </div>
+    </>
   );
 }
