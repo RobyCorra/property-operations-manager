@@ -22,7 +22,7 @@ export type MobileLateClean = {
   id: string;
   apartmentName: string;
   assignedToName: string;
-  scheduledTime: string; // "09:00"
+  scheduledTime: string;
   href: string;
 };
 
@@ -89,32 +89,24 @@ function statusBadgeClass(status: string) {
 }
 
 function eventBarColor(type: string, status: string) {
-  if (type === "CLEANING") {
-    return status === "IN_PROGRESS" ? "bg-violet-500" : "bg-amber-400";
-  }
+  if (type === "CLEANING") return status === "IN_PROGRESS" ? "bg-violet-500" : "bg-amber-400";
   return "bg-rose-500";
 }
 
 function eventBadgeClass(type: string, status: string) {
   if (type === "CLEANING") {
-    return status === "IN_PROGRESS"
-      ? "bg-violet-50 text-violet-600"
-      : "bg-amber-50 text-amber-600";
+    return status === "IN_PROGRESS" ? "bg-violet-50 text-violet-600" : "bg-amber-50 text-amber-600";
   }
   return "bg-rose-50 text-rose-600";
 }
 
 function eventIconColor(type: string, status: string) {
-  if (type === "CLEANING") {
-    return status === "IN_PROGRESS" ? "#7c3aed" : "#d97706";
-  }
+  if (type === "CLEANING") return status === "IN_PROGRESS" ? "#7c3aed" : "#d97706";
   return "#e11d48";
 }
 
 function eventBgColor(type: string, status: string) {
-  if (type === "CLEANING") {
-    return status === "IN_PROGRESS" ? "bg-violet-100" : "bg-amber-50";
-  }
+  if (type === "CLEANING") return status === "IN_PROGRESS" ? "bg-violet-100" : "bg-amber-50";
   return "bg-rose-50";
 }
 
@@ -130,40 +122,69 @@ export default function MobileDashboard({
   serverDate,
   dateLabel,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "calendar">("dashboard");
-  const [mapOpen, setMapOpen] = useState(false);
-  const [eventsOpen, setEventsOpen] = useState(false);
-  const [fabOpen, setFabOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [activeTab, setActiveTab]     = useState<"dashboard" | "calendar">("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mapOpen, setMapOpen]         = useState(false);
+  const [eventsOpen, setEventsOpen]   = useState(false);
+  const [searchOpen, setSearchOpen]   = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const pendingCount = todayPendingEvents.length;
-  const pendingCleanings = todayPendingEvents.filter((e) => e.type === "CLEANING").length;
+  const pendingCount      = todayPendingEvents.length;
+  const pendingCleanings  = todayPendingEvents.filter((e) => e.type === "CLEANING").length;
   const pendingMaintenance = todayPendingEvents.filter((e) => e.type === "MAINTENANCE").length;
 
   const filteredApartments = searchQuery
     ? apartments.filter((a) => a.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : apartments;
 
+  function openSidebar() { setSidebarOpen(true); }
+  function closeSidebar() { setSidebarOpen(false); }
+
+  function navigateTo(tab: "dashboard" | "calendar") {
+    setActiveTab(tab);
+    closeSidebar();
+  }
+
+  function openSearch() {
+    closeSidebar();
+    setSearchOpen(true);
+  }
+
+  // ── Hamburger button (reused in multiple headers) ──────────────────
+  const HamburgerBtn = () => (
+    <button
+      onClick={openSidebar}
+      aria-label="Apri menu"
+      className="w-10 h-10 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-1.5 px-2.5 shrink-0"
+    >
+      <span className="block w-full h-0.5 bg-slate-700 rounded-full" />
+      <span className="block w-4/5 h-0.5 bg-slate-700 rounded-full self-start" />
+      <span className="block w-full h-0.5 bg-slate-700 rounded-full" />
+    </button>
+  );
+
   return (
     <div className="relative bg-[#f8f7ff] min-h-screen flex flex-col overflow-hidden">
 
-      {/* ── SCROLLABLE MAIN CONTENT ─────────────────────────── */}
-      <div className="flex-1 overflow-y-auto pb-28" style={{ WebkitOverflowScrolling: "touch" }}>
+      {/* ════════════════════════════════════════════════════
+          DASHBOARD VIEW
+          ════════════════════════════════════════════════════ */}
+      <div className="flex-1 overflow-y-auto pb-8" style={{ WebkitOverflowScrolling: "touch" }}>
 
-        {/* ── HEADER ────────────────────────────────────────── */}
-        <div className="px-5 pt-4 pb-3 flex items-center justify-between">
-          <div>
+        {/* ── HEADER ──────────────────────────────────────── */}
+        <div className="px-4 pt-4 pb-3 flex items-center gap-3">
+          <HamburgerBtn />
+          <div className="flex-1">
             <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{dateLabel}</p>
-            <h1 className="text-[22px] font-bold text-slate-900 leading-tight">Buongiorno 👋</h1>
+            <h1 className="text-[20px] font-bold text-slate-900 leading-tight">Buongiorno 👋</h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setMapOpen(true)}
               className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-full shadow-sm border border-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
               </svg>
               Mappa
             </button>
@@ -171,9 +192,9 @@ export default function MobileDashboard({
           </div>
         </div>
 
-        {/* ── ALERT RITARDI — impilati ───────────────────────── */}
+        {/* ── ALERT RITARDI — impilati ─────────────────────── */}
         {lateCleanings.length > 0 && (
-          <div className="px-5 mb-3 space-y-2">
+          <div className="px-4 mb-3 space-y-2">
             {lateCleanings.map((lc, i) => (
               <div
                 key={lc.id}
@@ -182,8 +203,8 @@ export default function MobileDashboard({
               >
                 <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -192,10 +213,7 @@ export default function MobileDashboard({
                     {lc.apartmentName} · avrebbe dovuto iniziare {lc.scheduledTime}
                   </p>
                 </div>
-                <Link
-                  href={lc.href}
-                  className="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0"
-                >
+                <Link href={lc.href} className="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">
                   Vedi
                 </Link>
               </div>
@@ -203,8 +221,8 @@ export default function MobileDashboard({
           </div>
         )}
 
-        {/* ── KPI GRID ──────────────────────────────────────── */}
-        <div className="px-5 grid grid-cols-2 gap-3 mb-3">
+        {/* ── KPI GRID ────────────────────────────────────── */}
+        <div className="px-4 grid grid-cols-2 gap-3 mb-3">
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Check-in Oggi</p>
             <p className="text-3xl font-black text-slate-900">{checkinsCount}</p>
@@ -230,21 +248,21 @@ export default function MobileDashboard({
                 <p className="text-violet-200 text-[10px] mt-0.5">
                   {pendingCleanings > 0 && `${pendingCleanings} ${pendingCleanings === 1 ? "pulizia" : "pulizie"}`}
                   {pendingCleanings > 0 && pendingMaintenance > 0 && " · "}
-                  {pendingMaintenance > 0 && `${pendingMaintenance} ${pendingMaintenance === 1 ? "ticket" : "ticket"} manutenzione`}
+                  {pendingMaintenance > 0 && `${pendingMaintenance} ticket manutenzione`}
                 </p>
               )}
             </div>
             <div className="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center shrink-0">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                <polyline points="9 18 15 12 9 6"/>
+                <polyline points="9 18 15 12 9 6" />
               </svg>
             </div>
           </button>
         </div>
 
-        {/* ── PULIZIE IN CORSO ──────────────────────────────── */}
+        {/* ── PULIZIE IN CORSO ────────────────────────────── */}
         {cleaningsInProgress.length > 0 && (
-          <div className="px-5 mb-3">
+          <div className="px-4 mb-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Pulizie in corso</p>
@@ -260,13 +278,17 @@ export default function MobileDashboard({
               {cleaningsInProgress.map((c) => {
                 const pct = c.progressTotal > 0 ? Math.round((c.progressDone / c.progressTotal) * 100) : 0;
                 return (
-                  <Link key={c.id} href={c.href} className="block bg-white rounded-2xl border border-violet-200 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                  <Link
+                    key={c.id}
+                    href={c.href}
+                    className="block bg-white rounded-2xl border border-violet-200 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+                  >
                     <div className="h-1 bg-gradient-to-r from-violet-500 to-blue-500" />
                     <div className="px-4 py-3 flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5">
-                          <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
-                          <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
+                          <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                          <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
                         </svg>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -300,16 +322,14 @@ export default function MobileDashboard({
           </div>
         )}
 
-        {/* ── STATO APPARTAMENTI ────────────────────────────── */}
-        <div className="px-5 mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Stato Appartamenti</p>
-          </div>
+        {/* ── STATO APPARTAMENTI ──────────────────────────── */}
+        <div className="px-4 mb-8">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Stato Appartamenti</p>
           <div className="space-y-2">
             {apartments.map((apt) => (
               <div key={apt.id} className="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)} ${apt.status === "RED" ? "" : ""}`} />
+                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
                   <div>
                     <p className="text-sm font-bold text-slate-900">{apt.name}</p>
                     <p className="text-[10px] text-slate-400">{apt.statusLabel}</p>
@@ -324,128 +344,31 @@ export default function MobileDashboard({
         </div>
       </div>
 
-      {/* ── BOTTOM NAV ────────────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-slate-100 px-2 pt-2.5 pb-5 flex justify-around items-center z-30">
-        {/* Dashboard */}
-        <button
-          onClick={() => setActiveTab("dashboard")}
-          className="flex flex-col items-center gap-1"
-        >
-          <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${activeTab === "dashboard" ? "bg-violet-100" : ""}`}>
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={activeTab === "dashboard" ? "#7c3aed" : "#94a3b8"} strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-            </svg>
-          </div>
-          <span className={`text-[9px] font-bold ${activeTab === "dashboard" ? "text-violet-600" : "text-slate-400"}`}>Dashboard</span>
-        </button>
-
-        {/* Calendario */}
-        <button
-          onClick={() => setActiveTab("calendar")}
-          className="flex flex-col items-center gap-1"
-        >
-          <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${activeTab === "calendar" ? "bg-violet-100" : ""}`}>
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={activeTab === "calendar" ? "#7c3aed" : "#94a3b8"} strokeWidth="2">
-              <rect x="3" y="4" width="18" height="18" rx="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </div>
-          <span className={`text-[9px] font-bold ${activeTab === "calendar" ? "text-violet-600" : "text-slate-400"}`}>Calendario</span>
-        </button>
-
-        {/* FAB Nuovo */}
-        <div className="flex flex-col items-center gap-1 -mt-6 relative">
-          <button
-            onClick={() => setFabOpen(!fabOpen)}
-            className="w-[58px] h-[58px] rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-xl shadow-violet-300 transition-transform active:scale-95"
-          >
-            <svg
-              width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"
-              className={`transition-transform duration-200 ${fabOpen ? "rotate-45" : ""}`}
-            >
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-          </button>
-          <span className="text-[9px] font-bold text-violet-600 mt-0.5">Nuovo</span>
-
-          {/* FAB Menu */}
-          {fabOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setFabOpen(false)} />
-              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col gap-2 z-50 w-48">
-                <Link
-                  href="/dashboard/manager/cleanings/new"
-                  onClick={() => setFabOpen(false)}
-                  className="flex items-center gap-2 px-4 py-3 bg-violet-600 text-white text-xs font-bold rounded-2xl shadow-lg shadow-violet-300 active:scale-95 transition-transform"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
-                    <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
-                  </svg>
-                  Nuova Pulizia
-                </Link>
-                <Link
-                  href="/dashboard/manager/maintenance/new"
-                  onClick={() => setFabOpen(false)}
-                  className="flex items-center gap-2 px-4 py-3 bg-slate-900 text-white text-xs font-bold rounded-2xl shadow-lg active:scale-95 transition-transform"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                  </svg>
-                  Nuovo Ticket
-                </Link>
-                <Link
-                  href="/dashboard/manager/bookings/new"
-                  onClick={() => setFabOpen(false)}
-                  className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-2xl shadow-sm active:scale-95 transition-transform"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-                  </svg>
-                  Nuova Prenotazione
-                </Link>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Messaggi */}
-        <Link href="/dashboard/manager/messages" className="flex flex-col items-center gap-1 relative">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </div>
-          <span className="text-[9px] font-bold text-slate-400">Messaggi</span>
-        </Link>
-
-        {/* Cerca */}
-        <button
-          onClick={() => setSearchOpen(true)}
-          className="flex flex-col items-center gap-1"
-        >
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </div>
-          <span className="text-[9px] font-bold text-slate-400">Cerca</span>
-        </button>
-      </div>
-
-      {/* ── CALENDAR VIEW (slide in) ───────────────────────────── */}
+      {/* ════════════════════════════════════════════════════
+          CALENDAR VIEW — slide in from right
+          ════════════════════════════════════════════════════ */}
       {activeTab === "calendar" && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-20 flex flex-col">
-          {/* Header */}
-          <div className="px-5 pt-12 pb-3 flex items-center justify-between border-b border-slate-100">
-            <div>
+          {/* Header con hamburger + titolo + back */}
+          <div className="px-4 pt-4 pb-3 flex items-center gap-3 border-b border-slate-100">
+            <HamburgerBtn />
+            <div className="flex-1">
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Scegli appartamento</p>
               <h2 className="text-xl font-bold text-slate-900">Calendario</h2>
             </div>
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 rounded-full text-slate-600 text-[10px] font-bold"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              Indietro
+            </button>
           </div>
+
           {/* Apartment list */}
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2 pb-28">
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 pb-8">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
               Seleziona per aprire il calendario operativo
             </p>
@@ -465,19 +388,183 @@ export default function MobileDashboard({
                   )}
                 </div>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6"/>
+                  <polyline points="9 18 15 12 9 6" />
                 </svg>
               </Link>
             ))}
           </div>
-          {/* Bottom nav replica */}
-          <BottomNavCalendar onDashboard={() => setActiveTab("dashboard")} onSearch={() => setSearchOpen(true)} />
         </div>
       )}
 
-      {/* ── EVENTS DRAWER (slide up) ──────────────────────────── */}
+      {/* ════════════════════════════════════════════════════
+          SIDEBAR OVERLAY — slide in from left
+          ════════════════════════════════════════════════════ */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={closeSidebar}
+          />
+
+          {/* Panel */}
+          <div className="relative w-[270px] h-full bg-white flex flex-col shadow-2xl shadow-black/30 z-10">
+
+            {/* Sidebar header */}
+            <div className="px-5 pt-12 pb-5 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-lg shadow-violet-200 shrink-0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs font-black text-slate-800">Manager</p>
+                  <p className="text-[10px] text-slate-400">Dashboard Operativa</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Nav items */}
+            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+
+              {/* NAVIGAZIONE label */}
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">Navigazione</p>
+
+              <button
+                onClick={() => navigateTo("dashboard")}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-colors ${
+                  activeTab === "dashboard" ? "bg-violet-50 border border-violet-100" : "hover:bg-slate-50"
+                }`}
+              >
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${activeTab === "dashboard" ? "bg-violet-600" : "bg-slate-100"}`}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={activeTab === "dashboard" ? "white" : "#64748b"} strokeWidth="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                </div>
+                <div>
+                  <p className={`text-sm font-bold ${activeTab === "dashboard" ? "text-violet-700" : "text-slate-700"}`}>Dashboard</p>
+                  <p className="text-[10px] text-slate-400">Vista principale</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => navigateTo("calendar")}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left transition-colors ${
+                  activeTab === "calendar" ? "bg-violet-50 border border-violet-100" : "hover:bg-slate-50"
+                }`}
+              >
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${activeTab === "calendar" ? "bg-violet-600" : "bg-slate-100"}`}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={activeTab === "calendar" ? "white" : "#64748b"} strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                </div>
+                <div>
+                  <p className={`text-sm font-bold ${activeTab === "calendar" ? "text-violet-700" : "text-slate-700"}`}>Calendario</p>
+                  <p className="text-[10px] text-slate-400">Per appartamento</p>
+                </div>
+              </button>
+
+              <Link
+                href="/dashboard/manager/messages"
+                onClick={closeSidebar}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 relative">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-700">Messaggi</p>
+                  <p className="text-[10px] text-slate-400">Chat con il team</p>
+                </div>
+              </Link>
+
+              <button
+                onClick={openSearch}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors text-left"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-700">Cerca</p>
+                  <p className="text-[10px] text-slate-400">Appartamenti, ospiti…</p>
+                </div>
+              </button>
+
+              {/* Divider */}
+              <div className="my-3 h-px bg-slate-100 mx-2" />
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">Crea Nuovo</p>
+
+              <Link
+                href="/dashboard/manager/cleanings/new"
+                onClick={closeSidebar}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-violet-50 transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5">
+                    <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                    <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-slate-700">Nuova Pulizia</p>
+              </Link>
+
+              <Link
+                href="/dashboard/manager/maintenance/new"
+                onClick={closeSidebar}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-slate-700">Nuovo Ticket</p>
+              </Link>
+
+              <Link
+                href="/dashboard/manager/bookings/new"
+                onClick={closeSidebar}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5">
+                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-slate-700">Nuova Prenotazione</p>
+              </Link>
+            </nav>
+
+            {/* Chiudi */}
+            <div className="px-4 pb-8 pt-3 border-t border-slate-100">
+              <button
+                onClick={closeSidebar}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-slate-50 text-slate-500 text-sm font-bold active:bg-slate-100 transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                Chiudi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          EVENTS DRAWER — slide up
+          ════════════════════════════════════════════════════ */}
       {eventsOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-in slide-in-from-bottom duration-300">
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
           <div className="flex justify-center pt-3">
             <div className="w-10 h-1 bg-slate-200 rounded-full" />
           </div>
@@ -493,7 +580,7 @@ export default function MobileDashboard({
               className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
@@ -504,18 +591,23 @@ export default function MobileDashboard({
               </div>
             )}
             {todayPendingEvents.map((ev) => (
-              <Link key={ev.id} href={ev.href} onClick={() => setEventsOpen(false)} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+              <Link
+                key={ev.id}
+                href={ev.href}
+                onClick={() => setEventsOpen(false)}
+                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+              >
                 <div className={`h-1 ${eventBarColor(ev.type, ev.status)}`} />
                 <div className="px-4 py-3 flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl ${eventBgColor(ev.type, ev.status)} flex items-center justify-center shrink-0`}>
                     {ev.type === "CLEANING" ? (
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={eventIconColor(ev.type, ev.status)} strokeWidth="2.5">
-                        <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
-                        <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
+                        <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                        <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
                       </svg>
                     ) : (
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={eventIconColor(ev.type, ev.status)} strokeWidth="2.5">
-                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                       </svg>
                     )}
                   </div>
@@ -525,9 +617,7 @@ export default function MobileDashboard({
                         {ev.type === "CLEANING" ? "Pulizia" : "Manutenzione"}
                       </span>
                       {ev.time && <span className="text-[9px] text-slate-400">{ev.time}</span>}
-                      {ev.isUrgent && (
-                        <span className="text-[9px] text-rose-500 font-bold">● URGENTE</span>
-                      )}
+                      {ev.isUrgent && <span className="text-[9px] text-rose-500 font-bold">● URGENTE</span>}
                     </div>
                     <p className="text-sm font-bold text-slate-900 truncate">{ev.apartmentName}</p>
                     <p className="text-[10px] text-slate-400 truncate">{ev.subject} · {ev.actorName}</p>
@@ -542,7 +632,9 @@ export default function MobileDashboard({
         </div>
       )}
 
-      {/* ── MAP PANEL (slide up) ──────────────────────────────── */}
+      {/* ════════════════════════════════════════════════════
+          MAP PANEL — slide up
+          ════════════════════════════════════════════════════ */}
       {mapOpen && (
         <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col">
           <div className="flex justify-center pt-3 pb-1">
@@ -558,7 +650,7 @@ export default function MobileDashboard({
               className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
@@ -568,21 +660,26 @@ export default function MobileDashboard({
         </div>
       )}
 
-      {/* ── SEARCH OVERLAY ───────────────────────────────────── */}
+      {/* ════════════════════════════════════════════════════
+          SEARCH OVERLAY — sheet dal basso
+          ════════════════════════════════════════════════════ */}
       {searchOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex flex-col justify-end">
           <div className="bg-white rounded-t-3xl px-5 pt-5 pb-10">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-slate-900">Cerca</h2>
-              <button onClick={() => { setSearchOpen(false); setSearchQuery(""); }} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
+              <button
+                onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
+                className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"
+              >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </div>
             <div className="flex items-center bg-slate-100 rounded-2xl px-4 py-3 mb-4">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" className="shrink-0">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
               <input
                 autoFocus
@@ -593,7 +690,6 @@ export default function MobileDashboard({
                 className="bg-transparent border-none focus:ring-0 text-sm text-slate-900 ml-2 w-full placeholder:text-slate-400"
               />
             </div>
-            {/* Results */}
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {filteredApartments.map((apt) => (
                 <Link
@@ -616,62 +712,6 @@ export default function MobileDashboard({
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-// ── Sub-component: Bottom nav replica for calendar view ───────────────
-function BottomNavCalendar({
-  onDashboard,
-  onSearch,
-}: {
-  onDashboard: () => void;
-  onSearch: () => void;
-}) {
-  return (
-    <div className="bg-white/95 backdrop-blur border-t border-slate-100 px-2 pt-2.5 pb-5 flex justify-around items-center">
-      <button onClick={onDashboard} className="flex flex-col items-center gap-1">
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-          </svg>
-        </div>
-        <span className="text-[9px] font-bold text-slate-400">Dashboard</span>
-      </button>
-      <button className="flex flex-col items-center gap-1">
-        <div className="w-11 h-11 rounded-xl bg-violet-100 flex items-center justify-center">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2">
-            <rect x="3" y="4" width="18" height="18" rx="2"/>
-            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-          </svg>
-        </div>
-        <span className="text-[9px] font-bold text-violet-600">Calendario</span>
-      </button>
-      <div className="flex flex-col items-center gap-1 -mt-6">
-        <div className="w-[58px] h-[58px] rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-xl shadow-violet-300">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-        </div>
-        <span className="text-[9px] font-bold text-violet-600 mt-0.5">Nuovo</span>
-      </div>
-      <Link href="/dashboard/manager/messages" className="flex flex-col items-center gap-1 relative">
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
-        </div>
-        <span className="text-[9px] font-bold text-slate-400">Messaggi</span>
-      </Link>
-      <button onClick={onSearch} className="flex flex-col items-center gap-1">
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-        </div>
-        <span className="text-[9px] font-bold text-slate-400">Cerca</span>
-      </button>
     </div>
   );
 }
