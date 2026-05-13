@@ -28,15 +28,18 @@ export default function SidebarLayout({ children, unreadCount }: SidebarLayoutPr
   };
 
   // Use a stable initial value to avoid hydration mismatch: always start expanded
-  const sidebarWidth = mounted && collapsed ? "pl-[72px]" : "pl-64";
+  const sidebarWidth = mounted && collapsed ? "md:pl-[72px]" : "md:pl-64";
 
   return (
     <div className="min-h-screen bg-[#faf8ff] flex">
-      <ManagerNavbar unreadCount={unreadCount} collapsed={mounted && collapsed} onToggle={toggle} />
+      {/* Sidebar — nascosta su mobile */}
+      <div className="hidden md:block">
+        <ManagerNavbar unreadCount={unreadCount} collapsed={mounted && collapsed} onToggle={toggle} />
+      </div>
 
       <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarWidth}`}>
-        {/* Top Bar */}
-        <header className="sticky top-0 z-40 w-full h-20 bg-white/60 backdrop-blur-xl border-b border-white/40 flex items-center justify-between px-10 shadow-sm">
+        {/* Top Bar — nascosta su mobile */}
+        <header className="hidden md:flex sticky top-0 z-40 w-full h-20 bg-white/60 backdrop-blur-xl border-b border-white/40 items-center justify-between px-10 shadow-sm">
           <div className="flex-1 max-w-xl relative group">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors">
               🔍
