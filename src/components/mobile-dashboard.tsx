@@ -6,6 +6,7 @@ import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import { ApartmentStatus } from "@/src/lib/apartment-status";
 import { logoutAction } from "@/src/app/actions/auth";
+import ManagerAIChat from "@/src/components/manager-ai-chat";
 
 // ── Types ─────────────────────────────────────────────────────────────
 export type MobileApartmentData = {
@@ -64,6 +65,14 @@ export type MobileCleaningTodayItem = {
   href: string;
 };
 
+export type MobileUrgentTicketItem = {
+  id: string;
+  title: string;
+  apartmentName: string;
+  status: string;
+  href: string;
+};
+
 type NotificationItem = {
   id: string;
   type: string;
@@ -83,6 +92,7 @@ type Props = {
   cleaningsDoneCount: number;
   checkinsItems: MobileCheckinItem[];
   cleaningsTodayItems: MobileCleaningTodayItem[];
+  urgentTicketsItems: MobileUrgentTicketItem[];
   initialNotifications: NotificationItem[];
   serverDate: string;
   dateLabel: string;
@@ -140,6 +150,7 @@ export default function MobileDashboard({
   cleaningsDoneCount,
   checkinsItems,
   cleaningsTodayItems,
+  urgentTicketsItems,
   initialNotifications,
   serverDate,
   dateLabel,
@@ -150,6 +161,8 @@ export default function MobileDashboard({
   const [eventsOpen, setEventsOpen]         = useState(false);
   const [checkinsSheetOpen, setCheckinsSheetOpen]     = useState(false);
   const [cleaningsSheetOpen, setCleaningsSheetOpen]   = useState(false);
+  const [ticketsSheetOpen, setTicketsSheetOpen]       = useState(false);
+  const [aiChatOpen, setAiChatOpen]         = useState(false);
   const [searchOpen, setSearchOpen]         = useState(false);
   const [searchQuery, setSearchQuery]       = useState("");
 
@@ -275,6 +288,41 @@ export default function MobileDashboard({
                 </div>
               )}
             </div>
+          </button>
+
+          {/* Ticket Urgenti */}
+          <button
+            onClick={() => setTicketsSheetOpen(true)}
+            className={`rounded-2xl p-4 shadow-sm border text-left active:scale-95 transition-transform ${
+              urgentTicketsItems.length > 0
+                ? "bg-orange-50 border-orange-200"
+                : "bg-white border-slate-100"
+            }`}
+          >
+            <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${
+              urgentTicketsItems.length > 0 ? "text-orange-500" : "text-slate-400"
+            }`}>Ticket Urgenti</p>
+            <p className={`text-3xl font-black ${
+              urgentTicketsItems.length > 0 ? "text-orange-600" : "text-slate-900"
+            }`}>{urgentTicketsItems.length}</p>
+            <p className={`text-[10px] mt-0.5 ${
+              urgentTicketsItems.length > 0 ? "text-orange-400" : "text-slate-400"
+            }`}>segnalazioni aperte</p>
+          </button>
+
+          {/* Chiedi a IA */}
+          <button
+            onClick={() => setAiChatOpen(true)}
+            className="bg-gradient-to-br from-violet-600 to-blue-500 rounded-2xl p-4 shadow-lg shadow-violet-200 text-left active:scale-95 transition-transform"
+          >
+            <p className="text-[9px] font-black uppercase tracking-widest text-violet-200 mb-1">Assistente</p>
+            <div className="flex items-center gap-2 mt-1">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <p className="text-white font-black text-base leading-tight">Chiedi<br/>a IA</p>
+            </div>
+            <p className="text-violet-200 text-[10px] mt-2">Domande operative</p>
           </button>
 
           {/* Card prossimi eventi — cliccabile */}
@@ -757,6 +805,81 @@ export default function MobileDashboard({
           </div>
         </div>
       )}
+
+      {/* ════════════════════════════════════════════════════
+          TICKET URGENTI SHEET
+          ════════════════════════════════════════════════════ */}
+      {ticketsSheetOpen && (
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
+          <div className="flex justify-center pt-3">
+            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+          </div>
+          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">Manutenzione</p>
+              <h2 className="text-xl font-bold text-slate-900">
+                {urgentTicketsItems.length > 0
+                  ? `${urgentTicketsItems.length} ticket urgenti`
+                  : "Nessun ticket urgente"}
+              </h2>
+            </div>
+            <button
+              onClick={() => setTicketsSheetOpen(false)}
+              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+            {urgentTicketsItems.length === 0 && (
+              <div className="text-center py-12 text-slate-400 text-sm">
+                ✓ Nessun ticket urgente aperto
+              </div>
+            )}
+            {urgentTicketsItems.map((ticket) => {
+              const isOpen = ticket.status === "OPEN";
+              const badgeClass = isOpen
+                ? "bg-orange-50 text-orange-700"
+                : "bg-amber-50 text-amber-700";
+              const statusLabel = isOpen ? "Aperto" : "In carico";
+              return (
+                <Link
+                  key={ticket.id}
+                  href={ticket.href}
+                  onClick={() => setTicketsSheetOpen(false)}
+                  className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+                >
+                  <div className="h-1 bg-orange-400" />
+                  <div className="px-4 py-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2.5">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-900 truncate">{ticket.title}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{ticket.apartmentName}</p>
+                    </div>
+                    <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 ${badgeClass}`}>
+                      {statusLabel}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          AI CHAT — pannello identico al desktop
+          ════════════════════════════════════════════════════ */}
+      <ManagerAIChat
+        isOpen={aiChatOpen}
+        onClose={() => setAiChatOpen(false)}
+      />
 
       {/* ════════════════════════════════════════════════════
           EVENTS DRAWER — slide up

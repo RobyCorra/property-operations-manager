@@ -19,6 +19,7 @@ import type {
   MobileTodayEvent,
   MobileCheckinItem,
   MobileCleaningTodayItem,
+  MobileUrgentTicketItem,
 } from "@/src/components/mobile-dashboard";
 import {
   Brush,
@@ -310,6 +311,15 @@ export default async function ManagerDashboardPage() {
     month: "long",
   });
 
+  // Ticket urgenti per il sheet mobile
+  const mobileUrgentTicketsItems: MobileUrgentTicketItem[] = tickets.map((t: TicketView) => ({
+    id: t.id,
+    title: t.title,
+    apartmentName: t.apartment.name,
+    status: t.status,
+    href: `/dashboard/manager/maintenance/${t.id}/edit`,
+  }));
+
   // Pulizie oggi completate (cleaner ha finito)
   const cleaningsDoneCount = cleaningsToday.filter((c: CleaningView) =>
     ["COMPLETED", "AWAITING_REVIEW", "APPROVED"].includes(c.status)
@@ -380,6 +390,7 @@ export default async function ManagerDashboardPage() {
         cleaningsDoneCount={cleaningsDoneCount}
         checkinsItems={mobileCheckinsItems}
         cleaningsTodayItems={mobileCleaningsTodayItems}
+        urgentTicketsItems={mobileUrgentTicketsItems}
         initialNotifications={initialNotifications}
         serverDate={serverDate}
         dateLabel={mobileDateLabel}
