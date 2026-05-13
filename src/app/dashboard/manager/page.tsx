@@ -12,7 +12,14 @@ import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 import { getApartmentOperationalStatus, APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
 import MobileDashboard from "@/src/components/mobile-dashboard";
-import type { MobileApartmentData, MobileLateClean, MobileInProgressClean, MobileTodayEvent } from "@/src/components/mobile-dashboard";
+import type {
+  MobileApartmentData,
+  MobileLateClean,
+  MobileInProgressClean,
+  MobileTodayEvent,
+  MobileCheckinItem,
+  MobileCleaningTodayItem,
+} from "@/src/components/mobile-dashboard";
 import {
   Brush,
   Ticket,
@@ -303,6 +310,28 @@ export default async function ManagerDashboardPage() {
     month: "long",
   });
 
+  // Pulizie oggi completate (cleaner ha finito)
+  const cleaningsDoneCount = cleaningsToday.filter((c: CleaningView) =>
+    ["COMPLETED", "AWAITING_REVIEW", "APPROVED"].includes(c.status)
+  ).length;
+
+  // Check-in di oggi per il sheet mobile
+  const mobileCheckinsItems: MobileCheckinItem[] = checkinsToday.map((b: BookingView) => ({
+    id: b.id,
+    guestName: b.guestName ?? "Ospite",
+    apartmentName: b.apartment.name,
+    href: `/dashboard/manager/bookings/${b.id}/edit`,
+  }));
+
+  // Pulizie di oggi per il sheet mobile
+  const mobileCleaningsTodayItems: MobileCleaningTodayItem[] = cleaningsToday.map((c: CleaningView) => ({
+    id: c.id,
+    apartmentName: c.apartment.name,
+    assignedToName: c.assignedTo?.name ?? "Non assegnata",
+    status: c.status,
+    href: `/dashboard/manager/cleanings/${c.id}/edit`,
+  }));
+
   // KPI popup items
   const checkinsKpi: KpiPopupItem[] = checkinsToday.map((b: BookingView) => ({
     id: b.id,
@@ -348,6 +377,9 @@ export default async function ManagerDashboardPage() {
         todayPendingEvents={mobileTodayEvents}
         checkinsCount={checkinsToday.length}
         cleaningsCount={cleaningsToday.length}
+        cleaningsDoneCount={cleaningsDoneCount}
+        checkinsItems={mobileCheckinsItems}
+        cleaningsTodayItems={mobileCleaningsTodayItems}
         initialNotifications={initialNotifications}
         serverDate={serverDate}
         dateLabel={mobileDateLabel}

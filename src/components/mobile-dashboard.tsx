@@ -5,6 +5,7 @@ import Link from "next/link";
 import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import { ApartmentStatus } from "@/src/lib/apartment-status";
+import { logoutAction } from "@/src/app/actions/auth";
 
 // ── Types ─────────────────────────────────────────────────────────────
 export type MobileApartmentData = {
@@ -48,6 +49,21 @@ export type MobileTodayEvent = {
   isUrgent?: boolean;
 };
 
+export type MobileCheckinItem = {
+  id: string;
+  guestName: string;
+  apartmentName: string;
+  href: string;
+};
+
+export type MobileCleaningTodayItem = {
+  id: string;
+  apartmentName: string;
+  assignedToName: string;
+  status: string;
+  href: string;
+};
+
 type NotificationItem = {
   id: string;
   type: string;
@@ -64,6 +80,9 @@ type Props = {
   todayPendingEvents: MobileTodayEvent[];
   checkinsCount: number;
   cleaningsCount: number;
+  cleaningsDoneCount: number;
+  checkinsItems: MobileCheckinItem[];
+  cleaningsTodayItems: MobileCleaningTodayItem[];
   initialNotifications: NotificationItem[];
   serverDate: string;
   dateLabel: string;
@@ -118,16 +137,21 @@ export default function MobileDashboard({
   todayPendingEvents,
   checkinsCount,
   cleaningsCount,
+  cleaningsDoneCount,
+  checkinsItems,
+  cleaningsTodayItems,
   initialNotifications,
   serverDate,
   dateLabel,
 }: Props) {
-  const [activeTab, setActiveTab]     = useState<"dashboard" | "calendar">("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mapOpen, setMapOpen]         = useState(false);
-  const [eventsOpen, setEventsOpen]   = useState(false);
-  const [searchOpen, setSearchOpen]   = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab]           = useState<"dashboard" | "calendar">("dashboard");
+  const [sidebarOpen, setSidebarOpen]       = useState(false);
+  const [mapOpen, setMapOpen]               = useState(false);
+  const [eventsOpen, setEventsOpen]         = useState(false);
+  const [checkinsSheetOpen, setCheckinsSheetOpen]     = useState(false);
+  const [cleaningsSheetOpen, setCleaningsSheetOpen]   = useState(false);
+  const [searchOpen, setSearchOpen]         = useState(false);
+  const [searchQuery, setSearchQuery]       = useState("");
 
   const pendingCount      = todayPendingEvents.length;
   const pendingCleanings  = todayPendingEvents.filter((e) => e.type === "CLEANING").length;
@@ -223,16 +247,35 @@ export default function MobileDashboard({
 
         {/* ── KPI GRID ────────────────────────────────────── */}
         <div className="px-4 grid grid-cols-2 gap-3 mb-3">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          {/* Check-in oggi — cliccabile */}
+          <button
+            onClick={() => setCheckinsSheetOpen(true)}
+            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-left active:scale-95 transition-transform"
+          >
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Check-in Oggi</p>
             <p className="text-3xl font-black text-slate-900">{checkinsCount}</p>
             <p className="text-[10px] text-slate-400 mt-0.5">prenotazioni</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          </button>
+
+          {/* Pulizie oggi — cliccabile + count eseguite */}
+          <button
+            onClick={() => setCleaningsSheetOpen(true)}
+            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-left active:scale-95 transition-transform"
+          >
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Pulizie Oggi</p>
-            <p className="text-3xl font-black text-slate-900">{cleaningsCount}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">pianificate</p>
-          </div>
+            <div className="flex items-end gap-3">
+              <div>
+                <p className="text-3xl font-black text-slate-900">{cleaningsCount}</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">pianificate</p>
+              </div>
+              {cleaningsDoneCount > 0 && (
+                <div className="mb-0.5">
+                  <p className="text-xl font-black text-emerald-600 leading-none">{cleaningsDoneCount}</p>
+                  <p className="text-[9px] font-bold text-emerald-500 mt-0.5">eseguite</p>
+                </div>
+              )}
+            </div>
+          </button>
 
           {/* Card prossimi eventi — cliccabile */}
           <button
@@ -542,10 +585,37 @@ export default function MobileDashboard({
                 </div>
                 <p className="text-sm font-bold text-slate-700">Nuova Prenotazione</p>
               </Link>
+
+              <Link
+                href="/dashboard/manager/apartments/new"
+                onClick={closeSidebar}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-slate-700">Nuovo Appartamento</p>
+              </Link>
             </nav>
 
-            {/* Chiudi */}
-            <div className="px-4 pb-8 pt-3 border-t border-slate-100">
+            {/* Chiudi + Logout */}
+            <div className="px-4 pb-8 pt-3 border-t border-slate-100 space-y-2">
+              <form action={logoutAction} className="w-full">
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-rose-50 text-rose-600 text-sm font-bold active:bg-rose-100 transition-colors border border-rose-100"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                  Logout
+                </button>
+              </form>
               <button
                 onClick={closeSidebar}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-slate-50 text-slate-500 text-sm font-bold active:bg-slate-100 transition-colors"
@@ -556,6 +626,134 @@ export default function MobileDashboard({
                 Chiudi
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          CHECK-IN OGGI SHEET
+          ════════════════════════════════════════════════════ */}
+      {checkinsSheetOpen && (
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
+          <div className="flex justify-center pt-3">
+            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+          </div>
+          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Oggi</p>
+              <h2 className="text-xl font-bold text-slate-900">
+                {checkinsCount > 0 ? `${checkinsCount} check-in` : "Nessun check-in oggi"}
+              </h2>
+            </div>
+            <button
+              onClick={() => setCheckinsSheetOpen(false)}
+              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+            {checkinsItems.length === 0 && (
+              <div className="text-center py-12 text-slate-400 text-sm">Nessun check-in previsto per oggi</div>
+            )}
+            {checkinsItems.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={() => setCheckinsSheetOpen(false)}
+                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+              >
+                <div className="h-1 bg-blue-500" />
+                <div className="px-4 py-3 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5">
+                      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
+                    <p className="text-[10px] text-slate-400 truncate">Ospite: {item.guestName}</p>
+                  </div>
+                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full shrink-0">
+                    Apri
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          PULIZIE OGGI SHEET
+          ════════════════════════════════════════════════════ */}
+      {cleaningsSheetOpen && (
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
+          <div className="flex justify-center pt-3">
+            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+          </div>
+          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Oggi</p>
+              <h2 className="text-xl font-bold text-slate-900">
+                {cleaningsCount > 0 ? `${cleaningsCount} pulizie` : "Nessuna pulizia oggi"}
+              </h2>
+            </div>
+            <button
+              onClick={() => setCleaningsSheetOpen(false)}
+              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+            {cleaningsTodayItems.length === 0 && (
+              <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia pianificata per oggi</div>
+            )}
+            {cleaningsTodayItems.map((item) => {
+              const isDone = ["COMPLETED", "AWAITING_REVIEW", "APPROVED"].includes(item.status);
+              const isInProgress = item.status === "IN_PROGRESS";
+              const barColor = isDone ? "bg-emerald-500" : isInProgress ? "bg-violet-500" : "bg-amber-400";
+              const iconColor = isDone ? "#10b981" : isInProgress ? "#7c3aed" : "#d97706";
+              const iconBg = isDone ? "bg-emerald-50" : isInProgress ? "bg-violet-100" : "bg-amber-50";
+              const badgeClass = isDone
+                ? "bg-emerald-50 text-emerald-700"
+                : isInProgress
+                ? "bg-violet-50 text-violet-700"
+                : "bg-amber-50 text-amber-700";
+              const statusLabel = isDone
+                ? item.status === "APPROVED" ? "Approvata" : "Eseguita"
+                : isInProgress ? "In corso" : "Da fare";
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => setCleaningsSheetOpen(false)}
+                  className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+                >
+                  <div className={`h-1 ${barColor}`} />
+                  <div className="px-4 py-3 flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2.5">
+                        <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                        <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{item.assignedToName}</p>
+                    </div>
+                    <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 ${badgeClass}`}>
+                      {statusLabel}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}
