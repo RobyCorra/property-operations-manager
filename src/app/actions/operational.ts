@@ -79,7 +79,7 @@ export async function computeChecklistSnapshot(db: any, apartmentId: string, tas
       where: {
         apartmentId,
         checkInDate: { gte: taskDate },
-        status: { in: ["ACTIVE", "CONFIRMED"] }
+        status: { in: ["ACTIVE", "CONFIRMED", "CHECKED_IN"] }
       },
       orderBy: { checkInDate: "asc" }
     });
@@ -256,7 +256,7 @@ export async function enrichCleaningTaskWithNextBooking<T>(task: T & { apartment
     where: {
       apartmentId: task.apartmentId,
       checkInDate: { gte: task.date },
-      status: { in: ["ACTIVE", "CONFIRMED"] }
+      status: { in: ["ACTIVE", "CONFIRMED", "CHECKED_IN"] }
     },
     orderBy: { checkInDate: "asc" }
   });

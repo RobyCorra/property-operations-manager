@@ -145,7 +145,8 @@ export function getApartmentOperationalStatus(
   // --- 2. GERARCHIA DI STATO (5 livelli) ---
 
   // PRIORITÀ 1: OCCUPATO (RED)
-  const isOccupiedNow = (isOngoingStay && isToday) || (isCheckInDay && isToday && getMadridHour(now) >= 15);
+  const manualCheckIn = isCheckInDay && isToday && relevantBooking?.status === "CHECKED_IN";
+  const isOccupiedNow = (isOngoingStay && isToday) || (isCheckInDay && isToday && getMadridHour(now) >= 15) || manualCheckIn;
 
   if (isOccupiedNow) {
     return { status: "occupied", available: false, color: "RED", label: "Occupato", reason: "occupied_after_15" };

@@ -11,7 +11,7 @@ import React, {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getApartmentOperationalStatus, type ApartmentStatus } from "@/src/lib/apartment-status";
-import { deleteBooking } from "@/src/app/actions/booking";
+import { deleteBooking, confirmCheckIn } from "@/src/app/actions/booking";
 import {
   deleteCleaningTask,
   deleteMaintenanceTicket,
@@ -172,6 +172,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
   const [selectedEvent, setSelectedEvent] = useState<{ type: 'booking' | 'cleaning' | 'maintenance', data: any } | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCheckInConfirm, setShowCheckInConfirm] = useState(false);
 
   // Client-side clock for real-time 15:00 transition
   const [currentClientTime, setCurrentClientTime] = useState(() => new Date(serverDate));
@@ -284,6 +285,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
         if (e.key === "Escape") {
             setSelectedEvent(null);
             setShowDeleteConfirm(false);
+            setShowCheckInConfirm(false);
         }
     };
     if (selectedEvent) {
@@ -415,6 +417,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             router.refresh();
             setSelectedEvent(null);
             setShowDeleteConfirm(false);
+            setShowCheckInConfirm(false);
         } catch (e: any) {
             alert(e.message || "Si è verificato un errore durante l'operazione.");
         }
@@ -437,6 +440,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             router.refresh();
             setSelectedEvent(null);
             setShowDeleteConfirm(false);
+            setShowCheckInConfirm(false);
         } catch (e: any) {
             alert(e.message || "Impossibile eliminare l'evento.");
         }
@@ -851,14 +855,69 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                         {/* Specific Sections */}
                         {selectedEvent.type === 'booking' && (
-                            <div>
-                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Dettagli Soggiorno</h4>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <SummaryBox icon={<LogIn size={16} />} label="Check-in" value={formatDate(selectedEvent.data.checkInDate)} />
-                                    <SummaryBox icon={<DoorOpen size={16} />} label="Check-out" value={formatDate(selectedEvent.data.checkOutDate)} />
-                                    <SummaryBox icon={<UserCircle size={16} />} label="Ospiti" value={`${selectedEvent.data.totalGuests || 1} Persone`} />
-                                    <SummaryBox icon={<CalendarDays size={16} />} label="Sorgente" value={selectedEvent.data.source || "Diretto"} />
+                            <div className="space-y-6">
+                                <div>
+                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Dettagli Soggiorno</h4>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <SummaryBox icon={<LogIn size={16} />} label="Check-in" value={formatDate(selectedEvent.data.checkInDate)} />
+                                        <SummaryBox icon={<DoorOpen size={16} />} label="Check-out" value={formatDate(selectedEvent.data.checkOutDate)} />
+                                        <SummaryBox icon={<UserCircle size={16} />} label="Ospiti" value={`${selectedEvent.data.totalGuests || 1} Persone`} />
+                                        <SummaryBox icon={<CalendarDays size={16} />} label="Sorgente" value={selectedEvent.data.source || "Diretto"} />
+                                    </div>
                                 </div>
+
+                                {/* Check-in manuale */}
+                                {(() => {
+                                    const apt = apartments.find(a => a.id === selectedEvent.data.apartmentId);
+                                    const isReady = apt?.status === "GREEN";
+                                    const alreadyCheckedIn = selectedEvent.data.status === "CHECKED_IN";
+
+                                    if (alreadyCheckedIn) {
+                                        return (
+                                            <div className="flex items-center gap-2 px-4 py-3 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-black uppercase tracking-widest">
+                                                <LogIn size={13} /> Check in confermato
+                                            </div>
+                                        );
+                                    }
+
+                                    return showCheckInConfirm ? (
+                                        <div className="bg-emerald-500/8 border border-emerald-500/20 rounded-2xl p-4 flex items-center justify-between gap-3">
+                                            <p className="text-sm font-semibold text-slate-700">Confermi che i clienti hanno effettuato il check in?</p>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <button
+                                                    onClick={() => setShowCheckInConfirm(false)}
+                                                    className="px-4 py-2 bg-white border border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-50 transition-all"
+                                                >
+                                                    Annulla
+                                                </button>
+                                                <button
+                                                    disabled={isPending}
+                                                    onClick={() => handleAction(async () => {
+                                                        await confirmCheckIn(selectedEvent.data.id);
+                                                        setShowCheckInConfirm(false);
+                                                    })}
+                                                    className="px-5 py-2 bg-emerald-500 text-white text-xs font-bold uppercase tracking-wide rounded-full shadow-md shadow-emerald-200 hover:bg-emerald-600 transition-all disabled:opacity-50"
+                                                >
+                                                    ✓ Conferma
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            disabled={!isReady || isPending}
+                                            onClick={() => setShowCheckInConfirm(true)}
+                                            title={!isReady ? "Appartamento non ancora pronto" : "Conferma check-in anticipato"}
+                                            className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-black uppercase tracking-widest rounded-full transition-all duration-200 shadow-md ${
+                                                isReady
+                                                    ? "bg-emerald-500 text-white shadow-emerald-200 hover:bg-emerald-600 active:scale-95 cursor-pointer"
+                                                    : "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
+                                            }`}
+                                        >
+                                            <LogIn size={14} />
+                                            Check in ok
+                                        </button>
+                                    );
+                                })()}
                             </div>
                         )}
 

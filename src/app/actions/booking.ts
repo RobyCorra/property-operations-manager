@@ -273,3 +273,18 @@ export async function getApartmentBookings(apartmentId: string) {
 
   return bookings;
 }
+
+export async function confirmCheckIn(bookingId: string) {
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  if (!booking) throw new Error("Prenotazione non trovata.");
+  if (booking.status === "CANCELLED") throw new Error("Prenotazione annullata.");
+
+  await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: "CHECKED_IN" },
+  });
+
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/calendario-operativo");
+  revalidatePath("/dashboard/owner");
+}
