@@ -384,9 +384,8 @@ export default async function ManagerDashboardPage() {
     const refDate = t.scheduledStart ?? t.createdAt;
     return formatLocalDateKey(refDate) === todayLocalStr;
   });
-  // Popup: tutti i ticket aperti (non solo oggi)
-  const urgentTicketsKpi: KpiPopupItem[] = tickets
-    .filter((t: TicketView) => isMaintenanceActive(t))
+  // Popup: tutti i ticket di oggi (aperti + risolti)
+  const urgentTicketsKpi: KpiPopupItem[] = ticketsToday
     .map((t: TicketView) => ({
       id: t.id,
       label: t.title,
