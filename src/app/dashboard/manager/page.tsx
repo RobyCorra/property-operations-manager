@@ -386,6 +386,9 @@ export default async function ManagerDashboardPage() {
       sublabel: t.apartment.name,
       href: `/dashboard/manager/maintenance/${t.id}/edit`,
     }));
+  const ticketsDoneCount = tickets.filter((t: TicketView) =>
+    ["RESOLVED", "APPROVED"].includes(t.status)
+  ).length;
 
   // ── Calendar data per apartment (server-side, avoids client fetch auth issues) ──
   const mobileCalendarByApt: Record<string, CalendarData> = {};
@@ -504,6 +507,7 @@ export default async function ManagerDashboardPage() {
         cleaningsInProgress={cleaningsInProgressKpi}
         urgentTickets={urgentTicketsKpi}
         cleaningsDoneCount={cleaningsDoneCount}
+        ticketsDoneCount={ticketsDoneCount}
       />
 
       {/* 6. MAIN CONTENT LAYOUT */}

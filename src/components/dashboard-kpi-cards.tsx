@@ -24,6 +24,7 @@ export type DashboardKpiData = {
   cleaningsInProgress: KpiPopupItem[];
   urgentTickets: KpiPopupItem[];
   cleaningsDoneCount?: number;
+  ticketsDoneCount?: number;
 };
 
 type PopupState =
@@ -52,6 +53,7 @@ export default function DashboardKpiCards({
   cleaningsInProgress,
   urgentTickets,
   cleaningsDoneCount = 0,
+  ticketsDoneCount = 0,
 }: DashboardKpiData) {
   const [open, setOpen] = useState<PopupState>(null);
 
@@ -178,9 +180,17 @@ export default function DashboardKpiCards({
               <Ticket size={16} />
             </div>
           </div>
-          <div>
-            <p className="text-2xl font-semibold text-slate-900 tracking-tight">{urgentTickets.length}</p>
-            <p className="text-sm text-slate-500 mt-1">Segnalazioni aperte</p>
+          <div className="flex items-end gap-4">
+            <div>
+              <p className="text-2xl font-semibold text-slate-900 tracking-tight">{urgentTickets.length}</p>
+              <p className="text-sm text-slate-500 mt-1">pianificati</p>
+            </div>
+            {ticketsDoneCount > 0 && (
+              <div className="mb-0.5">
+                <p className="text-xl font-semibold text-emerald-600 leading-none">{ticketsDoneCount}</p>
+                <p className="text-xs font-semibold text-emerald-500 mt-1">eseguiti</p>
+              </div>
+            )}
           </div>
           <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-2 group-hover:text-violet-500 transition-colors">
             <span>→</span> Vedi lista
