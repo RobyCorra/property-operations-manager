@@ -392,6 +392,7 @@ export default async function ManagerDashboardPage() {
       sublabel: t.apartment.name,
       href: `/dashboard/manager/maintenance/${t.id}/edit`,
     }));
+  const ticketsTodayCount = ticketsToday.length;
   const ticketsDoneCount = ticketsToday.filter((t: TicketView) =>
     ["RESOLVED", "APPROVED"].includes(t.status)
   ).length;
@@ -513,6 +514,7 @@ export default async function ManagerDashboardPage() {
         cleaningsInProgress={cleaningsInProgressKpi}
         urgentTickets={urgentTicketsKpi}
         cleaningsDoneCount={cleaningsDoneCount}
+        ticketsTodayCount={ticketsTodayCount}
         ticketsDoneCount={ticketsDoneCount}
       />
 
