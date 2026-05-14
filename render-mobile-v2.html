@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mobile Dashboard – Proposta 1 Rev.2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background:#e8e4f8; font-family:system-ui,sans-serif; }
+  .phone { width:390px; background:#f8f7ff; border-radius:50px; overflow:hidden;
+           box-shadow:0 40px 100px rgba(0,0,0,.28), inset 0 0 0 1.5px rgba(255,255,255,.7);
+           border:10px solid #1a1a2e; position:relative; }
+  .phone-screen { height:844px; overflow-y:auto; overflow-x:hidden; position:relative; }
+  .phone-screen::-webkit-scrollbar { display:none; }
+  .notch { width:126px; height:34px; background:#1a1a2e; border-radius:0 0 22px 22px; margin:0 auto; }
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+
+  /* Pulse animation per ritardo */
+  @keyframes pulse-red {
+    0%,100% { opacity:1; }
+    50% { opacity:.6; }
+  }
+  .pulse-red { animation: pulse-red 1.4s ease-in-out infinite; }
+
+  /* Map slide-up */
+  #map-panel { transform: translateY(100%); transition: transform .35s cubic-bezier(.4,0,.2,1); }
+  #map-panel.open { transform: translateY(0); }
+</style>
+</head>
+<body class="p-8 min-h-screen flex flex-col items-center gap-10">
+
+<div class="text-center">
+  <h1 class="text-3xl font-black text-slate-800 mb-1">Proposta 1 — Revisione</h1>
+  <p class="text-slate-500 text-sm">Pulizie in corso visibili · Alert ritardi · Mappa su bottone</p>
+</div>
+
+<div class="flex flex-wrap gap-16 justify-center items-start">
+
+<!-- ══ PHONE ══ -->
+<div class="flex flex-col items-center gap-5">
+<div class="phone">
+<div class="phone-screen" id="mainScreen">
+  <div class="notch"></div>
+
+  <!-- STATUS BAR -->
+  <div class="flex justify-between items-center px-7 py-2 text-[11px] font-semibold text-slate-500">
+    <span>9:41</span>
+    <div class="flex items-center gap-1.5">
+      <svg width="15" height="11" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="1" width="2.5" height="11" rx="1" opacity=".25"/></svg>
+      <svg width="16" height="11" viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="0" y="1" width="20" height="10" rx="2"/><rect x="21" y="3.5" width="2" height="5" rx="1" fill="currentColor"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <!-- ━━━ 1. HEADER ━━━ -->
+  <div class="px-6 pt-1 pb-4 flex items-center justify-between">
+    <div>
+      <p class="text-[10px] font-black uppercase tracking-widest text-violet-500">Martedì 13 Maggio</p>
+      <h1 class="text-[26px] font-bold text-slate-900 leading-tight">Buongiorno 👋</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <!-- Mappa button -->
+      <button onclick="toggleMap()" class="flex items-center gap-1.5 px-3 py-2 bg-white rounded-full shadow-sm border border-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide hover:border-violet-300 transition-all">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Mappa
+      </button>
+      <!-- Bell -->
+      <button class="relative w-10 h-10 bg-white rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-black flex items-center justify-center">3</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ━━━ 2. ALERT RITARDO (molto visibile) ━━━ -->
+  <div class="mx-5 mb-4">
+    <div class="pulse-red bg-rose-500 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-rose-300">
+      <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="flex-1">
+        <p class="text-[11px] font-black uppercase tracking-wide text-white">⚠ Pulizia in ritardo</p>
+        <p class="text-[10px] text-rose-100 mt-0.5">Prati Studio · avrebbe dovuto iniziare alle 09:00</p>
+      </div>
+      <button class="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">Vedi</button>
+    </div>
+  </div>
+
+  <!-- ━━━ 3. KPI 2×2 ━━━ -->
+  <div class="px-5 grid grid-cols-2 gap-3 mb-4">
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+      <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Check-in Oggi</p>
+      <p class="text-3xl font-black text-slate-900">2</p>
+      <p class="text-[10px] text-slate-400 mt-0.5">prenotazioni</p>
+    </div>
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+      <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Pulizie Oggi</p>
+      <p class="text-3xl font-black text-slate-900">4</p>
+      <p class="text-[10px] text-slate-400 mt-0.5">pianificate</p>
+    </div>
+    <div class="bg-amber-50 rounded-2xl p-4 border border-amber-100">
+      <p class="text-[9px] font-black uppercase tracking-widest text-amber-500 mb-1">Ticket Urgenti</p>
+      <p class="text-3xl font-black text-amber-600">0</p>
+      <p class="text-[10px] text-amber-400 mt-0.5">aperti</p>
+    </div>
+    <div class="bg-violet-50 rounded-2xl p-4 border border-violet-100">
+      <p class="text-[9px] font-black uppercase tracking-widest text-violet-500 mb-1">Prossimo Evento</p>
+      <p class="text-sm font-black text-violet-700 leading-tight mt-0.5">Check-in<br/>alle 15:00</p>
+    </div>
+  </div>
+
+  <!-- ━━━ 4. PULIZIE IN CORSO ━━━ -->
+  <div class="px-5 mb-4">
+    <div class="flex items-center justify-between mb-2.5">
+      <div class="flex items-center gap-2">
+        <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">Pulizie in corso</p>
+        <span class="w-5 h-5 rounded-full bg-violet-600 text-white text-[9px] font-black flex items-center justify-center">2</span>
+      </div>
+      <button class="text-[10px] font-bold text-violet-600">Tutte →</button>
+    </div>
+
+    <!-- Card pulizia IN PROGRESS -->
+    <div class="space-y-2">
+      <div class="bg-white rounded-2xl border border-violet-200 shadow-sm overflow-hidden">
+        <div class="h-1 bg-gradient-to-r from-violet-500 to-blue-500"></div>
+        <div class="px-4 py-3 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-slate-900">Trastevere 68</p>
+            <p class="text-[10px] text-slate-400">Anna Cleaner · dal 09:30</p>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span class="flex items-center gap-1 text-[9px] font-black text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full">
+              <span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>
+              In corso
+            </span>
+            <p class="text-[9px] text-slate-400">7/10 punti</p>
+          </div>
+        </div>
+        <!-- Progress bar -->
+        <div class="px-4 pb-3">
+          <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-violet-500 to-blue-400 rounded-full" style="width:70%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-violet-200 shadow-sm overflow-hidden">
+        <div class="h-1 bg-gradient-to-r from-violet-500 to-blue-500"></div>
+        <div class="px-4 py-3 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-slate-900">Monti Suite</p>
+            <p class="text-[10px] text-slate-400">Marco Cleaner · dal 10:00</p>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span class="flex items-center gap-1 text-[9px] font-black text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full">
+              <span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>
+              In corso
+            </span>
+            <p class="text-[9px] text-slate-400">3/10 punti</p>
+          </div>
+        </div>
+        <div class="px-4 pb-3">
+          <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-violet-500 to-blue-400 rounded-full" style="width:30%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━━ 5. APPARTAMENTI ━━━ -->
+  <div class="px-5 mb-28">
+    <div class="flex items-center justify-between mb-2.5">
+      <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">Stato Appartamenti</p>
+      <button class="text-[10px] font-bold text-violet-600">Tutti →</button>
+    </div>
+    <div class="space-y-2">
+      <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></div>
+          <div>
+            <p class="text-sm font-bold text-slate-900">Trastevere 68</p>
+            <p class="text-[10px] text-slate-400">Pronto · check-in 15:00</p>
+          </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-700">Pronto</span>
+      </div>
+      <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></div>
+          <div>
+            <p class="text-sm font-bold text-slate-900">Monti Suite</p>
+            <p class="text-[10px] text-slate-400">Ospiti fino al 17/05</p>
+          </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-red-100 text-red-700">Occupato</span>
+      </div>
+      <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-rose-100">
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full bg-rose-500 pulse-red shrink-0"></div>
+          <div>
+            <p class="text-sm font-bold text-slate-900">Prati Studio</p>
+            <p class="text-[10px] text-rose-500">⚠ Pulizia in ritardo</p>
+          </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-rose-100 text-rose-700">Ritardo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━━ BOTTOM NAV BAR ━━━ -->
+  <div class="sticky bottom-0 bg-white/96 backdrop-blur border-t border-slate-100 px-3 pt-3 pb-5 flex justify-around items-center">
+    <button class="flex flex-col items-center gap-1">
+      <div class="w-11 h-11 rounded-xl bg-violet-100 flex items-center justify-center">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+      <span class="text-[9px] font-bold text-violet-600">Dashboard</span>
+    </button>
+    <button class="flex flex-col items-center gap-1">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <span class="text-[9px] font-bold text-slate-400">Calendario</span>
+    </button>
+    <!-- FAB + centrale -->
+    <button class="flex flex-col items-center gap-1 -mt-7">
+      <div class="w-15 h-15 w-[60px] h-[60px] rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-xl shadow-violet-300">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <span class="text-[9px] font-bold text-violet-600 mt-0.5">Nuovo</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 relative">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <span class="absolute top-0 right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-black flex items-center justify-center">2</span>
+      <span class="text-[9px] font-bold text-slate-400">Messaggi</span>
+    </button>
+    <button class="flex flex-col items-center gap-1">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <span class="text-[9px] font-bold text-slate-400">Cerca</span>
+    </button>
+  </div>
+
+  <!-- ━━━ MAP PANEL (slide up) ━━━ -->
+  <div id="map-panel" class="absolute inset-0 bg-slate-900 flex flex-col z-50">
+    <!-- Handle -->
+    <div class="flex justify-center pt-3 pb-2 shrink-0">
+      <div class="w-10 h-1 bg-white/20 rounded-full"></div>
+    </div>
+    <!-- Header mappa -->
+    <div class="px-5 pb-4 flex items-center justify-between shrink-0">
+      <div>
+        <p class="text-[10px] font-black uppercase tracking-widest text-violet-400">Mappa Geospaziale</p>
+        <h2 class="text-xl font-bold text-white">Appartamenti Live</h2>
+      </div>
+      <button onclick="toggleMap()" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <!-- Mappa placeholder -->
+    <div class="flex-1 mx-4 mb-4 rounded-3xl overflow-hidden relative bg-slate-800">
+      <!-- Simulated map -->
+      <div class="absolute inset-0 opacity-30" style="background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 50%, #1a1a2e 100%);">
+        <!-- Grid lines simulate map -->
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs><pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/></pattern></defs>
+          <rect width="100%" height="100%" fill="url(#grid)"/>
+          <!-- Simulated roads -->
+          <path d="M 50 200 Q 150 150 280 180 Q 340 190 370 250" stroke="rgba(255,255,255,0.12)" stroke-width="3" fill="none"/>
+          <path d="M 0 300 L 370 290" stroke="rgba(255,255,255,0.08)" stroke-width="2" fill="none"/>
+          <path d="M 180 0 L 200 500" stroke="rgba(255,255,255,0.08)" stroke-width="2" fill="none"/>
+        </svg>
+      </div>
+      <!-- Pin appartamento 1 — verde -->
+      <div class="absolute" style="top:38%;left:42%;">
+        <div class="relative flex flex-col items-center">
+          <div class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-white shadow-lg shadow-emerald-500/50 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="mt-1 bg-white rounded-lg px-2 py-1 shadow-xl text-center whitespace-nowrap">
+            <p class="text-[9px] font-black text-slate-800">Trastevere 68</p>
+            <p class="text-[8px] text-emerald-600 font-bold">Pronto</p>
+          </div>
+          <div class="w-2 h-2 bg-white rotate-45 -mt-1.5 shadow-sm"></div>
+        </div>
+      </div>
+      <!-- Pin appartamento 2 — rosso -->
+      <div class="absolute" style="top:25%;left:62%;">
+        <div class="relative flex flex-col items-center">
+          <div class="w-10 h-10 rounded-full bg-red-500 border-2 border-white shadow-lg shadow-red-500/50 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="mt-1 bg-white rounded-lg px-2 py-1 shadow-xl text-center whitespace-nowrap">
+            <p class="text-[9px] font-black text-slate-800">Monti Suite</p>
+            <p class="text-[8px] text-red-600 font-bold">Occupato</p>
+          </div>
+          <div class="w-2 h-2 bg-white rotate-45 -mt-1.5 shadow-sm"></div>
+        </div>
+      </div>
+      <!-- Pin appartamento 3 — rose (ritardo) -->
+      <div class="absolute pulse-red" style="top:55%;left:25%;">
+        <div class="relative flex flex-col items-center">
+          <div class="w-10 h-10 rounded-full bg-rose-500 border-2 border-white shadow-lg shadow-rose-500/50 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="mt-1 bg-white rounded-lg px-2 py-1 shadow-xl text-center whitespace-nowrap">
+            <p class="text-[9px] font-black text-slate-800">Prati Studio</p>
+            <p class="text-[8px] text-rose-600 font-bold">⚠ Ritardo</p>
+          </div>
+          <div class="w-2 h-2 bg-white rotate-45 -mt-1.5 shadow-sm"></div>
+        </div>
+      </div>
+      <!-- Legenda -->
+      <div class="absolute bottom-3 left-3 right-3 flex gap-2">
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/90 backdrop-blur rounded-full shadow text-[8px] font-bold text-slate-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Pronto
+        </div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/90 backdrop-blur rounded-full shadow text-[8px] font-bold text-slate-700">
+          <span class="w-2 h-2 rounded-full bg-red-500"></span> Occupato
+        </div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/90 backdrop-blur rounded-full shadow text-[8px] font-bold text-slate-700">
+          <span class="w-2 h-2 rounded-full bg-rose-500"></span> Ritardo
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end phone-screen -->
+</div><!-- end phone -->
+
+<!-- Legenda annotata -->
+<div class="space-y-3 text-sm max-w-[360px]">
+  <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-2.5">
+    <p class="font-black text-slate-800 uppercase tracking-wide text-xs">📋 Modifiche applicate</p>
+
+    <div class="flex gap-3">
+      <div class="w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center text-white text-[10px] font-black shrink-0 mt-0.5">1</div>
+      <div>
+        <p class="font-bold text-slate-800 text-sm">Alert ritardo lampeggiante</p>
+        <p class="text-slate-500 text-xs">Banner rosso pieno con animazione pulse, in evidenza sopra le KPI card. Pin sulla mappa lampeggia anch'esso.</p>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <div class="w-6 h-6 rounded-full bg-violet-600 flex items-center justify-center text-white text-[10px] font-black shrink-0 mt-0.5">2</div>
+      <div>
+        <p class="font-bold text-slate-800 text-sm">Pulizie in corso</p>
+        <p class="text-slate-500 text-xs">Sezione dedicata con card per ogni pulizia attiva: cleaner, orario, progress bar checklist e badge "In corso" con punto pulsante.</p>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-black shrink-0 mt-0.5">3</div>
+      <div>
+        <p class="font-bold text-slate-800 text-sm">Mappa su bottone "📍 Mappa"</p>
+        <p class="text-slate-500 text-xs">Bottone nell'header apre un pannello a schermo intero che sale dal basso (slide-up). Pin colorati per ogni appartamento, legenda, chiudi con ✕.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-violet-50 rounded-2xl p-4 border border-violet-100 text-xs text-violet-700 space-y-1">
+    <p class="font-black uppercase tracking-wide">💡 Ordine sezioni (dall'alto)</p>
+    <p>1. Header + bottone Mappa + notifiche</p>
+    <p>2. 🔴 Alert ritardo (se presente)</p>
+    <p>3. KPI 2×2</p>
+    <p>4. 🟣 Pulizie in corso (con progress)</p>
+    <p>5. Stato appartamenti</p>
+    <p>6. Bottom nav bar (5 tab + FAB)</p>
+  </div>
+</div>
+
+</div><!-- end flex -->
+
+<script>
+function toggleMap() {
+  const panel = document.getElementById('map-panel');
+  panel.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>

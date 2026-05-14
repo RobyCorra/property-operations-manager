@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mobile Dashboard – 3 Proposte</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background:#e8e4f8; font-family:system-ui,sans-serif; }
+  .phone { width:375px; min-height:812px; background:#f8f7ff; border-radius:44px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.6); position:relative; border:8px solid #1a1a2e; }
+  .phone-screen { height:812px; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; }
+  .phone-screen::-webkit-scrollbar { display:none; }
+  .notch { width:120px; height:30px; background:#1a1a2e; border-radius:0 0 20px 20px; margin:0 auto; }
+  .label { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#7c3aed; margin-bottom:8px; }
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:99px; font-size:10px; font-weight:700; }
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+</style>
+</head>
+<body class="p-8 min-h-screen">
+
+<div class="text-center mb-12">
+  <h1 class="text-3xl font-black text-slate-800 mb-2">Dashboard Manager — Responsive Mobile</h1>
+  <p class="text-slate-500 text-sm">3 proposte di layout. Larghezza 375px (iPhone 14)</p>
+</div>
+
+<div class="flex flex-wrap gap-12 justify-center items-start">
+
+<!-- ══════════════════════════════════════════
+     PROPOSTA 1 — Bottom Navigation Bar
+     ══════════════════════════════════════════ -->
+<div class="flex flex-col items-center gap-4">
+  <div class="label">Proposta 1 — Bottom Nav Bar</div>
+  <p class="text-xs text-slate-500 max-w-[375px] text-center mb-2">Navigazione fissa in basso. Header compatto. KPI in griglia 2×2. Azioni rapide nel bottom bar.</p>
+  <div class="phone">
+    <div class="phone-screen">
+      <div class="notch"></div>
+
+      <!-- STATUS BAR -->
+      <div class="flex justify-between items-center px-6 py-2 text-[11px] font-semibold text-slate-600">
+        <span>9:41</span>
+        <div class="flex gap-1 items-center">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="1" width="2.5" height="11" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 24 12" fill="currentColor"><rect x="0" y="1" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="21" y="3.5" width="2" height="5" rx="1"/><rect x="1.5" y="2.5" width="14" height="7" rx="1"/></svg>
+        </div>
+      </div>
+
+      <!-- HEADER -->
+      <div class="px-5 pt-2 pb-4 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-violet-500">Martedì 13 Maggio</p>
+          <h1 class="text-2xl font-bold text-slate-900">Buongiorno 👋</h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Notifica bell -->
+          <button class="relative w-10 h-10 bg-white rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-black flex items-center justify-center">3</span>
+          </button>
+          <!-- Avatar -->
+          <div class="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center text-white text-sm font-black">M</div>
+        </div>
+      </div>
+
+      <!-- KPI CARDS 2×2 -->
+      <div class="px-5 grid grid-cols-2 gap-3 mb-4">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Check-in Oggi</p>
+          <p class="text-2xl font-black text-slate-900">2</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">prenotazioni</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Pulizie Oggi</p>
+          <p class="text-2xl font-black text-slate-900">4</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">pianificate</p>
+        </div>
+        <div class="bg-rose-50 rounded-2xl p-4 border border-rose-100">
+          <p class="text-[10px] font-black uppercase tracking-widest text-rose-400 mb-1">In Ritardo</p>
+          <p class="text-2xl font-black text-rose-600">1</p>
+          <p class="text-[10px] text-rose-400 mt-0.5">pulizia</p>
+        </div>
+        <div class="bg-amber-50 rounded-2xl p-4 border border-amber-100">
+          <p class="text-[10px] font-black uppercase tracking-widest text-amber-500 mb-1">Ticket Urgenti</p>
+          <p class="text-2xl font-black text-amber-600">0</p>
+          <p class="text-[10px] text-amber-400 mt-0.5">aperti</p>
+        </div>
+      </div>
+
+      <!-- APPARTAMENTI -->
+      <div class="px-5 mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-[11px] font-black uppercase tracking-widest text-slate-500">Stato Appartamenti</p>
+          <button class="text-[10px] font-bold text-violet-600">Vedi tutti →</button>
+        </div>
+        <div class="space-y-2">
+          <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100">
+            <div>
+              <p class="text-sm font-bold text-slate-900">Trastevere 68</p>
+              <p class="text-[10px] text-slate-400">Via della Scala 68</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">Pronto</span>
+          </div>
+          <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100">
+            <div>
+              <p class="text-sm font-bold text-slate-900">Monti Suite</p>
+              <p class="text-[10px] text-slate-400">Via Nazionale 12</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 text-red-700">Occupato</span>
+          </div>
+          <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100">
+            <div>
+              <p class="text-sm font-bold text-slate-900">Prati Studio</p>
+              <p class="text-[10px] text-slate-400">Borgo Pio 5</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">Non pronto</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROSSIMI EVENTI -->
+      <div class="px-5 mb-24">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-[11px] font-black uppercase tracking-widest text-slate-500">Prossimi eventi</p>
+        </div>
+        <div class="space-y-2">
+          <div class="bg-white rounded-xl px-4 py-3 border border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs font-bold text-slate-900">Arrivo Marco Rossi</p>
+              <p class="text-[10px] text-slate-400">Trastevere 68 · 15:00</p>
+            </div>
+            <span class="text-[10px] font-bold text-violet-600">Oggi</span>
+          </div>
+          <div class="bg-white rounded-xl px-4 py-3 border border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs font-bold text-slate-900">Pulizia Monti Suite</p>
+              <p class="text-[10px] text-slate-400">Anna Cleaner · 10:00</p>
+            </div>
+            <span class="text-[10px] font-bold text-slate-400">Dom</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM NAV BAR -->
+      <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-slate-100 px-2 py-3 flex justify-around items-center" style="position:sticky;">
+        <button class="flex flex-col items-center gap-1">
+          <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <span class="text-[9px] font-bold text-violet-600">Dashboard</span>
+        </button>
+        <button class="flex flex-col items-center gap-1">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="text-[9px] font-bold text-slate-400">Calendario</span>
+        </button>
+        <!-- FAB centrale -->
+        <button class="flex flex-col items-center gap-1 -mt-6">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-lg shadow-violet-300">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <span class="text-[9px] font-bold text-violet-600">Nuovo</span>
+        </button>
+        <button class="flex flex-col items-center gap-1">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <span class="text-[9px] font-bold text-slate-400">Messaggi</span>
+        </button>
+        <button class="flex flex-col items-center gap-1">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <span class="text-[9px] font-bold text-slate-400">Cerca</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <div class="text-center text-xs text-slate-500 max-w-[375px] space-y-1 mt-2">
+    <p>✅ Navigazione sempre visibile in basso</p>
+    <p>✅ KPI in griglia 2×2 compatta</p>
+    <p>✅ FAB centrale per azioni rapide</p>
+    <p>✅ Lista appartamenti al posto della mappa</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PROPOSTA 2 — Card Swipe + Side Drawer
+     ══════════════════════════════════════════ -->
+<div class="flex flex-col items-center gap-4">
+  <div class="label">Proposta 2 — Hero Cards + Drawer</div>
+  <p class="text-xs text-slate-500 max-w-[375px] text-center mb-2">KPI orizzontali scrollabili. Sezioni con titoli grandi. Bottoni azione in alto full-width.</p>
+  <div class="phone">
+    <div class="phone-screen bg-gradient-to-b from-violet-950 to-slate-900">
+      <div class="notch bg-slate-900"></div>
+
+      <!-- DARK HEADER -->
+      <div class="px-6 pt-3 pb-6">
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-[10px] font-black uppercase tracking-widest text-violet-400">Mar 13 Maggio 2026</p>
+          <div class="flex items-center gap-2">
+            <button class="relative w-9 h-9 bg-white/10 rounded-full flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-black flex items-center justify-center">3</span>
+            </button>
+          </div>
+        </div>
+        <h1 class="text-3xl font-black text-white leading-tight">Oggi hai<br/><span class="text-violet-400">6 eventi</span></h1>
+        <p class="text-slate-400 text-sm mt-1">Tutto sotto controllo ✓</p>
+
+        <!-- KPI ORIZZONTALI SCROLLABILI -->
+        <div class="flex gap-3 mt-5 overflow-x-auto no-scrollbar pb-2">
+          <div class="bg-white/10 backdrop-blur rounded-2xl p-4 min-w-[110px] shrink-0 border border-white/10">
+            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Check-in</p>
+            <p class="text-3xl font-black text-white">2</p>
+            <p class="text-[9px] text-violet-300 mt-1">↑ Oggi</p>
+          </div>
+          <div class="bg-white/10 backdrop-blur rounded-2xl p-4 min-w-[110px] shrink-0 border border-white/10">
+            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Pulizie</p>
+            <p class="text-3xl font-black text-white">4</p>
+            <p class="text-[9px] text-emerald-300 mt-1">3 ok · 1 ✗</p>
+          </div>
+          <div class="bg-rose-500/20 backdrop-blur rounded-2xl p-4 min-w-[110px] shrink-0 border border-rose-500/20">
+            <p class="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-1">Ritardi</p>
+            <p class="text-3xl font-black text-rose-400">1</p>
+            <p class="text-[9px] text-rose-300 mt-1">⚠ Urgente</p>
+          </div>
+          <div class="bg-white/10 backdrop-blur rounded-2xl p-4 min-w-[110px] shrink-0 border border-white/10">
+            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Ticket</p>
+            <p class="text-3xl font-black text-white">0</p>
+            <p class="text-[9px] text-slate-400 mt-1">Nessuno</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIGHT SECTION -->
+      <div class="bg-[#f8f7ff] rounded-t-[2rem] min-h-[500px] pb-8">
+
+        <!-- AZIONI RAPIDE -->
+        <div class="px-5 pt-6 mb-5">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Azioni Rapide</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button class="flex flex-col items-center gap-2 bg-gradient-to-b from-violet-600 to-violet-700 text-white rounded-2xl py-4 px-2 shadow-lg shadow-violet-200">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+              <span class="text-[9px] font-black uppercase">Nuova Pulizia</span>
+            </button>
+            <button class="flex flex-col items-center gap-2 bg-slate-900 text-white rounded-2xl py-4 px-2 shadow-lg shadow-slate-200">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              <span class="text-[9px] font-black uppercase">Nuovo Ticket</span>
+            </button>
+            <button class="flex flex-col items-center gap-2 bg-white text-slate-800 rounded-2xl py-4 px-2 shadow-sm border border-slate-100">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class="text-[9px] font-black uppercase">Prenota</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- APPARTAMENTI -->
+        <div class="px-5 mb-5">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Appartamenti</p>
+            <button class="text-[10px] font-bold text-violet-600">Tutti →</button>
+          </div>
+          <div class="space-y-2">
+            <div class="bg-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                <div>
+                  <p class="text-sm font-bold text-slate-900">Trastevere 68</p>
+                  <p class="text-[10px] text-slate-400">Pronto per check-in</p>
+                </div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="bg-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <div>
+                  <p class="text-sm font-bold text-slate-900">Monti Suite</p>
+                  <p class="text-[10px] text-slate-400">Occupato · check-out 16/05</p>
+                </div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <div class="bg-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                <div>
+                  <p class="text-sm font-bold text-slate-900">Prati Studio</p>
+                  <p class="text-[10px] text-slate-400">Pulizia in corso</p>
+                </div>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMELINE COMPATTA -->
+        <div class="px-5">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Timeline Oggi</p>
+          <div class="relative pl-5 border-l-2 border-slate-100 space-y-4">
+            <div class="relative">
+              <div class="absolute -left-[21px] w-3 h-3 rounded-full bg-violet-500 border-2 border-white"></div>
+              <p class="text-xs font-bold text-slate-900">Pulizia Trastevere 68</p>
+              <p class="text-[10px] text-slate-400">Anna · 10:00 → In corso</p>
+            </div>
+            <div class="relative">
+              <div class="absolute -left-[21px] w-3 h-3 rounded-full bg-emerald-500 border-2 border-white"></div>
+              <p class="text-xs font-bold text-slate-900">Check-in Marco Rossi</p>
+              <p class="text-[10px] text-slate-400">Trastevere 68 · 15:00</p>
+            </div>
+            <div class="relative opacity-40">
+              <div class="absolute -left-[21px] w-3 h-3 rounded-full bg-slate-300 border-2 border-white"></div>
+              <p class="text-xs font-bold text-slate-900">Pulizia Monti Suite</p>
+              <p class="text-[10px] text-slate-400">Marco · 14 Mag · 09:00</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center text-xs text-slate-500 max-w-[375px] space-y-1 mt-2">
+    <p>✅ Header scuro con KPI scrollabili</p>
+    <p>✅ Azioni rapide come tile 3×1</p>
+    <p>✅ Timeline verticale compatta</p>
+    <p>✅ Design premium dark/light split</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PROPOSTA 3 — App Shell con sezioni
+     ══════════════════════════════════════════ -->
+<div class="flex flex-col items-center gap-4">
+  <div class="label">Proposta 3 — App Shell Minimalista</div>
+  <p class="text-xs text-slate-500 max-w-[375px] text-center mb-2">Intestazione piccola. Sezioni con separatori chiari. Tutto a portata di pollice. Focus su leggibilità.</p>
+  <div class="phone">
+    <div class="phone-screen">
+      <div class="notch"></div>
+
+      <!-- TOP BAR STICKY -->
+      <div class="sticky top-0 z-10 bg-[#f8f7ff]/95 backdrop-blur px-5 py-3 flex items-center justify-between border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-xs font-black">M</div>
+          <div>
+            <p class="text-xs font-black text-slate-900">Manager</p>
+            <p class="text-[9px] text-slate-400">Mar 13 Maggio</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="w-9 h-9 bg-white rounded-full border border-slate-100 shadow-sm flex items-center justify-center">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <button class="relative w-9 h-9 bg-white rounded-full border border-slate-100 shadow-sm flex items-center justify-center">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-black flex items-center justify-center">3</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="px-5 pt-5 pb-28 space-y-6">
+
+        <!-- SEZIONE: ALERT URGENTI -->
+        <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-rose-500 flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="flex-1">
+            <p class="text-xs font-black text-rose-800">Pulizia in ritardo</p>
+            <p class="text-[10px] text-rose-600">Prati Studio · avrebbe dovuto iniziare alle 09:00</p>
+          </div>
+          <button class="text-[10px] font-bold text-rose-600 bg-rose-100 px-3 py-1.5 rounded-full">Vedi</button>
+        </div>
+
+        <!-- SEZIONE: KPI COMPATTI -->
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Riepilogo Oggi</p>
+          <div class="grid grid-cols-4 gap-2">
+            <div class="bg-white rounded-xl p-3 text-center shadow-sm border border-slate-100">
+              <p class="text-xl font-black text-slate-900">2</p>
+              <p class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Check-in</p>
+            </div>
+            <div class="bg-white rounded-xl p-3 text-center shadow-sm border border-slate-100">
+              <p class="text-xl font-black text-slate-900">4</p>
+              <p class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Pulizie</p>
+            </div>
+            <div class="bg-white rounded-xl p-3 text-center shadow-sm border border-rose-100">
+              <p class="text-xl font-black text-rose-500">1</p>
+              <p class="text-[8px] font-bold text-rose-400 uppercase mt-0.5">Ritardi</p>
+            </div>
+            <div class="bg-white rounded-xl p-3 text-center shadow-sm border border-slate-100">
+              <p class="text-xl font-black text-slate-900">0</p>
+              <p class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Ticket</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEZIONE: APPARTAMENTI con status pill -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Appartamenti</p>
+            <button class="text-[10px] font-bold text-violet-600 bg-violet-50 px-3 py-1 rounded-full">+ Tutti</button>
+          </div>
+          <div class="space-y-2">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-slate-900 truncate">Trastevere 68</p>
+                <p class="text-[10px] text-slate-400">Pronto · check-in 15:00</p>
+              </div>
+              <div class="shrink-0 flex flex-col items-end gap-1">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700">PRONTO</span>
+                <button class="text-[9px] font-bold text-violet-600">Check in ok →</button>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-slate-900 truncate">Monti Suite</p>
+                <p class="text-[10px] text-slate-400">Marco Rossi · fino al 17/05</p>
+              </div>
+              <span class="shrink-0 px-2 py-0.5 rounded-full text-[9px] font-black bg-red-100 text-red-700">OCCUPATO</span>
+            </div>
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-slate-900 truncate">Prati Studio</p>
+                <p class="text-[10px] text-violet-500">⚠ Pulizia in ritardo</p>
+              </div>
+              <span class="shrink-0 px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-100 text-blue-700">IN PULIZIA</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEZIONE: PROSSIMI EVENTI -->
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Prossimi Eventi</p>
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden divide-y divide-slate-50">
+            <div class="px-4 py-3 flex items-center gap-3">
+              <span class="text-[10px] font-black text-slate-400 w-10 shrink-0">10:00</span>
+              <div class="w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0"></div>
+              <div class="flex-1"><p class="text-xs font-bold text-slate-900">Pulizia · Trastevere 68</p><p class="text-[10px] text-slate-400">Anna Cleaner</p></div>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-violet-100 text-violet-700">In corso</span>
+            </div>
+            <div class="px-4 py-3 flex items-center gap-3">
+              <span class="text-[10px] font-black text-slate-400 w-10 shrink-0">15:00</span>
+              <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
+              <div class="flex-1"><p class="text-xs font-bold text-slate-900">Check-in · Marco Rossi</p><p class="text-[10px] text-slate-400">Trastevere 68</p></div>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700">Oggi</span>
+            </div>
+            <div class="px-4 py-3 flex items-center gap-3 opacity-50">
+              <span class="text-[10px] font-black text-slate-400 w-10 shrink-0">Dom</span>
+              <div class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></div>
+              <div class="flex-1"><p class="text-xs font-bold text-slate-900">Pulizia · Monti Suite</p><p class="text-[10px] text-slate-400">Marco · 09:00</p></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM BAR: solo azioni principali -->
+      <div class="sticky bottom-0 bg-white border-t border-slate-100 px-4 py-3 grid grid-cols-3 gap-2">
+        <a href="#" class="flex items-center justify-center gap-1.5 bg-violet-600 text-white text-[9px] font-black uppercase tracking-widest py-3 rounded-xl">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Pulizia
+        </a>
+        <a href="#" class="flex items-center justify-center gap-1.5 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest py-3 rounded-xl">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Ticket
+        </a>
+        <a href="#" class="flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 text-[9px] font-black uppercase tracking-widest py-3 rounded-xl">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Prenota
+        </a>
+      </div>
+
+    </div>
+  </div>
+  <div class="text-center text-xs text-slate-500 max-w-[375px] space-y-1 mt-2">
+    <p>✅ Alert urgenti in evidenza</p>
+    <p>✅ KPI in griglia 4×1 compatta</p>
+    <p>✅ Appartamenti con shortcut rapidi</p>
+    <p>✅ Bottom bar con solo 3 azioni chiave</p>
+  </div>
+</div>
+
+</div><!-- end flex -->
+</body>
+</html>

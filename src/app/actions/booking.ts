@@ -285,6 +285,6 @@ export async function confirmCheckIn(bookingId: string) {
   });
 
   revalidatePath("/dashboard/manager");
-  revalidatePath("/dashboard/manager/calendario-operativo");
+  revalidatePath("/dashboard/manager/mappa");
   revalidatePath("/dashboard/owner");
 }

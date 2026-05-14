@@ -13,14 +13,14 @@ import {
   UserCircle,
   LogOut,
   ChevronLeft,
-  Activity,
+  MapPin,
 } from "./icons";
 
 const NAV_ITEMS = [
   { label: "Oggi", href: "/dashboard/manager", icon: LayoutDashboard },
   { label: "Appartamenti", href: "/dashboard/manager/apartments", icon: Building2 },
   { label: "Prenotazioni", href: "/dashboard/manager/bookings", icon: CalendarDays },
-  { label: "Mappa", href: "/dashboard/manager/calendario-operativo", icon: Activity },
+  { label: "Mappa", href: "/dashboard/manager/mappa", icon: MapPin },
   { label: "Messaggi", href: "/dashboard/manager/messages", icon: MessageSquare },
   { label: "Pulizie", href: "/dashboard/manager/cleanings", icon: Brush },
   { label: "Manutenzione", href: "/dashboard/manager/maintenance", icon: Wrench },

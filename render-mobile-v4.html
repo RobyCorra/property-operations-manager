@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mobile Dashboard – v4 · Sidebar</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background:#e8e4f8; font-family:system-ui,sans-serif; }
+  .phone {
+    width:390px; background:#f8f7ff; border-radius:50px; overflow:hidden;
+    box-shadow:0 40px 100px rgba(0,0,0,.28), inset 0 0 0 1.5px rgba(255,255,255,.7);
+    border:10px solid #1a1a2e;
+  }
+  .phone-screen { height:844px; overflow:hidden; position:relative; display:flex; }
+  .phone-screen::-webkit-scrollbar { display:none; }
+  .notch { width:126px; height:34px; background:#1a1a2e; border-radius:0 0 22px 22px; margin:0 auto; }
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+
+  @keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:.55} }
+  .pulse-red { animation:pulse-red 1.3s ease-in-out infinite; }
+
+  /* panels */
+  #map-panelA  { transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+  #map-panelA.open  { transform:translateY(0); }
+  #evtA { transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+  #evtA.open { transform:translateY(0); }
+
+  #sideB { transform:translateX(-100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+  #sideB.open { transform:translateX(0); }
+  #map-panelB { transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+  #map-panelB.open { transform:translateY(0); }
+  #evtB { transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+  #evtB.open { transform:translateY(0); }
+
+  .sidebar-item-active svg { stroke:#7c3aed !important; }
+  .sidebar-item-active span { color:#7c3aed !important; }
+  .sidebar-item-active .si-bg { background:#ede9fe; }
+</style>
+</head>
+<body class="p-8 min-h-screen flex flex-col items-center gap-10">
+
+<div class="text-center">
+  <h1 class="text-3xl font-black text-slate-800 mb-1">v4 — Sidebar al posto della Bottom Bar</h1>
+  <p class="text-slate-500 text-sm">Due proposte di sidebar · Scegli la variante preferita</p>
+</div>
+
+<div class="flex flex-wrap gap-14 justify-center items-start">
+
+<!-- ══════════════════════════════════════════════
+     PROPOSTA A — Sidebar fissa a sinistra (icon + label)
+     ══════════════════════════════════════════════ -->
+<div class="flex flex-col items-center gap-3">
+  <div class="bg-white rounded-2xl px-4 py-2 text-xs font-black uppercase tracking-widest text-violet-700 border border-violet-100 shadow-sm">
+    Proposta A — Sidebar fissa
+  </div>
+  <p class="text-slate-500 text-xs max-w-[220px] text-center">Sidebar sempre visibile a sinistra · icona + etichetta · contenuto a destra</p>
+
+<div class="phone">
+<div class="phone-screen" id="screenA">
+
+  <!-- ── SIDEBAR FISSA ── -->
+  <div class="flex flex-col items-center w-[68px] h-full bg-white border-r border-slate-100 shadow-sm pt-14 pb-6 gap-1 shrink-0 z-20">
+    <!-- Notch fill -->
+    <div class="absolute top-0 left-0 w-[68px] h-[54px] bg-white"></div>
+
+    <!-- Logo / iniziale -->
+    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center mb-3 shadow-lg shadow-violet-200">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+
+    <!-- Nav items -->
+    <button onclick="setTabA('dashboard')" id="tabA-dashboard" class="sidebar-item-active flex flex-col items-center gap-1 w-full py-2.5 px-1 rounded-none">
+      <div class="si-bg w-10 h-10 rounded-xl flex items-center justify-center transition-all">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+      <span class="text-[8px] font-bold text-slate-400 leading-tight">Dashboard</span>
+    </button>
+    <button onclick="setTabA('calendar')" id="tabA-calendar" class="flex flex-col items-center gap-1 w-full py-2.5 px-1">
+      <div class="si-bg w-10 h-10 rounded-xl flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <span class="text-[8px] font-bold text-slate-400 leading-tight">Calendario</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 w-full py-2.5 px-1">
+      <div class="si-bg w-10 h-10 rounded-xl flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <span class="text-[8px] font-bold text-slate-400 leading-tight">Messaggi</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 w-full py-2.5 px-1">
+      <div class="si-bg w-10 h-10 rounded-xl flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <span class="text-[8px] font-bold text-slate-400 leading-tight">Cerca</span>
+    </button>
+
+    <!-- Spacer -->
+    <div class="flex-1"></div>
+
+    <!-- FAB Nuovo -->
+    <div class="flex flex-col items-center gap-1 w-full pb-2 px-1">
+      <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-lg shadow-violet-200">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <span class="text-[8px] font-bold text-violet-600 leading-tight">Nuovo</span>
+    </div>
+  </div>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="flex-1 overflow-y-auto no-scrollbar relative" id="contentA">
+
+    <!-- Notch + status bar -->
+    <div class="notch"></div>
+    <div class="flex justify-between items-center px-4 py-1.5 text-[11px] font-semibold text-slate-500">
+      <span>9:41</span>
+      <div class="flex items-center gap-1.5">
+        <svg width="14" height="11" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="15" height="11" viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="0" y="1" width="20" height="10" rx="2"/><rect x="21" y="3.5" width="2" height="5" rx="1" fill="currentColor"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="px-4 pt-0 pb-3 flex items-center justify-between">
+      <div>
+        <p class="text-[9px] font-black uppercase tracking-widest text-violet-500">Martedì 13 Maggio</p>
+        <h1 class="text-[19px] font-bold text-slate-900 leading-tight">Buongiorno 👋</h1>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button onclick="document.getElementById('map-panelA').classList.add('open')" class="flex items-center gap-1 px-2.5 py-1.5 bg-white rounded-full shadow-sm border border-slate-100 text-slate-600 text-[9px] font-bold uppercase tracking-wide">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Mappa
+        </button>
+        <button class="relative w-9 h-9 bg-white rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-red-500 rounded-full text-[8px] text-white font-black flex items-center justify-center">3</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert ritardo -->
+    <div class="px-3 mb-2.5 space-y-2">
+      <div class="pulse-red bg-rose-500 rounded-2xl px-3 py-2.5 flex items-center gap-2.5 shadow-md shadow-rose-200">
+        <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[9px] font-black uppercase tracking-wide text-white">⚠ Pulizia in ritardo</p>
+          <p class="text-[9px] text-rose-100 truncate">Prati Studio · 09:00</p>
+        </div>
+        <button class="px-2.5 py-1 bg-white text-rose-600 text-[9px] font-black rounded-full shrink-0">Vedi</button>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="px-3 grid grid-cols-2 gap-2 mb-2.5">
+      <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
+        <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">Check-in Oggi</p>
+        <p class="text-2xl font-black text-slate-900">2</p>
+        <p class="text-[9px] text-slate-400 mt-0.5">prenotazioni</p>
+      </div>
+      <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100">
+        <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-1">Pulizie Oggi</p>
+        <p class="text-2xl font-black text-slate-900">4</p>
+        <p class="text-[9px] text-slate-400 mt-0.5">pianificate</p>
+      </div>
+      <button onclick="document.getElementById('evtA').classList.add('open')" class="col-span-2 bg-violet-600 rounded-2xl p-3 flex items-center justify-between cursor-pointer active:scale-95 transition-transform shadow-md shadow-violet-200">
+        <div>
+          <p class="text-[8px] font-black uppercase tracking-widest text-violet-200 mb-0.5">Prossimi eventi oggi</p>
+          <p class="text-white font-black text-sm">3 ancora da fare</p>
+          <p class="text-violet-200 text-[9px]">2 pulizie · 1 ticket</p>
+        </div>
+        <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </button>
+    </div>
+
+    <!-- Pulizie in corso -->
+    <div class="px-3 mb-2.5">
+      <div class="flex items-center justify-between mb-1.5">
+        <div class="flex items-center gap-1.5"><p class="text-[9px] font-black uppercase tracking-widest text-slate-500">In corso</p><span class="w-4 h-4 rounded-full bg-violet-600 text-white text-[8px] font-black flex items-center justify-center">2</span></div>
+        <button class="text-[9px] font-bold text-violet-600">Tutte →</button>
+      </div>
+      <div class="bg-white rounded-2xl border border-violet-200 shadow-sm overflow-hidden">
+        <div class="h-1 bg-gradient-to-r from-violet-500 to-blue-500"></div>
+        <div class="px-3 py-2.5 flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0"><p class="text-xs font-bold text-slate-900 truncate">Trastevere 68</p><p class="text-[9px] text-slate-400">Anna · 09:30</p></div>
+          <span class="flex items-center gap-1 text-[8px] font-black text-violet-600 bg-violet-50 border border-violet-200 px-1.5 py-0.5 rounded-full shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>In corso</span>
+        </div>
+        <div class="px-3 pb-2.5"><div class="h-1.5 bg-slate-100 rounded-full"><div class="h-full bg-gradient-to-r from-violet-500 to-blue-400 rounded-full" style="width:70%"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Appartamenti -->
+    <div class="px-3 mb-6">
+      <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1.5">Appartamenti</p>
+      <div class="space-y-1.5">
+        <div class="bg-white rounded-xl px-3 py-2.5 flex items-center justify-between shadow-sm border border-slate-100">
+          <div class="flex items-center gap-2.5"><div class="w-2 h-2 rounded-full bg-emerald-500"></div><p class="text-xs font-bold text-slate-900">Trastevere 68</p></div>
+          <span class="px-2 py-0.5 rounded-full text-[8px] font-bold bg-emerald-100 text-emerald-700">Pronto</span>
+        </div>
+        <div class="bg-white rounded-xl px-3 py-2.5 flex items-center justify-between shadow-sm border border-slate-100">
+          <div class="flex items-center gap-2.5"><div class="w-2 h-2 rounded-full bg-red-500"></div><p class="text-xs font-bold text-slate-900">Monti Suite</p></div>
+          <span class="px-2 py-0.5 rounded-full text-[8px] font-bold bg-red-100 text-red-700">Occupato</span>
+        </div>
+        <div class="bg-white rounded-xl px-3 py-2.5 flex items-center justify-between shadow-sm border border-rose-100">
+          <div class="flex items-center gap-2.5"><div class="w-2 h-2 rounded-full bg-rose-500 pulse-red"></div><p class="text-xs font-bold text-slate-900">Prati Studio</p></div>
+          <span class="px-2 py-0.5 rounded-full text-[8px] font-bold bg-rose-100 text-rose-700">Ritardo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Events drawer A -->
+    <div id="evtA" class="absolute inset-0 bg-[#f8f7ff] z-50 flex flex-col">
+      <div class="flex justify-center pt-3"><div class="w-10 h-1 bg-slate-200 rounded-full"></div></div>
+      <div class="px-4 pt-3 pb-3 flex items-center justify-between border-b border-slate-100">
+        <h2 class="text-lg font-bold text-slate-900">3 eventi pendenti</h2>
+        <button onclick="document.getElementById('evtA').classList.remove('open')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"><div class="h-1 bg-violet-500"></div><div class="px-3 py-3 flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg></div><div class="flex-1"><div class="flex items-center gap-2 mb-0.5"><span class="text-[9px] font-black text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Pulizia</span><span class="text-[9px] text-slate-400">10:00</span></div><p class="text-sm font-bold text-slate-900">Trastevere 68</p><p class="text-[10px] text-slate-400">Anna · In corso</p></div><button class="text-[9px] font-bold text-violet-600 bg-violet-50 px-2.5 py-1.5 rounded-full">Apri</button></div></div>
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"><div class="h-1 bg-rose-500"></div><div class="px-3 py-3 flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center shrink-0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="flex-1"><div class="flex items-center gap-2 mb-0.5"><span class="text-[9px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">Manutenzione</span><span class="text-[9px] text-rose-500 font-bold">● URGENTE</span></div><p class="text-sm font-bold text-slate-900">Monti Suite</p><p class="text-[10px] text-slate-400">Caldaia guasta</p></div><button class="text-[9px] font-bold text-rose-600 bg-rose-50 px-2.5 py-1.5 rounded-full">Apri</button></div></div>
+      </div>
+    </div>
+
+    <!-- Map panel A -->
+    <div id="map-panelA" class="absolute inset-0 bg-slate-900 z-50 flex flex-col">
+      <div class="px-4 py-4 flex items-center justify-between shrink-0">
+        <div><p class="text-[9px] font-black uppercase tracking-widest text-violet-400">Mappa</p><h2 class="text-base font-bold text-white">Appartamenti Live</h2></div>
+        <button onclick="document.getElementById('map-panelA').classList.remove('open')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="flex-1 mx-3 mb-4 rounded-3xl overflow-hidden relative bg-slate-800">
+        <div class="absolute inset-0" style="background:linear-gradient(135deg,#1e3a5f,#0f2744 50%,#1a1a2e);"><svg width="100%" height="100%"><defs><pattern id="gA" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0L0 0 0 30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(#gA)"/></svg></div>
+        <div class="absolute" style="top:35%;left:38%;"><div class="flex flex-col items-center"><div class="w-9 h-9 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div class="mt-1 bg-white rounded-lg px-2 py-0.5 shadow-xl"><p class="text-[8px] font-black text-slate-800">Trastevere 68</p><p class="text-[7px] text-emerald-600 font-bold">Pronto</p></div></div></div>
+        <div class="absolute" style="top:20%;left:58%;"><div class="flex flex-col items-center"><div class="w-9 h-9 rounded-full bg-red-500 border-2 border-white shadow-lg flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div class="mt-1 bg-white rounded-lg px-2 py-0.5 shadow-xl"><p class="text-[8px] font-black text-slate-800">Monti Suite</p><p class="text-[7px] text-red-600 font-bold">Occupato</p></div></div></div>
+        <div class="absolute pulse-red" style="top:52%;left:20%;"><div class="flex flex-col items-center"><div class="w-9 h-9 rounded-full bg-rose-500 border-2 border-white shadow-lg flex items-center justify-center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><div class="mt-1 bg-white rounded-lg px-2 py-0.5 shadow-xl"><p class="text-[8px] font-black text-slate-800">Prati Studio</p><p class="text-[7px] text-rose-600 font-bold">⚠ Ritardo</p></div></div></div>
+        <div class="absolute bottom-3 left-3 right-3 flex gap-1.5 flex-wrap">
+          <div class="flex items-center gap-1.5 px-2 py-1 bg-white/90 backdrop-blur rounded-full text-[8px] font-bold text-slate-700"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Pronto</div>
+          <div class="flex items-center gap-1.5 px-2 py-1 bg-white/90 backdrop-blur rounded-full text-[8px] font-bold text-slate-700"><span class="w-2 h-2 rounded-full bg-red-500"></span>Occupato</div>
+          <div class="flex items-center gap-1.5 px-2 py-1 bg-white/90 backdrop-blur rounded-full text-[8px] font-bold text-slate-700"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Ritardo</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end contentA -->
+</div><!-- end phone-screen -->
+</div><!-- end phone -->
+<div class="text-[10px] text-slate-500 space-y-1 mt-1">
+  <p>👆 Tocca i bottoni per provare</p>
+  <p>📏 Contenuto: 322px (390-68)</p>
+</div>
+</div><!-- end col A -->
+
+
+<!-- ══════════════════════════════════════════════
+     PROPOSTA B — Hamburger → Sidebar overlay
+     ══════════════════════════════════════════════ -->
+<div class="flex flex-col items-center gap-3">
+  <div class="bg-white rounded-2xl px-4 py-2 text-xs font-black uppercase tracking-widest text-blue-700 border border-blue-100 shadow-sm">
+    Proposta B — Sidebar overlay
+  </div>
+  <p class="text-slate-500 text-xs max-w-[220px] text-center">Hamburger nell'header → sidebar slide-in da sinistra · contenuto full-width</p>
+
+<div class="phone">
+<div class="phone-screen" id="screenB">
+  <!-- Content full-width -->
+  <div class="w-full overflow-y-auto no-scrollbar" id="contentB">
+
+    <!-- Notch -->
+    <div class="notch"></div>
+    <div class="flex justify-between items-center px-5 py-1.5 text-[11px] font-semibold text-slate-500">
+      <span>9:41</span>
+      <div class="flex items-center gap-1.5">
+        <svg width="14" height="11" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="15" height="11" viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="0" y="1" width="20" height="10" rx="2"/><rect x="21" y="3.5" width="2" height="5" rx="1" fill="currentColor"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="px-5 pt-1 pb-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Hamburger -->
+        <button onclick="document.getElementById('sideB').classList.add('open')" class="w-10 h-10 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center justify-center gap-1.5 px-2.5">
+          <span class="block w-full h-0.5 bg-slate-700 rounded-full"></span>
+          <span class="block w-4/5 h-0.5 bg-slate-700 rounded-full self-start"></span>
+          <span class="block w-full h-0.5 bg-slate-700 rounded-full"></span>
+        </button>
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-violet-500">Martedì 13 Maggio</p>
+          <h1 class="text-[22px] font-bold text-slate-900 leading-tight">Buongiorno 👋</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="document.getElementById('map-panelB').classList.add('open')" class="flex items-center gap-1.5 px-3 py-2 bg-white rounded-full shadow-sm border border-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wide">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Mappa
+        </button>
+        <button class="relative w-10 h-10 bg-white rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-black flex items-center justify-center">3</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert ritardi -->
+    <div class="px-5 mb-3 space-y-2">
+      <div class="pulse-red bg-rose-500 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-rose-300">
+        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="flex-1 min-w-0"><p class="text-[10px] font-black uppercase tracking-wide text-white">⚠ Pulizia in ritardo</p><p class="text-[10px] text-rose-100 truncate">Prati Studio · 09:00</p></div>
+        <button class="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">Vedi</button>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="px-5 grid grid-cols-2 gap-3 mb-3">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"><p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Check-in Oggi</p><p class="text-3xl font-black text-slate-900">2</p><p class="text-[10px] text-slate-400 mt-0.5">prenotazioni</p></div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"><p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Pulizie Oggi</p><p class="text-3xl font-black text-slate-900">4</p><p class="text-[10px] text-slate-400 mt-0.5">pianificate</p></div>
+      <button onclick="document.getElementById('evtB').classList.add('open')" class="col-span-2 bg-violet-600 rounded-2xl p-4 flex items-center justify-between cursor-pointer active:scale-95 transition-transform shadow-lg shadow-violet-200">
+        <div><p class="text-[9px] font-black uppercase tracking-widest text-violet-200 mb-1">Prossimi eventi oggi</p><p class="text-white font-black text-base">3 ancora da fare</p><p class="text-violet-200 text-[10px] mt-0.5">2 pulizie · 1 ticket</p></div>
+        <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </button>
+    </div>
+
+    <!-- In corso -->
+    <div class="px-5 mb-3">
+      <div class="flex items-center justify-between mb-2"><div class="flex items-center gap-2"><p class="text-[10px] font-black uppercase tracking-widest text-slate-500">In corso</p><span class="w-5 h-5 rounded-full bg-violet-600 text-white text-[9px] font-black flex items-center justify-center">2</span></div><button class="text-[10px] font-bold text-violet-600">Tutte →</button></div>
+      <div class="bg-white rounded-2xl border border-violet-200 shadow-sm overflow-hidden">
+        <div class="h-1 bg-gradient-to-r from-violet-500 to-blue-500"></div>
+        <div class="px-4 py-3 flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg></div>
+          <div class="flex-1"><p class="text-sm font-bold text-slate-900">Trastevere 68</p><p class="text-[10px] text-slate-400">Anna · 09:30</p></div>
+          <span class="flex items-center gap-1 text-[9px] font-black text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>In corso</span>
+        </div>
+        <div class="px-4 pb-3"><div class="h-1.5 bg-slate-100 rounded-full"><div class="h-full bg-gradient-to-r from-violet-500 to-blue-400 rounded-full" style="width:70%"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Appartamenti -->
+    <div class="px-5 mb-10">
+      <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Appartamenti</p>
+      <div class="space-y-2">
+        <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100"><div class="flex items-center gap-3"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><p class="text-sm font-bold text-slate-900">Trastevere 68</p></div><span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-700">Pronto</span></div>
+        <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100"><div class="flex items-center gap-3"><div class="w-2.5 h-2.5 rounded-full bg-red-500"></div><p class="text-sm font-bold text-slate-900">Monti Suite</p></div><span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-red-100 text-red-700">Occupato</span></div>
+        <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-rose-100"><div class="flex items-center gap-3"><div class="w-2.5 h-2.5 rounded-full bg-rose-500 pulse-red"></div><p class="text-sm font-bold text-slate-900">Prati Studio</p></div><span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-rose-100 text-rose-700">Ritardo</span></div>
+      </div>
+    </div>
+
+  </div><!-- end contentB -->
+
+  <!-- ── SIDEBAR OVERLAY (slide-in da sinistra) ── -->
+  <div id="sideB" class="absolute inset-0 z-50 flex">
+    <!-- Backdrop -->
+    <div onclick="document.getElementById('sideB').classList.remove('open')" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <!-- Sidebar panel -->
+    <div class="relative w-[260px] h-full bg-white flex flex-col shadow-2xl shadow-black/30 z-10">
+      <!-- Header sidebar -->
+      <div class="px-5 pt-14 pb-5 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-lg shadow-violet-200">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div>
+            <p class="text-xs font-black text-slate-800">Manager</p>
+            <p class="text-[10px] text-slate-400">Dashboard Operativa</p>
+          </div>
+        </div>
+      </div>
+      <!-- Nav items -->
+      <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <!-- Active item -->
+        <button onclick="document.getElementById('sideB').classList.remove('open')" class="w-full flex items-center gap-3 px-4 py-3 bg-violet-50 border border-violet-100 rounded-2xl text-left">
+          <div class="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center shrink-0">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-violet-700">Dashboard</p>
+            <p class="text-[10px] text-violet-400">Vista principale</p>
+          </div>
+        </button>
+        <button onclick="document.getElementById('sideB').classList.remove('open')" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left hover:bg-slate-50 active:bg-slate-100">
+          <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-slate-700">Calendario</p>
+            <p class="text-[10px] text-slate-400">Operativo</p>
+          </div>
+        </button>
+        <button onclick="document.getElementById('sideB').classList.remove('open')" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left hover:bg-slate-50">
+          <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 relative">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white font-black flex items-center justify-center">2</span>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-slate-700">Messaggi</p>
+            <p class="text-[10px] text-slate-400">Chat con team</p>
+          </div>
+        </button>
+        <button onclick="document.getElementById('sideB').classList.remove('open')" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left hover:bg-slate-50">
+          <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-slate-700">Cerca</p>
+            <p class="text-[10px] text-slate-400">Appartamenti, ospiti…</p>
+          </div>
+        </button>
+
+        <!-- Divider -->
+        <div class="my-3 h-px bg-slate-100 mx-2"></div>
+        <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">Crea Nuovo</p>
+
+        <button class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left hover:bg-violet-50">
+          <div class="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg></div>
+          <p class="text-sm font-bold text-slate-700">Nuova Pulizia</p>
+        </button>
+        <button class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left hover:bg-slate-50">
+          <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <p class="text-sm font-bold text-slate-700">Nuovo Ticket</p>
+        </button>
+        <button class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left hover:bg-slate-50">
+          <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+          <p class="text-sm font-bold text-slate-700">Nuova Prenotazione</p>
+        </button>
+      </nav>
+
+      <!-- Chiudi -->
+      <div class="px-4 pb-8 pt-3 border-t border-slate-100">
+        <button onclick="document.getElementById('sideB').classList.remove('open')" class="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-slate-50 text-slate-500 text-sm font-bold">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events drawer B -->
+  <div id="evtB" class="absolute inset-0 bg-[#f8f7ff] z-40 flex flex-col">
+    <div class="flex justify-center pt-3"><div class="w-10 h-1 bg-slate-200 rounded-full"></div></div>
+    <div class="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+      <h2 class="text-xl font-bold text-slate-900">3 eventi pendenti</h2>
+      <button onclick="document.getElementById('evtB').classList.remove('open')" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"><div class="h-1 bg-violet-500"></div><div class="px-4 py-3 flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg></div><div class="flex-1"><div class="flex items-center gap-2 mb-0.5"><span class="text-[9px] font-black text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">Pulizia</span><span class="text-[9px] text-slate-400">10:00</span></div><p class="text-sm font-bold text-slate-900">Trastevere 68</p><p class="text-[10px] text-slate-400">Anna · In corso</p></div><button class="text-[10px] font-bold text-violet-600 bg-violet-50 px-3 py-1.5 rounded-full">Apri</button></div></div>
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden"><div class="h-1 bg-rose-500"></div><div class="px-4 py-3 flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="flex-1"><div class="flex items-center gap-2 mb-0.5"><span class="text-[9px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">Manutenzione</span><span class="text-[9px] text-rose-500 font-bold">● URGENTE</span></div><p class="text-sm font-bold text-slate-900">Monti Suite</p><p class="text-[10px] text-slate-400">Caldaia guasta</p></div><button class="text-[10px] font-bold text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full">Apri</button></div></div>
+    </div>
+  </div>
+
+  <!-- Map panel B -->
+  <div id="map-panelB" class="absolute inset-0 bg-slate-900 z-50 flex flex-col">
+    <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-white/20 rounded-full"></div></div>
+    <div class="px-5 py-3 flex items-center justify-between shrink-0">
+      <div><p class="text-[10px] font-black uppercase tracking-widest text-violet-400">Mappa</p><h2 class="text-lg font-bold text-white">Appartamenti Live</h2></div>
+      <button onclick="document.getElementById('map-panelB').classList.remove('open')" class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="flex-1 mx-4 mb-4 rounded-3xl overflow-hidden relative bg-slate-800">
+      <div class="absolute inset-0" style="background:linear-gradient(135deg,#1e3a5f,#0f2744 50%,#1a1a2e);"><svg width="100%" height="100%"><defs><pattern id="gB" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0L0 0 0 30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(#gB)"/></svg></div>
+      <div class="absolute" style="top:35%;left:42%;"><div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div class="mt-1 bg-white rounded-lg px-2 py-0.5 shadow-xl"><p class="text-[8px] font-black text-slate-800">Trastevere 68</p><p class="text-[7px] text-emerald-600 font-bold">Pronto</p></div></div></div>
+      <div class="absolute" style="top:22%;left:60%;"><div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full bg-red-500 border-2 border-white shadow-lg flex items-center justify-center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div class="mt-1 bg-white rounded-lg px-2 py-0.5 shadow-xl"><p class="text-[8px] font-black text-slate-800">Monti Suite</p><p class="text-[7px] text-red-600 font-bold">Occupato</p></div></div></div>
+      <div class="absolute pulse-red" style="top:55%;left:22%;"><div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full bg-rose-500 border-2 border-white shadow-lg flex items-center justify-center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><div class="mt-1 bg-white rounded-lg px-2 py-0.5 shadow-xl"><p class="text-[8px] font-black text-slate-800">Prati Studio</p><p class="text-[7px] text-rose-600 font-bold">⚠ Ritardo</p></div></div></div>
+      <div class="absolute bottom-3 left-3 right-3 flex gap-1.5 flex-wrap">
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/90 backdrop-blur rounded-full text-[8px] font-bold text-slate-700"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Pronto</div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/90 backdrop-blur rounded-full text-[8px] font-bold text-slate-700"><span class="w-2 h-2 rounded-full bg-red-500"></span>Occupato</div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/90 backdrop-blur rounded-full text-[8px] font-bold text-slate-700"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Ritardo</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end phone-screen -->
+</div><!-- end phone -->
+<div class="text-[10px] text-slate-500 space-y-1 mt-1">
+  <p>☰ Tocca hamburger per aprire la sidebar</p>
+  <p>📏 Contenuto: 390px (full-width)</p>
+</div>
+</div><!-- end col B -->
+
+</div><!-- end flex -->
+
+<!-- Legenda comparativa -->
+<div class="flex flex-wrap gap-6 justify-center max-w-3xl">
+  <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex-1 min-w-[280px] space-y-3">
+    <p class="font-black text-slate-800 text-sm uppercase tracking-wide">🅐 Sidebar fissa</p>
+    <div class="space-y-2 text-xs">
+      <div class="flex gap-2"><span class="text-emerald-500 font-bold">✓</span><span class="text-slate-600">Navigazione sempre visibile senza gesti</span></div>
+      <div class="flex gap-2"><span class="text-emerald-500 font-bold">✓</span><span class="text-slate-600">Simile alla UI desktop — coerente</span></div>
+      <div class="flex gap-2"><span class="text-emerald-500 font-bold">✓</span><span class="text-slate-600">Nessun tap aggiuntivo per navigare</span></div>
+      <div class="flex gap-2"><span class="text-rose-400 font-bold">✗</span><span class="text-slate-600">Contenuto più stretto (322px invece di 390px)</span></div>
+      <div class="flex gap-2"><span class="text-rose-400 font-bold">✗</span><span class="text-slate-600">Meno spazio per card e testi</span></div>
+    </div>
+  </div>
+  <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex-1 min-w-[280px] space-y-3">
+    <p class="font-black text-slate-800 text-sm uppercase tracking-wide">🅑 Sidebar overlay (hamburger)</p>
+    <div class="space-y-2 text-xs">
+      <div class="flex gap-2"><span class="text-emerald-500 font-bold">✓</span><span class="text-slate-600">Contenuto full-width (390px) — massimo spazio</span></div>
+      <div class="flex gap-2"><span class="text-emerald-500 font-bold">✓</span><span class="text-slate-600">Sidebar ricca: icona + titolo + sottotitolo</span></div>
+      <div class="flex gap-2"><span class="text-emerald-500 font-bold">✓</span><span class="text-slate-600">Pattern standard mobile (Gmail, Notion, ecc.)</span></div>
+      <div class="flex gap-2"><span class="text-rose-400 font-bold">✗</span><span class="text-slate-600">Richiede 1 tap in più per navigare</span></div>
+      <div class="flex gap-2"><span class="text-rose-400 font-bold">✗</span><span class="text-slate-600">Hamburger meno intuitivo del bottom nav</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function setTabA(tab) {
+  ['dashboard','calendar'].forEach(t => {
+    const btn = document.getElementById('tabA-'+t);
+    if (btn) btn.classList.toggle('sidebar-item-active', t === tab);
+  });
+}
+</script>
+</body>
+</html>

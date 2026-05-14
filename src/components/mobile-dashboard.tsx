@@ -1689,7 +1689,7 @@ export default function MobileDashboard({
               {filteredApartments.map((apt) => (
                 <Link
                   key={apt.id}
-                  href="/dashboard/manager/calendario-operativo"
+                  href="/dashboard/manager/mappa"
                   onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
                   className="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-xl active:bg-slate-100"
                 >

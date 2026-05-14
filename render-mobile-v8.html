@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Render — Same-day CI+CO diagonal</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f0eeff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 24px; }
+  h1 { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; color: #7c3aed; margin-bottom: 20px; }
+  h2 { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #94a3b8; margin-bottom: 12px; margin-top: 24px; }
+
+  /* ── Phone shell ── */
+  .phone {
+    width: 375px;
+    background: #f8f7ff;
+    border-radius: 40px;
+    border: 8px solid #1e1b4b;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(30,27,75,.25);
+    margin: 0 auto;
+  }
+
+  /* ── Calendar grid ── */
+  .cal-wrap { padding: 16px; }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-header span { font-size: 15px; font-weight: 900; color: #1e293b; }
+  .cal-nav { width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
+  .dow-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 4px; }
+  .dow { text-align: center; font-size: 8px; font-weight: 900; color: #94a3b8; text-transform: uppercase; padding: 4px 0; }
+  .day-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .cell {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .cell.empty { }
+  .cell.today { background: #7c3aed; color: #fff; font-weight: 900; }
+
+  /* ── Apartment status colors ── */
+  /* GREEN */
+  .ci-green  { background: linear-gradient(135deg, #fff 50%, #a7f3d0 50%); color: #065f46; }
+  .co-green  { background: linear-gradient(135deg, #6ee7b7 50%, #fff 50%); color: #065f46; }
+  .occ-green { background: #d1fae5; color: #065f46; }
+
+  /* BLUE */
+  .ci-blue   { background: linear-gradient(135deg, #fff 50%, #bfdbfe 50%); color: #1e40af; }
+  .co-blue   { background: linear-gradient(135deg, #93c5fd 50%, #fff 50%); color: #1e40af; }
+  .occ-blue  { background: #dbeafe; color: #1e40af; }
+
+  /* VIOLET */
+  .ci-violet  { background: linear-gradient(135deg, #fff 50%, #ddd6fe 50%); color: #4c1d95; }
+  .co-violet  { background: linear-gradient(135deg, #c4b5fd 50%, #fff 50%); color: #4c1d95; }
+  .occ-violet { background: #ede9fe; color: #4c1d95; }
+
+  /* YELLOW */
+  .ci-yellow  { background: linear-gradient(135deg, #fff 50%, #fef08a 50%); color: #713f12; }
+  .co-yellow  { background: linear-gradient(135deg, #fde047 50%, #fff 50%); color: #713f12; }
+  .occ-yellow { background: #fef9c3; color: #713f12; }
+
+  /* RED */
+  .ci-red   { background: linear-gradient(135deg, #fff 50%, #fecaca 50%); color: #7f1d1d; }
+  .co-red   { background: linear-gradient(135deg, #f87171 50%, #fff 50%); color: #7f1d1d; }
+  .occ-red  { background: #fee2e2; color: #7f1d1d; }
+
+  /* ── SAME-DAY CI+CO combinations ── */
+  /* CO-left + CI-right: gradient(135deg, CO-dark 50%, CI-light 50%) */
+
+  /* CO green + CI green */
+  .cico-gg { background: linear-gradient(135deg, #6ee7b7 50%, #a7f3d0 50%); color: #065f46; }
+
+  /* CO red (Occupato) + CI green (Pronto) */
+  .cico-rg { background: linear-gradient(135deg, #f87171 50%, #a7f3d0 50%); }
+
+  /* CO red + CI blue (Non pronto) */
+  .cico-rb { background: linear-gradient(135deg, #f87171 50%, #bfdbfe 50%); }
+
+  /* CO blue + CI green */
+  .cico-bg { background: linear-gradient(135deg, #93c5fd 50%, #a7f3d0 50%); }
+
+  /* CO green + CI blue */
+  .cico-gb { background: linear-gradient(135deg, #6ee7b7 50%, #bfdbfe 50%); }
+
+  /* CO violet + CI green */
+  .cico-vg { background: linear-gradient(135deg, #c4b5fd 50%, #a7f3d0 50%); }
+
+  /* CO yellow + CI green */
+  .cico-yg { background: linear-gradient(135deg, #fde047 50%, #a7f3d0 50%); }
+
+  /* CO red + CI red (stesso stato) */
+  .cico-rr { background: linear-gradient(135deg, #f87171 50%, #fecaca 50%); color: #7f1d1d; }
+
+  /* dots */
+  .dots { position: absolute; bottom: 2px; left: 0; right: 0; display: flex; justify-content: center; gap: 2px; }
+  .dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Label section ── */
+  .label-section { padding: 0 16px 16px; }
+  .label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .label-cell { width: 28px; height: 22px; border-radius: 5px; flex-shrink: 0; }
+  .label-text { font-size: 9px; font-weight: 700; color: #475569; }
+  .label-sub  { font-size: 8px; color: #94a3b8; }
+
+  /* ── Explanation cards ── */
+  .card-section { padding: 0 16px 16px; }
+  .card { background: white; border-radius: 16px; padding: 12px 14px; margin-bottom: 8px; border: 1px solid #f1f5f9; }
+  .card-title { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: #7c3aed; margin-bottom: 8px; }
+  .card-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .card-cell { width: 36px; height: 28px; border-radius: 6px; flex-shrink: 0; }
+  .card-label { font-size: 10px; font-weight: 700; color: #1e293b; }
+  .card-desc  { font-size: 9px; color: #64748b; }
+
+  .arrow { font-size: 11px; color: #c4b5fd; }
+</style>
+</head>
+<body>
+
+<h1>Render v8 — Stesso giorno: Check-out + Check-in</h1>
+
+<div class="phone">
+
+  <!-- Calendar -->
+  <div class="cal-wrap">
+    <div class="cal-header">
+      <div class="cal-nav">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span>Maggio 2026</span>
+      <div class="cal-nav">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <div class="dow-row">
+      <div class="dow">Lun</div><div class="dow">Mar</div><div class="dow">Mer</div>
+      <div class="dow">Gio</div><div class="dow">Ven</div><div class="dow">Sab</div><div class="dow">Dom</div>
+    </div>
+
+    <div class="day-grid">
+      <!-- Row 1: 1-7 -->
+      <div class="cell empty"></div>
+      <div class="cell empty"></div>
+      <div class="cell empty"></div>
+      <div class="cell occ-green">1</div>  <!-- occupato verde -->
+      <div class="cell occ-green">2</div>
+      <div class="cell occ-green">3</div>
+      <div class="cell co-green">4        <!-- CHECK-OUT verde -->
+        <div class="dots"><div class="dot" style="background:#22c55e"></div></div>
+      </div>
+
+      <!-- Row 2: 8-14 -->
+      <div class="cell empty">5</div>
+      <div class="cell empty">6</div>
+      <div class="cell ci-blue">7</div>    <!-- CHECK-IN blu (Non pronto) -->
+      <div class="cell occ-blue">8</div>
+      <div class="cell occ-blue">9</div>
+      <div class="cell occ-blue">10</div>
+
+      <!-- STESSO GIORNO: CO blue + CI green -->
+      <div class="cell cico-bg">
+        <span style="font-size:11px;font-weight:700;color:#1e293b;position:relative;z-index:1">11</span>
+        <div class="dots"><div class="dot" style="background:#22c55e"></div></div>
+      </div>
+
+      <!-- Row 3: 12-18 -->
+      <div class="cell occ-green">12</div>
+      <div class="cell occ-green">13</div>
+      <div class="cell today">14</div>    <!-- OGGI -->
+      <div class="cell occ-red">15</div>   <!-- occupato rosso (Occupato) -->
+      <div class="cell occ-red">16</div>
+      <div class="cell occ-red">17</div>
+
+      <!-- STESSO GIORNO: CO red + CI blue -->
+      <div class="cell cico-rb">
+        <span style="font-size:11px;font-weight:700;color:#1e1b4b;position:relative;z-index:1">18</span>
+        <div class="dots"><div class="dot" style="background:#eab308"></div></div>
+      </div>
+
+      <!-- Row 4 -->
+      <div class="cell occ-blue">19</div>
+      <div class="cell occ-blue">20</div>
+      <div class="cell occ-blue">21</div>
+
+      <!-- STESSO GIORNO: CO blue + CI blue (stesso stato) -->
+      <div class="cell cico-bg">
+        <span style="font-size:11px;font-weight:700;color:#1e40af;position:relative;z-index:1">22</span>
+      </div>
+
+      <div class="cell occ-green">23</div>
+      <div class="cell occ-green">24</div>
+      <div class="cell co-green">25</div>
+
+      <!-- Row 5 -->
+      <div class="cell empty">26</div>
+      <div class="cell empty">27</div>
+      <div class="cell ci-red">28</div>
+      <div class="cell occ-red">29</div>
+      <div class="cell occ-red">30</div>
+      <div class="cell co-red">31</div>
+      <div class="cell empty"></div>
+    </div>
+  </div>
+
+  <!-- Label section -->
+  <div class="label-section">
+    <div style="background:white;border-radius:14px;border:1px solid #f1f5f9;padding:10px 12px;">
+      <div style="font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:8px;">Stato Appartamento</div>
+
+      <!-- Stato Appartamento rows -->
+      <div class="label-row">
+        <div class="label-cell" style="background:linear-gradient(135deg,#fff 50%,#a7f3d0 50%)"></div>
+        <div class="label-cell" style="background:#d1fae5"></div>
+        <div class="label-cell" style="background:linear-gradient(135deg,#6ee7b7 50%,#fff 50%)"></div>
+        <span class="label-text" style="color:#065f46">Pronto</span>
+        <span class="label-sub">CI · Occ · CO</span>
+      </div>
+      <div class="label-row">
+        <div class="label-cell" style="background:linear-gradient(135deg,#fff 50%,#bfdbfe 50%)"></div>
+        <div class="label-cell" style="background:#dbeafe"></div>
+        <div class="label-cell" style="background:linear-gradient(135deg,#93c5fd 50%,#fff 50%)"></div>
+        <span class="label-text" style="color:#1e40af">Non pronto</span>
+        <span class="label-sub">CI · Occ · CO</span>
+      </div>
+      <div class="label-row">
+        <div class="label-cell" style="background:linear-gradient(135deg,#fff 50%,#ddd6fe 50%)"></div>
+        <div class="label-cell" style="background:#ede9fe"></div>
+        <div class="label-cell" style="background:linear-gradient(135deg,#c4b5fd 50%,#fff 50%)"></div>
+        <span class="label-text" style="color:#4c1d95">In corso</span>
+        <span class="label-sub">CI · Occ · CO</span>
+      </div>
+      <div class="label-row">
+        <div class="label-cell" style="background:linear-gradient(135deg,#fff 50%,#fef08a 50%)"></div>
+        <div class="label-cell" style="background:#fef9c3"></div>
+        <div class="label-cell" style="background:linear-gradient(135deg,#fde047 50%,#fff 50%)"></div>
+        <span class="label-text" style="color:#713f12">In verifica</span>
+        <span class="label-sub">CI · Occ · CO</span>
+      </div>
+      <div class="label-row">
+        <div class="label-cell" style="background:linear-gradient(135deg,#fff 50%,#fecaca 50%)"></div>
+        <div class="label-cell" style="background:#fee2e2"></div>
+        <div class="label-cell" style="background:linear-gradient(135deg,#f87171 50%,#fff 50%)"></div>
+        <span class="label-text" style="color:#7f1d1d">Occupato</span>
+        <span class="label-sub">CI · Occ · CO</span>
+      </div>
+
+      <!-- Same-day row -->
+      <div style="border-top:1px solid #f1f5f9;margin-top:8px;padding-top:8px;">
+        <div style="font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:6px;">Stesso giorno — CO + CI</div>
+        <div class="label-row">
+          <div class="label-cell cico-rg" style="width:36px;height:28px;border-radius:6px"></div>
+          <span class="label-text">CO Occupato → CI Pronto</span>
+        </div>
+        <div class="label-row">
+          <div class="label-cell cico-rb" style="width:36px;height:28px;border-radius:6px"></div>
+          <span class="label-text">CO Occupato → CI Non pronto</span>
+        </div>
+        <div class="label-row">
+          <div class="label-cell cico-bg" style="width:36px;height:28px;border-radius:6px"></div>
+          <span class="label-text">CO Non pronto → CI Pronto</span>
+        </div>
+        <div class="label-row">
+          <div class="label-cell cico-gg" style="width:36px;height:28px;border-radius:6px"></div>
+          <span class="label-text">CO Pronto → CI Pronto (stesso stato)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<!-- Detail card outside phone -->
+<div style="max-width:375px;margin:24px auto 0;">
+  <h2>Come funziona la diagonale</h2>
+  <div class="card">
+    <div class="card-title">Logica cella stesso giorno</div>
+
+    <div class="card-row">
+      <div class="card-cell" style="background:linear-gradient(135deg,#f87171 50%,#a7f3d0 50%)"></div>
+      <div>
+        <div class="card-label">CO Rosso + CI Verde</div>
+        <div class="card-desc">Sinistra = colore scuro del CO &nbsp;|&nbsp; Destra = colore chiaro del CI</div>
+        <div class="card-desc" style="font-family:monospace;margin-top:3px;color:#7c3aed">135deg, #f87171 50%, #a7f3d0 50%</div>
+      </div>
+    </div>
+
+    <div class="card-row">
+      <div class="card-cell" style="background:linear-gradient(135deg,#93c5fd 50%,#a7f3d0 50%)"></div>
+      <div>
+        <div class="card-label">CO Blu + CI Verde</div>
+        <div class="card-desc" style="font-family:monospace;margin-top:3px;color:#7c3aed">135deg, #93c5fd 50%, #a7f3d0 50%</div>
+      </div>
+    </div>
+
+    <div class="card-row">
+      <div class="card-cell" style="background:linear-gradient(135deg,#6ee7b7 50%,#a7f3d0 50%)"></div>
+      <div>
+        <div class="card-label">CO Verde + CI Verde</div>
+        <div class="card-desc">Quasi omogeneo — la diagonale è sottile</div>
+        <div class="card-desc" style="font-family:monospace;margin-top:3px;color:#7c3aed">135deg, #6ee7b7 50%, #a7f3d0 50%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

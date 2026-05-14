@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calendario — Click giorno V7</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #e8e4f5;
+    min-height: 100vh;
+    padding: 28px 16px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  h1 { font-size: 20px; font-weight: 900; color: #1e1b4b; letter-spacing: -0.5px; }
+  .subtitle { font-size: 11px; color: #7c6fb0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+  .row { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .phone-label { font-size: 11px; font-weight: 800; color: #4c1d95; text-transform: uppercase; letter-spacing: 1.2px; text-align: center; }
+
+  /* Phone frame */
+  .phone {
+    width: 320px;
+    height: 700px;
+    background: #f8f7ff;
+    border-radius: 36px;
+    box-shadow: 0 24px 60px rgba(76,29,149,.22), 0 4px 14px rgba(0,0,0,.1);
+    overflow: hidden;
+    border: 5px solid #1e1b4b;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ── Header ── */
+  .apt-header {
+    background: #fff;
+    border-bottom: 1px solid #ede9ff;
+    padding: 12px 14px 0;
+    flex-shrink: 0;
+  }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700; color: #7c3aed;
+    background: #f1eeff; padding: 4px 10px; border-radius: 99px;
+    margin-bottom: 8px;
+  }
+  .apt-name { font-size: 18px; font-weight: 900; color: #1e1b4b; }
+  .apt-status { font-size: 10px; font-weight: 700; color: #15803d; margin-top: 1px; }
+  .tabs { display: flex; margin-top: 8px; }
+  .tab { flex: 1; padding: 7px 2px; text-align: center; font-size: 9px; font-weight: 700; color: #94a3b8; border-bottom: 2px solid transparent; }
+  .tab.active { color: #7c3aed; border-bottom-color: #7c3aed; }
+
+  /* ── Content ── */
+  .content { flex: 1; overflow-y: auto; padding: 12px 12px 24px; }
+
+  /* Month nav */
+  .month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .month-btn { width: 28px; height: 28px; border-radius: 50%; background: #f1eeff; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #7c3aed; }
+  .month-label { font-size: 14px; font-weight: 900; color: #1e1b4b; }
+
+  /* ── Calendar grid ── */
+  .cal-card { background: #fff; border-radius: 18px; padding: 10px; box-shadow: 0 2px 8px rgba(76,29,149,.07); margin-bottom: 10px; }
+  .day-labels { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 3px; }
+  .day-label { text-align: center; font-size: 8px; font-weight: 800; color: #94a3b8; text-transform: uppercase; padding: 2px 0; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+
+  /* Day cell */
+  .day {
+    aspect-ratio: 1;
+    position: relative;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .day:active { opacity: .7; }
+  .day-num { font-size: 11px; font-weight: 600; color: #475569; position: relative; z-index: 2; }
+  .day.empty .day-num { color: transparent; pointer-events: none; }
+
+  /* TODAY */
+  .day.today { background: #7c3aed; }
+  .day.today .day-num { color: #fff; font-weight: 900; }
+
+  /* ── SELECTED ring ── */
+  .day.selected {
+    box-shadow: 0 0 0 2px #1e1b4b;
+    border-radius: 8px;
+    z-index: 1;
+  }
+  .day.selected.today { box-shadow: 0 0 0 2px #1e1b4b; }
+
+  /* Stato GREEN */
+  .day.occ-green { background: #d1fae5; }
+  .day.occ-green .day-num { color: #065f46; font-weight: 700; }
+  .day.ci-green::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#fff 50%,#a7f3d0 50%); border-radius:8px; z-index:0; }
+  .day.ci-green .day-num { color: #065f46; }
+  .day.co-green::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#6ee7b7 50%,#fff 50%); border-radius:8px; z-index:0; }
+  .day.co-green .day-num { color: #065f46; }
+
+  /* Dots */
+  .dots { position:absolute; bottom:2px; left:0; right:0; display:flex; justify-content:center; gap:2px; z-index:3; }
+  .dot { width:4px; height:4px; border-radius:50%; }
+  .dot-p-attesa     { background: #eab308; }
+  .dot-p-nassegnata { background: #f43f5e; }
+  .dot-p-ritardo    { background: #f97316; }
+  .dot-p-corso      { background: #7c3aed; }
+  .dot-p-completata { background: #22c55e; }
+  .dot-t-urgente    { background: #ef4444; }
+  .dot-t-nonurgente { background: #f97316; }
+  .dot-t-risolto    { background: #94a3b8; }
+
+  /* ══════════════════════════════════════════
+     SELECTED DAY PANEL
+  ══════════════════════════════════════════ */
+  .day-panel {
+    background: #fff;
+    border-radius: 16px;
+    border: 1.5px solid #ede9ff;
+    box-shadow: 0 4px 16px rgba(76,29,149,.1);
+    overflow: hidden;
+    margin-bottom: 10px;
+    animation: slideDown .2s ease;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .day-panel-header {
+    padding: 10px 14px 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #f0eeff;
+  }
+  .day-panel-date { font-size: 13px; font-weight: 900; color: #1e1b4b; }
+  .day-panel-count { font-size: 9px; font-weight: 700; color: #7c3aed; background: #f1eeff; padding: 2px 8px; border-radius: 99px; }
+
+  /* Event cards inside panel */
+  .ev-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f8f7ff;
+    cursor: pointer;
+    transition: background .12s;
+    position: relative;
+  }
+  .ev-card:last-child { border-bottom: none; }
+  .ev-card:active { background: #faf8ff; }
+
+  .ev-color-bar {
+    width: 3px; height: 36px; border-radius: 99px; flex-shrink: 0;
+  }
+  .bar-booking   { background: #7c3aed; }
+  .bar-cleaning  { background: #3b82f6; }
+  .bar-ticket-urg{ background: #ef4444; }
+  .bar-ticket-nor{ background: #f97316; }
+
+  .ev-icon-wrap {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .icon-booking   { background: #f5f3ff; }
+  .icon-cleaning  { background: #eff6ff; }
+  .icon-ticket-urg{ background: #fef2f2; }
+  .icon-ticket-nor{ background: #fff7ed; }
+
+  .ev-info { flex: 1; min-width: 0; }
+  .ev-type { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; }
+  .type-booking   { color: #7c3aed; }
+  .type-cleaning  { color: #3b82f6; }
+  .type-ticket-urg{ color: #dc2626; }
+  .type-ticket-nor{ color: #ea580c; }
+  .ev-name { font-size: 12px; font-weight: 800; color: #1e1b4b; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev-meta { font-size: 9px; color: #64748b; margin-top: 1px; }
+
+  .ev-badge { font-size: 7px; font-weight: 700; padding: 2px 7px; border-radius: 99px; flex-shrink: 0; }
+  .badge-confirmed   { background: #dcfce7; color: #15803d; }
+  .badge-pending     { background: #fef9c3; color: #713f12; }
+  .badge-inprogress  { background: #ede9fe; color: #5b21b6; }
+  .badge-late        { background: #ffedd5; color: #9a3412; }
+  .badge-unassigned  { background: #ffe4e6; color: #9f1239; }
+  .badge-done        { background: #dcfce7; color: #15803d; }
+  .badge-urgent      { background: #fee2e2; color: #991b1b; }
+  .badge-nonurgent   { background: #ffedd5; color: #9a3412; }
+
+  .ev-chevron { color: #c4b5fd; flex-shrink: 0; }
+
+  /* Empty day panel */
+  .day-panel-empty {
+    padding: 16px 14px;
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  /* Note arrow connector */
+  .connector {
+    position: relative;
+    height: 0;
+  }
+  .connector::before {
+    content: '';
+    position: absolute;
+    top: -5px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #ede9ff;
+    z-index: 2;
+  }
+  .connector::after {
+    content: '';
+    position: absolute;
+    top: -3.5px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #fff;
+    z-index: 3;
+  }
+</style>
+</head>
+<body>
+
+<div style="text-align:center">
+  <h1>📅 Click su un giorno</h1>
+  <p class="subtitle">Render V7 — Lista eventi sotto il calendario</p>
+</div>
+
+<div class="row">
+
+  <!-- ══════════════════════════════════════════
+       PHONE 1 — Giorno vuoto selezionato
+  ══════════════════════════════════════════ -->
+  <div class="phone-wrap">
+    <div class="phone-label">Giorno senza eventi</div>
+    <div class="phone">
+      <div class="apt-header">
+        <div class="back-btn">← Appartamenti</div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+          <div>
+            <div class="apt-name">Trilo Centro</div>
+            <div class="apt-status">🟢 Pronto</div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab active">Calendario</div>
+          <div class="tab">Prenot.</div>
+          <div class="tab">Pulizie</div>
+          <div class="tab">Ticket</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="month-nav">
+          <div class="month-btn">‹</div>
+          <span class="month-label">Maggio 2026</span>
+          <div class="month-btn">›</div>
+        </div>
+
+        <div class="cal-card">
+          <div class="day-labels">
+            <div class="day-label">L</div><div class="day-label">M</div><div class="day-label">M</div>
+            <div class="day-label">G</div><div class="day-label">V</div><div class="day-label">S</div><div class="day-label">D</div>
+          </div>
+          <div class="cal-grid">
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day"><span class="day-num">1</span></div>
+            <div class="day"><span class="day-num">2</span></div>
+            <div class="day"><span class="day-num">3</span></div>
+
+            <div class="day"><span class="day-num">4</span></div>
+            <div class="day ci-green"><span class="day-num">5</span><div class="dots"><div class="dot dot-p-completata"></div></div></div>
+            <div class="day occ-green"><span class="day-num">6</span></div>
+            <div class="day occ-green"><span class="day-num">7</span></div>
+            <div class="day occ-green"><span class="day-num">8</span></div>
+            <div class="day occ-green"><span class="day-num">9</span></div>
+            <div class="day co-green"><span class="day-num">10</span></div>
+
+            <div class="day"><span class="day-num">11</span><div class="dots"><div class="dot dot-p-attesa"></div></div></div>
+            <!-- 12 SELEZIONATO (vuoto) -->
+            <div class="day selected"><span class="day-num">12</span></div>
+            <div class="day today"><span class="day-num">13</span></div>
+            <div class="day"><span class="day-num">14</span><div class="dots"><div class="dot dot-t-urgente"></div></div></div>
+            <div class="day ci-green"><span class="day-num">15</span></div>
+            <div class="day occ-green"><span class="day-num">16</span></div>
+            <div class="day occ-green"><span class="day-num">17</span></div>
+
+            <div class="day occ-green"><span class="day-num">18</span></div>
+            <div class="day co-green"><span class="day-num">19</span><div class="dots"><div class="dot dot-p-ritardo"></div></div></div>
+            <div class="day ci-green"><span class="day-num">20</span></div>
+            <div class="day occ-green"><span class="day-num">21</span></div>
+            <div class="day occ-green"><span class="day-num">22</span></div>
+            <div class="day occ-green"><span class="day-num">23</span></div>
+            <div class="day co-green"><span class="day-num">24</span></div>
+
+            <div class="day"><span class="day-num">25</span><div class="dots"><div class="dot dot-p-nassegnata"></div></div></div>
+            <div class="day"><span class="day-num">26</span></div>
+            <div class="day"><span class="day-num">27</span></div>
+            <div class="day"><span class="day-num">28</span></div>
+            <div class="day"><span class="day-num">29</span></div>
+            <div class="day"><span class="day-num">30</span><div class="dots"><div class="dot dot-t-risolto"></div></div></div>
+            <div class="day"><span class="day-num">31</span></div>
+          </div>
+        </div>
+
+        <!-- Panel giorno vuoto -->
+        <div class="connector" style="margin-left:calc(14.28%*1+7.14%);"></div>
+        <div class="day-panel">
+          <div class="day-panel-header">
+            <span class="day-panel-date">Martedì 12 Maggio</span>
+            <span class="day-panel-count">0 eventi</span>
+          </div>
+          <div class="day-panel-empty">Nessun evento in questa data</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PHONE 2 — Checkout + Pulizia + Ticket
+  ══════════════════════════════════════════ -->
+  <div class="phone-wrap">
+    <div class="phone-label">Giorno con 3 eventi</div>
+    <div class="phone">
+      <div class="apt-header">
+        <div class="back-btn">← Appartamenti</div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+          <div>
+            <div class="apt-name">Trilo Centro</div>
+            <div class="apt-status">🟢 Pronto</div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab active">Calendario</div>
+          <div class="tab">Prenot.</div>
+          <div class="tab">Pulizie</div>
+          <div class="tab">Ticket</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="month-nav">
+          <div class="month-btn">‹</div>
+          <span class="month-label">Maggio 2026</span>
+          <div class="month-btn">›</div>
+        </div>
+
+        <div class="cal-card">
+          <div class="day-labels">
+            <div class="day-label">L</div><div class="day-label">M</div><div class="day-label">M</div>
+            <div class="day-label">G</div><div class="day-label">V</div><div class="day-label">S</div><div class="day-label">D</div>
+          </div>
+          <div class="cal-grid">
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day"><span class="day-num">1</span></div>
+            <div class="day"><span class="day-num">2</span></div>
+            <div class="day"><span class="day-num">3</span></div>
+
+            <div class="day"><span class="day-num">4</span></div>
+            <div class="day ci-green"><span class="day-num">5</span><div class="dots"><div class="dot dot-p-completata"></div></div></div>
+            <div class="day occ-green"><span class="day-num">6</span></div>
+            <div class="day occ-green"><span class="day-num">7</span></div>
+            <div class="day occ-green"><span class="day-num">8</span></div>
+            <div class="day occ-green"><span class="day-num">9</span></div>
+            <!-- 10 SELEZIONATO: checkout + pulizia in ritardo + ticket urgente -->
+            <div class="day co-green selected"><span class="day-num">10</span><div class="dots"><div class="dot dot-p-ritardo"></div><div class="dot dot-t-urgente"></div></div></div>
+
+            <div class="day"><span class="day-num">11</span></div>
+            <div class="day"><span class="day-num">12</span></div>
+            <div class="day today"><span class="day-num">13</span></div>
+            <div class="day"><span class="day-num">14</span></div>
+            <div class="day ci-green"><span class="day-num">15</span></div>
+            <div class="day occ-green"><span class="day-num">16</span></div>
+            <div class="day occ-green"><span class="day-num">17</span></div>
+
+            <div class="day occ-green"><span class="day-num">18</span></div>
+            <div class="day occ-green"><span class="day-num">19</span></div>
+            <div class="day occ-green"><span class="day-num">20</span></div>
+            <div class="day occ-green"><span class="day-num">21</span></div>
+            <div class="day occ-green"><span class="day-num">22</span></div>
+            <div class="day occ-green"><span class="day-num">23</span></div>
+            <div class="day co-green"><span class="day-num">24</span></div>
+
+            <div class="day"><span class="day-num">25</span></div>
+            <div class="day"><span class="day-num">26</span></div>
+            <div class="day"><span class="day-num">27</span></div>
+            <div class="day"><span class="day-num">28</span></div>
+            <div class="day"><span class="day-num">29</span></div>
+            <div class="day"><span class="day-num">30</span></div>
+            <div class="day"><span class="day-num">31</span></div>
+          </div>
+        </div>
+
+        <!-- Panel 3 eventi -->
+        <div class="day-panel">
+          <div class="day-panel-header">
+            <span class="day-panel-date">Domenica 10 Maggio</span>
+            <span class="day-panel-count">3 eventi</span>
+          </div>
+
+          <!-- Prenotazione check-out -->
+          <div class="ev-card">
+            <div class="ev-color-bar bar-booking"></div>
+            <div class="ev-icon-wrap icon-booking">🏠</div>
+            <div class="ev-info">
+              <div class="ev-type type-booking">Prenotazione — Check-out</div>
+              <div class="ev-name">Marco Rossi</div>
+              <div class="ev-meta">Check-in 5 mag · 5 notti · 2 ospiti</div>
+            </div>
+            <span class="ev-badge badge-confirmed">Confermata</span>
+            <svg class="ev-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+          <!-- Pulizia in ritardo -->
+          <div class="ev-card">
+            <div class="ev-color-bar bar-cleaning"></div>
+            <div class="ev-icon-wrap icon-cleaning">🧹</div>
+            <div class="ev-info">
+              <div class="ev-type type-cleaning">Pulizia — Post checkout</div>
+              <div class="ev-name">Sofia Verdi</div>
+              <div class="ev-meta">Prevista 09:00 · In ritardo di 45 min</div>
+            </div>
+            <span class="ev-badge badge-late">In ritardo</span>
+            <svg class="ev-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+          <!-- Ticket urgente -->
+          <div class="ev-card">
+            <div class="ev-color-bar bar-ticket-urg"></div>
+            <div class="ev-icon-wrap icon-ticket-urg">🔧</div>
+            <div class="ev-info">
+              <div class="ev-type type-ticket-urg">Ticket — Urgente</div>
+              <div class="ev-name">Perdita acqua bagno</div>
+              <div class="ev-meta">Aperto il 9 mag · Non assegnato</div>
+            </div>
+            <span class="ev-badge badge-urgent">Urgente</span>
+            <svg class="ev-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PHONE 3 — Check-in + Pulizia completata
+  ══════════════════════════════════════════ -->
+  <div class="phone-wrap">
+    <div class="phone-label">Check-in + Pulizia</div>
+    <div class="phone">
+      <div class="apt-header">
+        <div class="back-btn">← Appartamenti</div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+          <div>
+            <div class="apt-name">Trilo Centro</div>
+            <div class="apt-status">🟢 Pronto</div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab active">Calendario</div>
+          <div class="tab">Prenot.</div>
+          <div class="tab">Pulizie</div>
+          <div class="tab">Ticket</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="month-nav">
+          <div class="month-btn">‹</div>
+          <span class="month-label">Maggio 2026</span>
+          <div class="month-btn">›</div>
+        </div>
+
+        <div class="cal-card">
+          <div class="day-labels">
+            <div class="day-label">L</div><div class="day-label">M</div><div class="day-label">M</div>
+            <div class="day-label">G</div><div class="day-label">V</div><div class="day-label">S</div><div class="day-label">D</div>
+          </div>
+          <div class="cal-grid">
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day empty"><span class="day-num"></span></div>
+            <div class="day"><span class="day-num">1</span></div>
+            <div class="day"><span class="day-num">2</span></div>
+            <div class="day"><span class="day-num">3</span></div>
+
+            <div class="day"><span class="day-num">4</span></div>
+            <!-- 5 check-in SELEZIONATO + pulizia completata -->
+            <div class="day ci-green selected">
+              <span class="day-num">5</span>
+              <div class="dots"><div class="dot dot-p-completata"></div></div>
+            </div>
+            <div class="day occ-green"><span class="day-num">6</span></div>
+            <div class="day occ-green"><span class="day-num">7</span></div>
+            <div class="day occ-green"><span class="day-num">8</span></div>
+            <div class="day occ-green"><span class="day-num">9</span></div>
+            <div class="day co-green"><span class="day-num">10</span><div class="dots"><div class="dot dot-p-ritardo"></div><div class="dot dot-t-urgente"></div></div></div>
+
+            <div class="day"><span class="day-num">11</span></div>
+            <div class="day"><span class="day-num">12</span></div>
+            <div class="day today"><span class="day-num">13</span></div>
+            <div class="day"><span class="day-num">14</span></div>
+            <div class="day ci-green"><span class="day-num">15</span></div>
+            <div class="day occ-green"><span class="day-num">16</span></div>
+            <div class="day occ-green"><span class="day-num">17</span></div>
+
+            <div class="day occ-green"><span class="day-num">18</span></div>
+            <div class="day occ-green"><span class="day-num">19</span></div>
+            <div class="day occ-green"><span class="day-num">20</span></div>
+            <div class="day occ-green"><span class="day-num">21</span></div>
+            <div class="day occ-green"><span class="day-num">22</span></div>
+            <div class="day occ-green"><span class="day-num">23</span></div>
+            <div class="day co-green"><span class="day-num">24</span></div>
+
+            <div class="day"><span class="day-num">25</span></div>
+            <div class="day"><span class="day-num">26</span></div>
+            <div class="day"><span class="day-num">27</span></div>
+            <div class="day"><span class="day-num">28</span></div>
+            <div class="day"><span class="day-num">29</span></div>
+            <div class="day"><span class="day-num">30</span></div>
+            <div class="day"><span class="day-num">31</span></div>
+          </div>
+        </div>
+
+        <!-- Panel 2 eventi -->
+        <div class="day-panel">
+          <div class="day-panel-header">
+            <span class="day-panel-date">Martedì 5 Maggio</span>
+            <span class="day-panel-count">2 eventi</span>
+          </div>
+
+          <!-- Check-in -->
+          <div class="ev-card">
+            <div class="ev-color-bar bar-booking"></div>
+            <div class="ev-icon-wrap icon-booking">🏠</div>
+            <div class="ev-info">
+              <div class="ev-type type-booking">Prenotazione — Check-in</div>
+              <div class="ev-name">Marco Rossi</div>
+              <div class="ev-meta">→ Check-out 10 mag · 5 notti · 2 ospiti</div>
+            </div>
+            <span class="ev-badge badge-confirmed">Confermata</span>
+            <svg class="ev-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+          <!-- Pulizia completata -->
+          <div class="ev-card">
+            <div class="ev-color-bar bar-cleaning"></div>
+            <div class="ev-icon-wrap icon-cleaning">🧹</div>
+            <div class="ev-info">
+              <div class="ev-type type-cleaning">Pulizia — Pre check-in</div>
+              <div class="ev-name">Sofia Verdi</div>
+              <div class="ev-meta">Completata alle 11:30</div>
+            </div>
+            <span class="ev-badge badge-done">Completata</span>
+            <svg class="ev-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+
+        </div>
+
+        <!-- Small upcoming below -->
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:6px;">Prossimi eventi del mese</div>
+        <div style="background:#fff;border-radius:12px;border:1px solid #f0eeff;overflow:hidden;">
+          <div class="ev-card" style="padding:8px 12px;">
+            <div class="ev-color-bar bar-booking" style="height:28px;"></div>
+            <div class="ev-info">
+              <div class="ev-type type-booking">Prenotazione</div>
+              <div class="ev-name" style="font-size:11px;">Anna Ferrari · 15–19 mag</div>
+            </div>
+            <svg class="ev-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="ev-card" style="padding:8px 12px;">
+            <div class="ev-color-bar bar-cleaning" style="height:28px;"></div>
+            <div class="ev-info">
+              <div class="ev-type type-cleaning">Pulizia</div>
+              <div class="ev-name" style="font-size:11px;">Post checkout · 19 mag</div>
+            </div>
+            <svg class="ev-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Note box -->
+<div style="max-width:680px;width:100%;background:#fff;border-radius:20px;padding:18px 22px;box-shadow:0 4px 20px rgba(76,29,149,.1);">
+  <p style="font-size:13px;font-weight:900;color:#1e1b4b;margin-bottom:10px;">📋 Comportamento al tap</p>
+  <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:#334155;line-height:1.6;">
+    <div>🖱️ <strong>Tap su un giorno</strong> → si evidenzia con bordo scuro + appare il pannello sotto il calendario</div>
+    <div>📋 <strong>Pannello eventi</strong> → mostra header con data + contatore + schede ordinate per tipo</div>
+    <div>🏠 Prenotazione · 🧹 Pulizia · 🔧 Ticket — ognuna con barra colorata + icona + badge stato + freccia</div>
+    <div>➡️ <strong>Tap sulla scheda</strong> → naviga alla pagina dettaglio dell'evento</div>
+    <div>📆 <strong>Giorno senza eventi</strong> → pannello mostra "Nessun evento in questa data"</div>
+    <div>📋 <strong>Sotto il pannello giorno</strong> → resta la lista "Prossimi eventi del mese"</div>
+  </div>
+</div>
+
+</body>
+</html>
