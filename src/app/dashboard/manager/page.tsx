@@ -82,6 +82,7 @@ type TicketView = {
   id: string;
   apartmentId: string;
   scheduledStart: Date | string | null;
+  resolvedAt: Date | string | null;
   createdAt: Date | string;
   title: string;
   status: string;
@@ -132,7 +133,7 @@ export default async function ManagerDashboardPage() {
     }),
     prisma.maintenanceTicket.findMany({
       where: { status: { not: "CANCELLED" } },
-      include: { apartment: true, assignedTo: true }
+      include: { apartment: true, assignedTo: true },
     }),
     getNotifications(),
   ]);
@@ -378,7 +379,12 @@ export default async function ManagerDashboardPage() {
       sublabel: c.assignedTo?.name || "Non assegnato",
       href: `/dashboard/manager/cleanings/${c.id}/edit`,
     }));
-  const urgentTicketsKpi: KpiPopupItem[] = tickets
+  // Tickets di oggi: scheduledStart = oggi, oppure (nessun scheduledStart e createdAt = oggi)
+  const ticketsToday = tickets.filter((t: TicketView) => {
+    const refDate = t.scheduledStart ?? t.createdAt;
+    return formatLocalDateKey(refDate) === todayLocalStr;
+  });
+  const urgentTicketsKpi: KpiPopupItem[] = ticketsToday
     .filter((t: TicketView) => isMaintenanceActive(t))
     .map((t: TicketView) => ({
       id: t.id,
@@ -386,7 +392,7 @@ export default async function ManagerDashboardPage() {
       sublabel: t.apartment.name,
       href: `/dashboard/manager/maintenance/${t.id}/edit`,
     }));
-  const ticketsDoneCount = tickets.filter((t: TicketView) =>
+  const ticketsDoneCount = ticketsToday.filter((t: TicketView) =>
     ["RESOLVED", "APPROVED"].includes(t.status)
   ).length;
 
