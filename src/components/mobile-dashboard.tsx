@@ -98,7 +98,7 @@ export type CalCleaning = {
   date: string;
   status: string;
   assignedTo: { name: string } | null;
-  booking: { guestName: string | null } | null;
+  booking: { guestName: string | null; totalGuests: number | null } | null;
 };
 
 export type CalTicket = {
@@ -871,8 +871,9 @@ export default function MobileDashboard({
                               <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center shrink-0 text-base">🏠</div>
                               <div className="flex-1 min-w-0">
                                 <div className="text-[8px] font-black uppercase tracking-wide text-violet-600">Prenotazione — {label}</div>
-                                <div className="text-[12px] font-bold text-slate-900 truncate">{b.guestName ?? "Ospite"}</div>
-                                <div className="text-[9px] text-slate-500">{fmtDate(b.checkInDate)} → {fmtDate(b.checkOutDate)}{b.totalGuests ? ` · ${b.totalGuests} osp.` : ""}</div>
+                                <div className="text-[12px] font-bold text-slate-900 truncate">{selectedApt!.name}</div>
+                                <div className="text-[9px] text-slate-500">{b.guestName ?? "Ospite"}{b.totalGuests ? ` · ${b.totalGuests} osp.` : ""}</div>
+                                <div className="text-[9px] text-slate-400">{fmtDate(b.checkInDate)} → {fmtDate(b.checkOutDate)}</div>
                               </div>
                               <span className="text-[7px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">Confermata</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -888,8 +889,8 @@ export default function MobileDashboard({
                               <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-base">🧹</div>
                               <div className="flex-1 min-w-0">
                                 <div className="text-[8px] font-black uppercase tracking-wide text-blue-600">Pulizia</div>
-                                <div className="text-[12px] font-bold text-slate-900 truncate">{c.assignedTo?.name ?? "Non assegnata"}</div>
-                                <div className="text-[9px] text-slate-500">{c.booking?.guestName ? `Post checkout: ${c.booking.guestName}` : fmtDate(c.date)}</div>
+                                <div className="text-[12px] font-bold text-slate-900 truncate">{selectedApt!.name}</div>
+                                <div className="text-[9px] text-slate-500">{c.booking?.totalGuests ? `${c.booking.totalGuests} ospiti` : "—"}{c.assignedTo ? ` · ${c.assignedTo.name}` : ""}</div>
                               </div>
                               <span className={`text-[7px] font-bold px-2 py-1 rounded-full shrink-0 ${info.badgeClass}`}>{info.label}</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1071,8 +1072,9 @@ export default function MobileDashboard({
                       <div className="px-4 py-3">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-slate-900 truncate">{b.guestName ?? "Ospite"}</p>
-                            <p className="text-[10px] text-slate-500 mt-0.5">Check-in: {fmtDateFull(b.checkInDate)}</p>
+                            <p className="text-sm font-bold text-slate-900 truncate">{selectedApt!.name}</p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">{b.guestName ?? "Ospite"}</p>
+                            <p className="text-[10px] text-slate-500">Check-in: {fmtDateFull(b.checkInDate)}</p>
                             <p className="text-[10px] text-slate-500">Check-out: {fmtDateFull(b.checkOutDate)}</p>
                             {b.totalGuests && <p className="text-[10px] text-slate-500">{b.totalGuests} ospiti · {diffDays(b.checkInDate, b.checkOutDate)} notti</p>}
                             {b.notes && <p className="text-[10px] text-slate-400 mt-1 italic">{b.notes}</p>}
@@ -1108,9 +1110,9 @@ export default function MobileDashboard({
                       <div className="px-4 py-3 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-lg">🧹</div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-slate-900">{fmtDateFull(c.date)}</p>
-                          {c.assignedTo && <p className="text-[10px] text-slate-500">{c.assignedTo.name}</p>}
-                          {c.booking?.guestName && <p className="text-[10px] text-slate-400">Post checkout: {c.booking.guestName}</p>}
+                          <p className="text-sm font-bold text-slate-900">{selectedApt!.name}</p>
+                          {c.booking?.totalGuests && <p className="text-[10px] text-slate-500">{c.booking.totalGuests} ospiti</p>}
+                          {c.assignedTo && <p className="text-[10px] text-slate-400">{c.assignedTo.name}</p>}
                         </div>
                         <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${cleaningStatusColor(c.status)}`}>{statusLabel(c.status)}</span>
                       </div>

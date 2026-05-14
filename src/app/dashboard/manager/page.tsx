@@ -76,6 +76,7 @@ type CleaningView = {
   assignedTo: {
     name: string;
   } | null;
+  booking?: { guestName: string | null; totalGuests: number | null } | null;
 };
 
 type TicketView = {
@@ -408,8 +409,8 @@ export default async function ManagerDashboardPage() {
         date: new Date(c.date).toISOString(),
         status: c.status,
         assignedTo: c.assignedTo ? { name: c.assignedTo.name } : null,
-        booking: (c as { booking?: { guestName: string | null } | null }).booking
-          ? { guestName: (c as { booking?: { guestName: string | null } | null }).booking!.guestName }
+        booking: c.booking
+          ? { guestName: c.booking.guestName, totalGuests: c.booking.totalGuests ?? null }
           : null,
       }));
     const calTickets: CalTicket[] = tickets
