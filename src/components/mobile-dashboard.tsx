@@ -742,9 +742,11 @@ export default function MobileDashboard({
               const dayCleaningsMap = new Map<number, CalCleaning[]>();
               const dayTicketsMap   = new Map<number, CalTicket[]>();
 
-              // Colore per ogni giorno occupato da una prenotazione, calcolato
-              // sulla data di check-in della prenotazione — identico al desktop
-              const dayBookingColor = new Map<number, string>();
+              // Colore per ogni giorno — separato per CI, CO, occupato
+              // (serve per gestire il caso stesso giorno CI+CO con diagonale)
+              const dayCI  = new Map<number, string>(); // giorno → colore del check-in
+              const dayCO  = new Map<number, string>(); // giorno → colore del check-out
+              const dayOcc = new Map<number, string>(); // giorno → colore occupato
 
               calendarData.bookings.forEach((b) => {
                 const ciYMD = isoToYMD(b.checkInDate);
@@ -760,9 +762,9 @@ export default function MobileDashboard({
 
                 for (let d = 1; d <= daysInMonth; d++) {
                   const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-                  if (ymd === ciYMD)                        { checkinDays.add(d);  dayBookingColor.set(d, bookingColor); }
-                  else if (ymd === coYMD)                   { checkoutDays.add(d); dayBookingColor.set(d, bookingColor); }
-                  else if (ymd > ciYMD && ymd < coYMD)     { occupiedDays.add(d); dayBookingColor.set(d, bookingColor); }
+                  if (ymd === ciYMD)                        { checkinDays.add(d);  dayCI.set(d, bookingColor); }
+                  else if (ymd === coYMD)                   { checkoutDays.add(d); dayCO.set(d, bookingColor); }
+                  else if (ymd > ciYMD && ymd < coYMD)     { occupiedDays.add(d); dayOcc.set(d, bookingColor); }
                 }
               });
               calendarData.cleanings.forEach((c) => {
@@ -789,24 +791,41 @@ export default function MobileDashboard({
               ];
               while (cells.length % 7 !== 0) cells.push(null);
 
-              // ── Day cell style — usa il colore calcolato per booking ──
+              // Helper: estrae i due colori da una stringa gradient tipo "135deg, #aaa 50%, #bbb 50%"
+              function gradColors(grad: string): [string, string] {
+                const parts = grad.split(",");
+                return [parts[1].trim().split(" ")[0], parts[2].trim().split(" ")[0]];
+              }
+
+              // ── Day cell style — gestisce anche il caso stesso giorno CI+CO ──
               function dayCellStyle(d: number): React.CSSProperties {
                 const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
                 if (ymd === todayYMD) return { background: "#7c3aed" };
-                const color = dayBookingColor.get(d);
-                if (!color) return {};
-                const c = aptStatusColors(color);
-                const isCI = checkinDays.has(d);
-                const isCO = checkoutDays.has(d);
-                if (isCI) return { background: `linear-gradient(${c.ciGrad})` };
-                if (isCO) return { background: `linear-gradient(${c.coGrad})` };
-                return { backgroundColor: c.occBg };
+                const ciColor  = dayCI.get(d);
+                const coColor  = dayCO.get(d);
+                const occColor = dayOcc.get(d);
+                if (ciColor && coColor) {
+                  // Stesso giorno CI + CO: diagonale 135°, metà sinistra = CO dark, metà destra = CI light
+                  const [coDark]  = gradColors(aptStatusColors(coColor).coGrad); // colore scuro del checkout
+                  const [, ciLight] = gradColors(aptStatusColors(ciColor).ciGrad); // colore chiaro del checkin
+                  return { background: `linear-gradient(135deg, ${coDark} 50%, ${ciLight} 50%)` };
+                }
+                if (ciColor) return { background: `linear-gradient(${aptStatusColors(ciColor).ciGrad})` };
+                if (coColor) return { background: `linear-gradient(${aptStatusColors(coColor).coGrad})` };
+                if (occColor) return { backgroundColor: aptStatusColors(occColor).occBg };
+                return {};
               }
               function dayNumColor(d: number): string {
                 const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
                 if (ymd === todayYMD) return "#fff";
-                const color = dayBookingColor.get(d);
-                if (color) return aptStatusColors(color).textColor;
+                const ciColor  = dayCI.get(d);
+                const coColor  = dayCO.get(d);
+                const occColor = dayOcc.get(d);
+                // Caso same-day: numero neutro scuro (metà cella chiara, metà scura)
+                if (ciColor && coColor) return "#1e293b";
+                if (ciColor)  return aptStatusColors(ciColor).textColor;
+                if (coColor)  return aptStatusColors(coColor).textColor;
+                if (occColor) return aptStatusColors(occColor).textColor;
                 return "#475569";
               }
 
@@ -973,6 +992,11 @@ export default function MobileDashboard({
                             </div>
                           );
                         })}
+                        {/* Riga stesso giorno CI+CO */}
+                        <div className="flex items-center gap-2 pt-0.5 border-t border-slate-50 mt-1">
+                          <div className="w-4 h-3.5 rounded-sm shrink-0" style={{ background: "linear-gradient(135deg, #f87171 50%, #a7f3d0 50%)" }} />
+                          <span className="text-[8px] font-bold text-slate-600">Stesso giorno CO + CI</span>
+                        </div>
                       </div>
                     </div>
 
