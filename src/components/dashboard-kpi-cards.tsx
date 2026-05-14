@@ -23,6 +23,7 @@ export type DashboardKpiData = {
   lateCleanings: KpiPopupItem[];
   cleaningsInProgress: KpiPopupItem[];
   urgentTickets: KpiPopupItem[];
+  cleaningsDoneCount?: number;
 };
 
 type PopupState =
@@ -50,6 +51,7 @@ export default function DashboardKpiCards({
   lateCleanings,
   cleaningsInProgress,
   urgentTickets,
+  cleaningsDoneCount = 0,
 }: DashboardKpiData) {
   const [open, setOpen] = useState<PopupState>(null);
 
@@ -101,7 +103,12 @@ export default function DashboardKpiCards({
             </div>
           </div>
           <div>
-            <p className="text-2xl font-semibold text-slate-900 tracking-tight">{cleaningsToday.length}</p>
+            <div className="flex items-end gap-3">
+              <p className="text-2xl font-semibold text-slate-900 tracking-tight">{cleaningsToday.length}</p>
+              {cleaningsDoneCount > 0 && (
+                <p className="text-xl font-semibold text-emerald-600 leading-none mb-0.5">{cleaningsDoneCount} ✓</p>
+              )}
+            </div>
             <p className="text-sm text-slate-500 mt-1">Interventi previsti</p>
           </div>
           <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-2 group-hover:text-violet-500 transition-colors">

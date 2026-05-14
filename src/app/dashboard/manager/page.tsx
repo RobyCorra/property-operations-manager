@@ -503,6 +503,7 @@ export default async function ManagerDashboardPage() {
         lateCleanings={lateCleaningsKpi}
         cleaningsInProgress={cleaningsInProgressKpi}
         urgentTickets={urgentTicketsKpi}
+        cleaningsDoneCount={cleaningsDoneCount}
       />
 
       {/* 6. MAIN CONTENT LAYOUT */}
