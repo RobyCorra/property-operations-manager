@@ -185,7 +185,7 @@ export default function DashboardKpiCards({
               <p className="text-2xl font-semibold text-slate-900 tracking-tight">{urgentTickets.length}</p>
               <p className="text-sm text-slate-500 mt-1">pianificati</p>
             </div>
-            {ticketsDoneCount > 0 && (
+            {ticketsDoneCount > 0 && urgentTickets.length > 0 && (
               <div className="mb-0.5">
                 <p className="text-xl font-semibold text-emerald-600 leading-none">{ticketsDoneCount}</p>
                 <p className="text-xs font-semibold text-emerald-500 mt-1">eseguiti</p>
