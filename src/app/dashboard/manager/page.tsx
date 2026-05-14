@@ -28,7 +28,6 @@ import type {
 import {
   Brush,
   Ticket,
-  Search,
   KeyRound,
   Navigation,
 } from "@/src/components/icons";
@@ -466,11 +465,7 @@ export default async function ManagerDashboardPage() {
         {/* 4. ACTION BUTTONS / TOPBAR */}
         <div className="w-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center bg-white border border-slate-200 rounded-full px-4 h-12 shadow-sm focus-within:ring-2 focus-within:ring-violet-500/20 transition-all">
-               <Search size={18} className="text-slate-400" />
-               <input type="text" placeholder="Cerca..." className="bg-transparent border-none focus:ring-0 text-sm text-slate-900 ml-2 w-32 md:w-48 placeholder:text-slate-400" />
-            </div>
-
+            <ManagerAIChatLauncher compact />
             <UpcomingEventsPanel events={allEvents} serverDate={serverDate} />
           </div>
 
