@@ -7,10 +7,10 @@ import { getNotifications } from "@/src/app/actions/notification";
 import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
 import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
-import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
+import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
-import { getApartmentOperationalStatus, APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
+import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import MobileDashboard from "@/src/components/mobile-dashboard";
 import type {
   MobileApartmentData,
@@ -29,14 +29,12 @@ import {
   Brush,
   Ticket,
   KeyRound,
-  Navigation,
 } from "@/src/components/icons";
 
 const isMaintenanceActive = (ticket: { status: string }) => {
   return !["RESOLVED", "CANCELLED", "APPROVED"].includes(ticket.status);
 };
 
-const apartmentStatusLegendKeys = ["GREEN", "BLUE", "RED"] as const;
 
 const formatLocalDateKey = (date: Date | string) => {
   const value = new Date(date);
@@ -228,6 +226,19 @@ export default async function ManagerDashboardPage() {
       openTickets: aptTickets.filter((t: TicketView) => isMaintenanceActive(t)).length,
     };
   });
+  // ── Calendar bookings per TimelineCalendar ────────────────────────────
+  const calendarBookings = bookings.map((b: BookingView) => ({
+    id: b.id,
+    apartmentId: b.apartmentId,
+    guestName: b.guestName ?? "",
+    checkInDate: b.checkInDate,
+    checkOutDate: b.checkOutDate,
+    status: b.status ?? undefined,
+    source: b.source ?? undefined,
+    externalId: b.externalId ?? undefined,
+    apartment: b.apartment,
+  }));
+
   // ── Mobile dashboard data ─────────────────────────────────────────────
   const mobileApartments: MobileApartmentData[] = apartmentsData.map((a) => ({
     id: a.id,
@@ -521,33 +532,27 @@ export default async function ManagerDashboardPage() {
       {/* 6. MAIN CONTENT LAYOUT */}
       <div className="space-y-6">
 
-        {/* MAP & STATO LIVE */}
+        {/* CALENDARIO OPERATIVO */}
         <div className="space-y-6">
           <section className="bg-white/50 backdrop-blur-xl rounded-[2.5rem] border border-white/40 shadow-2xl shadow-violet-500/5 overflow-hidden transition-all duration-300 hover:shadow-violet-500/10">
-            <div className="p-8 border-b border-white/40">
-                <h2 className="text-xl font-semibold text-slate-900 tracking-tight uppercase flex items-center gap-2">
-                    <Navigation size={20} className="text-violet-600" />
-                    Mappa & Stato Live
-                </h2>
-                <p className="text-xs uppercase tracking-wide text-slate-500 mt-1 uppercase">Monitoraggio Geospaziale</p>
+            <div className="p-8 border-b border-white/40 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900 tracking-tight uppercase">Calendario Operativo</h2>
+                <p className="text-xs uppercase tracking-wide text-slate-500 mt-1">Timeline Interventi &amp; Flussi</p>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-violet-50 rounded-full border border-violet-100">
+                <span className="w-2 h-2 bg-violet-600 rounded-full animate-pulse" />
+                <span className="text-[10px] font-bold text-violet-600 uppercase tracking-widest">Live Update</span>
+              </div>
             </div>
-            <div className="p-6">
-                <div className="rounded-3xl overflow-hidden border border-white/60 shadow-inner bg-slate-50 relative h-[500px]">
-                    <ApartmentMapWrapper apartments={apartmentsData} />
-                    
-                    {/* Compact Legend overlay */}
-                    <div className="absolute bottom-4 left-4 right-4 flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                        {apartmentStatusLegendKeys.map((key) => {
-                            const meta = APARTMENT_STATUS_META[key];
-                            return (
-                                <div key={key} className="flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-white/20 whitespace-nowrap">
-                                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: meta.hex }} />
-                                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tight">{meta.label}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
+            <div className="p-8">
+              <TimelineCalendar
+                apartments={apartmentsData}
+                bookings={calendarBookings}
+                cleaningTasks={cleanings}
+                maintenanceTickets={tickets}
+                serverDate={serverDate}
+              />
             </div>
           </section>
         </div>

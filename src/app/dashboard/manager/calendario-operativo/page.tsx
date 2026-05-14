@@ -4,7 +4,8 @@ import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import { getNotifications } from "@/src/app/actions/notification";
 
-import TimelineCalendar from "@/src/components/timeline-calendar";
+import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
+import { APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
 import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
 import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
@@ -215,7 +216,7 @@ export default async function CalendarioOperativoPage() {
       {/* PAGE HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">Calendario Operativo</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">Mappa</h1>
           <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal">
             {new Date(serverDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
@@ -257,27 +258,28 @@ export default async function CalendarioOperativoPage() {
           </div>
         </div>
 
-        {/* CALENDARIO OPERATIVO SECTION */}
+        {/* MAPPA SECTION */}
         <div className="space-y-6">
           <section className="bg-white/50 backdrop-blur-xl rounded-[2.5rem] border border-white/40 shadow-2xl shadow-violet-500/5 overflow-hidden transition-all duration-300 hover:shadow-violet-500/10">
-            <div className="p-10 border-b border-white/40 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold text-slate-900 tracking-tight uppercase">Calendario Operativo</h2>
-                <p className="text-xs uppercase tracking-wide text-slate-500 mt-1 uppercase">Timeline Interventi &amp; Flussi</p>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-violet-50 rounded-full border border-violet-100">
-                <span className="w-2 h-2 bg-violet-600 rounded-full animate-pulse" />
-                <span className="text-[10px] font-bold text-violet-600 uppercase tracking-widest">Live Update</span>
-              </div>
+            <div className="p-8 border-b border-white/40">
+              <h2 className="text-xl font-semibold text-slate-900 tracking-tight uppercase">Mappa & Stato Live</h2>
+              <p className="text-xs uppercase tracking-wide text-slate-500 mt-1">Monitoraggio Geospaziale</p>
             </div>
-            <div className="p-8">
-              <TimelineCalendar
-                apartments={apartmentsData}
-                bookings={calendarBookings}
-                cleaningTasks={cleanings}
-                maintenanceTickets={calendarTickets}
-                serverDate={serverDate}
-              />
+            <div className="p-6">
+              <div className="rounded-3xl overflow-hidden border border-white/60 shadow-inner bg-slate-50 relative h-[500px]">
+                <ApartmentMapWrapper apartments={apartmentsData} />
+                <div className="absolute bottom-4 left-4 right-4 flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                  {(["GREEN","BLUE","RED"] as const).map((key) => {
+                    const meta = APARTMENT_STATUS_META[key];
+                    return (
+                      <div key={key} className="flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-white/20 whitespace-nowrap">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: meta.hex }} />
+                        <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tight">{meta.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </section>
         </div>
