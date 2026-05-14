@@ -34,7 +34,7 @@ import {
 } from "@/src/components/icons";
 
 const isMaintenanceActive = (ticket: { status: string }) => {
-  return ticket.status !== "RESOLVED" && ticket.status !== "CANCELLED";
+  return !["RESOLVED", "CANCELLED", "APPROVED"].includes(ticket.status);
 };
 
 const apartmentStatusLegendKeys = ["GREEN", "BLUE", "RED"] as const;

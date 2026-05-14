@@ -391,6 +391,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                     <option value="OPEN">Aperto</option>
                     <option value="IN_PROGRESS">In carico</option>
                     <option value="RESOLVED">Risolto</option>
+                    <option value="APPROVED">Approvato (supervisore)</option>
                   </select>
                 </div>
               )}

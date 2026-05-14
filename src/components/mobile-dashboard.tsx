@@ -141,6 +141,7 @@ function statusLabel(s: string) {
   const map: Record<string, string> = {
     PENDING: "In attesa", IN_PROGRESS: "In corso", DONE: "Completata",
     CONFIRMED: "Confermata", OPEN: "Aperto", RESOLVED: "Risolto",
+    APPROVED: "Approvato", AWAITING_REVIEW: "In verifica", COMPLETED: "Completata",
   };
   return map[s] ?? s;
 }
