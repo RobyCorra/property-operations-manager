@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
-import { ApartmentStatus } from "@/src/lib/apartment-status";
+import { ApartmentStatus, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import { logoutAction } from "@/src/app/actions/auth";
 import ManagerAIChat from "@/src/components/manager-ai-chat";
 
@@ -718,7 +718,20 @@ export default function MobileDashboard({
               const startOffset = (firstDow + 6) % 7; // Mon=0
               const daysInMonth = new Date(year, month + 1, 0).getDate();
               const todayYMD = isoToYMD(new Date().toISOString());
-              const colors = aptStatusColors(selectedApt!.status);
+
+              // ── Dati per getApartmentOperationalStatus (stessa logica del desktop) ──
+              const booksForStatus = calendarData.bookings.map((b) => ({
+                id: b.id, apartmentId: selectedApt!.id,
+                checkInDate: b.checkInDate, checkOutDate: b.checkOutDate, status: b.status,
+              }));
+              const cleansForStatus = calendarData.cleanings.map((c) => ({
+                id: c.id, apartmentId: selectedApt!.id, date: c.date, status: c.status,
+              }));
+              const ticketsForStatus = calendarData.tickets.map((t) => ({
+                id: t.id, apartmentId: selectedApt!.id,
+                status: t.status, priority: t.priority ?? "LOW",
+                scheduledStart: t.scheduledStart ?? null, scheduledEnd: null,
+              }));
 
               // ── Per-day maps ──────────────────────────────────
               const checkinDays  = new Set<number>();
@@ -727,14 +740,27 @@ export default function MobileDashboard({
               const dayCleaningsMap = new Map<number, CalCleaning[]>();
               const dayTicketsMap   = new Map<number, CalTicket[]>();
 
+              // Colore per ogni giorno occupato da una prenotazione, calcolato
+              // sulla data di check-in della prenotazione — identico al desktop
+              const dayBookingColor = new Map<number, string>();
+
               calendarData.bookings.forEach((b) => {
                 const ciYMD = isoToYMD(b.checkInDate);
                 const coYMD = isoToYMD(b.checkOutDate);
+
+                // Logica desktop: se il booking è attivo oggi usa now, altrimenti usa checkInDate
+                const isActiveNow = todayYMD >= ciYMD && todayYMD < coYMD;
+                const targetDate = isActiveNow ? new Date() : new Date(b.checkInDate);
+                const bookingStatus = getApartmentOperationalStatus(
+                  targetDate, booksForStatus, cleansForStatus, ticketsForStatus
+                );
+                const bookingColor = bookingStatus.color;
+
                 for (let d = 1; d <= daysInMonth; d++) {
                   const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-                  if (ymd === ciYMD) checkinDays.add(d);
-                  else if (ymd === coYMD) checkoutDays.add(d);
-                  else if (ymd > ciYMD && ymd < coYMD) occupiedDays.add(d);
+                  if (ymd === ciYMD)                        { checkinDays.add(d);  dayBookingColor.set(d, bookingColor); }
+                  else if (ymd === coYMD)                   { checkoutDays.add(d); dayBookingColor.set(d, bookingColor); }
+                  else if (ymd > ciYMD && ymd < coYMD)     { occupiedDays.add(d); dayBookingColor.set(d, bookingColor); }
                 }
               });
               calendarData.cleanings.forEach((c) => {
@@ -761,22 +787,24 @@ export default function MobileDashboard({
               ];
               while (cells.length % 7 !== 0) cells.push(null);
 
-              // ── Day cell style ────────────────────────────────
+              // ── Day cell style — usa il colore calcolato per booking ──
               function dayCellStyle(d: number): React.CSSProperties {
                 const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
                 if (ymd === todayYMD) return { background: "#7c3aed" };
+                const color = dayBookingColor.get(d);
+                if (!color) return {};
+                const c = aptStatusColors(color);
                 const isCI = checkinDays.has(d);
                 const isCO = checkoutDays.has(d);
-                if (isCI && isCO) return { background: `linear-gradient(${colors.coGrad.split(",")[0]}, ${colors.coGrad.split(",").slice(1).join(",").replace("50%, #fff 50%", `50%, ${colors.ciGrad.split(",").slice(-1)[0].trim().replace("50%","50%")}`)}` };
-                if (isCI) return { background: `linear-gradient(${colors.ciGrad})` };
-                if (isCO) return { background: `linear-gradient(${colors.coGrad})` };
-                if (occupiedDays.has(d)) return { backgroundColor: colors.occBg };
-                return {};
+                if (isCI) return { background: `linear-gradient(${c.ciGrad})` };
+                if (isCO) return { background: `linear-gradient(${c.coGrad})` };
+                return { backgroundColor: c.occBg };
               }
               function dayNumColor(d: number): string {
                 const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
                 if (ymd === todayYMD) return "#fff";
-                if (checkinDays.has(d) || checkoutDays.has(d) || occupiedDays.has(d)) return colors.textColor;
+                const color = dayBookingColor.get(d);
+                if (color) return aptStatusColors(color).textColor;
                 return "#475569";
               }
 
@@ -997,20 +1025,21 @@ export default function MobileDashboard({
 
                     {/* Prenotazioni */}
                     <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Prenotazioni</p>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-5 h-3.5 rounded-sm shrink-0" style={{ background: `linear-gradient(${colors.ciGrad})` }} />
-                          <span className="text-[9px] font-semibold text-slate-600">Check-in</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-5 h-3.5 rounded-sm shrink-0" style={{ backgroundColor: colors.occBg }} />
-                          <span className="text-[9px] font-semibold text-slate-600">Occupato</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-5 h-3.5 rounded-sm shrink-0" style={{ background: `linear-gradient(${colors.coGrad})` }} />
-                          <span className="text-[9px] font-semibold text-slate-600">Check-out</span>
-                        </div>
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Prenotazioni — colore per stato</p>
+                      <div className="space-y-1.5">
+                        {(["GREEN","BLUE","VIOLET","YELLOW","RED"] as const).map((s) => {
+                          const c = aptStatusColors(s);
+                          const labels: Record<string, string> = { GREEN:"Pronto", BLUE:"Non pronto", VIOLET:"In corso", YELLOW:"In verifica", RED:"Occupato" };
+                          return (
+                            <div key={s} className="flex items-center gap-2">
+                              <div className="w-4 h-3.5 rounded-sm shrink-0" style={{ background: `linear-gradient(${c.ciGrad})` }} />
+                              <div className="w-4 h-3.5 rounded-sm shrink-0" style={{ backgroundColor: c.occBg }} />
+                              <div className="w-4 h-3.5 rounded-sm shrink-0" style={{ background: `linear-gradient(${c.coGrad})` }} />
+                              <span className="text-[8px] font-bold" style={{ color: c.textColor }}>{labels[s]}</span>
+                              <span className="text-[7px] text-slate-400">CI · Occ · CO</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
 
