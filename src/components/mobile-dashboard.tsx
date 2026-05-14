@@ -319,7 +319,9 @@ export default function MobileDashboard({
     setSelectedApt(apt);
     setCalendarTab("calendar");
     setCalendarLoading(false);
-    setSelectedDay(null);
+    // Torna sempre al mese corrente e seleziona oggi di default
+    setCalMonth({ year: nowDate.getFullYear(), month: nowDate.getMonth() });
+    setSelectedDay(nowDate.getDate());
     setCalendarData(calendarDataByApt[apt.id] ?? { bookings: [], cleanings: [], tickets: [] });
   }
 
@@ -897,55 +899,6 @@ export default function MobileDashboard({
                 );
               }
 
-              // ── Upcoming events (all month, sorted) ───────────
-              type AnyEvent = { sortDate: string; node: React.ReactNode };
-              const allMonthEvents: AnyEvent[] = [];
-              calendarData.bookings.forEach((b) => {
-                allMonthEvents.push({ sortDate: isoToYMD(b.checkInDate), node: (
-                  <Link key={`b-${b.id}`} href={`/dashboard/manager/bookings/${b.id}/edit`} className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-slate-100 shadow-sm active:scale-[.99] transition-transform overflow-hidden">
-                    <div className="w-1 self-stretch rounded-full bg-violet-500 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[8px] font-black uppercase tracking-wide text-violet-600">🏠 Prenotazione</div>
-                      <div className="text-[12px] font-bold text-slate-900 truncate">{b.guestName ?? "Ospite"}</div>
-                      <div className="text-[9px] text-slate-500">{fmtDate(b.checkInDate)} → {fmtDate(b.checkOutDate)}{b.totalGuests ? ` · ${b.totalGuests} osp.` : ""} · {diffDays(b.checkInDate, b.checkOutDate)} notti</div>
-                    </div>
-                    <span className="text-[7px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">Confermata</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-                  </Link>
-                )});
-              });
-              calendarData.cleanings.forEach((c) => {
-                const info = cleaningStatusInfo(c);
-                allMonthEvents.push({ sortDate: isoToYMD(c.date), node: (
-                  <Link key={`c-${c.id}`} href={`/dashboard/manager/cleanings/${c.id}`} className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-slate-100 shadow-sm active:scale-[.99] transition-transform overflow-hidden">
-                    <div className="w-1 self-stretch rounded-full bg-blue-400 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[8px] font-black uppercase tracking-wide text-blue-600">🧹 Pulizia</div>
-                      <div className="text-[12px] font-bold text-slate-900 truncate">{c.assignedTo?.name ?? "Non assegnata"}</div>
-                      <div className="text-[9px] text-slate-500">{fmtDateFull(c.date)}</div>
-                    </div>
-                    <span className={`text-[7px] font-bold px-2 py-1 rounded-full shrink-0 ${info.badgeClass}`}>{info.label}</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-                  </Link>
-                )});
-              });
-              calendarData.tickets.forEach((t) => {
-                const info = ticketStatusInfo(t);
-                allMonthEvents.push({ sortDate: isoToYMD(t.scheduledStart ?? t.createdAt), node: (
-                  <Link key={`t-${t.id}`} href={`/dashboard/manager/maintenance/${t.id}`} className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-slate-100 shadow-sm active:scale-[.99] transition-transform overflow-hidden">
-                    <div className="w-1 self-stretch rounded-full shrink-0" style={{ backgroundColor: info.barHex }} />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[8px] font-black uppercase tracking-wide" style={{ color: info.barHex }}>🔧 Ticket · {info.label}</div>
-                      <div className="text-[12px] font-bold text-slate-900 truncate">{t.title}</div>
-                      <div className="text-[9px] text-slate-500">{t.assignedTo?.name ?? "Non assegnato"}{t.scheduledStart ? ` · ${fmtDate(t.scheduledStart)}` : ""}</div>
-                    </div>
-                    <span className={`text-[7px] font-bold px-2 py-1 rounded-full shrink-0 ${info.badgeClass}`}>{info.label}</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-                  </Link>
-                )});
-              });
-              allMonthEvents.sort((a, b) => a.sortDate.localeCompare(b.sortDate));
-
               return (
                 <div className="px-4 pt-4">
                   {/* Month nav */}
@@ -1000,32 +953,12 @@ export default function MobileDashboard({
                     </div>
                   </div>
 
-                  {/* ── Legenda — identica al calendario desktop ── */}
+                  {/* ── Legenda ── */}
                   <div className="mb-4 space-y-2">
 
-                    {/* Appartamenti */}
+                    {/* Stato Appartamento */}
                     <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Appartamenti</p>
-                      <div className="space-y-1.5">
-                        {([
-                          { dot: "bg-emerald-500", label: "Pronto", desc: "Clienti possono entrare" },
-                          { dot: "bg-blue-500",    label: "Non pronto", desc: "Ticket o pulizie da risolvere" },
-                          { dot: "bg-violet-500",  label: "In corso", desc: "Pulizie in corso" },
-                          { dot: "bg-yellow-400",  label: "In verifica", desc: "Supervisor deve approvare" },
-                          { dot: "bg-red-500",     label: "Occupato", desc: "Clienti dentro" },
-                        ] as const).map(({ dot, label, desc }) => (
-                          <div key={label} className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full shrink-0 ${dot}`} />
-                            <span className="text-[9px] font-bold text-slate-700">{label}</span>
-                            <span className="text-[8px] text-slate-400">— {desc}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Prenotazioni */}
-                    <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Prenotazioni — colore per stato</p>
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Stato Appartamento</p>
                       <div className="space-y-1.5">
                         {(["GREEN","BLUE","VIOLET","YELLOW","RED"] as const).map((s) => {
                           const c = aptStatusColors(s);
@@ -1081,94 +1014,122 @@ export default function MobileDashboard({
 
                   </div>
 
-                  {/* Selected day panel */}
+                  {/* Pannello giorno selezionato (o oggi di default) */}
                   <SelectedDayPanel />
-
-                  {/* All month events */}
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">
-                    {allMonthEvents.length > 0 ? "Tutti gli eventi del mese" : "Nessun evento questo mese"}
-                  </p>
-                  <div className="space-y-2">
-                    {allMonthEvents.map((e, i) => <div key={i}>{e.node}</div>)}
-                  </div>
                 </div>
               );
             })()}
 
-            {!calendarLoading && calendarData && calendarTab === "bookings" && (
-              <div className="px-4 pt-4 space-y-3">
-                {calendarData.bookings.length === 0 && (
-                  <div className="text-center py-12 text-slate-400 text-sm">Nessuna prenotazione questo mese</div>
-                )}
-                {calendarData.bookings.map((b) => (
-                  <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
-                    <div className="h-1 bg-violet-500" />
-                    <div className="px-4 py-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-slate-900 truncate">{b.guestName ?? "Ospite"}</p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">
-                            Check-in: {fmtDateFull(b.checkInDate)}
-                          </p>
-                          <p className="text-[10px] text-slate-500">
-                            Check-out: {fmtDateFull(b.checkOutDate)}
-                          </p>
-                          {b.totalGuests && <p className="text-[10px] text-slate-500">{b.totalGuests} ospiti · {diffDays(b.checkInDate, b.checkOutDate)} notti</p>}
-                          {b.notes && <p className="text-[10px] text-slate-400 mt-1 italic">{b.notes}</p>}
+            {!calendarLoading && calendarData && calendarTab === "bookings" && (() => {
+              const selYMD = selectedDay
+                ? `${calMonth.year}-${String(calMonth.month+1).padStart(2,"0")}-${String(selectedDay).padStart(2,"0")}`
+                : null;
+              const dayLabel = selectedDay
+                ? new Date(calMonth.year, calMonth.month, selectedDay)
+                    .toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })
+                : null;
+              const items = selYMD
+                ? calendarData.bookings.filter((b) => {
+                    const ci = isoToYMD(b.checkInDate);
+                    const co = isoToYMD(b.checkOutDate);
+                    return selYMD === ci || selYMD === co || (selYMD > ci && selYMD < co);
+                  })
+                : [];
+              return (
+                <div className="px-4 pt-4 space-y-3">
+                  {dayLabel && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 capitalize">{dayLabel}</p>}
+                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
+                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessuna prenotazione in questa data</div>}
+                  {items.map((b) => (
+                    <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                      <div className="h-1 bg-violet-500" />
+                      <div className="px-4 py-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-slate-900 truncate">{b.guestName ?? "Ospite"}</p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">Check-in: {fmtDateFull(b.checkInDate)}</p>
+                            <p className="text-[10px] text-slate-500">Check-out: {fmtDateFull(b.checkOutDate)}</p>
+                            {b.totalGuests && <p className="text-[10px] text-slate-500">{b.totalGuests} ospiti · {diffDays(b.checkInDate, b.checkOutDate)} notti</p>}
+                            {b.notes && <p className="text-[10px] text-slate-400 mt-1 italic">{b.notes}</p>}
+                          </div>
+                          <span className="text-[8px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">Confermata</span>
                         </div>
-                        <span className="text-[8px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">Confermata</span>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
+                    </Link>
+                  ))}
+                </div>
+              );
+            })()}
 
-            {!calendarLoading && calendarData && calendarTab === "cleanings" && (
-              <div className="px-4 pt-4 space-y-3">
-                {calendarData.cleanings.length === 0 && (
-                  <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia questo mese</div>
-                )}
-                {calendarData.cleanings.map((c) => (
-                  <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
-                    <div className="h-1 bg-blue-400" />
-                    <div className="px-4 py-3 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-lg">🧹</div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-900">{fmtDateFull(c.date)}</p>
-                        {c.assignedTo && <p className="text-[10px] text-slate-500">{c.assignedTo.name}</p>}
-                        {c.booking?.guestName && <p className="text-[10px] text-slate-400">Post checkout: {c.booking.guestName}</p>}
+            {!calendarLoading && calendarData && calendarTab === "cleanings" && (() => {
+              const selYMD = selectedDay
+                ? `${calMonth.year}-${String(calMonth.month+1).padStart(2,"0")}-${String(selectedDay).padStart(2,"0")}`
+                : null;
+              const dayLabel = selectedDay
+                ? new Date(calMonth.year, calMonth.month, selectedDay)
+                    .toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })
+                : null;
+              const items = selYMD
+                ? calendarData.cleanings.filter((c) => isoToYMD(c.date) === selYMD)
+                : [];
+              return (
+                <div className="px-4 pt-4 space-y-3">
+                  {dayLabel && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 capitalize">{dayLabel}</p>}
+                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
+                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia in questa data</div>}
+                  {items.map((c) => (
+                    <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                      <div className="h-1 bg-blue-400" />
+                      <div className="px-4 py-3 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-lg">🧹</div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-slate-900">{fmtDateFull(c.date)}</p>
+                          {c.assignedTo && <p className="text-[10px] text-slate-500">{c.assignedTo.name}</p>}
+                          {c.booking?.guestName && <p className="text-[10px] text-slate-400">Post checkout: {c.booking.guestName}</p>}
+                        </div>
+                        <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${cleaningStatusColor(c.status)}`}>{statusLabel(c.status)}</span>
                       </div>
-                      <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${cleaningStatusColor(c.status)}`}>{statusLabel(c.status)}</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
+                    </Link>
+                  ))}
+                </div>
+              );
+            })()}
 
-            {!calendarLoading && calendarData && calendarTab === "tickets" && (
-              <div className="px-4 pt-4 space-y-3">
-                {calendarData.tickets.length === 0 && (
-                  <div className="text-center py-12 text-slate-400 text-sm">Nessun ticket aperto</div>
-                )}
-                {calendarData.tickets.map((t) => (
-                  <Link key={t.id} href={`/dashboard/manager/maintenance/${t.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
-                    <div className="h-1 bg-rose-400" />
-                    <div className="px-4 py-3">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <p className="text-sm font-bold text-slate-900 flex-1 min-w-0">{t.title}</p>
-                        <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${ticketPriorityColor(t.priority)}`}>
-                          {t.priority ?? "Normal"}
-                        </span>
+            {!calendarLoading && calendarData && calendarTab === "tickets" && (() => {
+              const selYMD = selectedDay
+                ? `${calMonth.year}-${String(calMonth.month+1).padStart(2,"0")}-${String(selectedDay).padStart(2,"0")}`
+                : null;
+              const dayLabel = selectedDay
+                ? new Date(calMonth.year, calMonth.month, selectedDay)
+                    .toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })
+                : null;
+              const items = selYMD
+                ? calendarData.tickets.filter((t) => isoToYMD(t.scheduledStart ?? t.createdAt) === selYMD)
+                : [];
+              return (
+                <div className="px-4 pt-4 space-y-3">
+                  {dayLabel && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 capitalize">{dayLabel}</p>}
+                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
+                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessun ticket in questa data</div>}
+                  {items.map((t) => (
+                    <Link key={t.id} href={`/dashboard/manager/maintenance/${t.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                      <div className="h-1 bg-rose-400" />
+                      <div className="px-4 py-3">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <p className="text-sm font-bold text-slate-900 flex-1 min-w-0">{t.title}</p>
+                          <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${ticketPriorityColor(t.priority)}`}>
+                            {t.priority ?? "Normal"}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-500">Stato: {statusLabel(t.status)}</p>
+                        {t.assignedTo && <p className="text-[10px] text-slate-500">Assegnato a {t.assignedTo.name}</p>}
+                        {t.scheduledStart && <p className="text-[10px] text-slate-500">Previsto: {fmtDateFull(t.scheduledStart)}</p>}
                       </div>
-                      <p className="text-[10px] text-slate-500">Stato: {statusLabel(t.status)}</p>
-                      {t.assignedTo && <p className="text-[10px] text-slate-500">Assegnato a {t.assignedTo.name}</p>}
-                      {t.scheduledStart && <p className="text-[10px] text-slate-500">Previsto: {fmtDateFull(t.scheduledStart)}</p>}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
+                    </Link>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
