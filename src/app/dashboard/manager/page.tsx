@@ -20,6 +20,10 @@ import type {
   MobileCheckinItem,
   MobileCleaningTodayItem,
   MobileUrgentTicketItem,
+  CalBooking,
+  CalCleaning,
+  CalTicket,
+  CalendarData,
 } from "@/src/components/mobile-dashboard";
 import {
   Brush,
@@ -50,6 +54,8 @@ type BookingView = {
   checkOutDate: Date | string;
   guestName: string | null;
   status: string | null;
+  totalGuests?: number | null;
+  notes?: string | null;
   source?: string | null;
   externalId?: string | null;
   apartment: {
@@ -79,6 +85,7 @@ type TicketView = {
   createdAt: Date | string;
   title: string;
   status: string;
+  priority?: string | null;
   apartment: {
     name: string;
   };
@@ -124,7 +131,7 @@ export default async function ManagerDashboardPage() {
       }
     }),
     prisma.maintenanceTicket.findMany({
-      where: { status: { in: ["OPEN", "IN_PROGRESS"] } },
+      where: { status: { not: "CANCELLED" } },
       include: { apartment: true, assignedTo: true }
     }),
     getNotifications(),
@@ -311,14 +318,16 @@ export default async function ManagerDashboardPage() {
     month: "long",
   });
 
-  // Ticket urgenti per il sheet mobile
-  const mobileUrgentTicketsItems: MobileUrgentTicketItem[] = tickets.map((t: TicketView) => ({
-    id: t.id,
-    title: t.title,
-    apartmentName: t.apartment.name,
-    status: t.status,
-    href: `/dashboard/manager/maintenance/${t.id}/edit`,
-  }));
+  // Ticket urgenti per il sheet mobile (solo attivi — escludi RESOLVED)
+  const mobileUrgentTicketsItems: MobileUrgentTicketItem[] = tickets
+    .filter((t: TicketView) => isMaintenanceActive(t))
+    .map((t: TicketView) => ({
+      id: t.id,
+      title: t.title,
+      apartmentName: t.apartment.name,
+      status: t.status,
+      href: `/dashboard/manager/maintenance/${t.id}/edit`,
+    }));
 
   // Pulizie oggi completate (cleaner ha finito)
   const cleaningsDoneCount = cleaningsToday.filter((c: CleaningView) =>
@@ -369,12 +378,53 @@ export default async function ManagerDashboardPage() {
       sublabel: c.assignedTo?.name || "Non assegnato",
       href: `/dashboard/manager/cleanings/${c.id}/edit`,
     }));
-  const urgentTicketsKpi: KpiPopupItem[] = tickets.map((t: TicketView) => ({
-    id: t.id,
-    label: t.title,
-    sublabel: t.apartment.name,
-    href: `/dashboard/manager/maintenance/${t.id}/edit`,
-  }));
+  const urgentTicketsKpi: KpiPopupItem[] = tickets
+    .filter((t: TicketView) => isMaintenanceActive(t))
+    .map((t: TicketView) => ({
+      id: t.id,
+      label: t.title,
+      sublabel: t.apartment.name,
+      href: `/dashboard/manager/maintenance/${t.id}/edit`,
+    }));
+
+  // ── Calendar data per apartment (server-side, avoids client fetch auth issues) ──
+  const mobileCalendarByApt: Record<string, CalendarData> = {};
+  for (const apt of apartments) {
+    const calBookings: CalBooking[] = bookings
+      .filter((b: BookingView) => b.apartmentId === apt.id)
+      .map((b: BookingView) => ({
+        id: b.id,
+        guestName: b.guestName,
+        checkInDate: new Date(b.checkInDate).toISOString(),
+        checkOutDate: new Date(b.checkOutDate).toISOString(),
+        totalGuests: b.totalGuests ?? null,
+        status: b.status,
+        notes: b.notes ?? null,
+      }));
+    const calCleanings: CalCleaning[] = cleanings
+      .filter((c: CleaningView) => c.apartmentId === apt.id)
+      .map((c: CleaningView) => ({
+        id: c.id,
+        date: new Date(c.date).toISOString(),
+        status: c.status,
+        assignedTo: c.assignedTo ? { name: c.assignedTo.name } : null,
+        booking: (c as { booking?: { guestName: string | null } | null }).booking
+          ? { guestName: (c as { booking?: { guestName: string | null } | null }).booking!.guestName }
+          : null,
+      }));
+    const calTickets: CalTicket[] = tickets
+      .filter((t: TicketView) => t.apartmentId === apt.id)
+      .map((t: TicketView) => ({
+        id: t.id,
+        title: t.title,
+        status: t.status,
+        priority: t.priority ?? null,
+        createdAt: new Date(t.createdAt).toISOString(),
+        scheduledStart: t.scheduledStart ? new Date(t.scheduledStart).toISOString() : null,
+        assignedTo: t.assignedTo ? { name: t.assignedTo.name } : null,
+      }));
+    mobileCalendarByApt[apt.id] = { bookings: calBookings, cleanings: calCleanings, tickets: calTickets };
+  }
 
   return (
     <>
@@ -394,6 +444,7 @@ export default async function ManagerDashboardPage() {
         initialNotifications={initialNotifications}
         serverDate={serverDate}
         dateLabel={mobileDateLabel}
+        calendarDataByApt={mobileCalendarByApt}
       />
     </div>
 

@@ -83,7 +83,7 @@ type NotificationItem = {
 };
 
 // ── Calendar API types ─────────────────────────────────────────────
-type CalBooking = {
+export type CalBooking = {
   id: string;
   guestName: string | null;
   checkInDate: string;
@@ -93,7 +93,7 @@ type CalBooking = {
   notes: string | null;
 };
 
-type CalCleaning = {
+export type CalCleaning = {
   id: string;
   date: string;
   status: string;
@@ -101,7 +101,7 @@ type CalCleaning = {
   booking: { guestName: string | null } | null;
 };
 
-type CalTicket = {
+export type CalTicket = {
   id: string;
   title: string;
   status: string;
@@ -111,7 +111,7 @@ type CalTicket = {
   assignedTo: { name: string } | null;
 };
 
-type CalendarData = {
+export type CalendarData = {
   bookings: CalBooking[];
   cleanings: CalCleaning[];
   tickets: CalTicket[];
@@ -214,6 +214,7 @@ type Props = {
   initialNotifications: NotificationItem[];
   serverDate: string;
   dateLabel: string;
+  calendarDataByApt: Record<string, CalendarData>;
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────
@@ -272,6 +273,7 @@ export default function MobileDashboard({
   initialNotifications,
   serverDate,
   dateLabel,
+  calendarDataByApt,
 }: Props) {
   const [activeTab, setActiveTab]           = useState<"dashboard" | "calendar">("dashboard");
   const [sidebarOpen, setSidebarOpen]       = useState(false);
@@ -293,41 +295,19 @@ export default function MobileDashboard({
   const nowDate = new Date();
   const [calMonth, setCalMonth]             = useState({ year: nowDate.getFullYear(), month: nowDate.getMonth() });
 
-  async function openApartmentCalendar(apt: MobileApartmentData) {
+  function openApartmentCalendar(apt: MobileApartmentData) {
     setSelectedApt(apt);
     setCalendarTab("calendar");
-    setCalendarLoading(true);
-    setCalendarData(null);
+    setCalendarLoading(false);
     setSelectedDay(null);
-    const monthStr = `${calMonth.year}-${String(calMonth.month + 1).padStart(2, "0")}`;
-    try {
-      const res = await fetch(`/api/apartments/${apt.id}/calendar?month=${monthStr}`);
-      const data = await res.json();
-      setCalendarData({ bookings: data.bookings ?? [], cleanings: data.cleanings ?? [], tickets: data.tickets ?? [] });
-    } catch {
-      setCalendarData({ bookings: [], cleanings: [], tickets: [] });
-    } finally {
-      setCalendarLoading(false);
-    }
+    setCalendarData(calendarDataByApt[apt.id] ?? { bookings: [], cleanings: [], tickets: [] });
   }
 
-  async function changeCalMonth(delta: number) {
+  function changeCalMonth(delta: number) {
     const next = new Date(calMonth.year, calMonth.month + delta, 1);
-    const newMonth = { year: next.getFullYear(), month: next.getMonth() };
-    setCalMonth(newMonth);
+    setCalMonth({ year: next.getFullYear(), month: next.getMonth() });
     setSelectedDay(null);
-    if (!selectedApt) return;
-    setCalendarLoading(true);
-    const monthStr = `${newMonth.year}-${String(newMonth.month + 1).padStart(2, "0")}`;
-    try {
-      const res = await fetch(`/api/apartments/${selectedApt.id}/calendar?month=${monthStr}`);
-      const data = await res.json();
-      setCalendarData({ bookings: data.bookings ?? [], cleanings: data.cleanings ?? [], tickets: data.tickets ?? [] });
-    } catch {
-      setCalendarData({ bookings: [], cleanings: [], tickets: [] });
-    } finally {
-      setCalendarLoading(false);
-    }
+    // Data spans all months — no fetch needed
   }
 
   const pendingCount      = todayPendingEvents.length;
