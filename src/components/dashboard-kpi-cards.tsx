@@ -41,7 +41,7 @@ const POPUP_CONFIG: Record<
   cleanings:  { title: "Pulizie Oggi",       emptyMsg: "Nessuna pulizia oggi" },
   late:       { title: "Pulizie in Ritardo", emptyMsg: "Nessuna pulizia in ritardo" },
   inprogress: { title: "Pulizie in Corso",   emptyMsg: "Nessuna pulizia in corso" },
-  tickets:    { title: "Ticket Urgenti",     emptyMsg: "Nessun ticket urgente aperto" },
+  tickets:    { title: "Ticket Aperti",      emptyMsg: "Nessun ticket aperto" },
 };
 
 export default function DashboardKpiCards({
@@ -163,7 +163,7 @@ export default function DashboardKpiCards({
           className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[170px] flex flex-col justify-between transition-all hover:shadow-violet-500/10 hover:-translate-y-0.5 hover:border-violet-200/50 border border-transparent text-left cursor-pointer group"
         >
           <div className="flex justify-between items-start">
-            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">Ticket urgenti</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">Ticket aperti</p>
             <div className="w-8 h-8 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
               <Ticket size={16} />
             </div>
