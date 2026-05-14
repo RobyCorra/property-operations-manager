@@ -168,21 +168,26 @@ function aptStatusColors(status: string) {
   return map[status] ?? map["GREEN"];
 }
 
-// ── Cleaning dot color (hex) ───────────────────────────────────────
+// ── Cleaning dot color (hex) — mirrors desktop timeline-calendar.tsx ─
 function cleaningDotHex(c: CalCleaning): string {
-  const done = ["DONE", "APPROVED", "AWAITING_REVIEW", "COMPLETED"].includes(c.status);
-  if (done) return "#22c55e";
-  if (c.status === "IN_PROGRESS") return "#7c3aed";
-  if (!c.assignedTo) return "#f43f5e";
+  if (c.status === "APPROVED" || c.status === "DONE") return "#22c55e";       // emerald — Completata/Approvata
+  if (["IN_PROGRESS", "COMPLETED", "AWAITING_REVIEW"].includes(c.status)) return "#7c3aed"; // violet — in corso / da approvare / in verifica
+  if (!c.assignedTo) return "#f43f5e";                                          // rose — Non assegnata
   const isLate = Date.now() > new Date(c.date).getTime() + 30 * 60 * 1000;
-  if (isLate) return "#f97316";
-  return "#eab308";
+  if (isLate) return "#f97316";                                                  // orange — In ritardo
+  return "#eab308";                                                              // yellow — In attesa
 }
 function cleaningStatusInfo(c: CalCleaning): { label: string; badgeClass: string } {
-  const done = ["DONE", "APPROVED", "AWAITING_REVIEW", "COMPLETED"].includes(c.status);
-  if (done) return { label: "Completata", badgeClass: "bg-emerald-50 text-emerald-700" };
-  if (c.status === "IN_PROGRESS") return { label: "In corso", badgeClass: "bg-violet-50 text-violet-700" };
-  if (!c.assignedTo) return { label: "Non assegnata", badgeClass: "bg-rose-50 text-rose-700" };
+  if (c.status === "APPROVED" || c.status === "DONE")
+    return { label: "Approvata", badgeClass: "bg-emerald-50 text-emerald-700" };
+  if (c.status === "AWAITING_REVIEW")
+    return { label: "In verifica", badgeClass: "bg-violet-50 text-violet-700" };
+  if (c.status === "COMPLETED")
+    return { label: "Da approvare", badgeClass: "bg-violet-50 text-violet-700" };
+  if (c.status === "IN_PROGRESS")
+    return { label: "In corso", badgeClass: "bg-violet-50 text-violet-700" };
+  if (!c.assignedTo)
+    return { label: "Non assegnata", badgeClass: "bg-rose-50 text-rose-700" };
   const isLate = Date.now() > new Date(c.date).getTime() + 30 * 60 * 1000;
   if (isLate) return { label: "In ritardo", badgeClass: "bg-orange-50 text-orange-700" };
   return { label: "In attesa", badgeClass: "bg-yellow-50 text-yellow-700" };
@@ -220,19 +225,34 @@ type Props = {
 // ── Helpers ────────────────────────────────────────────────────────────
 function statusDotClass(status: string) {
   switch (status) {
-    case "GREEN": return "bg-emerald-500";
-    case "RED":   return "bg-red-500";
-    case "BLUE":  return "bg-blue-500";
-    default:      return "bg-slate-400";
+    case "GREEN":  return "bg-emerald-500";
+    case "RED":    return "bg-red-500";
+    case "BLUE":   return "bg-blue-500";
+    case "VIOLET": return "bg-violet-500";
+    case "YELLOW": return "bg-yellow-400";
+    default:       return "bg-slate-400";
   }
 }
 
 function statusBadgeClass(status: string) {
   switch (status) {
-    case "GREEN": return "bg-emerald-100 text-emerald-700";
-    case "RED":   return "bg-red-100 text-red-700";
-    case "BLUE":  return "bg-blue-100 text-blue-700";
-    default:      return "bg-slate-100 text-slate-600";
+    case "GREEN":  return "bg-emerald-100 text-emerald-700";
+    case "RED":    return "bg-red-100 text-red-700";
+    case "BLUE":   return "bg-blue-100 text-blue-700";
+    case "VIOLET": return "bg-violet-100 text-violet-700";
+    case "YELLOW": return "bg-yellow-100 text-yellow-700";
+    default:       return "bg-slate-100 text-slate-600";
+  }
+}
+
+function statusTextClass(status: string) {
+  switch (status) {
+    case "GREEN":  return "text-emerald-600";
+    case "RED":    return "text-red-600";
+    case "BLUE":   return "text-blue-600";
+    case "VIOLET": return "text-violet-600";
+    case "YELLOW": return "text-yellow-600";
+    default:       return "text-slate-500";
   }
 }
 
@@ -656,7 +676,7 @@ export default function MobileDashboard({
               <div className={`w-3 h-3 rounded-full shrink-0 ${statusDotClass(selectedApt.status)}`} />
               <div>
                 <h2 className="text-[19px] font-black text-slate-900 leading-tight">{selectedApt.name}</h2>
-                <p className={`text-[10px] font-bold ${selectedApt.status === "GREEN" ? "text-emerald-600" : selectedApt.status === "RED" ? "text-red-600" : "text-blue-600"}`}>
+                <p className={`text-[10px] font-bold ${statusTextClass(selectedApt.status)}`}>
                   {selectedApt.statusLabel}
                   {selectedApt.openTickets > 0 && <span className="ml-2 text-rose-600">· {selectedApt.openTickets} ticket aperti</span>}
                 </p>
@@ -952,35 +972,84 @@ export default function MobileDashboard({
                     </div>
                   </div>
 
-                  {/* Legend */}
-                  <div className="flex flex-wrap gap-x-3 gap-y-1 mb-4 px-1">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-3 rounded-sm" style={{ background: `linear-gradient(${colors.ciGrad})` }} />
-                      <span className="text-[8px] font-semibold text-slate-500">Check-in</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-3 rounded-sm" style={{ backgroundColor: colors.occBg }} />
-                      <span className="text-[8px] font-semibold text-slate-500">Occupato</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-3 rounded-sm" style={{ background: `linear-gradient(${colors.coGrad})` }} />
-                      <span className="text-[8px] font-semibold text-slate-500">Check-out</span>
-                    </div>
-                    {[
-                      { hex: "#eab308", label: "P. attesa" },
-                      { hex: "#f43f5e", label: "P. non assegnata" },
-                      { hex: "#f97316", label: "P. ritardo" },
-                      { hex: "#7c3aed", label: "P. in corso" },
-                      { hex: "#22c55e", label: "P. completata" },
-                      { hex: "#ef4444", label: "T. urgente" },
-                      { hex: "#f97316", label: "T. non urgente" },
-                      { hex: "#94a3b8", label: "T. risolto" },
-                    ].map((l) => (
-                      <div key={l.label} className="flex items-center gap-1.5">
-                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: l.hex, flexShrink: 0 }} />
-                        <span className="text-[8px] font-semibold text-slate-500">{l.label}</span>
+                  {/* ── Legenda — identica al calendario desktop ── */}
+                  <div className="mb-4 space-y-2">
+
+                    {/* Appartamenti */}
+                    <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Appartamenti</p>
+                      <div className="space-y-1.5">
+                        {([
+                          { dot: "bg-emerald-500", label: "Pronto", desc: "Clienti possono entrare" },
+                          { dot: "bg-blue-500",    label: "Non pronto", desc: "Ticket o pulizie da risolvere" },
+                          { dot: "bg-violet-500",  label: "In corso", desc: "Pulizie in corso" },
+                          { dot: "bg-yellow-400",  label: "In verifica", desc: "Supervisor deve approvare" },
+                          { dot: "bg-red-500",     label: "Occupato", desc: "Clienti dentro" },
+                        ] as const).map(({ dot, label, desc }) => (
+                          <div key={label} className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full shrink-0 ${dot}`} />
+                            <span className="text-[9px] font-bold text-slate-700">{label}</span>
+                            <span className="text-[8px] text-slate-400">— {desc}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Prenotazioni */}
+                    <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Prenotazioni</p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-5 h-3.5 rounded-sm shrink-0" style={{ background: `linear-gradient(${colors.ciGrad})` }} />
+                          <span className="text-[9px] font-semibold text-slate-600">Check-in</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-5 h-3.5 rounded-sm shrink-0" style={{ backgroundColor: colors.occBg }} />
+                          <span className="text-[9px] font-semibold text-slate-600">Occupato</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-5 h-3.5 rounded-sm shrink-0" style={{ background: `linear-gradient(${colors.coGrad})` }} />
+                          <span className="text-[9px] font-semibold text-slate-600">Check-out</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pulizie */}
+                    <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Pulizie</p>
+                      <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                        {([
+                          { hex: "#eab308", label: "In attesa" },
+                          { hex: "#f43f5e", label: "Non assegnata" },
+                          { hex: "#f97316", label: "In ritardo" },
+                          { hex: "#7c3aed", label: "In corso / verifica" },
+                          { hex: "#22c55e", label: "Completata" },
+                        ] as const).map(({ hex, label }) => (
+                          <div key={label} className="flex items-center gap-1.5">
+                            <div style={{ width: 7, height: 7, borderRadius: "50%", background: hex, flexShrink: 0 }} />
+                            <span className="text-[8px] font-semibold text-slate-600">{label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Ticket */}
+                    <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Ticket manutenzione</p>
+                      <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                        {([
+                          { hex: "#ef4444", label: "Urgente" },
+                          { hex: "#f97316", label: "Non urgente" },
+                          { hex: "#94a3b8", label: "Risolto" },
+                        ] as const).map(({ hex, label }) => (
+                          <div key={label} className="flex items-center gap-1.5">
+                            <div style={{ width: 7, height: 7, borderRadius: "50%", background: hex, flexShrink: 0 }} />
+                            <span className="text-[8px] font-semibold text-slate-600">{label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
                   </div>
 
                   {/* Selected day panel */}
