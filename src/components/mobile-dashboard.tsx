@@ -82,6 +82,80 @@ type NotificationItem = {
   createdAt: Date | string;
 };
 
+// ── Calendar API types ─────────────────────────────────────────────
+type CalBooking = {
+  id: string;
+  guestName: string | null;
+  checkInDate: string;
+  checkOutDate: string;
+  totalGuests: number | null;
+  status: string | null;
+  notes: string | null;
+};
+
+type CalCleaning = {
+  id: string;
+  date: string;
+  status: string;
+  assignedTo: { name: string } | null;
+  booking: { guestName: string | null } | null;
+};
+
+type CalTicket = {
+  id: string;
+  title: string;
+  status: string;
+  priority: string | null;
+  createdAt: string;
+  scheduledStart: string | null;
+  assignedTo: { name: string } | null;
+};
+
+type CalendarData = {
+  bookings: CalBooking[];
+  cleanings: CalCleaning[];
+  tickets: CalTicket[];
+};
+
+// ── Calendar helpers ───────────────────────────────────────────────
+function fmtDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "short" });
+}
+function fmtDateFull(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" });
+}
+function isoToYMD(iso: string) {
+  // Returns YYYY-MM-DD in local time (avoids UTC shift)
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+function diffDays(a: string, b: string) {
+  return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
+}
+function statusLabel(s: string) {
+  const map: Record<string, string> = {
+    PENDING: "In attesa", IN_PROGRESS: "In corso", DONE: "Completata",
+    CONFIRMED: "Confermata", OPEN: "Aperto", RESOLVED: "Risolto",
+  };
+  return map[s] ?? s;
+}
+function cleaningStatusColor(s: string) {
+  if (s === "DONE") return "bg-emerald-50 text-emerald-700";
+  if (s === "IN_PROGRESS") return "bg-violet-50 text-violet-700";
+  return "bg-amber-50 text-amber-700";
+}
+function ticketPriorityColor(p: string | null) {
+  if (p === "URGENT") return "bg-red-50 text-red-700";
+  if (p === "HIGH") return "bg-orange-50 text-orange-700";
+  return "bg-slate-50 text-slate-600";
+}
+const MONTH_NAMES_IT = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+
 type Props = {
   apartments: MobileApartmentData[];
   lateCleanings: MobileLateClean[];
@@ -165,6 +239,49 @@ export default function MobileDashboard({
   const [aiChatOpen, setAiChatOpen]         = useState(false);
   const [searchOpen, setSearchOpen]         = useState(false);
   const [searchQuery, setSearchQuery]       = useState("");
+
+  // ── Per-apartment calendar ─────────────────────────────────────
+  const [selectedApt, setSelectedApt]       = useState<MobileApartmentData | null>(null);
+  const [calendarData, setCalendarData]     = useState<CalendarData | null>(null);
+  const [calendarLoading, setCalendarLoading] = useState(false);
+  const [calendarTab, setCalendarTab]       = useState<"calendar" | "bookings" | "cleanings" | "tickets">("calendar");
+  const now = new Date();
+  const [calMonth, setCalMonth]             = useState({ year: now.getFullYear(), month: now.getMonth() });
+
+  async function openApartmentCalendar(apt: MobileApartmentData) {
+    setSelectedApt(apt);
+    setCalendarTab("calendar");
+    setCalendarLoading(true);
+    setCalendarData(null);
+    const monthStr = `${calMonth.year}-${String(calMonth.month + 1).padStart(2, "0")}`;
+    try {
+      const res = await fetch(`/api/apartments/${apt.id}/calendar?month=${monthStr}`);
+      const data = await res.json();
+      setCalendarData({ bookings: data.bookings ?? [], cleanings: data.cleanings ?? [], tickets: data.tickets ?? [] });
+    } catch {
+      setCalendarData({ bookings: [], cleanings: [], tickets: [] });
+    } finally {
+      setCalendarLoading(false);
+    }
+  }
+
+  async function changeCalMonth(delta: number) {
+    const next = new Date(calMonth.year, calMonth.month + delta, 1);
+    const newMonth = { year: next.getFullYear(), month: next.getMonth() };
+    setCalMonth(newMonth);
+    if (!selectedApt) return;
+    setCalendarLoading(true);
+    const monthStr = `${newMonth.year}-${String(newMonth.month + 1).padStart(2, "0")}`;
+    try {
+      const res = await fetch(`/api/apartments/${selectedApt.id}/calendar?month=${monthStr}`);
+      const data = await res.json();
+      setCalendarData({ bookings: data.bookings ?? [], cleanings: data.cleanings ?? [], tickets: data.tickets ?? [] });
+    } catch {
+      setCalendarData({ bookings: [], cleanings: [], tickets: [] });
+    } finally {
+      setCalendarLoading(false);
+    }
+  }
 
   const pendingCount      = todayPendingEvents.length;
   const pendingCleanings  = todayPendingEvents.filter((e) => e.type === "CLEANING").length;
@@ -461,13 +578,13 @@ export default function MobileDashboard({
           {/* Apartment list */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 pb-8">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-              Seleziona per aprire il calendario operativo
+              Seleziona per aprire il calendario
             </p>
             {apartments.map((apt) => (
-              <Link
+              <button
                 key={apt.id}
-                href="/dashboard/manager/calendario-operativo"
-                className="w-full bg-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm border border-slate-100 active:scale-95 transition-transform"
+                onClick={() => openApartmentCalendar(apt)}
+                className="w-full bg-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm border border-slate-100 active:scale-95 transition-transform text-left"
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
@@ -481,8 +598,280 @@ export default function MobileDashboard({
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2">
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
-              </Link>
+              </button>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          PER-APARTMENT CALENDAR — full screen in-state
+          ════════════════════════════════════════════════════ */}
+      {selectedApt && (
+        <div className="fixed inset-0 bg-[#f8f7ff] z-30 flex flex-col">
+
+          {/* Header */}
+          <div className="bg-white border-b border-slate-100 px-4 pt-4 pb-0">
+            {/* Back row */}
+            <div className="flex items-center gap-2 mb-2">
+              <button
+                onClick={() => { setSelectedApt(null); setCalendarData(null); }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-full text-violet-700 text-[10px] font-bold"
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Appartamenti
+              </button>
+            </div>
+            {/* Apartment name + status */}
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`w-3 h-3 rounded-full shrink-0 ${statusDotClass(selectedApt.status)}`} />
+              <div>
+                <h2 className="text-[19px] font-black text-slate-900 leading-tight">{selectedApt.name}</h2>
+                <p className={`text-[10px] font-bold ${selectedApt.status === "GREEN" ? "text-emerald-600" : selectedApt.status === "RED" ? "text-red-600" : "text-blue-600"}`}>
+                  {selectedApt.statusLabel}
+                  {selectedApt.openTickets > 0 && <span className="ml-2 text-rose-600">· {selectedApt.openTickets} ticket aperti</span>}
+                </p>
+              </div>
+            </div>
+            {/* Tabs */}
+            <div className="flex gap-2 pb-0">
+              {(["calendar","bookings","cleanings","tickets"] as const).map((t) => {
+                const labels = { calendar: "Calendario", bookings: "Prenotazioni", cleanings: "Pulizie", tickets: "Ticket" };
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setCalendarTab(t)}
+                    className={`flex-1 py-2 text-[10px] font-bold rounded-t-xl border-b-2 transition-colors ${
+                      calendarTab === t
+                        ? "border-violet-600 text-violet-700 bg-violet-50"
+                        : "border-transparent text-slate-500 bg-transparent"
+                    }`}
+                  >
+                    {labels[t]}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto pb-8">
+            {calendarLoading && (
+              <div className="flex flex-col items-center justify-center h-40 gap-3">
+                <div className="w-8 h-8 border-2 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+                <p className="text-xs text-slate-400 font-semibold">Caricamento…</p>
+              </div>
+            )}
+
+            {!calendarLoading && calendarData && calendarTab === "calendar" && (() => {
+              const { year, month } = calMonth;
+              const firstDow = new Date(year, month, 1).getDay(); // 0=Sun
+              const startOffset = (firstDow + 6) % 7; // Mon=0
+              const daysInMonth = new Date(year, month + 1, 0).getDate();
+              const todayYMD = isoToYMD(new Date().toISOString());
+
+              // Build set of special days
+              const checkinDays = new Set<number>();
+              const checkoutDays = new Set<number>();
+              const occupiedDays = new Set<number>();
+              const cleaningDays = new Set<number>();
+
+              calendarData.bookings.forEach((b) => {
+                const ciYMD = isoToYMD(b.checkInDate);
+                const coYMD = isoToYMD(b.checkOutDate);
+                const ciDate = new Date(year, month, 1);
+                const coDate = new Date(year, month + 1, 0);
+                // Iterate days of month
+                for (let d = 1; d <= daysInMonth; d++) {
+                  const dayYMD = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+                  if (dayYMD === ciYMD) checkinDays.add(d);
+                  else if (dayYMD === coYMD) checkoutDays.add(d);
+                  else if (dayYMD > ciYMD && dayYMD < coYMD) occupiedDays.add(d);
+                }
+                void ciDate; void coDate;
+              });
+              calendarData.cleanings.forEach((c) => {
+                const dYMD = isoToYMD(c.date);
+                const [cy, cm, cd] = dYMD.split("-").map(Number);
+                if (cy === year && cm === month + 1) cleaningDays.add(cd);
+              });
+
+              const cells: (number | null)[] = [...Array(startOffset).fill(null), ...Array.from({length: daysInMonth}, (_,i) => i+1)];
+              // Pad to complete weeks
+              while (cells.length % 7 !== 0) cells.push(null);
+
+              function dayClass(d: number) {
+                const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+                if (ymd === todayYMD) return "bg-violet-600 text-white font-black";
+                if (checkinDays.has(d)) return "bg-emerald-100 text-emerald-800 font-bold";
+                if (checkoutDays.has(d)) return "bg-yellow-100 text-yellow-800 font-bold";
+                if (occupiedDays.has(d)) return "bg-violet-100 text-violet-700 font-semibold";
+                if (cleaningDays.has(d)) return "bg-blue-100 text-blue-700 font-semibold";
+                return "text-slate-600";
+              }
+
+              return (
+                <div className="px-4 pt-4">
+                  {/* Month nav */}
+                  <div className="flex items-center justify-between mb-4">
+                    <button onClick={() => changeCalMonth(-1)} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                    <span className="text-base font-black text-slate-900">{MONTH_NAMES_IT[month]} {year}</span>
+                    <button onClick={() => changeCalMonth(1)} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  </div>
+
+                  {/* Calendar grid */}
+                  <div className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 mb-4">
+                    <div className="grid grid-cols-7 gap-1 mb-1">
+                      {["Lun","Mar","Mer","Gio","Ven","Sab","Dom"].map((d) => (
+                        <div key={d} className="text-center text-[8px] font-black text-slate-400 uppercase py-1">{d}</div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-7 gap-1">
+                      {cells.map((d, i) => (
+                        <div key={i} className={`aspect-square flex items-center justify-center rounded-xl text-[11px] ${d ? dayClass(d) : ""}`}>
+                          {d ?? ""}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 mb-5">
+                    {[
+                      { color: "bg-emerald-100", label: "Check-in" },
+                      { color: "bg-violet-100",  label: "Occupato" },
+                      { color: "bg-yellow-100",  label: "Check-out" },
+                      { color: "bg-blue-100",    label: "Pulizia" },
+                    ].map((l) => (
+                      <div key={l.label} className="flex items-center gap-1.5">
+                        <div className={`w-3 h-3 rounded ${l.color}`} />
+                        <span className="text-[9px] font-semibold text-slate-500">{l.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Upcoming events */}
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Prossimi eventi</p>
+                  {calendarData.bookings.length === 0 && calendarData.cleanings.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400 text-sm">Nessun evento questo mese</div>
+                  ) : (
+                    <div className="space-y-3">
+                      {calendarData.bookings.map((b) => (
+                        <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                          <div className="h-1 bg-violet-500" />
+                          <div className="px-4 py-3">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-black uppercase tracking-wide text-violet-600">🏠 Prenotazione</span>
+                              <span className="text-[8px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Confermata</span>
+                            </div>
+                            <p className="text-sm font-bold text-slate-900">{b.guestName ?? "Ospite"}</p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">
+                              {fmtDate(b.checkInDate)} → {fmtDate(b.checkOutDate)}
+                              {b.totalGuests ? ` · ${b.totalGuests} ospiti` : ""}
+                              {" · "}{diffDays(b.checkInDate, b.checkOutDate)} notti
+                            </p>
+                          </div>
+                        </Link>
+                      ))}
+                      {calendarData.cleanings.map((c) => (
+                        <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                          <div className="h-1 bg-blue-400" />
+                          <div className="px-4 py-3">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-black uppercase tracking-wide text-blue-600">🧹 Pulizia</span>
+                              <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${cleaningStatusColor(c.status)}`}>{statusLabel(c.status)}</span>
+                            </div>
+                            <p className="text-sm font-bold text-slate-900">{fmtDateFull(c.date)}</p>
+                            {c.assignedTo && <p className="text-[10px] text-slate-500 mt-0.5">Assegnata a {c.assignedTo.name}</p>}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {!calendarLoading && calendarData && calendarTab === "bookings" && (
+              <div className="px-4 pt-4 space-y-3">
+                {calendarData.bookings.length === 0 && (
+                  <div className="text-center py-12 text-slate-400 text-sm">Nessuna prenotazione questo mese</div>
+                )}
+                {calendarData.bookings.map((b) => (
+                  <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                    <div className="h-1 bg-violet-500" />
+                    <div className="px-4 py-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-slate-900 truncate">{b.guestName ?? "Ospite"}</p>
+                          <p className="text-[10px] text-slate-500 mt-0.5">
+                            Check-in: {fmtDateFull(b.checkInDate)}
+                          </p>
+                          <p className="text-[10px] text-slate-500">
+                            Check-out: {fmtDateFull(b.checkOutDate)}
+                          </p>
+                          {b.totalGuests && <p className="text-[10px] text-slate-500">{b.totalGuests} ospiti · {diffDays(b.checkInDate, b.checkOutDate)} notti</p>}
+                          {b.notes && <p className="text-[10px] text-slate-400 mt-1 italic">{b.notes}</p>}
+                        </div>
+                        <span className="text-[8px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">Confermata</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {!calendarLoading && calendarData && calendarTab === "cleanings" && (
+              <div className="px-4 pt-4 space-y-3">
+                {calendarData.cleanings.length === 0 && (
+                  <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia questo mese</div>
+                )}
+                {calendarData.cleanings.map((c) => (
+                  <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                    <div className="h-1 bg-blue-400" />
+                    <div className="px-4 py-3 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-lg">🧹</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-900">{fmtDateFull(c.date)}</p>
+                        {c.assignedTo && <p className="text-[10px] text-slate-500">{c.assignedTo.name}</p>}
+                        {c.booking?.guestName && <p className="text-[10px] text-slate-400">Post checkout: {c.booking.guestName}</p>}
+                      </div>
+                      <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${cleaningStatusColor(c.status)}`}>{statusLabel(c.status)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {!calendarLoading && calendarData && calendarTab === "tickets" && (
+              <div className="px-4 pt-4 space-y-3">
+                {calendarData.tickets.length === 0 && (
+                  <div className="text-center py-12 text-slate-400 text-sm">Nessun ticket aperto</div>
+                )}
+                {calendarData.tickets.map((t) => (
+                  <Link key={t.id} href={`/dashboard/manager/maintenance/${t.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                    <div className="h-1 bg-rose-400" />
+                    <div className="px-4 py-3">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="text-sm font-bold text-slate-900 flex-1 min-w-0">{t.title}</p>
+                        <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${ticketPriorityColor(t.priority)}`}>
+                          {t.priority ?? "Normal"}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500">Stato: {statusLabel(t.status)}</p>
+                      {t.assignedTo && <p className="text-[10px] text-slate-500">Assegnato a {t.assignedTo.name}</p>}
+                      {t.scheduledStart && <p className="text-[10px] text-slate-500">Previsto: {fmtDateFull(t.scheduledStart)}</p>}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
