@@ -217,6 +217,9 @@ type Props = {
   checkinsItems: MobileCheckinItem[];
   cleaningsTodayItems: MobileCleaningTodayItem[];
   urgentTicketsItems: MobileUrgentTicketItem[];
+  ticketsTodayItems: MobileUrgentTicketItem[];
+  ticketsTodayCount: number;
+  ticketsDoneCount: number;
   initialNotifications: NotificationItem[];
   serverDate: string;
   dateLabel: string;
@@ -291,6 +294,9 @@ export default function MobileDashboard({
   checkinsItems,
   cleaningsTodayItems,
   urgentTicketsItems,
+  ticketsTodayItems,
+  ticketsTodayCount,
+  ticketsDoneCount,
   initialNotifications,
   serverDate,
   dateLabel,
@@ -303,6 +309,8 @@ export default function MobileDashboard({
   const [checkinsSheetOpen, setCheckinsSheetOpen]     = useState(false);
   const [cleaningsSheetOpen, setCleaningsSheetOpen]   = useState(false);
   const [ticketsSheetOpen, setTicketsSheetOpen]       = useState(false);
+  const [lateCleanSheetOpen, setLateCleanSheetOpen]   = useState(false);
+  const [inProgressSheetOpen, setInProgressSheetOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen]         = useState(false);
   const [searchOpen, setSearchOpen]         = useState(false);
   const [searchQuery, setSearchQuery]       = useState("");
@@ -457,24 +465,60 @@ export default function MobileDashboard({
             </div>
           </button>
 
-          {/* Ticket Urgenti */}
+          {/* Pulizie in ritardo */}
           <button
-            onClick={() => setTicketsSheetOpen(true)}
+            onClick={() => setLateCleanSheetOpen(true)}
             className={`rounded-2xl p-4 shadow-sm border text-left active:scale-95 transition-transform ${
-              urgentTicketsItems.length > 0
-                ? "bg-orange-50 border-orange-200"
-                : "bg-white border-slate-100"
+              lateCleanings.length > 0 ? "bg-orange-50 border-orange-200" : "bg-white border-slate-100"
             }`}
           >
             <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${
-              urgentTicketsItems.length > 0 ? "text-orange-500" : "text-slate-400"
-            }`}>Ticket Urgenti</p>
+              lateCleanings.length > 0 ? "text-orange-500" : "text-slate-400"
+            }`}>Pulizie in ritardo</p>
             <p className={`text-3xl font-black ${
-              urgentTicketsItems.length > 0 ? "text-orange-600" : "text-slate-900"
-            }`}>{urgentTicketsItems.length}</p>
+              lateCleanings.length > 0 ? "text-orange-600" : "text-slate-900"
+            }`}>{lateCleanings.length}</p>
             <p className={`text-[10px] mt-0.5 ${
-              urgentTicketsItems.length > 0 ? "text-orange-400" : "text-slate-400"
-            }`}>segnalazioni aperte</p>
+              lateCleanings.length > 0 ? "text-orange-400" : "text-slate-400"
+            }`}>in ritardo</p>
+          </button>
+
+          {/* Pulizie in corso */}
+          <button
+            onClick={() => setInProgressSheetOpen(true)}
+            className={`rounded-2xl p-4 shadow-sm border text-left active:scale-95 transition-transform ${
+              cleaningsInProgress.length > 0 ? "bg-violet-50 border-violet-200" : "bg-white border-slate-100"
+            }`}
+          >
+            <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${
+              cleaningsInProgress.length > 0 ? "text-violet-500" : "text-slate-400"
+            }`}>Pulizie in corso</p>
+            <p className={`text-3xl font-black ${
+              cleaningsInProgress.length > 0 ? "text-violet-600" : "text-slate-900"
+            }`}>{cleaningsInProgress.length}</p>
+            <p className={`text-[10px] mt-0.5 ${
+              cleaningsInProgress.length > 0 ? "text-violet-400" : "text-slate-400"
+            }`}>in esecuzione</p>
+          </button>
+
+          {/* Ticket Oggi */}
+          <button
+            onClick={() => setTicketsSheetOpen(true)}
+            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-left active:scale-95 transition-transform"
+          >
+            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Ticket Oggi</p>
+            <div className="flex items-end gap-3">
+              <div>
+                <p className="text-3xl font-black text-slate-900">{ticketsTodayCount}</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">pianificati</p>
+              </div>
+              {ticketsDoneCount > 0 && (
+                <div className="mb-0.5">
+                  <p className="text-xl font-black text-emerald-600 leading-none">{ticketsDoneCount}</p>
+                  <p className="text-[9px] font-bold text-emerald-500 mt-0.5">eseguiti</p>
+                </div>
+              )}
+            </div>
           </button>
 
           {/* Chiedi a IA */}
@@ -490,31 +534,6 @@ export default function MobileDashboard({
               <p className="text-white font-black text-base leading-tight">Chiedi<br/>a IA</p>
             </div>
             <p className="text-violet-200 text-[10px] mt-2">Domande operative</p>
-          </button>
-
-          {/* Card prossimi eventi — cliccabile */}
-          <button
-            onClick={() => setEventsOpen(true)}
-            className="col-span-2 bg-violet-600 rounded-2xl p-4 cursor-pointer active:scale-95 transition-transform shadow-lg shadow-violet-200 flex items-center justify-between"
-          >
-            <div className="text-left">
-              <p className="text-[9px] font-black uppercase tracking-widest text-violet-200 mb-1">Prossimi eventi oggi</p>
-              <p className="text-white font-black text-base">
-                {pendingCount > 0 ? `${pendingCount} ancora da fare` : "Nessun evento pendente"}
-              </p>
-              {pendingCount > 0 && (
-                <p className="text-violet-200 text-[10px] mt-0.5">
-                  {pendingCleanings > 0 && `${pendingCleanings} ${pendingCleanings === 1 ? "pulizia" : "pulizie"}`}
-                  {pendingCleanings > 0 && pendingMaintenance > 0 && " · "}
-                  {pendingMaintenance > 0 && `${pendingMaintenance} ticket manutenzione`}
-                </p>
-              )}
-            </div>
-            <div className="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </div>
           </button>
         </div>
 
@@ -1481,7 +1500,7 @@ export default function MobileDashboard({
       )}
 
       {/* ════════════════════════════════════════════════════
-          TICKET URGENTI SHEET
+          TICKET OGGI SHEET
           ════════════════════════════════════════════════════ */}
       {ticketsSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
@@ -1492,9 +1511,9 @@ export default function MobileDashboard({
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">Manutenzione</p>
               <h2 className="text-xl font-bold text-slate-900">
-                {urgentTicketsItems.length > 0
-                  ? `${urgentTicketsItems.length} ticket urgenti`
-                  : "Nessun ticket urgente"}
+                {ticketsTodayItems.length > 0
+                  ? `${ticketsTodayItems.length} ticket oggi`
+                  : "Nessun ticket oggi"}
               </h2>
             </div>
             <button
@@ -1507,17 +1526,21 @@ export default function MobileDashboard({
             </button>
           </div>
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
-            {urgentTicketsItems.length === 0 && (
+            {ticketsTodayItems.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">
-                ✓ Nessun ticket urgente aperto
+                ✓ Nessun ticket per oggi
               </div>
             )}
-            {urgentTicketsItems.map((ticket) => {
+            {ticketsTodayItems.map((ticket) => {
+              const isDone = ["RESOLVED", "APPROVED"].includes(ticket.status);
               const isOpen = ticket.status === "OPEN";
-              const badgeClass = isOpen
+              const badgeClass = isDone
+                ? "bg-emerald-50 text-emerald-700"
+                : isOpen
                 ? "bg-orange-50 text-orange-700"
                 : "bg-amber-50 text-amber-700";
-              const statusLabel = isOpen ? "Aperto" : "In carico";
+              const ticketStatusLabel = isDone ? "Risolto" : isOpen ? "Aperto" : "In carico";
+              const barColor = isDone ? "bg-emerald-400" : isOpen ? "bg-orange-400" : "bg-amber-400";
               return (
                 <Link
                   key={ticket.id}
@@ -1525,7 +1548,7 @@ export default function MobileDashboard({
                   onClick={() => setTicketsSheetOpen(false)}
                   className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
                 >
-                  <div className="h-1 bg-orange-400" />
+                  <div className={`h-1 ${barColor}`} />
                   <div className="px-4 py-3 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2.5">
@@ -1537,12 +1560,147 @@ export default function MobileDashboard({
                       <p className="text-[10px] text-slate-400 truncate">{ticket.apartmentName}</p>
                     </div>
                     <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 ${badgeClass}`}>
-                      {statusLabel}
+                      {ticketStatusLabel}
                     </span>
                   </div>
                 </Link>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          PULIZIE IN RITARDO SHEET
+          ════════════════════════════════════════════════════ */}
+      {lateCleanSheetOpen && (
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
+          <div className="flex justify-center pt-3">
+            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+          </div>
+          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">Attenzione</p>
+              <h2 className="text-xl font-bold text-slate-900">
+                {lateCleanings.length > 0
+                  ? `${lateCleanings.length} pulizie in ritardo`
+                  : "Nessuna pulizia in ritardo"}
+              </h2>
+            </div>
+            <button
+              onClick={() => setLateCleanSheetOpen(false)}
+              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+            {lateCleanings.length === 0 && (
+              <div className="text-center py-12 text-slate-400 text-sm">
+                ✓ Nessuna pulizia in ritardo
+              </div>
+            )}
+            {lateCleanings.map((c) => (
+              <Link
+                key={c.id}
+                href={c.href}
+                onClick={() => setLateCleanSheetOpen(false)}
+                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+              >
+                <div className="h-1 bg-orange-400" />
+                <div className="px-4 py-3 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2.5">
+                      <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                      <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 truncate">{c.apartmentName}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{c.assignedToName} · {c.scheduledTime}</p>
+                  </div>
+                  <span className="text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 bg-orange-50 text-orange-700">
+                    In ritardo
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          PULIZIE IN CORSO SHEET
+          ════════════════════════════════════════════════════ */}
+      {inProgressSheetOpen && (
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
+          <div className="flex justify-center pt-3">
+            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+          </div>
+          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">In esecuzione</p>
+              <h2 className="text-xl font-bold text-slate-900">
+                {cleaningsInProgress.length > 0
+                  ? `${cleaningsInProgress.length} pulizie in corso`
+                  : "Nessuna pulizia in corso"}
+              </h2>
+            </div>
+            <button
+              onClick={() => setInProgressSheetOpen(false)}
+              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+            {cleaningsInProgress.length === 0 && (
+              <div className="text-center py-12 text-slate-400 text-sm">
+                Nessuna pulizia in corso
+              </div>
+            )}
+            {cleaningsInProgress.map((c) => (
+              <Link
+                key={c.id}
+                href={c.href}
+                onClick={() => setInProgressSheetOpen(false)}
+                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+              >
+                <div className="h-1 bg-violet-500" />
+                <div className="px-4 py-3 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center shrink-0">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5">
+                      <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                      <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 truncate">{c.apartmentName}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{c.assignedToName}</p>
+                    {c.progressTotal > 0 && (
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <div className="flex-1 h-1 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-violet-500 rounded-full"
+                            style={{ width: `${Math.round((c.progressDone / c.progressTotal) * 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-[9px] font-bold text-violet-600 shrink-0">
+                          {c.progressDone}/{c.progressTotal}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 bg-violet-50 text-violet-700">
+                    In corso
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       )}

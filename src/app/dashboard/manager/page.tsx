@@ -408,6 +408,16 @@ export default async function ManagerDashboardPage() {
     ["RESOLVED", "APPROVED"].includes(t.status)
   ).length;
 
+  // Ticket di oggi per il sheet mobile (tutti — aperti + risolti)
+  const mobileTicketsTodayItems: MobileUrgentTicketItem[] = ticketsToday
+    .map((t: TicketView) => ({
+      id: t.id,
+      title: t.title,
+      apartmentName: t.apartment.name,
+      status: t.status,
+      href: `/dashboard/manager/maintenance/${t.id}/edit`,
+    }));
+
   // ── Calendar data per apartment (server-side, avoids client fetch auth issues) ──
   const mobileCalendarByApt: Record<string, CalendarData> = {};
   for (const apt of apartments) {
@@ -462,6 +472,9 @@ export default async function ManagerDashboardPage() {
         checkinsItems={mobileCheckinsItems}
         cleaningsTodayItems={mobileCleaningsTodayItems}
         urgentTicketsItems={mobileUrgentTicketsItems}
+        ticketsTodayItems={mobileTicketsTodayItems}
+        ticketsTodayCount={ticketsTodayCount}
+        ticketsDoneCount={ticketsDoneCount}
         initialNotifications={initialNotifications}
         serverDate={serverDate}
         dateLabel={mobileDateLabel}
