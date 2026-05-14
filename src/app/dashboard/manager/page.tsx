@@ -457,7 +457,6 @@ export default async function ManagerDashboardPage() {
           <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal">
             {new Date(serverDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
-          <ManagerAIChatLauncher />
         </div>
       </div>
 
