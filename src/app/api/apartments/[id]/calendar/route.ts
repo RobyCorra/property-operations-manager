@@ -76,7 +76,7 @@ export async function GET(
     prisma.maintenanceTicket.findMany({
       where: {
         apartmentId: id,
-        status: { in: ["OPEN", "IN_PROGRESS"] },
+        status: { not: "CANCELLED" },
       },
       orderBy: { createdAt: "desc" },
       select: {
