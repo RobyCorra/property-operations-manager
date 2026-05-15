@@ -958,7 +958,7 @@ export async function resolveMaintenanceTicket(id: string, formData: FormData) {
     }
     
     // 2. Update status
-    await updateMaintenanceStatus(id, "RESOLVED");
+    await updateMaintenanceStatus(id, "AWAITING_REVIEW");
     
     return { success: true };
   } catch (error: any) {

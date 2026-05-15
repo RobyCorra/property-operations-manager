@@ -59,7 +59,7 @@ export default function MaintenanceResolutionForm({ ticketId }: Props) {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full bg-red-600 text-white font-bold py-4 rounded-2xl hover:bg-red-700 transition-all shadow-lg shadow-red-100 disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full bg-amber-500 text-white font-bold py-4 rounded-2xl hover:bg-amber-600 transition-all shadow-lg shadow-amber-100 disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {isPending ? (
           <>
@@ -67,7 +67,7 @@ export default function MaintenanceResolutionForm({ ticketId }: Props) {
             Salvataggio...
           </>
         ) : (
-          "Segnala come Risolto"
+          "✓ Completato — Invia per verifica"
         )}
       </button>
     </form>
