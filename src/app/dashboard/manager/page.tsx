@@ -337,6 +337,7 @@ export default async function ManagerDashboardPage() {
       id: t.id,
       title: t.title,
       apartmentName: t.apartment.name,
+      isAssigned: !!t.assignedTo,
       status: t.status,
       href: `/dashboard/manager/maintenance/${t.id}/edit`,
     }));
@@ -359,6 +360,7 @@ export default async function ManagerDashboardPage() {
     id: c.id,
     apartmentName: c.apartment.name,
     assignedToName: c.assignedTo?.name ?? "Non assegnata",
+    isAssigned: !!c.assignedTo,
     status: c.status,
     href: `/dashboard/manager/cleanings/${c.id}/edit`,
   }));
@@ -414,6 +416,7 @@ export default async function ManagerDashboardPage() {
       id: t.id,
       title: t.title,
       apartmentName: t.apartment.name,
+      isAssigned: !!t.assignedTo,
       status: t.status,
       href: `/dashboard/manager/maintenance/${t.id}/edit`,
     }));

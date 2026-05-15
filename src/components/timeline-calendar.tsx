@@ -653,25 +653,30 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                   if (event.type === "cleaning") {
                     const cleaning = event.data as CleaningTask;
-                    const cleaningLate = isCleaningLate(cleaning);
-                    const cleaningUnassigned = cleaning.status === "PENDING" && !cleaning.assignedTo;
+                    const isAssigned = !!cleaning.assignedTo;
 
-                    // Colori unificati basati su status (allineati con ticket)
+                    // Colori unificati basati su status + assegnazione
                     const cleaningColor = cleaning.status === "APPROVED"
                       ? "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 shadow-emerald-100"
-                      : cleaning.status === "AWAITING_REVIEW" || cleaning.status === "COMPLETED"
+                      : cleaning.status === "AWAITING_REVIEW"
                       ? "bg-amber-500/15 text-amber-700 border-amber-500/30 shadow-amber-100"
+                      : cleaning.status === "COMPLETED"
+                      ? "bg-sky-500/15 text-sky-700 border-sky-500/30 shadow-sky-100"
                       : cleaning.status === "IN_PROGRESS"
                       ? "bg-violet-500/15 text-violet-700 border-violet-500/30 shadow-violet-100"
-                      : "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100"; // PENDING (Da fare)
+                      : isAssigned
+                      ? "bg-yellow-500/15 text-yellow-700 border-yellow-500/30 shadow-yellow-100"
+                      : "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100";
 
                     const cleaningLabel = cleaning.status === "APPROVED"
                       ? "Approvato"
-                      : cleaning.status === "AWAITING_REVIEW" || cleaning.status === "COMPLETED"
+                      : cleaning.status === "AWAITING_REVIEW"
                       ? "In verifica"
+                      : cleaning.status === "COMPLETED"
+                      ? "Completata"
                       : cleaning.status === "IN_PROGRESS"
                       ? "In corso"
-                      : "Da fare";
+                      : isAssigned ? "Assegnato" : "Da fare";
                     const cleaningPulse = cleaning.status === "AWAITING_REVIEW" ? "animate-pulse" : "";
 
                     return (
@@ -696,15 +701,17 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                   if (event.type === "maintenance") {
                     const ticket = event.data as MaintenanceTicket;
-                    // Colori unificati basati su status (allineati con pulizie)
-                    const ticketStatusColors: Record<string, string> = {
-                      OPEN:            "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100",
-                      IN_PROGRESS:     "bg-violet-500/15 text-violet-700 border-violet-500/30 shadow-violet-100",
-                      AWAITING_REVIEW: "bg-amber-500/15 text-amber-700 border-amber-500/30 shadow-amber-100",
-                      RESOLVED:        "bg-amber-500/15 text-amber-700 border-amber-500/30 shadow-amber-100", // legacy
-                      APPROVED:        "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 shadow-emerald-100",
-                    };
-                    const ticketColor = ticketStatusColors[ticket.status] || "bg-red-500/15 text-red-700 border-red-500/30";
+                    const isAssigned = !!ticket.assignedTo;
+                    // Colori unificati basati su status + assegnazione
+                    const ticketColor = ticket.status === "APPROVED"
+                      ? "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 shadow-emerald-100"
+                      : ticket.status === "AWAITING_REVIEW" || ticket.status === "RESOLVED"
+                      ? "bg-amber-500/15 text-amber-700 border-amber-500/30 shadow-amber-100"
+                      : ticket.status === "IN_PROGRESS"
+                      ? "bg-violet-500/15 text-violet-700 border-violet-500/30 shadow-violet-100"
+                      : isAssigned
+                      ? "bg-yellow-500/15 text-yellow-700 border-yellow-500/30 shadow-yellow-100"
+                      : "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100";
 
                     return (
                       <div
@@ -736,14 +743,16 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
     <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Stato Intervento</span>
       {[
-        { color: "bg-red-500/15 border-red-500/30 text-red-700",       icon: <Paintbrush size={9} className="opacity-70" />, label: "Da fare" },
-        { color: "bg-violet-500/15 border-violet-500/30 text-violet-700", icon: <Paintbrush size={9} className="opacity-70" />, label: "In corso" },
-        { color: "bg-amber-500/15 border-amber-500/30 text-amber-700", icon: <Paintbrush size={9} className="opacity-70" />, label: "In verifica" },
-        { color: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700", icon: <Paintbrush size={9} className="opacity-70" />, label: "Approvato" },
-      ].map(({ color, icon, label }) => (
+        { color: "bg-red-500/15 border-red-500/30 text-red-700",         label: "Da fare" },
+        { color: "bg-yellow-500/15 border-yellow-500/30 text-yellow-700", label: "Assegnato" },
+        { color: "bg-violet-500/15 border-violet-500/30 text-violet-700", label: "In corso" },
+        { color: "bg-sky-500/15 border-sky-500/30 text-sky-700",          label: "Completata" },
+        { color: "bg-amber-500/15 border-amber-500/30 text-amber-700",    label: "In verifica" },
+        { color: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700", label: "Approvato" },
+      ].map(({ color, label }) => (
         <div key={label} className="flex items-center gap-1.5">
           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
-            {icon}{label}
+            <Paintbrush size={9} className="opacity-70" />{label}
           </span>
         </div>
       ))}

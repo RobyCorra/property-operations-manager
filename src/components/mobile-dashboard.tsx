@@ -61,6 +61,7 @@ export type MobileCleaningTodayItem = {
   id: string;
   apartmentName: string;
   assignedToName: string;
+  isAssigned: boolean;
   status: string;
   href: string;
 };
@@ -69,6 +70,7 @@ export type MobileUrgentTicketItem = {
   id: string;
   title: string;
   apartmentName: string;
+  isAssigned: boolean;
   status: string;
   href: string;
 };
@@ -138,30 +140,33 @@ function diffDays(a: string, b: string) {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
 // ── Mappa status → label unificata ────────────────────────────────
-function statusLabel(s: string) {
+function statusLabel(s: string, assigned = false) {
+  if ((s === "PENDING" || s === "OPEN") && assigned) return "Assegnato";
   const map: Record<string, string> = {
-    // stati unificati
     PENDING: "Da fare", OPEN: "Da fare",
     IN_PROGRESS: "In corso",
-    AWAITING_REVIEW: "In verifica", COMPLETED: "In verifica", RESOLVED: "In verifica",
+    COMPLETED: "Completata",
+    AWAITING_REVIEW: "In verifica", RESOLVED: "In verifica",
     APPROVED: "Approvato",
-    // prenotazioni
     CONFIRMED: "Confermata", DONE: "Approvato",
   };
   return map[s] ?? s;
 }
 
 // ── Colori status unificati (pulizie e ticket) ─────────────────────
-function unifiedStatusColor(s: string): string {
+// assigned: true = PENDING/OPEN con assegnatario → giallo
+function unifiedStatusColor(s: string, assigned = false): string {
   if (s === "APPROVED") return "bg-emerald-50 text-emerald-700";
-  if (s === "AWAITING_REVIEW" || s === "COMPLETED" || s === "RESOLVED") return "bg-amber-50 text-amber-700";
+  if (s === "AWAITING_REVIEW" || s === "RESOLVED") return "bg-amber-50 text-amber-700";
+  if (s === "COMPLETED") return "bg-sky-50 text-sky-700";
   if (s === "IN_PROGRESS") return "bg-violet-50 text-violet-700";
-  return "bg-red-50 text-red-700"; // PENDING / OPEN / default
+  if ((s === "PENDING" || s === "OPEN") && assigned) return "bg-yellow-50 text-yellow-700";
+  return "bg-red-50 text-red-700"; // PENDING/OPEN senza assegnatario
 }
 
 // ── Legacy aliases ─────────────────────────────────────────────────
-function cleaningStatusColor(s: string) { return unifiedStatusColor(s); }
-function ticketPriorityColor(_p: string | null) { return "bg-slate-50 text-slate-600"; } // non più usata per colori primari
+function cleaningStatusColor(s: string, assigned = false) { return unifiedStatusColor(s, assigned); }
+function ticketPriorityColor(_p: string | null) { return "bg-slate-50 text-slate-600"; }
 const MONTH_NAMES_IT = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
 // ── Apartment status → calendar colors ────────────────────────────
@@ -177,24 +182,32 @@ function aptStatusColors(status: string) {
 }
 
 // ── Colori dot unificati per il calendario (hex) ──────────────────
-function unifiedDotHex(status: string): string {
-  if (status === "APPROVED")                                          return "#10b981"; // emerald
-  if (["AWAITING_REVIEW","COMPLETED","RESOLVED"].includes(status))   return "#f59e0b"; // amber
-  if (status === "IN_PROGRESS")                                       return "#7c3aed"; // violet
-  return "#ef4444"; // red — PENDING / OPEN / default
+function unifiedDotHex(status: string, assigned = false): string {
+  if (status === "APPROVED")                                        return "#10b981"; // emerald
+  if (["AWAITING_REVIEW","RESOLVED"].includes(status))             return "#f59e0b"; // amber
+  if (status === "COMPLETED")                                       return "#0ea5e9"; // sky
+  if (status === "IN_PROGRESS")                                     return "#7c3aed"; // violet
+  if ((status === "PENDING" || status === "OPEN") && assigned)     return "#eab308"; // yellow
+  return "#ef4444"; // red — non assegnato
 }
 
-function cleaningDotHex(c: CalCleaning): string { return unifiedDotHex(c.status); }
+function cleaningDotHex(c: CalCleaning): string {
+  return unifiedDotHex(c.status, !!c.assignedTo);
+}
 function cleaningStatusInfo(c: CalCleaning): { label: string; badgeClass: string } {
-  return { label: statusLabel(c.status), badgeClass: unifiedStatusColor(c.status) };
+  const assigned = !!c.assignedTo;
+  return { label: statusLabel(c.status, assigned), badgeClass: unifiedStatusColor(c.status, assigned) };
 }
 
-function ticketDotHex(t: CalTicket): string { return unifiedDotHex(t.status); }
+function ticketDotHex(t: CalTicket): string {
+  return unifiedDotHex(t.status, !!t.assignedTo);
+}
 function ticketStatusInfo(t: CalTicket): { label: string; badgeClass: string; barHex: string } {
+  const assigned = !!t.assignedTo;
   return {
-    label: statusLabel(t.status),
-    badgeClass: unifiedStatusColor(t.status),
-    barHex: unifiedDotHex(t.status),
+    label: statusLabel(t.status, assigned),
+    badgeClass: unifiedStatusColor(t.status, assigned),
+    barHex: unifiedDotHex(t.status, assigned),
   };
 }
 
@@ -1448,18 +1461,22 @@ export default function MobileDashboard({
               <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia pianificata per oggi</div>
             )}
             {cleaningsTodayItems.map((item) => {
-              const dotHex = unifiedDotHex(item.status);
+              const dotHex = unifiedDotHex(item.status, item.isAssigned);
               const barColor = item.status === "APPROVED" ? "bg-emerald-500"
-                : ["AWAITING_REVIEW","COMPLETED","RESOLVED"].includes(item.status) ? "bg-amber-400"
+                : item.status === "AWAITING_REVIEW" ? "bg-amber-400"
+                : item.status === "COMPLETED" ? "bg-sky-400"
                 : item.status === "IN_PROGRESS" ? "bg-violet-500"
+                : item.isAssigned ? "bg-yellow-400"
                 : "bg-red-400";
               const iconColor = dotHex;
               const iconBg = item.status === "APPROVED" ? "bg-emerald-50"
-                : ["AWAITING_REVIEW","COMPLETED","RESOLVED"].includes(item.status) ? "bg-amber-50"
+                : item.status === "AWAITING_REVIEW" ? "bg-amber-50"
+                : item.status === "COMPLETED" ? "bg-sky-50"
                 : item.status === "IN_PROGRESS" ? "bg-violet-100"
+                : item.isAssigned ? "bg-yellow-50"
                 : "bg-red-50";
-              const badgeClass = unifiedStatusColor(item.status);
-              const itemStatusLabel = statusLabel(item.status);
+              const badgeClass = unifiedStatusColor(item.status, item.isAssigned);
+              const itemStatusLabel = statusLabel(item.status, item.isAssigned);
               return (
                 <Link
                   key={item.id}
@@ -1523,11 +1540,12 @@ export default function MobileDashboard({
               </div>
             )}
             {ticketsTodayItems.map((ticket) => {
-              const badgeClass = unifiedStatusColor(ticket.status);
-              const ticketStatusLabel = statusLabel(ticket.status);
+              const badgeClass = unifiedStatusColor(ticket.status, ticket.isAssigned);
+              const ticketStatusLabel = statusLabel(ticket.status, ticket.isAssigned);
               const barColor = ticket.status === "APPROVED" ? "bg-emerald-400"
                 : ["AWAITING_REVIEW","RESOLVED"].includes(ticket.status) ? "bg-amber-400"
                 : ticket.status === "IN_PROGRESS" ? "bg-violet-500"
+                : ticket.isAssigned ? "bg-yellow-400"
                 : "bg-red-400";
               return (
                 <Link
