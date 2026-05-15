@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Render — Mobile KPI Grid</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f8f7ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; justify-content: center; padding: 32px 16px; gap: 40px; flex-wrap: wrap; }
+
+  .phone { width: 390px; }
+  .label { text-align: center; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; color: #7c3aed; margin-bottom: 12px; }
+
+  /* Grid */
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+
+  /* Card base */
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    text-align: left;
+    cursor: pointer;
+  }
+  .card-label {
+    font-size: 9px; font-weight: 900; text-transform: uppercase;
+    letter-spacing: .12em; color: #94a3b8; margin-bottom: 6px;
+  }
+  .card-num { font-size: 30px; font-weight: 900; color: #0f172a; line-height: 1; }
+  .card-sub { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+
+  /* Card con doppio numero (pulizie/ticket) */
+  .dual { display: flex; align-items: flex-end; gap: 12px; }
+  .dual .big { }
+  .dual .small-num { font-size: 20px; font-weight: 900; line-height: 1; margin-bottom: 2px; }
+  .dual .small-sub { font-size: 9px; font-weight: 700; margin-top: 3px; }
+
+  /* Card ritardo */
+  .card-late { background: #fff7ed; border-color: #fed7aa; }
+  .card-late .card-label { color: #f97316; }
+  .card-late .card-num { color: #ea580c; }
+  .card-late .card-sub { color: #fb923c; }
+
+  /* Card in corso */
+  .card-inprogress { background: #faf5ff; border-color: #e9d5ff; }
+  .card-inprogress .card-label { color: #7c3aed; }
+  .card-inprogress .card-num { color: #6d28d9; }
+  .card-inprogress .card-sub { color: #a78bfa; }
+
+  /* Card IA */
+  .card-ai {
+    background: linear-gradient(135deg, #7c3aed, #3b82f6);
+    border: none;
+    box-shadow: 0 8px 24px rgba(124,58,237,.25);
+  }
+  .card-ai .card-label { color: rgba(255,255,255,.6); }
+  .card-ai .card-num { color: #fff; font-size: 16px; }
+  .card-ai .card-sub { color: rgba(255,255,255,.5); }
+  .ai-icon { margin: 4px 0; }
+
+  /* Card ticket oggi */
+  .card-ticket { background: #fff; border-color: #e2e8f0; }
+  .card-ticket .card-label { color: #94a3b8; }
+
+  /* Sezione prima — attuale */
+  .section-title {
+    padding: 0 16px 8px;
+    font-size: 10px; font-weight: 900; text-transform: uppercase;
+    letter-spacing: .1em; color: #94a3b8;
+  }
+  .divider { height: 1px; background: #e2e8f0; margin: 20px 16px; }
+
+  .emerald { color: #059669; }
+  .emerald-sub { color: #10b981; }
+  .slate { color: #64748b; }
+</style>
+</head>
+<body>
+
+<!-- PRIMA -->
+<div class="phone">
+  <div class="label">⬅ Prima (attuale)</div>
+
+  <div class="kpi-grid">
+    <!-- Check-in -->
+    <div class="card">
+      <div class="card-label">Check-in Oggi</div>
+      <div class="card-num">3</div>
+      <div class="card-sub">prenotazioni</div>
+    </div>
+
+    <!-- Pulizie -->
+    <div class="card">
+      <div class="card-label">Pulizie Oggi</div>
+      <div class="dual">
+        <div class="big">
+          <div class="card-num">5</div>
+          <div class="card-sub">pianificate</div>
+        </div>
+        <div>
+          <div class="small-num emerald">3</div>
+          <div class="small-sub emerald-sub">eseguite</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticket Urgenti (attuale) -->
+    <div class="card" style="background:#fff7ed;border-color:#fed7aa;">
+      <div class="card-label" style="color:#f97316;">Ticket Urgenti</div>
+      <div class="card-num" style="color:#ea580c;">2</div>
+      <div class="card-sub" style="color:#fb923c;">segnalazioni aperte</div>
+    </div>
+
+    <!-- IA -->
+    <div class="card card-ai">
+      <div class="card-label">Assistente</div>
+      <div class="ai-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="card-num">Chiedi<br>a IA</div>
+      <div class="card-sub">Domande operative</div>
+    </div>
+
+    <!-- Prossimi eventi (da rimuovere) -->
+    <div class="card" style="grid-column:span 2;background:#7c3aed;border:none;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 24px rgba(124,58,237,.3);">
+      <div>
+        <div style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.6);margin-bottom:4px;">Prossimi eventi oggi</div>
+        <div style="color:#fff;font-weight:900;font-size:15px;">5 ancora da fare</div>
+        <div style="color:rgba(255,255,255,.5);font-size:10px;margin-top:2px;">3 pulizie · 2 ticket manutenzione</div>
+      </div>
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DOPO -->
+<div class="phone">
+  <div class="label">➡ Dopo (proposta)</div>
+
+  <div class="kpi-grid">
+    <!-- Check-in -->
+    <div class="card">
+      <div class="card-label">Check-in Oggi</div>
+      <div class="card-num">3</div>
+      <div class="card-sub">prenotazioni</div>
+    </div>
+
+    <!-- Pulizie -->
+    <div class="card">
+      <div class="card-label">Pulizie Oggi</div>
+      <div class="dual">
+        <div class="big">
+          <div class="card-num">5</div>
+          <div class="card-sub">pianificate</div>
+        </div>
+        <div>
+          <div class="small-num emerald">3</div>
+          <div class="small-sub emerald-sub">eseguite</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pulizie in ritardo (NEW) -->
+    <div class="card card-late">
+      <div class="card-label">Pulizie in ritardo</div>
+      <div class="card-num">1</div>
+      <div class="card-sub">in ritardo</div>
+    </div>
+
+    <!-- Pulizie in corso (NEW) -->
+    <div class="card card-inprogress">
+      <div class="card-label">Pulizie in corso</div>
+      <div class="card-num">2</div>
+      <div class="card-sub">in esecuzione</div>
+    </div>
+
+    <!-- Ticket Oggi (sostituisce Ticket Urgenti) -->
+    <div class="card card-ticket">
+      <div class="card-label">Ticket Oggi</div>
+      <div class="dual">
+        <div class="big">
+          <div class="card-num">1</div>
+          <div class="card-sub">pianificati</div>
+        </div>
+        <div>
+          <div class="small-num emerald">1</div>
+          <div class="small-sub emerald-sub">eseguiti</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IA -->
+    <div class="card card-ai">
+      <div class="card-label">Assistente</div>
+      <div class="ai-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="card-num">Chiedi<br>a IA</div>
+      <div class="card-sub">Domande operative</div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

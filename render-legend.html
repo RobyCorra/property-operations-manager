@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Render — Legenda Calendario</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 40px 24px; display: flex; flex-direction: column; gap: 40px; }
+
+  .section-label { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; color: #7c3aed; margin-bottom: 12px; }
+
+  /* ── PRIMA ── */
+  .legend-old {
+    background: rgba(255,255,255,.3);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 20px;
+  }
+  .legend-old + .legend-old { margin-top: 8px; }
+  .legend-group-label {
+    font-size: 10px; font-weight: 900; text-transform: uppercase;
+    letter-spacing: .1em; color: #94a3b8;
+    white-space: nowrap;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 10px; border-radius: 999px; border: 1px solid;
+    font-size: 10px; font-weight: 600;
+  }
+
+  /* Pulizie — old */
+  .b-yellow   { background:#fefce8; border-color:#fde047; color:#854d0e; }
+  .b-rose     { background:#fff1f2; border-color:#fda4af; color:#9f1239; }
+  .b-orange   { background:#fff7ed; border-color:#fdba74; color:#9a3412; }
+  .b-violet   { background:#f5f3ff; border-color:#c4b5fd; color:#4c1d95; }
+  .b-emerald  { background:#ecfdf5; border-color:#6ee7b7; color:#065f46; }
+
+  /* Appartamenti — old */
+  .b-blue     { background:#eff6ff; border-color:#93c5fd; color:#1e40af; }
+  .b-red      { background:#fef2f2; border-color:#fca5a5; color:#7f1d1d; }
+
+  /* ── DOPO ── */
+  .legend-new {
+    background: rgba(255,255,255,.3);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.2);
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+  }
+
+  /* New status colors */
+  .n-red    { background:#fef2f2; border-color:#fca5a5; color:#b91c1c; }
+  .n-violet { background:#f5f3ff; border-color:#c4b5fd; color:#5b21b6; }
+  .n-amber  { background:#fffbeb; border-color:#fcd34d; color:#92400e; }
+  .n-green  { background:#ecfdf5; border-color:#6ee7b7; color:#065f46; }
+
+  /* Apt colors (unchanged) */
+  .n-apt-green  { background:#ecfdf5; border-color:#6ee7b7; color:#065f46; }
+  .n-apt-blue   { background:#eff6ff; border-color:#93c5fd; color:#1e40af; }
+  .n-apt-violet { background:#f5f3ff; border-color:#c4b5fd; color:#4c1d95; }
+  .n-apt-yellow { background:#fefce8; border-color:#fde047; color:#854d0e; }
+  .n-apt-red    { background:#fef2f2; border-color:#fca5a5; color:#7f1d1d; }
+
+  .icon { opacity: .7; }
+  svg { display:inline-block; vertical-align: middle; }
+
+  .divider { height: 1px; background: #e2e8f0; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .row-label { font-size: 11px; font-weight: 700; color: #64748b; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     PRIMA (attuale) — due legende separate
+     ══════════════════════════════════════════════════════ -->
+<div>
+  <div class="section-label">⬅ Prima (attuale) — 2 legende separate</div>
+
+  <div class="legend-old">
+    <span class="legend-group-label">Pulizie</span>
+    <span class="badge b-yellow">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      In attesa
+    </span>
+    <span class="badge b-rose">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      Non assegnata
+    </span>
+    <span class="badge b-orange">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      In ritardo
+    </span>
+    <span class="badge b-violet">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      In corso
+    </span>
+    <span class="badge b-emerald">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      Completata
+    </span>
+  </div>
+
+  <div class="legend-old" style="margin-top:8px;">
+    <span class="legend-group-label">Appartamenti</span>
+    <span class="badge b-emerald">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Pronto
+    </span>
+    <span class="badge b-blue">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Non pronto
+    </span>
+    <span class="badge b-violet">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      In corso
+    </span>
+    <span class="badge b-yellow">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      In verifica
+    </span>
+    <span class="badge b-red">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Occupato
+    </span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     DOPO — legenda unificata
+     ══════════════════════════════════════════════════════ -->
+<div>
+  <div class="section-label">➡ Dopo (proposta) — legenda unificata</div>
+
+  <div class="legend-new">
+
+    <!-- Stato Intervento -->
+    <span class="legend-group-label">Stato Intervento</span>
+
+    <span class="badge n-red">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Da fare
+    </span>
+    <span class="badge n-violet">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      In corso
+    </span>
+    <span class="badge n-amber">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      In verifica
+    </span>
+    <span class="badge n-green">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Approvato
+    </span>
+
+    <!-- separatore verticale -->
+    <div style="width:1px;height:18px;background:#e2e8f0;margin:0 4px;"></div>
+
+    <!-- Appartamenti -->
+    <span class="legend-group-label">Appartamento</span>
+
+    <span class="badge n-apt-green">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Pronto
+    </span>
+    <span class="badge n-apt-blue">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Non pronto
+    </span>
+    <span class="badge n-apt-violet">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      In corso
+    </span>
+    <span class="badge n-apt-yellow">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      In verifica
+    </span>
+    <span class="badge n-apt-red">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Occupato
+    </span>
+
+  </div>
+</div>
+
+</body>
+</html>

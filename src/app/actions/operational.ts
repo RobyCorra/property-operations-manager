@@ -511,10 +511,10 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
   });
   if (!task) throw new Error("Task non trovata.");
 
-  // Validation: PENDING -> IN_PROGRESS -> COMPLETED
+  // Flusso diretto: PENDING -> IN_PROGRESS -> AWAITING_REVIEW
   const transitions: Record<string, string> = {
     "PENDING": "IN_PROGRESS",
-    "IN_PROGRESS": "COMPLETED",
+    "IN_PROGRESS": "AWAITING_REVIEW",
   };
 
   if (transitions[task.status] !== nextStatus) {
@@ -541,17 +541,16 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     updateData.startedAt = new Date();
   }
 
-  if (nextStatus === "COMPLETED") {
+  if (nextStatus === "AWAITING_REVIEW") {
     updateData.completedAt = task.completedAt || new Date();
-  }
 
-  // VALIDATION: Quality Checklist check
-  if (nextStatus === "COMPLETED" && task.checklistProgress) {
-    const items = task.checklistProgress as any[];
-    const incompleteRequired = items.filter(i => i.required && !i.completed);
-
-    if (incompleteRequired.length > 0) {
-      throw new Error(`Impossibile completare: ${incompleteRequired.length} punti obbligatori non smarcati.`);
+    // Validazione checklist: tutti i punti obbligatori devono essere completati
+    if (task.checklistProgress) {
+      const items = task.checklistProgress as any[];
+      const incompleteRequired = items.filter(i => i.required && !i.completed);
+      if (incompleteRequired.length > 0) {
+        throw new Error(`Impossibile completare: ${incompleteRequired.length} punti obbligatori non smarcati.`);
+      }
     }
   }
 
@@ -560,8 +559,8 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     data: updateData,
   });
 
-  // Quando il cleaner segna COMPLETATA → notifica + auto-message in chat per il manager
-  if (nextStatus === "COMPLETED") {
+  // Quando il cleaner invia per verifica → notifica manager E supervisor
+  if (nextStatus === "AWAITING_REVIEW") {
     const apartment = await prisma.apartment.findUnique({
       where: { id: task.apartmentId },
       select: { name: true },
@@ -570,8 +569,8 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       prisma.notification.create({
         data: {
           type: "CLEANING",
-          title: "✅ Pulizia completata",
-          message: `${task.assignedTo?.name ?? "Il cleaner"} ha completato la pulizia presso ${apartment?.name || "un appartamento"}. In attesa di approvazione.`,
+          title: "🔔 Pulizia da verificare",
+          message: `${task.assignedTo?.name ?? "Il cleaner"} ha completato la pulizia presso ${apartment?.name || "un appartamento"}. Richiede verifica da supervisor o manager.`,
           apartmentId: task.apartmentId,
         },
       }),
@@ -580,7 +579,7 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
           cleaningTaskId: id,
           role: "SYSTEM",
           senderName: task.assignedTo?.name ?? "Cleaner",
-          text: `✅ ${task.assignedTo?.name ?? "Il cleaner"} ha completato la pulizia e la quality checklist. In attesa di approvazione del manager.`,
+          text: `⏳ ${task.assignedTo?.name ?? "Il cleaner"} ha completato la pulizia e la quality checklist. In attesa di verifica da supervisor o manager.`,
           readByManagerAt: null,
         },
       }),
@@ -773,12 +772,16 @@ export async function resolveCleaningCorrections(
 }
 
 export async function updateMaintenanceStatus(id: string, nextStatus: string) {
-  const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
+  const ticket = await prisma.maintenanceTicket.findUnique({
+    where: { id },
+    include: { assignedTo: { select: { name: true } } },
+  });
   if (!ticket) throw new Error("Ticket non trovato.");
 
+  // Flusso diretto: OPEN -> IN_PROGRESS -> AWAITING_REVIEW
   const transitions: Record<string, string> = {
     "OPEN": "IN_PROGRESS",
-    "IN_PROGRESS": "RESOLVED"
+    "IN_PROGRESS": "AWAITING_REVIEW",
   };
 
   if (transitions[ticket.status] !== nextStatus) {
@@ -789,29 +792,25 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   if (nextStatus === "IN_PROGRESS") {
     data.startedAt = ticket.startedAt || new Date();
   }
-  if (nextStatus === "RESOLVED") {
+  if (nextStatus === "AWAITING_REVIEW") {
     data.resolvedAt = ticket.resolvedAt || new Date();
   }
 
-  await prisma.maintenanceTicket.update({
-    where: { id },
-    data,
-  });
+  await prisma.maintenanceTicket.update({ where: { id }, data });
 
-  // Trigger Notification for Manager if resolved
-  if (nextStatus === "RESOLVED") {
+  // Quando il tecnico termina → notifica manager E supervisor
+  if (nextStatus === "AWAITING_REVIEW") {
     const apartment = await prisma.apartment.findUnique({
       where: { id: ticket.apartmentId },
-      select: { name: true }
+      select: { name: true },
     });
-
     await prisma.notification.create({
       data: {
         type: "MAINTENANCE",
-        title: "Manutenzione Risolta",
-        message: `Il ticket "${ticket.title}" presso ${apartment?.name || 'un appartamento'} è stato risolto.`,
+        title: "🔔 Manutenzione da verificare",
+        message: `${ticket.assignedTo?.name ?? "Il tecnico"} ha completato l'intervento "${ticket.title}" presso ${apartment?.name || "un appartamento"}. Richiede verifica da supervisor o manager.`,
         apartmentId: ticket.apartmentId,
-      }
+      },
     });
   }
 

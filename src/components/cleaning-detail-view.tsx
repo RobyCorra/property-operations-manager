@@ -7,7 +7,7 @@ import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
 import CleaningCorrectionPanel from "@/src/components/cleaning-correction-panel";
 import type { CorrectionItem } from "@/src/components/cleaning-correction-panel";
-import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage, submitCleaningForReview } from "@/src/app/actions/operational";
+import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage } from "@/src/app/actions/operational";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 interface ChecklistItem {
@@ -315,29 +315,18 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
           {status === "IN_PROGRESS" && !hasCorrections && (
             <button
               type="button"
-              onClick={() => handleStatusUpdate("COMPLETED")}
+              onClick={() => handleStatusUpdate("AWAITING_REVIEW")}
               disabled={isPending}
-              className="flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-emerald-200 transition-all hover:bg-emerald-700 active:scale-95 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 rounded-full bg-amber-500 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-amber-200 transition-all hover:bg-amber-600 active:scale-95 disabled:opacity-50"
             >
-              {isPending ? <Loader2 size={13} className="animate-spin" /> : "■"}
-              Segna Completata
+              {isPending ? <Loader2 size={13} className="animate-spin" /> : "✓"}
+              Completata — Invia per verifica
             </button>
           )}
           {status === "IN_PROGRESS" && hasCorrections && (
             <span className="rounded-full bg-rose-50 border border-rose-200 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-rose-600">
               ⚠ Correggi i punti sopra
             </span>
-          )}
-          {status === "COMPLETED" && (
-            <button
-              type="button"
-              onClick={() => startTransition(async () => { await submitCleaningForReview(task.id); setStatus("AWAITING_REVIEW"); })}
-              disabled={isPending}
-              className="flex items-center justify-center gap-2 rounded-full bg-yellow-500 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-yellow-200 transition-all hover:bg-yellow-600 active:scale-95 disabled:opacity-50"
-            >
-              {isPending ? <Loader2 size={13} className="animate-spin" /> : "⏫"}
-              Invia per revisione
-            </button>
           )}
           {status === "AWAITING_REVIEW" && (
             <span className="rounded-full bg-yellow-50 border border-yellow-200 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-yellow-700">
