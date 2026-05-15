@@ -126,7 +126,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const handleComplete = async () => {
     setIsCompletingTask(true);
     try {
-      await updateCleaningStatus(taskId, "COMPLETED");
+      await updateCleaningStatus(taskId, "AWAITING_REVIEW");
     } catch (err: unknown) {
       alert((err as Error).message || "Errore durante il completamento.");
       setIsCompletingTask(false);
@@ -237,7 +237,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           )}
         </button>
         <p className="text-[10px] text-slate-400 mt-3">
-          Il Manager riceverà una notifica immediata.
+          Supervisor e Manager riceveranno una notifica immediata.
         </p>
       </div>
     );
