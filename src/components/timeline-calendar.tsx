@@ -19,7 +19,7 @@ import {
   updateCleaningStatus,
   updateMaintenanceStatus,
   approveCleaningDirectly,
-  approveMaintenanceReview,
+  approveMaintenanceDirectly,
 } from "@/src/app/actions/operational";
 
 import { 
@@ -1108,7 +1108,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     <div className="flex items-center gap-3">
                                         <button
                                             disabled={isPending}
-                                            onClick={() => handleAction(() => approveMaintenanceReview(selectedEvent.data.id, 'manager'))}
+                                            onClick={() => handleAction(() => approveMaintenanceDirectly(selectedEvent.data.id))}
                                             className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
                                         >
                                             ✓ Approva

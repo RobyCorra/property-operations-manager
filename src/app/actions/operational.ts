@@ -857,6 +857,32 @@ export async function submitMaintenanceForReview(id: string) {
   revalidatePath("/dashboard/manager/maintenance");
 }
 
+// Manager direct approval — sets APPROVED without going through the supervisor review flow
+export async function approveMaintenanceDirectly(maintenanceTicketId: string) {
+  const ticket = await prisma.maintenanceTicket.findUnique({ where: { id: maintenanceTicketId } });
+  if (!ticket) throw new Error("Ticket non trovato.");
+
+  await prisma.maintenanceTicket.update({
+    where: { id: maintenanceTicketId },
+    data: { status: "APPROVED", resolvedAt: ticket.resolvedAt || new Date(), correctionProgress: [] },
+  });
+
+  const apartment = await prisma.apartment.findUnique({ where: { id: ticket.apartmentId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      type: "MAINTENANCE",
+      title: "Manutenzione approvata",
+      message: `Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è stato approvato dal manager.`,
+      apartmentId: ticket.apartmentId,
+    },
+  });
+
+  revalidatePath("/dashboard/maintenance");
+  revalidatePath("/dashboard/supervisor");
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/manager/maintenance");
+}
+
 export async function approveMaintenanceReview(maintenanceTicketId: string, supervisorId: string) {
   const ticket = await prisma.maintenanceTicket.findUnique({ where: { id: maintenanceTicketId } });
   if (!ticket) throw new Error("Ticket non trovato.");
