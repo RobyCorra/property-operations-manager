@@ -798,20 +798,30 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
 
   await prisma.maintenanceTicket.update({ where: { id }, data });
 
-  // Quando il tecnico termina → notifica manager E supervisor
+  // Quando il tecnico termina → notifica manager E supervisor + messaggio in chat
   if (nextStatus === "AWAITING_REVIEW") {
     const apartment = await prisma.apartment.findUnique({
       where: { id: ticket.apartmentId },
       select: { name: true },
     });
-    await prisma.notification.create({
-      data: {
-        type: "MAINTENANCE",
-        title: "🔔 Manutenzione da verificare",
-        message: `${ticket.assignedTo?.name ?? "Il tecnico"} ha completato l'intervento "${ticket.title}" presso ${apartment?.name || "un appartamento"}. Richiede verifica da supervisor o manager.`,
-        apartmentId: ticket.apartmentId,
-      },
-    });
+    await prisma.$transaction([
+      prisma.notification.create({
+        data: {
+          type: "MAINTENANCE",
+          title: "🔔 Manutenzione da verificare",
+          message: `${ticket.assignedTo?.name ?? "Il tecnico"} ha completato l'intervento "${ticket.title}" presso ${apartment?.name || "un appartamento"}. Richiede verifica da supervisor o manager.`,
+          apartmentId: ticket.apartmentId,
+        },
+      }),
+      prisma.message.create({
+        data: {
+          maintenanceTicketId: id,
+          role: "SYSTEM",
+          senderName: ticket.assignedTo?.name ?? "Tecnico",
+          text: `⏳ ${ticket.assignedTo?.name ?? "Il tecnico"} ha completato l'intervento "${ticket.title}". In attesa di verifica da supervisor o manager.`,
+        },
+      }),
+    ]);
   }
 
   revalidatePath("/dashboard/maintenance");
