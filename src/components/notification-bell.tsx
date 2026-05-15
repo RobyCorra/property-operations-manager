@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 import { markAllAsRead, markNotificationAsRead } from "@/src/app/actions/notification";
@@ -30,10 +30,28 @@ export default function NotificationBell({ initialNotifications, serverDate }: N
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setNotifications(data);
+      }
+    } catch {
+      // silenzioso — non bloccare l'UI se il poll fallisce
+    }
+  }, []);
+
   useEffect(() => {
     setMounted(true);
     setNotifications(initialNotifications);
   }, [initialNotifications]);
+
+  // Poll every 30 seconds for new notifications
+  useEffect(() => {
+    const interval = setInterval(fetchNotifications, 30_000);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
