@@ -137,24 +137,31 @@ function isoToYMD(iso: string) {
 function diffDays(a: string, b: string) {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
+// ── Mappa status → label unificata ────────────────────────────────
 function statusLabel(s: string) {
   const map: Record<string, string> = {
-    PENDING: "In attesa", IN_PROGRESS: "In corso", DONE: "Completata",
-    CONFIRMED: "Confermata", OPEN: "Aperto", RESOLVED: "Risolto",
-    APPROVED: "Approvato", AWAITING_REVIEW: "In verifica", COMPLETED: "Completata",
+    // stati unificati
+    PENDING: "Da fare", OPEN: "Da fare",
+    IN_PROGRESS: "In corso",
+    AWAITING_REVIEW: "In verifica", COMPLETED: "In verifica", RESOLVED: "In verifica",
+    APPROVED: "Approvato",
+    // prenotazioni
+    CONFIRMED: "Confermata", DONE: "Approvato",
   };
   return map[s] ?? s;
 }
-function cleaningStatusColor(s: string) {
-  if (s === "DONE") return "bg-emerald-50 text-emerald-700";
+
+// ── Colori status unificati (pulizie e ticket) ─────────────────────
+function unifiedStatusColor(s: string): string {
+  if (s === "APPROVED") return "bg-emerald-50 text-emerald-700";
+  if (s === "AWAITING_REVIEW" || s === "COMPLETED" || s === "RESOLVED") return "bg-amber-50 text-amber-700";
   if (s === "IN_PROGRESS") return "bg-violet-50 text-violet-700";
-  return "bg-amber-50 text-amber-700";
+  return "bg-red-50 text-red-700"; // PENDING / OPEN / default
 }
-function ticketPriorityColor(p: string | null) {
-  if (p === "URGENT") return "bg-red-50 text-red-700";
-  if (p === "HIGH") return "bg-orange-50 text-orange-700";
-  return "bg-slate-50 text-slate-600";
-}
+
+// ── Legacy aliases ─────────────────────────────────────────────────
+function cleaningStatusColor(s: string) { return unifiedStatusColor(s); }
+function ticketPriorityColor(_p: string | null) { return "bg-slate-50 text-slate-600"; } // non più usata per colori primari
 const MONTH_NAMES_IT = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
 // ── Apartment status → calendar colors ────────────────────────────
@@ -169,41 +176,26 @@ function aptStatusColors(status: string) {
   return map[status] ?? map["GREEN"];
 }
 
-// ── Cleaning dot color (hex) — mirrors desktop timeline-calendar.tsx ─
-function cleaningDotHex(c: CalCleaning): string {
-  if (c.status === "APPROVED" || c.status === "DONE") return "#22c55e";       // emerald — Completata/Approvata
-  if (["IN_PROGRESS", "COMPLETED", "AWAITING_REVIEW"].includes(c.status)) return "#7c3aed"; // violet — in corso / da approvare / in verifica
-  if (!c.assignedTo) return "#f43f5e";                                          // rose — Non assegnata
-  const isLate = Date.now() > new Date(c.date).getTime() + 30 * 60 * 1000;
-  if (isLate) return "#f97316";                                                  // orange — In ritardo
-  return "#eab308";                                                              // yellow — In attesa
-}
-function cleaningStatusInfo(c: CalCleaning): { label: string; badgeClass: string } {
-  if (c.status === "APPROVED" || c.status === "DONE")
-    return { label: "Approvata", badgeClass: "bg-emerald-50 text-emerald-700" };
-  if (c.status === "AWAITING_REVIEW")
-    return { label: "In verifica", badgeClass: "bg-violet-50 text-violet-700" };
-  if (c.status === "COMPLETED")
-    return { label: "Da approvare", badgeClass: "bg-violet-50 text-violet-700" };
-  if (c.status === "IN_PROGRESS")
-    return { label: "In corso", badgeClass: "bg-violet-50 text-violet-700" };
-  if (!c.assignedTo)
-    return { label: "Non assegnata", badgeClass: "bg-rose-50 text-rose-700" };
-  const isLate = Date.now() > new Date(c.date).getTime() + 30 * 60 * 1000;
-  if (isLate) return { label: "In ritardo", badgeClass: "bg-orange-50 text-orange-700" };
-  return { label: "In attesa", badgeClass: "bg-yellow-50 text-yellow-700" };
+// ── Colori dot unificati per il calendario (hex) ──────────────────
+function unifiedDotHex(status: string): string {
+  if (status === "APPROVED")                                          return "#10b981"; // emerald
+  if (["AWAITING_REVIEW","COMPLETED","RESOLVED"].includes(status))   return "#f59e0b"; // amber
+  if (status === "IN_PROGRESS")                                       return "#7c3aed"; // violet
+  return "#ef4444"; // red — PENDING / OPEN / default
 }
 
-// ── Ticket dot color (hex) ─────────────────────────────────────────
-function ticketDotHex(t: CalTicket): string {
-  if (t.status === "RESOLVED") return "#94a3b8";
-  if (t.priority === "URGENT") return "#ef4444";
-  return "#f97316";
+function cleaningDotHex(c: CalCleaning): string { return unifiedDotHex(c.status); }
+function cleaningStatusInfo(c: CalCleaning): { label: string; badgeClass: string } {
+  return { label: statusLabel(c.status), badgeClass: unifiedStatusColor(c.status) };
 }
+
+function ticketDotHex(t: CalTicket): string { return unifiedDotHex(t.status); }
 function ticketStatusInfo(t: CalTicket): { label: string; badgeClass: string; barHex: string } {
-  if (t.status === "RESOLVED") return { label: "Risolto", badgeClass: "bg-slate-100 text-slate-500", barHex: "#94a3b8" };
-  if (t.priority === "URGENT") return { label: "Urgente", badgeClass: "bg-red-50 text-red-700", barHex: "#ef4444" };
-  return { label: "Non urgente", badgeClass: "bg-orange-50 text-orange-700", barHex: "#f97316" };
+  return {
+    label: statusLabel(t.status),
+    badgeClass: unifiedStatusColor(t.status),
+    barHex: unifiedDotHex(t.status),
+  };
 }
 
 type Props = {
@@ -1456,19 +1448,18 @@ export default function MobileDashboard({
               <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia pianificata per oggi</div>
             )}
             {cleaningsTodayItems.map((item) => {
-              const isDone = ["COMPLETED", "AWAITING_REVIEW", "APPROVED"].includes(item.status);
-              const isInProgress = item.status === "IN_PROGRESS";
-              const barColor = isDone ? "bg-emerald-500" : isInProgress ? "bg-violet-500" : "bg-amber-400";
-              const iconColor = isDone ? "#10b981" : isInProgress ? "#7c3aed" : "#d97706";
-              const iconBg = isDone ? "bg-emerald-50" : isInProgress ? "bg-violet-100" : "bg-amber-50";
-              const badgeClass = isDone
-                ? "bg-emerald-50 text-emerald-700"
-                : isInProgress
-                ? "bg-violet-50 text-violet-700"
-                : "bg-amber-50 text-amber-700";
-              const statusLabel = isDone
-                ? item.status === "APPROVED" ? "Approvata" : "Eseguita"
-                : isInProgress ? "In corso" : "Da fare";
+              const dotHex = unifiedDotHex(item.status);
+              const barColor = item.status === "APPROVED" ? "bg-emerald-500"
+                : ["AWAITING_REVIEW","COMPLETED","RESOLVED"].includes(item.status) ? "bg-amber-400"
+                : item.status === "IN_PROGRESS" ? "bg-violet-500"
+                : "bg-red-400";
+              const iconColor = dotHex;
+              const iconBg = item.status === "APPROVED" ? "bg-emerald-50"
+                : ["AWAITING_REVIEW","COMPLETED","RESOLVED"].includes(item.status) ? "bg-amber-50"
+                : item.status === "IN_PROGRESS" ? "bg-violet-100"
+                : "bg-red-50";
+              const badgeClass = unifiedStatusColor(item.status);
+              const itemStatusLabel = statusLabel(item.status);
               return (
                 <Link
                   key={item.id}
@@ -1489,7 +1480,7 @@ export default function MobileDashboard({
                       <p className="text-[10px] text-slate-400 truncate">{item.assignedToName}</p>
                     </div>
                     <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 ${badgeClass}`}>
-                      {statusLabel}
+                      {itemStatusLabel}
                     </span>
                   </div>
                 </Link>
@@ -1532,15 +1523,12 @@ export default function MobileDashboard({
               </div>
             )}
             {ticketsTodayItems.map((ticket) => {
-              const isDone = ["RESOLVED", "APPROVED"].includes(ticket.status);
-              const isOpen = ticket.status === "OPEN";
-              const badgeClass = isDone
-                ? "bg-emerald-50 text-emerald-700"
-                : isOpen
-                ? "bg-orange-50 text-orange-700"
-                : "bg-amber-50 text-amber-700";
-              const ticketStatusLabel = isDone ? "Risolto" : isOpen ? "Aperto" : "In carico";
-              const barColor = isDone ? "bg-emerald-400" : isOpen ? "bg-orange-400" : "bg-amber-400";
+              const badgeClass = unifiedStatusColor(ticket.status);
+              const ticketStatusLabel = statusLabel(ticket.status);
+              const barColor = ticket.status === "APPROVED" ? "bg-emerald-400"
+                : ["AWAITING_REVIEW","RESOLVED"].includes(ticket.status) ? "bg-amber-400"
+                : ticket.status === "IN_PROGRESS" ? "bg-violet-500"
+                : "bg-red-400";
               return (
                 <Link
                   key={ticket.id}

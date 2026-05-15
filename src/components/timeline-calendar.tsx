@@ -656,30 +656,23 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     const cleaningLate = isCleaningLate(cleaning);
                     const cleaningUnassigned = cleaning.status === "PENDING" && !cleaning.assignedTo;
 
+                    // Colori unificati basati su status (allineati con ticket)
                     const cleaningColor = cleaning.status === "APPROVED"
-                      ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                      : cleaning.status === "AWAITING_REVIEW"
-                      ? "bg-violet-500/10 text-violet-600 border-violet-500/20"
-                      : cleaning.status === "COMPLETED"
-                      ? "bg-violet-500/20 text-violet-700 border-violet-500/40 shadow-violet-100"
+                      ? "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 shadow-emerald-100"
+                      : cleaning.status === "AWAITING_REVIEW" || cleaning.status === "COMPLETED"
+                      ? "bg-amber-500/15 text-amber-700 border-amber-500/30 shadow-amber-100"
                       : cleaning.status === "IN_PROGRESS"
-                      ? "bg-violet-500/10 text-violet-600 border-violet-500/20"
-                      : cleaningUnassigned
-                      ? "bg-rose-500/20 text-rose-700 border-rose-500/40 shadow-rose-100"
-                      : cleaningLate
-                      ? "bg-orange-500/20 text-orange-700 border-orange-500/40 shadow-orange-100"
-                      : "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
+                      ? "bg-violet-500/15 text-violet-700 border-violet-500/30 shadow-violet-100"
+                      : "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100"; // PENDING (Da fare)
 
-                    const cleaningLabel = cleaningUnassigned
-                      ? "Non assegnata"
-                      : cleaningLate
-                      ? "In ritardo"
-                      : cleaning.status === "COMPLETED"
-                      ? "Da Approvare"
-                      : cleaning.status === "AWAITING_REVIEW"
-                      ? "Da Revisionare"
-                      : null;
-                    const cleaningPulse = cleaning.status === "COMPLETED" ? "animate-pulse" : "";
+                    const cleaningLabel = cleaning.status === "APPROVED"
+                      ? "Approvato"
+                      : cleaning.status === "AWAITING_REVIEW" || cleaning.status === "COMPLETED"
+                      ? "In verifica"
+                      : cleaning.status === "IN_PROGRESS"
+                      ? "In corso"
+                      : "Da fare";
+                    const cleaningPulse = cleaning.status === "AWAITING_REVIEW" ? "animate-pulse" : "";
 
                     return (
                       <div
@@ -703,18 +696,15 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                   if (event.type === "maintenance") {
                     const ticket = event.data as MaintenanceTicket;
-                    const priorityColors: Record<string, string> = {
-                      URGENT: "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100",
-                      HIGH: "bg-orange-500/15 text-orange-700 border-orange-500/30 shadow-orange-100",
-                      MEDIUM: "bg-violet-500/15 text-violet-700 border-violet-500/30 shadow-violet-100",
-                      LOW: "bg-sky-500/15 text-sky-700 border-sky-500/30 shadow-sky-100",
+                    // Colori unificati basati su status (allineati con pulizie)
+                    const ticketStatusColors: Record<string, string> = {
+                      OPEN:            "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100",
+                      IN_PROGRESS:     "bg-violet-500/15 text-violet-700 border-violet-500/30 shadow-violet-100",
+                      AWAITING_REVIEW: "bg-amber-500/15 text-amber-700 border-amber-500/30 shadow-amber-100",
+                      RESOLVED:        "bg-amber-500/15 text-amber-700 border-amber-500/30 shadow-amber-100", // legacy
+                      APPROVED:        "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 shadow-emerald-100",
                     };
-                    const urgentOpenTicket = isUrgentOpenTicket(ticket);
-                    const ticketColor = ticket.status === "RESOLVED"
-                      ? "bg-slate-200 text-slate-600 border-slate-300"
-                      : urgentOpenTicket
-                      ? "bg-red-600/20 text-red-800 border-red-600/50 shadow-red-200"
-                      : priorityColors[ticket.priority] || "bg-slate-500/15 text-slate-700 border-slate-500/30 shadow-slate-100";
+                    const ticketColor = ticketStatusColors[ticket.status] || "bg-red-500/15 text-red-700 border-red-500/30";
 
                     return (
                       <div
@@ -727,7 +717,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                           width: Math.max(10, timelineDayWidth - 12, getWidth(event.start, event.end) - 12),
                         }}
                       >
-                        {urgentOpenTicket ? <span className="mr-1">⚠️</span> : <Wrench size={11} className="mr-1 opacity-70" />}
+                        <Wrench size={11} className="mr-1 opacity-70" />
                         TICKET
                       </div>
                     );
@@ -742,39 +732,33 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
       </div>
     </div>
 
-    {/* Legenda stati pulizie */}
-    <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
-      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Pulizie</span>
+    {/* Legenda unificata */}
+    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
+      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Stato Intervento</span>
       {[
-        { color: "bg-yellow-500/15 border-yellow-500/30 text-yellow-700", label: "In attesa" },
-        { color: "bg-rose-500/20 border-rose-500/40 text-rose-700", label: "Non assegnata" },
-        { color: "bg-orange-500/20 border-orange-500/40 text-orange-700", label: "In ritardo" },
-        { color: "bg-violet-500/10 border-violet-500/20 text-violet-700", label: "In corso" },
-        { color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-700", label: "Completata" },
-      ].map(({ color, label }) => (
+        { color: "bg-red-500/15 border-red-500/30 text-red-700",       icon: <Paintbrush size={9} className="opacity-70" />, label: "Da fare" },
+        { color: "bg-violet-500/15 border-violet-500/30 text-violet-700", icon: <Paintbrush size={9} className="opacity-70" />, label: "In corso" },
+        { color: "bg-amber-500/15 border-amber-500/30 text-amber-700", icon: <Paintbrush size={9} className="opacity-70" />, label: "In verifica" },
+        { color: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700", icon: <Paintbrush size={9} className="opacity-70" />, label: "Approvato" },
+      ].map(({ color, icon, label }) => (
         <div key={label} className="flex items-center gap-1.5">
           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
-            <Paintbrush size={9} className="opacity-70" />
-            {label}
+            {icon}{label}
           </span>
         </div>
       ))}
-    </div>
-
-    {/* Legenda stati appartamenti */}
-    <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
-      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Appartamenti</span>
+      <div className="w-px h-4 bg-slate-200 mx-1" />
+      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Appartamento</span>
       {[
         { color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-700", label: "Pronto" },
-        { color: "bg-blue-500/10 border-blue-500/20 text-blue-700", label: "Non pronto" },
-        { color: "bg-violet-500/10 border-violet-500/20 text-violet-700", label: "In corso" },
-        { color: "bg-yellow-500/10 border-yellow-500/20 text-yellow-700", label: "In verifica" },
-        { color: "bg-red-500/10 border-red-500/20 text-red-700", label: "Occupato" },
+        { color: "bg-blue-500/10 border-blue-500/20 text-blue-700",          label: "Non pronto" },
+        { color: "bg-violet-500/10 border-violet-500/20 text-violet-700",    label: "In corso" },
+        { color: "bg-yellow-500/10 border-yellow-500/20 text-yellow-700",    label: "In verifica" },
+        { color: "bg-red-500/10 border-red-500/20 text-red-700",             label: "Occupato" },
       ].map(({ color, label }) => (
         <div key={label} className="flex items-center gap-1.5">
           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
-            <Home size={9} className="opacity-70" />
-            {label}
+            <Home size={9} className="opacity-70" />{label}
           </span>
         </div>
       ))}
