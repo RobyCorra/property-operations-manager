@@ -327,8 +327,11 @@ ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1
 
 Regole ACTION — OBBLIGATORIE:
 - Per BULK_ASSIGN_CLEANINGS_BY_FILTER usa gli id degli APPARTAMENTI (sezione STATO APPARTAMENTI, campo id:xxx) e l'id del cleaner dalla sezione PERSONALE DISPONIBILE. NON elencare mai gli id delle singole pulizie.
-- Per UPDATE_BOOKING, UPDATE_CLEANING, UPDATE_TICKET usa l'id dell'entità dal contesto. MAI inventare id.
+- Per UPDATE_BOOKING usa esattamente il campo bookingId:xxx dalla riga della prenotazione nel contesto (sezioni CHECK-IN OGGI, PROSSIMI CHECK-IN, PRENOTAZIONI ATTIVE OGGI). MAI inventare id.
+- Per UPDATE_CLEANING usa esattamente il campo id:xxx dalla riga della pulizia nel contesto (sezione PULIZIE OPERATIVE). MAI inventare id.
+- Per UPDATE_TICKET usa esattamente il campo id:xxx dalla riga del ticket nel contesto (sezione MANUTENZIONI OPERATIVE). MAI inventare id.
 - Se non trovi un id nel contesto, avvisa l'utente invece di inventarlo.
+- IMPORTANTE: i campi nei fields che non cambiano devono essere omessi (non scrivere "..." come valore).
 - Le date devono essere in formato ISO 8601: dateFrom="2026-05-01", dateTo="2026-05-31". Per "maggio" usa sempre il mese intero (01→31), non la data di oggi come inizio.
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") NON proporre modifiche.
 - Il blocco ACTION deve essere su UNA RIGA SOLA alla fine della risposta.
@@ -1932,7 +1935,7 @@ async function buildGeneralManagerContext(now: Date) {
   const activeBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate <= now && booking.checkOutDate > now);
 
   const bookingLine = (booking: ApartmentBookingWithApartmentForAI) => (
-    `- id:${(booking as any).id || "n/d"} | ${booking.apartment.name} | ospite: ${booking.guestName || "n/d"} | ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
+    `- bookingId:${(booking as any).id || "n/d"} | ${booking.apartment.name} | ospite: ${booking.guestName || "n/d"} | ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
   );
 
   const cleaningLines = cleanings.map((task: CleaningTaskWithApartmentForAI) => (

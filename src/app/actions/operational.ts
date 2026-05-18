@@ -1152,16 +1152,18 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
     if (payload.type === "UPDATE_BOOKING") {
       const { id, fields } = payload;
       const booking = await prisma.booking.findUnique({ where: { id } });
-      if (!booking) return { success: false, error: "Prenotazione non trovata." };
+      if (!booking) return { success: false, error: `Prenotazione non trovata (id: ${id}). Richiedi all'AI di riproporre la modifica.` };
       if (booking.source !== "MANUAL") return { success: false, error: "Non puoi modificare prenotazioni iCal/Airbnb." };
+      // Filtra i campi placeholder ("..." o stringa vuota) per non sovrascrivere valori reali
+      const isReal = (v: unknown) => v !== undefined && v !== "..." && v !== "";
       await prisma.booking.update({
         where: { id },
         data: {
-          ...(fields.guestName !== undefined && { guestName: fields.guestName }),
+          ...(isReal(fields.guestName) && { guestName: fields.guestName }),
           ...(fields.totalGuests !== undefined && { totalGuests: Number(fields.totalGuests) }),
-          ...(fields.checkInDate !== undefined && { checkInDate: new Date(fields.checkInDate) }),
-          ...(fields.checkOutDate !== undefined && { checkOutDate: new Date(fields.checkOutDate) }),
-          ...(fields.notes !== undefined && { notes: fields.notes }),
+          ...(isReal(fields.checkInDate) && { checkInDate: new Date(fields.checkInDate!) }),
+          ...(isReal(fields.checkOutDate) && { checkOutDate: new Date(fields.checkOutDate!) }),
+          ...(isReal(fields.notes) && { notes: fields.notes }),
         },
       });
       revalidatePath("/dashboard/manager");
