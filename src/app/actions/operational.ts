@@ -1144,7 +1144,8 @@ export async function getApartmentSchedule(apartmentId: string) {
 export type AIActionPayload =
   | { type: "UPDATE_BOOKING"; id: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToId: string }>; description: string }
-  | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string };
+  | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
+  | { type: "BULK_ASSIGN_CLEANINGS"; ids: string[]; assignedToId: string; description: string };
 
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
   try {
@@ -1195,6 +1196,15 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       });
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/maintenance");
+    } else if (payload.type === "BULK_ASSIGN_CLEANINGS") {
+      const { ids, assignedToId } = payload;
+      if (!ids.length) return { success: false, error: "Nessuna pulizia specificata." };
+      await prisma.cleaningTask.updateMany({
+        where: { id: { in: ids } },
+        data: { assignedToId },
+      });
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/cleanings");
     }
     return { success: true };
   } catch (err: any) {

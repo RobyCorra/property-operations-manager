@@ -311,7 +311,7 @@ Rispondi:
 };
 
 // ── Suffisso ACTION aggiunto ai system prompt quando il ruolo è MANAGER ──────
-export const AI_ACTION_SUFFIX = `
+const AI_ACTION_SUFFIX = `
 
 CAPACITÀ DI MODIFICA (solo per manager):
 Puoi proporre modifiche a prenotazioni, pulizie e ticket di manutenzione.
@@ -323,12 +323,15 @@ ACTION: {"type":"UPDATE_CLEANING","id":"<id>","fields":{"date":"2026-05-20T10:00
 
 ACTION: {"type":"UPDATE_TICKET","id":"<id>","fields":{"title":"...","description":"...","priority":"HIGH","scheduledStart":"2026-05-20T09:00:00.000Z","notes":"..."},"description":"Aggiorno il ticket di manutenzione"}
 
+ACTION: {"type":"BULK_ASSIGN_CLEANINGS","ids":["<id1>","<id2>","<id3>"],"assignedToId":"<userId>","description":"Assegno 3 pulizie di maggio a Mario"}
+
 Regole ACTION:
 - Includi SOLO i campi che l'utente vuole davvero modificare, non tutti
 - Usa sempre id reali dal contesto (mai inventarli)
 - Le date devono essere in formato ISO 8601 UTC
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") NON proporre modifiche
 - Il blocco ACTION deve essere su una riga sola
+- Per assegnazioni multiple usa BULK_ASSIGN_CLEANINGS con tutti gli id in un array
 - Non aggiungere ACTION se l'utente chiede solo informazioni
 `;
 

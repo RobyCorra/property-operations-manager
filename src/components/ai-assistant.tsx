@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { askAI } from "@/src/app/actions/ai";
-import { executeAIAction, type AIActionPayload } from "@/src/app/actions/operational";
+import { executeAIAction } from "@/src/app/actions/operational";
+import type { AIActionPayload } from "@/src/app/actions/operational";
 import { useRouter } from "next/navigation";
 
 type ChatMessage = {
@@ -46,7 +47,18 @@ function actionTypeLabel(type: string) {
   if (type === "UPDATE_BOOKING") return "Modifica prenotazione";
   if (type === "UPDATE_CLEANING") return "Modifica pulizia";
   if (type === "UPDATE_TICKET") return "Modifica ticket manutenzione";
+  if (type === "BULK_ASSIGN_CLEANINGS") return "Assegnazione pulizie";
   return "Modifica";
+}
+
+function actionSummary(action: AIActionPayload): React.ReactNode {
+  if (action.type === "BULK_ASSIGN_CLEANINGS") {
+    return <p className="text-xs text-amber-700">• {action.ids.length} pulizie da assegnare</p>;
+  }
+  const fields = (action as any).fields ?? {};
+  return Object.entries(fields).map(([k, v]) => (
+    <p key={k} className="text-xs text-amber-700">• {fieldLabel(k, v)}</p>
+  ));
 }
 
 function fieldLabel(key: string, value: unknown): string {
@@ -208,9 +220,7 @@ export default function AIAssistant({
                   </div>
                   <p className="text-sm font-medium text-amber-900">{message.action.description}</p>
                   <div className="space-y-1">
-                    {Object.entries(message.action.fields).map(([k, v]) => (
-                      <p key={k} className="text-xs text-amber-700">• {fieldLabel(k, v)}</p>
-                    ))}
+                    {actionSummary(message.action)}
                   </div>
                   <div className="flex gap-2 pt-1">
                     <button
