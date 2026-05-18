@@ -317,7 +317,7 @@ CAPACITÀ DI MODIFICA (solo per manager):
 Puoi proporre modifiche a prenotazioni, pulizie e ticket di manutenzione.
 Quando l'utente chiede di modificare qualcosa, rispondi normalmente E aggiungi in fondo alla risposta un blocco ACTION esattamente così:
 
-ACTION: {"type":"UPDATE_BOOKING","id":"<id>","fields":{"guestName":"...","totalGuests":2,"checkInDate":"2026-05-20T14:00:00.000Z","checkOutDate":"2026-05-25T10:00:00.000Z","notes":"..."},"description":"Aggiorno la prenotazione di Mario Rossi"}
+ACTION: {"type":"UPDATE_BOOKING","apartmentId":"<apartmentId>","checkInDate":"2026-05-20T14:00:00.000Z","fields":{"totalGuests":4},"description":"Aggiorno la prenotazione del 20 maggio a 4 ospiti"}
 
 ACTION: {"type":"UPDATE_CLEANING","id":"<id>","fields":{"date":"2026-05-20T10:00:00.000Z","notes":"...","assignedToId":"<userId>"},"description":"Sposto la pulizia al 20 maggio alle 10:00"}
 
@@ -327,7 +327,7 @@ ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1
 
 Regole ACTION — OBBLIGATORIE:
 - Per BULK_ASSIGN_CLEANINGS_BY_FILTER usa gli id degli APPARTAMENTI (sezione STATO APPARTAMENTI, campo id:xxx) e l'id del cleaner dalla sezione PERSONALE DISPONIBILE. NON elencare mai gli id delle singole pulizie.
-- Per UPDATE_BOOKING usa esattamente il valore tra virgolette del campo bookingId:"xxx" dalla riga della prenotazione nel contesto (sezioni CHECK-IN OGGI, PROSSIMI CHECK-IN, PRENOTAZIONI ATTIVE OGGI). MAI inventare id, MAI modificare l'id.
+- Per UPDATE_BOOKING usa l'id appartamento dalla sezione STATO APPARTAMENTI (campo id:xxx) e la data checkInDate esatta della prenotazione in formato ISO. NON serve l'id della prenotazione. Nei fields includi SOLO i campi che cambiano (es. solo "totalGuests":4), ometti tutti gli altri.
 - Per UPDATE_CLEANING usa esattamente il campo id:xxx dalla riga della pulizia nel contesto (sezione PULIZIE OPERATIVE). MAI inventare id.
 - Per UPDATE_TICKET usa esattamente il campo id:xxx dalla riga del ticket nel contesto (sezione MANUTENZIONI OPERATIVE). MAI inventare id.
 - Se non trovi un id nel contesto, avvisa l'utente invece di inventarlo.
@@ -1935,7 +1935,7 @@ async function buildGeneralManagerContext(now: Date) {
   const activeBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate <= now && booking.checkOutDate > now);
 
   const bookingLine = (booking: ApartmentBookingWithApartmentForAI) => (
-    `- bookingId:"${(booking as any).id || "n/d"}" | ${booking.apartment.name} | ospite: ${booking.guestName || "n/d"} | ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
+    `- apt:${(booking.apartment as any).id || "n/d"} | ${booking.apartment.name} | ospite: ${booking.guestName || "n/d"} | checkIn:${(booking.checkInDate as Date).toISOString()} checkOut:${(booking.checkOutDate as Date).toISOString()} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
   );
 
   const cleaningLines = cleanings.map((task: CleaningTaskWithApartmentForAI) => (
