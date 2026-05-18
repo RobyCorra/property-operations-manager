@@ -252,6 +252,26 @@ model ApartmentOwner {
   @@id([apartmentId, userId])
 }
 
+model ManagerChatSession {
+  id        String               @id @default(uuid())
+  date      DateTime             @db.Date
+  createdAt DateTime             @default(now())
+  messages  ManagerChatMessage[]
+
+  @@unique([date])
+}
+
+model ManagerChatMessage {
+  id        String             @id @default(uuid())
+  sessionId String
+  session   ManagerChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role      String
+  content   String
+  createdAt DateTime           @default(now())
+
+  @@index([sessionId])
+}
+
 enum Role {
   MANAGER
   CLEANER

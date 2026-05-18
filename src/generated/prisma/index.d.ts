@@ -88,6 +88,16 @@ export type ApartmentSupervisor = $Result.DefaultSelection<Prisma.$ApartmentSupe
  * 
  */
 export type ApartmentOwner = $Result.DefaultSelection<Prisma.$ApartmentOwnerPayload>
+/**
+ * Model ManagerChatSession
+ * 
+ */
+export type ManagerChatSession = $Result.DefaultSelection<Prisma.$ManagerChatSessionPayload>
+/**
+ * Model ManagerChatMessage
+ * 
+ */
+export type ManagerChatMessage = $Result.DefaultSelection<Prisma.$ManagerChatMessagePayload>
 
 /**
  * Enums
@@ -391,6 +401,26 @@ export class PrismaClient<
     * ```
     */
   get apartmentOwner(): Prisma.ApartmentOwnerDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.managerChatSession`: Exposes CRUD operations for the **ManagerChatSession** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ManagerChatSessions
+    * const managerChatSessions = await prisma.managerChatSession.findMany()
+    * ```
+    */
+  get managerChatSession(): Prisma.ManagerChatSessionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.managerChatMessage`: Exposes CRUD operations for the **ManagerChatMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ManagerChatMessages
+    * const managerChatMessages = await prisma.managerChatMessage.findMany()
+    * ```
+    */
+  get managerChatMessage(): Prisma.ManagerChatMessageDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -839,7 +869,9 @@ export namespace Prisma {
     CleaningTaskMessage: 'CleaningTaskMessage',
     SupervisorReview: 'SupervisorReview',
     ApartmentSupervisor: 'ApartmentSupervisor',
-    ApartmentOwner: 'ApartmentOwner'
+    ApartmentOwner: 'ApartmentOwner',
+    ManagerChatSession: 'ManagerChatSession',
+    ManagerChatMessage: 'ManagerChatMessage'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -855,7 +887,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner"
+      modelProps: "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1969,6 +2001,154 @@ export namespace Prisma {
           }
         }
       }
+      ManagerChatSession: {
+        payload: Prisma.$ManagerChatSessionPayload<ExtArgs>
+        fields: Prisma.ManagerChatSessionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ManagerChatSessionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ManagerChatSessionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>
+          }
+          findFirst: {
+            args: Prisma.ManagerChatSessionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ManagerChatSessionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>
+          }
+          findMany: {
+            args: Prisma.ManagerChatSessionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>[]
+          }
+          create: {
+            args: Prisma.ManagerChatSessionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>
+          }
+          createMany: {
+            args: Prisma.ManagerChatSessionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ManagerChatSessionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>[]
+          }
+          delete: {
+            args: Prisma.ManagerChatSessionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>
+          }
+          update: {
+            args: Prisma.ManagerChatSessionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>
+          }
+          deleteMany: {
+            args: Prisma.ManagerChatSessionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ManagerChatSessionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ManagerChatSessionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>[]
+          }
+          upsert: {
+            args: Prisma.ManagerChatSessionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatSessionPayload>
+          }
+          aggregate: {
+            args: Prisma.ManagerChatSessionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateManagerChatSession>
+          }
+          groupBy: {
+            args: Prisma.ManagerChatSessionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ManagerChatSessionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ManagerChatSessionCountArgs<ExtArgs>
+            result: $Utils.Optional<ManagerChatSessionCountAggregateOutputType> | number
+          }
+        }
+      }
+      ManagerChatMessage: {
+        payload: Prisma.$ManagerChatMessagePayload<ExtArgs>
+        fields: Prisma.ManagerChatMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ManagerChatMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ManagerChatMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.ManagerChatMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ManagerChatMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>
+          }
+          findMany: {
+            args: Prisma.ManagerChatMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>[]
+          }
+          create: {
+            args: Prisma.ManagerChatMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>
+          }
+          createMany: {
+            args: Prisma.ManagerChatMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ManagerChatMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.ManagerChatMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>
+          }
+          update: {
+            args: Prisma.ManagerChatMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.ManagerChatMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ManagerChatMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ManagerChatMessageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>[]
+          }
+          upsert: {
+            args: Prisma.ManagerChatMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ManagerChatMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.ManagerChatMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateManagerChatMessage>
+          }
+          groupBy: {
+            args: Prisma.ManagerChatMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ManagerChatMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ManagerChatMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<ManagerChatMessageCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2092,6 +2272,8 @@ export namespace Prisma {
     supervisorReview?: SupervisorReviewOmit
     apartmentSupervisor?: ApartmentSupervisorOmit
     apartmentOwner?: ApartmentOwnerOmit
+    managerChatSession?: ManagerChatSessionOmit
+    managerChatMessage?: ManagerChatMessageOmit
   }
 
   /* Types for Logging */
@@ -2490,6 +2672,37 @@ export namespace Prisma {
    */
   export type AttachmentCountOutputTypeCountCleaningMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CleaningTaskMessageWhereInput
+  }
+
+
+  /**
+   * Count Type ManagerChatSessionCountOutputType
+   */
+
+  export type ManagerChatSessionCountOutputType = {
+    messages: number
+  }
+
+  export type ManagerChatSessionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    messages?: boolean | ManagerChatSessionCountOutputTypeCountMessagesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ManagerChatSessionCountOutputType without action
+   */
+  export type ManagerChatSessionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSessionCountOutputType
+     */
+    select?: ManagerChatSessionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ManagerChatSessionCountOutputType without action
+   */
+  export type ManagerChatSessionCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ManagerChatMessageWhereInput
   }
 
 
@@ -20336,6 +20549,2118 @@ export namespace Prisma {
 
 
   /**
+   * Model ManagerChatSession
+   */
+
+  export type AggregateManagerChatSession = {
+    _count: ManagerChatSessionCountAggregateOutputType | null
+    _min: ManagerChatSessionMinAggregateOutputType | null
+    _max: ManagerChatSessionMaxAggregateOutputType | null
+  }
+
+  export type ManagerChatSessionMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    createdAt: Date | null
+  }
+
+  export type ManagerChatSessionMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    createdAt: Date | null
+  }
+
+  export type ManagerChatSessionCountAggregateOutputType = {
+    id: number
+    date: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ManagerChatSessionMinAggregateInputType = {
+    id?: true
+    date?: true
+    createdAt?: true
+  }
+
+  export type ManagerChatSessionMaxAggregateInputType = {
+    id?: true
+    date?: true
+    createdAt?: true
+  }
+
+  export type ManagerChatSessionCountAggregateInputType = {
+    id?: true
+    date?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ManagerChatSessionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ManagerChatSession to aggregate.
+     */
+    where?: ManagerChatSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ManagerChatSessions to fetch.
+     */
+    orderBy?: ManagerChatSessionOrderByWithRelationInput | ManagerChatSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ManagerChatSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ManagerChatSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ManagerChatSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ManagerChatSessions
+    **/
+    _count?: true | ManagerChatSessionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ManagerChatSessionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ManagerChatSessionMaxAggregateInputType
+  }
+
+  export type GetManagerChatSessionAggregateType<T extends ManagerChatSessionAggregateArgs> = {
+        [P in keyof T & keyof AggregateManagerChatSession]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateManagerChatSession[P]>
+      : GetScalarType<T[P], AggregateManagerChatSession[P]>
+  }
+
+
+
+
+  export type ManagerChatSessionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ManagerChatSessionWhereInput
+    orderBy?: ManagerChatSessionOrderByWithAggregationInput | ManagerChatSessionOrderByWithAggregationInput[]
+    by: ManagerChatSessionScalarFieldEnum[] | ManagerChatSessionScalarFieldEnum
+    having?: ManagerChatSessionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ManagerChatSessionCountAggregateInputType | true
+    _min?: ManagerChatSessionMinAggregateInputType
+    _max?: ManagerChatSessionMaxAggregateInputType
+  }
+
+  export type ManagerChatSessionGroupByOutputType = {
+    id: string
+    date: Date
+    createdAt: Date
+    _count: ManagerChatSessionCountAggregateOutputType | null
+    _min: ManagerChatSessionMinAggregateOutputType | null
+    _max: ManagerChatSessionMaxAggregateOutputType | null
+  }
+
+  type GetManagerChatSessionGroupByPayload<T extends ManagerChatSessionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ManagerChatSessionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ManagerChatSessionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ManagerChatSessionGroupByOutputType[P]>
+            : GetScalarType<T[P], ManagerChatSessionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ManagerChatSessionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    createdAt?: boolean
+    messages?: boolean | ManagerChatSession$messagesArgs<ExtArgs>
+    _count?: boolean | ManagerChatSessionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["managerChatSession"]>
+
+  export type ManagerChatSessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["managerChatSession"]>
+
+  export type ManagerChatSessionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["managerChatSession"]>
+
+  export type ManagerChatSessionSelectScalar = {
+    id?: boolean
+    date?: boolean
+    createdAt?: boolean
+  }
+
+  export type ManagerChatSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "createdAt", ExtArgs["result"]["managerChatSession"]>
+  export type ManagerChatSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    messages?: boolean | ManagerChatSession$messagesArgs<ExtArgs>
+    _count?: boolean | ManagerChatSessionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ManagerChatSessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ManagerChatSessionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $ManagerChatSessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ManagerChatSession"
+    objects: {
+      messages: Prisma.$ManagerChatMessagePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      createdAt: Date
+    }, ExtArgs["result"]["managerChatSession"]>
+    composites: {}
+  }
+
+  type ManagerChatSessionGetPayload<S extends boolean | null | undefined | ManagerChatSessionDefaultArgs> = $Result.GetResult<Prisma.$ManagerChatSessionPayload, S>
+
+  type ManagerChatSessionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ManagerChatSessionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ManagerChatSessionCountAggregateInputType | true
+    }
+
+  export interface ManagerChatSessionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ManagerChatSession'], meta: { name: 'ManagerChatSession' } }
+    /**
+     * Find zero or one ManagerChatSession that matches the filter.
+     * @param {ManagerChatSessionFindUniqueArgs} args - Arguments to find a ManagerChatSession
+     * @example
+     * // Get one ManagerChatSession
+     * const managerChatSession = await prisma.managerChatSession.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ManagerChatSessionFindUniqueArgs>(args: SelectSubset<T, ManagerChatSessionFindUniqueArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ManagerChatSession that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ManagerChatSessionFindUniqueOrThrowArgs} args - Arguments to find a ManagerChatSession
+     * @example
+     * // Get one ManagerChatSession
+     * const managerChatSession = await prisma.managerChatSession.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ManagerChatSessionFindUniqueOrThrowArgs>(args: SelectSubset<T, ManagerChatSessionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ManagerChatSession that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatSessionFindFirstArgs} args - Arguments to find a ManagerChatSession
+     * @example
+     * // Get one ManagerChatSession
+     * const managerChatSession = await prisma.managerChatSession.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ManagerChatSessionFindFirstArgs>(args?: SelectSubset<T, ManagerChatSessionFindFirstArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ManagerChatSession that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatSessionFindFirstOrThrowArgs} args - Arguments to find a ManagerChatSession
+     * @example
+     * // Get one ManagerChatSession
+     * const managerChatSession = await prisma.managerChatSession.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ManagerChatSessionFindFirstOrThrowArgs>(args?: SelectSubset<T, ManagerChatSessionFindFirstOrThrowArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ManagerChatSessions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatSessionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ManagerChatSessions
+     * const managerChatSessions = await prisma.managerChatSession.findMany()
+     * 
+     * // Get first 10 ManagerChatSessions
+     * const managerChatSessions = await prisma.managerChatSession.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const managerChatSessionWithIdOnly = await prisma.managerChatSession.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ManagerChatSessionFindManyArgs>(args?: SelectSubset<T, ManagerChatSessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ManagerChatSession.
+     * @param {ManagerChatSessionCreateArgs} args - Arguments to create a ManagerChatSession.
+     * @example
+     * // Create one ManagerChatSession
+     * const ManagerChatSession = await prisma.managerChatSession.create({
+     *   data: {
+     *     // ... data to create a ManagerChatSession
+     *   }
+     * })
+     * 
+     */
+    create<T extends ManagerChatSessionCreateArgs>(args: SelectSubset<T, ManagerChatSessionCreateArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ManagerChatSessions.
+     * @param {ManagerChatSessionCreateManyArgs} args - Arguments to create many ManagerChatSessions.
+     * @example
+     * // Create many ManagerChatSessions
+     * const managerChatSession = await prisma.managerChatSession.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ManagerChatSessionCreateManyArgs>(args?: SelectSubset<T, ManagerChatSessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ManagerChatSessions and returns the data saved in the database.
+     * @param {ManagerChatSessionCreateManyAndReturnArgs} args - Arguments to create many ManagerChatSessions.
+     * @example
+     * // Create many ManagerChatSessions
+     * const managerChatSession = await prisma.managerChatSession.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ManagerChatSessions and only return the `id`
+     * const managerChatSessionWithIdOnly = await prisma.managerChatSession.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ManagerChatSessionCreateManyAndReturnArgs>(args?: SelectSubset<T, ManagerChatSessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ManagerChatSession.
+     * @param {ManagerChatSessionDeleteArgs} args - Arguments to delete one ManagerChatSession.
+     * @example
+     * // Delete one ManagerChatSession
+     * const ManagerChatSession = await prisma.managerChatSession.delete({
+     *   where: {
+     *     // ... filter to delete one ManagerChatSession
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ManagerChatSessionDeleteArgs>(args: SelectSubset<T, ManagerChatSessionDeleteArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ManagerChatSession.
+     * @param {ManagerChatSessionUpdateArgs} args - Arguments to update one ManagerChatSession.
+     * @example
+     * // Update one ManagerChatSession
+     * const managerChatSession = await prisma.managerChatSession.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ManagerChatSessionUpdateArgs>(args: SelectSubset<T, ManagerChatSessionUpdateArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ManagerChatSessions.
+     * @param {ManagerChatSessionDeleteManyArgs} args - Arguments to filter ManagerChatSessions to delete.
+     * @example
+     * // Delete a few ManagerChatSessions
+     * const { count } = await prisma.managerChatSession.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ManagerChatSessionDeleteManyArgs>(args?: SelectSubset<T, ManagerChatSessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ManagerChatSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatSessionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ManagerChatSessions
+     * const managerChatSession = await prisma.managerChatSession.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ManagerChatSessionUpdateManyArgs>(args: SelectSubset<T, ManagerChatSessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ManagerChatSessions and returns the data updated in the database.
+     * @param {ManagerChatSessionUpdateManyAndReturnArgs} args - Arguments to update many ManagerChatSessions.
+     * @example
+     * // Update many ManagerChatSessions
+     * const managerChatSession = await prisma.managerChatSession.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ManagerChatSessions and only return the `id`
+     * const managerChatSessionWithIdOnly = await prisma.managerChatSession.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ManagerChatSessionUpdateManyAndReturnArgs>(args: SelectSubset<T, ManagerChatSessionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ManagerChatSession.
+     * @param {ManagerChatSessionUpsertArgs} args - Arguments to update or create a ManagerChatSession.
+     * @example
+     * // Update or create a ManagerChatSession
+     * const managerChatSession = await prisma.managerChatSession.upsert({
+     *   create: {
+     *     // ... data to create a ManagerChatSession
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ManagerChatSession we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ManagerChatSessionUpsertArgs>(args: SelectSubset<T, ManagerChatSessionUpsertArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ManagerChatSessions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatSessionCountArgs} args - Arguments to filter ManagerChatSessions to count.
+     * @example
+     * // Count the number of ManagerChatSessions
+     * const count = await prisma.managerChatSession.count({
+     *   where: {
+     *     // ... the filter for the ManagerChatSessions we want to count
+     *   }
+     * })
+    **/
+    count<T extends ManagerChatSessionCountArgs>(
+      args?: Subset<T, ManagerChatSessionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ManagerChatSessionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ManagerChatSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatSessionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ManagerChatSessionAggregateArgs>(args: Subset<T, ManagerChatSessionAggregateArgs>): Prisma.PrismaPromise<GetManagerChatSessionAggregateType<T>>
+
+    /**
+     * Group by ManagerChatSession.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatSessionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ManagerChatSessionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ManagerChatSessionGroupByArgs['orderBy'] }
+        : { orderBy?: ManagerChatSessionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ManagerChatSessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetManagerChatSessionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ManagerChatSession model
+   */
+  readonly fields: ManagerChatSessionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ManagerChatSession.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ManagerChatSessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    messages<T extends ManagerChatSession$messagesArgs<ExtArgs> = {}>(args?: Subset<T, ManagerChatSession$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ManagerChatSession model
+   */
+  interface ManagerChatSessionFieldRefs {
+    readonly id: FieldRef<"ManagerChatSession", 'String'>
+    readonly date: FieldRef<"ManagerChatSession", 'DateTime'>
+    readonly createdAt: FieldRef<"ManagerChatSession", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ManagerChatSession findUnique
+   */
+  export type ManagerChatSessionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatSession to fetch.
+     */
+    where: ManagerChatSessionWhereUniqueInput
+  }
+
+  /**
+   * ManagerChatSession findUniqueOrThrow
+   */
+  export type ManagerChatSessionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatSession to fetch.
+     */
+    where: ManagerChatSessionWhereUniqueInput
+  }
+
+  /**
+   * ManagerChatSession findFirst
+   */
+  export type ManagerChatSessionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatSession to fetch.
+     */
+    where?: ManagerChatSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ManagerChatSessions to fetch.
+     */
+    orderBy?: ManagerChatSessionOrderByWithRelationInput | ManagerChatSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ManagerChatSessions.
+     */
+    cursor?: ManagerChatSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ManagerChatSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ManagerChatSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ManagerChatSessions.
+     */
+    distinct?: ManagerChatSessionScalarFieldEnum | ManagerChatSessionScalarFieldEnum[]
+  }
+
+  /**
+   * ManagerChatSession findFirstOrThrow
+   */
+  export type ManagerChatSessionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatSession to fetch.
+     */
+    where?: ManagerChatSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ManagerChatSessions to fetch.
+     */
+    orderBy?: ManagerChatSessionOrderByWithRelationInput | ManagerChatSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ManagerChatSessions.
+     */
+    cursor?: ManagerChatSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ManagerChatSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ManagerChatSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ManagerChatSessions.
+     */
+    distinct?: ManagerChatSessionScalarFieldEnum | ManagerChatSessionScalarFieldEnum[]
+  }
+
+  /**
+   * ManagerChatSession findMany
+   */
+  export type ManagerChatSessionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatSessions to fetch.
+     */
+    where?: ManagerChatSessionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ManagerChatSessions to fetch.
+     */
+    orderBy?: ManagerChatSessionOrderByWithRelationInput | ManagerChatSessionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ManagerChatSessions.
+     */
+    cursor?: ManagerChatSessionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ManagerChatSessions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ManagerChatSessions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ManagerChatSessions.
+     */
+    distinct?: ManagerChatSessionScalarFieldEnum | ManagerChatSessionScalarFieldEnum[]
+  }
+
+  /**
+   * ManagerChatSession create
+   */
+  export type ManagerChatSessionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ManagerChatSession.
+     */
+    data: XOR<ManagerChatSessionCreateInput, ManagerChatSessionUncheckedCreateInput>
+  }
+
+  /**
+   * ManagerChatSession createMany
+   */
+  export type ManagerChatSessionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ManagerChatSessions.
+     */
+    data: ManagerChatSessionCreateManyInput | ManagerChatSessionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ManagerChatSession createManyAndReturn
+   */
+  export type ManagerChatSessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * The data used to create many ManagerChatSessions.
+     */
+    data: ManagerChatSessionCreateManyInput | ManagerChatSessionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ManagerChatSession update
+   */
+  export type ManagerChatSessionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ManagerChatSession.
+     */
+    data: XOR<ManagerChatSessionUpdateInput, ManagerChatSessionUncheckedUpdateInput>
+    /**
+     * Choose, which ManagerChatSession to update.
+     */
+    where: ManagerChatSessionWhereUniqueInput
+  }
+
+  /**
+   * ManagerChatSession updateMany
+   */
+  export type ManagerChatSessionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ManagerChatSessions.
+     */
+    data: XOR<ManagerChatSessionUpdateManyMutationInput, ManagerChatSessionUncheckedUpdateManyInput>
+    /**
+     * Filter which ManagerChatSessions to update
+     */
+    where?: ManagerChatSessionWhereInput
+    /**
+     * Limit how many ManagerChatSessions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ManagerChatSession updateManyAndReturn
+   */
+  export type ManagerChatSessionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * The data used to update ManagerChatSessions.
+     */
+    data: XOR<ManagerChatSessionUpdateManyMutationInput, ManagerChatSessionUncheckedUpdateManyInput>
+    /**
+     * Filter which ManagerChatSessions to update
+     */
+    where?: ManagerChatSessionWhereInput
+    /**
+     * Limit how many ManagerChatSessions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ManagerChatSession upsert
+   */
+  export type ManagerChatSessionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ManagerChatSession to update in case it exists.
+     */
+    where: ManagerChatSessionWhereUniqueInput
+    /**
+     * In case the ManagerChatSession found by the `where` argument doesn't exist, create a new ManagerChatSession with this data.
+     */
+    create: XOR<ManagerChatSessionCreateInput, ManagerChatSessionUncheckedCreateInput>
+    /**
+     * In case the ManagerChatSession was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ManagerChatSessionUpdateInput, ManagerChatSessionUncheckedUpdateInput>
+  }
+
+  /**
+   * ManagerChatSession delete
+   */
+  export type ManagerChatSessionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+    /**
+     * Filter which ManagerChatSession to delete.
+     */
+    where: ManagerChatSessionWhereUniqueInput
+  }
+
+  /**
+   * ManagerChatSession deleteMany
+   */
+  export type ManagerChatSessionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ManagerChatSessions to delete
+     */
+    where?: ManagerChatSessionWhereInput
+    /**
+     * Limit how many ManagerChatSessions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ManagerChatSession.messages
+   */
+  export type ManagerChatSession$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    where?: ManagerChatMessageWhereInput
+    orderBy?: ManagerChatMessageOrderByWithRelationInput | ManagerChatMessageOrderByWithRelationInput[]
+    cursor?: ManagerChatMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ManagerChatMessageScalarFieldEnum | ManagerChatMessageScalarFieldEnum[]
+  }
+
+  /**
+   * ManagerChatSession without action
+   */
+  export type ManagerChatSessionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatSession
+     */
+    select?: ManagerChatSessionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatSession
+     */
+    omit?: ManagerChatSessionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatSessionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ManagerChatMessage
+   */
+
+  export type AggregateManagerChatMessage = {
+    _count: ManagerChatMessageCountAggregateOutputType | null
+    _min: ManagerChatMessageMinAggregateOutputType | null
+    _max: ManagerChatMessageMaxAggregateOutputType | null
+  }
+
+  export type ManagerChatMessageMinAggregateOutputType = {
+    id: string | null
+    sessionId: string | null
+    role: string | null
+    content: string | null
+    createdAt: Date | null
+  }
+
+  export type ManagerChatMessageMaxAggregateOutputType = {
+    id: string | null
+    sessionId: string | null
+    role: string | null
+    content: string | null
+    createdAt: Date | null
+  }
+
+  export type ManagerChatMessageCountAggregateOutputType = {
+    id: number
+    sessionId: number
+    role: number
+    content: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ManagerChatMessageMinAggregateInputType = {
+    id?: true
+    sessionId?: true
+    role?: true
+    content?: true
+    createdAt?: true
+  }
+
+  export type ManagerChatMessageMaxAggregateInputType = {
+    id?: true
+    sessionId?: true
+    role?: true
+    content?: true
+    createdAt?: true
+  }
+
+  export type ManagerChatMessageCountAggregateInputType = {
+    id?: true
+    sessionId?: true
+    role?: true
+    content?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ManagerChatMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ManagerChatMessage to aggregate.
+     */
+    where?: ManagerChatMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ManagerChatMessages to fetch.
+     */
+    orderBy?: ManagerChatMessageOrderByWithRelationInput | ManagerChatMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ManagerChatMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ManagerChatMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ManagerChatMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ManagerChatMessages
+    **/
+    _count?: true | ManagerChatMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ManagerChatMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ManagerChatMessageMaxAggregateInputType
+  }
+
+  export type GetManagerChatMessageAggregateType<T extends ManagerChatMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateManagerChatMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateManagerChatMessage[P]>
+      : GetScalarType<T[P], AggregateManagerChatMessage[P]>
+  }
+
+
+
+
+  export type ManagerChatMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ManagerChatMessageWhereInput
+    orderBy?: ManagerChatMessageOrderByWithAggregationInput | ManagerChatMessageOrderByWithAggregationInput[]
+    by: ManagerChatMessageScalarFieldEnum[] | ManagerChatMessageScalarFieldEnum
+    having?: ManagerChatMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ManagerChatMessageCountAggregateInputType | true
+    _min?: ManagerChatMessageMinAggregateInputType
+    _max?: ManagerChatMessageMaxAggregateInputType
+  }
+
+  export type ManagerChatMessageGroupByOutputType = {
+    id: string
+    sessionId: string
+    role: string
+    content: string
+    createdAt: Date
+    _count: ManagerChatMessageCountAggregateOutputType | null
+    _min: ManagerChatMessageMinAggregateOutputType | null
+    _max: ManagerChatMessageMaxAggregateOutputType | null
+  }
+
+  type GetManagerChatMessageGroupByPayload<T extends ManagerChatMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ManagerChatMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ManagerChatMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ManagerChatMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], ManagerChatMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ManagerChatMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    role?: boolean
+    content?: boolean
+    createdAt?: boolean
+    session?: boolean | ManagerChatSessionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["managerChatMessage"]>
+
+  export type ManagerChatMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    role?: boolean
+    content?: boolean
+    createdAt?: boolean
+    session?: boolean | ManagerChatSessionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["managerChatMessage"]>
+
+  export type ManagerChatMessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionId?: boolean
+    role?: boolean
+    content?: boolean
+    createdAt?: boolean
+    session?: boolean | ManagerChatSessionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["managerChatMessage"]>
+
+  export type ManagerChatMessageSelectScalar = {
+    id?: boolean
+    sessionId?: boolean
+    role?: boolean
+    content?: boolean
+    createdAt?: boolean
+  }
+
+  export type ManagerChatMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionId" | "role" | "content" | "createdAt", ExtArgs["result"]["managerChatMessage"]>
+  export type ManagerChatMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | ManagerChatSessionDefaultArgs<ExtArgs>
+  }
+  export type ManagerChatMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | ManagerChatSessionDefaultArgs<ExtArgs>
+  }
+  export type ManagerChatMessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    session?: boolean | ManagerChatSessionDefaultArgs<ExtArgs>
+  }
+
+  export type $ManagerChatMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ManagerChatMessage"
+    objects: {
+      session: Prisma.$ManagerChatSessionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      sessionId: string
+      role: string
+      content: string
+      createdAt: Date
+    }, ExtArgs["result"]["managerChatMessage"]>
+    composites: {}
+  }
+
+  type ManagerChatMessageGetPayload<S extends boolean | null | undefined | ManagerChatMessageDefaultArgs> = $Result.GetResult<Prisma.$ManagerChatMessagePayload, S>
+
+  type ManagerChatMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ManagerChatMessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ManagerChatMessageCountAggregateInputType | true
+    }
+
+  export interface ManagerChatMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ManagerChatMessage'], meta: { name: 'ManagerChatMessage' } }
+    /**
+     * Find zero or one ManagerChatMessage that matches the filter.
+     * @param {ManagerChatMessageFindUniqueArgs} args - Arguments to find a ManagerChatMessage
+     * @example
+     * // Get one ManagerChatMessage
+     * const managerChatMessage = await prisma.managerChatMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ManagerChatMessageFindUniqueArgs>(args: SelectSubset<T, ManagerChatMessageFindUniqueArgs<ExtArgs>>): Prisma__ManagerChatMessageClient<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ManagerChatMessage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ManagerChatMessageFindUniqueOrThrowArgs} args - Arguments to find a ManagerChatMessage
+     * @example
+     * // Get one ManagerChatMessage
+     * const managerChatMessage = await prisma.managerChatMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ManagerChatMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, ManagerChatMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ManagerChatMessageClient<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ManagerChatMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatMessageFindFirstArgs} args - Arguments to find a ManagerChatMessage
+     * @example
+     * // Get one ManagerChatMessage
+     * const managerChatMessage = await prisma.managerChatMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ManagerChatMessageFindFirstArgs>(args?: SelectSubset<T, ManagerChatMessageFindFirstArgs<ExtArgs>>): Prisma__ManagerChatMessageClient<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ManagerChatMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatMessageFindFirstOrThrowArgs} args - Arguments to find a ManagerChatMessage
+     * @example
+     * // Get one ManagerChatMessage
+     * const managerChatMessage = await prisma.managerChatMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ManagerChatMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, ManagerChatMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__ManagerChatMessageClient<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ManagerChatMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ManagerChatMessages
+     * const managerChatMessages = await prisma.managerChatMessage.findMany()
+     * 
+     * // Get first 10 ManagerChatMessages
+     * const managerChatMessages = await prisma.managerChatMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const managerChatMessageWithIdOnly = await prisma.managerChatMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ManagerChatMessageFindManyArgs>(args?: SelectSubset<T, ManagerChatMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ManagerChatMessage.
+     * @param {ManagerChatMessageCreateArgs} args - Arguments to create a ManagerChatMessage.
+     * @example
+     * // Create one ManagerChatMessage
+     * const ManagerChatMessage = await prisma.managerChatMessage.create({
+     *   data: {
+     *     // ... data to create a ManagerChatMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends ManagerChatMessageCreateArgs>(args: SelectSubset<T, ManagerChatMessageCreateArgs<ExtArgs>>): Prisma__ManagerChatMessageClient<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ManagerChatMessages.
+     * @param {ManagerChatMessageCreateManyArgs} args - Arguments to create many ManagerChatMessages.
+     * @example
+     * // Create many ManagerChatMessages
+     * const managerChatMessage = await prisma.managerChatMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ManagerChatMessageCreateManyArgs>(args?: SelectSubset<T, ManagerChatMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ManagerChatMessages and returns the data saved in the database.
+     * @param {ManagerChatMessageCreateManyAndReturnArgs} args - Arguments to create many ManagerChatMessages.
+     * @example
+     * // Create many ManagerChatMessages
+     * const managerChatMessage = await prisma.managerChatMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ManagerChatMessages and only return the `id`
+     * const managerChatMessageWithIdOnly = await prisma.managerChatMessage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ManagerChatMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, ManagerChatMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ManagerChatMessage.
+     * @param {ManagerChatMessageDeleteArgs} args - Arguments to delete one ManagerChatMessage.
+     * @example
+     * // Delete one ManagerChatMessage
+     * const ManagerChatMessage = await prisma.managerChatMessage.delete({
+     *   where: {
+     *     // ... filter to delete one ManagerChatMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ManagerChatMessageDeleteArgs>(args: SelectSubset<T, ManagerChatMessageDeleteArgs<ExtArgs>>): Prisma__ManagerChatMessageClient<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ManagerChatMessage.
+     * @param {ManagerChatMessageUpdateArgs} args - Arguments to update one ManagerChatMessage.
+     * @example
+     * // Update one ManagerChatMessage
+     * const managerChatMessage = await prisma.managerChatMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ManagerChatMessageUpdateArgs>(args: SelectSubset<T, ManagerChatMessageUpdateArgs<ExtArgs>>): Prisma__ManagerChatMessageClient<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ManagerChatMessages.
+     * @param {ManagerChatMessageDeleteManyArgs} args - Arguments to filter ManagerChatMessages to delete.
+     * @example
+     * // Delete a few ManagerChatMessages
+     * const { count } = await prisma.managerChatMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ManagerChatMessageDeleteManyArgs>(args?: SelectSubset<T, ManagerChatMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ManagerChatMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ManagerChatMessages
+     * const managerChatMessage = await prisma.managerChatMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ManagerChatMessageUpdateManyArgs>(args: SelectSubset<T, ManagerChatMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ManagerChatMessages and returns the data updated in the database.
+     * @param {ManagerChatMessageUpdateManyAndReturnArgs} args - Arguments to update many ManagerChatMessages.
+     * @example
+     * // Update many ManagerChatMessages
+     * const managerChatMessage = await prisma.managerChatMessage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ManagerChatMessages and only return the `id`
+     * const managerChatMessageWithIdOnly = await prisma.managerChatMessage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ManagerChatMessageUpdateManyAndReturnArgs>(args: SelectSubset<T, ManagerChatMessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ManagerChatMessage.
+     * @param {ManagerChatMessageUpsertArgs} args - Arguments to update or create a ManagerChatMessage.
+     * @example
+     * // Update or create a ManagerChatMessage
+     * const managerChatMessage = await prisma.managerChatMessage.upsert({
+     *   create: {
+     *     // ... data to create a ManagerChatMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ManagerChatMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ManagerChatMessageUpsertArgs>(args: SelectSubset<T, ManagerChatMessageUpsertArgs<ExtArgs>>): Prisma__ManagerChatMessageClient<$Result.GetResult<Prisma.$ManagerChatMessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ManagerChatMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatMessageCountArgs} args - Arguments to filter ManagerChatMessages to count.
+     * @example
+     * // Count the number of ManagerChatMessages
+     * const count = await prisma.managerChatMessage.count({
+     *   where: {
+     *     // ... the filter for the ManagerChatMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends ManagerChatMessageCountArgs>(
+      args?: Subset<T, ManagerChatMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ManagerChatMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ManagerChatMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ManagerChatMessageAggregateArgs>(args: Subset<T, ManagerChatMessageAggregateArgs>): Prisma.PrismaPromise<GetManagerChatMessageAggregateType<T>>
+
+    /**
+     * Group by ManagerChatMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ManagerChatMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ManagerChatMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ManagerChatMessageGroupByArgs['orderBy'] }
+        : { orderBy?: ManagerChatMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ManagerChatMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetManagerChatMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ManagerChatMessage model
+   */
+  readonly fields: ManagerChatMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ManagerChatMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ManagerChatMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    session<T extends ManagerChatSessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ManagerChatSessionDefaultArgs<ExtArgs>>): Prisma__ManagerChatSessionClient<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ManagerChatMessage model
+   */
+  interface ManagerChatMessageFieldRefs {
+    readonly id: FieldRef<"ManagerChatMessage", 'String'>
+    readonly sessionId: FieldRef<"ManagerChatMessage", 'String'>
+    readonly role: FieldRef<"ManagerChatMessage", 'String'>
+    readonly content: FieldRef<"ManagerChatMessage", 'String'>
+    readonly createdAt: FieldRef<"ManagerChatMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ManagerChatMessage findUnique
+   */
+  export type ManagerChatMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatMessage to fetch.
+     */
+    where: ManagerChatMessageWhereUniqueInput
+  }
+
+  /**
+   * ManagerChatMessage findUniqueOrThrow
+   */
+  export type ManagerChatMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatMessage to fetch.
+     */
+    where: ManagerChatMessageWhereUniqueInput
+  }
+
+  /**
+   * ManagerChatMessage findFirst
+   */
+  export type ManagerChatMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatMessage to fetch.
+     */
+    where?: ManagerChatMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ManagerChatMessages to fetch.
+     */
+    orderBy?: ManagerChatMessageOrderByWithRelationInput | ManagerChatMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ManagerChatMessages.
+     */
+    cursor?: ManagerChatMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ManagerChatMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ManagerChatMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ManagerChatMessages.
+     */
+    distinct?: ManagerChatMessageScalarFieldEnum | ManagerChatMessageScalarFieldEnum[]
+  }
+
+  /**
+   * ManagerChatMessage findFirstOrThrow
+   */
+  export type ManagerChatMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatMessage to fetch.
+     */
+    where?: ManagerChatMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ManagerChatMessages to fetch.
+     */
+    orderBy?: ManagerChatMessageOrderByWithRelationInput | ManagerChatMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ManagerChatMessages.
+     */
+    cursor?: ManagerChatMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ManagerChatMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ManagerChatMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ManagerChatMessages.
+     */
+    distinct?: ManagerChatMessageScalarFieldEnum | ManagerChatMessageScalarFieldEnum[]
+  }
+
+  /**
+   * ManagerChatMessage findMany
+   */
+  export type ManagerChatMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which ManagerChatMessages to fetch.
+     */
+    where?: ManagerChatMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ManagerChatMessages to fetch.
+     */
+    orderBy?: ManagerChatMessageOrderByWithRelationInput | ManagerChatMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ManagerChatMessages.
+     */
+    cursor?: ManagerChatMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ManagerChatMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ManagerChatMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ManagerChatMessages.
+     */
+    distinct?: ManagerChatMessageScalarFieldEnum | ManagerChatMessageScalarFieldEnum[]
+  }
+
+  /**
+   * ManagerChatMessage create
+   */
+  export type ManagerChatMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ManagerChatMessage.
+     */
+    data: XOR<ManagerChatMessageCreateInput, ManagerChatMessageUncheckedCreateInput>
+  }
+
+  /**
+   * ManagerChatMessage createMany
+   */
+  export type ManagerChatMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ManagerChatMessages.
+     */
+    data: ManagerChatMessageCreateManyInput | ManagerChatMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ManagerChatMessage createManyAndReturn
+   */
+  export type ManagerChatMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * The data used to create many ManagerChatMessages.
+     */
+    data: ManagerChatMessageCreateManyInput | ManagerChatMessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ManagerChatMessage update
+   */
+  export type ManagerChatMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ManagerChatMessage.
+     */
+    data: XOR<ManagerChatMessageUpdateInput, ManagerChatMessageUncheckedUpdateInput>
+    /**
+     * Choose, which ManagerChatMessage to update.
+     */
+    where: ManagerChatMessageWhereUniqueInput
+  }
+
+  /**
+   * ManagerChatMessage updateMany
+   */
+  export type ManagerChatMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ManagerChatMessages.
+     */
+    data: XOR<ManagerChatMessageUpdateManyMutationInput, ManagerChatMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which ManagerChatMessages to update
+     */
+    where?: ManagerChatMessageWhereInput
+    /**
+     * Limit how many ManagerChatMessages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ManagerChatMessage updateManyAndReturn
+   */
+  export type ManagerChatMessageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * The data used to update ManagerChatMessages.
+     */
+    data: XOR<ManagerChatMessageUpdateManyMutationInput, ManagerChatMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which ManagerChatMessages to update
+     */
+    where?: ManagerChatMessageWhereInput
+    /**
+     * Limit how many ManagerChatMessages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ManagerChatMessage upsert
+   */
+  export type ManagerChatMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ManagerChatMessage to update in case it exists.
+     */
+    where: ManagerChatMessageWhereUniqueInput
+    /**
+     * In case the ManagerChatMessage found by the `where` argument doesn't exist, create a new ManagerChatMessage with this data.
+     */
+    create: XOR<ManagerChatMessageCreateInput, ManagerChatMessageUncheckedCreateInput>
+    /**
+     * In case the ManagerChatMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ManagerChatMessageUpdateInput, ManagerChatMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * ManagerChatMessage delete
+   */
+  export type ManagerChatMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+    /**
+     * Filter which ManagerChatMessage to delete.
+     */
+    where: ManagerChatMessageWhereUniqueInput
+  }
+
+  /**
+   * ManagerChatMessage deleteMany
+   */
+  export type ManagerChatMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ManagerChatMessages to delete
+     */
+    where?: ManagerChatMessageWhereInput
+    /**
+     * Limit how many ManagerChatMessages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ManagerChatMessage without action
+   */
+  export type ManagerChatMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ManagerChatMessage
+     */
+    select?: ManagerChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ManagerChatMessage
+     */
+    omit?: ManagerChatMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ManagerChatMessageInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -20567,6 +22892,26 @@ export namespace Prisma {
   };
 
   export type ApartmentOwnerScalarFieldEnum = (typeof ApartmentOwnerScalarFieldEnum)[keyof typeof ApartmentOwnerScalarFieldEnum]
+
+
+  export const ManagerChatSessionScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    createdAt: 'createdAt'
+  };
+
+  export type ManagerChatSessionScalarFieldEnum = (typeof ManagerChatSessionScalarFieldEnum)[keyof typeof ManagerChatSessionScalarFieldEnum]
+
+
+  export const ManagerChatMessageScalarFieldEnum: {
+    id: 'id',
+    sessionId: 'sessionId',
+    role: 'role',
+    content: 'content',
+    createdAt: 'createdAt'
+  };
+
+  export type ManagerChatMessageScalarFieldEnum = (typeof ManagerChatMessageScalarFieldEnum)[keyof typeof ManagerChatMessageScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -21940,6 +24285,106 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"ApartmentOwner"> | string
   }
 
+  export type ManagerChatSessionWhereInput = {
+    AND?: ManagerChatSessionWhereInput | ManagerChatSessionWhereInput[]
+    OR?: ManagerChatSessionWhereInput[]
+    NOT?: ManagerChatSessionWhereInput | ManagerChatSessionWhereInput[]
+    id?: StringFilter<"ManagerChatSession"> | string
+    date?: DateTimeFilter<"ManagerChatSession"> | Date | string
+    createdAt?: DateTimeFilter<"ManagerChatSession"> | Date | string
+    messages?: ManagerChatMessageListRelationFilter
+  }
+
+  export type ManagerChatSessionOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    messages?: ManagerChatMessageOrderByRelationAggregateInput
+  }
+
+  export type ManagerChatSessionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    date?: Date | string
+    AND?: ManagerChatSessionWhereInput | ManagerChatSessionWhereInput[]
+    OR?: ManagerChatSessionWhereInput[]
+    NOT?: ManagerChatSessionWhereInput | ManagerChatSessionWhereInput[]
+    createdAt?: DateTimeFilter<"ManagerChatSession"> | Date | string
+    messages?: ManagerChatMessageListRelationFilter
+  }, "id" | "date">
+
+  export type ManagerChatSessionOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    _count?: ManagerChatSessionCountOrderByAggregateInput
+    _max?: ManagerChatSessionMaxOrderByAggregateInput
+    _min?: ManagerChatSessionMinOrderByAggregateInput
+  }
+
+  export type ManagerChatSessionScalarWhereWithAggregatesInput = {
+    AND?: ManagerChatSessionScalarWhereWithAggregatesInput | ManagerChatSessionScalarWhereWithAggregatesInput[]
+    OR?: ManagerChatSessionScalarWhereWithAggregatesInput[]
+    NOT?: ManagerChatSessionScalarWhereWithAggregatesInput | ManagerChatSessionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ManagerChatSession"> | string
+    date?: DateTimeWithAggregatesFilter<"ManagerChatSession"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"ManagerChatSession"> | Date | string
+  }
+
+  export type ManagerChatMessageWhereInput = {
+    AND?: ManagerChatMessageWhereInput | ManagerChatMessageWhereInput[]
+    OR?: ManagerChatMessageWhereInput[]
+    NOT?: ManagerChatMessageWhereInput | ManagerChatMessageWhereInput[]
+    id?: StringFilter<"ManagerChatMessage"> | string
+    sessionId?: StringFilter<"ManagerChatMessage"> | string
+    role?: StringFilter<"ManagerChatMessage"> | string
+    content?: StringFilter<"ManagerChatMessage"> | string
+    createdAt?: DateTimeFilter<"ManagerChatMessage"> | Date | string
+    session?: XOR<ManagerChatSessionScalarRelationFilter, ManagerChatSessionWhereInput>
+  }
+
+  export type ManagerChatMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    session?: ManagerChatSessionOrderByWithRelationInput
+  }
+
+  export type ManagerChatMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ManagerChatMessageWhereInput | ManagerChatMessageWhereInput[]
+    OR?: ManagerChatMessageWhereInput[]
+    NOT?: ManagerChatMessageWhereInput | ManagerChatMessageWhereInput[]
+    sessionId?: StringFilter<"ManagerChatMessage"> | string
+    role?: StringFilter<"ManagerChatMessage"> | string
+    content?: StringFilter<"ManagerChatMessage"> | string
+    createdAt?: DateTimeFilter<"ManagerChatMessage"> | Date | string
+    session?: XOR<ManagerChatSessionScalarRelationFilter, ManagerChatSessionWhereInput>
+  }, "id">
+
+  export type ManagerChatMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    _count?: ManagerChatMessageCountOrderByAggregateInput
+    _max?: ManagerChatMessageMaxOrderByAggregateInput
+    _min?: ManagerChatMessageMinOrderByAggregateInput
+  }
+
+  export type ManagerChatMessageScalarWhereWithAggregatesInput = {
+    AND?: ManagerChatMessageScalarWhereWithAggregatesInput | ManagerChatMessageScalarWhereWithAggregatesInput[]
+    OR?: ManagerChatMessageScalarWhereWithAggregatesInput[]
+    NOT?: ManagerChatMessageScalarWhereWithAggregatesInput | ManagerChatMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ManagerChatMessage"> | string
+    sessionId?: StringWithAggregatesFilter<"ManagerChatMessage"> | string
+    role?: StringWithAggregatesFilter<"ManagerChatMessage"> | string
+    content?: StringWithAggregatesFilter<"ManagerChatMessage"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"ManagerChatMessage"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -23242,6 +25687,107 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type ManagerChatSessionCreateInput = {
+    id?: string
+    date: Date | string
+    createdAt?: Date | string
+    messages?: ManagerChatMessageCreateNestedManyWithoutSessionInput
+  }
+
+  export type ManagerChatSessionUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    createdAt?: Date | string
+    messages?: ManagerChatMessageUncheckedCreateNestedManyWithoutSessionInput
+  }
+
+  export type ManagerChatSessionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: ManagerChatMessageUpdateManyWithoutSessionNestedInput
+  }
+
+  export type ManagerChatSessionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: ManagerChatMessageUncheckedUpdateManyWithoutSessionNestedInput
+  }
+
+  export type ManagerChatSessionCreateManyInput = {
+    id?: string
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ManagerChatSessionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ManagerChatSessionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ManagerChatMessageCreateInput = {
+    id?: string
+    role: string
+    content: string
+    createdAt?: Date | string
+    session: ManagerChatSessionCreateNestedOneWithoutMessagesInput
+  }
+
+  export type ManagerChatMessageUncheckedCreateInput = {
+    id?: string
+    sessionId: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type ManagerChatMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    session?: ManagerChatSessionUpdateOneRequiredWithoutMessagesNestedInput
+  }
+
+  export type ManagerChatMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ManagerChatMessageCreateManyInput = {
+    id?: string
+    sessionId: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type ManagerChatMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ManagerChatMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -24291,6 +26837,63 @@ export namespace Prisma {
   export type ApartmentOwnerMinOrderByAggregateInput = {
     apartmentId?: SortOrder
     userId?: SortOrder
+  }
+
+  export type ManagerChatMessageListRelationFilter = {
+    every?: ManagerChatMessageWhereInput
+    some?: ManagerChatMessageWhereInput
+    none?: ManagerChatMessageWhereInput
+  }
+
+  export type ManagerChatMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ManagerChatSessionCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ManagerChatSessionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ManagerChatSessionMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ManagerChatSessionScalarRelationFilter = {
+    is?: ManagerChatSessionWhereInput
+    isNot?: ManagerChatSessionWhereInput
+  }
+
+  export type ManagerChatMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ManagerChatMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ManagerChatMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    sessionId?: SortOrder
+    role?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type CleaningTaskCreateNestedManyWithoutAssignedToInput = {
@@ -25759,6 +28362,62 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutOwnedApartmentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedApartmentsInput, UserUpdateWithoutOwnedApartmentsInput>, UserUncheckedUpdateWithoutOwnedApartmentsInput>
+  }
+
+  export type ManagerChatMessageCreateNestedManyWithoutSessionInput = {
+    create?: XOR<ManagerChatMessageCreateWithoutSessionInput, ManagerChatMessageUncheckedCreateWithoutSessionInput> | ManagerChatMessageCreateWithoutSessionInput[] | ManagerChatMessageUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: ManagerChatMessageCreateOrConnectWithoutSessionInput | ManagerChatMessageCreateOrConnectWithoutSessionInput[]
+    createMany?: ManagerChatMessageCreateManySessionInputEnvelope
+    connect?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+  }
+
+  export type ManagerChatMessageUncheckedCreateNestedManyWithoutSessionInput = {
+    create?: XOR<ManagerChatMessageCreateWithoutSessionInput, ManagerChatMessageUncheckedCreateWithoutSessionInput> | ManagerChatMessageCreateWithoutSessionInput[] | ManagerChatMessageUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: ManagerChatMessageCreateOrConnectWithoutSessionInput | ManagerChatMessageCreateOrConnectWithoutSessionInput[]
+    createMany?: ManagerChatMessageCreateManySessionInputEnvelope
+    connect?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+  }
+
+  export type ManagerChatMessageUpdateManyWithoutSessionNestedInput = {
+    create?: XOR<ManagerChatMessageCreateWithoutSessionInput, ManagerChatMessageUncheckedCreateWithoutSessionInput> | ManagerChatMessageCreateWithoutSessionInput[] | ManagerChatMessageUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: ManagerChatMessageCreateOrConnectWithoutSessionInput | ManagerChatMessageCreateOrConnectWithoutSessionInput[]
+    upsert?: ManagerChatMessageUpsertWithWhereUniqueWithoutSessionInput | ManagerChatMessageUpsertWithWhereUniqueWithoutSessionInput[]
+    createMany?: ManagerChatMessageCreateManySessionInputEnvelope
+    set?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+    disconnect?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+    delete?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+    connect?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+    update?: ManagerChatMessageUpdateWithWhereUniqueWithoutSessionInput | ManagerChatMessageUpdateWithWhereUniqueWithoutSessionInput[]
+    updateMany?: ManagerChatMessageUpdateManyWithWhereWithoutSessionInput | ManagerChatMessageUpdateManyWithWhereWithoutSessionInput[]
+    deleteMany?: ManagerChatMessageScalarWhereInput | ManagerChatMessageScalarWhereInput[]
+  }
+
+  export type ManagerChatMessageUncheckedUpdateManyWithoutSessionNestedInput = {
+    create?: XOR<ManagerChatMessageCreateWithoutSessionInput, ManagerChatMessageUncheckedCreateWithoutSessionInput> | ManagerChatMessageCreateWithoutSessionInput[] | ManagerChatMessageUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: ManagerChatMessageCreateOrConnectWithoutSessionInput | ManagerChatMessageCreateOrConnectWithoutSessionInput[]
+    upsert?: ManagerChatMessageUpsertWithWhereUniqueWithoutSessionInput | ManagerChatMessageUpsertWithWhereUniqueWithoutSessionInput[]
+    createMany?: ManagerChatMessageCreateManySessionInputEnvelope
+    set?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+    disconnect?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+    delete?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+    connect?: ManagerChatMessageWhereUniqueInput | ManagerChatMessageWhereUniqueInput[]
+    update?: ManagerChatMessageUpdateWithWhereUniqueWithoutSessionInput | ManagerChatMessageUpdateWithWhereUniqueWithoutSessionInput[]
+    updateMany?: ManagerChatMessageUpdateManyWithWhereWithoutSessionInput | ManagerChatMessageUpdateManyWithWhereWithoutSessionInput[]
+    deleteMany?: ManagerChatMessageScalarWhereInput | ManagerChatMessageScalarWhereInput[]
+  }
+
+  export type ManagerChatSessionCreateNestedOneWithoutMessagesInput = {
+    create?: XOR<ManagerChatSessionCreateWithoutMessagesInput, ManagerChatSessionUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: ManagerChatSessionCreateOrConnectWithoutMessagesInput
+    connect?: ManagerChatSessionWhereUniqueInput
+  }
+
+  export type ManagerChatSessionUpdateOneRequiredWithoutMessagesNestedInput = {
+    create?: XOR<ManagerChatSessionCreateWithoutMessagesInput, ManagerChatSessionUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: ManagerChatSessionCreateOrConnectWithoutMessagesInput
+    upsert?: ManagerChatSessionUpsertWithoutMessagesInput
+    connect?: ManagerChatSessionWhereUniqueInput
+    update?: XOR<XOR<ManagerChatSessionUpdateToOneWithWhereWithoutMessagesInput, ManagerChatSessionUpdateWithoutMessagesInput>, ManagerChatSessionUncheckedUpdateWithoutMessagesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -29849,6 +32508,97 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type ManagerChatMessageCreateWithoutSessionInput = {
+    id?: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type ManagerChatMessageUncheckedCreateWithoutSessionInput = {
+    id?: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type ManagerChatMessageCreateOrConnectWithoutSessionInput = {
+    where: ManagerChatMessageWhereUniqueInput
+    create: XOR<ManagerChatMessageCreateWithoutSessionInput, ManagerChatMessageUncheckedCreateWithoutSessionInput>
+  }
+
+  export type ManagerChatMessageCreateManySessionInputEnvelope = {
+    data: ManagerChatMessageCreateManySessionInput | ManagerChatMessageCreateManySessionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ManagerChatMessageUpsertWithWhereUniqueWithoutSessionInput = {
+    where: ManagerChatMessageWhereUniqueInput
+    update: XOR<ManagerChatMessageUpdateWithoutSessionInput, ManagerChatMessageUncheckedUpdateWithoutSessionInput>
+    create: XOR<ManagerChatMessageCreateWithoutSessionInput, ManagerChatMessageUncheckedCreateWithoutSessionInput>
+  }
+
+  export type ManagerChatMessageUpdateWithWhereUniqueWithoutSessionInput = {
+    where: ManagerChatMessageWhereUniqueInput
+    data: XOR<ManagerChatMessageUpdateWithoutSessionInput, ManagerChatMessageUncheckedUpdateWithoutSessionInput>
+  }
+
+  export type ManagerChatMessageUpdateManyWithWhereWithoutSessionInput = {
+    where: ManagerChatMessageScalarWhereInput
+    data: XOR<ManagerChatMessageUpdateManyMutationInput, ManagerChatMessageUncheckedUpdateManyWithoutSessionInput>
+  }
+
+  export type ManagerChatMessageScalarWhereInput = {
+    AND?: ManagerChatMessageScalarWhereInput | ManagerChatMessageScalarWhereInput[]
+    OR?: ManagerChatMessageScalarWhereInput[]
+    NOT?: ManagerChatMessageScalarWhereInput | ManagerChatMessageScalarWhereInput[]
+    id?: StringFilter<"ManagerChatMessage"> | string
+    sessionId?: StringFilter<"ManagerChatMessage"> | string
+    role?: StringFilter<"ManagerChatMessage"> | string
+    content?: StringFilter<"ManagerChatMessage"> | string
+    createdAt?: DateTimeFilter<"ManagerChatMessage"> | Date | string
+  }
+
+  export type ManagerChatSessionCreateWithoutMessagesInput = {
+    id?: string
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ManagerChatSessionUncheckedCreateWithoutMessagesInput = {
+    id?: string
+    date: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ManagerChatSessionCreateOrConnectWithoutMessagesInput = {
+    where: ManagerChatSessionWhereUniqueInput
+    create: XOR<ManagerChatSessionCreateWithoutMessagesInput, ManagerChatSessionUncheckedCreateWithoutMessagesInput>
+  }
+
+  export type ManagerChatSessionUpsertWithoutMessagesInput = {
+    update: XOR<ManagerChatSessionUpdateWithoutMessagesInput, ManagerChatSessionUncheckedUpdateWithoutMessagesInput>
+    create: XOR<ManagerChatSessionCreateWithoutMessagesInput, ManagerChatSessionUncheckedCreateWithoutMessagesInput>
+    where?: ManagerChatSessionWhereInput
+  }
+
+  export type ManagerChatSessionUpdateToOneWithWhereWithoutMessagesInput = {
+    where?: ManagerChatSessionWhereInput
+    data: XOR<ManagerChatSessionUpdateWithoutMessagesInput, ManagerChatSessionUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type ManagerChatSessionUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ManagerChatSessionUncheckedUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CleaningTaskCreateManyAssignedToInput = {
     id?: string
     apartmentId: string
@@ -30861,6 +33611,34 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTaskId?: StringFieldUpdateOperationsInput | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ManagerChatMessageCreateManySessionInput = {
+    id?: string
+    role: string
+    content: string
+    createdAt?: Date | string
+  }
+
+  export type ManagerChatMessageUpdateWithoutSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ManagerChatMessageUncheckedUpdateWithoutSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ManagerChatMessageUncheckedUpdateManyWithoutSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

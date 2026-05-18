@@ -295,6 +295,20 @@ exports.Prisma.ApartmentOwnerScalarFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.ManagerChatSessionScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ManagerChatMessageScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  role: 'role',
+  content: 'content',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -348,7 +362,9 @@ exports.Prisma.ModelName = {
   CleaningTaskMessage: 'CleaningTaskMessage',
   SupervisorReview: 'SupervisorReview',
   ApartmentSupervisor: 'ApartmentSupervisor',
-  ApartmentOwner: 'ApartmentOwner'
+  ApartmentOwner: 'ApartmentOwner',
+  ManagerChatSession: 'ManagerChatSession',
+  ManagerChatMessage: 'ManagerChatMessage'
 };
 
 /**
