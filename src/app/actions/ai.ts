@@ -1243,8 +1243,9 @@ async function buildCleaningContext(apartmentId: string) {
         select: { guestName: true, totalGuests: true, checkInDate: true, checkOutDate: true, status: true, source: true },
       },
       cleaningTasks: {
-        orderBy: { date: "desc" },
-        take: 30,
+        where: { date: { gte: addDays(now, -30) } },
+        orderBy: { date: "asc" },
+        take: 60,
         include: {
           assignedTo: { select: { name: true, role: true, email: true } },
           booking: { select: { guestName: true, totalGuests: true, checkInDate: true, checkOutDate: true, source: true, status: true } },
@@ -1256,12 +1257,6 @@ async function buildCleaningContext(apartmentId: string) {
   });
 
   if (!apartment) return "CONTESTO PULIZIE\n- Appartamento non trovato.";
-
-  console.log(`[AI buildCleaningContext] ${apartment.name}: ${apartment.cleaningTasks.length} pulizie trovate:`, apartment.cleaningTasks.map(t => `${t.date.toISOString()} ${t.status}`));
-
-  const cleaningSummary = apartment.cleaningTasks.length > 0
-    ? `${apartment.cleaningTasks.length} pulizie caricate (date UTC raw: ${apartment.cleaningTasks.map(t => t.date.toISOString().slice(0,10)).join(", ")})`
-    : "nessuna pulizia trovata nel database";
 
   const bookingLines = apartment.bookings.map((b) =>
     `- ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "n/d"}`
@@ -1280,8 +1275,6 @@ async function buildCleaningContext(apartmentId: string) {
 
   return limitText(`CONTESTO PULIZIE — ${apartment.name} (${apartment.address})
 Capacità: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni
-DEBUG: ${cleaningSummary}
-
 PRENOTAZIONI PROSSIME 30 GIORNI
 ${bookingLines.length > 0 ? bookingLines.join("\n") : "- Nessuna prenotazione imminente."}
 
