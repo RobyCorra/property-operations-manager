@@ -153,6 +153,7 @@ function fieldLabel(key: string, value: unknown): string {
     description: "Descrizione",
     priority: "Priorità",
     scheduledStart: "Data intervento",
+    status: "Stato",
   };
   const label = labels[key] ?? key;
   let display = String(value);

@@ -1147,7 +1147,7 @@ export type AIActionPayload =
   | { type: "CREATE_TICKET"; apartmentName: string; title: string; ticketDescription?: string; priority: string; scheduledStart?: string; assignedToName?: string; description: string }
   | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToName: string }>; description: string }
-  | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
+  | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string; status: string }>; description: string }
   | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; description: string }
   | { type: "PURGE_CANCELLED"; description: string };
 
@@ -1318,6 +1318,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
           ...(fields.priority !== undefined && { priority: fields.priority as any }),
           ...(fields.scheduledStart !== undefined && { scheduledStart: new Date(fields.scheduledStart) }),
           ...(fields.notes !== undefined && { notes: fields.notes }),
+          ...(fields.status !== undefined && { status: fields.status }),
         },
       });
       revalidatePath("/dashboard/manager");

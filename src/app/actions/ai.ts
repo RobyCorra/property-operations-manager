@@ -316,8 +316,15 @@ Rispondi:
 const AI_ACTION_SUFFIX = `
 
 CAPACITÀ DI AZIONE (solo per manager):
-Puoi creare nuove prenotazioni, modificare prenotazioni/pulizie/ticket esistenti.
-Quando l'utente chiede di creare o modificare qualcosa, rispondi normalmente E aggiungi in fondo alla risposta un blocco ACTION esattamente così:
+Puoi creare nuove prenotazioni, modificare/cancellare prenotazioni/pulizie/ticket esistenti.
+Quando l'utente chiede di creare o modificare qualcosa, rispondi normalmente E aggiungi in fondo alla risposta un blocco ACTION su UNA RIGA SOLA.
+
+════ COME LEGGERE L'ID DAL CONTESTO ════
+Ogni riga di pulizia o ticket nel contesto inizia con "id:XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX".
+Esempio riga ticket: "- id:3fa85f64-5717-4562-b3fc-2c963f66afa6 | 18/05/2026 | HIGH | OPEN | Perdita rubinetto | ..."
+Devi copiare ESATTAMENTE quel valore UUID nel campo "id" dell'ACTION. MAI inventarlo o abbreviarlo.
+
+════ ESEMPI ACTION ════
 
 ACTION: {"type":"CREATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-06-29T00:00:00.000Z","checkOutDate":"2026-06-30T00:00:00.000Z","totalGuests":4,"guestName":"Mario Rossi","description":"Creo prenotazione 29-30 giugno per 4 persone"}
 
@@ -327,30 +334,42 @@ ACTION: {"type":"CREATE_TICKET","apartmentName":"Trastevere 68","title":"Perdita
 
 ACTION: {"type":"UPDATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-05-20T14:00:00.000Z","fields":{"totalGuests":4},"description":"Aggiorno la prenotazione del 20 maggio a 4 ospiti"}
 
-ACTION: {"type":"UPDATE_CLEANING","id":"<id>","fields":{"date":"2026-05-20T10:00:00.000Z","assignedToName":"Mario Rossi"},"description":"Sposto la pulizia al 20 maggio e la assegno a Mario Rossi"}
+ACTION: {"type":"UPDATE_CLEANING","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fields":{"date":"2026-05-20T10:00:00.000Z","assignedToName":"Mario Rossi"},"description":"Sposto la pulizia al 20 maggio e la assegno a Mario Rossi"}
 
-ACTION: {"type":"UPDATE_TICKET","id":"<id>","fields":{"title":"...","description":"...","priority":"HIGH","scheduledStart":"2026-05-20T09:00:00.000Z","notes":"..."},"description":"Aggiorno il ticket di manutenzione"}
+ACTION: {"type":"UPDATE_TICKET","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fields":{"scheduledStart":"2026-05-19T09:30:00.000Z"},"description":"Sposto il ticket a domani 19 maggio alle 9:30"}
+
+ACTION: {"type":"UPDATE_TICKET","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fields":{"status":"CANCELLED"},"description":"Cancello il ticket di manutenzione"}
 
 ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1>","<apartmentId2>"],"dateFrom":"2026-05-01","dateTo":"2026-05-31","assignedToId":"<userId>","description":"Assegno tutte le pulizie di maggio di Trastevere 156 e 68 a Mario"}
 
 ACTION: {"type":"PURGE_CANCELLED","description":"Elimino dal database tutte le prenotazioni e pulizie con stato CANCELLED"}
 
-Regole ACTION — OBBLIGATORIE:
-- Per CREATE_BOOKING usa il nome esatto dell'appartamento, le date ISO (checkInDate e checkOutDate), totalGuests numerico. guestName è opzionale. Verifica prima nel contesto che non ci siano conflitti di date.
-- Per CREATE_CLEANING usa il nome esatto dell'appartamento e la data ISO. assignedToName è il nome del cleaner dalla sezione PERSONALE DISPONIBILE (non l'id). notes è opzionale. NON verificare conflitti con prenotazioni: pulizie e manutenzioni si possono aggiungere in qualsiasi data.
-- Per CREATE_TICKET usa il nome esatto dell'appartamento, title obbligatorio, priority (LOW/MEDIUM/HIGH/URGENT). assignedToName è il nome del tecnico dalla sezione PERSONALE DISPONIBILE (non l'id). ticketDescription e scheduledStart sono opzionali.
-- Per BULK_ASSIGN_CLEANINGS_BY_FILTER usa gli id degli APPARTAMENTI (sezione STATO APPARTAMENTI, campo id:xxx) e l'id del cleaner dalla sezione PERSONALE DISPONIBILE. NON elencare mai gli id delle singole pulizie.
-- Per UPDATE_BOOKING usa il nome esatto dell'appartamento (campo apartmentName, es. "Trastevere 68") e la data checkInDate ISO della prenotazione. NON usare UUID o id numerici. Nei fields includi SOLO i campi che cambiano (es. solo "totalGuests":4), ometti tutti gli altri.
-- Per UPDATE_CLEANING usa esattamente il campo id:xxx dalla riga della pulizia nel contesto (sezione PULIZIE OPERATIVE). MAI inventare id. Per il cleaner usa assignedToName con il nome dalla sezione PERSONALE DISPONIBILE, non l'id.
-- Per UPDATE_TICKET usa esattamente il campo id:xxx dalla riga del ticket nel contesto (sezione MANUTENZIONI OPERATIVE). MAI inventare id.
-- Se non trovi un id nel contesto, avvisa l'utente invece di inventarlo.
-- IMPORTANTE: i campi nei fields che non cambiano devono essere omessi (non scrivere "..." come valore).
-- Le date devono essere in formato ISO 8601: dateFrom="2026-05-01", dateTo="2026-05-31". Per "maggio" usa sempre il mese intero (01→31), non la data di oggi come inizio.
-- Per prenotazioni iCal/Airbnb (source != "MANUAL") puoi proporre modifiche SOLO a totalGuests e notes. NON proporre modifiche a guestName, checkInDate, checkOutDate.
-- Per PURGE_CANCELLED: elimina in modo permanente dal DB tutte le pulizie e prenotazioni con stato CANCELLED. Usalo solo quando l'utente chiede esplicitamente di cancellare/eliminare i record cancellati.
-- Il blocco ACTION deve essere su UNA RIGA SOLA alla fine della risposta.
-- NON scrivere "ho creato", "ho assegnato", "ho aggiornato", "è stato fatto" — l'ACTION è una PROPOSTA che richiede conferma dall'utente. Usa "Propongo di..." o "Ecco la modifica proposta:".
+════ REGOLE OBBLIGATORIE ════
+ID:
+- Per UPDATE_CLEANING e UPDATE_TICKET: copia l'UUID ESATTO dalla riga "id:..." nel contesto. Non inventarlo mai.
+- Se non trovi l'id nel contesto, chiedi all'utente di specificarlo.
+
+DATE:
+- Usa sempre il formato ISO 8601 (es. "2026-05-19T09:30:00.000Z").
+- "domani" = data di oggi + 1 giorno. Usa la data di oggi indicata nel contesto ("Oggi:" o "Data corrente:").
+- Non esistono restrizioni sulle date (passate o future sono tutte valide).
+- Non inventare restrizioni del tipo "deve essere futura" o "minimo 24 ore" — non esistono.
+
+CAMPI:
+- Nei fields di UPDATE_* includi SOLO i campi che cambiano. Ometti tutto il resto.
+- UPDATE_TICKET supporta: title, description, priority, scheduledStart, notes, status (es. "CANCELLED" per cancellare).
+- UPDATE_CLEANING supporta: date, notes, assignedToName.
+- Per cancellare un ticket: usa UPDATE_TICKET con fields: {"status": "CANCELLED"}.
+- Per prenotazioni iCal/Airbnb (source != "MANUAL") puoi modificare SOLO totalGuests e notes.
+
+NOMI:
+- apartmentName: nome esatto dell'appartamento (es. "Trastevere 68").
+- assignedToName: nome dalla sezione PERSONALE DISPONIBILE, non l'id.
+
+COMPORTAMENTO:
+- NON scrivere "ho creato/modificato/cancellato" — l'ACTION è una PROPOSTA che richiede conferma. Usa "Propongo di...".
 - Non aggiungere ACTION se l'utente chiede solo informazioni.
+- Il blocco ACTION deve stare su UNA RIGA SOLA alla fine della risposta.
 `;
 
 const HISTORY_DAYS = 90;

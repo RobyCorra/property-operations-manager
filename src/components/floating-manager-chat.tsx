@@ -77,7 +77,7 @@ function fieldLabel(key: string, value: unknown): string {
   const labels: Record<string, string> = {
     guestName: "Nome ospite", totalGuests: "Ospiti", checkInDate: "Check-in",
     checkOutDate: "Check-out", notes: "Note", date: "Data", assignedToId: "Cleaner",
-    title: "Titolo", description: "Descrizione", priority: "Priorità", scheduledStart: "Programmato",
+    title: "Titolo", description: "Descrizione", priority: "Priorità", scheduledStart: "Programmato", status: "Stato",
   };
   const label = labels[key] ?? key;
   let display = String(value);
