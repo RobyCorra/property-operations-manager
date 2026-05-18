@@ -1259,6 +1259,10 @@ async function buildCleaningContext(apartmentId: string) {
 
   console.log(`[AI buildCleaningContext] ${apartment.name}: ${apartment.cleaningTasks.length} pulizie trovate:`, apartment.cleaningTasks.map(t => `${t.date.toISOString()} ${t.status}`));
 
+  const cleaningSummary = apartment.cleaningTasks.length > 0
+    ? `${apartment.cleaningTasks.length} pulizie caricate (date UTC raw: ${apartment.cleaningTasks.map(t => t.date.toISOString().slice(0,10)).join(", ")})`
+    : "nessuna pulizia trovata nel database";
+
   const bookingLines = apartment.bookings.map((b) =>
     `- ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "n/d"}`
   );
@@ -1276,6 +1280,7 @@ async function buildCleaningContext(apartmentId: string) {
 
   return limitText(`CONTESTO PULIZIE — ${apartment.name} (${apartment.address})
 Capacità: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni
+DEBUG: ${cleaningSummary}
 
 PRENOTAZIONI PROSSIME 30 GIORNI
 ${bookingLines.length > 0 ? bookingLines.join("\n") : "- Nessuna prenotazione imminente."}
