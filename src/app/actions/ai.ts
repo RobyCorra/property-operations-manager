@@ -555,7 +555,8 @@ function formatTechnicalProfile(technicalProfile: unknown) {
 }
 
 function formatDate(value: Date) {
-  return value.toISOString().slice(0, 10);
+  // Usa timezone Europe/Rome per mostrare la data operativa corretta
+  return value.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit" });
 }
 
 function truncateText(value: string | null | undefined, maxLength = 180) {
