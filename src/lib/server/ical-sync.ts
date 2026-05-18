@@ -1,11 +1,59 @@
 import { prisma } from "../prisma";
 import { syncCleaningTaskFromBooking } from "@/src/app/actions/operational";
 
-/**
- * Server-only service for iCal synchronization.
- * This file is the ONLY one allowed to import 'node-ical' to prevent 
- * bundling issues in Next.js Server Actions.
- */
+// ── Minimal iCal parser (no external deps) ────────────────────────────────────
+type ICalEvent = {
+  uid: string;
+  summary: string;
+  start: Date;
+  end: Date;
+};
+
+function parseICalDate(value: string): Date {
+  // Formats: 20260629, 20260629T140000Z, 20260629T140000
+  const clean = value.replace(/[TZ]/g, "");
+  const year = parseInt(clean.slice(0, 4));
+  const month = parseInt(clean.slice(4, 6)) - 1;
+  const day = parseInt(clean.slice(6, 8));
+  return new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+}
+
+function parseICS(text: string): ICalEvent[] {
+  const events: ICalEvent[] = [];
+  // Unfold lines (RFC 5545: continuation lines start with space/tab)
+  const unfolded = text.replace(/\r?\n[ \t]/g, "");
+  const lines = unfolded.split(/\r?\n/);
+
+  let inEvent = false;
+  let current: Partial<ICalEvent> = {};
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (line === "BEGIN:VEVENT") { inEvent = true; current = {}; continue; }
+    if (line === "END:VEVENT") {
+      if (inEvent && current.uid && current.start && current.end) {
+        events.push(current as ICalEvent);
+      }
+      inEvent = false;
+      continue;
+    }
+    if (!inEvent) continue;
+
+    // Key may have parameters: DTSTART;TZID=Europe/Rome:20260629T140000
+    const colonIdx = line.indexOf(":");
+    if (colonIdx === -1) continue;
+    const keyPart = line.slice(0, colonIdx).split(";")[0].toUpperCase();
+    const value = line.slice(colonIdx + 1).trim();
+
+    if (keyPart === "UID") current.uid = value;
+    else if (keyPart === "SUMMARY") current.summary = value;
+    else if (keyPart === "DTSTART") current.start = parseICalDate(value);
+    else if (keyPart === "DTEND") current.end = parseICalDate(value);
+  }
+
+  return events;
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 export async function performApartmentIcalSync(apartmentId: string) {
   const apartment = await prisma.apartment.findUnique({
@@ -24,63 +72,36 @@ export async function performApartmentIcalSync(apartmentId: string) {
   }
   const icalData = await response.text();
 
-  // 2. Parse iCal
-  const ical = (await import("node-ical")).default;
-  const events = ical.parseICS(icalData);
+  // 2. Parse
+  const events = parseICS(icalData);
   const activeExternalIds: string[] = [];
 
-  for (const k in events) {
-    const event = events[k];
-    if (!event || event.type !== 'VEVENT' || !event.start || !event.end || !event.uid) continue;
-
-    // Skip Airbnb blocking events ("Not available", "Closed", etc.) — not real bookings
-    const summary = (event.summary || '').toString().trim().toLowerCase();
+  for (const event of events) {
+    // Skip blocking events
+    const summary = (event.summary || "").toLowerCase();
     if (
-      summary.includes('not available') ||
-      summary.includes('non disponibile') ||
-      summary.includes('closed') ||
-      summary.includes('blocked') ||
-      summary.includes('unavailable')
+      summary.includes("not available") ||
+      summary.includes("non disponibile") ||
+      summary.includes("closed") ||
+      summary.includes("blocked") ||
+      summary.includes("unavailable")
     ) continue;
 
     const externalId = event.uid;
     activeExternalIds.push(externalId);
 
-    // Extract components as they appear in the source date (treating it as a "clock date")
-    // to avoid timezone shifts when normalizing to UTC midnight.
-    const start = event.start as Date;
-    const end = event.end as Date;
-
-    const checkInDate = new Date(Date.UTC(
-      start.getFullYear(),
-      start.getMonth(),
-      start.getDate(),
-      0, 0, 0, 0
-    ));
-
-    const checkOutDate = new Date(Date.UTC(
-      end.getFullYear(),
-      end.getMonth(),
-      end.getDate(),
-      0, 0, 0, 0
-    ));
-
-    const guestName = "Prenotazione Airbnb";
-    const totalGuests = 1;
+    const checkInDate = event.start;
+    const checkOutDate = event.end;
 
     // 3. Upsert Booking
     const booking = await prisma.booking.upsert({
       where: { externalId },
-      update: {
-        checkInDate,
-        checkOutDate,
-        status: "ACTIVE",
-      },
+      update: { checkInDate, checkOutDate, status: "ACTIVE" },
       create: {
         externalId,
         apartmentId: apartment.id,
-        guestName,
-        totalGuests,
+        guestName: "Prenotazione Airbnb",
+        totalGuests: 1,
         checkInDate,
         checkOutDate,
         source: "airbnb",
@@ -88,48 +109,35 @@ export async function performApartmentIcalSync(apartmentId: string) {
       },
     });
 
-    // 3. Sync cleaning task for this booking
+    // 4. Sync cleaning task
     await syncCleaningTaskFromBooking(booking.id);
   }
 
-  // 5. Cleanup
+  // 5. Cancel removed bookings
   const missingBookings = await prisma.booking.findMany({
     where: {
       apartmentId: apartment.id,
       source: "airbnb",
       status: "ACTIVE",
-      NOT: {
-        externalId: { in: activeExternalIds }
-      }
-    }
+      NOT: { externalId: { in: activeExternalIds } },
+    },
   });
 
   for (const b of missingBookings) {
-    await prisma.booking.update({
-      where: { id: b.id },
-      data: { status: "CANCELLED" }
-    });
+    await prisma.booking.update({ where: { id: b.id }, data: { status: "CANCELLED" } });
     await syncCleaningTaskFromBooking(b.id);
   }
 
   // 6. Update lastSyncAt
-  await prisma.apartment.update({
-    where: { id: apartment.id },
-    data: { lastSyncAt: new Date() }
-  });
+  await prisma.apartment.update({ where: { id: apartment.id }, data: { lastSyncAt: new Date() } });
 
   return activeExternalIds.length;
 }
 
 export async function performAllApartmentsIcalSync() {
   const apartments = await prisma.apartment.findMany({
-    where: {
-      AND: [
-        { icalUrl: { not: null } },
-        { icalUrl: { not: "" } },
-      ],
-    },
-    select: { id: true }
+    where: { AND: [{ icalUrl: { not: null } }, { icalUrl: { not: "" } }] },
+    select: { id: true },
   });
 
   const results = [];
@@ -141,6 +149,5 @@ export async function performAllApartmentsIcalSync() {
       results.push({ id: apartment.id, success: false, error: error.message });
     }
   }
-
   return results;
 }
