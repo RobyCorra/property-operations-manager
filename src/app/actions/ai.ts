@@ -336,7 +336,7 @@ ACTION: {"type":"UPDATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"
 
 ACTION: {"type":"UPDATE_CLEANING","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fields":{"date":"2026-05-20T10:00:00.000Z","assignedToName":"Mario Rossi"},"description":"Sposto la pulizia al 20 maggio e la assegno a Mario Rossi"}
 
-ACTION: {"type":"UPDATE_TICKET","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fields":{"scheduledStart":"2026-05-19T09:30:00.000Z"},"description":"Sposto il ticket a domani 19 maggio alle 9:30"}
+ACTION: {"type":"UPDATE_TICKET","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fields":{"scheduledStart":"2026-05-19T09:30:00+02:00"},"description":"Sposto il ticket a domani 19 maggio alle 9:30 ora di Roma"}
 
 ACTION: {"type":"UPDATE_TICKET","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fields":{"status":"CANCELLED"},"description":"Cancello il ticket di manutenzione"}
 
@@ -349,17 +349,18 @@ ID:
 - Per UPDATE_CLEANING e UPDATE_TICKET: copia l'UUID ESATTO dalla riga "id:..." nel contesto. Non inventarlo mai.
 - Se non trovi l'id nel contesto, chiedi all'utente di specificarlo.
 
-DATE:
-- Usa sempre il formato ISO 8601 (es. "2026-05-19T09:30:00.000Z").
-- "domani" = data di oggi + 1 giorno. Usa la data di oggi indicata nel contesto ("Oggi:" o "Data corrente:").
-- Non esistono restrizioni sulle date (passate o future sono tutte valide).
-- Non inventare restrizioni del tipo "deve essere futura" o "minimo 24 ore" — non esistono.
+DATE E ORARI:
+- Usa il formato ISO 8601 CON offset fuso orario di Roma: estate (marzo–ottobre) +02:00, inverno (novembre–febbraio) +01:00.
+- Esempio corretto: "2026-05-19T09:30:00+02:00" = ore 9:30 ora di Roma in estate. NON usare il suffisso Z (UTC) per orari locali.
+- "domani" = data di oggi + 1 giorno. Usa la data indicata nel contesto ("Oggi:" o "Data corrente:").
+- Non esistono restrizioni sulle date. Non inventare limiti tipo "deve essere futura" o "minimo 24 ore".
 
 CAMPI:
-- Nei fields di UPDATE_* includi SOLO i campi che cambiano. Ometti tutto il resto.
-- UPDATE_TICKET supporta: title, description, priority, scheduledStart, notes, status (es. "CANCELLED" per cancellare).
+- Nei fields di UPDATE_* includi SOLO i campi che l'utente vuole cambiare. Ometti tutto il resto.
+- NON cambiare mai il campo "status" di un ticket o pulizia a meno che l'utente non lo chieda esplicitamente con parole come "cancella", "riapri", "chiudi", "cambia stato".
+- UPDATE_TICKET supporta: title, description, priority, scheduledStart, notes, status (solo se richiesto).
 - UPDATE_CLEANING supporta: date, notes, assignedToName.
-- Per cancellare un ticket: usa UPDATE_TICKET con fields: {"status": "CANCELLED"}.
+- Per cancellare un ticket usa UPDATE_TICKET con fields: {"status": "CANCELLED"}.
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") puoi modificare SOLO totalGuests e notes.
 
 NOMI:
