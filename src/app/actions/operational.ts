@@ -1165,17 +1165,19 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
         where: { apartmentId: apartment.id, checkInDate: { gte: dayStart, lte: dayEnd } },
       });
       if (!booking) return { success: false, error: `Prenotazione non trovata in "${apartmentName}" il ${dayStart.toISOString().slice(0, 10)}.` };
-      if (booking.source !== "MANUAL") return { success: false, error: "Non puoi modificare prenotazioni iCal/Airbnb." };
       // Filtra i campi placeholder ("..." o stringa vuota) per non sovrascrivere valori reali
       const isReal = (v: unknown) => v !== undefined && v !== "..." && v !== "";
+      const isManual = booking.source === "MANUAL";
       await prisma.booking.update({
         where: { id: booking.id },
         data: {
-          ...(isReal(fields.guestName) && { guestName: fields.guestName }),
+          // Campi operativi: consentiti per tutte le fonti
           ...(fields.totalGuests !== undefined && { totalGuests: Number(fields.totalGuests) }),
-          ...(isReal(fields.checkInDate) && { checkInDate: new Date(fields.checkInDate!) }),
-          ...(isReal(fields.checkOutDate) && { checkOutDate: new Date(fields.checkOutDate!) }),
           ...(isReal(fields.notes) && { notes: fields.notes }),
+          // Campi anagrafici/date: solo per prenotazioni manuali
+          ...(isManual && isReal(fields.guestName) && { guestName: fields.guestName }),
+          ...(isManual && isReal(fields.checkInDate) && { checkInDate: new Date(fields.checkInDate!) }),
+          ...(isManual && isReal(fields.checkOutDate) && { checkOutDate: new Date(fields.checkOutDate!) }),
         },
       });
       revalidatePath("/dashboard/manager");
