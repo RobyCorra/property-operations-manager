@@ -313,9 +313,11 @@ Rispondi:
 // ── Suffisso ACTION aggiunto ai system prompt quando il ruolo è MANAGER ──────
 const AI_ACTION_SUFFIX = `
 
-CAPACITÀ DI MODIFICA (solo per manager):
-Puoi proporre modifiche a prenotazioni, pulizie e ticket di manutenzione.
-Quando l'utente chiede di modificare qualcosa, rispondi normalmente E aggiungi in fondo alla risposta un blocco ACTION esattamente così:
+CAPACITÀ DI AZIONE (solo per manager):
+Puoi creare nuove prenotazioni, modificare prenotazioni/pulizie/ticket esistenti.
+Quando l'utente chiede di creare o modificare qualcosa, rispondi normalmente E aggiungi in fondo alla risposta un blocco ACTION esattamente così:
+
+ACTION: {"type":"CREATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-06-29T14:00:00.000Z","checkOutDate":"2026-06-30T10:00:00.000Z","totalGuests":4,"guestName":"Mario Rossi","description":"Creo prenotazione 29-30 giugno per 4 persone"}
 
 ACTION: {"type":"UPDATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-05-20T14:00:00.000Z","fields":{"totalGuests":4},"description":"Aggiorno la prenotazione del 20 maggio a 4 ospiti"}
 
@@ -326,6 +328,7 @@ ACTION: {"type":"UPDATE_TICKET","id":"<id>","fields":{"title":"...","description
 ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1>","<apartmentId2>"],"dateFrom":"2026-05-01","dateTo":"2026-05-31","assignedToId":"<userId>","description":"Assegno tutte le pulizie di maggio di Trastevere 156 e 68 a Mario"}
 
 Regole ACTION — OBBLIGATORIE:
+- Per CREATE_BOOKING usa il nome esatto dell'appartamento, le date ISO (checkInDate e checkOutDate), totalGuests numerico. guestName è opzionale. Verifica prima nel contesto che non ci siano conflitti di date.
 - Per BULK_ASSIGN_CLEANINGS_BY_FILTER usa gli id degli APPARTAMENTI (sezione STATO APPARTAMENTI, campo id:xxx) e l'id del cleaner dalla sezione PERSONALE DISPONIBILE. NON elencare mai gli id delle singole pulizie.
 - Per UPDATE_BOOKING usa il nome esatto dell'appartamento (campo apartmentName, es. "Trastevere 68") e la data checkInDate ISO della prenotazione. NON usare UUID o id numerici. Nei fields includi SOLO i campi che cambiano (es. solo "totalGuests":4), ometti tutti gli altri.
 - Per UPDATE_CLEANING usa esattamente il campo id:xxx dalla riga della pulizia nel contesto (sezione PULIZIE OPERATIVE). MAI inventare id.
@@ -335,7 +338,7 @@ Regole ACTION — OBBLIGATORIE:
 - Le date devono essere in formato ISO 8601: dateFrom="2026-05-01", dateTo="2026-05-31". Per "maggio" usa sempre il mese intero (01→31), non la data di oggi come inizio.
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") puoi proporre modifiche SOLO a totalGuests e notes. NON proporre modifiche a guestName, checkInDate, checkOutDate.
 - Il blocco ACTION deve essere su UNA RIGA SOLA alla fine della risposta.
-- NON scrivere "ho assegnato", "ho aggiornato", "è stato fatto" — l'ACTION è una PROPOSTA che richiede conferma dall'utente. Usa "Propongo di..." o "Ecco la modifica proposta:".
+- NON scrivere "ho creato", "ho assegnato", "ho aggiornato", "è stato fatto" — l'ACTION è una PROPOSTA che richiede conferma dall'utente. Usa "Propongo di..." o "Ecco la modifica proposta:".
 - Non aggiungere ACTION se l'utente chiede solo informazioni.
 `;
 

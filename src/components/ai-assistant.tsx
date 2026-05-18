@@ -71,6 +71,7 @@ function parseAction(content: string): { text: string; action?: AIActionPayload 
 }
 
 function actionTypeLabel(type: string) {
+  if (type === "CREATE_BOOKING") return "Nuova prenotazione";
   if (type === "UPDATE_BOOKING") return "Modifica prenotazione";
   if (type === "UPDATE_CLEANING") return "Modifica pulizia";
   if (type === "UPDATE_TICKET") return "Modifica ticket manutenzione";
@@ -79,6 +80,17 @@ function actionTypeLabel(type: string) {
 }
 
 function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | null): React.ReactNode {
+  if (action.type === "CREATE_BOOKING") {
+    return (
+      <div className="space-y-1">
+        <p className="text-xs text-amber-700">• Appartamento: {action.apartmentName}</p>
+        <p className="text-xs text-amber-700">• Check-in: {new Date(action.checkInDate).toLocaleDateString("it-IT")}</p>
+        <p className="text-xs text-amber-700">• Check-out: {new Date(action.checkOutDate).toLocaleDateString("it-IT")}</p>
+        <p className="text-xs text-amber-700">• Ospiti: {action.totalGuests}</p>
+        {action.guestName && <p className="text-xs text-amber-700">• Nome ospite: {action.guestName}</p>}
+      </div>
+    );
+  }
   if (action.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") {
     if (!preview) return <p className="text-xs text-amber-500 animate-pulse">Caricamento anteprima...</p>;
     if (preview.length === 0) return <p className="text-xs text-red-600">⚠ Nessuna pulizia trovata con questi filtri.</p>;

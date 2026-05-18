@@ -1142,6 +1142,7 @@ export async function getApartmentSchedule(apartmentId: string) {
 
 // ── AI Action Execution ────────────────────────────────────────────────────
 export type AIActionPayload =
+  | { type: "CREATE_BOOKING"; apartmentName: string; checkInDate: string; checkOutDate: string; totalGuests: number; guestName?: string; notes?: string; description: string }
   | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToId: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
@@ -1149,7 +1150,49 @@ export type AIActionPayload =
 
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
   try {
-    if (payload.type === "UPDATE_BOOKING") {
+    if (payload.type === "CREATE_BOOKING") {
+      const { apartmentName, checkInDate, checkOutDate, totalGuests, guestName, notes } = payload;
+      const apartment = await prisma.apartment.findFirst({
+        where: { name: { equals: apartmentName, mode: "insensitive" } },
+        select: { id: true },
+      });
+      if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
+      const checkIn = new Date(checkInDate);
+      const checkOut = new Date(checkOutDate);
+      // Verifica conflitti
+      const conflict = await prisma.booking.findFirst({
+        where: {
+          apartmentId: apartment.id,
+          status: { not: "CANCELLED" },
+          checkInDate: { lt: checkOut },
+          checkOutDate: { gt: checkIn },
+        },
+      });
+      if (conflict) return { success: false, error: `Conflitto con prenotazione esistente: ${conflict.checkInDate.toISOString().slice(0, 10)} → ${conflict.checkOutDate.toISOString().slice(0, 10)}.` };
+      const newBooking = await prisma.booking.create({
+        data: {
+          apartmentId: apartment.id,
+          checkInDate: checkIn,
+          checkOutDate: checkOut,
+          totalGuests: Number(totalGuests),
+          guestName: guestName || null,
+          notes: notes || null,
+          source: "MANUAL",
+          status: "CONFIRMED",
+        },
+      });
+      // Crea pulizia associata
+      await prisma.cleaningTask.create({
+        data: {
+          apartmentId: apartment.id,
+          bookingId: newBooking.id,
+          date: checkOut,
+          status: "PENDING",
+        },
+      });
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/bookings");
+    } else if (payload.type === "UPDATE_BOOKING") {
       const { apartmentName, checkInDate, fields } = payload;
       // Cerca appartamento per nome (case-insensitive) — evita UUID che l'AI storpia
       const apartment = await prisma.apartment.findFirst({
