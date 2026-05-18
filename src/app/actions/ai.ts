@@ -1807,7 +1807,7 @@ async function buildGeneralManagerContext(now: Date) {
   const windowEnd = addDays(todayStart, 30);
   const recent14Days = addDays(todayStart, -14);
 
-  const [apartments, bookings, cleanings, tickets] = await Promise.all([
+  const [apartments, bookings, cleanings, tickets, personnel] = await Promise.all([
     prisma.apartment.findMany({
       take: 50,
       orderBy: { name: "asc" },
@@ -1857,7 +1857,7 @@ async function buildGeneralManagerContext(now: Date) {
       take: 30,
       include: {
         apartment: { select: { id: true, name: true, address: true } },
-        assignedTo: { select: { name: true, role: true } },
+        assignedTo: { select: { id: true, name: true, role: true } },
         booking: { select: { guestName: true, totalGuests: true, checkInDate: true, checkOutDate: true } },
         messages: {
           orderBy: { createdAt: "desc" },
@@ -1884,7 +1884,7 @@ async function buildGeneralManagerContext(now: Date) {
       take: 30,
       include: {
         apartment: { select: { id: true, name: true, address: true } },
-        assignedTo: { select: { name: true, role: true } },
+        assignedTo: { select: { id: true, name: true, role: true } },
         messages: {
           orderBy: { createdAt: "desc" },
           take: 10,
@@ -1896,6 +1896,11 @@ async function buildGeneralManagerContext(now: Date) {
           select: { fileName: true, fileType: true, url: true, size: true, category: true, extractedText: true, createdAt: true },
         },
       },
+    }),
+    prisma.user.findMany({
+      where: { role: { in: ["CLEANER", "MAINTENANCE"] } },
+      select: { id: true, name: true, role: true },
+      orderBy: { name: "asc" },
     }),
   ]);
 
@@ -1926,15 +1931,15 @@ async function buildGeneralManagerContext(now: Date) {
   const activeBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate <= now && booking.checkOutDate > now);
 
   const bookingLine = (booking: ApartmentBookingWithApartmentForAI) => (
-    `- ${booking.apartment.name} | ospite: ${booking.guestName || "n/d"} | ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
+    `- id:${(booking as any).id || "n/d"} | ${booking.apartment.name} | ospite: ${booking.guestName || "n/d"} | ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
   );
 
   const cleaningLines = cleanings.map((task: CleaningTaskWithApartmentForAI) => (
-    `- ${task.apartment.name} | ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} | note: ${truncateText(task.notes, 160) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 450)} | booking: ${task.booking?.guestName || "n/d"} (${task.booking?.totalGuests ?? "n/d"} ospiti) | messaggi: ${formatManagerMessages(task.messages)} | allegati: ${formatOperationalAttachmentLines(task.attachments)}`
+    `- id:${(task as any).id} | ${task.apartment.name} | ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"}${(task.assignedTo as any)?.id ? ` (assignedToId:${(task.assignedTo as any).id})` : ""} | note: ${truncateText(task.notes, 160) || "n/d"} | booking: ${task.booking?.guestName || "n/d"} (${task.booking?.totalGuests ?? "n/d"} ospiti) | messaggi: ${formatManagerMessages(task.messages)}`
   ));
 
   const ticketLines = tickets.map((ticket: MaintenanceTicketWithApartmentForAI) => (
-    `- ${ticket.apartment.name} | ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"} | programmato: ${formatDateTime(ticket.scheduledStart)} | risolto: ${formatDateTime(ticket.resolvedAt)} | messaggi: ${formatManagerMessages(ticket.messages)} | allegati: ${formatOperationalAttachmentLines(ticket.attachments)}`
+    `- id:${(ticket as any).id} | ${ticket.apartment.name} | ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"}${(ticket.assignedTo as any)?.id ? ` (assignedToId:${(ticket.assignedTo as any).id})` : ""} | programmato: ${formatDateTime(ticket.scheduledStart)} | messaggi: ${formatManagerMessages(ticket.messages)}`
   ));
 
   const recentMessageLines = [
@@ -1984,6 +1989,9 @@ ${recentMessageLines.length > 0 ? recentMessageLines.join("\n") : "- Nessun mess
 
 PROBLEMI RICORRENTI DA SCHEDE TECNICHE
 ${recurringIssueLines.length > 0 ? recurringIssueLines.join("\n") : "- Nessun problema ricorrente registrato nelle schede tecniche caricate."}
+
+PERSONALE DISPONIBILE (usa questi id per le azioni AI)
+${personnel.map((u: { id: string; name: string; role: string }) => `- id:${u.id} | ${u.name} | ruolo: ${u.role}`).join("\n") || "- Nessun personale trovato."}
 `.trim();
 
   return limitText(contextText, MAX_MANAGER_CONTEXT_TEXT_LENGTH);
