@@ -329,7 +329,7 @@ Regole ACTION — OBBLIGATORIE:
 - Per BULK_ASSIGN_CLEANINGS_BY_FILTER usa gli id degli APPARTAMENTI (sezione STATO APPARTAMENTI, campo id:xxx) e l'id del cleaner dalla sezione PERSONALE DISPONIBILE. NON elencare mai gli id delle singole pulizie.
 - Per UPDATE_BOOKING, UPDATE_CLEANING, UPDATE_TICKET usa l'id dell'entità dal contesto. MAI inventare id.
 - Se non trovi un id nel contesto, avvisa l'utente invece di inventarlo.
-- Le date devono essere in formato ISO 8601: dateFrom="2026-05-01", dateTo="2026-05-31".
+- Le date devono essere in formato ISO 8601: dateFrom="2026-05-01", dateTo="2026-05-31". Per "maggio" usa sempre il mese intero (01→31), non la data di oggi come inizio.
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") NON proporre modifiche.
 - Il blocco ACTION deve essere su UNA RIGA SOLA alla fine della risposta.
 - NON scrivere "ho assegnato", "ho aggiornato", "è stato fatto" — l'ACTION è una PROPOSTA che richiede conferma dall'utente. Usa "Propongo di..." o "Ecco la modifica proposta:".

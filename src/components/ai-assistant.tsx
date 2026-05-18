@@ -39,13 +39,18 @@ type AIAssistantProps = {
   compact?: boolean;
 };
 
-// Estrae il blocco ACTION dal testo dell'AI
+// Estrae il blocco ACTION dal testo dell'AI — robusto a newline e backtick
 function parseAction(content: string): { text: string; action?: AIActionPayload } {
-  const match = content.match(/ACTION:\s*(\{.*\})/);
+  // Cerca ACTION: seguito da JSON (con possibili backtick/newline)
+  const match = content.match(/ACTION:\s*`{0,3}\s*([\s\S]*?)\s*`{0,3}\s*(?:\n|$)/m)
+    ?? content.match(/ACTION:\s*(\{[\s\S]*?\})\s*(?:\n|$)/m)
+    ?? content.match(/ACTION:\s*(\{[\s\S]*\})/);
   if (!match) return { text: content };
   try {
-    const action = JSON.parse(match[1]) as AIActionPayload;
-    const text = content.replace(/ACTION:\s*\{.*\}/, "").trim();
+    const jsonStr = match[1].trim();
+    const action = JSON.parse(jsonStr) as AIActionPayload;
+    // Rimuove l'intera riga ACTION dal testo
+    const text = content.replace(/ACTION:[\s\S]*$/, "").trim();
     return { text, action };
   } catch {
     return { text: content };
