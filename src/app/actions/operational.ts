@@ -1157,14 +1157,14 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
         select: { id: true },
       });
       if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
-      // Cerca la prenotazione per apartmentId + checkInDate (±12h)
+      // Cerca la prenotazione per apartmentId + giorno del check-in (indipendente dall'ora)
       const checkIn = new Date(checkInDate);
-      const checkInFrom = new Date(checkIn.getTime() - 12 * 60 * 60 * 1000);
-      const checkInTo = new Date(checkIn.getTime() + 12 * 60 * 60 * 1000);
+      const dayStart = new Date(Date.UTC(checkIn.getUTCFullYear(), checkIn.getUTCMonth(), checkIn.getUTCDate(), 0, 0, 0));
+      const dayEnd = new Date(Date.UTC(checkIn.getUTCFullYear(), checkIn.getUTCMonth(), checkIn.getUTCDate(), 23, 59, 59));
       const booking = await prisma.booking.findFirst({
-        where: { apartmentId: apartment.id, checkInDate: { gte: checkInFrom, lte: checkInTo } },
+        where: { apartmentId: apartment.id, checkInDate: { gte: dayStart, lte: dayEnd } },
       });
-      if (!booking) return { success: false, error: `Prenotazione non trovata in "${apartmentName}" con check-in ${checkInDate}.` };
+      if (!booking) return { success: false, error: `Prenotazione non trovata in "${apartmentName}" il ${dayStart.toISOString().slice(0, 10)}.` };
       if (booking.source !== "MANUAL") return { success: false, error: "Non puoi modificare prenotazioni iCal/Airbnb." };
       // Filtra i campi placeholder ("..." o stringa vuota) per non sovrascrivere valori reali
       const isReal = (v: unknown) => v !== undefined && v !== "..." && v !== "";
