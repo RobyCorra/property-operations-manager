@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import { askAI } from "@/src/app/actions/ai";
 import { executeAIAction } from "@/src/app/actions/operational";
@@ -123,10 +123,18 @@ export default function AIAssistant({
   );
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  // useRef per accedere sempre ai messages aggiornati senza stale closure
+  const messagesRef = useRef(messages);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Indice dell'ultima azione pending (per bottone di conferma rapida)
+  const lastPendingIdx = messages.map((m, i) => ({ m, i }))
+    .reverse()
+    .find(({ m }) => m.actionState === "pending" || m.actionState === "error");
 
   const CONFIRM_WORDS = /^(ok|sì|si|yes|confermo|conferma|vai|procedi|fatto|esegui|assegna)$/i;
 
@@ -135,13 +143,14 @@ export default function AIAssistant({
     if (!content || loading) return;
 
     // Se l'utente scrive una parola di conferma e c'è un'azione pending → eseguila
+    // Usa messagesRef per evitare stale closure
     if (CONFIRM_WORDS.test(content)) {
-      const lastPendingIdx = [...messages].map((m, i) => ({ m, i }))
+      const pending = messagesRef.current.map((m, i) => ({ m, i }))
         .reverse()
         .find(({ m }) => m.actionState === "pending" || m.actionState === "error");
-      if (lastPendingIdx) {
+      if (pending) {
         setInput("");
-        await handleConfirmAction(lastPendingIdx.i);
+        await handleConfirmAction(pending.i);
         return;
       }
     }
@@ -175,8 +184,8 @@ export default function AIAssistant({
     setLoading(false);
   }
 
-  async function handleConfirmAction(msgIndex: number) {
-    const msg = messages[msgIndex];
+  const handleConfirmAction = useCallback(async (msgIndex: number) => {
+    const msg = messagesRef.current[msgIndex];
     if (!msg.action) return;
 
     // Mostra stato "loading" temporaneo senza bloccare il retry
@@ -199,7 +208,7 @@ export default function AIAssistant({
         )
       );
     }
-  }
+  }, [router]);
 
   function handleDismissAction(msgIndex: number) {
     setMessages((prev) =>
@@ -224,12 +233,22 @@ export default function AIAssistant({
         }}
       />
 
-      <button
-        onClick={handleAsk}
-        className="px-4 py-2 bg-black text-white rounded-full text-xs font-black uppercase tracking-widest"
-      >
-        {loading ? "Caricamento..." : "Chiedi"}
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={handleAsk}
+          className="px-4 py-2 bg-black text-white rounded-full text-xs font-black uppercase tracking-widest"
+        >
+          {loading ? "Caricamento..." : "Chiedi"}
+        </button>
+        {lastPendingIdx && (
+          <button
+            onClick={() => handleConfirmAction(lastPendingIdx.i)}
+            className="px-4 py-2 bg-amber-500 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-amber-600 transition-colors animate-pulse"
+          >
+            ✓ Conferma azione
+          </button>
+        )}
+      </div>
 
       {messages.length > 0 && (
         <div className={`mt-3 overflow-y-auto space-y-2 ${compact ? "max-h-56" : "max-h-80"}`}>
