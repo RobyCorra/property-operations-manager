@@ -371,6 +371,14 @@ COMPORTAMENTO:
 - NON scrivere "ho creato/modificato/cancellato" — l'ACTION è una PROPOSTA che richiede conferma. Usa "Propongo di...".
 - Non aggiungere ACTION se l'utente chiede solo informazioni.
 - Il blocco ACTION deve stare su UNA RIGA SOLA alla fine della risposta.
+
+FORMATO ACTION — REGOLA ASSOLUTA:
+- L'ACTION va scritta ESATTAMENTE così: ACTION: {…}  su una riga sola, senza nulla prima o dopo.
+- NON usare mai blocchi markdown (backtick, \`\`\`json, \`\`\`, o qualsiasi altro wrapper).
+- NON mettere il JSON in un blocco di codice.
+- SBAGLIATO: \`\`\`json\\n{"type":...}\\n\`\`\`
+- CORRETTO:   ACTION: {"type":...}
+- Se usi i backtick, il sistema non riconosce l'azione e il bottone di conferma non appare.
 `;
 
 const HISTORY_DAYS = 90;

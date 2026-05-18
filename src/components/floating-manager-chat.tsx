@@ -41,22 +41,45 @@ type ChatMessage = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function parseAction(content: string): { text: string; action?: AIActionPayload } {
-  const actionIdx = content.indexOf("ACTION:");
-  if (actionIdx === -1) return { text: content };
-  const afterAction = content.slice(actionIdx + "ACTION:".length);
-  const jsonStart = afterAction.indexOf("{");
-  if (jsonStart === -1) return { text: content };
+function extractJsonAction(src: string, prefixEnd: number): { action: AIActionPayload; jsonEnd: number } | null {
+  const jsonStart = src.indexOf("{", prefixEnd);
+  if (jsonStart === -1) return null;
   let depth = 0, jsonEnd = -1;
-  for (let i = jsonStart; i < afterAction.length; i++) {
-    if (afterAction[i] === "{") depth++;
-    else if (afterAction[i] === "}") { depth--; if (depth === 0) { jsonEnd = i; break; } }
+  for (let i = jsonStart; i < src.length; i++) {
+    if (src[i] === "{") depth++;
+    else if (src[i] === "}") { depth--; if (depth === 0) { jsonEnd = i; break; } }
   }
-  if (jsonEnd === -1) return { text: content };
+  if (jsonEnd === -1) return null;
   try {
-    const action = JSON.parse(afterAction.slice(jsonStart, jsonEnd + 1)) as AIActionPayload;
-    return { text: content.slice(0, actionIdx).trim(), action };
-  } catch { return { text: content }; }
+    const action = JSON.parse(src.slice(jsonStart, jsonEnd + 1)) as AIActionPayload;
+    return { action, jsonEnd };
+  } catch { return null; }
+}
+
+function parseAction(content: string): { text: string; action?: AIActionPayload } {
+  // Percorso principale: ACTION: {...}
+  const actionIdx = content.indexOf("ACTION:");
+  if (actionIdx !== -1) {
+    const result = extractJsonAction(content, actionIdx + "ACTION:".length);
+    if (result) {
+      return { text: content.slice(0, actionIdx).trim(), action: result.action };
+    }
+  }
+
+  // Fallback: l'AI ha wrappato il JSON in un code block (```json ... ```)
+  // Cerca il pattern ```json\n{...}\n``` o ``` \n{...}\n```
+  const codeBlockMatch = content.match(/```(?:json)?\s*\n?(\{[\s\S]*?\})\s*\n?```/);
+  if (codeBlockMatch) {
+    try {
+      const parsed = JSON.parse(codeBlockMatch[1]) as AIActionPayload;
+      if (parsed && typeof parsed === "object" && "type" in parsed) {
+        const cleanText = content.replace(/```(?:json)?\s*\n?[\s\S]*?\n?```/, "").trim();
+        return { text: cleanText, action: parsed };
+      }
+    } catch { /* not valid JSON */ }
+  }
+
+  return { text: content };
 }
 
 function actionTypeLabel(type: string) {

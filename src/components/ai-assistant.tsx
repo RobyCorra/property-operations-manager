@@ -48,33 +48,39 @@ type AIAssistantProps = {
 
 // Estrae il blocco ACTION dal testo dell'AI con brace-matching (robusto a qualsiasi formato)
 function parseAction(content: string): { text: string; action?: AIActionPayload } {
+  // Percorso principale: ACTION: {...}
   const actionIdx = content.indexOf("ACTION:");
-  if (actionIdx === -1) return { text: content };
-
-  const afterAction = content.slice(actionIdx + "ACTION:".length);
-  const jsonStart = afterAction.indexOf("{");
-  if (jsonStart === -1) return { text: content };
-
-  // Trova la parentesi graffa di chiusura con brace-matching
-  let depth = 0;
-  let jsonEnd = -1;
-  for (let i = jsonStart; i < afterAction.length; i++) {
-    if (afterAction[i] === "{") depth++;
-    else if (afterAction[i] === "}") {
-      depth--;
-      if (depth === 0) { jsonEnd = i; break; }
+  if (actionIdx !== -1) {
+    const afterAction = content.slice(actionIdx + "ACTION:".length);
+    const jsonStart = afterAction.indexOf("{");
+    if (jsonStart !== -1) {
+      let depth = 0, jsonEnd = -1;
+      for (let i = jsonStart; i < afterAction.length; i++) {
+        if (afterAction[i] === "{") depth++;
+        else if (afterAction[i] === "}") { depth--; if (depth === 0) { jsonEnd = i; break; } }
+      }
+      if (jsonEnd !== -1) {
+        try {
+          const action = JSON.parse(afterAction.slice(jsonStart, jsonEnd + 1)) as AIActionPayload;
+          return { text: content.slice(0, actionIdx).trim(), action };
+        } catch { /* fall through */ }
+      }
     }
   }
-  if (jsonEnd === -1) return { text: content };
 
-  const jsonStr = afterAction.slice(jsonStart, jsonEnd + 1);
-  try {
-    const action = JSON.parse(jsonStr) as AIActionPayload;
-    const text = content.slice(0, actionIdx).trim();
-    return { text, action };
-  } catch {
-    return { text: content };
+  // Fallback: l'AI ha wrappato il JSON in un code block (```json ... ```)
+  const codeBlockMatch = content.match(/```(?:json)?\s*\n?(\{[\s\S]*?\})\s*\n?```/);
+  if (codeBlockMatch) {
+    try {
+      const parsed = JSON.parse(codeBlockMatch[1]) as AIActionPayload;
+      if (parsed && typeof parsed === "object" && "type" in parsed) {
+        const cleanText = content.replace(/```(?:json)?\s*\n?[\s\S]*?\n?```/, "").trim();
+        return { text: cleanText, action: parsed };
+      }
+    } catch { /* not valid JSON */ }
   }
+
+  return { text: content };
 }
 
 function actionTypeLabel(type: string) {
