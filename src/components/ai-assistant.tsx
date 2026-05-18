@@ -7,12 +7,21 @@ import { executeAIAction } from "@/src/app/actions/operational";
 import type { AIActionPayload } from "@/src/app/actions/operational";
 import { useRouter } from "next/navigation";
 
+type PreviewCleaning = {
+  id: string;
+  date: string;
+  status: string;
+  apartmentName: string;
+  assignedTo: string | null;
+};
+
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
   action?: AIActionPayload;
   actionState?: "pending" | "done" | "error";
   actionError?: string;
+  preview?: PreviewCleaning[] | null;
 };
 
 type PersistedAIMessage = {
@@ -47,13 +56,24 @@ function actionTypeLabel(type: string) {
   if (type === "UPDATE_BOOKING") return "Modifica prenotazione";
   if (type === "UPDATE_CLEANING") return "Modifica pulizia";
   if (type === "UPDATE_TICKET") return "Modifica ticket manutenzione";
-  if (type === "BULK_ASSIGN_CLEANINGS") return "Assegnazione pulizie";
+  if (type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") return "Assegnazione pulizie";
   return "Modifica";
 }
 
-function actionSummary(action: AIActionPayload): React.ReactNode {
-  if (action.type === "BULK_ASSIGN_CLEANINGS") {
-    return <p className="text-xs text-amber-700">• {action.ids.length} pulizie da assegnare</p>;
+function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | null): React.ReactNode {
+  if (action.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") {
+    if (!preview) return <p className="text-xs text-amber-500 animate-pulse">Caricamento anteprima...</p>;
+    if (preview.length === 0) return <p className="text-xs text-red-600">⚠ Nessuna pulizia trovata con questi filtri.</p>;
+    return (
+      <div className="space-y-1">
+        <p className="text-xs font-bold text-amber-800">{preview.length} pulizie trovate:</p>
+        {preview.map((c) => (
+          <p key={c.id} className="text-xs text-amber-700">
+            • {c.apartmentName} — {new Date(c.date).toLocaleDateString("it-IT", { day: "numeric", month: "short" })} ({c.status}) {c.assignedTo ? `→ attuale: ${c.assignedTo}` : ""}
+          </p>
+        ))}
+      </div>
+    );
   }
   const fields = (action as any).fields ?? {};
   return Object.entries(fields).map(([k, v]) => (
@@ -123,9 +143,20 @@ export default function AIAssistant({
     );
 
     const { text, action } = parseAction(res || "");
+    let preview: PreviewCleaning[] | null = null;
+    if (action?.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") {
+      const params = new URLSearchParams();
+      action.apartmentIds.forEach((id) => params.append("apartmentId", id));
+      params.set("dateFrom", action.dateFrom);
+      params.set("dateTo", action.dateTo);
+      try {
+        const r = await fetch(`/api/cleanings-preview?${params}`);
+        preview = r.ok ? await r.json() : [];
+      } catch { preview = []; }
+    }
     setMessages([
       ...nextMessages,
-      { role: "assistant", content: text, action, actionState: action ? "pending" : undefined },
+      { role: "assistant", content: text, action, actionState: action ? "pending" : undefined, preview },
     ]);
     setLoading(false);
   }
@@ -220,12 +251,13 @@ export default function AIAssistant({
                   </div>
                   <p className="text-sm font-medium text-amber-900">{message.action.description}</p>
                   <div className="space-y-1">
-                    {actionSummary(message.action)}
+                    {actionSummary(message.action, message.preview ?? null)}
                   </div>
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={() => handleConfirmAction(index)}
-                      className="flex-1 rounded-full bg-amber-500 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-amber-600 transition-colors"
+                      disabled={message.action?.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER" && (message.preview == null || message.preview.length === 0)}
+                      className="flex-1 rounded-full bg-amber-500 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-amber-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       ✓ Conferma
                     </button>
@@ -241,7 +273,9 @@ export default function AIAssistant({
 
               {message.actionState === "done" && (
                 <div className="max-w-[85%] mt-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2">
-                  <p className="text-xs font-bold text-emerald-700">✓ Modifica applicata</p>
+                  <p className="text-xs font-bold text-emerald-700">
+                    ✓ {message.preview ? `${message.preview.length} pulizie assegnate` : "Modifica applicata"}
+                  </p>
                 </div>
               )}
 

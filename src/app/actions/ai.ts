@@ -323,17 +323,16 @@ ACTION: {"type":"UPDATE_CLEANING","id":"<id>","fields":{"date":"2026-05-20T10:00
 
 ACTION: {"type":"UPDATE_TICKET","id":"<id>","fields":{"title":"...","description":"...","priority":"HIGH","scheduledStart":"2026-05-20T09:00:00.000Z","notes":"..."},"description":"Aggiorno il ticket di manutenzione"}
 
-ACTION: {"type":"BULK_ASSIGN_CLEANINGS","ids":["<id1>","<id2>","<id3>"],"assignedToId":"<userId>","description":"Assegno 3 pulizie di maggio a Mario"}
+ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1>","<apartmentId2>"],"dateFrom":"2026-05-01","dateTo":"2026-05-31","assignedToId":"<userId>","description":"Assegno tutte le pulizie di maggio di Trastevere 156 e 68 a Mario"}
 
 Regole ACTION — OBBLIGATORIE:
-- Usa SOLO id presenti nel contesto (formato id:xxx). MAI inventare o dedurre id.
-- Se non trovi l'id di una pulizia/ticket/prenotazione nel contesto, NON includerla nell'ACTION e avvisa l'utente.
-- Per assignedToId usa SOLO id presenti nella sezione PERSONALE DISPONIBILE del contesto.
-- Le date devono essere in formato ISO 8601 UTC.
+- Per BULK_ASSIGN_CLEANINGS_BY_FILTER usa gli id degli APPARTAMENTI (sezione STATO APPARTAMENTI, campo id:xxx) e l'id del cleaner dalla sezione PERSONALE DISPONIBILE. NON elencare mai gli id delle singole pulizie.
+- Per UPDATE_BOOKING, UPDATE_CLEANING, UPDATE_TICKET usa l'id dell'entità dal contesto. MAI inventare id.
+- Se non trovi un id nel contesto, avvisa l'utente invece di inventarlo.
+- Le date devono essere in formato ISO 8601: dateFrom="2026-05-01", dateTo="2026-05-31".
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") NON proporre modifiche.
-- Il blocco ACTION deve essere su una riga sola, alla fine della risposta.
-- Per assegnazioni multiple usa BULK_ASSIGN_CLEANINGS con tutti gli id reali in un array.
-- NON scrivere frasi come "ho assegnato", "ho aggiornato", "è stato fatto" — l'ACTION è una PROPOSTA che richiede conferma esplicita dall'utente. Scrivi invece "Propongo di assegnare..." o "Ecco la modifica proposta:".
+- Il blocco ACTION deve essere su UNA RIGA SOLA alla fine della risposta.
+- NON scrivere "ho assegnato", "ho aggiornato", "è stato fatto" — l'ACTION è una PROPOSTA che richiede conferma dall'utente. Usa "Propongo di..." o "Ecco la modifica proposta:".
 - Non aggiungere ACTION se l'utente chiede solo informazioni.
 `;
 
@@ -1924,7 +1923,7 @@ async function buildGeneralManagerContext(now: Date) {
       })
       .join(" || ");
 
-    return `- ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
+    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
   });
 
   const checkinsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkInDate) === formatDateKey(todayStart));

@@ -1145,7 +1145,7 @@ export type AIActionPayload =
   | { type: "UPDATE_BOOKING"; id: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToId: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
-  | { type: "BULK_ASSIGN_CLEANINGS"; ids: string[]; assignedToId: string; description: string };
+  | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; description: string };
 
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
   try {
@@ -1196,13 +1196,21 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       });
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/maintenance");
-    } else if (payload.type === "BULK_ASSIGN_CLEANINGS") {
-      const { ids, assignedToId } = payload;
-      if (!ids.length) return { success: false, error: "Nessuna pulizia specificata." };
-      await prisma.cleaningTask.updateMany({
-        where: { id: { in: ids } },
+    } else if (payload.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") {
+      const { apartmentIds, dateFrom, dateTo, assignedToId } = payload;
+      if (!apartmentIds.length) return { success: false, error: "Nessun appartamento specificato." };
+      const from = new Date(dateFrom);
+      const to = new Date(dateTo);
+      to.setHours(23, 59, 59, 999);
+      const result = await prisma.cleaningTask.updateMany({
+        where: {
+          apartmentId: { in: apartmentIds },
+          date: { gte: from, lte: to },
+          status: { in: ["PENDING", "IN_PROGRESS"] },
+        },
         data: { assignedToId },
       });
+      if (result.count === 0) return { success: false, error: "Nessuna pulizia trovata con i filtri specificati." };
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/cleanings");
     }
