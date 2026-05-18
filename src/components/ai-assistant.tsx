@@ -128,9 +128,23 @@ export default function AIAssistant({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  const CONFIRM_WORDS = /^(ok|sì|si|yes|confermo|conferma|vai|procedi|fatto|esegui|assegna)$/i;
+
   async function handleAsk() {
     const content = input.trim();
     if (!content || loading) return;
+
+    // Se l'utente scrive una parola di conferma e c'è un'azione pending → eseguila
+    if (CONFIRM_WORDS.test(content)) {
+      const lastPendingIdx = [...messages].map((m, i) => ({ m, i }))
+        .reverse()
+        .find(({ m }) => m.actionState === "pending");
+      if (lastPendingIdx) {
+        setInput("");
+        await handleConfirmAction(lastPendingIdx.i);
+        return;
+      }
+    }
 
     const nextMessages: ChatMessage[] = [...messages, { role: "user", content }];
     setMessages(nextMessages);
@@ -242,11 +256,11 @@ export default function AIAssistant({
 
               {/* Blocco di conferma ACTION */}
               {message.action && message.actionState === "pending" && (
-                <div className="max-w-[85%] mt-2 rounded-2xl border border-amber-200 bg-amber-50 p-4 space-y-3">
+                <div className="max-w-[85%] mt-2 rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 space-y-3 shadow-md shadow-amber-100">
                   <div className="flex items-center gap-2">
                     <span className="text-amber-600 text-base">✏️</span>
                     <p className="text-xs font-black uppercase tracking-widest text-amber-700">
-                      {actionTypeLabel(message.action.type)}
+                      {actionTypeLabel(message.action.type)} — premi Conferma per eseguire
                     </p>
                   </div>
                   <p className="text-sm font-medium text-amber-900">{message.action.description}</p>
