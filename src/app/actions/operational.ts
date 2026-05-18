@@ -1148,7 +1148,8 @@ export type AIActionPayload =
   | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToName: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
-  | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; description: string };
+  | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; description: string }
+  | { type: "PURGE_CANCELLED"; description: string };
 
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
   try {
@@ -1338,6 +1339,22 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       if (result.count === 0) return { success: false, error: "Nessuna pulizia trovata con i filtri specificati." };
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/cleanings");
+    } else if (payload.type === "PURGE_CANCELLED") {
+      // Delete cancelled cleaning tasks first (FK dependency)
+      const deletedCleanings = await prisma.cleaningTask.deleteMany({
+        where: { status: "CANCELLED" },
+      });
+      // Delete cancelled bookings
+      const deletedBookings = await prisma.booking.deleteMany({
+        where: { status: "CANCELLED" },
+      });
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/cleanings");
+      revalidatePath("/dashboard/manager/bookings");
+      return {
+        success: true,
+        error: `Eliminati: ${deletedCleanings.count} pulizie cancellate, ${deletedBookings.count} prenotazioni cancellate.`,
+      };
     }
     return { success: true };
   } catch (err: any) {

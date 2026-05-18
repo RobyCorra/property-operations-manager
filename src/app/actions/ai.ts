@@ -331,6 +331,8 @@ ACTION: {"type":"UPDATE_TICKET","id":"<id>","fields":{"title":"...","description
 
 ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1>","<apartmentId2>"],"dateFrom":"2026-05-01","dateTo":"2026-05-31","assignedToId":"<userId>","description":"Assegno tutte le pulizie di maggio di Trastevere 156 e 68 a Mario"}
 
+ACTION: {"type":"PURGE_CANCELLED","description":"Elimino dal database tutte le prenotazioni e pulizie con stato CANCELLED"}
+
 Regole ACTION — OBBLIGATORIE:
 - Per CREATE_BOOKING usa il nome esatto dell'appartamento, le date ISO (checkInDate e checkOutDate), totalGuests numerico. guestName è opzionale. Verifica prima nel contesto che non ci siano conflitti di date.
 - Per CREATE_CLEANING usa il nome esatto dell'appartamento e la data ISO. assignedToName è il nome del cleaner dalla sezione PERSONALE DISPONIBILE (non l'id). notes è opzionale. NON verificare conflitti con prenotazioni: pulizie e manutenzioni si possono aggiungere in qualsiasi data.
@@ -343,6 +345,7 @@ Regole ACTION — OBBLIGATORIE:
 - IMPORTANTE: i campi nei fields che non cambiano devono essere omessi (non scrivere "..." come valore).
 - Le date devono essere in formato ISO 8601: dateFrom="2026-05-01", dateTo="2026-05-31". Per "maggio" usa sempre il mese intero (01→31), non la data di oggi come inizio.
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") puoi proporre modifiche SOLO a totalGuests e notes. NON proporre modifiche a guestName, checkInDate, checkOutDate.
+- Per PURGE_CANCELLED: elimina in modo permanente dal DB tutte le pulizie e prenotazioni con stato CANCELLED. Usalo solo quando l'utente chiede esplicitamente di cancellare/eliminare i record cancellati.
 - Il blocco ACTION deve essere su UNA RIGA SOLA alla fine della risposta.
 - NON scrivere "ho creato", "ho assegnato", "ho aggiornato", "è stato fatto" — l'ACTION è una PROPOSTA che richiede conferma dall'utente. Usa "Propongo di..." o "Ecco la modifica proposta:".
 - Non aggiungere ACTION se l'utente chiede solo informazioni.
@@ -1237,13 +1240,13 @@ async function buildCleaningContext(apartmentId: string) {
       id: true, name: true, address: true, maxGuests: true, bedrooms: true, bathrooms: true,
       checklistItems: { orderBy: [{ order: "asc" }, { createdAt: "asc" }], take: 100 },
       bookings: {
-        where: { checkOutDate: { gte: addDays(now, -1) }, checkInDate: { lte: addDays(now, 30) } },
+        where: { checkOutDate: { gte: addDays(now, -1) }, checkInDate: { lte: addDays(now, 30) }, status: { not: "CANCELLED" } },
         orderBy: { checkInDate: "asc" },
         take: 20,
         select: { guestName: true, totalGuests: true, checkInDate: true, checkOutDate: true, status: true, source: true },
       },
       cleaningTasks: {
-        where: { date: { gte: addDays(now, -30) } },
+        where: { date: { gte: addDays(now, -30) }, status: { not: "CANCELLED" } },
         orderBy: { date: "asc" },
         take: 60,
         include: {
@@ -1323,9 +1326,9 @@ async function buildBookingsContext(apartmentId: string) {
     where: { id: apartmentId },
     select: {
       id: true, name: true, address: true, maxGuests: true,
-      bookings: { orderBy: { checkInDate: "desc" }, take: 60 },
+      bookings: { where: { status: { not: "CANCELLED" } }, orderBy: { checkInDate: "desc" }, take: 60 },
       cleaningTasks: {
-        where: { OR: [{ status: { in: ["PENDING", "IN_PROGRESS"] } }, { date: { gte: addDays(now, -7) } }] },
+        where: { status: { not: "CANCELLED" }, OR: [{ status: { in: ["PENDING", "IN_PROGRESS"] } }, { date: { gte: addDays(now, -7) } }] },
         orderBy: { date: "asc" },
         take: 20,
         select: { date: true, status: true, assignedTo: { select: { name: true } } },
@@ -1440,10 +1443,12 @@ export async function buildApartmentAIContext(apartmentId: string) {
         take: 100,
       },
       bookings: {
+        where: { status: { not: "CANCELLED" } },
         orderBy: { checkInDate: "desc" },
         take: 60,
       },
       cleaningTasks: {
+        where: { status: { not: "CANCELLED" } },
         orderBy: { date: "desc" },
         take: 50,
         include: {
@@ -1687,6 +1692,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
       },
       bookings: {
         where: {
+          status: { not: "CANCELLED" },
           OR: [
             { checkInDate: { gte: historySince, lte: futureUntil } },
             { checkOutDate: { gte: historySince, lte: futureUntil } },
@@ -1697,6 +1703,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
       },
       cleaningTasks: {
         where: {
+          status: { not: "CANCELLED" },
           OR: [
             { status: { in: ["PENDING", "IN_PROGRESS"] } },
             { date: { gte: historySince } },
