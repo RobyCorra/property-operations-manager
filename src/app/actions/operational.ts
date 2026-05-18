@@ -1243,7 +1243,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
           title,
           description: ticketDescription || "",
           priority: (priority as any) || "MEDIUM",
-          status: "OPEN",
+          status: "PENDING",
           ...(scheduledStart && { scheduledStart: new Date(scheduledStart) }),
           ...(assignedToId && { assignedToId }),
         },
