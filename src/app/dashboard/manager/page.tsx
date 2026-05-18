@@ -233,6 +233,7 @@ export default async function ManagerDashboardPage() {
     guestName: b.guestName ?? "",
     checkInDate: b.checkInDate,
     checkOutDate: b.checkOutDate,
+    totalGuests: b.totalGuests ?? 0,
     status: b.status ?? undefined,
     source: b.source ?? undefined,
     externalId: b.externalId ?? undefined,
