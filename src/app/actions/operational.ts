@@ -1142,7 +1142,7 @@ export async function getApartmentSchedule(apartmentId: string) {
 
 // ── AI Action Execution ────────────────────────────────────────────────────
 export type AIActionPayload =
-  | { type: "UPDATE_BOOKING"; apartmentId: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
+  | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToId: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
   | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; description: string };
@@ -1150,15 +1150,21 @@ export type AIActionPayload =
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
   try {
     if (payload.type === "UPDATE_BOOKING") {
-      const { apartmentId, checkInDate, fields } = payload;
-      // Cerca la prenotazione per apartmentId + checkInDate (±12h) — più affidabile degli UUID
+      const { apartmentName, checkInDate, fields } = payload;
+      // Cerca appartamento per nome (case-insensitive) — evita UUID che l'AI storpia
+      const apartment = await prisma.apartment.findFirst({
+        where: { name: { equals: apartmentName, mode: "insensitive" } },
+        select: { id: true },
+      });
+      if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
+      // Cerca la prenotazione per apartmentId + checkInDate (±12h)
       const checkIn = new Date(checkInDate);
       const checkInFrom = new Date(checkIn.getTime() - 12 * 60 * 60 * 1000);
       const checkInTo = new Date(checkIn.getTime() + 12 * 60 * 60 * 1000);
       const booking = await prisma.booking.findFirst({
-        where: { apartmentId, checkInDate: { gte: checkInFrom, lte: checkInTo } },
+        where: { apartmentId: apartment.id, checkInDate: { gte: checkInFrom, lte: checkInTo } },
       });
-      if (!booking) return { success: false, error: `Prenotazione non trovata (apt: ${apartmentId}, checkIn: ${checkInDate}).` };
+      if (!booking) return { success: false, error: `Prenotazione non trovata in "${apartmentName}" con check-in ${checkInDate}.` };
       if (booking.source !== "MANUAL") return { success: false, error: "Non puoi modificare prenotazioni iCal/Airbnb." };
       // Filtra i campi placeholder ("..." o stringa vuota) per non sovrascrivere valori reali
       const isReal = (v: unknown) => v !== undefined && v !== "..." && v !== "";
