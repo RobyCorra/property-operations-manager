@@ -1139,3 +1139,66 @@ export async function getApartmentSchedule(apartmentId: string) {
 
   return { bookings, cleanings, tickets };
 }
+
+// ── AI Action Execution ────────────────────────────────────────────────────
+export type AIActionPayload =
+  | { type: "UPDATE_BOOKING"; id: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
+  | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToId: string }>; description: string }
+  | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string };
+
+export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (payload.type === "UPDATE_BOOKING") {
+      const { id, fields } = payload;
+      const booking = await prisma.booking.findUnique({ where: { id } });
+      if (!booking) return { success: false, error: "Prenotazione non trovata." };
+      if (booking.source !== "MANUAL") return { success: false, error: "Non puoi modificare prenotazioni iCal/Airbnb." };
+      await prisma.booking.update({
+        where: { id },
+        data: {
+          ...(fields.guestName !== undefined && { guestName: fields.guestName }),
+          ...(fields.totalGuests !== undefined && { totalGuests: Number(fields.totalGuests) }),
+          ...(fields.checkInDate !== undefined && { checkInDate: new Date(fields.checkInDate) }),
+          ...(fields.checkOutDate !== undefined && { checkOutDate: new Date(fields.checkOutDate) }),
+          ...(fields.notes !== undefined && { notes: fields.notes }),
+        },
+      });
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/bookings");
+    } else if (payload.type === "UPDATE_CLEANING") {
+      const { id, fields } = payload;
+      const task = await prisma.cleaningTask.findUnique({ where: { id } });
+      if (!task) return { success: false, error: "Pulizia non trovata." };
+      await prisma.cleaningTask.update({
+        where: { id },
+        data: {
+          ...(fields.date !== undefined && { date: new Date(fields.date) }),
+          ...(fields.notes !== undefined && { notes: fields.notes }),
+          ...(fields.assignedToId !== undefined && { assignedToId: fields.assignedToId }),
+        },
+      });
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/cleanings");
+    } else if (payload.type === "UPDATE_TICKET") {
+      const { id, fields } = payload;
+      const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
+      if (!ticket) return { success: false, error: "Ticket non trovato." };
+      await prisma.maintenanceTicket.update({
+        where: { id },
+        data: {
+          ...(fields.title !== undefined && { title: fields.title }),
+          ...(fields.description !== undefined && { description: fields.description }),
+          ...(fields.priority !== undefined && { priority: fields.priority as any }),
+          ...(fields.scheduledStart !== undefined && { scheduledStart: new Date(fields.scheduledStart) }),
+          ...(fields.notes !== undefined && { notes: fields.notes }),
+        },
+      });
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/maintenance");
+    }
+    return { success: true };
+  } catch (err: any) {
+    console.error("[executeAIAction]", err);
+    return { success: false, error: err.message || "Errore durante l'aggiornamento." };
+  }
+}
