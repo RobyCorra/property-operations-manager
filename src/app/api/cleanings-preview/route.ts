@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     where: {
       apartmentId: { in: apartmentIds },
       date: { gte: new Date(dateFrom), lte: to },
-      status: { in: ["PENDING", "IN_PROGRESS"] },
+      status: { notIn: ["CANCELLED", "APPROVED"] },
     },
     include: {
       apartment: { select: { name: true } },

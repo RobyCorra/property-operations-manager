@@ -138,7 +138,7 @@ export default function AIAssistant({
     if (CONFIRM_WORDS.test(content)) {
       const lastPendingIdx = [...messages].map((m, i) => ({ m, i }))
         .reverse()
-        .find(({ m }) => m.actionState === "pending");
+        .find(({ m }) => m.actionState === "pending" || m.actionState === "error");
       if (lastPendingIdx) {
         setInput("");
         await handleConfirmAction(lastPendingIdx.i);
@@ -179,18 +179,23 @@ export default function AIAssistant({
     const msg = messages[msgIndex];
     if (!msg.action) return;
 
+    // Mostra stato "loading" temporaneo senza bloccare il retry
     setMessages((prev) =>
-      prev.map((m, i) => (i === msgIndex ? { ...m, actionState: "done" as const } : m))
+      prev.map((m, i) => (i === msgIndex ? { ...m, actionError: undefined } : m))
     );
 
     const result = await executeAIAction(msg.action);
 
     if (result.success) {
+      setMessages((prev) =>
+        prev.map((m, i) => (i === msgIndex ? { ...m, actionState: "done" as const } : m))
+      );
       router.refresh();
     } else {
+      // Torna a "pending" con messaggio di errore → l'utente può riprovare
       setMessages((prev) =>
         prev.map((m, i) =>
-          i === msgIndex ? { ...m, actionState: "error" as const, actionError: result.error } : m
+          i === msgIndex ? { ...m, actionState: "pending" as const, actionError: result.error } : m
         )
       );
     }
@@ -267,6 +272,11 @@ export default function AIAssistant({
                   <div className="space-y-1">
                     {actionSummary(message.action, message.preview ?? null)}
                   </div>
+                  {message.actionError && (
+                    <p className="text-xs font-bold text-red-600 bg-red-50 rounded-xl px-3 py-2">
+                      ⚠ {message.actionError} — riprova o annulla.
+                    </p>
+                  )}
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={() => handleConfirmAction(index)}

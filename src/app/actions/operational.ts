@@ -1206,7 +1206,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
         where: {
           apartmentId: { in: apartmentIds },
           date: { gte: from, lte: to },
-          status: { in: ["PENDING", "IN_PROGRESS"] },
+          status: { notIn: ["CANCELLED", "APPROVED"] },
         },
         data: { assignedToId },
       });
