@@ -78,6 +78,7 @@ type AssignedUserForAI = {
 } | null;
 
 type CleaningTaskForAI = {
+  id: string;
   apartmentId: string;
   date: Date;
   status: string;
@@ -116,6 +117,7 @@ type CleaningTaskWithApartmentForAI = CleaningTaskForAI & {
 };
 
 type MaintenanceTicketForAI = {
+  id: string;
   apartmentId: string;
   createdAt: Date;
   status: string;
@@ -1273,7 +1275,7 @@ async function buildCleaningContext(apartmentId: string) {
     const msgs = task.messages.map((m) =>
       `${formatDateTime(m.createdAt)} ${m.senderName} (${m.role}): ${truncateText(m.text, 200) || "n/d"}`
     );
-    return `- ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} (${task.assignedTo?.role || "n/d"}) | booking: ${task.booking?.guestName || "n/d"} ${task.booking ? `${formatDate(task.booking.checkInDate)} → ${formatDate(task.booking.checkOutDate)}` : ""} | note: ${truncateText(task.notes, 300) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 800)} | allegati: ${formatOperationalAttachmentLines(task.attachments)} | messaggi: ${msgs.length > 0 ? msgs.join(" || ") : "nessuno"}`;
+    return `- id:${task.id} | ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} (${task.assignedTo?.role || "n/d"}) | booking: ${task.booking?.guestName || "n/d"} ${task.booking ? `${formatDate(task.booking.checkInDate)} → ${formatDate(task.booking.checkOutDate)}` : ""} | note: ${truncateText(task.notes, 300) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 800)} | allegati: ${formatOperationalAttachmentLines(task.attachments)} | messaggi: ${msgs.length > 0 ? msgs.join(" || ") : "nessuno"}`;
   });
 
   return limitText(`CONTESTO PULIZIE — ${apartment.name} (${apartment.address})
@@ -1311,7 +1313,7 @@ async function buildMaintenanceContext(apartmentId: string) {
     const msgs = t.messages.map((m) =>
       `${formatDateTime(m.createdAt)} ${m.senderName} (${m.role}): ${truncateText(m.text, 200) || "n/d"}`
     );
-    return `- ${formatDate(t.createdAt)} | ${t.priority} | ${t.status} | ${t.title} | descrizione: ${truncateText(t.description, 400) || "n/d"} | tecnico: ${t.assignedTo?.name || "non assegnato"} (${t.assignedTo?.role || "n/d"}) | programmato: ${formatDateTime(t.scheduledStart)} | risolto: ${formatDateTime(t.resolvedAt)} | allegati: ${formatOperationalAttachmentLines(t.attachments)} | messaggi: ${msgs.length > 0 ? msgs.join(" || ") : "nessuno"}`;
+    return `- id:${t.id} | ${formatDate(t.createdAt)} | ${t.priority} | ${t.status} | ${t.title} | descrizione: ${truncateText(t.description, 400) || "n/d"} | tecnico: ${t.assignedTo?.name || "non assegnato"} (${t.assignedTo?.role || "n/d"}) | programmato: ${formatDateTime(t.scheduledStart)} | risolto: ${formatDateTime(t.resolvedAt)} | allegati: ${formatOperationalAttachmentLines(t.attachments)} | messaggi: ${msgs.length > 0 ? msgs.join(" || ") : "nessuno"}`;
   });
 
   return limitText(`CONTESTO MANUTENZIONE — ${apartment.name} (${apartment.address})
@@ -1555,7 +1557,7 @@ export async function buildApartmentAIContext(apartmentId: string) {
       return `${formatDateTime(message.createdAt)} ${message.senderName} (${message.role}): ${truncateText(message.text, 220) || "n/d"}${attachment}`;
     });
 
-    return `- ${formatDate(task.date)} | stato: ${task.status} | creata: ${formatDateTime(task.createdAt)} | assegnato: ${task.assignedTo?.name || "non assegnato"} (${task.assignedTo?.role || "n/d"}) | booking: ${task.booking?.guestName || "n/d"} ${task.booking ? `${formatDate(task.booking.checkInDate)} -> ${formatDate(task.booking.checkOutDate)} fonte ${task.booking.source || "n/d"}` : ""} | note: ${truncateText(task.notes, 300) || "n/d"} | checklistProgress: ${compactJsonText(task.checklistProgress, 1200)} | allegati: ${formatOperationalDocuments(task.attachments)} | messaggi: ${messageLines.length > 0 ? messageLines.join(" || ") : "nessun messaggio"} | richieste IA: ${formatAIMessages(task.aiAssistantMessages)}`;
+    return `- id:${task.id} | ${formatDate(task.date)} | stato: ${task.status} | creata: ${formatDateTime(task.createdAt)} | assegnato: ${task.assignedTo?.name || "non assegnato"} (${task.assignedTo?.role || "n/d"}) | booking: ${task.booking?.guestName || "n/d"} ${task.booking ? `${formatDate(task.booking.checkInDate)} -> ${formatDate(task.booking.checkOutDate)} fonte ${task.booking.source || "n/d"}` : ""} | note: ${truncateText(task.notes, 300) || "n/d"} | checklistProgress: ${compactJsonText(task.checklistProgress, 1200)} | allegati: ${formatOperationalDocuments(task.attachments)} | messaggi: ${messageLines.length > 0 ? messageLines.join(" || ") : "nessun messaggio"} | richieste IA: ${formatAIMessages(task.aiAssistantMessages)}`;
   });
 
   const ticketLines = apartment.maintenanceTickets.map((ticket: MaintenanceTicketWithAIMessagesForAI) => {
@@ -1567,7 +1569,7 @@ export async function buildApartmentAIContext(apartmentId: string) {
       return `${formatDateTime(message.createdAt)} ${message.senderName} (${message.role}): ${truncateText(message.text, 220) || "n/d"}${attachment}`;
     });
 
-    return `- ${formatDate(ticket.createdAt)} | titolo: ${ticket.title} | stato: ${ticket.status} | priorita: ${ticket.priority} | descrizione problema: ${truncateText(ticket.description, 450) || "n/d"} | assegnato: ${ticket.assignedTo?.name || "non assegnato"} (${ticket.assignedTo?.role || "n/d"}) | programmato: ${formatDateTime(ticket.scheduledStart)} -> ${formatDateTime(ticket.scheduledEnd)} | avviato: ${formatDateTime(ticket.startedAt)} | risolto/soluzione: ${formatDateTime(ticket.resolvedAt)} | allegati: ${formatOperationalDocuments(ticket.attachments)} | messaggi/chat: ${messageLines.length > 0 ? messageLines.join(" || ") : "nessun messaggio"} | richieste IA: ${formatAIMessages(ticket.aiAssistantMessages)}`;
+    return `- id:${ticket.id} | ${formatDate(ticket.createdAt)} | titolo: ${ticket.title} | stato: ${ticket.status} | priorita: ${ticket.priority} | descrizione problema: ${truncateText(ticket.description, 450) || "n/d"} | assegnato: ${ticket.assignedTo?.name || "non assegnato"} (${ticket.assignedTo?.role || "n/d"}) | programmato: ${formatDateTime(ticket.scheduledStart)} -> ${formatDateTime(ticket.scheduledEnd)} | avviato: ${formatDateTime(ticket.startedAt)} | risolto/soluzione: ${formatDateTime(ticket.resolvedAt)} | allegati: ${formatOperationalDocuments(ticket.attachments)} | messaggi/chat: ${messageLines.length > 0 ? messageLines.join(" || ") : "nessun messaggio"} | richieste IA: ${formatAIMessages(ticket.aiAssistantMessages)}`;
   });
 
   const operationalSummaryText = formatOperationalHistory({
@@ -1770,11 +1772,11 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
   ));
 
   const cleaningLines = apartment.cleaningTasks.map((task: CleaningTaskForAI) => (
-    `- ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} | note: ${truncateText(task.notes, 180) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 500)} | booking: ${task.booking?.guestName || "n/d"} | messaggi: ${formatManagerMessages(task.messages)} | allegati: ${formatOperationalAttachmentLines(task.attachments)}`
+    `- id:${task.id} | ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} | note: ${truncateText(task.notes, 180) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 500)} | booking: ${task.booking?.guestName || "n/d"} | messaggi: ${formatManagerMessages(task.messages)} | allegati: ${formatOperationalAttachmentLines(task.attachments)}`
   ));
 
   const ticketLines = apartment.maintenanceTickets.map((ticket: MaintenanceTicketForAI) => (
-    `- ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"} | programmato: ${formatDateTime(ticket.scheduledStart)} | risolto: ${formatDateTime(ticket.resolvedAt)} | messaggi: ${formatManagerMessages(ticket.messages)} | allegati: ${formatOperationalAttachmentLines(ticket.attachments)}`
+    `- id:${ticket.id} | ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"} | programmato: ${formatDateTime(ticket.scheduledStart)} | risolto: ${formatDateTime(ticket.resolvedAt)} | messaggi: ${formatManagerMessages(ticket.messages)} | allegati: ${formatOperationalAttachmentLines(ticket.attachments)}`
   ));
 
   const attachmentLines = apartment.apartmentAttachments.map((attachment: ApartmentAttachmentForAI) => {
