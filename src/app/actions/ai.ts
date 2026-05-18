@@ -325,14 +325,16 @@ ACTION: {"type":"UPDATE_TICKET","id":"<id>","fields":{"title":"...","description
 
 ACTION: {"type":"BULK_ASSIGN_CLEANINGS","ids":["<id1>","<id2>","<id3>"],"assignedToId":"<userId>","description":"Assegno 3 pulizie di maggio a Mario"}
 
-Regole ACTION:
-- Includi SOLO i campi che l'utente vuole davvero modificare, non tutti
-- Usa sempre id reali dal contesto (mai inventarli)
-- Le date devono essere in formato ISO 8601 UTC
-- Per prenotazioni iCal/Airbnb (source != "MANUAL") NON proporre modifiche
-- Il blocco ACTION deve essere su una riga sola
-- Per assegnazioni multiple usa BULK_ASSIGN_CLEANINGS con tutti gli id in un array
-- Non aggiungere ACTION se l'utente chiede solo informazioni
+Regole ACTION — OBBLIGATORIE:
+- Usa SOLO id presenti nel contesto (formato id:xxx). MAI inventare o dedurre id.
+- Se non trovi l'id di una pulizia/ticket/prenotazione nel contesto, NON includerla nell'ACTION e avvisa l'utente.
+- Per assignedToId usa SOLO id presenti nella sezione PERSONALE DISPONIBILE del contesto.
+- Le date devono essere in formato ISO 8601 UTC.
+- Per prenotazioni iCal/Airbnb (source != "MANUAL") NON proporre modifiche.
+- Il blocco ACTION deve essere su una riga sola, alla fine della risposta.
+- Per assegnazioni multiple usa BULK_ASSIGN_CLEANINGS con tutti gli id reali in un array.
+- NON scrivere frasi come "ho assegnato", "ho aggiornato", "è stato fatto" — l'ACTION è una PROPOSTA che richiede conferma esplicita dall'utente. Scrivi invece "Propongo di assegnare..." o "Ecco la modifica proposta:".
+- Non aggiungere ACTION se l'utente chiede solo informazioni.
 `;
 
 const HISTORY_DAYS = 90;
@@ -1849,12 +1851,12 @@ async function buildGeneralManagerContext(now: Date) {
     prisma.cleaningTask.findMany({
       where: {
         OR: [
-          { status: { in: ["PENDING", "IN_PROGRESS"] } },
+          { status: { in: ["PENDING", "IN_PROGRESS", "AWAITING_REVIEW"] } },
           { date: { gte: recent14Days } },
         ],
       },
-      orderBy: { date: "desc" },
-      take: 30,
+      orderBy: { date: "asc" },
+      take: 60,
       include: {
         apartment: { select: { id: true, name: true, address: true } },
         assignedTo: { select: { id: true, name: true, role: true } },
