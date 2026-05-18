@@ -1142,7 +1142,7 @@ export async function getApartmentSchedule(apartmentId: string) {
 
 // ── AI Action Execution ────────────────────────────────────────────────────
 export type AIActionPayload =
-  | { type: "CREATE_BOOKING"; apartmentName: string; checkInDate: string; checkOutDate: string; totalGuests: number; guestName?: string; notes?: string; description: string }
+  | { type: "CREATE_BOOKING"; apartmentName: string; checkInDate: string; checkOutDate: string; totalGuests: number; guestName?: string; description: string }
   | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToId: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
@@ -1151,7 +1151,7 @@ export type AIActionPayload =
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
   try {
     if (payload.type === "CREATE_BOOKING") {
-      const { apartmentName, checkInDate, checkOutDate, totalGuests, guestName, notes } = payload;
+      const { apartmentName, checkInDate, checkOutDate, totalGuests, guestName } = payload;
       const apartment = await prisma.apartment.findFirst({
         where: { name: { equals: apartmentName, mode: "insensitive" } },
         select: { id: true },
@@ -1176,7 +1176,6 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
           checkOutDate: checkOut,
           totalGuests: Number(totalGuests),
           guestName: guestName || null,
-          notes: notes || null,
           source: "MANUAL",
           status: "CONFIRMED",
         },

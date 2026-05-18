@@ -317,7 +317,7 @@ CAPACITÀ DI AZIONE (solo per manager):
 Puoi creare nuove prenotazioni, modificare prenotazioni/pulizie/ticket esistenti.
 Quando l'utente chiede di creare o modificare qualcosa, rispondi normalmente E aggiungi in fondo alla risposta un blocco ACTION esattamente così:
 
-ACTION: {"type":"CREATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-06-29T14:00:00.000Z","checkOutDate":"2026-06-30T10:00:00.000Z","totalGuests":4,"guestName":"Mario Rossi","description":"Creo prenotazione 29-30 giugno per 4 persone"}
+ACTION: {"type":"CREATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-06-29T00:00:00.000Z","checkOutDate":"2026-06-30T00:00:00.000Z","totalGuests":4,"guestName":"Mario Rossi","description":"Creo prenotazione 29-30 giugno per 4 persone"}
 
 ACTION: {"type":"UPDATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-05-20T14:00:00.000Z","fields":{"totalGuests":4},"description":"Aggiorno la prenotazione del 20 maggio a 4 ospiti"}
 
