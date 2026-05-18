@@ -1817,7 +1817,7 @@ async function buildGeneralManagerContext(now: Date) {
   const tomorrowStart = addDays(todayStart, 1);
   const next7Days = addDays(todayStart, 7);
   const windowStart = addDays(todayStart, -30);
-  const windowEnd = addDays(todayStart, 30);
+  const windowEnd = addDays(todayStart, 60);
   const recent14Days = addDays(todayStart, -14);
 
   const [apartments, bookings, cleanings, tickets, personnel] = await Promise.all([
@@ -1974,7 +1974,7 @@ async function buildGeneralManagerContext(now: Date) {
   const contextText = `
 CONTESTO OPERATIVO MANAGER
 Modalita: contesto generale
-Periodo prenotazioni: ultimi/prossimi 30 giorni. Pulizie e ticket: aperti/in corso o ultimi 14 giorni. Limiti applicati per sicurezza.
+Periodo prenotazioni: ultimi 30 giorni / prossimi 60 giorni. Pulizie e ticket: aperti/in corso o ultimi 14 giorni. Limiti applicati per sicurezza.
 
 STATO APPARTAMENTI
 ${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
