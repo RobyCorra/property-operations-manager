@@ -1348,14 +1348,16 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       const deletedBookings = await prisma.booking.deleteMany({
         where: { status: "CANCELLED" },
       });
-      revalidatePath("/dashboard/manager");
-      revalidatePath("/dashboard/manager/cleanings");
-      revalidatePath("/dashboard/manager/bookings");
+      // Revalida tutto prima di restituire il messaggio di riepilogo
+      revalidatePath("/", "layout");
       return {
         success: true,
         error: `Eliminati: ${deletedCleanings.count} pulizie cancellate, ${deletedBookings.count} prenotazioni cancellate.`,
       };
     }
+    // Invalida l'intero albero di route — garantisce aggiornamento immediato
+    // su qualsiasi pagina il manager si trovi, senza bisogno di refresh manuale.
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (err: any) {
     console.error("[executeAIAction]", err);
