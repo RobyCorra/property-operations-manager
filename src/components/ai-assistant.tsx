@@ -72,6 +72,8 @@ function parseAction(content: string): { text: string; action?: AIActionPayload 
 
 function actionTypeLabel(type: string) {
   if (type === "CREATE_BOOKING") return "Nuova prenotazione";
+  if (type === "CREATE_CLEANING") return "Nuova pulizia";
+  if (type === "CREATE_TICKET") return "Nuovo ticket manutenzione";
   if (type === "UPDATE_BOOKING") return "Modifica prenotazione";
   if (type === "UPDATE_CLEANING") return "Modifica pulizia";
   if (type === "UPDATE_TICKET") return "Modifica ticket manutenzione";
@@ -88,6 +90,26 @@ function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | nul
         <p className="text-xs text-amber-700">• Check-out: {new Date(action.checkOutDate).toLocaleDateString("it-IT")}</p>
         <p className="text-xs text-amber-700">• Ospiti: {action.totalGuests}</p>
         {action.guestName && <p className="text-xs text-amber-700">• Nome ospite: {action.guestName}</p>}
+      </div>
+    );
+  }
+  if (action.type === "CREATE_CLEANING") {
+    return (
+      <div className="space-y-1">
+        <p className="text-xs text-amber-700">• Appartamento: {action.apartmentName}</p>
+        <p className="text-xs text-amber-700">• Data: {new Date(action.date).toLocaleDateString("it-IT")}</p>
+        {action.notes && <p className="text-xs text-amber-700">• Note: {action.notes}</p>}
+      </div>
+    );
+  }
+  if (action.type === "CREATE_TICKET") {
+    return (
+      <div className="space-y-1">
+        <p className="text-xs text-amber-700">• Appartamento: {action.apartmentName}</p>
+        <p className="text-xs text-amber-700">• Titolo: {action.title}</p>
+        <p className="text-xs text-amber-700">• Priorità: {action.priority}</p>
+        {action.ticketDescription && <p className="text-xs text-amber-700">• Descrizione: {action.ticketDescription}</p>}
+        {action.scheduledStart && <p className="text-xs text-amber-700">• Programmato: {new Date(action.scheduledStart).toLocaleDateString("it-IT")}</p>}
       </div>
     );
   }

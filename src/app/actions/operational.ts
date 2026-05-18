@@ -1143,6 +1143,8 @@ export async function getApartmentSchedule(apartmentId: string) {
 // ── AI Action Execution ────────────────────────────────────────────────────
 export type AIActionPayload =
   | { type: "CREATE_BOOKING"; apartmentName: string; checkInDate: string; checkOutDate: string; totalGuests: number; guestName?: string; description: string }
+  | { type: "CREATE_CLEANING"; apartmentName: string; date: string; assignedToId?: string; notes?: string; description: string }
+  | { type: "CREATE_TICKET"; apartmentName: string; title: string; ticketDescription?: string; priority: string; scheduledStart?: string; assignedToId?: string; description: string }
   | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToId: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
@@ -1191,6 +1193,44 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       });
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/bookings");
+    } else if (payload.type === "CREATE_CLEANING") {
+      const { apartmentName, date, assignedToId, notes } = payload;
+      const apartment = await prisma.apartment.findFirst({
+        where: { name: { equals: apartmentName, mode: "insensitive" } },
+        select: { id: true },
+      });
+      if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
+      await prisma.cleaningTask.create({
+        data: {
+          apartmentId: apartment.id,
+          date: new Date(date),
+          status: "PENDING",
+          ...(assignedToId && { assignedToId }),
+          ...(notes && { notes }),
+        },
+      });
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/cleanings");
+    } else if (payload.type === "CREATE_TICKET") {
+      const { apartmentName, title, ticketDescription, priority, scheduledStart, assignedToId } = payload;
+      const apartment = await prisma.apartment.findFirst({
+        where: { name: { equals: apartmentName, mode: "insensitive" } },
+        select: { id: true },
+      });
+      if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
+      await prisma.maintenanceTicket.create({
+        data: {
+          apartmentId: apartment.id,
+          title,
+          description: ticketDescription || "",
+          priority: (priority as any) || "MEDIUM",
+          status: "OPEN",
+          ...(scheduledStart && { scheduledStart: new Date(scheduledStart) }),
+          ...(assignedToId && { assignedToId }),
+        },
+      });
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/maintenance");
     } else if (payload.type === "UPDATE_BOOKING") {
       const { apartmentName, checkInDate, fields } = payload;
       // Cerca appartamento per nome (case-insensitive) — evita UUID che l'AI storpia

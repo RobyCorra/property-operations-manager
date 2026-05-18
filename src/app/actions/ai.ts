@@ -319,6 +319,10 @@ Quando l'utente chiede di creare o modificare qualcosa, rispondi normalmente E a
 
 ACTION: {"type":"CREATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-06-29T00:00:00.000Z","checkOutDate":"2026-06-30T00:00:00.000Z","totalGuests":4,"guestName":"Mario Rossi","description":"Creo prenotazione 29-30 giugno per 4 persone"}
 
+ACTION: {"type":"CREATE_CLEANING","apartmentName":"Trastevere 68","date":"2026-06-15T00:00:00.000Z","assignedToId":"<userId>","notes":"Pulizia straordinaria","description":"Aggiungo pulizia il 15 giugno"}
+
+ACTION: {"type":"CREATE_TICKET","apartmentName":"Trastevere 68","title":"Perdita rubinetto bagno","ticketDescription":"Il rubinetto del bagno perde acqua","priority":"HIGH","scheduledStart":"2026-06-15T09:00:00.000Z","assignedToId":"<userId>","description":"Apro ticket manutenzione per perdita rubinetto"}
+
 ACTION: {"type":"UPDATE_BOOKING","apartmentName":"Trastevere 68","checkInDate":"2026-05-20T14:00:00.000Z","fields":{"totalGuests":4},"description":"Aggiorno la prenotazione del 20 maggio a 4 ospiti"}
 
 ACTION: {"type":"UPDATE_CLEANING","id":"<id>","fields":{"date":"2026-05-20T10:00:00.000Z","notes":"...","assignedToId":"<userId>"},"description":"Sposto la pulizia al 20 maggio alle 10:00"}
@@ -329,6 +333,8 @@ ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1
 
 Regole ACTION — OBBLIGATORIE:
 - Per CREATE_BOOKING usa il nome esatto dell'appartamento, le date ISO (checkInDate e checkOutDate), totalGuests numerico. guestName è opzionale. Verifica prima nel contesto che non ci siano conflitti di date.
+- Per CREATE_CLEANING usa il nome esatto dell'appartamento e la data ISO. assignedToId e notes sono opzionali. NON verificare conflitti con prenotazioni: pulizie e manutenzioni si possono aggiungere in qualsiasi data.
+- Per CREATE_TICKET usa il nome esatto dell'appartamento, title obbligatorio, priority (LOW/MEDIUM/HIGH/URGENT). ticketDescription, scheduledStart e assignedToId sono opzionali.
 - Per BULK_ASSIGN_CLEANINGS_BY_FILTER usa gli id degli APPARTAMENTI (sezione STATO APPARTAMENTI, campo id:xxx) e l'id del cleaner dalla sezione PERSONALE DISPONIBILE. NON elencare mai gli id delle singole pulizie.
 - Per UPDATE_BOOKING usa il nome esatto dell'appartamento (campo apartmentName, es. "Trastevere 68") e la data checkInDate ISO della prenotazione. NON usare UUID o id numerici. Nei fields includi SOLO i campi che cambiano (es. solo "totalGuests":4), ometti tutti gli altri.
 - Per UPDATE_CLEANING usa esattamente il campo id:xxx dalla riga della pulizia nel contesto (sezione PULIZIE OPERATIVE). MAI inventare id.
