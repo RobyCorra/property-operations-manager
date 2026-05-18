@@ -1257,6 +1257,8 @@ async function buildCleaningContext(apartmentId: string) {
 
   if (!apartment) return "CONTESTO PULIZIE\n- Appartamento non trovato.";
 
+  console.log(`[AI buildCleaningContext] ${apartment.name}: ${apartment.cleaningTasks.length} pulizie trovate:`, apartment.cleaningTasks.map(t => `${t.date.toISOString()} ${t.status}`));
+
   const bookingLines = apartment.bookings.map((b) =>
     `- ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "n/d"}`
   );
@@ -1868,7 +1870,7 @@ async function buildGeneralManagerContext(now: Date) {
         ],
       },
       orderBy: { date: "asc" },
-      take: 60,
+      take: 150,
       include: {
         apartment: { select: { id: true, name: true, address: true } },
         assignedTo: { select: { id: true, name: true, role: true } },
