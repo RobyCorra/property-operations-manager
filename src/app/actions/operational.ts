@@ -1143,10 +1143,10 @@ export async function getApartmentSchedule(apartmentId: string) {
 // ── AI Action Execution ────────────────────────────────────────────────────
 export type AIActionPayload =
   | { type: "CREATE_BOOKING"; apartmentName: string; checkInDate: string; checkOutDate: string; totalGuests: number; guestName?: string; description: string }
-  | { type: "CREATE_CLEANING"; apartmentName: string; date: string; assignedToId?: string; notes?: string; description: string }
-  | { type: "CREATE_TICKET"; apartmentName: string; title: string; ticketDescription?: string; priority: string; scheduledStart?: string; assignedToId?: string; description: string }
+  | { type: "CREATE_CLEANING"; apartmentName: string; date: string; assignedToName?: string; notes?: string; description: string }
+  | { type: "CREATE_TICKET"; apartmentName: string; title: string; ticketDescription?: string; priority: string; scheduledStart?: string; assignedToName?: string; description: string }
   | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
-  | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToId: string }>; description: string }
+  | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToName: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string }>; description: string }
   | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; description: string };
 
@@ -1194,12 +1194,21 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/bookings");
     } else if (payload.type === "CREATE_CLEANING") {
-      const { apartmentName, date, assignedToId, notes } = payload;
+      const { apartmentName, date, assignedToName, notes } = payload;
       const apartment = await prisma.apartment.findFirst({
         where: { name: { equals: apartmentName, mode: "insensitive" } },
         select: { id: true },
       });
       if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
+      let assignedToId: string | undefined;
+      if (assignedToName) {
+        const user = await prisma.user.findFirst({
+          where: { name: { equals: assignedToName, mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (!user) return { success: false, error: `Cleaner non trovato: "${assignedToName}".` };
+        assignedToId = user.id;
+      }
       await prisma.cleaningTask.create({
         data: {
           apartmentId: apartment.id,
@@ -1212,12 +1221,21 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/cleanings");
     } else if (payload.type === "CREATE_TICKET") {
-      const { apartmentName, title, ticketDescription, priority, scheduledStart, assignedToId } = payload;
+      const { apartmentName, title, ticketDescription, priority, scheduledStart, assignedToName } = payload;
       const apartment = await prisma.apartment.findFirst({
         where: { name: { equals: apartmentName, mode: "insensitive" } },
         select: { id: true },
       });
       if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
+      let assignedToId: string | undefined;
+      if (assignedToName) {
+        const user = await prisma.user.findFirst({
+          where: { name: { equals: assignedToName, mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (!user) return { success: false, error: `Tecnico non trovato: "${assignedToName}".` };
+        assignedToId = user.id;
+      }
       await prisma.maintenanceTicket.create({
         data: {
           apartmentId: apartment.id,
@@ -1268,12 +1286,21 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       const { id, fields } = payload;
       const task = await prisma.cleaningTask.findUnique({ where: { id } });
       if (!task) return { success: false, error: "Pulizia non trovata." };
+      let resolvedAssignedToId: string | undefined;
+      if (fields.assignedToName) {
+        const user = await prisma.user.findFirst({
+          where: { name: { equals: fields.assignedToName, mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (!user) return { success: false, error: `Cleaner non trovato: "${fields.assignedToName}".` };
+        resolvedAssignedToId = user.id;
+      }
       await prisma.cleaningTask.update({
         where: { id },
         data: {
           ...(fields.date !== undefined && { date: new Date(fields.date) }),
           ...(fields.notes !== undefined && { notes: fields.notes }),
-          ...(fields.assignedToId !== undefined && { assignedToId: fields.assignedToId }),
+          ...(resolvedAssignedToId && { assignedToId: resolvedAssignedToId }),
         },
       });
       revalidatePath("/dashboard/manager");
