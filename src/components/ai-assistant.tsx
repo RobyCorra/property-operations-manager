@@ -39,18 +39,31 @@ type AIAssistantProps = {
   compact?: boolean;
 };
 
-// Estrae il blocco ACTION dal testo dell'AI — robusto a newline e backtick
+// Estrae il blocco ACTION dal testo dell'AI con brace-matching (robusto a qualsiasi formato)
 function parseAction(content: string): { text: string; action?: AIActionPayload } {
-  // Cerca ACTION: seguito da JSON (con possibili backtick/newline)
-  const match = content.match(/ACTION:\s*`{0,3}\s*([\s\S]*?)\s*`{0,3}\s*(?:\n|$)/m)
-    ?? content.match(/ACTION:\s*(\{[\s\S]*?\})\s*(?:\n|$)/m)
-    ?? content.match(/ACTION:\s*(\{[\s\S]*\})/);
-  if (!match) return { text: content };
+  const actionIdx = content.indexOf("ACTION:");
+  if (actionIdx === -1) return { text: content };
+
+  const afterAction = content.slice(actionIdx + "ACTION:".length);
+  const jsonStart = afterAction.indexOf("{");
+  if (jsonStart === -1) return { text: content };
+
+  // Trova la parentesi graffa di chiusura con brace-matching
+  let depth = 0;
+  let jsonEnd = -1;
+  for (let i = jsonStart; i < afterAction.length; i++) {
+    if (afterAction[i] === "{") depth++;
+    else if (afterAction[i] === "}") {
+      depth--;
+      if (depth === 0) { jsonEnd = i; break; }
+    }
+  }
+  if (jsonEnd === -1) return { text: content };
+
+  const jsonStr = afterAction.slice(jsonStart, jsonEnd + 1);
   try {
-    const jsonStr = match[1].trim();
     const action = JSON.parse(jsonStr) as AIActionPayload;
-    // Rimuove l'intera riga ACTION dal testo
-    const text = content.replace(/ACTION:[\s\S]*$/, "").trim();
+    const text = content.slice(0, actionIdx).trim();
     return { text, action };
   } catch {
     return { text: content };
