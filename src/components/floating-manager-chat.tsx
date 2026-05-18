@@ -156,6 +156,54 @@ export default function FloatingManagerChat() {
   const [isPastSession, setIsPastSession] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
+  // ── Drag state ────────────────────────────────────────────────────────────
+  // pos: offset from default anchor (bottom-right). null = use CSS default.
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const dragging = useRef(false);
+  const dragStart = useRef({ mx: 0, my: 0, wx: 0, wy: 0 });
+  const windowRef = useRef<HTMLDivElement>(null);
+
+  function onDragStart(e: React.MouseEvent) {
+    // Only drag via header; ignore clicks on buttons inside the header
+    if ((e.target as HTMLElement).closest("button")) return;
+    e.preventDefault();
+    dragging.current = true;
+
+    const rect = windowRef.current?.getBoundingClientRect();
+    dragStart.current = {
+      mx: e.clientX,
+      my: e.clientY,
+      wx: rect?.left ?? 0,
+      wy: rect?.top ?? 0,
+    };
+
+    function onMove(ev: MouseEvent) {
+      if (!dragging.current) return;
+      const dx = ev.clientX - dragStart.current.mx;
+      const dy = ev.clientY - dragStart.current.my;
+      const newLeft = dragStart.current.wx + dx;
+      const newTop = dragStart.current.wy + dy;
+
+      // Clamp within viewport
+      const W = windowRef.current?.offsetWidth ?? 360;
+      const H = windowRef.current?.offsetHeight ?? 520;
+      const clampedLeft = Math.max(0, Math.min(window.innerWidth - W, newLeft));
+      const clampedTop = Math.max(0, Math.min(window.innerHeight - H, newTop));
+
+      setPos({ x: clampedLeft, y: clampedTop });
+    }
+
+    function onUp() {
+      dragging.current = false;
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    }
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesRef = useRef(messages);
@@ -329,12 +377,24 @@ export default function FloatingManagerChat() {
 
       {/* ── Floating window ── */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[360px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
-
-          {/* Header */}
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-white flex-shrink-0">
+        <div
+          ref={windowRef}
+          className="z-50 w-[360px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
+          style={
+            pos
+              ? { position: "fixed", left: pos.x, top: pos.y }
+              : { position: "fixed", bottom: "96px", right: "24px" }
+          }
+        >
+          {/* Header — drag handle */}
+          <div
+            onMouseDown={onDragStart}
+            className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-white flex-shrink-0 select-none"
+            style={{ cursor: "grab" }}
+          >
             <span className="text-lg">🤖</span>
             <span className="font-semibold text-sm text-slate-800">AI Assistant</span>
+            <span className="text-xs text-slate-300 ml-1">⠿</span>
             <span className="ml-auto text-xs text-slate-400">Manager</span>
             <button onClick={() => setOpen(false)} className="ml-2 text-slate-400 hover:text-slate-600 text-lg leading-none">✕</button>
           </div>
