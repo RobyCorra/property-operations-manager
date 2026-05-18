@@ -15,6 +15,12 @@ type PreviewCleaning = {
   assignedTo: string | null;
 };
 
+type ConflictWarning = {
+  guestName: string | null;
+  checkInDate: string;
+  checkOutDate: string;
+};
+
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
@@ -22,6 +28,7 @@ type ChatMessage = {
   actionState?: "pending" | "done" | "error";
   actionError?: string;
   preview?: PreviewCleaning[] | null;
+  conflictWarning?: ConflictWarning | null;
 };
 
 type PersistedAIMessage = {
@@ -229,9 +236,23 @@ export default function AIAssistant({
         preview = r.ok ? await r.json() : [];
       } catch { preview = []; }
     }
+    let conflictWarning: ConflictWarning | null = null;
+    if (action?.type === "CREATE_CLEANING" || action?.type === "CREATE_TICKET") {
+      const date = action.type === "CREATE_CLEANING" ? action.date : action.scheduledStart;
+      if (date) {
+        try {
+          const params = new URLSearchParams({ apartmentName: action.apartmentName, date });
+          const r = await fetch(`/api/booking-conflict?${params}`);
+          if (r.ok) {
+            const data = await r.json();
+            if (data.conflict) conflictWarning = data;
+          }
+        } catch { /* ignora errori di rete */ }
+      }
+    }
     setMessages([
       ...nextMessages,
-      { role: "assistant", content: text, action, actionState: action ? "pending" : undefined, preview },
+      { role: "assistant", content: text, action, actionState: action ? "pending" : undefined, preview, conflictWarning },
     ]);
     setLoading(false);
   }
@@ -343,6 +364,17 @@ export default function AIAssistant({
                   <div className="space-y-1">
                     {actionSummary(message.action, message.preview ?? null)}
                   </div>
+                  {message.conflictWarning && (
+                    <div className="rounded-xl bg-orange-50 border border-orange-200 px-3 py-2 space-y-0.5">
+                      <p className="text-xs font-bold text-orange-700">⚠ Appartamento occupato in questa data</p>
+                      <p className="text-xs text-orange-600">
+                        Prenotazione: {message.conflictWarning.guestName || "n/d"} —{" "}
+                        {new Date(message.conflictWarning.checkInDate).toLocaleDateString("it-IT")} →{" "}
+                        {new Date(message.conflictWarning.checkOutDate).toLocaleDateString("it-IT")}
+                      </p>
+                      <p className="text-xs text-orange-600 font-medium">Puoi comunque procedere confermando.</p>
+                    </div>
+                  )}
                   {message.actionError && (
                     <p className="text-xs font-bold text-red-600 bg-red-50 rounded-xl px-3 py-2">
                       ⚠ {message.actionError} — riprova o annulla.
