@@ -98,7 +98,7 @@ export default async function MaintenanceDashboardPage({
     where: { id: userId },
     include: {
       maintenanceTickets: {
-        where: { status: { in: isHistoryView ? ["RESOLVED", "APPROVED", "CANCELLED"] : ["OPEN", "IN_PROGRESS", "RESOLVED", "AWAITING_REVIEW"] } },
+        where: { status: { in: isHistoryView ? ["RESOLVED", "APPROVED", "CANCELLED"] : ["PENDING", "OPEN", "IN_PROGRESS", "RESOLVED", "AWAITING_REVIEW"] } },
         include: {
           apartment: true,
           attachments: true,
@@ -197,8 +197,8 @@ export default async function MaintenanceDashboardPage({
                           {priorityLabel[ticket.priority] ?? ticket.priority}
                         </span>
                         <div className="flex items-center gap-2 rounded-full bg-slate-100/70 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                          <div className={`h-1.5 w-1.5 rounded-full ${ticket.status === "IN_PROGRESS" ? "bg-orange-500 animate-pulse" : "bg-slate-300"}`} />
-                          {ticket.status === "OPEN" ? "Aperto" : ticket.status === "IN_PROGRESS" ? "In corso" : "Risolto"}
+                          <div className={`h-1.5 w-1.5 rounded-full ${ticket.status === "IN_PROGRESS" ? "bg-orange-500 animate-pulse" : ticket.status === "PENDING" ? "bg-blue-400" : "bg-slate-300"}`} />
+                          {ticket.status === "PENDING" ? "In attesa" : ticket.status === "OPEN" ? "Aperto" : ticket.status === "IN_PROGRESS" ? "In corso" : "Risolto"}
                         </div>
                       </div>
                       <h3 className="text-2xl font-semibold uppercase tracking-tight text-slate-900 line-clamp-1">{ticket.title}</h3>
@@ -232,7 +232,15 @@ export default async function MaintenanceDashboardPage({
                     </div>
                   )}
                   actionRow={(
-                    !isHistoryView && ticket.status === "OPEN" ? (
+                    !isHistoryView && ticket.status === "PENDING" ? (
+                      <StatusUpdateButton
+                        id={ticket.id}
+                        nextStatus="OPEN"
+                        label="📋  Apri Ticket"
+                        action={updateMaintenanceStatus}
+                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-black uppercase tracking-widest py-4 rounded-full transition-all duration-300 shadow-xl shadow-blue-200 hover:shadow-2xl hover:scale-[1.03] active:scale-95"
+                      />
+                    ) : !isHistoryView && ticket.status === "OPEN" ? (
                       <StatusUpdateButton
                         id={ticket.id}
                         nextStatus="IN_PROGRESS"

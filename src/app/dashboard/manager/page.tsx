@@ -184,7 +184,7 @@ export default async function ManagerDashboardPage() {
         apartmentName: t.apartment.name,
         subject: t.title,
         status: t.status,
-        statusLabel: t.status === "OPEN" ? "Aperto" : t.status === "IN_PROGRESS" ? "In Carico" : "Risolto",
+        statusLabel: t.status === "PENDING" ? "In attesa" : t.status === "OPEN" ? "Aperto" : t.status === "IN_PROGRESS" ? "In Carico" : "Risolto",
         actorName: t.assignedTo?.name || "Non assegnato"
       });
     }

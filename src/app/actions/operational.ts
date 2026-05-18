@@ -433,7 +433,7 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
       title,
       description: description || "",
       priority,
-      status: "OPEN",
+      status: "PENDING",
       scheduledStart,
       scheduledEnd,
     },
@@ -481,7 +481,7 @@ export async function updateMaintenanceTicket(id: string, prevState: any, formDa
       title,
       description: description || "",
       priority,
-      status: status || "OPEN",
+      status: status || "PENDING",
       scheduledStart,
       scheduledEnd,
     },
@@ -778,8 +778,9 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   });
   if (!ticket) throw new Error("Ticket non trovato.");
 
-  // Flusso diretto: OPEN -> IN_PROGRESS -> AWAITING_REVIEW
+  // Flusso: PENDING -> OPEN -> IN_PROGRESS -> AWAITING_REVIEW
   const transitions: Record<string, string> = {
+    "PENDING": "OPEN",
     "OPEN": "IN_PROGRESS",
     "IN_PROGRESS": "AWAITING_REVIEW",
   };
