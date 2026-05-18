@@ -1148,7 +1148,7 @@ export type AIActionPayload =
   | { type: "CREATE_TICKET"; apartmentName: string; title: string; ticketDescription?: string; priority: string; scheduledStart?: string; assignedToName?: string; description: string }
   | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToName: string }>; description: string }
-  | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string; status: string }>; description: string }
+  | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string; status: string; assignedToName: string }>; description: string }
   | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; description: string }
   | { type: "PURGE_CANCELLED"; description: string };
 
@@ -1311,6 +1311,15 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       const { id, fields } = payload;
       const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
       if (!ticket) return { success: false, error: "Ticket non trovato." };
+      let assignedToId: string | undefined;
+      if (fields.assignedToName) {
+        const user = await prisma.user.findFirst({
+          where: { name: { equals: fields.assignedToName, mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (!user) return { success: false, error: `Tecnico non trovato: "${fields.assignedToName}".` };
+        assignedToId = user.id;
+      }
       await prisma.maintenanceTicket.update({
         where: { id },
         data: {
@@ -1320,6 +1329,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
           ...(fields.scheduledStart !== undefined && { scheduledStart: new Date(fields.scheduledStart) }),
           ...(fields.notes !== undefined && { notes: fields.notes }),
           ...(fields.status !== undefined && { status: fields.status }),
+          ...(assignedToId !== undefined && { assignedToId }),
         },
       });
       revalidatePath("/dashboard/manager");

@@ -358,7 +358,7 @@ DATE E ORARI:
 CAMPI:
 - Nei fields di UPDATE_* includi SOLO i campi che l'utente vuole cambiare. Ometti tutto il resto.
 - NON cambiare mai il campo "status" di un ticket o pulizia a meno che l'utente non lo chieda esplicitamente con parole come "cancella", "riapri", "chiudi", "cambia stato".
-- UPDATE_TICKET supporta: title, description, priority, scheduledStart, notes, status (solo se richiesto).
+- UPDATE_TICKET supporta: title, description, priority, scheduledStart, notes, status (solo se richiesto), assignedToName (nome del tecnico dalla sezione PERSONALE DISPONIBILE).
 - UPDATE_CLEANING supporta: date, notes, assignedToName.
 - Per cancellare un ticket usa UPDATE_TICKET con fields: {"status": "CANCELLED"}.
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") puoi modificare SOLO totalGuests e notes.
@@ -1695,7 +1695,8 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
   const historySince = addDays(now, -HISTORY_DAYS);
   const futureUntil = addDays(now, 30);
 
-  const apartment = await prisma.apartment.findUnique({
+  const [apartment, personnel] = await Promise.all([
+  prisma.apartment.findUnique({
     where: { id: apartmentId },
     include: {
       apartmentAttachments: {
@@ -1773,7 +1774,13 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
         },
       },
     },
-  });
+  }),
+  prisma.user.findMany({
+    where: { role: { in: ["CLEANER", "MAINTENANCE"] } },
+    select: { id: true, name: true, role: true },
+    orderBy: { name: "asc" },
+  }),
+  ]);
 
   if (!apartment) {
     return "CONTESTO OPERATIVO MANAGER\n- Appartamento non trovato nei dati disponibili.";
@@ -1837,6 +1844,9 @@ ${ticketLines.length > 0 ? ticketLines.join("\n") : "- Nessun ticket nel periodo
 
 DOCUMENTI / ALLEGATI APPARTAMENTO
 ${attachmentLines.length > 0 ? attachmentLines.join("\n") : "- Nessun documento appartamento registrato."}
+
+PERSONALE DISPONIBILE (usa assignedToName per le azioni AI)
+${personnel.map((u: { id: string; name: string; role: string }) => `- ${u.name} | ruolo: ${u.role}`).join("\n") || "- Nessun personale trovato."}
 `.trim();
 
   return limitText(contextText, MAX_MANAGER_CONTEXT_TEXT_LENGTH);
