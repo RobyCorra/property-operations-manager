@@ -583,7 +583,21 @@ function formatTechnicalProfile(technicalProfile: unknown) {
     return "Nessuna scheda tecnica disponibile.";
   }
 
-  const profileText = JSON.stringify(compactProfile, null, 2);
+  // Rimuovi i campi di accesso dal JSON grezzo: sono già presentati con label italiane
+  // nella sezione ACCESSO APPARTAMENTO tramite formatAccessInfo — tenerli qui con chiavi
+  // inglesi ("safeCode", "buildingCode" …) confonde la AI.
+  const ACCESS_KEYS = new Set([
+    "doorCode", "safeCode", "buildingCode", "floor",
+    "wifiNetwork", "wifiPassword", "directions", "checkInNotes", "parking",
+  ]);
+  const filtered =
+    compactProfile && typeof compactProfile === "object" && !Array.isArray(compactProfile)
+      ? Object.fromEntries(
+          Object.entries(compactProfile as Record<string, unknown>).filter(([k]) => !ACCESS_KEYS.has(k))
+        )
+      : compactProfile;
+
+  const profileText = JSON.stringify(filtered, null, 2);
 
   if (profileText.length <= 4000) {
     return profileText;
