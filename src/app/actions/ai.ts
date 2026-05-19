@@ -592,6 +592,21 @@ function formatDate(value: Date) {
   return value.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit" });
 }
 
+/**
+ * Restituisce un tag testuale che indica la situazione della prenotazione rispetto ad oggi.
+ * Usato nelle righe di contesto per aiutare l'AI a distinguere check-in, soggiorni in corso e check-out.
+ */
+function bookingTag(checkInDate: Date, checkOutDate: Date, now: Date = new Date()): string {
+  const todayKey = formatDate(now);
+  const inKey    = formatDate(checkInDate);
+  const outKey   = formatDate(checkOutDate);
+  if (inKey === todayKey) return "[CHECK-IN OGGI]";
+  if (outKey === todayKey) return "[CHECK-OUT OGGI]";
+  if (checkInDate < now && checkOutDate > now) return "[SOGGIORNO IN CORSO]";
+  if (checkInDate > now) return "[FUTURO]";
+  return "[PASSATO]";
+}
+
 function truncateText(value: string | null | undefined, maxLength = 180) {
   if (!value) {
     return "";
@@ -1292,7 +1307,7 @@ async function buildCleaningContext(apartmentId: string) {
   if (!apartment) return "CONTESTO PULIZIE\n- Appartamento non trovato.";
 
   const bookingLines = apartment.bookings.map((b) =>
-    `- ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "n/d"}`
+    `- ${bookingTag(b.checkInDate, b.checkOutDate)} ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "n/d"}`
   );
 
   const checklistLines = apartment.checklistItems.map((item) =>
@@ -1369,7 +1384,7 @@ async function buildBookingsContext(apartmentId: string) {
   if (!apartment) return "CONTESTO PRENOTAZIONI\n- Appartamento non trovato.";
 
   const bookingLines = apartment.bookings.map((b) =>
-    `- ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "manuale"} | externalId: ${b.externalId || "n/d"}`
+    `- ${bookingTag(b.checkInDate, b.checkOutDate)} ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "manuale"} | externalId: ${b.externalId || "n/d"}`
   );
 
   const cleaningLines = apartment.cleaningTasks.map((t) =>
@@ -1573,7 +1588,7 @@ export async function buildApartmentAIContext(apartmentId: string) {
   ));
 
   const bookingLines = apartment.bookings.map((booking: ApartmentBookingForAI) => (
-    `- ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospite: ${booking.guestName || "n/d"} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "manuale"} | externalId: ${booking.externalId || "n/d"}`
+    `- ${bookingTag(booking.checkInDate, booking.checkOutDate)} ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospite: ${booking.guestName || "n/d"} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "manuale"} | externalId: ${booking.externalId || "n/d"}`
   ));
 
   const cleaningLines = apartment.cleaningTasks.map((task: CleaningTaskWithAIMessagesForAI) => {
@@ -1803,7 +1818,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
   );
 
   const bookingLines = apartment.bookings.map((booking: ApartmentBookingForAI) => (
-    `- ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospite: ${booking.guestName || "n/d"} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
+    `- ${bookingTag(booking.checkInDate, booking.checkOutDate, now)} ${formatDate(booking.checkInDate)} -> ${formatDate(booking.checkOutDate)} | ospite: ${booking.guestName || "n/d"} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
   ));
 
   const cleaningLines = apartment.cleaningTasks.map((task: CleaningTaskForAI) => (
