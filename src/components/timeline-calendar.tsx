@@ -393,6 +393,25 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
     }
   }, [firstVisibleEventPosition]);
 
+  // Badge mese visibile: traccia il mese corrispondente al primo giorno visibile
+  const [visibleMonthLabel, setVisibleMonthLabel] = useState(() => {
+    const idx = Math.floor(firstVisibleEventPosition / timelineDayWidth);
+    const d = days[Math.max(0, Math.min(idx, days.length - 1))];
+    return d ? d.toLocaleDateString("it-IT", { month: "long", year: "numeric" }) : "";
+  });
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const idx = Math.floor(el.scrollLeft / timelineDayWidth);
+      const d = days[Math.max(0, Math.min(idx, days.length - 1))];
+      if (d) setVisibleMonthLabel(d.toLocaleDateString("it-IT", { month: "long", year: "numeric" }));
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [days, timelineDayWidth]);
+
   const formatDate = (dateInput: Date | string) => {
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return "";
@@ -503,7 +522,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
           style={{ cursor: "grab" }}
         >
           {/* Header Dates */}
-          <div className="flex h-16 border-b-2 border-slate-200/70 sticky top-0 bg-white/40 backdrop-blur-xl z-10">
+          <div className="flex h-16 border-b-2 border-slate-200/70 sticky top-0 bg-white/40 backdrop-blur-xl z-10 relative">
+            {/* Badge mese sticky — rimane visibile a sinistra durante lo scroll */}
+            <div className="sticky left-0 z-20 flex items-center pointer-events-none" style={{ width: 0, overflow: "visible" }}>
+              <span className="ml-2 px-2.5 py-0.5 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase tracking-widest shadow-md whitespace-nowrap select-none">
+                {visibleMonthLabel}
+              </span>
+            </div>
             {days.map((day, i) => {
               const isToday = toLocalDateKey(day) === toLocalDateKey(serverDate);
               const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
