@@ -13,6 +13,7 @@ interface SidebarLayoutProps {
 export default function SidebarLayout({ children, unreadCount }: SidebarLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("sidebar-collapsed");
@@ -53,7 +54,16 @@ export default function SidebarLayout({ children, unreadCount }: SidebarLayoutPr
           </div>
 
           <div className="flex items-center gap-6">
-            <FloatingManagerChat inline />
+            {/* Bottone AI Assistant inline — stato gestito qui per evitare conflitti con altre istanze */}
+            <button
+              type="button"
+              onClick={() => setAiOpen(true)}
+              className="flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-10 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
+              title="AI Assistant"
+            >
+              🤖 AI Assistant
+            </button>
+            <FloatingManagerChat externalOpen={aiOpen} onExternalClose={() => setAiOpen(false)} />
             <div className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
               <span className="text-xl">⚙️</span>
               <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">Impostazioni</span>
