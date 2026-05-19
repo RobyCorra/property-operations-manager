@@ -34,6 +34,10 @@ export default function SidebarLayout({ children, unreadCount }: SidebarLayoutPr
 
   return (
     <div className="min-h-screen bg-[#faf8ff] flex">
+      {/* FloatingManagerChat fuori dall'header per evitare problemi di stacking context
+          causati da backdrop-filter: blur sull'header sticky */}
+      <FloatingManagerChat externalOpen={aiOpen} onExternalClose={() => setAiOpen(false)} />
+
       {/* Sidebar — nascosta su mobile */}
       <div className="hidden md:block">
         <ManagerNavbar unreadCount={unreadCount} collapsed={mounted && collapsed} onToggle={toggle} />
@@ -54,7 +58,7 @@ export default function SidebarLayout({ children, unreadCount }: SidebarLayoutPr
           </div>
 
           <div className="flex items-center gap-6">
-            {/* Bottone AI Assistant inline — stato gestito qui per evitare conflitti con altre istanze */}
+            {/* Bottone AI Assistant — apre la chat flottante renderizzata fuori dall'header */}
             <button
               type="button"
               onClick={() => setAiOpen(true)}
@@ -63,7 +67,6 @@ export default function SidebarLayout({ children, unreadCount }: SidebarLayoutPr
             >
               🤖 AI Assistant
             </button>
-            <FloatingManagerChat externalOpen={aiOpen} onExternalClose={() => setAiOpen(false)} />
             <div className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
               <span className="text-xl">⚙️</span>
               <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">Impostazioni</span>
