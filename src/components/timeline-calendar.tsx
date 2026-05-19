@@ -393,24 +393,19 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
     }
   }, [firstVisibleEventPosition]);
 
-  // Badge mese visibile: traccia il mese corrispondente al primo giorno visibile
-  const [visibleMonthLabel, setVisibleMonthLabel] = useState(() => {
-    const idx = Math.floor(firstVisibleEventPosition / timelineDayWidth);
-    const d = days[Math.max(0, Math.min(idx, days.length - 1))];
-    return d ? d.toLocaleDateString("it-IT", { month: "long", year: "numeric" }) : "";
-  });
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const onScroll = () => {
-      const idx = Math.floor(el.scrollLeft / timelineDayWidth);
-      const d = days[Math.max(0, Math.min(idx, days.length - 1))];
-      if (d) setVisibleMonthLabel(d.toLocaleDateString("it-IT", { month: "long", year: "numeric" }));
-    };
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
-  }, [days, timelineDayWidth]);
+  // Raggruppa i giorni per mese per la riga header mese
+  const monthGroups = useMemo(() => {
+    const groups: { label: string; count: number }[] = [];
+    days.forEach((day) => {
+      const label = day.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+      if (groups.length === 0 || groups[groups.length - 1].label !== label) {
+        groups.push({ label, count: 1 });
+      } else {
+        groups[groups.length - 1].count++;
+      }
+    });
+    return groups;
+  }, [days]);
 
   const formatDate = (dateInput: Date | string) => {
     const d = new Date(dateInput);
@@ -485,7 +480,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
           className="z-20 bg-white/60 backdrop-blur-xl border-r border-slate-200/80 flex-shrink-0"
           style={{ width: APARTMENT_COL_WIDTH }}
         >
-          <div className="h-16 border-b-2 border-slate-200/70 flex items-center px-8">
+          {/* Allineamento con la doppia riga header (mese + giorni) */}
+          <div className="h-24 border-b-2 border-slate-200/70 flex items-end pb-2 px-8">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Appartamento</span>
           </div>
           {apartments.map((apt) => {
@@ -521,40 +517,49 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
           className="flex-1 overflow-x-auto overflow-y-hidden select-none bg-white relative"
           style={{ cursor: "grab" }}
         >
-          {/* Header Dates */}
-          <div className="flex h-16 border-b-2 border-slate-200/70 sticky top-0 bg-white/40 backdrop-blur-xl z-10 relative">
-            {/* Badge mese sticky — rimane visibile a sinistra durante lo scroll */}
-            <div className="sticky left-0 z-20 flex items-center pointer-events-none" style={{ width: 0, overflow: "visible" }}>
-              <span className="ml-2 px-2.5 py-0.5 rounded-full bg-violet-600 text-white text-[10px] font-bold uppercase tracking-widest shadow-md whitespace-nowrap select-none">
-                {visibleMonthLabel}
-              </span>
-            </div>
-            {days.map((day, i) => {
-              const isToday = toLocalDateKey(day) === toLocalDateKey(serverDate);
-              const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-              const previousDay = days[i - 1];
-              const isNewMonth = i === 0 || previousDay.getMonth() !== day.getMonth();
-              const monthLabel = day.toLocaleDateString("it-IT", { month: "short" });
-              const isWeekend = day.getDay() === 0 || day.getDay() === 6;
-              return (
+          {/* Header — Mese (riga 1) + Giorni (riga 2) — sticky verticale */}
+          <div
+            className="sticky top-0 z-10 bg-white/40 backdrop-blur-xl border-b-2 border-slate-200/70"
+            style={{ width: days.length * timelineDayWidth }}
+          >
+            {/* Riga 1: blocchi mese */}
+            <div className="flex h-8 border-b border-slate-200/50">
+              {monthGroups.map((group, gi) => (
                 <div
-                  key={i}
-                  className={`flex-shrink-0 border-r border-b-2 border-slate-200/70 flex flex-col items-center justify-center gap-0.5
-                    ${isToday ? "bg-violet-500/8 border-r-violet-300/60" : isWeekend ? "bg-slate-100/60" : "bg-slate-50/30"}`}
-                  style={{ width: timelineDayWidth }}
+                  key={gi}
+                  className="flex-shrink-0 flex items-center justify-center border-r border-slate-200/50 last:border-r-0 bg-violet-50/40"
+                  style={{ width: group.count * timelineDayWidth }}
                 >
-                  <span className={`h-3 text-[9px] font-bold uppercase tracking-wide ${isNewMonth ? "text-slate-500" : "text-transparent"}`}>
-                    {isNewMonth ? monthLabel : "·"}
-                  </span>
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider ${isToday ? "text-violet-600" : "text-slate-400"}`}>
-                    {weekDays[day.getDay()]}
-                  </span>
-                  <span className={`text-base font-semibold leading-none ${isToday ? "text-violet-700" : "text-slate-900"}`}>
-                    {day.getDate()}
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-violet-600 capitalize select-none">
+                    {group.label}
                   </span>
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            {/* Riga 2: giorni */}
+            <div className="flex h-16">
+              {days.map((day, i) => {
+                const isToday = toLocalDateKey(day) === toLocalDateKey(serverDate);
+                const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+                return (
+                  <div
+                    key={i}
+                    className={`flex-shrink-0 border-r border-slate-200/70 flex flex-col items-center justify-center gap-0.5
+                      ${isToday ? "bg-violet-500/8 border-r-violet-300/60" : isWeekend ? "bg-slate-100/60" : "bg-slate-50/30"}`}
+                    style={{ width: timelineDayWidth }}
+                  >
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider ${isToday ? "text-violet-600" : "text-slate-400"}`}>
+                      {weekDays[day.getDay()]}
+                    </span>
+                    <span className={`text-base font-semibold leading-none ${isToday ? "text-violet-700" : "text-slate-900"}`}>
+                      {day.getDate()}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Rows */}
