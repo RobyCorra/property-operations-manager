@@ -253,6 +253,43 @@ export default function FloatingManagerChat({
   const messagesRef = useRef(messages);
   useEffect(() => { messagesRef.current = messages; }, [messages]);
 
+  // ── Voice input ───────────────────────────────────────────────────────────
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  function toggleMic() {
+    const SpeechRecognitionAPI =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
+      alert("Il tuo browser non supporta il riconoscimento vocale. Usa Chrome o Edge.");
+      return;
+    }
+
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    const recognition = new SpeechRecognitionAPI();
+    recognition.lang = "it-IT";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => setListening(true);
+    recognition.onend   = () => setListening(false);
+    recognition.onerror = () => setListening(false);
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript as string;
+      setInput((prev) => (prev ? prev + " " + transcript : transcript));
+      setTimeout(() => inputRef.current?.focus(), 50);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   // Scroll to bottom when messages change
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -609,6 +646,20 @@ export default function FloatingManagerChat({
                 className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300"
                 disabled={loading}
               />
+              {/* Mic button */}
+              <button
+                type="button"
+                onClick={toggleMic}
+                disabled={loading}
+                title={listening ? "Interrompi registrazione" : "Parla con l'AI"}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors flex-shrink-0 ${
+                  listening
+                    ? "bg-red-500 hover:bg-red-600 text-white animate-pulse"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-500"
+                }`}
+              >
+                🎤
+              </button>
               <button
                 onClick={handleAsk}
                 disabled={loading || !input.trim()}
