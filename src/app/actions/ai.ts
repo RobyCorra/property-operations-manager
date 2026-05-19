@@ -593,6 +593,34 @@ function formatDate(value: Date) {
 }
 
 /**
+ * Formatta il campo accessInfo dell'appartamento con label italiane esplicite.
+ * Ogni campo è su riga separata con il nome usato nell'interfaccia,
+ * così l'AI può rispondere correttamente a domande su wifi, citofono, piano, ecc.
+ */
+function formatAccessInfo(accessInfo: unknown, accessInstructions?: string | null): string {
+  const lines: string[] = [];
+
+  if (accessInfo && typeof accessInfo === "object" && !Array.isArray(accessInfo)) {
+    const a = accessInfo as Record<string, unknown>;
+    if (a.doorCode)      lines.push(`- Codice porta / smart lock: ${a.doorCode}`);
+    if (a.safeCode)      lines.push(`- Codice cassetta chiavi: ${a.safeCode}`);
+    if (a.buildingCode)  lines.push(`- Codice portone / citofono: ${a.buildingCode}`);
+    if (a.floor)         lines.push(`- Piano / interno: ${a.floor}`);
+    if (a.wifiNetwork)   lines.push(`- Rete Wi-Fi (nome rete): ${a.wifiNetwork}`);
+    if (a.wifiPassword)  lines.push(`- Password Wi-Fi: ${a.wifiPassword}`);
+    if (a.directions)    lines.push(`- Come raggiungere l'appartamento: ${a.directions}`);
+    if (a.checkInNotes)  lines.push(`- Note check-in / check-out (orari): ${a.checkInNotes}`);
+    if (a.parking)       lines.push(`- Parcheggio: ${a.parking}`);
+  }
+
+  if (accessInstructions) {
+    lines.push(`- Istruzioni accesso (testo libero): ${truncateText(accessInstructions, 400)}`);
+  }
+
+  return lines.length > 0 ? lines.join("\n") : "- Nessuna informazione di accesso registrata.";
+}
+
+/**
  * Restituisce un tag testuale che indica la situazione della prenotazione rispetto ad oggi.
  * Usato nelle righe di contesto per aiutare l'AI a distinguere check-in, soggiorni in corso e check-out.
  */
@@ -1414,6 +1442,8 @@ async function buildTechnicalContext(apartmentId: string) {
     select: {
       id: true, name: true, address: true, maxGuests: true, bedrooms: true, bathrooms: true, squareMeters: true,
       technicalProfile: true,
+      accessInfo: true,
+      accessInstructions: true,
       apartmentAttachments: {
         orderBy: { createdAt: "desc" },
         take: 30,
@@ -1426,6 +1456,9 @@ async function buildTechnicalContext(apartmentId: string) {
 
   return limitText(`CONTESTO SCHEDA TECNICA — ${apartment.name} (${apartment.address})
 Dati base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq
+
+ACCESSO APPARTAMENTO
+${formatAccessInfo((apartment as any).accessInfo, apartment.accessInstructions)}
 
 ${formatCompleteTechnicalProfileForAI(apartment.technicalProfile)}
 
@@ -1850,7 +1883,9 @@ APPARTAMENTO
 - Indirizzo: ${apartment.address}
 - Stato operativo: ${status.label} (${status.reason})
 - Dati base: ${apartment.maxGuests} ospiti max, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq
-- Istruzioni accesso: ${truncateText(apartment.accessInstructions, 220) || "n/d"}
+
+ACCESSO APPARTAMENTO
+${formatAccessInfo((apartment as any).accessInfo, (apartment as any).accessInstructions)}
 
 SCHEDA TECNICA
 ${formatTechnicalProfile(apartment.technicalProfile)}
@@ -2005,7 +2040,18 @@ async function buildGeneralManagerContext(now: Date) {
       })
       .join(" || ");
 
-    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
+    const ai = (apartment as any).accessInfo as Record<string, unknown> | null | undefined;
+    const accessSummary = ai ? [
+      ai.doorCode      && `codice porta: ${ai.doorCode}`,
+      ai.buildingCode  && `codice portone/citofono: ${ai.buildingCode}`,
+      ai.floor         && `piano: ${ai.floor}`,
+      ai.wifiNetwork   && `rete wifi: ${ai.wifiNetwork}`,
+      ai.wifiPassword  && `password wifi: ${ai.wifiPassword}`,
+      ai.checkInNotes  && `note check-in/out: ${truncateText(String(ai.checkInNotes), 120)}`,
+      ai.parking       && `parcheggio: ${truncateText(String(ai.parking), 80)}`,
+    ].filter(Boolean).join(" | ") : "";
+
+    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq${accessSummary ? ` | accesso: ${accessSummary}` : ""} | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
   });
 
   // CHECK-IN OGGI: prenotazioni il cui checkInDate è oggi (ospiti in arrivo)
