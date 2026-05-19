@@ -603,24 +603,49 @@ function formatDate(value: Date) {
  * accessInstructions è testo libero legacy — incluso solo se accessInfo è vuoto,
  * per evitare che dati obsoleti nel testo libero confliggano con quelli strutturati.
  */
-function formatAccessInfo(accessInfo: unknown, accessInstructions?: string | null): string {
+/**
+ * Cerca un campo di accesso prima in accessInfo, poi come fallback in technicalProfile
+ * (alcuni dati vecchi potrebbero essere stati salvati lì per errore).
+ */
+function accessField(key: string, accessInfo: Record<string, unknown>, technicalProfile: unknown): unknown {
+  if (accessInfo[key]) return accessInfo[key];
+  if (technicalProfile && typeof technicalProfile === "object" && !Array.isArray(technicalProfile)) {
+    return (technicalProfile as Record<string, unknown>)[key] || null;
+  }
+  return null;
+}
+
+function formatAccessInfo(accessInfo: unknown, accessInstructions?: string | null, technicalProfile?: unknown): string {
   const lines: string[] = [];
 
-  if (accessInfo && typeof accessInfo === "object" && !Array.isArray(accessInfo)) {
-    const a = accessInfo as Record<string, unknown>;
-    if (a.doorCode)      lines.push(`- Codice porta / smart lock: ${a.doorCode}`);
-    if (a.safeCode)      lines.push(`- Codice cassetta chiavi: ${a.safeCode}`);
-    if (a.buildingCode)  lines.push(`- Codice portone / citofono: ${a.buildingCode}`);
-    if (a.floor)         lines.push(`- Piano / interno: ${a.floor}`);
-    if (a.wifiNetwork)   lines.push(`- Rete Wi-Fi (nome rete): ${a.wifiNetwork}`);
-    if (a.wifiPassword)  lines.push(`- Password Wi-Fi: ${a.wifiPassword}`);
-    if (a.directions)    lines.push(`- Come raggiungere l'appartamento: ${a.directions}`);
-    if (a.checkInNotes)  lines.push(`- Note check-in / check-out (orari): ${a.checkInNotes}`);
-    if (a.parking)       lines.push(`- Parcheggio: ${a.parking}`);
-  }
+  const a: Record<string, unknown> =
+    accessInfo && typeof accessInfo === "object" && !Array.isArray(accessInfo)
+      ? (accessInfo as Record<string, unknown>)
+      : {};
 
-  // accessInstructions (testo libero legacy) incluso SOLO se non ci sono campi strutturati,
-  // altrimenti i dati obsoleti nel testo libero potrebbero sovrascrivere quelli corretti.
+  const f = (key: string) => accessField(key, a, technicalProfile);
+
+  const doorCode     = f("doorCode");
+  const safeCode     = f("safeCode");
+  const buildingCode = f("buildingCode");
+  const floor        = f("floor");
+  const wifiNetwork  = f("wifiNetwork");
+  const wifiPassword = f("wifiPassword");
+  const directions   = f("directions");
+  const checkInNotes = f("checkInNotes");
+  const parking      = f("parking");
+
+  if (doorCode)     lines.push(`- Codice porta / smart lock: ${doorCode}`);
+  if (safeCode)     lines.push(`- Codice cassetta chiavi: ${safeCode}`);
+  if (buildingCode) lines.push(`- Codice portone / citofono: ${buildingCode}`);
+  if (floor)        lines.push(`- Piano / interno: ${floor}`);
+  if (wifiNetwork)  lines.push(`- Rete Wi-Fi (nome rete): ${wifiNetwork}`);
+  if (wifiPassword) lines.push(`- Password Wi-Fi: ${wifiPassword}`);
+  if (directions)   lines.push(`- Come raggiungere l'appartamento: ${directions}`);
+  if (checkInNotes) lines.push(`- Note check-in / check-out (orari): ${checkInNotes}`);
+  if (parking)      lines.push(`- Parcheggio: ${parking}`);
+
+  // accessInstructions (testo libero legacy) incluso SOLO se non ci sono campi strutturati
   if (lines.length === 0 && accessInstructions) {
     lines.push(`- Istruzioni accesso: ${truncateText(accessInstructions, 400)}`);
   }
@@ -1199,7 +1224,12 @@ function formatTechnicalProfileExtraFields(technicalProfile: unknown) {
     return "- Nessun altro campo tecnico registrato.";
   }
 
-  const excluded = new Set(["systems", "appliances", "smartHome", "products", "recurringIssues", "generalAttachments"]);
+  // Chiavi escluse: sezioni standard + campi di accesso (gestiti da formatAccessInfo con label italiane)
+  const excluded = new Set([
+    "systems", "appliances", "smartHome", "products", "recurringIssues", "generalAttachments", "aiNotes",
+    "doorCode", "safeCode", "buildingCode", "floor", "wifiNetwork", "wifiPassword",
+    "directions", "checkInNotes", "parking",
+  ]);
   const lines = Object.entries(technicalProfile as Record<string, unknown>)
     .filter(([key]) => !excluded.has(key))
     .map(([key, value]) => `- ${key}: ${formatNullable(value, 1200)}`);
@@ -1466,7 +1496,7 @@ async function buildTechnicalContext(apartmentId: string) {
 Dati base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq
 
 ACCESSO APPARTAMENTO
-${formatAccessInfo((apartment as any).accessInfo, apartment.accessInstructions)}
+${formatAccessInfo((apartment as any).accessInfo, apartment.accessInstructions, apartment.technicalProfile)}
 
 ${formatCompleteTechnicalProfileForAI(apartment.technicalProfile)}
 
@@ -1893,7 +1923,7 @@ APPARTAMENTO
 - Dati base: ${apartment.maxGuests} ospiti max, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq
 
 ACCESSO APPARTAMENTO
-${formatAccessInfo((apartment as any).accessInfo, (apartment as any).accessInstructions)}
+${formatAccessInfo((apartment as any).accessInfo, (apartment as any).accessInstructions, apartment.technicalProfile)}
 
 SCHEDA TECNICA
 ${formatTechnicalProfile(apartment.technicalProfile)}
