@@ -522,15 +522,15 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             className="sticky top-0 z-10 bg-white/40 backdrop-blur-xl border-b-2 border-slate-200/70"
             style={{ width: days.length * timelineDayWidth }}
           >
-            {/* Riga 1: blocchi mese */}
+            {/* Riga 1: blocchi mese — label sticky si ancora al bordo sinistro del viewport mentre scorri */}
             <div className="flex h-8 border-b border-slate-200/50">
               {monthGroups.map((group, gi) => (
                 <div
                   key={gi}
-                  className="flex-shrink-0 flex items-center justify-center border-r border-slate-200/50 last:border-r-0 bg-violet-50/40"
+                  className="relative flex-shrink-0 flex items-center bg-violet-50/40 border-r-2 border-violet-200 last:border-r-0"
                   style={{ width: group.count * timelineDayWidth }}
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-violet-600 capitalize select-none">
+                  <span className="sticky left-3 text-[10px] font-bold uppercase tracking-widest text-violet-600 capitalize whitespace-nowrap select-none pl-1">
                     {group.label}
                   </span>
                 </div>
@@ -543,10 +543,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                 const isToday = toLocalDateKey(day) === toLocalDateKey(serverDate);
                 const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
                 const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+                const isFirstOfMonth = day.getDate() === 1 && i > 0;
                 return (
                   <div
                     key={i}
-                    className={`flex-shrink-0 border-r border-slate-200/70 flex flex-col items-center justify-center gap-0.5
+                    className={`flex-shrink-0 flex flex-col items-center justify-center gap-0.5
+                      ${isFirstOfMonth ? "border-l-2 border-l-violet-200" : ""}
+                      border-r border-slate-200/70
                       ${isToday ? "bg-violet-500/8 border-r-violet-300/60" : isWeekend ? "bg-slate-100/60" : "bg-slate-50/30"}`}
                     style={{ width: timelineDayWidth }}
                   >
