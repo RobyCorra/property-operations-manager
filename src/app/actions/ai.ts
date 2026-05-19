@@ -373,9 +373,16 @@ COMPORTAMENTO:
 - Il blocco ACTION deve stare su UNA RIGA SOLA alla fine della risposta.
 
 ACCESSO APPARTAMENTO — REGOLA ASSOLUTA:
-- La sezione "ACCESSO APPARTAMENTO" nel contesto è l'UNICA fonte autorevole per: password Wi-Fi, codice porta, codice portone/citofono, piano, orari check-in/out, parcheggio.
-- Se un dato (es. password wifi, codice) appare in altre sezioni (scheda tecnica, istruzioni libere, note), IGNORA quelle occorrenze e usa SOLO quanto scritto in "ACCESSO APPARTAMENTO".
-- Se un campo non è presente in "ACCESSO APPARTAMENTO", rispondi che non è registrato — non inventare e non cercare in altre sezioni.
+- I dati di accesso (password Wi-Fi, codice porta, codice cassetta chiavi, codice portone/citofono, piano, orari check-in/out, parcheggio) si trovano in DUE formati nel contesto:
+  a) Sezione dedicata "ACCESSO APPARTAMENTO" (contesto appartamento specifico)
+  b) Campo inline "accesso: ..." per ogni appartamento nel contesto generale (es. "accesso: Password Wi-Fi: abc123 | Codice cassetta chiavi: 1971")
+- Cerca in ENTRAMBI i formati prima di rispondere. Se trovi il dato in uno qualsiasi dei due, usalo.
+- Non inventare dati non presenti nel contesto.
+
+REGOLA FONDAMENTALE — PRIMA DI RISPONDERE "NON CI SONO DATI":
+- Scorri TUTTO il contesto disponibile, incluse tutte le sezioni e tutti i campi inline di ogni appartamento.
+- Se hai il minimo dubbio, cita il dato trovato specificando dove l'hai trovato (es. "Nel campo accesso di Trastevere 156 trovo: ...").
+- Rispondi "non ci sono dati" SOLO dopo aver verificato ogni sezione del contesto e non aver trovato nulla.
 
 FORMATO ACTION — REGOLA ASSOLUTA:
 - L'ACTION va scritta ESATTAMENTE così: ACTION: {…}  su una riga sola, senza nulla prima o dopo.
@@ -2329,6 +2336,7 @@ REGOLE GENERALI SUI LINK (sempre valide):
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
+    temperature: 0,   // risposta deterministica: stessa domanda → stesso risultato
     messages: [
       { role: "system", content: systemPrompt },
       ...messages,
