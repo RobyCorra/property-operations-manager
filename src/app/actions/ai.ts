@@ -1224,15 +1224,30 @@ function formatTechnicalProfileExtraFields(technicalProfile: unknown) {
     return "- Nessun altro campo tecnico registrato.";
   }
 
-  // Chiavi escluse: sezioni standard + campi di accesso (gestiti da formatAccessInfo con label italiane)
-  const excluded = new Set([
+  // Sezioni standard escluse (hanno già la loro sezione dedicata)
+  const structuralKeys = new Set([
     "systems", "appliances", "smartHome", "products", "recurringIssues", "generalAttachments", "aiNotes",
-    "doorCode", "safeCode", "buildingCode", "floor", "wifiNetwork", "wifiPassword",
-    "directions", "checkInNotes", "parking",
   ]);
+
+  // Campi di accesso: mappati con label italiane invece di chiavi inglesi grezze
+  const accessKeyLabels: Record<string, string> = {
+    doorCode:     "Codice porta / smart lock",
+    safeCode:     "Codice cassetta chiavi",
+    buildingCode: "Codice portone / citofono",
+    floor:        "Piano / interno",
+    wifiNetwork:  "Rete Wi-Fi (nome rete)",
+    wifiPassword: "Password Wi-Fi",
+    directions:   "Come raggiungere l'appartamento",
+    checkInNotes: "Note check-in / check-out (orari)",
+    parking:      "Parcheggio",
+  };
+
   const lines = Object.entries(technicalProfile as Record<string, unknown>)
-    .filter(([key]) => !excluded.has(key))
-    .map(([key, value]) => `- ${key}: ${formatNullable(value, 1200)}`);
+    .filter(([key]) => !structuralKeys.has(key))
+    .map(([key, value]) => {
+      const label = accessKeyLabels[key] ?? key;
+      return `- ${label}: ${formatNullable(value, 1200)}`;
+    });
 
   return lines.length > 0 ? lines.join("\n") : "- Nessun altro campo tecnico registrato.";
 }
