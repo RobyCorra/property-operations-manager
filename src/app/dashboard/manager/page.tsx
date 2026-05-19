@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getNotifications } from "@/src/app/actions/notification";
 
 import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
+import FloatingManagerChat from "@/src/components/floating-manager-chat";
 import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
 import TimelineCalendar from "@/src/components/timeline-calendar";
@@ -501,6 +502,7 @@ export default async function ManagerDashboardPage() {
         {/* 4. ACTION BUTTONS / TOPBAR */}
         <div className="w-full flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <FloatingManagerChat inline />
             <UpcomingEventsPanel events={allEvents} serverDate={serverDate} />
           </div>
 

@@ -167,7 +167,7 @@ function formatDateTab(iso: string): string {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function FloatingManagerChat() {
+export default function FloatingManagerChat({ inline = false }: { inline?: boolean } = {}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -384,17 +384,34 @@ export default function FloatingManagerChat() {
 
   return (
     <>
-      {/* ── Floating button ── */}
+      {/* ── Trigger button ── */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/40 flex items-center justify-center text-2xl transition-all duration-200 active:scale-95"
+        className={
+          inline
+            ? "relative flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-12 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
+            : "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/40 flex items-center justify-center text-2xl transition-all duration-200 active:scale-95"
+        }
         title="AI Assistant"
       >
-        {open ? "✕" : "🤖"}
-        {!open && pendingCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
-            {pendingCount}
-          </span>
+        {inline ? (
+          <>
+            🤖 AI Assistant
+            {!open && pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {pendingCount}
+              </span>
+            )}
+          </>
+        ) : (
+          <>
+            {open ? "✕" : "🤖"}
+            {!open && pendingCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {pendingCount}
+              </span>
+            )}
+          </>
         )}
       </button>
 
