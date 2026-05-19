@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageSquare } from "@/src/components/icons";
+import { Sparkles } from "lucide-react";
 import AIAssistant from "@/src/components/ai-assistant";
 
 type ManagerAIChatProps = {
@@ -43,8 +43,9 @@ export default function ManagerAIChat({
         <div className="border-b border-slate-100 px-6 py-5">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold tracking-tight text-slate-900">
-                Assistente IA Manager
+              <h2 className="flex items-center gap-2 text-xl font-semibold tracking-tight text-slate-900">
+                <Sparkles size={20} className="text-violet-600" />
+                AI Assistant
               </h2>
               <p className="mt-1 text-sm leading-5 text-slate-500">
                 Chiedi informazioni, proponi modifiche a prenotazioni, pulizie e manutenzioni
@@ -98,8 +99,8 @@ export function ManagerAIChatLauncher({ apartmentId, apartmentName, compact }: M
             : "mt-5 flex w-full max-w-sm items-center justify-center gap-2 rounded-2xl border border-violet-100 bg-white/70 px-5 py-3 text-xs font-bold uppercase tracking-widest text-violet-700 shadow-sm shadow-violet-500/5 transition hover:-translate-y-0.5 hover:bg-violet-50 hover:shadow-md"
         }
       >
-        <MessageSquare size={16} />
-        Assistente IA
+        <Sparkles size={16} />
+        AI Assistant
       </button>
 
       <ManagerAIChat
