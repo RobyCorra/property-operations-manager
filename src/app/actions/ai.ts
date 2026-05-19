@@ -2078,18 +2078,14 @@ async function buildGeneralManagerContext(now: Date) {
       })
       .join(" || ");
 
-    const ai = (apartment as any).accessInfo as Record<string, unknown> | null | undefined;
-    const accessSummary = ai ? [
-      ai.doorCode      && `codice porta: ${ai.doorCode}`,
-      ai.buildingCode  && `codice portone/citofono: ${ai.buildingCode}`,
-      ai.floor         && `piano: ${ai.floor}`,
-      ai.wifiNetwork   && `rete wifi: ${ai.wifiNetwork}`,
-      ai.wifiPassword  && `password wifi: ${ai.wifiPassword}`,
-      ai.checkInNotes  && `note check-in/out: ${truncateText(String(ai.checkInNotes), 120)}`,
-      ai.parking       && `parcheggio: ${truncateText(String(ai.parking), 80)}`,
-    ].filter(Boolean).join(" | ") : "";
+    // Usa formatAccessInfo con fallback su technicalProfile per label italiane corrette
+    const accessSummary = formatAccessInfo(
+      (apartment as any).accessInfo,
+      (apartment as any).accessInstructions,
+      apartment.technicalProfile,
+    ).replace(/^- /gm, "").replace(/\n/g, " | ");
 
-    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq${accessSummary ? ` | accesso: ${accessSummary}` : ""} | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
+    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | accesso: ${accessSummary} | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
   });
 
   // CHECK-IN OGGI: prenotazioni il cui checkInDate è oggi (ospiti in arrivo)
