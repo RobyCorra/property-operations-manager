@@ -9,7 +9,6 @@ import { APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
 import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
 import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
-import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import {
   Brush,
@@ -220,7 +219,6 @@ export default async function CalendarioOperativoPage() {
           <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal">
             {new Date(serverDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
-          <ManagerAIChatLauncher />
         </div>
       </div>
 
