@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, startTransition } from "react";
 import ReactMarkdown from "react-markdown";
 import { askAI } from "@/src/app/actions/ai";
 import { executeAIAction } from "@/src/app/actions/operational";
@@ -364,9 +364,14 @@ export default function FloatingManagerChat({
     }
 
     const nextMessages: ChatMessage[] = [...messagesRef.current, { role: "user", content }];
-    setMessages(nextMessages);
+
+    // Aggiorna input e loading subito (urgente — l'utente deve vedere il feedback)
     setInput("");
     setLoading(true);
+    // Aggiorna la lista messaggi come transizione non urgente:
+    // React può fare il paint dello stato "input svuotato + loading" prima di
+    // eseguire il re-render pesante con tutti i messaggi + ReactMarkdown.
+    startTransition(() => { setMessages(nextMessages); });
 
     // Save user message to DB
     if (sessionId) await saveManagerChatMessage(sessionId, "user", content);
@@ -641,7 +646,7 @@ export default function FloatingManagerChat({
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAsk(); } }}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); setTimeout(handleAsk, 0); } }}
                 placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare..." : "Chiedi all'AI..."}
                 className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300"
                 disabled={loading}
@@ -661,7 +666,7 @@ export default function FloatingManagerChat({
                 🎤
               </button>
               <button
-                onClick={handleAsk}
+                onClick={() => setTimeout(handleAsk, 0)}
                 disabled={loading || !input.trim()}
                 className="w-8 h-8 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 flex items-center justify-center text-white text-sm transition-colors flex-shrink-0"
               >
