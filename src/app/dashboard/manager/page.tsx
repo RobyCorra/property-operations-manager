@@ -9,7 +9,6 @@ import type { OperationalEvent } from "@/src/components/operational-event-card";
 import NotificationBell from "@/src/components/notification-bell";
 import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
-import { ManagerAIChatLauncher } from "@/src/components/manager-ai-chat";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import MobileDashboard from "@/src/components/mobile-dashboard";
 import type {
@@ -502,7 +501,6 @@ export default async function ManagerDashboardPage() {
         {/* 4. ACTION BUTTONS / TOPBAR */}
         <div className="w-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ManagerAIChatLauncher compact />
             <UpcomingEventsPanel events={allEvents} serverDate={serverDate} />
           </div>
 
