@@ -372,6 +372,11 @@ COMPORTAMENTO:
 - Non aggiungere ACTION se l'utente chiede solo informazioni.
 - Il blocco ACTION deve stare su UNA RIGA SOLA alla fine della risposta.
 
+ACCESSO APPARTAMENTO — REGOLA ASSOLUTA:
+- La sezione "ACCESSO APPARTAMENTO" nel contesto è l'UNICA fonte autorevole per: password Wi-Fi, codice porta, codice portone/citofono, piano, orari check-in/out, parcheggio.
+- Se un dato (es. password wifi, codice) appare in altre sezioni (scheda tecnica, istruzioni libere, note), IGNORA quelle occorrenze e usa SOLO quanto scritto in "ACCESSO APPARTAMENTO".
+- Se un campo non è presente in "ACCESSO APPARTAMENTO", rispondi che non è registrato — non inventare e non cercare in altre sezioni.
+
 FORMATO ACTION — REGOLA ASSOLUTA:
 - L'ACTION va scritta ESATTAMENTE così: ACTION: {…}  su una riga sola, senza nulla prima o dopo.
 - NON usare mai blocchi markdown (backtick, \`\`\`json, \`\`\`, o qualsiasi altro wrapper).
@@ -594,8 +599,9 @@ function formatDate(value: Date) {
 
 /**
  * Formatta il campo accessInfo dell'appartamento con label italiane esplicite.
- * Ogni campo è su riga separata con il nome usato nell'interfaccia,
- * così l'AI può rispondere correttamente a domande su wifi, citofono, piano, ecc.
+ * Fonte autorevole: i campi strutturati di accessInfo (scheda appartamento).
+ * accessInstructions è testo libero legacy — incluso solo se accessInfo è vuoto,
+ * per evitare che dati obsoleti nel testo libero confliggano con quelli strutturati.
  */
 function formatAccessInfo(accessInfo: unknown, accessInstructions?: string | null): string {
   const lines: string[] = [];
@@ -613,8 +619,10 @@ function formatAccessInfo(accessInfo: unknown, accessInstructions?: string | nul
     if (a.parking)       lines.push(`- Parcheggio: ${a.parking}`);
   }
 
-  if (accessInstructions) {
-    lines.push(`- Istruzioni accesso (testo libero): ${truncateText(accessInstructions, 400)}`);
+  // accessInstructions (testo libero legacy) incluso SOLO se non ci sono campi strutturati,
+  // altrimenti i dati obsoleti nel testo libero potrebbero sovrascrivere quelli corretti.
+  if (lines.length === 0 && accessInstructions) {
+    lines.push(`- Istruzioni accesso: ${truncateText(accessInstructions, 400)}`);
   }
 
   return lines.length > 0 ? lines.join("\n") : "- Nessuna informazione di accesso registrata.";
