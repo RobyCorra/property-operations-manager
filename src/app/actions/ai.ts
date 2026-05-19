@@ -836,7 +836,14 @@ function addDays(value: Date, days: number) {
 }
 
 function formatDateTime(value: Date | null | undefined) {
-  return value ? value.toISOString().slice(0, 16).replace("T", " ") : "n/d";
+  if (!value) return "n/d";
+  // Usa timezone Europe/Rome per mostrare data e ora operativa corretta
+  return value.toLocaleString("it-IT", {
+    timeZone: "Europe/Rome",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit",
+    hour12: false,
+  }).replace(",", "");
 }
 
 function compactJsonText(value: unknown, maxLength = 600) {
