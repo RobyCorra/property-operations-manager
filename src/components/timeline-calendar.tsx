@@ -754,38 +754,42 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
       </div>
     </div>
 
-    {/* Legenda unificata */}
-    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
-      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Stato Intervento</span>
-      {[
-        { color: "bg-red-500/15 border-red-500/30 text-red-700",         label: "Da fare" },
-        { color: "bg-yellow-500/15 border-yellow-500/30 text-yellow-700", label: "Assegnato" },
-        { color: "bg-violet-500/15 border-violet-500/30 text-violet-700", label: "In corso" },
-        { color: "bg-sky-500/15 border-sky-500/30 text-sky-700",          label: "Completata" },
-        { color: "bg-amber-500/15 border-amber-500/30 text-amber-700",    label: "In verifica" },
-        { color: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700", label: "Approvato" },
-      ].map(({ color, label }) => (
-        <div key={label} className="flex items-center gap-1.5">
-          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
+    {/* Legenda */}
+    <div className="mt-3 flex flex-col gap-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
+      {/* Riga 1 — Stato Intervento */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">Stato Intervento</span>
+        {[
+          { color: "bg-red-500/15 border-red-500/30 text-red-700",            label: "Da fare" },
+          { color: "bg-yellow-500/15 border-yellow-500/30 text-yellow-700",   label: "Assegnato" },
+          { color: "bg-violet-500/15 border-violet-500/30 text-violet-700",   label: "In corso" },
+          { color: "bg-sky-500/15 border-sky-500/30 text-sky-700",            label: "Completata" },
+          { color: "bg-amber-500/15 border-amber-500/30 text-amber-700",      label: "In verifica" },
+          { color: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",label: "Approvato" },
+        ].map(({ color, label }) => (
+          <span key={label} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
             <Paintbrush size={9} className="opacity-70" />{label}
           </span>
-        </div>
-      ))}
-      <div className="w-px h-4 bg-slate-200 mx-1" />
-      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Appartamento</span>
-      {[
-        { color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-700", label: "Pronto" },
-        { color: "bg-blue-500/10 border-blue-500/20 text-blue-700",          label: "Non pronto" },
-        { color: "bg-violet-500/10 border-violet-500/20 text-violet-700",    label: "In corso" },
-        { color: "bg-yellow-500/10 border-yellow-500/20 text-yellow-700",    label: "In verifica" },
-        { color: "bg-red-500/10 border-red-500/20 text-red-700",             label: "Occupato" },
-      ].map(({ color, label }) => (
-        <div key={label} className="flex items-center gap-1.5">
-          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
-            <Home size={9} className="opacity-70" />{label}
+        ))}
+      </div>
+
+      {/* Separatore */}
+      <div className="h-px bg-slate-200/60 w-full" />
+
+      {/* Riga 2 — Stato Appartamento con dot */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">Appartamento</span>
+        {[
+          { dot: "bg-emerald-500", text: "text-emerald-700", label: "Pronto" },
+          { dot: "bg-blue-500",    text: "text-blue-700",    label: "Non pronto" },
+          { dot: "bg-red-500",     text: "text-red-700",     label: "Occupato" },
+        ].map(({ dot, text, label }) => (
+          <span key={label} className={`inline-flex items-center gap-1.5 text-[10px] font-semibold ${text}`}>
+            <span className={`w-2 h-2 rounded-full shrink-0 ${dot}`} />
+            {label}
           </span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
 
     {/* Event Modal Overlay */}
