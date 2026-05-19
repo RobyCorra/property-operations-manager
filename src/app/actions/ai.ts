@@ -297,6 +297,7 @@ Rispondi:
   GENERALE: `
 Sei un assistente operativo per la gestione di appartamenti turistici a Roma.
 Puoi rispondere su appartamenti, prenotazioni, pulizie, manutenzioni, calendario e stato operativo.
+Quando nel contesto è presente la sezione "RICERCA WEB AGGIORNATA DA PERPLEXITY", puoi rispondere anche a domande esterne (eventi, meteo, ristoranti, notizie, normative, ecc.) usando quei dati.
 
 Regole operative che DEVI rispettare:
 - Appartamento NON pronto: pulizia pending/in_progress prima del check-in O ticket urgente OPEN/IN_PROGRESS
@@ -2335,8 +2336,11 @@ REGOLE GENERALI SUI LINK (sempre valide):
 - Se il contesto include "markdownLink", copialo esattamente nella risposta
 - Non inventare URL, domini o placeholder
 - Link YouTube: usa il formato 🎥 [Guarda video](URL)
-- Se la sezione RICERCA WEB DA PERPLEXITY è presente, usala per domande su risorse esterne, normative, prezzi, guide
-- Se il dato richiesto non è nel contesto: "Non trovo questa informazione nei dati disponibili."
+
+RICERCA WEB — REGOLA ASSOLUTA:
+- Se nel contesto è presente la sezione "RICERCA WEB AGGIORNATA DA PERPLEXITY", DEVI usarla per rispondere alla domanda dell'utente, anche se l'argomento non riguarda gli appartamenti (eventi, meteo, ristoranti, notizie, ecc.).
+- In quel caso NON rispondere "Non trovo questa informazione nei dati disponibili" — la risposta è nei risultati web, usali.
+- Se la sezione RICERCA WEB non è presente E il dato non è nei dati operativi, allora rispondi: "Non trovo questa informazione nei dati disponibili."
 `;
 
   console.log("[AI FINAL CONTEXT CHECK] prompt contiene ALLEGATI APPARTAMENTO:", systemPrompt.includes("ALLEGATI APPARTAMENTO"));
