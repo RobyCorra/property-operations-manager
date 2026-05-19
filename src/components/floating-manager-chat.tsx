@@ -167,9 +167,30 @@ function formatDateTab(iso: string): string {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function FloatingManagerChat({ inline = false }: { inline?: boolean } = {}) {
+type FloatingManagerChatProps = {
+  inline?: boolean;
+  /** Quando forniti, il bottone interno è nascosto e lo stato aperto/chiuso è controllato dall'esterno */
+  externalOpen?: boolean;
+  onExternalClose?: () => void;
+};
+
+export default function FloatingManagerChat({
+  inline = false,
+  externalOpen,
+  onExternalClose,
+}: FloatingManagerChatProps = {}) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Se controllato dall'esterno usa externalOpen, altrimenti lo stato interno
+  const controlled = externalOpen !== undefined;
+  const open = controlled ? externalOpen : internalOpen;
+  const setOpen = controlled
+    ? (v: boolean | ((prev: boolean) => boolean)) => {
+        const next = typeof v === "function" ? v(open!) : v;
+        if (!next) onExternalClose?.();
+      }
+    : setInternalOpen;
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -384,8 +405,8 @@ export default function FloatingManagerChat({ inline = false }: { inline?: boole
 
   return (
     <>
-      {/* ── Trigger button ── */}
-      <button
+      {/* ── Trigger button — nascosto se controllato dall'esterno ── */}
+      {!controlled && <button
         onClick={() => setOpen((v) => !v)}
         className={
           inline
@@ -413,7 +434,7 @@ export default function FloatingManagerChat({ inline = false }: { inline?: boole
             )}
           </>
         )}
-      </button>
+      </button>}
 
       {/* ── Floating window ── */}
       {open && (

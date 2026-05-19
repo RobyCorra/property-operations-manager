@@ -6,7 +6,7 @@ import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import { ApartmentStatus, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import { logoutAction } from "@/src/app/actions/auth";
-import ManagerAIChat from "@/src/components/manager-ai-chat";
+import FloatingManagerChat from "@/src/components/floating-manager-chat";
 
 // ── Types ─────────────────────────────────────────────────────────────
 export type MobileApartmentData = {
@@ -1714,9 +1714,9 @@ export default function MobileDashboard({
       {/* ════════════════════════════════════════════════════
           AI CHAT — pannello identico al desktop
           ════════════════════════════════════════════════════ */}
-      <ManagerAIChat
-        isOpen={aiChatOpen}
-        onClose={() => setAiChatOpen(false)}
+      <FloatingManagerChat
+        externalOpen={aiChatOpen}
+        onExternalClose={() => setAiChatOpen(false)}
       />
 
       {/* ════════════════════════════════════════════════════
