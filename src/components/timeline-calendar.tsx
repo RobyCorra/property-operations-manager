@@ -630,23 +630,44 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       ? "bg-blue-500/10 text-red-700 border-blue-500/20 shadow-blue-100"
                       : bgColors[bookingStatus.color] || "bg-slate-500/10 text-slate-600 border-slate-500/20";
 
+                    const statusDotColor: Record<string, string> = {
+                      GREEN: "bg-emerald-500", BLUE: "bg-blue-500", VIOLET: "bg-violet-500",
+                      YELLOW: "bg-yellow-400", RED: "bg-red-500",
+                    };
+                    const statusLabelShort: Record<string, string> = {
+                      GREEN: "Pronto", BLUE: "Non pronto", VIOLET: "In corso",
+                      YELLOW: "In verifica", RED: "Occupato",
+                    };
+                    const effectiveStatus = bookingNotReady ? "BLUE" : bookingStatus.color;
+                    const effectiveLabel = bookingNotReady ? "Non pronto" : (statusLabelShort[bookingStatus.color] ?? bookingStatus.label);
+                    const barWidth = Math.max(timelineDayWidth - 8, getWidth(event.start, event.end) - 4);
+                    const tooltipText = `${booking.guestName || "Ospite"} · ${booking.totalGuests ?? 0} ospiti · Stato: ${effectiveLabel}`;
+
                     return (
                       <div
                         key={`${event.type}-${event.id}`}
                         onClick={() => setSelectedEvent({ type: "booking", data: booking })}
-                        className={`absolute top-4 h-8 rounded-full border flex items-center gap-2 px-4 shadow-sm z-10 transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-95 cursor-pointer text-[11px] font-semibold tracking-tight whitespace-nowrap overflow-hidden ${bookingColor}`}
-                        title={bookingNotReady ? `${event.title} - NON PRONTO` : event.title}
-                        style={{
-                          left: getPosition(event.start, true),
-                          width: Math.max(timelineDayWidth - 8, getWidth(event.start, event.end) - 4),
-                        }}
+                        className={`absolute top-4 h-8 rounded-full border flex items-center gap-1.5 px-3 shadow-sm z-10 transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-95 cursor-pointer text-[11px] font-semibold tracking-tight overflow-hidden ${bookingColor}`}
+                        title={tooltipText}
+                        style={{ left: getPosition(event.start, true), width: barWidth }}
                       >
-                        <LogIn size={12} className="opacity-70" /> {booking.totalGuests ?? 0} osp.
-                        {bookingNotReady ? (
-                          <span className="rounded-full bg-red-600 px-2 py-0.5 text-[9px] font-bold uppercase text-white">
-                            Non pronto
+                        {/* Icona sempre visibile */}
+                        <LogIn size={11} className="opacity-70 shrink-0" />
+                        {/* Ospiti: sempre visibili */}
+                        <span className="shrink-0">{booking.totalGuests ?? 0} osp.</span>
+                        {/* Separatore + dot stato: da 130px */}
+                        {barWidth >= 130 && (
+                          <>
+                            <span className="opacity-30 shrink-0 text-[10px]">·</span>
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${statusDotColor[effectiveStatus] ?? "bg-slate-400"}`} />
+                          </>
+                        )}
+                        {/* Label stato: da 185px */}
+                        {barWidth >= 185 && (
+                          <span className="truncate text-[10px] font-bold uppercase tracking-wide opacity-80">
+                            {effectiveLabel}
                           </span>
-                        ) : null}
+                        )}
                       </div>
                     );
                   }
