@@ -556,6 +556,27 @@ async function askPerplexitySearch(query: string) {
   }
 }
 
+/**
+ * Chiavi di accesso appartamento che vengono già presentate con label italiane
+ * nella sezione ACCESSO APPARTAMENTO tramite formatAccessInfo.
+ * Vanno escluse dal JSON grezzo del technicalProfile per evitare che la AI
+ * veda "safeCode" / "buildingCode" ecc. e li chiami con nomi inglesi.
+ */
+const TECH_PROFILE_ACCESS_KEYS = new Set([
+  "doorCode", "safeCode", "buildingCode", "floor",
+  "wifiNetwork", "wifiPassword", "directions", "checkInNotes", "parking",
+]);
+
+/** Restituisce technicalProfile senza i campi di accesso (già gestiti da formatAccessInfo). */
+function stripAccessKeysFromTechProfile(technicalProfile: unknown): unknown {
+  if (!technicalProfile || typeof technicalProfile !== "object" || Array.isArray(technicalProfile)) {
+    return technicalProfile;
+  }
+  return Object.fromEntries(
+    Object.entries(technicalProfile as Record<string, unknown>).filter(([k]) => !TECH_PROFILE_ACCESS_KEYS.has(k))
+  );
+}
+
 function compactTechnicalProfile(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value.map(compactTechnicalProfile).filter((item) => item !== undefined);
@@ -586,16 +607,7 @@ function formatTechnicalProfile(technicalProfile: unknown) {
   // Rimuovi i campi di accesso dal JSON grezzo: sono già presentati con label italiane
   // nella sezione ACCESSO APPARTAMENTO tramite formatAccessInfo — tenerli qui con chiavi
   // inglesi ("safeCode", "buildingCode" …) confonde la AI.
-  const ACCESS_KEYS = new Set([
-    "doorCode", "safeCode", "buildingCode", "floor",
-    "wifiNetwork", "wifiPassword", "directions", "checkInNotes", "parking",
-  ]);
-  const filtered =
-    compactProfile && typeof compactProfile === "object" && !Array.isArray(compactProfile)
-      ? Object.fromEntries(
-          Object.entries(compactProfile as Record<string, unknown>).filter(([k]) => !ACCESS_KEYS.has(k))
-        )
-      : compactProfile;
+  const filtered = stripAccessKeysFromTechProfile(compactProfile);
 
   const profileText = JSON.stringify(filtered, null, 2);
 
@@ -2114,7 +2126,7 @@ async function buildGeneralManagerContext(now: Date) {
       apartment.technicalProfile,
     ).replace(/^- /gm, "").replace(/\n/g, " | ");
 
-    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | accesso: ${accessSummary} | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
+    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | accesso: ${accessSummary} | technicalProfile: ${compactJsonText(stripAccessKeysFromTechProfile(apartment.technicalProfile), 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
   });
 
   // CHECK-IN OGGI: prenotazioni il cui checkInDate è oggi (ospiti in arrivo)
