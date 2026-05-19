@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import ManagerNavbar from "./manager-navbar";
 import { logoutAction } from "@/src/app/actions/auth";
+import FloatingManagerChat from "./floating-manager-chat";
 
 interface SidebarLayoutProps {
   children: React.ReactNode;
@@ -52,6 +53,7 @@ export default function SidebarLayout({ children, unreadCount }: SidebarLayoutPr
           </div>
 
           <div className="flex items-center gap-6">
+            <FloatingManagerChat inline />
             <div className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
               <span className="text-xl">⚙️</span>
               <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">Impostazioni</span>
