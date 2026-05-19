@@ -2001,10 +2001,13 @@ async function buildGeneralManagerContext(now: Date) {
     return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | technicalProfile: ${compactJsonText(apartment.technicalProfile, 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
   });
 
+  // CHECK-IN OGGI: prenotazioni il cui checkInDate è oggi (ospiti in arrivo)
   const checkinsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkInDate) === formatDateKey(todayStart));
   const checkoutsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkOutDate) === formatDateKey(todayStart));
   const upcomingCheckins = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate >= tomorrowStart && booking.checkInDate < next7Days);
-  const activeBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate <= now && booking.checkOutDate > now);
+  // SOGGIORNI IN CORSO: solo prenotazioni con checkIn PRIMA di oggi (ospiti già presenti da ieri o prima)
+  // NON include i check-in di oggi, altrimenti l'AI confonde arrivi odierni con soggiorni in corso
+  const activeBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate < todayStart && booking.checkOutDate > now);
 
   const bookingLine = (booking: ApartmentBookingWithApartmentForAI) => (
     `- apt:"${booking.apartment.name}" | ospite: ${booking.guestName || "n/d"} | checkIn:${(booking.checkInDate as Date).toISOString()} checkOut:${(booking.checkOutDate as Date).toISOString()} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
@@ -2051,8 +2054,8 @@ ${checkoutsToday.length > 0 ? checkoutsToday.map(bookingLine).join("\n") : "- Ne
 PROSSIMI CHECK-IN 7 GIORNI
 ${upcomingCheckins.length > 0 ? upcomingCheckins.map(bookingLine).join("\n") : "- Nessun check-in nei prossimi 7 giorni."}
 
-PRENOTAZIONI ATTIVE OGGI
-${activeBookings.length > 0 ? activeBookings.map(bookingLine).join("\n") : "- Nessuna prenotazione attiva ora."}
+SOGGIORNI IN CORSO (ospiti già presenti — checkIn avvenuto PRIMA di oggi, NON sono nuovi arrivi)
+${activeBookings.length > 0 ? activeBookings.map(bookingLine).join("\n") : "- Nessun soggiorno in corso da giorni precedenti."}
 
 PULIZIE OPERATIVE
 ${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia operativa nel periodo caricato."}
