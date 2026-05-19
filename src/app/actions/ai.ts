@@ -157,6 +157,7 @@ type ApartmentAttachmentForAI = {
   mimeType: string | null;
   size: number | null;
   category: string;
+  linkedTo: string | null;
   notes: string | null;
   extractedText: string | null;
   createdAt: Date;
@@ -825,7 +826,7 @@ function formatAttachmentLines(attachments: unknown, maxExtractedText = 300) {
     .map((attachment) => {
       const item = attachment as Record<string, unknown>;
       const linkApribile = formatInternalFileUrl(stringField(item.url));
-      return `allegato: ${stringField(item.filename) || "n/d"} | Documento interno caricato nella scheda appartamento | category: ${stringField(item.category) || "n/d"} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | notes: ${truncateText(stringField(item.notes), 180) || "n/d"} | extractedText: ${truncateText(stringField(item.extractedText), maxExtractedText) || "n/d"}`;
+      return `allegato: ${stringField(item.filename) || "n/d"} | Documento interno caricato nella scheda appartamento | category: ${stringField(item.category) || "n/d"} | collegato a: ${stringField(item.linkedTo) || "n/d"} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | notes: ${truncateText(stringField(item.notes), 180) || "n/d"} | extractedText: ${truncateText(stringField(item.extractedText), maxExtractedText) || "n/d"}`;
     });
 }
 
@@ -876,6 +877,7 @@ function formatGeneralAttachmentsSection({
     filename: string;
     url: string | null;
     category: string;
+    linkedTo: string | null;
     notes: string | null;
     extractedText: string | null;
   }[];
@@ -883,7 +885,7 @@ function formatGeneralAttachmentsSection({
   const generalAttachmentLines = formatAttachmentLines(arraySection(technicalProfile, "generalAttachments"), 400).map((line) => `- ${line}`);
   const persistedAttachmentLines = apartmentAttachments.map((attachment) => {
     const linkApribile = formatInternalFileUrl(attachment.url);
-    return `- allegato tecnico: ${attachment.filename} | Documento interno caricato nella scheda appartamento | category: ${attachment.category} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | notes: ${truncateText(attachment.notes, 180) || "n/d"} | extractedText: ${truncateText(attachment.extractedText, 400) || "n/d"}`;
+    return `- allegato tecnico: ${attachment.filename} | Documento interno caricato nella scheda appartamento | category: ${attachment.category} | collegato a: ${attachment.linkedTo || "n/d"} | linkApribile: ${linkApribile} | markdownLink: ${formatInternalMarkdownLink(linkApribile)} | notes: ${truncateText(attachment.notes, 180) || "n/d"} | extractedText: ${truncateText(attachment.extractedText, 400) || "n/d"}`;
   });
 
   return `SEZIONE ALLEGATI GENERALI\n${[...generalAttachmentLines, ...persistedAttachmentLines].length > 0 ? [...generalAttachmentLines, ...persistedAttachmentLines].join("\n") : "- Nessun allegato generale registrato."}`;
@@ -898,6 +900,7 @@ function formatStructuredTechnicalKnowledge({
     filename: string;
     url: string | null;
     category: string;
+    linkedTo: string | null;
     notes: string | null;
     extractedText: string | null;
   }[];
@@ -1533,7 +1536,7 @@ async function buildTechnicalContext(apartmentId: string) {
       apartmentAttachments: {
         orderBy: { createdAt: "desc" },
         take: 30,
-        select: { filename: true, url: true, category: true, notes: true, extractedText: true, mimeType: true, size: true, createdAt: true },
+        select: { filename: true, url: true, category: true, linkedTo: true, notes: true, extractedText: true, mimeType: true, size: true, createdAt: true },
       },
     },
   });
@@ -1561,7 +1564,7 @@ async function buildAttachmentsContext(apartmentId: string) {
       apartmentAttachments: {
         orderBy: { createdAt: "desc" },
         take: 50,
-        select: { filename: true, url: true, category: true, notes: true, extractedText: true, mimeType: true, size: true, createdAt: true },
+        select: { filename: true, url: true, category: true, linkedTo: true, notes: true, extractedText: true, mimeType: true, size: true, createdAt: true },
       },
     },
   });
@@ -1602,6 +1605,7 @@ export async function buildApartmentAIContext(apartmentId: string) {
           filename: true,
           url: true,
           category: true,
+          linkedTo: true,
           notes: true,
           extractedText: true,
           mimeType: true,
@@ -1855,6 +1859,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
           filename: true,
           url: true,
           category: true,
+          linkedTo: true,
           notes: true,
           extractedText: true,
           mimeType: true,
@@ -2023,6 +2028,7 @@ async function buildGeneralManagerContext(now: Date) {
             filename: true,
             url: true,
             category: true,
+            linkedTo: true,
             notes: true,
             extractedText: true,
             mimeType: true,
@@ -2122,7 +2128,7 @@ async function buildGeneralManagerContext(now: Date) {
     const attachmentSummary = apartment.apartmentAttachments
       .map((attachment: ApartmentAttachmentForAI) => {
         const linkApribile = formatInternalFileUrl(attachment.url);
-        return `${attachment.filename} (${attachment.category}) Documento interno caricato nella scheda appartamento linkApribile: ${linkApribile} markdownLink: ${formatInternalMarkdownLink(linkApribile)} note: ${truncateText(attachment.notes, 80) || "n/d"} extractedText: ${truncateText(attachment.extractedText, 120) || "n/d"}`;
+        return `${attachment.filename} (${attachment.category}) collegato a: ${attachment.linkedTo || "n/d"} Documento interno caricato nella scheda appartamento linkApribile: ${linkApribile} markdownLink: ${formatInternalMarkdownLink(linkApribile)} note: ${truncateText(attachment.notes, 80) || "n/d"} extractedText: ${truncateText(attachment.extractedText, 120) || "n/d"}`;
       })
       .join(" || ");
 
