@@ -425,8 +425,10 @@ function shouldUseWebSearch(question: string) {
 
   const q = question.toLowerCase();
   const webSearchTriggers = [
+    // trigger espliciti
     "cerca online",
     "cerca sul web",
+    "cerca su internet",
     "fai una ricerca",
     "ricerca aggiornata",
     "aggiornato",
@@ -443,9 +445,34 @@ function shouldUseWebSearch(question: string) {
     "alternative",
     "competitor",
     "best practice aggiornate",
+    // domande su eventi / attività esterne
+    "eventi",
+    "cosa fare",
+    "cosa succede",
+    "cosa c'è",
+    "cosa si fa",
+    "in programma",
+    "concerti",
+    "mostre",
+    "ristorante",
+    "ristoranti",
+    "meteo",
+    "previsioni",
+    "temperatura",
+    "trasporti",
+    "sciopero",
+    "musei",
+    "aperture",
+    // "cerca X" generico — una sola parola "cerca" seguita da qualsiasi cosa
+    // Lo gestiamo con regex separata sotto
   ];
 
-  return webSearchTriggers.some((trigger) => q.includes(trigger));
+  if (webSearchTriggers.some((trigger) => q.includes(trigger))) return true;
+
+  // "cerca ..." generico: la parola "cerca" da sola come verbo (non "ricercatore", ecc.)
+  if (/\bcerca\b/.test(q)) return true;
+
+  return false;
 }
 
 function stringArrayFromUnknown(value: unknown) {
