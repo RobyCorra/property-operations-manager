@@ -618,21 +618,15 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       { now: currentClientTime }
                     );
 
-                    const bgColors: Record<string, string> = {
-                      GREEN:  "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-                      BLUE:   "bg-blue-500/10 text-blue-600 border-blue-500/20",
-                      VIOLET: "bg-violet-500/10 text-violet-600 border-violet-500/20",
-                      YELLOW: "bg-yellow-500/10 text-yellow-700 border-yellow-500/20",
-                      RED:    "bg-red-500/10 text-red-600 border-red-500/20",
-                    };
                     const bookingNotReady = isBookingNotReady(booking);
-                    const bookingColor = bookingNotReady
-                      ? "bg-blue-500/10 text-red-700 border-blue-500/20 shadow-blue-100"
-                      : bgColors[bookingStatus.color] || "bg-slate-500/10 text-slate-600 border-slate-500/20";
 
                     const statusDotColor: Record<string, string> = {
                       GREEN: "bg-emerald-500", BLUE: "bg-blue-500", VIOLET: "bg-violet-500",
                       YELLOW: "bg-yellow-400", RED: "bg-red-500",
+                    };
+                    const statusTextColor: Record<string, string> = {
+                      GREEN: "text-emerald-600", BLUE: "text-blue-600", VIOLET: "text-violet-600",
+                      YELLOW: "text-yellow-600", RED: "text-red-600",
                     };
                     const statusLabelShort: Record<string, string> = {
                       GREEN: "Pronto", BLUE: "Non pronto", VIOLET: "In corso",
@@ -647,12 +641,12 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       <div
                         key={`${event.type}-${event.id}`}
                         onClick={() => setSelectedEvent({ type: "booking", data: booking })}
-                        className={`absolute top-4 h-8 rounded-full border flex items-center gap-1.5 px-3 shadow-sm z-10 transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-95 cursor-pointer text-[11px] font-semibold tracking-tight overflow-hidden ${bookingColor}`}
+                        className="absolute top-4 h-8 rounded-full border border-slate-200/80 bg-white/70 backdrop-blur-sm flex items-center gap-1.5 px-3 shadow-sm z-10 transition-all duration-200 hover:scale-[1.03] hover:shadow-md hover:bg-white/90 active:scale-95 cursor-pointer text-[11px] font-semibold tracking-tight overflow-hidden text-slate-700"
                         title={tooltipText}
                         style={{ left: getPosition(event.start, true), width: barWidth }}
                       >
                         {/* Icona sempre visibile */}
-                        <LogIn size={11} className="opacity-70 shrink-0" />
+                        <LogIn size={11} className="opacity-50 shrink-0" />
                         {/* Ospiti: sempre visibili */}
                         <span className="shrink-0">{booking.totalGuests ?? 0} osp.</span>
                         {/* Separatore + dot stato: da 130px */}
@@ -662,9 +656,9 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                             <span className={`w-2 h-2 rounded-full shrink-0 ${statusDotColor[effectiveStatus] ?? "bg-slate-400"}`} />
                           </>
                         )}
-                        {/* Label stato: da 185px */}
+                        {/* Label stato colorata: da 185px */}
                         {barWidth >= 185 && (
-                          <span className="truncate text-[10px] font-bold uppercase tracking-wide opacity-80">
+                          <span className={`truncate text-[10px] font-bold uppercase tracking-wide ${statusTextColor[effectiveStatus] ?? "text-slate-500"}`}>
                             {effectiveLabel}
                           </span>
                         )}
