@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import CleaningDetailView from "@/src/components/cleaning-detail-view";
+import CleaningShareButton from "@/src/components/cleaning-share-button";
 import { getCleaningTaskMessages, enrichCleaningTaskWithNextBooking } from "@/src/app/actions/operational";
 
 export default async function EditCleaningPage({ params }: { params: Promise<{ id: string }> }) {
@@ -35,6 +36,12 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
     notFound();
   }
 
+  // Legge il token separatamente (campo aggiunto dopo la query principale)
+  const tokenRecord = await prisma.cleaningTask.findUnique({
+    where: { id },
+    select: { cleaningAccessToken: true },
+  });
+
   const enrichedTask = await enrichCleaningTaskWithNextBooking(task);
 
   return (
@@ -46,6 +53,17 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
         >
           &larr; Torna all'elenco pulizie
         </Link>
+
+        {/* Link condivisibile per il cleaner */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2">
+          <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+            🔗 Link cleaner (accesso senza login)
+          </p>
+          <CleaningShareButton
+            cleaningId={id}
+            existingToken={tokenRecord?.cleaningAccessToken ?? null}
+          />
+        </div>
 
         <CleaningDetailView
           task={enrichedTask as any}

@@ -8848,6 +8848,7 @@ export namespace Prisma {
     assignedToId: string | null
     notes: string | null
     bookingId: string | null
+    cleaningAccessToken: string | null
   }
 
   export type CleaningTaskMaxAggregateOutputType = {
@@ -8861,6 +8862,7 @@ export namespace Prisma {
     assignedToId: string | null
     notes: string | null
     bookingId: string | null
+    cleaningAccessToken: string | null
   }
 
   export type CleaningTaskCountAggregateOutputType = {
@@ -8876,6 +8878,7 @@ export namespace Prisma {
     bookingId: number
     checklistProgress: number
     correctionProgress: number
+    cleaningAccessToken: number
     _all: number
   }
 
@@ -8891,6 +8894,7 @@ export namespace Prisma {
     assignedToId?: true
     notes?: true
     bookingId?: true
+    cleaningAccessToken?: true
   }
 
   export type CleaningTaskMaxAggregateInputType = {
@@ -8904,6 +8908,7 @@ export namespace Prisma {
     assignedToId?: true
     notes?: true
     bookingId?: true
+    cleaningAccessToken?: true
   }
 
   export type CleaningTaskCountAggregateInputType = {
@@ -8919,6 +8924,7 @@ export namespace Prisma {
     bookingId?: true
     checklistProgress?: true
     correctionProgress?: true
+    cleaningAccessToken?: true
     _all?: true
   }
 
@@ -9007,6 +9013,7 @@ export namespace Prisma {
     bookingId: string | null
     checklistProgress: JsonValue | null
     correctionProgress: JsonValue | null
+    cleaningAccessToken: string | null
     _count: CleaningTaskCountAggregateOutputType | null
     _min: CleaningTaskMinAggregateOutputType | null
     _max: CleaningTaskMaxAggregateOutputType | null
@@ -9039,6 +9046,7 @@ export namespace Prisma {
     bookingId?: boolean
     checklistProgress?: boolean
     correctionProgress?: boolean
+    cleaningAccessToken?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -9062,6 +9070,7 @@ export namespace Prisma {
     bookingId?: boolean
     checklistProgress?: boolean
     correctionProgress?: boolean
+    cleaningAccessToken?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -9080,6 +9089,7 @@ export namespace Prisma {
     bookingId?: boolean
     checklistProgress?: boolean
     correctionProgress?: boolean
+    cleaningAccessToken?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -9098,9 +9108,10 @@ export namespace Prisma {
     bookingId?: boolean
     checklistProgress?: boolean
     correctionProgress?: boolean
+    cleaningAccessToken?: boolean
   }
 
-  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress", ExtArgs["result"]["cleaningTask"]>
+  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken", ExtArgs["result"]["cleaningTask"]>
   export type CleaningTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -9146,6 +9157,7 @@ export namespace Prisma {
       bookingId: string | null
       checklistProgress: Prisma.JsonValue | null
       correctionProgress: Prisma.JsonValue | null
+      cleaningAccessToken: string | null
     }, ExtArgs["result"]["cleaningTask"]>
     composites: {}
   }
@@ -9588,6 +9600,7 @@ export namespace Prisma {
     readonly bookingId: FieldRef<"CleaningTask", 'String'>
     readonly checklistProgress: FieldRef<"CleaningTask", 'Json'>
     readonly correctionProgress: FieldRef<"CleaningTask", 'Json'>
+    readonly cleaningAccessToken: FieldRef<"CleaningTask", 'String'>
   }
     
 
@@ -22763,7 +22776,8 @@ export namespace Prisma {
     notes: 'notes',
     bookingId: 'bookingId',
     checklistProgress: 'checklistProgress',
-    correctionProgress: 'correctionProgress'
+    correctionProgress: 'correctionProgress',
+    cleaningAccessToken: 'cleaningAccessToken'
   };
 
   export type CleaningTaskScalarFieldEnum = (typeof CleaningTaskScalarFieldEnum)[keyof typeof CleaningTaskScalarFieldEnum]
@@ -23514,6 +23528,7 @@ export namespace Prisma {
     bookingId?: StringNullableFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CleaningTask">
     correctionProgress?: JsonNullableFilter<"CleaningTask">
+    cleaningAccessToken?: StringNullableFilter<"CleaningTask"> | string | null
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -23536,6 +23551,7 @@ export namespace Prisma {
     bookingId?: SortOrderInput | SortOrder
     checklistProgress?: SortOrderInput | SortOrder
     correctionProgress?: SortOrderInput | SortOrder
+    cleaningAccessToken?: SortOrderInput | SortOrder
     booking?: BookingOrderByWithRelationInput
     apartment?: ApartmentOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
@@ -23548,6 +23564,7 @@ export namespace Prisma {
   export type CleaningTaskWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     bookingId?: string
+    cleaningAccessToken?: string
     AND?: CleaningTaskWhereInput | CleaningTaskWhereInput[]
     OR?: CleaningTaskWhereInput[]
     NOT?: CleaningTaskWhereInput | CleaningTaskWhereInput[]
@@ -23568,7 +23585,7 @@ export namespace Prisma {
     attachments?: AttachmentListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
     supervisorReviews?: SupervisorReviewListRelationFilter
-  }, "id" | "bookingId">
+  }, "id" | "bookingId" | "cleaningAccessToken">
 
   export type CleaningTaskOrderByWithAggregationInput = {
     id?: SortOrder
@@ -23583,6 +23600,7 @@ export namespace Prisma {
     bookingId?: SortOrderInput | SortOrder
     checklistProgress?: SortOrderInput | SortOrder
     correctionProgress?: SortOrderInput | SortOrder
+    cleaningAccessToken?: SortOrderInput | SortOrder
     _count?: CleaningTaskCountOrderByAggregateInput
     _max?: CleaningTaskMaxOrderByAggregateInput
     _min?: CleaningTaskMinOrderByAggregateInput
@@ -23604,6 +23622,7 @@ export namespace Prisma {
     bookingId?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableWithAggregatesFilter<"CleaningTask">
     correctionProgress?: JsonNullableWithAggregatesFilter<"CleaningTask">
+    cleaningAccessToken?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
   }
 
   export type MaintenanceTicketWhereInput = {
@@ -24886,6 +24905,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -24908,6 +24928,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -24924,6 +24945,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -24946,6 +24968,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -24965,6 +24988,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
   }
 
   export type CleaningTaskUpdateManyMutationInput = {
@@ -24977,6 +25001,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CleaningTaskUncheckedUpdateManyInput = {
@@ -24992,6 +25017,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MaintenanceTicketCreateInput = {
@@ -26416,6 +26442,7 @@ export namespace Prisma {
     bookingId?: SortOrder
     checklistProgress?: SortOrder
     correctionProgress?: SortOrder
+    cleaningAccessToken?: SortOrder
   }
 
   export type CleaningTaskMaxOrderByAggregateInput = {
@@ -26429,6 +26456,7 @@ export namespace Prisma {
     assignedToId?: SortOrder
     notes?: SortOrder
     bookingId?: SortOrder
+    cleaningAccessToken?: SortOrder
   }
 
   export type CleaningTaskMinOrderByAggregateInput = {
@@ -26442,6 +26470,7 @@ export namespace Prisma {
     assignedToId?: SortOrder
     notes?: SortOrder
     bookingId?: SortOrder
+    cleaningAccessToken?: SortOrder
   }
 
   export type MessageListRelationFilter = {
@@ -28704,6 +28733,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -28724,6 +28754,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -28886,6 +28917,7 @@ export namespace Prisma {
     bookingId?: StringNullableFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CleaningTask">
     correctionProgress?: JsonNullableFilter<"CleaningTask">
+    cleaningAccessToken?: StringNullableFilter<"CleaningTask"> | string | null
   }
 
   export type MaintenanceTicketUpsertWithWhereUniqueWithoutAssignedToInput = {
@@ -29077,6 +29109,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -29097,6 +29130,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -29829,6 +29863,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -29849,6 +29884,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -29946,6 +29982,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -29966,6 +30003,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -30921,6 +30959,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -30942,6 +30981,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -31081,6 +31121,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -31102,6 +31143,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -31209,6 +31251,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -31230,6 +31273,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -31370,6 +31414,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -31391,6 +31436,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -31726,6 +31772,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -31747,6 +31794,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -31811,6 +31859,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -31832,6 +31881,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -31917,6 +31967,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -31938,6 +31989,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -32049,6 +32101,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -32070,6 +32123,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -32611,6 +32665,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
   }
 
   export type MaintenanceTicketCreateManyAssignedToInput = {
@@ -32656,6 +32711,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -32676,6 +32732,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -32694,6 +32751,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MaintenanceTicketUpdateWithoutAssignedToInput = {
@@ -32837,6 +32895,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: string | null
   }
 
   export type MaintenanceTicketCreateManyApartmentInput = {
@@ -32973,6 +33032,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -32993,6 +33053,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -33011,6 +33072,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MaintenanceTicketUpdateWithoutApartmentInput = {
