@@ -509,7 +509,12 @@ export default function FloatingManagerChat({
             <span className="font-semibold text-sm text-slate-800">AI Assistant</span>
             <span className="text-xs text-slate-300 ml-1">⠿</span>
             <span className="ml-auto text-xs text-slate-400">Manager</span>
-            <button onClick={() => setOpen(false)} className="ml-2 text-slate-400 hover:text-slate-600 text-lg leading-none">✕</button>
+            <button
+              onClick={() => setMessages([])}
+              title="Nuova chat (pulisci history)"
+              className="ml-2 text-slate-400 hover:text-red-400 transition-colors text-sm leading-none"
+            >🗑️</button>
+            <button onClick={() => setOpen(false)} className="ml-1 text-slate-400 hover:text-slate-600 text-lg leading-none">✕</button>
           </div>
 
           {/* Date tabs */}
