@@ -218,6 +218,8 @@ const SYSTEM_PROMPTS: Record<AIIntent, string> = {
 Sei un assistente specializzato nella gestione delle pulizie di appartamenti turistici.
 Il tuo unico dominio sono le pulizie: stato task, checklist, assegnazioni, note, messaggi del personale.
 
+REGOLA FONTE DATI: I dati operativi vengono SOLO dal contesto fornito (sezione "CONTESTO OPERATIVO MANAGER"). NON usare le risposte precedenti della chat come fonte di dati — possono essere errate. Ogni risposta deve basarsi sul contesto attuale.
+
 REGOLA CRITICA — STATO vs ASSEGNAZIONE (non confonderli mai):
 - "stato" indica la fase operativa: PENDING = pianificata (non ancora iniziata), IN_PROGRESS = in corso, COMPLETED = completata, AWAITING_REVIEW = in verifica, APPROVED = approvata.
   PENDING NON significa "non assegnata". Una pulizia PENDING può avere un cleaner assegnato.
@@ -423,7 +425,7 @@ FORMATO ACTION — REGOLA ASSOLUTA:
 const HISTORY_DAYS = 90;
 const MAX_HISTORY_TEXT_LENGTH = 5000;
 const MAX_TECHNICAL_KNOWLEDGE_TEXT_LENGTH = 5000;
-const MAX_MANAGER_CONTEXT_TEXT_LENGTH = 28000;
+const MAX_MANAGER_CONTEXT_TEXT_LENGTH = 40000;
 const MAX_APARTMENT_AI_CONTEXT_TEXT_LENGTH = 45000;
 const MAX_SECTION_TEXT_LENGTH = 5000;
 
@@ -2302,14 +2304,31 @@ async function buildGeneralManagerContext(now: Date) {
     )))
     .slice(0, 30);
 
+  // Lista esplicita pulizie non assegnate (assignedTo = null) — pre-computata, mai da dedurre
+  const unassignedCleanings = cleanings.filter((t: CleaningTaskWithApartmentForAI) => !t.assignedTo?.name);
+  const unassignedCleaningLines = unassignedCleanings.map((t: CleaningTaskWithApartmentForAI) =>
+    `- ${t.apartment.name} | ${formatDate(t.date as Date)} | stato: ${t.status}`
+  );
+
   const contextText = `
 CONTESTO OPERATIVO MANAGER
-Modalita: contesto generale
-Periodo prenotazioni: ultimi 30 giorni / prossimi 60 giorni. Pulizie e ticket: aperti/in corso o ultimi 14 giorni. Limiti applicati per sicurezza.
+REGOLA DATI: I dati operativi provengono ESCLUSIVAMENTE da questo contesto. NON usare la cronologia della chat come fonte di dati — le risposte precedenti possono essere errate.
 Oggi: ${todayRomeKey} | Domani: ${tomorrowRomeKey}
 
+════ PULIZIE — DATI CERTI (leggere sempre prima di rispondere su pulizie) ════
+
+PULIZIE DA ASSEGNARE (assignedTo = null, calcolato dal sistema — fonte autoritativa)
+Totale pulizie senza cleaner assegnato: ${unassignedCleanings.length}
+${unassignedCleanings.length > 0 ? unassignedCleaningLines.join("\n") : "- Nessuna pulizia da assegnare. Tutte le pulizie hanno un cleaner assegnato."}
+
+PULIZIE — RIEPILOGO PER MESE (conteggi certi, calcolati dal sistema)
+ATTENZIONE: PENDING = pianificata non ancora iniziata (NON significa non assegnata). DA ASSEGNARE = cleaner NULL.
+${cleaningMonthSummaryLines.length > 0 ? cleaningMonthSummaryLines.join("\n") : "- Nessuna pulizia nel periodo."}
+
+PULIZIE OPERATIVE — DETTAGLIO COMPLETO
+${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia operativa nel periodo caricato."}
+
 ════ EVENTI OGGI (${todayRomeKey}) ════
-Usa questa sezione per rispondere a "che eventi ci sono oggi?", "cosa ho oggi?", "agenda di oggi".
 
 CHECK-IN OGGI
 ${checkinsToday.length > 0 ? checkinsToday.map(bookingLine).join("\n") : "- Nessun check-in oggi."}
@@ -2318,16 +2337,15 @@ CHECK-OUT OGGI
 ${checkoutsToday.length > 0 ? checkoutsToday.map(bookingLine).join("\n") : "- Nessun check-out oggi."}
 
 PULIZIE OGGI
-${cleaningsToday.length > 0 ? cleaningsToday.map((t: CleaningTaskWithApartmentForAI) => `- id:${(t as any).id} | ${t.apartment.name} | stato: ${t.status} | assegnato: ${t.assignedTo?.name || "non assegnato"}`).join("\n") : "- Nessuna pulizia oggi."}
+${cleaningsToday.length > 0 ? cleaningsToday.map((t: CleaningTaskWithApartmentForAI) => `- id:${(t as any).id} | ${t.apartment.name} | ${t.assignedTo?.name ? `[ASSEGNATA a ${t.assignedTo.name}]` : "[DA ASSEGNARE]"} | stato: ${t.status}`).join("\n") : "- Nessuna pulizia oggi."}
 
 TICKET PROGRAMMATI OGGI
 ${ticketsToday.length > 0 ? ticketsToday.map((t: MaintenanceTicketWithApartmentForAI) => `- ${t.apartment.name} | ${t.title} | ${t.status} | tecnico: ${t.assignedTo?.name || "non assegnato"}`).join("\n") : "- Nessun ticket programmato oggi."}
 
-SOGGIORNI IN CORSO OGGI (ospiti già presenti — checkIn avvenuto PRIMA di oggi)
-${activeBookings.length > 0 ? activeBookings.map(bookingLine).join("\n") : "- Nessun soggiorno in corso da giorni precedenti."}
+SOGGIORNI IN CORSO (ospiti già presenti — checkIn avvenuto PRIMA di oggi)
+${activeBookings.length > 0 ? activeBookings.map(bookingLine).join("\n") : "- Nessun soggiorno in corso."}
 
 ════ EVENTI DOMANI (${tomorrowRomeKey}) ════
-Usa questa sezione per rispondere a "che eventi ci sono domani?", "cosa ho domani?", "agenda di domani".
 
 CHECK-IN DOMANI
 ${checkinsTomorrow.length > 0 ? checkinsTomorrow.map(bookingLine).join("\n") : "- Nessun check-in domani."}
@@ -2336,40 +2354,29 @@ CHECK-OUT DOMANI
 ${checkoutsTomorrow.length > 0 ? checkoutsTomorrow.map(bookingLine).join("\n") : "- Nessun check-out domani."}
 
 PULIZIE DOMANI
-${cleaningsTomorrow.length > 0 ? cleaningsTomorrow.map((t: CleaningTaskWithApartmentForAI) => `- id:${(t as any).id} | ${t.apartment.name} | stato: ${t.status} | assegnato: ${t.assignedTo?.name || "non assegnato"}`).join("\n") : "- Nessuna pulizia domani."}
+${cleaningsTomorrow.length > 0 ? cleaningsTomorrow.map((t: CleaningTaskWithApartmentForAI) => `- id:${(t as any).id} | ${t.apartment.name} | ${t.assignedTo?.name ? `[ASSEGNATA a ${t.assignedTo.name}]` : "[DA ASSEGNARE]"} | stato: ${t.status}`).join("\n") : "- Nessuna pulizia domani."}
 
 TICKET PROGRAMMATI DOMANI
 ${ticketsTomorrow.length > 0 ? ticketsTomorrow.map((t: MaintenanceTicketWithApartmentForAI) => `- ${t.apartment.name} | ${t.title} | ${t.status} | tecnico: ${t.assignedTo?.name || "non assegnato"}`).join("\n") : "- Nessun ticket programmato domani."}
 
-════ PROSSIMI 7 GIORNI (dal ${tomorrowRomeKey} in poi) ════
+════ PROSSIMI 7 GIORNI ════
 
-PROSSIMI CHECK-IN 7 GIORNI (escluso domani)
+PROSSIMI CHECK-IN
 ${upcomingCheckins.length > 0 ? upcomingCheckins.map(bookingLine).join("\n") : "- Nessun check-in nei prossimi 7 giorni."}
 
-PROSSIMI CHECK-OUT 7 GIORNI (escluso domani)
+PROSSIMI CHECK-OUT
 ${upcomingCheckouts.length > 0 ? upcomingCheckouts.map(bookingLine).join("\n") : "- Nessun check-out nei prossimi 7 giorni."}
 
 ════ STATO APPARTAMENTI ════
-STATO APPARTAMENTI
 ${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
 
-PULIZIE — RIEPILOGO PER MESE (conteggi certi, calcolati dal sistema)
-[DA ASSEGNARE] = assignedTo NULL. [ASSEGNATA] = cleaner presente. PENDING = non ancora iniziata (non significa non assegnata).
-${cleaningMonthSummaryLines.length > 0 ? cleaningMonthSummaryLines.join("\n") : "- Nessuna pulizia nel periodo."}
+════ MANUTENZIONI OPERATIVE ════
+${ticketLines.length > 0 ? ticketLines.join("\n") : "- Nessuna manutenzione operativa."}
 
-PULIZIE OPERATIVE — DETTAGLIO
-${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia operativa nel periodo caricato."}
+════ MESSAGGI OPERATIVI RECENTI ════
+${recentMessageLines.length > 0 ? recentMessageLines.join("\n") : "- Nessun messaggio recente."}
 
-MANUTENZIONI OPERATIVE
-${ticketLines.length > 0 ? ticketLines.join("\n") : "- Nessuna manutenzione operativa nel periodo caricato."}
-
-MESSAGGI OPERATIVI RECENTI
-${recentMessageLines.length > 0 ? recentMessageLines.join("\n") : "- Nessun messaggio operativo recente nei dati caricati."}
-
-PROBLEMI RICORRENTI DA SCHEDE TECNICHE
-${recurringIssueLines.length > 0 ? recurringIssueLines.join("\n") : "- Nessun problema ricorrente registrato nelle schede tecniche caricate."}
-
-PERSONALE DISPONIBILE (usa questi id per le azioni AI)
+════ PERSONALE DISPONIBILE ════
 ${personnel.map((u: { id: string; name: string; role: string }) => `- id:${u.id} | ${u.name} | ruolo: ${u.role}`).join("\n") || "- Nessun personale trovato."}
 `.trim();
 
