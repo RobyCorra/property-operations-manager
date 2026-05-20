@@ -1,38 +1,34 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
-import { Loader2 } from "lucide-react";
 
 interface PublicStatusButtonProps {
   id: string;
   nextStatus: string;
   label: string;
+  afterLabel: string;   // testo mostrato dopo il click (prima del reload)
   className?: string;
 }
 
-export default function PublicStatusButton({ id, nextStatus, label, className }: PublicStatusButtonProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [done, setDone] = useState(false);
+export default function PublicStatusButton({ id, nextStatus, label, afterLabel, className }: PublicStatusButtonProps) {
+  const [clicked, setClicked] = useState(false);
 
-  function handleClick() {
-    startTransition(async () => {
-      await updateCleaningStatus(id, nextStatus);
-      setDone(true);
-      router.refresh();
-    });
+  async function handleClick() {
+    if (clicked) return;
+    setClicked(true);
+    await updateCleaningStatus(id, nextStatus);
+    // Ricarica la pagina per aggiornare lo stato dal server
+    window.location.reload();
   }
 
   return (
     <button
       onClick={handleClick}
-      disabled={isPending || done}
-      className={`${className ?? ""} flex items-center justify-center gap-2 disabled:opacity-60`}
+      disabled={clicked}
+      className={`${className ?? ""} flex items-center justify-center gap-2 disabled:opacity-80`}
     >
-      {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-      {done ? "✓ Aggiornato" : label}
+      {clicked ? afterLabel : label}
     </button>
   );
 }

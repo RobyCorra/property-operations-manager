@@ -112,6 +112,7 @@ export default async function PublicCleaningPage({
                 id={task.id}
                 nextStatus="IN_PROGRESS"
                 label="▶ Avvia pulizia"
+                afterLabel="⏳ Avvio in corso..."
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-2xl text-sm transition-colors"
               />
             )}
@@ -119,17 +120,27 @@ export default async function PublicCleaningPage({
               <PublicStatusButton
                 id={task.id}
                 nextStatus="AWAITING_REVIEW"
-                label="✓ Completa"
+                label="✓ Completa pulizia"
+                afterLabel="⏳ Attendi revisione..."
                 className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-2xl text-sm transition-colors"
               />
             )}
           </div>
         )}
 
-        {/* Completed/Approved banner */}
-        {(task.status === "COMPLETED" || task.status === "AWAITING_REVIEW" || task.status === "APPROVED") && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 text-center text-emerald-800 font-medium text-sm">
-            ✅ Pulizia {statusLabel[task.status]?.toLowerCase()} — grazie!
+        {/* Banner AWAITING_REVIEW */}
+        {task.status === "AWAITING_REVIEW" && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-4 text-center space-y-1">
+            <p className="text-amber-800 font-semibold text-sm">⏳ Attendi revisione</p>
+            <p className="text-amber-600 text-xs">La pulizia è stata inviata al responsabile. Una volta approvata apparirà il messaggio di conferma.</p>
+          </div>
+        )}
+
+        {/* Banner COMPLETED / APPROVED */}
+        {(task.status === "COMPLETED" || task.status === "APPROVED") && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-4 text-center space-y-1">
+            <p className="text-emerald-800 font-semibold text-sm">✅ Pulizia conclusa — puoi andare</p>
+            <p className="text-emerald-600 text-xs">Il responsabile ha approvato la pulizia. Ottimo lavoro!</p>
           </div>
         )}
 
