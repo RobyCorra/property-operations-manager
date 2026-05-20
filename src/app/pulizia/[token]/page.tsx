@@ -3,6 +3,7 @@ import { getCleaningByToken } from "@/src/app/actions/cleaning-token";
 import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
 import ChecklistInteractive from "@/src/components/checklist-interactive";
 import PublicStatusButton from "@/src/components/public-status-button";
+import PublicStatusPoller from "@/src/components/public-status-poller";
 import { Paintbrush, CalendarDays, Navigation } from "@/src/components/icons";
 import { Users } from "lucide-react";
 
@@ -112,8 +113,9 @@ export default async function PublicCleaningPage({
                 id={task.id}
                 nextStatus="IN_PROGRESS"
                 label="▶ Avvia pulizia"
-                afterLabel="⏳ Avvio in corso..."
+                afterLabel="🟣 Pulizia in corso"
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-2xl text-sm transition-colors"
+                afterClassName="flex-1 bg-violet-600 text-white font-semibold py-3 rounded-2xl text-sm"
               />
             )}
             {canComplete && (
@@ -128,11 +130,12 @@ export default async function PublicCleaningPage({
           </div>
         )}
 
-        {/* Banner AWAITING_REVIEW */}
+        {/* Banner AWAITING_REVIEW + auto-polling */}
         {task.status === "AWAITING_REVIEW" && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-4 text-center space-y-1">
             <p className="text-amber-800 font-semibold text-sm">⏳ Attendi revisione</p>
             <p className="text-amber-600 text-xs">La pulizia è stata inviata al responsabile. Una volta approvata apparirà il messaggio di conferma.</p>
+            <PublicStatusPoller />
           </div>
         )}
 
