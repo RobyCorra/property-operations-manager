@@ -2267,6 +2267,21 @@ async function buildGeneralManagerContext(now: Date) {
     return `- id:${(task as any).id} | ${task.apartment.name} | ${formatDate(task.date)} | ${assignTag} | stato: ${task.status} | note: ${truncateText(task.notes, 160) || "n/d"} | booking: ${task.booking?.guestName || "n/d"} (${task.booking?.totalGuests ?? "n/d"} ospiti) | messaggi: ${formatManagerMessages(task.messages)}`;
   });
 
+  // Riepilogo numerico pre-calcolato per mese — l'AI legge direttamente i conteggi senza ragionare sui campi
+  type MonthSummary = { total: number; assegnate: number; daAssegnare: number };
+  const cleaningsByMonth: Record<string, MonthSummary> = {};
+  cleanings.forEach((task: CleaningTaskWithApartmentForAI) => {
+    const d = task.date as Date;
+    const monthKey = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", month: "long", year: "numeric" });
+    if (!cleaningsByMonth[monthKey]) cleaningsByMonth[monthKey] = { total: 0, assegnate: 0, daAssegnare: 0 };
+    cleaningsByMonth[monthKey].total++;
+    if (task.assignedTo?.name) cleaningsByMonth[monthKey].assegnate++;
+    else cleaningsByMonth[monthKey].daAssegnare++;
+  });
+  const cleaningMonthSummaryLines = Object.entries(cleaningsByMonth).map(([month, s]) =>
+    `- ${month}: totale ${s.total} | assegnate ${s.assegnate} | DA ASSEGNARE ${s.daAssegnare}`
+  );
+
   const ticketLines = tickets.map((ticket: MaintenanceTicketWithApartmentForAI) => (
     `- id:${(ticket as any).id} | ${ticket.apartment.name} | ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"}${(ticket.assignedTo as any)?.id ? ` (assignedToId:${(ticket.assignedTo as any).id})` : ""} | programmato: ${formatDateTime(ticket.scheduledStart)} | messaggi: ${formatManagerMessages(ticket.messages)}`
   ));
@@ -2338,8 +2353,11 @@ ${upcomingCheckouts.length > 0 ? upcomingCheckouts.map(bookingLine).join("\n") :
 STATO APPARTAMENTI
 ${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
 
-PULIZIE OPERATIVE
-IMPORTANTE: [DA ASSEGNARE] = nessun cleaner assegnato. [ASSEGNATA a X] = già assegnata. Lo stato PENDING NON indica mancanza di assegnazione.
+PULIZIE — RIEPILOGO PER MESE (conteggi certi, calcolati dal sistema)
+[DA ASSEGNARE] = assignedTo NULL. [ASSEGNATA] = cleaner presente. PENDING = non ancora iniziata (non significa non assegnata).
+${cleaningMonthSummaryLines.length > 0 ? cleaningMonthSummaryLines.join("\n") : "- Nessuna pulizia nel periodo."}
+
+PULIZIE OPERATIVE — DETTAGLIO
 ${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia operativa nel periodo caricato."}
 
 MANUTENZIONI OPERATIVE
