@@ -2259,9 +2259,13 @@ async function buildGeneralManagerContext(now: Date) {
     `- apt:"${booking.apartment.name}" | ospite: ${booking.guestName || "n/d"} | checkIn:${formatDate(booking.checkInDate as Date)} checkOut:${formatDate(booking.checkOutDate as Date)} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
   );
 
-  const cleaningLines = cleanings.map((task: CleaningTaskWithApartmentForAI) => (
-    `- id:${(task as any).id} | ${task.apartment.name} | ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"}${(task.assignedTo as any)?.id ? ` (assignedToId:${(task.assignedTo as any).id})` : ""} | note: ${truncateText(task.notes, 160) || "n/d"} | booking: ${task.booking?.guestName || "n/d"} (${task.booking?.totalGuests ?? "n/d"} ospiti) | messaggi: ${formatManagerMessages(task.messages)}`
-  ));
+  // TAG esplicito [DA ASSEGNARE] vs [ASSEGNATA a X] — il modello non deve dedurre l'assegnazione dallo stato
+  const cleaningLines = cleanings.map((task: CleaningTaskWithApartmentForAI) => {
+    const assignTag = task.assignedTo?.name
+      ? `[ASSEGNATA a ${task.assignedTo.name}]`
+      : `[DA ASSEGNARE]`;
+    return `- id:${(task as any).id} | ${task.apartment.name} | ${formatDate(task.date)} | ${assignTag} | stato: ${task.status} | note: ${truncateText(task.notes, 160) || "n/d"} | booking: ${task.booking?.guestName || "n/d"} (${task.booking?.totalGuests ?? "n/d"} ospiti) | messaggi: ${formatManagerMessages(task.messages)}`;
+  });
 
   const ticketLines = tickets.map((ticket: MaintenanceTicketWithApartmentForAI) => (
     `- id:${(ticket as any).id} | ${ticket.apartment.name} | ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"}${(ticket.assignedTo as any)?.id ? ` (assignedToId:${(ticket.assignedTo as any).id})` : ""} | programmato: ${formatDateTime(ticket.scheduledStart)} | messaggi: ${formatManagerMessages(ticket.messages)}`
@@ -2335,6 +2339,7 @@ STATO APPARTAMENTI
 ${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
 
 PULIZIE OPERATIVE
+IMPORTANTE: [DA ASSEGNARE] = nessun cleaner assegnato. [ASSEGNATA a X] = già assegnata. Lo stato PENDING NON indica mancanza di assegnazione.
 ${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia operativa nel periodo caricato."}
 
 MANUTENZIONI OPERATIVE
