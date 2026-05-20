@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/src/lib/prisma";
 
 export async function GET() {
   try {
     const cleanings = await prisma.cleaningTask.findMany({
       where: {
-        scheduledDate: {
+        date: {
           gte: new Date("2026-05-01T00:00:00.000Z"),
           lt: new Date("2026-06-01T00:00:00.000Z"),
         },
       },
       select: {
         id: true,
-        scheduledDate: true,
+        date: true,
         status: true,
         assignedToId: true,
         assignedTo: {
@@ -22,7 +22,7 @@ export async function GET() {
           select: { id: true, name: true },
         },
       },
-      orderBy: { scheduledDate: "asc" },
+      orderBy: { date: "asc" },
     });
 
     const summary = {
