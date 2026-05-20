@@ -198,7 +198,7 @@ function classifyIntent(query: string): AIIntent {
     return "MANUTENZIONE";
   }
 
-  if (/prenotazione|prenotazioni|check.in|check.out|ospite|ospiti|booking|arrivo|partenza|disponibilit|calendario|soggiorno|notte|notti|airbnb|ical/.test(q)) {
+  if (/prenotazione|prenotazioni|check.in|check.out|ospite|ospiti|booking|arrivo|arrivi|partenza|partenze|disponibilit|calendario|agenda|soggiorno|notte|notti|airbnb|ical|evento|eventi/.test(q)) {
     return "PRENOTAZIONI";
   }
 
@@ -250,9 +250,21 @@ Rispondi:
 
   PRENOTAZIONI: `
 Sei un assistente specializzato nelle prenotazioni e nel calendario operativo di appartamenti turistici.
-Il tuo unico dominio sono le prenotazioni: date, ospiti, check-in/check-out, disponibilità, fonte.
+Il tuo dominio: prenotazioni, check-in, check-out, pulizie, ticket di manutenzione, disponibilità.
+
+REGOLA FONDAMENTALE — "Che eventi ci sono oggi/domani/questa settimana?":
+Quando l'utente chiede "che eventi ci sono", "cosa c'è domani", "cosa ho oggi", "agenda di oggi/domani" o simili,
+DEVI sempre elencare TUTTI gli eventi interni trovati nel contesto per quella data:
+  1. CHECK-IN: nome ospite, appartamento, numero ospiti, fonte
+  2. CHECK-OUT: nome ospite, appartamento
+  3. PULIZIE: appartamento, stato, cleaner assegnato
+  4. TICKET DI MANUTENZIONE: appartamento, titolo, stato, tecnico assegnato
+Se non ci sono eventi di un tipo, scrivilo esplicitamente ("Nessun check-in domani").
+NON rispondere "non ci sono eventi" senza aver verificato TUTTI e 4 i tipi.
 
 Regole operative che DEVI rispettare:
+- "domani" = data di oggi + 1 giorno. Usa la data nel contesto ("Oggi:" o "Data corrente:").
+- Scorri TUTTO il contesto prima di rispondere. Se un check-in/out è presente nel contesto, citalo sempre.
 - Le prenotazioni manuali sono la fonte operativa principale
 - Le prenotazioni importate da iCal/Airbnb sono read-only
 - Segnala conflitti di date se presenti nel contesto
@@ -405,7 +417,8 @@ const MAX_SECTION_TEXT_LENGTH = 5000;
 function isInternalOperationalQuestion(question: string) {
   const q = question.toLowerCase();
 
-  return (
+  // Termini sempre interni
+  if (
     q.includes("manuale") ||
     q.includes("documento") ||
     q.includes("allegato") ||
@@ -415,8 +428,38 @@ function isInternalOperationalQuestion(question: string) {
     q.includes("condizionatore") ||
     q.includes("elettrodomestico") ||
     q.includes("appartamento") ||
-    q.includes("trastevere")
-  );
+    q.includes("trastevere") ||
+    // operativi calendario
+    q.includes("check-in") ||
+    q.includes("check in") ||
+    q.includes("checkin") ||
+    q.includes("check-out") ||
+    q.includes("check out") ||
+    q.includes("checkout") ||
+    q.includes("arrivo") ||
+    q.includes("arrivi") ||
+    q.includes("partenza") ||
+    q.includes("partenze") ||
+    q.includes("prenotazione") ||
+    q.includes("prenotazioni") ||
+    q.includes("pulizia") ||
+    q.includes("pulizie") ||
+    q.includes("ticket") ||
+    q.includes("manutenzione") ||
+    q.includes("calendario") ||
+    q.includes("agenda") ||
+    q.includes("occupato") ||
+    q.includes("libero") ||
+    q.includes("disponibile")
+  ) return true;
+
+  // "eventi" o "evento" senza nome di città esplicito = calendario operativo interno
+  if (q.includes("eventi") || q.includes("evento")) {
+    const cityPattern = /\b(roma|milano|napoli|torino|firenze|venezia|bologna|genova|palermo|bari|in città|in centro|nel quartiere|della città|vicino|esterno|fuori)\b/;
+    if (!cityPattern.test(q)) return true;
+  }
+
+  return false;
 }
 
 function shouldUseWebSearch(question: string) {
