@@ -252,15 +252,16 @@ Rispondi:
 Sei un assistente specializzato nelle prenotazioni e nel calendario operativo di appartamenti turistici.
 Il tuo dominio: prenotazioni, check-in, check-out, pulizie, ticket di manutenzione, disponibilità.
 
-REGOLA FONDAMENTALE — "Che eventi ci sono oggi/domani/questa settimana?":
-Quando l'utente chiede "che eventi ci sono", "cosa c'è domani", "cosa ho oggi", "agenda di oggi/domani" o simili,
-DEVI sempre elencare TUTTI gli eventi interni trovati nel contesto per quella data:
-  1. CHECK-IN: nome ospite, appartamento, numero ospiti, fonte
-  2. CHECK-OUT: nome ospite, appartamento
-  3. PULIZIE: appartamento, stato, cleaner assegnato
-  4. TICKET DI MANUTENZIONE: appartamento, titolo, stato, tecnico assegnato
-Se non ci sono eventi di un tipo, scrivilo esplicitamente ("Nessun check-in domani").
-NON rispondere "non ci sono eventi" senza aver verificato TUTTI e 4 i tipi.
+REGOLA FONDAMENTALE — "Che eventi ci sono oggi/domani?":
+Il contesto contiene sezioni pre-computate:
+  - "════ EVENTI OGGI (GG/MM/AAAA) ════" — usala per domande su OGGI
+  - "════ EVENTI DOMANI (GG/MM/AAAA) ════" — usala per domande su DOMANI
+Quando l'utente chiede "che eventi ci sono", "cosa ho oggi/domani", "agenda di oggi/domani":
+  1. Identifica la data richiesta (oggi o domani)
+  2. Leggi ESATTAMENTE dalla sezione corrispondente: CHECK-IN, CHECK-OUT, PULIZIE, TICKET PROGRAMMATI
+  3. NON cercare o dedurre date da altre sezioni (PROSSIMI 7 GIORNI, SOGGIORNI IN CORSO, ecc.)
+  4. Se non ci sono eventi di un tipo nella sezione, scrivi "Nessun check-in domani" ecc.
+  5. NON rispondere "non ci sono eventi" senza aver letto entrambe le sottosezioni CHECK-IN e CHECK-OUT della sezione giusta.
 
 Regole operative che DEVI rispettare:
 - "domani" = data di oggi + 1 giorno. Usa la data nel contesto ("Oggi:" o "Data corrente:").
@@ -2213,14 +2214,33 @@ async function buildGeneralManagerContext(now: Date) {
     return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | accesso: ${accessSummary} | technicalProfile: ${compactJsonText(stripAccessKeysFromTechProfile(apartment.technicalProfile), 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
   });
 
-  // CHECK-IN OGGI: prenotazioni il cui checkInDate è oggi (ospiti in arrivo)
-  const checkinsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkInDate) === formatDateKey(todayStart));
-  const checkoutsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkOutDate) === formatDateKey(todayStart));
-  const upcomingCheckins = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate >= tomorrowStart && booking.checkInDate < next7Days);
-  const upcomingCheckouts = bookings.filter((booking: ApartmentBookingForAI) => booking.checkOutDate >= tomorrowStart && booking.checkOutDate < next7Days);
-  // SOGGIORNI IN CORSO: solo prenotazioni con checkIn PRIMA di oggi (ospiti già presenti da ieri o prima)
-  // NON include i check-in di oggi, altrimenti l'AI confonde arrivi odierni con soggiorni in corso
-  const activeBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate < todayStart && booking.checkOutDate > now);
+  // Usa formatDate (Europe/Rome) come chiave stringa per tutti i filtri — evita mismatch UTC/locale
+  const todayRomeKey    = formatDate(now);
+  const tomorrowRomeKey = formatDate(tomorrowStart);
+
+  const checkinsToday    = bookings.filter((b: ApartmentBookingForAI) => formatDate(b.checkInDate  as Date) === todayRomeKey);
+  const checkoutsToday   = bookings.filter((b: ApartmentBookingForAI) => formatDate(b.checkOutDate as Date) === todayRomeKey);
+  const checkinsTomorrow = bookings.filter((b: ApartmentBookingForAI) => formatDate(b.checkInDate  as Date) === tomorrowRomeKey);
+  const checkoutsTomorrow= bookings.filter((b: ApartmentBookingForAI) => formatDate(b.checkOutDate as Date) === tomorrowRomeKey);
+
+  // Prossimi 7 giorni: checkIn dal giorno dopodomani in poi (escluso oggi e domani già listati sopra)
+  const upcomingCheckins  = bookings.filter((b: ApartmentBookingForAI) => {
+    const k = formatDate(b.checkInDate as Date);
+    return k !== todayRomeKey && k !== tomorrowRomeKey && (b.checkInDate as Date) >= tomorrowStart && (b.checkInDate as Date) < next7Days;
+  });
+  const upcomingCheckouts = bookings.filter((b: ApartmentBookingForAI) => {
+    const k = formatDate(b.checkOutDate as Date);
+    return k !== todayRomeKey && k !== tomorrowRomeKey && (b.checkOutDate as Date) >= tomorrowStart && (b.checkOutDate as Date) < next7Days;
+  });
+
+  // SOGGIORNI IN CORSO: checkIn PRIMA di oggi, checkOut nel futuro (ospiti già presenti)
+  const activeBookings = bookings.filter((b: ApartmentBookingForAI) => (b.checkInDate as Date) < todayStart && (b.checkOutDate as Date) > now);
+
+  // Pulizie e ticket di OGGI e DOMANI (pre-computati per evitare ragionamento date da parte dell'AI)
+  const cleaningsToday    = cleanings.filter((t: CleaningTaskWithApartmentForAI) => formatDate(t.date as Date) === todayRomeKey);
+  const cleaningsTomorrow = cleanings.filter((t: CleaningTaskWithApartmentForAI) => formatDate(t.date as Date) === tomorrowRomeKey);
+  const ticketsToday      = tickets.filter((t: MaintenanceTicketWithApartmentForAI) => t.scheduledStart && formatDate(t.scheduledStart as Date) === todayRomeKey);
+  const ticketsTomorrow   = tickets.filter((t: MaintenanceTicketWithApartmentForAI) => t.scheduledStart && formatDate(t.scheduledStart as Date) === tomorrowRomeKey);
 
   // bookingLine usa formatDate (timezone Roma) invece di toISOString() per evitare ambiguità UTC/locale
   const bookingLine = (booking: ApartmentBookingWithApartmentForAI) => (
@@ -2255,9 +2275,10 @@ async function buildGeneralManagerContext(now: Date) {
 CONTESTO OPERATIVO MANAGER
 Modalita: contesto generale
 Periodo prenotazioni: ultimi 30 giorni / prossimi 60 giorni. Pulizie e ticket: aperti/in corso o ultimi 14 giorni. Limiti applicati per sicurezza.
+Oggi: ${todayRomeKey} | Domani: ${tomorrowRomeKey}
 
-STATO APPARTAMENTI
-${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
+════ EVENTI OGGI (${todayRomeKey}) ════
+Usa questa sezione per rispondere a "che eventi ci sono oggi?", "cosa ho oggi?", "agenda di oggi".
 
 CHECK-IN OGGI
 ${checkinsToday.length > 0 ? checkinsToday.map(bookingLine).join("\n") : "- Nessun check-in oggi."}
@@ -2265,14 +2286,41 @@ ${checkinsToday.length > 0 ? checkinsToday.map(bookingLine).join("\n") : "- Ness
 CHECK-OUT OGGI
 ${checkoutsToday.length > 0 ? checkoutsToday.map(bookingLine).join("\n") : "- Nessun check-out oggi."}
 
-PROSSIMI CHECK-IN 7 GIORNI
+PULIZIE OGGI
+${cleaningsToday.length > 0 ? cleaningsToday.map((t: CleaningTaskWithApartmentForAI) => `- id:${(t as any).id} | ${t.apartment.name} | stato: ${t.status} | assegnato: ${t.assignedTo?.name || "non assegnato"}`).join("\n") : "- Nessuna pulizia oggi."}
+
+TICKET PROGRAMMATI OGGI
+${ticketsToday.length > 0 ? ticketsToday.map((t: MaintenanceTicketWithApartmentForAI) => `- ${t.apartment.name} | ${t.title} | ${t.status} | tecnico: ${t.assignedTo?.name || "non assegnato"}`).join("\n") : "- Nessun ticket programmato oggi."}
+
+SOGGIORNI IN CORSO OGGI (ospiti già presenti — checkIn avvenuto PRIMA di oggi)
+${activeBookings.length > 0 ? activeBookings.map(bookingLine).join("\n") : "- Nessun soggiorno in corso da giorni precedenti."}
+
+════ EVENTI DOMANI (${tomorrowRomeKey}) ════
+Usa questa sezione per rispondere a "che eventi ci sono domani?", "cosa ho domani?", "agenda di domani".
+
+CHECK-IN DOMANI
+${checkinsTomorrow.length > 0 ? checkinsTomorrow.map(bookingLine).join("\n") : "- Nessun check-in domani."}
+
+CHECK-OUT DOMANI
+${checkoutsTomorrow.length > 0 ? checkoutsTomorrow.map(bookingLine).join("\n") : "- Nessun check-out domani."}
+
+PULIZIE DOMANI
+${cleaningsTomorrow.length > 0 ? cleaningsTomorrow.map((t: CleaningTaskWithApartmentForAI) => `- id:${(t as any).id} | ${t.apartment.name} | stato: ${t.status} | assegnato: ${t.assignedTo?.name || "non assegnato"}`).join("\n") : "- Nessuna pulizia domani."}
+
+TICKET PROGRAMMATI DOMANI
+${ticketsTomorrow.length > 0 ? ticketsTomorrow.map((t: MaintenanceTicketWithApartmentForAI) => `- ${t.apartment.name} | ${t.title} | ${t.status} | tecnico: ${t.assignedTo?.name || "non assegnato"}`).join("\n") : "- Nessun ticket programmato domani."}
+
+════ PROSSIMI 7 GIORNI (dal ${tomorrowRomeKey} in poi) ════
+
+PROSSIMI CHECK-IN 7 GIORNI (escluso domani)
 ${upcomingCheckins.length > 0 ? upcomingCheckins.map(bookingLine).join("\n") : "- Nessun check-in nei prossimi 7 giorni."}
 
-PROSSIMI CHECK-OUT 7 GIORNI
+PROSSIMI CHECK-OUT 7 GIORNI (escluso domani)
 ${upcomingCheckouts.length > 0 ? upcomingCheckouts.map(bookingLine).join("\n") : "- Nessun check-out nei prossimi 7 giorni."}
 
-SOGGIORNI IN CORSO (ospiti già presenti — checkIn avvenuto PRIMA di oggi, NON sono nuovi arrivi)
-${activeBookings.length > 0 ? activeBookings.map(bookingLine).join("\n") : "- Nessun soggiorno in corso da giorni precedenti."}
+════ STATO APPARTAMENTI ════
+STATO APPARTAMENTI
+${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
 
 PULIZIE OPERATIVE
 ${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia operativa nel periodo caricato."}
