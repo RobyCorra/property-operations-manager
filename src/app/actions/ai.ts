@@ -2217,12 +2217,14 @@ async function buildGeneralManagerContext(now: Date) {
   const checkinsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkInDate) === formatDateKey(todayStart));
   const checkoutsToday = bookings.filter((booking: ApartmentBookingForAI) => formatDateKey(booking.checkOutDate) === formatDateKey(todayStart));
   const upcomingCheckins = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate >= tomorrowStart && booking.checkInDate < next7Days);
+  const upcomingCheckouts = bookings.filter((booking: ApartmentBookingForAI) => booking.checkOutDate >= tomorrowStart && booking.checkOutDate < next7Days);
   // SOGGIORNI IN CORSO: solo prenotazioni con checkIn PRIMA di oggi (ospiti già presenti da ieri o prima)
   // NON include i check-in di oggi, altrimenti l'AI confonde arrivi odierni con soggiorni in corso
   const activeBookings = bookings.filter((booking: ApartmentBookingForAI) => booking.checkInDate < todayStart && booking.checkOutDate > now);
 
+  // bookingLine usa formatDate (timezone Roma) invece di toISOString() per evitare ambiguità UTC/locale
   const bookingLine = (booking: ApartmentBookingWithApartmentForAI) => (
-    `- apt:"${booking.apartment.name}" | ospite: ${booking.guestName || "n/d"} | checkIn:${(booking.checkInDate as Date).toISOString()} checkOut:${(booking.checkOutDate as Date).toISOString()} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
+    `- apt:"${booking.apartment.name}" | ospite: ${booking.guestName || "n/d"} | checkIn:${formatDate(booking.checkInDate as Date)} checkOut:${formatDate(booking.checkOutDate as Date)} | ospiti: ${booking.totalGuests} | stato: ${booking.status || "n/d"} | fonte: ${booking.source || "n/d"}`
   );
 
   const cleaningLines = cleanings.map((task: CleaningTaskWithApartmentForAI) => (
@@ -2265,6 +2267,9 @@ ${checkoutsToday.length > 0 ? checkoutsToday.map(bookingLine).join("\n") : "- Ne
 
 PROSSIMI CHECK-IN 7 GIORNI
 ${upcomingCheckins.length > 0 ? upcomingCheckins.map(bookingLine).join("\n") : "- Nessun check-in nei prossimi 7 giorni."}
+
+PROSSIMI CHECK-OUT 7 GIORNI
+${upcomingCheckouts.length > 0 ? upcomingCheckouts.map(bookingLine).join("\n") : "- Nessun check-out nei prossimi 7 giorni."}
 
 SOGGIORNI IN CORSO (ospiti già presenti — checkIn avvenuto PRIMA di oggi, NON sono nuovi arrivi)
 ${activeBookings.length > 0 ? activeBookings.map(bookingLine).join("\n") : "- Nessun soggiorno in corso da giorni precedenti."}
