@@ -201,55 +201,65 @@ export default function FloatingManagerChat({
   const [initialized, setInitialized] = useState(false);
 
   // ── Drag state ────────────────────────────────────────────────────────────
-  // pos: offset from default anchor (bottom-right). null = use CSS default.
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const [size, setSize] = useState({ w: 360, h: 520 });
   const dragging = useRef(false);
+  const resizing = useRef(false);
   const dragStart = useRef({ mx: 0, my: 0, wx: 0, wy: 0 });
+  const resizeStart = useRef({ mx: 0, my: 0, w: 360, h: 520 });
   const windowRef = useRef<HTMLDivElement>(null);
 
   function onDragStart(e: React.MouseEvent) {
-    // Only drag via header; ignore clicks on buttons inside the header
     if ((e.target as HTMLElement).closest("button")) return;
     e.preventDefault();
     dragging.current = true;
-
     const rect = windowRef.current?.getBoundingClientRect();
-    dragStart.current = {
-      mx: e.clientX,
-      my: e.clientY,
-      wx: rect?.left ?? 0,
-      wy: rect?.top ?? 0,
-    };
+    dragStart.current = { mx: e.clientX, my: e.clientY, wx: rect?.left ?? 0, wy: rect?.top ?? 0 };
 
     function onMove(ev: MouseEvent) {
       if (!dragging.current) return;
-      const dx = ev.clientX - dragStart.current.mx;
-      const dy = ev.clientY - dragStart.current.my;
-      const newLeft = dragStart.current.wx + dx;
-      const newTop = dragStart.current.wy + dy;
-
-      // Clamp within viewport
-      const W = windowRef.current?.offsetWidth ?? 360;
-      const H = windowRef.current?.offsetHeight ?? 520;
-      const clampedLeft = Math.max(0, Math.min(window.innerWidth - W, newLeft));
-      const clampedTop = Math.max(0, Math.min(window.innerHeight - H, newTop));
-
-      setPos({ x: clampedLeft, y: clampedTop });
+      const newLeft = dragStart.current.wx + (ev.clientX - dragStart.current.mx);
+      const newTop  = dragStart.current.wy + (ev.clientY - dragStart.current.my);
+      const W = windowRef.current?.offsetWidth ?? size.w;
+      const H = windowRef.current?.offsetHeight ?? size.h;
+      setPos({
+        x: Math.max(0, Math.min(window.innerWidth  - W, newLeft)),
+        y: Math.max(0, Math.min(window.innerHeight - H, newTop)),
+      });
     }
-
     function onUp() {
       dragging.current = false;
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
     }
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  }
 
+  function onResizeStart(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    resizing.current = true;
+    resizeStart.current = { mx: e.clientX, my: e.clientY, w: size.w, h: size.h };
+
+    function onMove(ev: MouseEvent) {
+      if (!resizing.current) return;
+      const newW = Math.max(300, Math.min(800, resizeStart.current.w + (ev.clientX - resizeStart.current.mx)));
+      const newH = Math.max(400, Math.min(window.innerHeight - 40, resizeStart.current.h + (ev.clientY - resizeStart.current.my)));
+      setSize({ w: newW, h: newH });
+    }
+    function onUp() {
+      resizing.current = false;
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    }
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
   }
   // ─────────────────────────────────────────────────────────────────────────
 
   const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesRef = useRef(messages);
   useEffect(() => { messagesRef.current = messages; }, [messages]);
 
@@ -482,11 +492,11 @@ export default function FloatingManagerChat({
       {open && (
         <div
           ref={windowRef}
-          className="z-50 w-[360px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
+          className="z-50 bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
           style={
             pos
-              ? { position: "fixed", left: pos.x, top: pos.y }
-              : { position: "fixed", bottom: "96px", right: "24px" }
+              ? { position: "fixed", left: pos.x, top: pos.y, width: size.w, height: size.h }
+              : { position: "fixed", bottom: "96px", right: "24px", width: size.w, height: size.h }
           }
         >
           {/* Header — drag handle */}
@@ -633,45 +643,68 @@ export default function FloatingManagerChat({
 
           {/* Input bar */}
           {!isPastSession && (
-            <div className="px-3 py-2.5 border-t border-slate-100 flex gap-2 flex-shrink-0 bg-white">
-              {lastPendingIdx && (
+            <div className="px-3 pt-2 pb-1 border-t border-slate-100 flex flex-col gap-2 flex-shrink-0 bg-white">
+              <div className="flex gap-2 items-end">
+                {lastPendingIdx && (
+                  <button
+                    onClick={() => handleConfirmAction(lastPendingIdx.i)}
+                    className="text-[10px] font-black uppercase tracking-widest text-white bg-amber-500 hover:bg-amber-600 px-3 py-2 rounded-full transition-colors animate-pulse flex-shrink-0"
+                  >
+                    ✓ Conferma
+                  </button>
+                )}
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  rows={1}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    e.target.style.height = "auto";
+                    e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      setTimeout(handleAsk, 0);
+                    }
+                  }}
+                  placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare..." : "Chiedi all'AI… (Shift+Enter per andare a capo)"}
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 resize-none overflow-hidden leading-snug"
+                  disabled={loading}
+                />
+                {/* Mic button */}
                 <button
-                  onClick={() => handleConfirmAction(lastPendingIdx.i)}
-                  className="text-[10px] font-black uppercase tracking-widest text-white bg-amber-500 hover:bg-amber-600 px-3 py-2 rounded-full transition-colors animate-pulse flex-shrink-0"
+                  type="button"
+                  onClick={toggleMic}
+                  disabled={loading}
+                  title={listening ? "Interrompi registrazione" : "Parla con l'AI"}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors flex-shrink-0 ${
+                    listening
+                      ? "bg-red-500 hover:bg-red-600 text-white animate-pulse"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-500"
+                  }`}
                 >
-                  ✓ Conferma
+                  🎤
                 </button>
-              )}
-              <input
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); setTimeout(handleAsk, 0); } }}
-                placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare..." : "Chiedi all'AI..."}
-                className="flex-1 bg-slate-50 border border-slate-200 rounded-full px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300"
-                disabled={loading}
-              />
-              {/* Mic button */}
-              <button
-                type="button"
-                onClick={toggleMic}
-                disabled={loading}
-                title={listening ? "Interrompi registrazione" : "Parla con l'AI"}
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors flex-shrink-0 ${
-                  listening
-                    ? "bg-red-500 hover:bg-red-600 text-white animate-pulse"
-                    : "bg-slate-100 hover:bg-slate-200 text-slate-500"
-                }`}
-              >
-                🎤
-              </button>
-              <button
-                onClick={() => setTimeout(handleAsk, 0)}
-                disabled={loading || !input.trim()}
-                className="w-8 h-8 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 flex items-center justify-center text-white text-sm transition-colors flex-shrink-0"
-              >
-                →
-              </button>
+                <button
+                  onClick={() => setTimeout(handleAsk, 0)}
+                  disabled={loading || !input.trim()}
+                  className="w-8 h-8 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 flex items-center justify-center text-white text-sm transition-colors flex-shrink-0"
+                >
+                  →
+                </button>
+              </div>
+              {/* Resize grip */}
+              <div className="flex justify-end">
+                <div
+                  onMouseDown={onResizeStart}
+                  title="Ridimensiona"
+                  className="w-4 h-4 flex items-center justify-center text-slate-300 hover:text-slate-500 cursor-se-resize transition-colors select-none"
+                  style={{ fontSize: 12 }}
+                >
+                  ⇲
+                </div>
+              </div>
             </div>
           )}
         </div>
