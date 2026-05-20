@@ -2510,7 +2510,7 @@ RICERCA WEB — REGOLA ASSOLUTA:
   });
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-4.1",
     temperature: 0,   // risposta deterministica: stessa domanda → stesso risultato
     messages: [
       { role: "system", content: systemPrompt },
