@@ -1,27 +1,22 @@
 import { notFound } from "next/navigation";
 import { getCleaningByToken } from "@/src/app/actions/cleaning-token";
-import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
 import ChecklistInteractive from "@/src/components/checklist-interactive";
 import PublicStatusButton from "@/src/components/public-status-button";
 import PublicStatusPoller from "@/src/components/public-status-poller";
-import { Paintbrush, CalendarDays, Navigation } from "@/src/components/icons";
-import { Users } from "lucide-react";
 
-const statusLabel: Record<string, string> = {
-  PENDING: "In Attesa",
-  IN_PROGRESS: "In Corso",
-  COMPLETED: "Completata",
-  AWAITING_REVIEW: "In Verifica",
-  APPROVED: "Approvata",
-};
-
-const statusColor: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  IN_PROGRESS: "bg-blue-100 text-blue-800",
-  COMPLETED: "bg-green-100 text-green-800",
-  AWAITING_REVIEW: "bg-purple-100 text-purple-800",
-  APPROVED: "bg-emerald-100 text-emerald-800",
-};
+// Formatta la data per il box in evidenza: "22 Maggio" + "Venerdì 2026"
+function formatDateBig(date: Date): { day: string; monthYear: string; weekday: string } {
+  const d = new Date(date);
+  const day = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", day: "numeric" });
+  const month = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", month: "long" });
+  const year = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", year: "numeric" });
+  const weekday = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", weekday: "long" });
+  return {
+    day,
+    monthYear: `${month} ${year}`,
+    weekday: weekday.charAt(0).toUpperCase() + weekday.slice(1),
+  };
+}
 
 export default async function PublicCleaningPage({
   params,
@@ -32,6 +27,9 @@ export default async function PublicCleaningPage({
   const task = await getCleaningByToken(token);
 
   if (!task) return notFound();
+
+  const dateInfo = formatDateBig(task.date as Date);
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
 
   const checklistItems = (() => {
     const master = task.apartment.checklistItems;
@@ -54,106 +52,82 @@ export default async function PublicCleaningPage({
     }));
   })();
 
-  const canStart = task.status === "PENDING";
+  const canStart    = task.status === "PENDING";
   const canComplete = task.status === "IN_PROGRESS";
+  const isWaiting   = task.status === "AWAITING_REVIEW";
+  const isDone      = task.status === "COMPLETED" || task.status === "APPROVED";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-violet-50/20">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-4 sticky top-0 z-10">
+    <div className="min-h-screen bg-slate-50 font-sans">
+
+      {/* ── HEADER ── */}
+      <header className="bg-white border-b border-slate-200 px-4 py-4">
         <div className="max-w-lg mx-auto flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-            <Paintbrush className="w-5 h-5 text-indigo-600" />
+          <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0 text-xl">
+            🧹
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-slate-800 truncate">{task.apartment.name}</p>
-            <p className="text-xs text-slate-500 truncate flex items-center gap-1">
-              <Navigation className="w-3 h-3" />
-              {task.apartment.address}
-            </p>
+            <p className="font-bold text-slate-800 text-base leading-tight">{task.apartment.name}</p>
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-indigo-600 underline underline-offset-2 flex items-center gap-1 mt-0.5"
+            >
+              📍 {task.apartment.address}
+            </a>
           </div>
-          <span className={`ml-auto text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ${statusColor[task.status] ?? "bg-slate-100 text-slate-600"}`}>
-            {statusLabel[task.status] ?? task.status}
-          </span>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
-        {/* Info card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 space-y-3">
-          <div className="flex items-center gap-2 text-sm text-slate-700">
-            <CalendarDays className="w-4 h-4 text-indigo-500 flex-shrink-0" />
-            <span className="font-medium">Data pulizia:</span>
-            <span>{formatRomeDateDisplay(task.date)}</span>
-          </div>
+      {/* ── CONTENUTO ── */}
+      <div className="max-w-lg mx-auto px-4 py-5 flex flex-col gap-4 pb-32">
 
-          {task.booking && (
-            <div className="flex items-center gap-2 text-sm text-slate-700">
-              <Users className="w-4 h-4 text-violet-500 flex-shrink-0" />
-              <span className="font-medium">Prossimo arrivo:</span>
-              <span>
-                {task.booking.guestName ?? "Ospite"} · {task.booking.totalGuests} pers. ·{" "}
-                check-in {formatRomeDateDisplay(task.booking.checkInDate)}
-              </span>
-            </div>
-          )}
-
-          {task.notes && (
-            <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 text-sm text-amber-800">
-              <span className="font-semibold">Note: </span>{task.notes}
-            </div>
-          )}
+        {/* Box data in evidenza */}
+        <div className="bg-indigo-600 rounded-2xl px-6 py-6 text-center text-white shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-widest opacity-75 mb-2">Data pulizia</p>
+          <p className="text-4xl font-extrabold leading-none">{dateInfo.day}</p>
+          <p className="text-xl font-bold mt-1 capitalize">{dateInfo.monthYear}</p>
+          <p className="text-sm opacity-80 mt-1">{dateInfo.weekday}</p>
         </div>
 
-        {/* Status buttons */}
-        {(canStart || canComplete) && (
-          <div className="flex gap-3">
-            {canStart && (
-              <PublicStatusButton
-                id={task.id}
-                nextStatus="IN_PROGRESS"
-                label="▶ Avvia pulizia"
-                afterLabel="🟣 Pulizia in corso"
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-2xl text-sm transition-colors"
-                afterClassName="flex-1 bg-violet-600 text-white font-semibold py-3 rounded-2xl text-sm"
-              />
-            )}
-            {canComplete && (
-              <PublicStatusButton
-                id={task.id}
-                nextStatus="AWAITING_REVIEW"
-                label="✓ Completa pulizia"
-                afterLabel="⏳ Attendi revisione..."
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-2xl text-sm transition-colors"
-              />
-            )}
+        {/* Note (solo se presenti) */}
+        {task.notes && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-4">
+            <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">📝 Note del responsabile</p>
+            <p className="text-sm text-amber-900 leading-relaxed">{task.notes}</p>
           </div>
         )}
 
-        {/* Banner AWAITING_REVIEW + auto-polling */}
-        {task.status === "AWAITING_REVIEW" && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-4 text-center space-y-1">
-            <p className="text-amber-800 font-semibold text-sm">⏳ Attendi revisione</p>
-            <p className="text-amber-600 text-xs">La pulizia è stata inviata al responsabile. Una volta approvata apparirà il messaggio di conferma.</p>
+        {/* ── Banner stati finali ── */}
+
+        {/* AWAITING_REVIEW */}
+        {isWaiting && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-5 text-center">
+            <p className="text-amber-800 font-bold text-base mb-1">⏳ Attendi revisione</p>
+            <p className="text-amber-600 text-sm leading-relaxed">
+              La pulizia è stata inviata al responsabile.<br />
+              Una volta approvata apparirà il messaggio di conferma.
+            </p>
             <PublicStatusPoller />
           </div>
         )}
 
-        {/* Banner COMPLETED / APPROVED */}
-        {(task.status === "COMPLETED" || task.status === "APPROVED") && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-4 text-center space-y-1">
-            <p className="text-emerald-800 font-semibold text-sm">✅ Pulizia conclusa — puoi andare</p>
-            <p className="text-emerald-600 text-xs">Il responsabile ha approvato la pulizia. Ottimo lavoro!</p>
+        {/* APPROVED / COMPLETED */}
+        {isDone && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-5 text-center">
+            <p className="text-emerald-800 font-bold text-base mb-1">✅ Pulizia conclusa — puoi andare</p>
+            <p className="text-emerald-600 text-sm">Il responsabile ha approvato la pulizia. Ottimo lavoro!</p>
           </div>
         )}
 
-        {/* Checklist */}
-        {checklistItems.length > 0 && (
+        {/* ── Checklist (solo IN_PROGRESS) ── */}
+        {canComplete && checklistItems.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="px-4 py-3 border-b border-slate-100">
+            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
               <p className="font-semibold text-slate-800 text-sm">Checklist pulizia</p>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {checklistItems.filter((i) => i.completed).length} / {checklistItems.length} completate
+              <p className="text-xs text-slate-400">
+                {checklistItems.filter((i) => i.completed).length} / {checklistItems.length}
               </p>
             </div>
             <div className="p-3">
@@ -162,11 +136,35 @@ export default async function PublicCleaningPage({
           </div>
         )}
 
-        {/* Footer */}
-        <p className="text-center text-xs text-slate-300 pb-4">
-          Property Operations Manager
-        </p>
+        <p className="text-center text-xs text-slate-300 pb-2">Property Operations Manager</p>
       </div>
+
+      {/* ── PULSANTE FISSO IN FONDO ── */}
+      {(canStart || canComplete) && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-20">
+          <div className="max-w-lg mx-auto">
+            {canStart && (
+              <PublicStatusButton
+                id={task.id}
+                nextStatus="IN_PROGRESS"
+                label="▶ Avvia pulizia"
+                afterLabel="🟣 Pulizia in corso..."
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl text-lg transition-colors"
+                afterClassName="w-full bg-violet-600 text-white font-bold py-4 rounded-2xl text-lg"
+              />
+            )}
+            {canComplete && (
+              <PublicStatusButton
+                id={task.id}
+                nextStatus="AWAITING_REVIEW"
+                label="✓ Completa pulizia"
+                afterLabel="⏳ Invio in corso..."
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl text-lg transition-colors"
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
