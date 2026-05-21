@@ -144,7 +144,15 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       // best-effort DB sync
     }
 
-    setJustCompleted(completed ? currentItem.label : null);
+    const completedTranslatedLabel =
+      lang && lang !== "it" && currentItem.labelTranslations?.[lang]
+        ? currentItem.labelTranslations[lang]
+        : currentItem.label;
+    const completedItemLabel =
+      currentItem.type === "dynamic"
+        ? `${completedTranslatedLabel}: ${currentItem.value ?? "N/A"}`
+        : completedTranslatedLabel;
+    setJustCompleted(completed ? completedItemLabel : null);
     clearPhoto();
 
     // Go to next unprocessed item, or completion screen if all processed
