@@ -4,18 +4,13 @@ import ChecklistInteractive from "@/src/components/checklist-interactive";
 import PublicStatusButton from "@/src/components/public-status-button";
 import PublicStatusPoller from "@/src/components/public-status-poller";
 
-// Formatta la data per il box in evidenza: "22 Maggio" + "Venerdì 2026"
-function formatDateBig(date: Date): { day: string; monthYear: string; weekday: string } {
+function formatDateFull(date: Date): string {
   const d = new Date(date);
-  const day = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", day: "numeric" });
-  const month = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", month: "long" });
-  const year = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", year: "numeric" });
   const weekday = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", weekday: "long" });
-  return {
-    day,
-    monthYear: `${month} ${year}`,
-    weekday: weekday.charAt(0).toUpperCase() + weekday.slice(1),
-  };
+  const day     = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", day: "numeric" });
+  const month   = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", month: "long" });
+  const year    = d.toLocaleDateString("it-IT", { timeZone: "Europe/Rome", year: "numeric" });
+  return `${weekday.charAt(0).toUpperCase() + weekday.slice(1)} ${day} ${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
 }
 
 export default async function PublicCleaningPage({
@@ -28,8 +23,8 @@ export default async function PublicCleaningPage({
 
   if (!task) return notFound();
 
-  const dateInfo = formatDateBig(task.date as Date);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
+  const dateLabel = formatDateFull(task.date as Date);
 
   const checklistItems = (() => {
     const master = task.apartment.checklistItems;
@@ -58,52 +53,49 @@ export default async function PublicCleaningPage({
   const isDone      = task.status === "COMPLETED" || task.status === "APPROVED";
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-100 font-sans">
 
-      {/* ── HEADER ── */}
-      <header className="bg-white border-b border-slate-200 px-4 py-4">
-        <div className="max-w-lg mx-auto flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0 text-xl">
-            🧹
-          </div>
-          <div className="min-w-0">
-            <p className="font-bold text-slate-800 text-base leading-tight">{task.apartment.name}</p>
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-indigo-600 underline underline-offset-2 flex items-center gap-1 mt-0.5"
-            >
-              📍 {task.apartment.address}
-            </a>
-          </div>
+      {/* ── HEADER viola ── */}
+      <header
+        className="px-5 pt-8 pb-10 text-white"
+        style={{ background: "linear-gradient(145deg, #4338ca, #7c3aed)" }}
+      >
+        <div className="max-w-lg mx-auto">
+          <span className="text-4xl block mb-3">🧹</span>
+          <p className="text-2xl font-extrabold leading-tight mb-2">{task.apartment.name}</p>
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm underline underline-offset-2 opacity-90 hover:opacity-100"
+          >
+            📍 {task.apartment.address}
+          </a>
         </div>
       </header>
 
-      {/* ── CONTENUTO ── */}
-      <div className="max-w-lg mx-auto px-4 py-5 flex flex-col gap-4 pb-32">
+      {/* ── CARDS ── */}
+      <div className="max-w-lg mx-auto px-4 -mt-5 flex flex-col gap-3 pb-32">
 
-        {/* Box data in evidenza */}
-        <div className="bg-indigo-600 rounded-2xl px-6 py-6 text-center text-white shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-widest opacity-75 mb-2">Data pulizia</p>
-          <p className="text-4xl font-extrabold leading-none">{dateInfo.day}</p>
-          <p className="text-xl font-bold mt-1 capitalize">{dateInfo.monthYear}</p>
-          <p className="text-sm opacity-80 mt-1">{dateInfo.weekday}</p>
+        {/* Card data */}
+        <div className="bg-white rounded-2xl shadow-sm p-4">
+          <p className="text-2xl mb-1">📅</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Data pulizia</p>
+          <p className="text-lg font-bold text-slate-800">{dateLabel}</p>
         </div>
 
-        {/* Note (solo se presenti) */}
+        {/* Card note (solo se presenti) */}
         {task.notes && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-4">
-            <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">📝 Note del responsabile</p>
-            <p className="text-sm text-amber-900 leading-relaxed">{task.notes}</p>
+          <div className="bg-white rounded-2xl shadow-sm p-4">
+            <p className="text-2xl mb-1">📝</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Note del responsabile</p>
+            <p className="text-base text-slate-700 leading-relaxed">{task.notes}</p>
           </div>
         )}
 
-        {/* ── Banner stati finali ── */}
-
-        {/* AWAITING_REVIEW */}
+        {/* ── Banner AWAITING_REVIEW ── */}
         {isWaiting && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-5 text-center">
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
             <p className="text-amber-800 font-bold text-base mb-1">⏳ Attendi revisione</p>
             <p className="text-amber-600 text-sm leading-relaxed">
               La pulizia è stata inviata al responsabile.<br />
@@ -113,9 +105,9 @@ export default async function PublicCleaningPage({
           </div>
         )}
 
-        {/* APPROVED / COMPLETED */}
+        {/* ── Banner APPROVED / COMPLETED ── */}
         {isDone && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-5 text-center">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center">
             <p className="text-emerald-800 font-bold text-base mb-1">✅ Pulizia conclusa — puoi andare</p>
             <p className="text-emerald-600 text-sm">Il responsabile ha approvato la pulizia. Ottimo lavoro!</p>
           </div>
@@ -123,7 +115,7 @@ export default async function PublicCleaningPage({
 
         {/* ── Checklist (solo IN_PROGRESS) ── */}
         {canComplete && checklistItems.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
               <p className="font-semibold text-slate-800 text-sm">Checklist pulizia</p>
               <p className="text-xs text-slate-400">
@@ -149,7 +141,7 @@ export default async function PublicCleaningPage({
                 nextStatus="IN_PROGRESS"
                 label="▶ Avvia pulizia"
                 afterLabel="🟣 Pulizia in corso..."
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl text-lg transition-colors"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl text-lg shadow-lg shadow-green-300 transition-colors"
                 afterClassName="w-full bg-violet-600 text-white font-bold py-4 rounded-2xl text-lg"
               />
             )}
