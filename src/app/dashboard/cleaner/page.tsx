@@ -3,29 +3,19 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
 import { prisma } from "@/src/lib/prisma";
-import CleanerChecklistWrapper from "@/src/components/cleaner-checklist-wrapper";
-import TicketConversation from "@/src/components/ticket-conversation";
-import AIAssistant from "@/src/components/ai-assistant";
 import SafeDate from "@/src/components/safe-date";
-import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableCleaningCard from "@/src/components/expandable-cleaning-card";
-import RecalculateCleaningChecklistButton from "@/src/components/recalculate-cleaning-checklist-button";
 import CleanerStartButton from "@/src/components/cleaner-start-button";
+import CleanerContinueButton from "@/src/components/cleaner-continue-button";
 import CleanerLangGate from "@/src/components/cleaner-lang-gate";
 import LangSwitchPill from "@/src/components/lang-switch-pill";
 import { CleanerGreeting, CleanerSectionTitle } from "@/src/components/cleaner-dashboard-header";
 import CleanerStatusBadge from "@/src/components/cleaner-status-badge";
 import CleanerActionBanner from "@/src/components/cleaner-action-banner";
-import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
-import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
-import {
-  LogOut,
-  Navigation,
-  Paintbrush,
-  CalendarDays,
-  MessageSquare
-} from "@/src/components/icons";
-import { ScrollText, ClipboardList, Sparkles } from "lucide-react";
+import { enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
+import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
+import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
+import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
 import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
 
 type CleanerTaskNextBooking = {
@@ -190,176 +180,98 @@ export default async function CleanerDashboardPage() {
                   />
                 )}
                 <ExpandableCleaningCard
-                  className={`space-y-5 rounded-[2.5rem] border border-white/60 bg-white/55 p-5 shadow-2xl shadow-black/5 backdrop-blur-xl transition-all duration-500 lg:p-7 ${task.status === "IN_PROGRESS" ? "ring-2 ring-violet-500/30 shadow-violet-500/5" : ""}`}
+                  className={`space-y-5 rounded-[2.5rem] border p-5 shadow-xl backdrop-blur-xl transition-all duration-500 lg:p-7 ${
+                    task.status === "IN_PROGRESS" ? "border-violet-200/60 bg-white/80 ring-2 ring-violet-500/20" :
+                    task.status === "APPROVED" || task.status === "COMPLETED" ? "border-emerald-200/60 bg-emerald-50/60" :
+                    "border-white/60 bg-white/55 shadow-black/5"
+                  }`}
                   headerMain={(
                     <div className="min-w-0">
                       <div className="mb-2 flex flex-wrap items-center gap-3">
                         <CleanerStatusBadge status={task.status} />
                       </div>
-                      <h3 className="text-2xl font-semibold uppercase tracking-tight text-slate-900 line-clamp-1">{task.apartment.name}</h3>
-                      <p className="mt-1 text-sm font-medium text-slate-500 truncate">{task.apartment.address}</p>
-                      {/* Date shown inline on mobile */}
-                      <div className="mt-3 flex items-center gap-2 lg:hidden">
-                        <CalendarDays size={13} className="text-slate-400" />
-                        <span className="text-xs font-bold text-slate-700">{formatRomeDateDisplay(task.date)}</span>
+                      <h3 className={`text-2xl font-semibold uppercase tracking-tight line-clamp-1 ${task.status === "APPROVED" || task.status === "COMPLETED" ? "text-emerald-800" : "text-slate-900"}`}>
+                        {task.apartment.name}
+                      </h3>
+                      {/* Indirizzo cliccabile → Google Maps */}
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 mt-2 text-indigo-600 hover:text-indigo-800 transition-colors"
+                      >
+                        <span className="w-5 h-5 bg-indigo-100 rounded-md flex items-center justify-center shrink-0">
+                          <MapPin size={11} className="text-indigo-600" />
+                        </span>
+                        <span className="text-sm font-semibold underline underline-offset-2">{task.apartment.address}</span>
+                      </a>
+                      {/* Data */}
+                      <div className="mt-2 flex items-center gap-2">
+                        <CalendarDays size={12} className="text-slate-400" />
+                        <span className="text-xs font-bold text-slate-600">{formatRomeDateDisplay(task.date)}</span>
                       </div>
                     </div>
                   )}
-                  headerMeta={(
-                    /* Date pill — desktop only */
-                    <div className="hidden lg:flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-white shadow-lg shadow-slate-200">
-                      <CalendarDays size={14} />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/90">
-                        {formatRomeDateDisplay(task.date)}
-                      </span>
-                    </div>
-                  )}
-                  actionRow={
-                    ["IN_PROGRESS", "AWAITING_REVIEW", "APPROVED"].includes(task.status)
-                      ? <CleanerActionBanner status={task.status} />
-                      : undefined
-                  }
-                  compactContent={(
-                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                      {/* Tempi */}
-                      <div className="h-full rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
-                        <div className="mb-4 flex items-center gap-2">
-                          <Paintbrush size={14} className="text-violet-600" />
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tempi intervento</p>
-                        </div>
-                        <p className="text-sm font-bold text-slate-900 mb-4">
-                          {formatRomeDateTimeDisplay(task.date)}
-                        </p>
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                          <div className="rounded-2xl bg-emerald-50 p-4">
-                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-emerald-700">Inizio reale</p>
-                            <p className="text-sm font-bold text-slate-900">
-                              {task.startedAt ? formatRomeDateTimeDisplay(task.startedAt) : "Non avviato"}
-                            </p>
-                          </div>
-                          <div className="rounded-2xl bg-blue-50 p-4">
-                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-blue-700">Fine reale</p>
-                            <p className="text-sm font-bold text-slate-900">
-                              {task.completedAt ? formatRomeDateTimeDisplay(task.completedAt) : "Non completato"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <AccessInstructionsCard accessInstructions={task.apartment.accessInstructions} />
-
-                      {/* Intervento */}
-                      <div className="h-full rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
-                        <div className="mb-4 flex items-center gap-2">
-                          <span className="text-lg">🧹</span>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Intervento</p>
-                        </div>
-                        <p className="text-sm font-bold text-slate-900">Pulizia per check-in</p>
-                        {task.notes && (
-                          <div className="mt-3 flex gap-2 rounded-2xl bg-slate-50 p-3 text-xs text-slate-600">
-                            <MessageSquare size={14} className="shrink-0 text-slate-400" />
-                            <span className="line-clamp-2 font-medium italic">"{task.notes}"</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Logistica */}
-                      <div className="h-full rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
-                        <div className="mb-4 flex items-center gap-2">
-                          <span className="text-lg">📍</span>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Logistica</p>
-                        </div>
-                        <div className="space-y-3">
-                          {task.booking ? (
-                            <p className="text-sm font-bold text-slate-900">
-                              <span className="text-rose-500">Uscita:</span> {task.booking.guestName}
-                              <span className="ml-2 text-[10px] font-medium text-slate-500">
-                                Out: <SafeDate date={task.booking.checkOutDate} serverDate={serverDate} format={{ day: "numeric", month: "short" }} />
-                              </span>
-                            </p>
-                          ) : (
-                            <p className="text-sm font-bold text-slate-900"><span className="text-rose-500">Uscita:</span> Evento manuale</p>
-                          )}
-                          {task.nextBooking ? (
-                            <p className="text-sm font-bold text-slate-900">
-                              <span className="text-emerald-600">Arrivo:</span> {task.nextBooking.guestName} ({task.nextBooking.totalGuests} osp)
-                              <span className="ml-2 text-[10px] font-medium text-slate-500">
-                                In: <SafeDate date={task.nextBooking.checkInDate} serverDate={serverDate} format={{ day: "numeric", month: "short" }} />
-                              </span>
-                            </p>
-                          ) : (
-                            <p className="text-sm font-bold text-slate-500"><span className="text-slate-400">Arrivo:</span> Nessun arrivo</p>
-                          )}
-                          <a
-                            href={`https://www.google.com/maps/dir/?api=1&destination=${task.apartment.latitude},${task.apartment.longitude}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-slate-200 transition-all hover:bg-slate-700"
-                          >
-                            <Navigation size={14} />
-                            Apri percorso
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  expandedContent={(
-                    <div className="space-y-5">
-                      {/* Pulsante avvio — solo per task PENDING, con controllo data */}
+                  headerMeta={undefined}
+                  actionRow={(
+                    <div className="flex flex-col gap-2">
                       {task.status === "PENDING" && (
-                        <CleanerStartButton
-                          taskId={task.id}
-                          taskDate={task.date.toISOString()}
-                        />
+                        <CleanerStartButton taskId={task.id} taskDate={task.date.toISOString()} />
+                      )}
+                      {task.status === "IN_PROGRESS" && (
+                        <CleanerContinueButton taskId={task.id} />
+                      )}
+                      {["AWAITING_REVIEW", "APPROVED", "COMPLETED"].includes(task.status) && (
+                        <CleanerActionBanner status={task.status} />
+                      )}
+                    </div>
+                  )}
+                  compactContent={<></>}
+                  expandedContent={(
+                    <div className="space-y-3">
+                      {/* Check-out / Check-in */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-1">🚪 Check-out</p>
+                          <p className="text-sm font-bold text-slate-900 truncate">
+                            {task.booking ? task.booking.guestName || "—" : "Evento manuale"}
+                          </p>
+                          {task.booking && (
+                            <p className="text-[10px] text-slate-400 mt-0.5">
+                              <SafeDate date={task.booking.checkOutDate} serverDate={serverDate} format={{ day: "numeric", month: "short" }} />
+                            </p>
+                          )}
+                        </div>
+                        <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-1">🛎 Check-in</p>
+                          {task.nextBooking ? (
+                            <>
+                              <p className="text-sm font-bold text-slate-900 truncate">{task.nextBooking.guestName || "—"}</p>
+                              <p className="text-[10px] text-slate-400 mt-0.5">
+                                {task.nextBooking.totalGuests} osp · <SafeDate date={task.nextBooking.checkInDate} serverDate={serverDate} format={{ day: "numeric", month: "short" }} />
+                              </p>
+                            </>
+                          ) : (
+                            <p className="text-sm font-bold text-slate-400">Nessun arrivo</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Accesso appartamento */}
+                      {task.apartment.accessInstructions && (
+                        <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-amber-500 mb-2">🔑 Accesso</p>
+                          <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{task.apartment.accessInstructions}</p>
+                        </div>
                       )}
 
-                      <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
-                        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="flex items-center gap-3">
-                            <ClipboardList size={18} className="text-violet-600" />
-                            <h4 className="text-sm font-semibold uppercase tracking-tight text-slate-900">Checklist Qualità</h4>
-                          </div>
-                          {task.status === "IN_PROGRESS" && (
-                            <RecalculateCleaningChecklistButton taskId={task.id} />
-                          )}
+                      {/* Note responsabile */}
+                      {task.notes && (
+                        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                          <p className="text-[9px] font-black uppercase tracking-widest text-amber-600 mb-2">📝 Note</p>
+                          <p className="text-sm text-amber-800 italic leading-relaxed">"{task.notes}"</p>
                         </div>
-                        {task.status === "IN_PROGRESS" ? (
-                          <CleanerChecklistWrapper
-                            key={JSON.stringify(checklist)}
-                            taskId={task.id}
-                            initialItems={checklist}
-                          />
-                        ) : (
-                          <p className="rounded-2xl border border-slate-100 border-dashed bg-slate-50/70 px-4 py-3 text-sm font-medium text-slate-500">
-                            Avvia intervento per vedere checklist
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-                        <AIAssistant
-                          role="CLEANER"
-                          type="cleaning"
-                          apartmentId={task.apartmentId}
-                          cleaningTaskId={task.id}
-                          initialMessages={task.aiAssistantMessages}
-                          compact
-                        />
-                        <div className="rounded-3xl border border-slate-100 bg-white/70 p-4 shadow-sm">
-                          <div className="mb-3 flex items-center gap-2">
-                            <span className="text-lg">💬</span>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chat</p>
-                          </div>
-                          <TicketConversation
-                            entityId={task.id}
-                            initialMessages={task.messages}
-                            currentUserRole="CLEANER"
-                            currentUserName={user.name}
-                            submitAction={createCleaningTaskMessage}
-                            heightClass="h-[380px]"
-                          />
-                        </div>
-                      </div>
+                      )}
                     </div>
                   )}
                 />

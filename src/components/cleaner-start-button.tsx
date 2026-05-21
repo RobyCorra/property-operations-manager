@@ -22,12 +22,8 @@ function getRomeDateLabel(isoDate: string, lang: string): string {
 }
 
 function isTodayRome(isoDate: string): boolean {
-  const taskDate = new Date(isoDate).toLocaleDateString("it-IT", {
-    timeZone: "Europe/Rome",
-  });
-  const today = new Date().toLocaleDateString("it-IT", {
-    timeZone: "Europe/Rome",
-  });
+  const taskDate = new Date(isoDate).toLocaleDateString("it-IT", { timeZone: "Europe/Rome" });
+  const today = new Date().toLocaleDateString("it-IT", { timeZone: "Europe/Rome" });
   return taskDate === today;
 }
 
@@ -45,7 +41,7 @@ export default function CleanerStartButton({ taskId, taskDate }: Props) {
         <button
           type="button"
           disabled
-          className="w-full py-3.5 rounded-full bg-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest cursor-not-allowed"
+          className="w-full py-3.5 rounded-xl bg-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest cursor-not-allowed"
         >
           {t.lockedUntil(dateLabel)}
         </button>
@@ -62,15 +58,22 @@ export default function CleanerStartButton({ taskId, taskDate }: Props) {
         startTransition(async () => {
           try {
             await updateCleaningStatus(taskId, "IN_PROGRESS");
-            router.refresh();
+            router.push(`/dashboard/cleaner/task/${taskId}`);
           } catch (err: unknown) {
             alert((err as Error).message || "Errore durante l'avvio.");
           }
         })
       }
-      className="w-full py-3.5 rounded-full bg-gradient-to-r from-violet-600 to-blue-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-violet-200 hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-blue-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-violet-200 hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
     >
-      {isPending ? "..." : t.startCleaning}
+      {isPending ? (
+        "..."
+      ) : (
+        <>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          {t.startCleaning}
+        </>
+      )}
     </button>
   );
 }
