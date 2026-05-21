@@ -1,0 +1,213 @@
+export type Lang = "it" | "en" | "es";
+
+export const translations = {
+  it: {
+    // Language picker
+    pickLang: "Scegli la tua lingua",
+    pickLangSub: "Choose your language · Elige tu idioma",
+
+    // Page header / cards
+    dateLabel: "Data pulizia",
+    notesLabel: "Note del responsabile",
+
+    // Buttons
+    startBtn: "▶ Avvia pulizia",
+    startingBtn: "🟣 Pulizia in corso...",
+
+    // Banners
+    waitingTitle: "⏳ Attendi revisione",
+    waitingText: "La pulizia è stata inviata al responsabile.",
+    waitingText2: "Una volta approvata apparirà il messaggio di conferma.",
+    waitingAutoUpdate: (s: number) => `Aggiornamento automatico in ${s}s`,
+    waitingCheckNow: "Controlla ora",
+    doneTitle: "✅ Pulizia conclusa — puoi andare",
+    doneText: "Il responsabile ha approvato la pulizia. Ottimo lavoro!",
+
+    // Checklist
+    checklistTitle: "Checklist pulizia",
+    stepOf: (cur: number, tot: number) => `Punto ${cur} di ${tot}`,
+    required: "Obbligatorio",
+    photoLabel: "📸 Foto di verifica",
+    photoOptional: "📸 Foto di verifica (opzionale)",
+    takePhoto: "Scatta una foto",
+    photoReady: "✓ Pronta per l'invio",
+    photoRequiredError: "📸 Foto obbligatoria — scatta una foto prima di procedere",
+    prevCompleted: (label: string) => `"${label}" completato`,
+    back: "Indietro",
+    skip: "Salta",
+    done: "Fatto",
+    uploading: "Caricamento...",
+    saving: "Salvataggio...",
+
+    // Incomplete screen
+    incompleteTitle: "Intervento non completabile",
+    incompleteText: (n: number) =>
+      `${n} ${n === 1 ? "punto non è stato" : "punti non sono stati"} completato/i. Risolvi tutti i punti per poter chiudere l'intervento.`,
+    skipped: "Saltato",
+    notCompleted: "Non completato",
+    resolve: "Risolvi",
+    completeDisabled: "✓ Intervento Completato",
+    completeHint: "Completa tutti i punti per sbloccare questa azione.",
+
+    // Completion screen
+    allDoneTitle: "Checklist completata!",
+    allDoneCount: (done: number, tot: number) => `${done} / ${tot} punti verificati`,
+    photosAttached: (n: number) => `📸 ${n} foto allegate`,
+    completeBtn: "✓ Intervento Completato",
+    completing: "Completamento...",
+    notifyHint: "Supervisor e Manager riceveranno una notifica immediata.",
+
+    // Cleaner dashboard
+    dashSub: "I tuoi interventi assegnati",
+    dashSection: "Interventi Assegnati",
+    viewInfo: "Vedi Informazioni",
+    closeInfo: "Chiudi dettagli",
+    startCleaning: "▶ Avvia Intervento",
+    lockedUntil: (date: string) => `🔒 Disponibile il ${date}`,
+    lockedHint: "Puoi avviare solo nella data programmata",
+    statusPending: "In Attesa",
+    statusInProgress: "In Corso",
+    statusAwaiting: "In Verifica",
+    statusCompleted: "Completata",
+    statusApproved: "Approvata",
+    inProgressBanner: "Intervento in corso",
+
+    footer: "Property Operations Manager",
+  },
+
+  en: {
+    pickLang: "Choose your language",
+    pickLangSub: "Scegli la tua lingua · Elige tu idioma",
+
+    dateLabel: "Cleaning date",
+    notesLabel: "Manager's notes",
+
+    startBtn: "▶ Start cleaning",
+    startingBtn: "🟣 Cleaning in progress...",
+
+    waitingTitle: "⏳ Awaiting review",
+    waitingText: "The cleaning has been sent to the manager.",
+    waitingText2: "Once approved, the confirmation message will appear.",
+    waitingAutoUpdate: (s: number) => `Auto-update in ${s}s`,
+    waitingCheckNow: "Check now",
+    doneTitle: "✅ Cleaning done — you can go",
+    doneText: "The manager has approved the cleaning. Great job!",
+
+    checklistTitle: "Cleaning checklist",
+    stepOf: (cur: number, tot: number) => `Step ${cur} of ${tot}`,
+    required: "Required",
+    photoLabel: "📸 Verification photo",
+    photoOptional: "📸 Verification photo (optional)",
+    takePhoto: "Take a photo",
+    photoReady: "✓ Ready to send",
+    photoRequiredError: "📸 Photo required — take a photo before proceeding",
+    prevCompleted: (label: string) => `"${label}" completed`,
+    back: "Back",
+    skip: "Skip",
+    done: "Done",
+    uploading: "Uploading...",
+    saving: "Saving...",
+
+    incompleteTitle: "Cannot complete intervention",
+    incompleteText: (n: number) =>
+      `${n} ${n === 1 ? "item has not been" : "items have not been"} completed. Resolve all items to close the intervention.`,
+    skipped: "Skipped",
+    notCompleted: "Not completed",
+    resolve: "Resolve",
+    completeDisabled: "✓ Intervention Completed",
+    completeHint: "Complete all items to unlock this action.",
+
+    allDoneTitle: "Checklist completed!",
+    allDoneCount: (done: number, tot: number) => `${done} / ${tot} items verified`,
+    photosAttached: (n: number) => `📸 ${n} photo${n === 1 ? "" : "s"} attached`,
+    completeBtn: "✓ Intervention Completed",
+    completing: "Submitting...",
+    notifyHint: "Supervisor and Manager will receive an immediate notification.",
+
+    // Cleaner dashboard
+    dashSub: "Your assigned cleaning jobs",
+    dashSection: "Assigned Jobs",
+    viewInfo: "View Information",
+    closeInfo: "Close details",
+    startCleaning: "▶ Start Cleaning",
+    lockedUntil: (date: string) => `🔒 Available on ${date}`,
+    lockedHint: "You can start this job only on the scheduled date",
+    statusPending: "Pending",
+    statusInProgress: "In Progress",
+    statusAwaiting: "Awaiting Review",
+    statusCompleted: "Completed",
+    statusApproved: "Approved",
+    inProgressBanner: "Intervention in progress",
+
+    footer: "Property Operations Manager",
+  },
+
+  es: {
+    pickLang: "Elige tu idioma",
+    pickLangSub: "Scegli la tua lingua · Choose your language",
+
+    dateLabel: "Fecha de limpieza",
+    notesLabel: "Notas del responsable",
+
+    startBtn: "▶ Iniciar limpieza",
+    startingBtn: "🟣 Limpieza en curso...",
+
+    waitingTitle: "⏳ En espera de revisión",
+    waitingText: "La limpieza ha sido enviada al responsable.",
+    waitingText2: "Una vez aprobada, aparecerá el mensaje de confirmación.",
+    waitingAutoUpdate: (s: number) => `Actualización automática en ${s}s`,
+    waitingCheckNow: "Verificar ahora",
+    doneTitle: "✅ Limpieza completada — puedes irte",
+    doneText: "El responsable ha aprobado la limpieza. ¡Excelente trabajo!",
+
+    checklistTitle: "Lista de tareas",
+    stepOf: (cur: number, tot: number) => `Tarea ${cur} de ${tot}`,
+    required: "Obligatorio",
+    photoLabel: "📸 Foto de verificación",
+    photoOptional: "📸 Foto de verificación (opcional)",
+    takePhoto: "Tomar una foto",
+    photoReady: "✓ Lista para enviar",
+    photoRequiredError: "📸 Foto obligatoria — toma una foto antes de continuar",
+    prevCompleted: (label: string) => `"${label}" completado`,
+    back: "Atrás",
+    skip: "Omitir",
+    done: "Listo",
+    uploading: "Cargando...",
+    saving: "Guardando...",
+
+    incompleteTitle: "No se puede completar la intervención",
+    incompleteText: (n: number) =>
+      `${n} ${n === 1 ? "punto no ha sido" : "puntos no han sido"} completado/s. Resuelve todos los puntos para cerrar la intervención.`,
+    skipped: "Omitido",
+    notCompleted: "No completado",
+    resolve: "Resolver",
+    completeDisabled: "✓ Intervención Completada",
+    completeHint: "Completa todos los puntos para desbloquear esta acción.",
+
+    allDoneTitle: "¡Lista completada!",
+    allDoneCount: (done: number, tot: number) => `${done} / ${tot} puntos verificados`,
+    photosAttached: (n: number) => `📸 ${n} foto${n === 1 ? "" : "s"} adjuntas`,
+    completeBtn: "✓ Intervención Completada",
+    completing: "Enviando...",
+    notifyHint: "El supervisor y el manager recibirán una notificación inmediata.",
+
+    // Cleaner dashboard
+    dashSub: "Tus tareas asignadas",
+    dashSection: "Tareas Asignadas",
+    viewInfo: "Ver Información",
+    closeInfo: "Cerrar detalles",
+    startCleaning: "▶ Iniciar intervención",
+    lockedUntil: (date: string) => `🔒 Disponible el ${date}`,
+    lockedHint: "Solo puedes iniciar en la fecha programada",
+    statusPending: "Pendiente",
+    statusInProgress: "En Curso",
+    statusAwaiting: "En Revisión",
+    statusCompleted: "Completada",
+    statusApproved: "Aprobada",
+    inProgressBanner: "Intervención en curso",
+
+    footer: "Property Operations Manager",
+  },
+} as const;
+
+export type T = (typeof translations)[Lang];

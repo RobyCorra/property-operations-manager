@@ -2,9 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
-import { updateCleaningStatus } from "@/src/app/actions/operational";
 import { prisma } from "@/src/lib/prisma";
-import StatusUpdateButton from "@/src/components/status-update-button";
 import CleanerChecklistWrapper from "@/src/components/cleaner-checklist-wrapper";
 import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
@@ -12,6 +10,8 @@ import SafeDate from "@/src/components/safe-date";
 import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableCleaningCard from "@/src/components/expandable-cleaning-card";
 import RecalculateCleaningChecklistButton from "@/src/components/recalculate-cleaning-checklist-button";
+import CleanerStartButton from "@/src/components/cleaner-start-button";
+import CleanerLangGate from "@/src/components/cleaner-lang-gate";
 import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import {
@@ -21,16 +21,8 @@ import {
   CalendarDays,
   MessageSquare
 } from "@/src/components/icons";
-import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
+import { ScrollText, ClipboardList, Sparkles } from "lucide-react";
 import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
-
-const cleaningStatusLabel: Record<string, string> = {
-  PENDING: "In Attesa",
-  IN_PROGRESS: "In Corso",
-  COMPLETED: "Completata",
-  AWAITING_REVIEW: "In Verifica",
-  APPROVED: "Approvata",
-};
 
 type CleanerTaskNextBooking = {
   guestName: string | null;
@@ -140,6 +132,7 @@ export default async function CleanerDashboardPage() {
   const serverDate = new Date().toISOString();
 
   return (
+    <CleanerLangGate>
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-5xl mx-auto space-y-12">
 
@@ -205,7 +198,7 @@ export default async function CleanerDashboardPage() {
                           "bg-slate-100 text-slate-500"
                         }`}>
                           <div className={`h-1.5 w-1.5 rounded-full ${task.status === "IN_PROGRESS" ? "bg-white animate-pulse" : task.status === "AWAITING_REVIEW" ? "bg-white animate-pulse" : "bg-white/70"}`} />
-                          {cleaningStatusLabel[task.status] ?? task.status}
+                          {{ PENDING: "In Attesa", IN_PROGRESS: "In Corso", COMPLETED: "Completata", AWAITING_REVIEW: "In Verifica", APPROVED: "Approvata" }[task.status] ?? task.status}
                         </span>
                       </div>
                       <h3 className="text-2xl font-semibold uppercase tracking-tight text-slate-900 line-clamp-1">{task.apartment.name}</h3>
@@ -226,34 +219,22 @@ export default async function CleanerDashboardPage() {
                       </span>
                     </div>
                   )}
-                  actionRow={(
-                    task.status === "PENDING" ? (
-                      <StatusUpdateButton
-                        id={task.id}
-                        nextStatus="IN_PROGRESS"
-                        label="▶  Avvia Intervento"
-                        action={updateCleaningStatus}
-                        className="w-full bg-gradient-to-r from-violet-600 to-blue-500 text-white text-xs font-black uppercase tracking-widest py-4 rounded-full transition-all duration-300 shadow-xl shadow-violet-200 hover:shadow-2xl hover:scale-[1.03] active:scale-95"
-                      />
-                    ) : task.status === "IN_PROGRESS" ? (
+                  actionRow={
+                    task.status === "IN_PROGRESS" ? (
                       <div className="w-full rounded-full bg-violet-50 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-violet-700">
                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500 animate-pulse mr-2 align-middle" />
                         Intervento in corso
                       </div>
-                    ) : task.status === "COMPLETED" ? (
-                      <div className="w-full rounded-full bg-violet-50 border border-violet-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-violet-700">
-                        ✓ Completata — in attesa di approvazione del manager
-                      </div>
                     ) : task.status === "AWAITING_REVIEW" ? (
                       <div className="w-full rounded-full bg-yellow-50 border border-yellow-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-yellow-700">
-                        ⏳ Inviata al supervisor — in attesa di revisione
+                        ⏳ In attesa di revisione
                       </div>
                     ) : task.status === "APPROVED" ? (
                       <div className="w-full rounded-full bg-emerald-600 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-white">
                         ✓ Approvata
                       </div>
-                    ) : null
-                  )}
+                    ) : undefined
+                  }
                   compactContent={(
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                       {/* Tempi */}
@@ -340,6 +321,14 @@ export default async function CleanerDashboardPage() {
                   )}
                   expandedContent={(
                     <div className="space-y-5">
+                      {/* Pulsante avvio — solo per task PENDING, con controllo data */}
+                      {task.status === "PENDING" && (
+                        <CleanerStartButton
+                          taskId={task.id}
+                          taskDate={task.date.toISOString()}
+                        />
+                      )}
+
                       <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
                         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                           <div className="flex items-center gap-3">
@@ -438,5 +427,6 @@ export default async function CleanerDashboardPage() {
         </form>
       </nav>
     </main>
+    </CleanerLangGate>
   );
 }
