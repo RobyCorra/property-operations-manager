@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { upload } from "@vercel/blob/client";
 import { updateTaskChecklist } from "@/src/app/actions/checklist";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
-import { Camera, ChevronRight, ChevronLeft, SkipForward, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { Camera, ChevronRight, ChevronLeft, SkipForward, CheckCircle2, Loader2, AlertCircle, Trash2 } from "lucide-react";
 import { useLang } from "@/src/components/lang-context";
 
 interface ChecklistItem {
@@ -75,10 +75,28 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     setCurrentIndex((prev) => prev - 1);
   };
 
+  const goForward = () => {
+    clearPhoto();
+    setJustCompleted(null);
+    setCurrentIndex((prev) => prev + 1);
+  };
+
   const goToItem = (idx: number) => {
     clearPhoto();
     setJustCompleted(null);
     setCurrentIndex(idx);
+  };
+
+  const resetItem = async (idx: number) => {
+    const updatedItems = items.map((item, i) =>
+      i === idx ? { ...item, completed: false, skipped: false, photoUrl: null } : item
+    );
+    setItems(updatedItems);
+    try {
+      await updateTaskChecklist(taskId, updatedItems);
+    } catch {
+      // best-effort
+    }
   };
 
   const advance = async (completed: boolean) => {
@@ -255,7 +273,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   }
 
   // ── Step view ──────────────────────────────────────────────────────────────
-  const progress = Math.round((currentIndex / items.length) * 100);
+  const progress = Math.round((completedCount / items.length) * 100);
   const translatedLabel =
     lang && lang !== "it" && currentItem.labelTranslations?.[lang]
       ? currentItem.labelTranslations[lang]
@@ -266,6 +284,80 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       ? `${translatedLabel}: ${currentItem.value ?? "N/A"}`
       : translatedLabel;
 
+  // ── Item già completato: vista sola lettura con cestino ────────────────────
+  if (currentItem.completed) {
+    return (
+      <div className="animate-in fade-in duration-300">
+        {/* Progress bar */}
+        <div className="mb-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              {t.stepOf(currentIndex + 1, items.length)}
+            </span>
+            <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
+          </div>
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-violet-500 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Completed card */}
+        <div className="rounded-2xl bg-green-50 border border-green-200 p-4 shadow-sm mb-4">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 size={20} className="text-green-600 shrink-0" />
+            <span className="flex-1 text-base font-bold text-green-800 leading-snug">{itemLabel}</span>
+            <button
+              type="button"
+              onClick={() => resetItem(currentIndex)}
+              className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center text-red-500 hover:bg-red-200 active:scale-95 transition-all shrink-0"
+              title="Annulla e rifai"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
+          {currentItem.photoUrl && (
+            <div className="mt-3 flex items-center gap-3 pl-8">
+              <a href={currentItem.photoUrl} target="_blank" rel="noreferrer">
+                <img
+                  src={currentItem.photoUrl}
+                  alt="foto"
+                  className="w-12 h-12 object-cover rounded-xl border border-green-200 shadow-sm hover:scale-105 transition-transform"
+                />
+              </a>
+              <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider">Foto allegata</span>
+            </div>
+          )}
+        </div>
+
+        {/* Navigazione semplificata */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={goBack}
+            disabled={currentIndex === 0}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft size={13} />
+            {t.back}
+          </button>
+          <button
+            type="button"
+            onClick={goForward}
+            disabled={currentIndex >= items.length - 1}
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            Avanti
+            <ChevronRight size={13} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Item da fare ───────────────────────────────────────────────────────────
   return (
     <div className="animate-in fade-in duration-300">
       {/* Progress bar */}
@@ -300,16 +392,9 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         </div>
       )}
 
-      {/* Item card */}
+      {/* Item card — nessun testo "Obbligatorio" qui */}
       <div className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm mb-4 text-center">
-        <h3 className="text-lg font-bold text-slate-900 leading-snug">
-          {itemLabel}
-          {currentItem.required && <span className="text-rose-500 ml-1 text-base">*</span>}
-        </h3>
-        {/* "Obbligatorio" sotto il titolo solo se NON è photo-required (in quel caso va nella sezione foto) */}
-        {currentItem.required && !currentItem.photoRequired && (
-          <p className="text-[10px] text-rose-400 font-bold uppercase tracking-widest mt-2">{t.required}</p>
-        )}
+        <h3 className="text-lg font-bold text-slate-900 leading-snug">{itemLabel}</h3>
       </div>
 
       {/* Photo section */}
