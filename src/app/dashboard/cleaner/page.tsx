@@ -5,7 +5,7 @@ import { logoutAction } from "@/src/app/actions/auth";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
 import { prisma } from "@/src/lib/prisma";
 import StatusUpdateButton from "@/src/components/status-update-button";
-import ChecklistInteractive from "@/src/components/checklist-interactive";
+import CleanerChecklistWrapper from "@/src/components/cleaner-checklist-wrapper";
 import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
 import SafeDate from "@/src/components/safe-date";
@@ -41,11 +41,15 @@ type CleanerTaskNextBooking = {
 type CleanerTaskChecklistItem = {
   id: string;
   label: string;
+  labelTranslations?: Record<string, string> | null;
   type: string;
   value: number | null;
   required: boolean;
+  photoRequired: boolean;
   completed: boolean;
   formula?: string | null;
+  photoUrl?: string | null;
+  skipped?: boolean;
 };
 
 type CleanerDashboardTask = {
@@ -347,7 +351,7 @@ export default async function CleanerDashboardPage() {
                           )}
                         </div>
                         {task.status === "IN_PROGRESS" ? (
-                          <ChecklistInteractive
+                          <CleanerChecklistWrapper
                             key={JSON.stringify(checklist)}
                             taskId={task.id}
                             initialItems={checklist}

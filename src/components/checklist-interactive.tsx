@@ -5,13 +5,16 @@ import { upload } from "@vercel/blob/client";
 import { updateTaskChecklist } from "@/src/app/actions/checklist";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
 import { Camera, ChevronRight, ChevronLeft, SkipForward, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { useLang } from "@/src/components/lang-context";
 
 interface ChecklistItem {
   id: string;
   label: string;
+  labelTranslations?: Record<string, string> | null;
   type: string;
   value?: number | null;
   required: boolean;
+  photoRequired: boolean;
   completed: boolean;
   formula?: string | null;
   photoUrl?: string | null;
@@ -24,6 +27,7 @@ interface ChecklistInteractiveProps {
 }
 
 export default function ChecklistInteractive({ taskId, initialItems }: ChecklistInteractiveProps) {
+  const { t, lang } = useLang();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
 
   const firstUnprocessed = initialItems.findIndex((i) => !i.completed && !i.skipped);
@@ -38,6 +42,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const [isCompletingTask, setIsCompletingTask] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
+  const [photoRequiredError, setPhotoRequiredError] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const currentItem = items[currentIndex];
@@ -77,6 +82,13 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   };
 
   const advance = async (completed: boolean) => {
+    // Blocca se foto obbligatoria e non ancora caricata
+    if (completed && currentItem.photoRequired && !photoFile && !currentItem.photoUrl) {
+      setPhotoRequiredError(true);
+      setTimeout(() => setPhotoRequiredError(false), 2500);
+      return;
+    }
+
     setIsSaving(true);
     setUploadError(null);
 
@@ -145,10 +157,9 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
             <div className="flex items-start gap-3 mb-4">
               <AlertCircle size={20} className="text-amber-500 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-bold text-amber-800">Intervento non completabile</p>
+                <p className="text-sm font-bold text-amber-800">{t.incompleteTitle}</p>
                 <p className="text-xs text-amber-600 mt-0.5">
-                  {incompleteItems.length} {incompleteItems.length === 1 ? "punto non è stato" : "punti non sono stati"} completato/i.
-                  Risolvi tutti i punti per poter chiudere l'intervento.
+                  {t.incompleteText(incompleteItems.length)}
                 </p>
               </div>
             </div>
@@ -165,7 +176,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
                       {item.required && <span className="text-rose-500 ml-1">*</span>}
                     </p>
                     <p className="text-[10px] text-amber-500 font-bold mt-0.5">
-                      {item.skipped ? "Saltato" : "Non completato"}
+                      {item.skipped ? t.skipped : t.notCompleted}
                     </p>
                   </div>
                   <button
@@ -173,7 +184,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
                     onClick={() => goToItem(item.idx)}
                     className="shrink-0 flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 transition-all"
                   >
-                    Risolvi <ChevronRight size={11} />
+                    {t.resolve} <ChevronRight size={11} />
                   </button>
                 </div>
               ))}
@@ -185,10 +196,10 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
             disabled
             className="w-full py-4 rounded-2xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed"
           >
-            ✓ Intervento Completato
+            {t.completeDisabled}
           </button>
           <p className="text-[10px] text-slate-400 mt-2 text-center">
-            Completa tutti i punti per sbloccare questa azione.
+            {t.completeHint}
           </p>
         </div>
       );
@@ -198,15 +209,15 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     return (
       <div className="text-center py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="text-6xl mb-4">🎉</div>
-        <h3 className="text-xl font-bold text-slate-900 mb-1">Checklist completata!</h3>
+        <h3 className="text-xl font-bold text-slate-900 mb-1">{t.allDoneTitle}</h3>
         <p className="text-sm text-slate-500 mb-6">
-          {completedCount} / {items.length} punti verificati
+          {t.allDoneCount(completedCount, items.length)}
         </p>
 
         {photosWithUrls.length > 0 && (
           <div className="mb-6">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-              📸 {photosWithUrls.length} foto allegate
+              {t.photosAttached(photosWithUrls.length)}
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {photosWithUrls.map((item) => (
@@ -230,14 +241,14 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         >
           {isCompletingTask ? (
             <span className="flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin" /> Completamento...
+              <Loader2 size={16} className="animate-spin" /> {t.completing}
             </span>
           ) : (
-            "✓ Intervento Completato"
+            t.completeBtn
           )}
         </button>
         <p className="text-[10px] text-slate-400 mt-3">
-          Supervisor e Manager riceveranno una notifica immediata.
+          {t.notifyHint}
         </p>
       </div>
     );
@@ -245,10 +256,15 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
   // ── Step view ──────────────────────────────────────────────────────────────
   const progress = Math.round((currentIndex / items.length) * 100);
+  const translatedLabel =
+    lang && lang !== "it" && currentItem.labelTranslations?.[lang]
+      ? currentItem.labelTranslations[lang]
+      : currentItem.label;
+
   const itemLabel =
     currentItem.type === "dynamic"
-      ? `${currentItem.label}: ${currentItem.value ?? "N/A"}`
-      : currentItem.label;
+      ? `${translatedLabel}: ${currentItem.value ?? "N/A"}`
+      : translatedLabel;
 
   return (
     <div className="animate-in fade-in duration-300">
@@ -256,7 +272,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       <div className="mb-5">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-            Punto {currentIndex + 1} di {items.length}
+            {t.stepOf(currentIndex + 1, items.length)}
           </span>
           <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
         </div>
@@ -272,27 +288,42 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       {justCompleted && (
         <div className="mb-3 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 animate-in fade-in slide-in-from-top-2 duration-300">
           <CheckCircle2 size={13} />
-          <span className="truncate">"{justCompleted}" completato</span>
+          <span className="truncate">{t.prevCompleted(justCompleted!)}</span>
+        </div>
+      )}
+
+      {/* Foto obbligatoria — toast errore */}
+      {photoRequiredError && (
+        <div className="mb-3 flex items-center gap-2 rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-xs font-bold text-rose-600 animate-in fade-in slide-in-from-top-2 duration-300">
+          <AlertCircle size={13} />
+          <span>{t.photoRequiredError}</span>
         </div>
       )}
 
       {/* Item card */}
       <div className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm mb-4 text-center">
-        <div className="text-5xl mb-4">{currentItem.required ? "✅" : "☑️"}</div>
         <h3 className="text-lg font-bold text-slate-900 leading-snug">
           {itemLabel}
           {currentItem.required && <span className="text-rose-500 ml-1 text-base">*</span>}
         </h3>
-        {currentItem.required && (
-          <p className="text-[10px] text-rose-400 font-bold uppercase tracking-widest mt-2">Obbligatorio</p>
+        {/* "Obbligatorio" sotto il titolo solo se NON è photo-required (in quel caso va nella sezione foto) */}
+        {currentItem.required && !currentItem.photoRequired && (
+          <p className="text-[10px] text-rose-400 font-bold uppercase tracking-widest mt-2">{t.required}</p>
         )}
       </div>
 
       {/* Photo section */}
       <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-4">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-          📸 Foto di verifica{!currentItem.required && " (opzionale)"}
-        </p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            {currentItem.photoRequired ? t.photoLabel : t.photoOptional}
+          </p>
+          {currentItem.photoRequired && (
+            <span className="text-[9px] font-black uppercase tracking-wide text-white bg-rose-500 rounded-full px-2 py-0.5">
+              {t.required}
+            </span>
+          )}
+        </div>
 
         {uploadError && (
           <p className="text-xs text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mb-3 border border-rose-100">
@@ -309,7 +340,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
             />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
-              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">✓ Pronta per l'invio</p>
+              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">{t.photoReady}</p>
             </div>
             <button
               type="button"
@@ -323,10 +354,10 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           <button
             type="button"
             onClick={() => photoInputRef.current?.click()}
-            className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 py-4 text-sm font-bold text-slate-500 hover:border-slate-400 hover:bg-white transition-colors"
+            className={`w-full flex items-center justify-center gap-2 rounded-xl bg-slate-400 py-4 text-sm font-bold text-white hover:bg-slate-500 transition-colors ${currentItem.photoRequired ? "border-2 border-rose-400" : ""}`}
           >
             <Camera size={18} />
-            Scatta / carica foto
+            {t.takePhoto}
           </button>
         )}
 
@@ -350,7 +381,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronLeft size={13} />
-          Indietro
+          {t.back}
         </button>
 
         {/* Salta */}
@@ -361,7 +392,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-50 transition-colors"
         >
           <SkipForward size={13} />
-          Salta
+          {t.skip}
         </button>
 
         {/* Fatto */}
@@ -369,17 +400,17 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           type="button"
           onClick={() => advance(true)}
           disabled={isSaving || isUploading}
-          className="flex-1 flex items-center justify-center gap-2 rounded-full bg-black py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-black/10"
+          className="flex-1 flex items-center justify-center gap-2 rounded-full bg-green-600 py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-green-700 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-green-600/20"
         >
           {isSaving || isUploading ? (
             <>
               <Loader2 size={13} className="animate-spin" />
-              {isUploading ? "Caricamento..." : "Salvataggio..."}
+              {isUploading ? t.uploading : t.saving}
             </>
           ) : (
             <>
               <CheckCircle2 size={13} />
-              Fatto
+              {t.done}
               <ChevronRight size={13} />
             </>
           )}

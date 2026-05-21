@@ -21,8 +21,10 @@ type ChecklistSnapshotItem = {
 type ChecklistItemRecord = {
   id: string;
   label: string;
+  labelTranslations?: unknown;
   type: string;
   required: boolean;
+  photoRequired: boolean;
   formula: string | null;
 };
 
@@ -104,9 +106,11 @@ export async function computeChecklistSnapshot(db: any, apartmentId: string, tas
       return {
         id: item.id,
         label: item.label,
+        labelTranslations: (item.labelTranslations ?? null) as Record<string, string> | null,
         type: item.type,
         value: computedValue,
         required: item.required,
+        photoRequired: item.photoRequired ?? false,
         completed: false,
         formula: item.formula
       };

@@ -4,13 +4,16 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { DEFAULT_CHECKLIST } from "@/src/lib/constants";
 import { computeChecklistSnapshot } from "./operational";
+import { translateLabel } from "@/src/lib/translate";
 
 type ChecklistSnapshotItem = {
   id: string;
   label: string;
+  labelTranslations?: Record<string, string> | null;
   type: string;
   value: number | null;
   required: boolean;
+  photoRequired: boolean;
   completed: boolean;
 };
 
@@ -81,6 +84,7 @@ export async function addChecklistItem(apartmentId: string, prevState: any, form
     const type = formData.get("type") as string || "static";
     const formula = formData.get("formula") as string;
     const required = formData.get("required") === "on";
+    const photoRequired = formData.get("photoRequired") === "on";
 
     if (!label || !apartmentId) {
       return { error: "L'etichetta è obbligatoria." };
@@ -92,16 +96,30 @@ export async function addChecklistItem(apartmentId: string, prevState: any, form
       orderBy: { order: "desc" },
     });
 
-    await prisma.checklistItem.create({
+    const created = await prisma.checklistItem.create({
       data: {
         apartmentId,
         label,
         type,
         formula: type === "dynamic" ? formula : null,
         required,
+        photoRequired,
         order: (lastItem?.order || 0) + 1,
       },
     });
+
+    // Auto-translate label to EN and ES (best-effort, non-blocking)
+    try {
+      const translations = await translateLabel(label, ["en", "es"]);
+      if (Object.keys(translations).length > 0) {
+        await prisma.checklistItem.update({
+          where: { id: created.id },
+          data: { labelTranslations: translations },
+        });
+      }
+    } catch (e) {
+      console.warn("Auto-translate failed (non-blocking):", e);
+    }
 
     revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checklist`);
     await syncPendentCleaningTasks(apartmentId);
@@ -118,10 +136,20 @@ export async function updateChecklistItem(id: string, prevState: any, formData: 
     const type = formData.get("type") as string || "static";
     const formula = formData.get("formula") as string;
     const required = formData.get("required") === "on";
+    const photoRequired = formData.get("photoRequired") === "on";
     const apartmentId = formData.get("apartmentId") as string;
 
     if (!label || !id) {
       return { error: "ID e etichetta sono obbligatori." };
+    }
+
+    // Auto-translate new label (best-effort)
+    let labelTranslations: Record<string, string> | undefined;
+    try {
+      const t = await translateLabel(label, ["en", "es"]);
+      if (Object.keys(t).length > 0) labelTranslations = t;
+    } catch (e) {
+      console.warn("Auto-translate failed (non-blocking):", e);
     }
 
     await prisma.checklistItem.update({
@@ -131,6 +159,8 @@ export async function updateChecklistItem(id: string, prevState: any, formData: 
         type,
         formula: type === "dynamic" ? formula : null,
         required,
+        photoRequired,
+        ...(labelTranslations ? { labelTranslations } : {}),
       },
     });
 
@@ -239,6 +269,46 @@ export async function syncChecklistWithDefaults(apartmentId: string) {
   revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checklist`);
   await syncPendentCleaningTasks(apartmentId);
   return { count: missingItems.length };
+}
+
+/**
+ * Translates all checklist items of an apartment to the given languages.
+ * Called by the manager from the checklist page.
+ */
+export async function translateAllChecklistItems(apartmentId: string, langs: string[]) {
+  if (!langs || langs.length === 0) return { error: "Seleziona almeno una lingua." };
+
+  try {
+    const items = await prisma.checklistItem.findMany({
+      where: { apartmentId },
+      select: { id: true, label: true },
+    });
+
+    if (items.length === 0) return { count: 0 };
+
+    // Translate each item sequentially to avoid rate limits
+    let translated = 0;
+    for (const item of items) {
+      try {
+        const translations = await translateLabel(item.label, langs);
+        if (Object.keys(translations).length > 0) {
+          await prisma.checklistItem.update({
+            where: { id: item.id },
+            data: { labelTranslations: translations },
+          });
+          translated++;
+        }
+      } catch (e) {
+        console.warn(`Failed to translate item ${item.id}:`, e);
+      }
+    }
+
+    revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checklist`);
+    return { count: translated };
+  } catch (error) {
+    console.error("Error translating checklist:", error);
+    return { error: "Errore durante la traduzione." };
+  }
 }
 
 export async function reorderChecklistItems(apartmentId: string, orderedIds: string[]) {
