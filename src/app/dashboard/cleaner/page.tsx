@@ -12,6 +12,7 @@ import ExpandableCleaningCard from "@/src/components/expandable-cleaning-card";
 import RecalculateCleaningChecklistButton from "@/src/components/recalculate-cleaning-checklist-button";
 import CleanerStartButton from "@/src/components/cleaner-start-button";
 import CleanerLangGate from "@/src/components/cleaner-lang-gate";
+import LangSwitchPill from "@/src/components/lang-switch-pill";
 import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import {
@@ -139,6 +140,9 @@ export default async function CleanerDashboardPage() {
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
+            <div className="mb-3">
+              <LangSwitchPill />
+            </div>
             <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">
               Ciao, {user.name} <span className="text-violet-600">.</span>
             </h1>
