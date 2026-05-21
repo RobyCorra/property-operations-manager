@@ -77,12 +77,14 @@ export default async function PublicCleaningPage({
       {/* ── CARDS ── */}
       <div className="max-w-lg mx-auto px-4 -mt-5 flex flex-col gap-3 pb-32">
 
-        {/* Card data */}
-        <div className="bg-white rounded-2xl shadow-sm p-4">
-          <p className="text-2xl mb-1">📅</p>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Data pulizia</p>
-          <p className="text-lg font-bold text-slate-800">{dateLabel}</p>
-        </div>
+        {/* Card data — nascosta quando pulizia è IN_PROGRESS */}
+        {!canComplete && (
+          <div className="bg-white rounded-2xl shadow-sm p-4">
+            <p className="text-2xl mb-1">📅</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Data pulizia</p>
+            <p className="text-lg font-bold text-slate-800">{dateLabel}</p>
+          </div>
+        )}
 
         {/* Card note (solo se presenti) */}
         {task.notes && (
@@ -131,29 +133,18 @@ export default async function PublicCleaningPage({
         <p className="text-center text-xs text-slate-300 pb-2">Property Operations Manager</p>
       </div>
 
-      {/* ── PULSANTE FISSO IN FONDO ── */}
-      {(canStart || canComplete) && (
+      {/* ── PULSANTE FISSO IN FONDO — solo PENDING ── */}
+      {canStart && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-20">
           <div className="max-w-lg mx-auto">
-            {canStart && (
-              <PublicStatusButton
-                id={task.id}
-                nextStatus="IN_PROGRESS"
-                label="▶ Avvia pulizia"
-                afterLabel="🟣 Pulizia in corso..."
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl text-lg shadow-lg shadow-green-300 transition-colors"
-                afterClassName="w-full bg-violet-600 text-white font-bold py-4 rounded-2xl text-lg"
-              />
-            )}
-            {canComplete && (
-              <PublicStatusButton
-                id={task.id}
-                nextStatus="AWAITING_REVIEW"
-                label="✓ Completa pulizia"
-                afterLabel="⏳ Invio in corso..."
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl text-lg transition-colors"
-              />
-            )}
+            <PublicStatusButton
+              id={task.id}
+              nextStatus="IN_PROGRESS"
+              label="▶ Avvia pulizia"
+              afterLabel="🟣 Pulizia in corso..."
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl text-lg shadow-lg shadow-green-300 transition-colors"
+              afterClassName="w-full bg-violet-600 text-white font-bold py-4 rounded-2xl text-lg"
+            />
           </div>
         </div>
       )}
