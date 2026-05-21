@@ -58,6 +58,7 @@ export const translations = {
     notifyHint: "Supervisor e Manager riceveranno una notifica immediata.",
 
     // Cleaner dashboard
+    dashGreeting: (name: string) => `Ciao, ${name}`,
     dashSub: "I tuoi interventi assegnati",
     dashSection: "Interventi Assegnati",
     viewInfo: "Vedi Informazioni",
@@ -71,6 +72,8 @@ export const translations = {
     statusCompleted: "Completata",
     statusApproved: "Approvata",
     inProgressBanner: "Intervento in corso",
+    awaitingBanner: "⏳ In attesa di revisione",
+    approvedBanner: "✓ Approvata",
 
     footer: "Property Operations Manager",
   },
@@ -125,6 +128,7 @@ export const translations = {
     notifyHint: "Supervisor and Manager will receive an immediate notification.",
 
     // Cleaner dashboard
+    dashGreeting: (name: string) => `Hi, ${name}`,
     dashSub: "Your assigned cleaning jobs",
     dashSection: "Assigned Jobs",
     viewInfo: "View Information",
@@ -138,6 +142,8 @@ export const translations = {
     statusCompleted: "Completed",
     statusApproved: "Approved",
     inProgressBanner: "Intervention in progress",
+    awaitingBanner: "⏳ Awaiting review",
+    approvedBanner: "✓ Approved",
 
     footer: "Property Operations Manager",
   },
@@ -192,6 +198,7 @@ export const translations = {
     notifyHint: "El supervisor y el manager recibirán una notificación inmediata.",
 
     // Cleaner dashboard
+    dashGreeting: (name: string) => `Hola, ${name}`,
     dashSub: "Tus tareas asignadas",
     dashSection: "Tareas Asignadas",
     viewInfo: "Ver Información",
@@ -205,6 +212,8 @@ export const translations = {
     statusCompleted: "Completada",
     statusApproved: "Aprobada",
     inProgressBanner: "Intervención en curso",
+    awaitingBanner: "⏳ En espera de revisión",
+    approvedBanner: "✓ Aprobada",
 
     footer: "Property Operations Manager",
   },

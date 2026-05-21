@@ -13,6 +13,9 @@ import RecalculateCleaningChecklistButton from "@/src/components/recalculate-cle
 import CleanerStartButton from "@/src/components/cleaner-start-button";
 import CleanerLangGate from "@/src/components/cleaner-lang-gate";
 import LangSwitchPill from "@/src/components/lang-switch-pill";
+import { CleanerGreeting, CleanerSectionTitle } from "@/src/components/cleaner-dashboard-header";
+import CleanerStatusBadge from "@/src/components/cleaner-status-badge";
+import CleanerActionBanner from "@/src/components/cleaner-action-banner";
 import { createCleaningTaskMessage, enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import {
@@ -143,10 +146,7 @@ export default async function CleanerDashboardPage() {
             <div className="mb-3">
               <LangSwitchPill />
             </div>
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">
-              Ciao, {user.name} <span className="text-violet-600">.</span>
-            </h1>
-            <p className="text-slate-500 text-sm mt-1 font-medium tracking-normal">Ecco i tuoi interventi di pulizia in programma</p>
+            <CleanerGreeting name={user.name} />
           </div>
           {/* Desktop-only nav buttons */}
           <div className="hidden md:flex items-center gap-4">
@@ -168,7 +168,7 @@ export default async function CleanerDashboardPage() {
         {/* Tasks */}
         <section className="space-y-6">
           <div className="flex items-center gap-3 mb-2">
-            <h2 className="text-lg font-semibold text-slate-900 tracking-tight uppercase">Interventi Assegnati</h2>
+            <CleanerSectionTitle />
             <div className="h-px flex-1 bg-slate-200/50"></div>
           </div>
 
@@ -194,16 +194,7 @@ export default async function CleanerDashboardPage() {
                   headerMain={(
                     <div className="min-w-0">
                       <div className="mb-2 flex flex-wrap items-center gap-3">
-                        <span className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] ${
-                          task.status === "IN_PROGRESS" ? "bg-violet-500 text-white shadow-lg shadow-violet-200" :
-                          task.status === "AWAITING_REVIEW" ? "bg-yellow-400 text-white shadow-lg shadow-yellow-100" :
-                          task.status === "COMPLETED" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-100" :
-                          task.status === "APPROVED" ? "bg-emerald-700 text-white" :
-                          "bg-slate-100 text-slate-500"
-                        }`}>
-                          <div className={`h-1.5 w-1.5 rounded-full ${task.status === "IN_PROGRESS" ? "bg-white animate-pulse" : task.status === "AWAITING_REVIEW" ? "bg-white animate-pulse" : "bg-white/70"}`} />
-                          {{ PENDING: "In Attesa", IN_PROGRESS: "In Corso", COMPLETED: "Completata", AWAITING_REVIEW: "In Verifica", APPROVED: "Approvata" }[task.status] ?? task.status}
-                        </span>
+                        <CleanerStatusBadge status={task.status} />
                       </div>
                       <h3 className="text-2xl font-semibold uppercase tracking-tight text-slate-900 line-clamp-1">{task.apartment.name}</h3>
                       <p className="mt-1 text-sm font-medium text-slate-500 truncate">{task.apartment.address}</p>
@@ -224,20 +215,9 @@ export default async function CleanerDashboardPage() {
                     </div>
                   )}
                   actionRow={
-                    task.status === "IN_PROGRESS" ? (
-                      <div className="w-full rounded-full bg-violet-50 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-violet-700">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-500 animate-pulse mr-2 align-middle" />
-                        Intervento in corso
-                      </div>
-                    ) : task.status === "AWAITING_REVIEW" ? (
-                      <div className="w-full rounded-full bg-yellow-50 border border-yellow-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-yellow-700">
-                        ⏳ In attesa di revisione
-                      </div>
-                    ) : task.status === "APPROVED" ? (
-                      <div className="w-full rounded-full bg-emerald-600 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-white">
-                        ✓ Approvata
-                      </div>
-                    ) : undefined
+                    ["IN_PROGRESS", "AWAITING_REVIEW", "APPROVED"].includes(task.status)
+                      ? <CleanerActionBanner status={task.status} />
+                      : undefined
                   }
                   compactContent={(
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
