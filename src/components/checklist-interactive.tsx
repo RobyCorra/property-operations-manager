@@ -405,64 +405,64 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         <h3 className="text-lg font-bold text-slate-900 leading-snug">{itemLabel}</h3>
       </div>
 
-      {/* Photo section */}
-      <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-4">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-            {currentItem.photoRequired ? t.photoLabel : t.photoOptional}
-          </p>
-          {currentItem.photoRequired && (
+      {/* Photo section — solo se obbligatoria */}
+      {currentItem.photoRequired && (
+        <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              {t.photoLabel}
+            </p>
             <span className="text-[9px] font-black uppercase tracking-wide text-white bg-rose-500 rounded-full px-2 py-0.5">
               {t.required}
             </span>
+          </div>
+
+          {uploadError && (
+            <p className="text-xs text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mb-3 border border-rose-100">
+              ⚠️ {uploadError}
+            </p>
           )}
-        </div>
 
-        {uploadError && (
-          <p className="text-xs text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mb-3 border border-rose-100">
-            ⚠️ {uploadError}
-          </p>
-        )}
-
-        {photoPreview ? (
-          <div className="flex items-center gap-3">
-            <img
-              src={photoPreview}
-              alt="Anteprima"
-              className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
-              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">{t.photoReady}</p>
+          {photoPreview ? (
+            <div className="flex items-center gap-3">
+              <img
+                src={photoPreview}
+                alt="Anteprima"
+                className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
+                <p className="text-[10px] text-emerald-600 font-bold mt-0.5">{t.photoReady}</p>
+              </div>
+              <button
+                type="button"
+                onClick={clearPhoto}
+                className="w-7 h-7 rounded-full bg-rose-100 text-rose-500 text-[10px] flex items-center justify-center hover:bg-rose-200 shrink-0"
+              >
+                ✕
+              </button>
             </div>
+          ) : (
             <button
               type="button"
-              onClick={clearPhoto}
-              className="w-7 h-7 rounded-full bg-rose-100 text-rose-500 text-[10px] flex items-center justify-center hover:bg-rose-200 shrink-0"
+              onClick={() => photoInputRef.current?.click()}
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-400 border-2 border-rose-400 py-4 text-sm font-bold text-white hover:bg-slate-500 transition-colors"
             >
-              ✕
+              <Camera size={18} />
+              {t.takePhoto}
             </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => photoInputRef.current?.click()}
-            className={`w-full flex items-center justify-center gap-2 rounded-xl bg-slate-400 py-4 text-sm font-bold text-white hover:bg-slate-500 transition-colors ${currentItem.photoRequired ? "border-2 border-rose-400" : ""}`}
-          >
-            <Camera size={18} />
-            {t.takePhoto}
-          </button>
-        )}
+          )}
 
-        <input
-          ref={photoInputRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden"
-          onChange={handlePhotoSelect}
-        />
-      </div>
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handlePhotoSelect}
+          />
+        </div>
+      )}
 
       {/* Actions */}
       <div className="flex gap-2">
