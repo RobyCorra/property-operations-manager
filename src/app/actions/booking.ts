@@ -13,6 +13,7 @@ export async function createBooking(prevState: any, formData: FormData) {
   const checkInDate = new Date(formData.get("checkInDate") as string);
   const checkOutDate = new Date(formData.get("checkOutDate") as string);
   const rawGuestName = formData.get("guestName");
+  const cullaRequested = formData.get("cullaRequested") === "true";
 
   const guestName = typeof rawGuestName === "string" && rawGuestName.trim() !== ""
     ? rawGuestName.trim()
@@ -96,6 +97,7 @@ export async function createBooking(prevState: any, formData: FormData) {
           status: "CONFIRMED",
           source: "manual",
           guestName, // può essere null
+          cullaRequested,
         },
       });
 
@@ -147,6 +149,7 @@ export async function updateBooking(id: string, prevState: any, formData: FormDa
   const totalGuests = parseInt(formData.get("totalGuests") as string, 10);
   const checkInDate = new Date(formData.get("checkInDate") as string);
   const checkOutDate = new Date(formData.get("checkOutDate") as string);
+  const cullaRequested = formData.get("cullaRequested") === "true";
 
   const rawGuestName = formData.get("guestName");
   const guestName = typeof rawGuestName === "string" && rawGuestName.trim() !== ""
@@ -220,6 +223,7 @@ export async function updateBooking(id: string, prevState: any, formData: FormDa
           status: "CONFIRMED",
           source: "manual",
           guestName, // può essere null
+          cullaRequested,
         },
       });
 

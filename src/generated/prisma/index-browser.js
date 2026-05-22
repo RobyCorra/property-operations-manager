@@ -142,6 +142,7 @@ exports.Prisma.ApartmentScalarFieldEnum = {
   maxGuests: 'maxGuests',
   accessInstructions: 'accessInstructions',
   accessInfo: 'accessInfo',
+  bedConfig: 'bedConfig',
   icalUrl: 'icalUrl',
   lastSyncAt: 'lastSyncAt',
   technicalProfile: 'technicalProfile',
@@ -181,6 +182,7 @@ exports.Prisma.BookingScalarFieldEnum = {
   status: 'status',
   externalId: 'externalId',
   source: 'source',
+  cullaRequested: 'cullaRequested',
   createdAt: 'createdAt'
 };
 

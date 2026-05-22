@@ -27,6 +27,58 @@ type AccessMediaFile = {
   size: number | null;
 };
 
+type BedTypeData = {
+  count: number;
+  lenzuola: number;
+  federe: number;
+  copriPiumino: number;
+};
+
+type BedConfigData = {
+  matrimoniale:       BedTypeData;
+  singolo:            BedTypeData;
+  divanoMatrimoniale: BedTypeData;
+  divanoSingolo:      BedTypeData;
+  culla:              { lenzuola: number; federe: number; copriPiumino: number };
+};
+
+const DEFAULT_BED_TYPE: BedTypeData = { count: 0, lenzuola: 0, federe: 0, copriPiumino: 0 };
+const DEFAULT_BED_CONFIG: BedConfigData = {
+  matrimoniale:       { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2 },
+  singolo:            { count: 0, lenzuola: 1, federe: 1, copriPiumino: 1 },
+  divanoMatrimoniale: { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2 },
+  divanoSingolo:      { count: 0, lenzuola: 2, federe: 1, copriPiumino: 1 },
+  culla:              { lenzuola: 1, federe: 1, copriPiumino: 1 },
+};
+
+function parseBedConfigForForm(raw: unknown): BedConfigData {
+  if (!raw || typeof raw !== "object") return DEFAULT_BED_CONFIG;
+  const r = raw as Record<string, unknown>;
+  const parseBed = (key: string, def: BedTypeData): BedTypeData => {
+    const v = r[key];
+    if (!v || typeof v !== "object") return def;
+    const b = v as Record<string, unknown>;
+    return {
+      count:        typeof b.count === "number"        ? b.count        : def.count,
+      lenzuola:     typeof b.lenzuola === "number"     ? b.lenzuola     : def.lenzuola,
+      federe:       typeof b.federe === "number"       ? b.federe       : def.federe,
+      copriPiumino: typeof b.copriPiumino === "number" ? b.copriPiumino : def.copriPiumino,
+    };
+  };
+  const cRaw = r["culla"] as Record<string, unknown> | undefined;
+  return {
+    matrimoniale:       parseBed("matrimoniale",       DEFAULT_BED_CONFIG.matrimoniale),
+    singolo:            parseBed("singolo",            DEFAULT_BED_CONFIG.singolo),
+    divanoMatrimoniale: parseBed("divanoMatrimoniale", DEFAULT_BED_CONFIG.divanoMatrimoniale),
+    divanoSingolo:      parseBed("divanoSingolo",      DEFAULT_BED_CONFIG.divanoSingolo),
+    culla: cRaw ? {
+      lenzuola:     typeof cRaw.lenzuola === "number"     ? cRaw.lenzuola     : DEFAULT_BED_CONFIG.culla.lenzuola,
+      federe:       typeof cRaw.federe === "number"       ? cRaw.federe       : DEFAULT_BED_CONFIG.culla.federe,
+      copriPiumino: typeof cRaw.copriPiumino === "number" ? cRaw.copriPiumino : DEFAULT_BED_CONFIG.culla.copriPiumino,
+    } : DEFAULT_BED_CONFIG.culla,
+  };
+}
+
 type Apartment = {
   id: string;
   name?: string;
@@ -40,6 +92,7 @@ type Apartment = {
   icalUrl?: string | null;
   technicalProfile?: unknown;
   accessInfo?: unknown;
+  bedConfig?: unknown;
 };
 
 type TechnicalAttachment = {
@@ -738,6 +791,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
   const technicalProfile = (initialData?.technicalProfile as TechnicalProfile | null) ?? {};
   const rawAccessInfo = (initialData?.accessInfo as AccessInfo | null) ?? {};
   const [activeSection, setActiveSection] = useState<FormSectionKey>("main");
+  const [bedConfig, setBedConfig] = useState<BedConfigData>(() => parseBedConfigForForm(initialData?.bedConfig));
   const [formError, setFormError] = useState("");
   const [systems, setSystems] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.systems));
   const [appliances, setAppliances] = useState<TechnicalItem[]>(normalizeTechnicalItems(technicalProfile.appliances, legacyApplianceLabels));
@@ -881,6 +935,152 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                     <label htmlFor="maxGuests" className="block text-sm font-medium text-gray-700 mb-1">Ospiti Max</label>
                     <input required type="number" min="1" id="maxGuests" name="maxGuests" defaultValue={initialData?.maxGuests ?? 2} className={inputClass} />
                   </div>
+                </div>
+              </div>
+
+              {/* ── LETTI & BIANCHERIA ── */}
+              <div className="space-y-4 pt-2">
+                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Letti &amp; Biancheria</h2>
+
+                {/* hidden inputs per serializzare bedConfig */}
+                {(["matrimoniale","singolo","divanoMatrimoniale","divanoSingolo"] as const).map((k) => (
+                  <span key={k}>
+                    <input type="hidden" name={`bedConfig.${k}.count`}        value={bedConfig[k].count} />
+                    <input type="hidden" name={`bedConfig.${k}.lenzuola`}     value={bedConfig[k].lenzuola} />
+                    <input type="hidden" name={`bedConfig.${k}.federe`}       value={bedConfig[k].federe} />
+                    <input type="hidden" name={`bedConfig.${k}.copriPiumino`} value={bedConfig[k].copriPiumino} />
+                  </span>
+                ))}
+                <input type="hidden" name="bedConfig.culla.lenzuola"     value={bedConfig.culla.lenzuola} />
+                <input type="hidden" name="bedConfig.culla.federe"       value={bedConfig.culla.federe} />
+                <input type="hidden" name="bedConfig.culla.copriPiumino" value={bedConfig.culla.copriPiumino} />
+
+                {/* tabella */}
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[560px] border-collapse">
+                    <thead>
+                      <tr>
+                        <th className="text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 pb-2 pr-4">Tipo</th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 pb-2 px-2 w-20">N° letti</th>
+                        <th className="w-3"></th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">Lenzuola</th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">Federe</th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-28">Copri piumino</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+
+                      {/* LETTI FISSI */}
+                      <tr><td colSpan={6} className="pt-3 pb-1">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-700 px-3 py-1 rounded-full">🛏 Letti fissi — sempre preparati</span>
+                      </td></tr>
+
+                      {([
+                        { key: "matrimoniale" as const,       label: "Letto matrimoniale",  icon: "🛏", note: "2 posti" },
+                        { key: "singolo" as const,            label: "Letto singolo",        icon: "🛏", note: "1 posto" },
+                      ]).map(({ key, label, icon, note }) => (
+                        <tr key={key} className="hover:bg-gray-50/50">
+                          <td className="py-2 pr-4">
+                            <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                              <span>{icon}</span>{label}
+                              <span className="text-[10px] text-gray-400">({note})</span>
+                            </span>
+                          </td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].count}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], count: +e.target.value } }))}
+                              className="w-16 text-center border border-gray-300 rounded-lg py-1.5 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-300" />
+                          </td>
+                          <td className="w-3 text-gray-200 text-center">│</td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].lenzuola}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], lenzuola: +e.target.value } }))}
+                              className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
+                          </td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].federe}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], federe: +e.target.value } }))}
+                              className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
+                          </td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].copriPiumino}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], copriPiumino: +e.target.value } }))}
+                              className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
+                          </td>
+                        </tr>
+                      ))}
+
+                      {/* LETTI AGGIUNTIVI */}
+                      <tr><td colSpan={6} className="pt-4 pb-1">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-amber-50 text-amber-700 px-3 py-1 rounded-full">🛋 Letti aggiuntivi — attivati se gli ospiti superano i letti fissi</span>
+                      </td></tr>
+
+                      {([
+                        { key: "divanoMatrimoniale" as const, label: "Divano letto matrimoniale", icon: "🛋", note: "2 posti" },
+                        { key: "divanoSingolo" as const,      label: "Divano letto singolo",      icon: "🛋", note: "1 posto" },
+                      ]).map(({ key, label, icon, note }) => (
+                        <tr key={key} className="hover:bg-gray-50/50">
+                          <td className="py-2 pr-4">
+                            <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                              <span>{icon}</span>{label}
+                              <span className="text-[10px] text-gray-400">({note})</span>
+                            </span>
+                          </td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].count}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], count: +e.target.value } }))}
+                              className="w-16 text-center border border-gray-300 rounded-lg py-1.5 text-sm font-bold outline-none focus:ring-2 focus:ring-amber-300" />
+                          </td>
+                          <td className="w-3 text-gray-200 text-center">│</td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].lenzuola}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], lenzuola: +e.target.value } }))}
+                              className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
+                          </td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].federe}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], federe: +e.target.value } }))}
+                              className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
+                          </td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].copriPiumino}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], copriPiumino: +e.target.value } }))}
+                              className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
+                          </td>
+                        </tr>
+                      ))}
+
+                      {/* CULLA */}
+                      <tr><td colSpan={6} className="pt-4 pb-1">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full">🪺 Culla — attivata dalla prenotazione, biancheria separata</span>
+                      </td></tr>
+                      <tr className="hover:bg-gray-50/50">
+                        <td className="py-2 pr-4">
+                          <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                            <span>🪺</span>Culla
+                          </span>
+                        </td>
+                        <td className="py-2 px-2 text-center text-xs text-gray-400 italic">da prenotaz.</td>
+                        <td className="w-3 text-gray-200 text-center">│</td>
+                        <td className="py-2 px-2 text-center">
+                          <input type="number" min="0" value={bedConfig.culla.lenzuola}
+                            onChange={(e) => setBedConfig((p) => ({ ...p, culla: { ...p.culla, lenzuola: +e.target.value } }))}
+                            className="w-16 text-center border border-emerald-200 rounded-lg py-1.5 text-sm font-bold text-emerald-700 bg-emerald-50 outline-none focus:ring-2 focus:ring-emerald-300" />
+                        </td>
+                        <td className="py-2 px-2 text-center">
+                          <input type="number" min="0" value={bedConfig.culla.federe}
+                            onChange={(e) => setBedConfig((p) => ({ ...p, culla: { ...p.culla, federe: +e.target.value } }))}
+                            className="w-16 text-center border border-emerald-200 rounded-lg py-1.5 text-sm font-bold text-emerald-700 bg-emerald-50 outline-none focus:ring-2 focus:ring-emerald-300" />
+                        </td>
+                        <td className="py-2 px-2 text-center">
+                          <input type="number" min="0" value={bedConfig.culla.copriPiumino}
+                            onChange={(e) => setBedConfig((p) => ({ ...p, culla: { ...p.culla, copriPiumino: +e.target.value } }))}
+                            className="w-16 text-center border border-emerald-200 rounded-lg py-1.5 text-sm font-bold text-emerald-700 bg-emerald-50 outline-none focus:ring-2 focus:ring-emerald-300" />
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

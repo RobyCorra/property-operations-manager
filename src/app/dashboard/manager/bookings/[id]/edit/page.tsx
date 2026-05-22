@@ -52,7 +52,8 @@ export default async function EditBookingPage({ params }: { params: { id: string
             guestName: booking.guestName ?? "",
             totalGuests: booking.totalGuests,
             checkInDate: booking.checkInDate,
-            checkOutDate: booking.checkOutDate
+            checkOutDate: booking.checkOutDate,
+            cullaRequested: booking.cullaRequested ?? false,
           }}
           serverDate={serverDate}
         />

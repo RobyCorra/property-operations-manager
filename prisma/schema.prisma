@@ -34,6 +34,7 @@ model Apartment {
   maxGuests            Int
   accessInstructions   String?
   accessInfo           Json?
+  bedConfig            Json?
   icalUrl              String?
   lastSyncAt           DateTime?
   technicalProfile     Json?
@@ -81,10 +82,11 @@ model Booking {
   totalGuests  Int
   checkInDate  DateTime
   checkOutDate DateTime
-  status       String?
-  externalId   String?       @unique
-  source       String?
-  createdAt    DateTime      @default(now())
+  status           String?
+  externalId       String?       @unique
+  source           String?
+  cullaRequested   Boolean       @default(false)
+  createdAt        DateTime      @default(now())
   apartment    Apartment     @relation(fields: [apartmentId], references: [id])
   cleaningTask CleaningTask?
 }

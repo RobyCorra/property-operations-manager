@@ -34,6 +34,7 @@ model Apartment {
   maxGuests            Int
   accessInstructions   String?
   accessInfo           Json?
+  bedConfig            Json?
   icalUrl              String?
   lastSyncAt           DateTime?
   technicalProfile     Json?
@@ -75,18 +76,19 @@ model Notification {
 }
 
 model Booking {
-  id           String        @id @default(uuid())
-  apartmentId  String
-  guestName    String?
-  totalGuests  Int
-  checkInDate  DateTime
-  checkOutDate DateTime
-  status       String?
-  externalId   String?       @unique
-  source       String?
-  createdAt    DateTime      @default(now())
-  apartment    Apartment     @relation(fields: [apartmentId], references: [id])
-  cleaningTask CleaningTask?
+  id             String        @id @default(uuid())
+  apartmentId    String
+  guestName      String?
+  totalGuests    Int
+  checkInDate    DateTime
+  checkOutDate   DateTime
+  status         String?
+  externalId     String?       @unique
+  source         String?
+  cullaRequested Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  apartment      Apartment     @relation(fields: [apartmentId], references: [id])
+  cleaningTask   CleaningTask?
 }
 
 model CleaningTask {

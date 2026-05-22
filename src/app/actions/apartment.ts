@@ -13,6 +13,32 @@ function textValue(formData: FormData, key: string) {
   return (formData.get(key) as string | null) ?? "";
 }
 
+function intField(formData: FormData, key: string, fallback = 0): number {
+  const v = parseInt(formData.get(key) as string, 10);
+  return isNaN(v) ? fallback : v;
+}
+
+function parseBedConfigFromForm(formData: FormData) {
+  const bedTypes = ["matrimoniale", "singolo", "divanoMatrimoniale", "divanoSingolo"] as const;
+  const beds: Record<string, { count: number; lenzuola: number; federe: number; copriPiumino: number }> = {};
+  for (const k of bedTypes) {
+    beds[k] = {
+      count:        intField(formData, `bedConfig.${k}.count`),
+      lenzuola:     intField(formData, `bedConfig.${k}.lenzuola`),
+      federe:       intField(formData, `bedConfig.${k}.federe`),
+      copriPiumino: intField(formData, `bedConfig.${k}.copriPiumino`),
+    };
+  }
+  return {
+    ...beds,
+    culla: {
+      lenzuola:     intField(formData, "bedConfig.culla.lenzuola", 1),
+      federe:       intField(formData, "bedConfig.culla.federe", 1),
+      copriPiumino: intField(formData, "bedConfig.culla.copriPiumino", 1),
+    },
+  };
+}
+
 function objectValue(value: unknown) {
   return value && typeof value === "object" && !Array.isArray(value)
     ? value as Record<string, unknown>
@@ -308,6 +334,7 @@ export async function createApartment(formData: FormData) {
         accessInstructions: null,
         accessInfo: hasAccessInfo ? accessInfo : undefined,
         icalUrl: (formData.get("icalUrl") as string | null) || "",
+        bedConfig: parseBedConfigFromForm(formData),
         technicalProfile,
         apartmentAttachments: directAttachments.length > 0 ? {
           create: directAttachments.map((attachment) => ({
@@ -388,6 +415,7 @@ export async function updateApartment(formData: FormData) {
         accessInstructions: existingApartment?.accessInstructions ?? null,
         accessInfo,
         icalUrl: formData.get("icalUrl") as string,
+        bedConfig: parseBedConfigFromForm(formData),
         technicalProfile: await buildTechnicalProfile(formData, id, existingApartment?.technicalProfile),
       },
     });

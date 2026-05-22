@@ -16,6 +16,7 @@ interface BookingInitialData {
   totalGuests: number;
   checkInDate: Date;
   checkOutDate: Date;
+  cullaRequested?: boolean;
 }
 
 interface BookingFormProps {
@@ -62,6 +63,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
   const [apartmentId, setApartmentId] = useState(initialData?.apartmentId || "");
   const [checkInDate, setCheckInDate] = useState(() => formatDateToISO(initialData?.checkInDate ?? null));
   const [checkOutDate, setCheckOutDate] = useState(() => formatDateToISO(initialData?.checkOutDate ?? null));
+  const [cullaRequested, setCullaRequested] = useState(initialData?.cullaRequested ?? false);
 
   useEffect(() => {
     if (apartmentId !== initialData?.apartmentId) {
@@ -126,17 +128,44 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
 
               <div>
                 <label htmlFor="totalGuests" className="block text-sm font-medium text-gray-700 mb-1.5">Ospiti Totali *</label>
-                <input 
-                  required 
-                  type="number" 
-                  min="1" 
-                  id="totalGuests" 
-                  name="totalGuests" 
+                <input
+                  required
+                  type="number"
+                  min="1"
+                  id="totalGuests"
+                  name="totalGuests"
                   defaultValue={initialData?.totalGuests || "1"}
-                  className="w-full rounded-xl border-gray-200 border px-4 py-3 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all" 
+                  className="w-full rounded-xl border-gray-200 border px-4 py-3 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
                 />
               </div>
             </div>
+
+            {/* Culla */}
+            <input type="hidden" name="cullaRequested" value={cullaRequested ? "true" : "false"} />
+            <button
+              type="button"
+              onClick={() => setCullaRequested((v) => !v)}
+              className={`w-full flex items-center justify-between rounded-2xl border px-4 py-3.5 transition-all ${
+                cullaRequested
+                  ? "bg-emerald-50 border-emerald-300"
+                  : "bg-gray-50 border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🪺</span>
+                <div className="text-left">
+                  <p className={`text-sm font-bold ${cullaRequested ? "text-emerald-800" : "text-gray-700"}`}>
+                    Culla necessaria
+                  </p>
+                  <p className={`text-xs ${cullaRequested ? "text-emerald-600" : "text-gray-400"}`}>
+                    Aggiunge la biancheria culla al calcolo — mostrata separatamente
+                  </p>
+                </div>
+              </div>
+              <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${cullaRequested ? "bg-emerald-500" : "bg-gray-300"}`}>
+                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${cullaRequested ? "translate-x-5" : "translate-x-0.5"}`} />
+              </div>
+            </button>
 
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
