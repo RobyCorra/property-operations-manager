@@ -9,6 +9,7 @@ import CleaningCorrectionPanel from "@/src/components/cleaning-correction-panel"
 import type { CorrectionItem } from "@/src/components/cleaning-correction-panel";
 import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage } from "@/src/app/actions/operational";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import { calculateLinen } from "@/src/lib/linen-calculator";
 
 interface ChecklistItem {
   id: string;
@@ -25,6 +26,7 @@ interface NextBooking {
   guestName: string | null;
   totalGuests: number;
   checkInDate: Date;
+  cullaRequested?: boolean | null;
 }
 
 interface CleaningTask {
@@ -39,7 +41,7 @@ interface CleaningTask {
   checklistProgress: unknown;
   correctionProgress: unknown;
   nextBooking?: NextBooking | null;
-  apartment: { name: string; address: string };
+  apartment: { name: string; address: string; bathrooms?: number; bedConfig?: unknown };
   assignedTo?: { name: string } | null;
   aiAssistantMessages: {
     createdAt: Date;
@@ -173,6 +175,100 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                 )}
               </div>
             </div>
+
+                {/* Biancheria */}
+                {task.nextBooking && (() => {
+                  const linen = calculateLinen(
+                    task.apartment.bedConfig,
+                    task.nextBooking.totalGuests,
+                    !!(task.nextBooking.cullaRequested)
+                  );
+                  return (
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Biancheria da Preparare</p>
+
+                      {/* Asciugamani + Tappetini */}
+                      <div className="grid grid-cols-2 gap-2 mb-3">
+                        <div className="rounded-xl bg-gray-50 border border-gray-100 px-3 py-2 flex items-center gap-2">
+                          <span className="text-sm">🛁</span>
+                          <div>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Asciugamani</p>
+                            <p className="text-lg font-black text-gray-900 leading-none">{task.nextBooking.totalGuests * 2}</p>
+                          </div>
+                        </div>
+                        <div className="rounded-xl bg-gray-50 border border-gray-100 px-3 py-2 flex items-center gap-2">
+                          <span className="text-sm">🚿</span>
+                          <div>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Tappetini</p>
+                            <p className="text-lg font-black text-gray-900 leading-none">{task.apartment.bathrooms ?? "—"}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Letti */}
+                      <div className="space-y-1.5 mb-2">
+                        {linen.beds.map(bed => (
+                          <div key={bed.key} className={`flex items-center justify-between rounded-xl px-3 py-2 border ${bed.isFixed ? "bg-blue-50 border-blue-100" : "bg-amber-50 border-amber-100"}`}>
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${bed.isFixed ? "bg-blue-400" : "bg-amber-400"}`} />
+                              <div>
+                                <p className="text-[10px] font-black text-slate-700 uppercase tracking-tight">{bed.label} ×{bed.count}</p>
+                                <p className="text-[9px] text-gray-400 font-semibold">{bed.isFixed ? "fisso" : "aggiunto"}</p>
+                              </div>
+                            </div>
+                            <div className="flex gap-1">
+                              {[
+                                { v: bed.linen.lenzuola,     l: "Lenz." },
+                                { v: bed.linen.federe,       l: "Fed."  },
+                                { v: bed.linen.copriPiumino, l: "Cop."  },
+                              ].map(chip => (
+                                <div key={chip.l} className="bg-white border border-gray-100 rounded-lg px-2 py-1 text-center min-w-[30px]">
+                                  <p className="text-[11px] font-black text-gray-900 leading-none">{chip.v}</p>
+                                  <p className="text-[7px] font-black uppercase tracking-wide text-gray-400">{chip.l}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Totali */}
+                      <div className="rounded-xl bg-gray-900 px-3 py-2 flex mb-2">
+                        {[
+                          { v: linen.adults.lenzuola,     l: "Lenzuola"   },
+                          { v: linen.adults.federe,       l: "Federe"     },
+                          { v: linen.adults.copriPiumino, l: "Copripium." },
+                        ].map((t, i) => (
+                          <div key={t.l} className={`flex-1 text-center ${i > 0 ? "border-l border-white/10" : ""}`}>
+                            <p className="text-[8px] font-black uppercase tracking-widest text-white/40">{t.l}</p>
+                            <p className="text-base font-black text-white leading-none mt-0.5">{t.v}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Culla */}
+                      {linen.culla && (
+                        <div className="rounded-xl bg-emerald-50 border border-emerald-100 px-3 py-2 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="bg-emerald-500 text-white text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded">culla</span>
+                            <span className="text-[10px] font-black text-emerald-800 uppercase tracking-tight">Lettino Neonato</span>
+                          </div>
+                          <div className="flex gap-1">
+                            {[
+                              { v: linen.culla.lenzuola, l: "Lenz." },
+                              { v: linen.culla.federe,   l: "Fed."  },
+                            ].map(chip => (
+                              <div key={chip.l} className="bg-emerald-100 border border-emerald-200 rounded-lg px-2 py-1 text-center min-w-[30px]">
+                                <p className="text-[11px] font-black text-emerald-900 leading-none">{chip.v}</p>
+                                <p className="text-[7px] font-black uppercase tracking-wide text-emerald-500">{chip.l}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
             {task.notes && (
               <div>

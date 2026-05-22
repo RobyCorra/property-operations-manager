@@ -6,29 +6,31 @@ import UnifiedFilters, { FilterField } from "./unified-filters";
 import DeleteOperationalButton from "./delete-operational-button";
 import SafeDate from "./safe-date";
 import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
-import { 
-  CalendarDays, 
-  Building2, 
-  User, 
-  LogIn, 
-  Pencil, 
+import {
+  CalendarDays,
+  Building2,
+  User,
+  LogIn,
+  Pencil,
   Search,
   Filter,
   Clock,
   ArrowRight
 } from "./icons";
+import { calculateLinen } from "@/src/lib/linen-calculator";
 
 interface CleaningTask {
   id: string;
   date: Date | string;
   status: string;
   notes: string | null;
-  apartment: { id: string; name: string };
+  apartment: { id: string; name: string; bathrooms?: number; bedConfig?: unknown };
   assignedTo: { id: string; name: string } | null;
   nextBooking?: {
     guestName: string | null;
     totalGuests: number;
     checkInDate: Date | string;
+    cullaRequested?: boolean | null;
   } | null;
 }
 
@@ -201,23 +203,52 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     </div>
                   </td>
                   <td className="px-10 py-6">
-                    {task.nextBooking ? (
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                           <LogIn size={12} className="text-emerald-500" />
-                           <span className="text-sm font-bold text-slate-900 line-clamp-1 uppercase tracking-tight">{task.nextBooking.guestName}</span>
+                    {task.nextBooking ? (() => {
+                      const nb = task.nextBooking;
+                      const linen = calculateLinen(
+                        task.apartment.bedConfig,
+                        nb.totalGuests,
+                        !!(nb.cullaRequested)
+                      );
+                      return (
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex items-center gap-2">
+                            <LogIn size={12} className="text-emerald-500" />
+                            <span className="text-sm font-bold text-slate-900 line-clamp-1 uppercase tracking-tight">{nb.guestName}</span>
+                          </div>
+                          <div className="flex items-center gap-2 opacity-60">
+                            <div className="w-3" />
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                              {nb.totalGuests} osp. &middot; <SafeDate date={nb.checkInDate} format={{ day: '2-digit', month: 'short' }} />
+                            </span>
+                          </div>
+                          {/* Mini linen summary */}
+                          <div className="flex flex-wrap gap-1 mt-0.5">
+                            <span className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5 text-[9px] font-black text-slate-500 uppercase tracking-wide">
+                              🛁 {nb.totalGuests * 2}
+                            </span>
+                            {task.apartment.bathrooms != null && (
+                              <span className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5 text-[9px] font-black text-slate-500 uppercase tracking-wide">
+                                🚿 {task.apartment.bathrooms}
+                              </span>
+                            )}
+                            {linen.beds.map(bed => (
+                              <span key={bed.key} className={`inline-flex items-center rounded-md px-2 py-0.5 text-[9px] font-black uppercase tracking-wide border ${bed.isFixed ? "bg-blue-50 border-blue-200 text-blue-700" : "bg-amber-50 border-amber-200 text-amber-700"}`}>
+                                {bed.label.replace("Letto ", "").replace("Divano letto ", "Div.")} ×{bed.count} · {bed.linen.lenzuola}+{bed.linen.federe}+{bed.linen.copriPiumino}
+                              </span>
+                            ))}
+                            {linen.culla && (
+                              <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[9px] font-black uppercase tracking-wide bg-emerald-50 border border-emerald-200 text-emerald-700">
+                                🟢 culla · {linen.culla.lenzuola}+{linen.culla.federe}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 opacity-60">
-                           <div className="w-3" />
-                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                             {task.nextBooking.totalGuests} osp. &middot; <SafeDate date={task.nextBooking.checkInDate} format={{ day: '2-digit', month: 'short' }} />
-                           </span>
-                        </div>
-                      </div>
-                    ) : (
+                      );
+                    })() : (
                       <div className="flex items-center gap-2 opacity-30">
-                          <Clock size={12} />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">Nessun arrivo</span>
+                        <Clock size={12} />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Nessun arrivo</span>
                       </div>
                     )}
                   </td>

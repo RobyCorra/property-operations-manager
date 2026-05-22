@@ -215,7 +215,9 @@ exports.Prisma.MaintenanceTicketScalarFieldEnum = {
   scheduledEnd: 'scheduledEnd',
   startedAt: 'startedAt',
   resolvedAt: 'resolvedAt',
-  correctionProgress: 'correctionProgress'
+  correctionProgress: 'correctionProgress',
+  maintenanceTasks: 'maintenanceTasks',
+  maintenanceAccessToken: 'maintenanceAccessToken'
 };
 
 exports.Prisma.AIAssistantMessageScalarFieldEnum = {

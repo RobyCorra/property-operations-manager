@@ -439,6 +439,9 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
     return { error: "La data di fine non può essere precedente o uguale alla data di inizio." };
   }
 
+  const rawTasks = formData.get("maintenanceTasks") as string | null;
+  const maintenanceTasks = rawTasks ? (() => { try { return JSON.parse(rawTasks); } catch { return []; } })() : [];
+
   const ticket = await prisma.maintenanceTicket.create({
     data: {
       apartmentId,
@@ -449,6 +452,7 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
       status: "PENDING",
       scheduledStart,
       scheduledEnd,
+      maintenanceTasks,
     },
   });
 
@@ -486,6 +490,9 @@ export async function updateMaintenanceTicket(id: string, prevState: any, formDa
     return { error: "La data di fine non può essere precedente o uguale alla data di inizio." };
   }
 
+  const rawTasksUpd = formData.get("maintenanceTasks") as string | null;
+  const maintenanceTasksUpd = rawTasksUpd ? (() => { try { return JSON.parse(rawTasksUpd); } catch { return undefined; } })() : undefined;
+
   await prisma.maintenanceTicket.update({
     where: { id },
     data: {
@@ -497,6 +504,7 @@ export async function updateMaintenanceTicket(id: string, prevState: any, formDa
       status: status || "PENDING",
       scheduledStart,
       scheduledEnd,
+      ...(maintenanceTasksUpd !== undefined && { maintenanceTasks: maintenanceTasksUpd }),
     },
   });
 

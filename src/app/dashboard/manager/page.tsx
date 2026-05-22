@@ -51,6 +51,7 @@ type BookingView = {
   guestName: string | null;
   status: string | null;
   totalGuests?: number | null;
+  cullaRequested?: boolean | null;
   notes?: string | null;
   source?: string | null;
   externalId?: string | null;
@@ -233,6 +234,7 @@ export default async function ManagerDashboardPage() {
     checkInDate: b.checkInDate,
     checkOutDate: b.checkOutDate,
     totalGuests: b.totalGuests ?? 0,
+    cullaRequested: b.cullaRequested ?? false,
     status: b.status ?? undefined,
     source: b.source ?? undefined,
     externalId: b.externalId ?? undefined,

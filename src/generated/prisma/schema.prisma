@@ -115,25 +115,27 @@ model CleaningTask {
 }
 
 model MaintenanceTicket {
-  id                  String               @id @default(uuid())
-  apartmentId         String
-  title               String
-  description         String
-  status              String
-  priority            String
-  createdAt           DateTime             @default(now())
-  assignedToId        String?
-  scheduledStart      DateTime?
-  scheduledEnd        DateTime?
-  startedAt           DateTime?
-  resolvedAt          DateTime?
-  correctionProgress  Json?
-  apartment           Apartment            @relation(fields: [apartmentId], references: [id])
-  assignedTo          User?                @relation(fields: [assignedToId], references: [id])
-  attachments         Attachment[]
-  messages            Message[]
-  aiAssistantMessages AIAssistantMessage[]
-  supervisorReviews   SupervisorReview[]
+  id                     String               @id @default(uuid())
+  apartmentId            String
+  title                  String
+  description            String
+  status                 String
+  priority               String
+  createdAt              DateTime             @default(now())
+  assignedToId           String?
+  scheduledStart         DateTime?
+  scheduledEnd           DateTime?
+  startedAt              DateTime?
+  resolvedAt             DateTime?
+  correctionProgress     Json?
+  maintenanceTasks       Json?
+  maintenanceAccessToken String?              @unique
+  apartment              Apartment            @relation(fields: [apartmentId], references: [id])
+  assignedTo             User?                @relation(fields: [assignedToId], references: [id])
+  attachments            Attachment[]
+  messages               Message[]
+  aiAssistantMessages    AIAssistantMessage[]
+  supervisorReviews      SupervisorReview[]
 }
 
 model AIAssistantMessage {

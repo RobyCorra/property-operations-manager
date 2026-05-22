@@ -8,6 +8,7 @@ import StatusUpdateButton from "@/src/components/status-update-button";
 import AIAssistant from "@/src/components/ai-assistant";
 import { updateMaintenanceTicket, createTicketMessage, reopenMaintenanceTicket } from "@/src/app/actions/operational";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import MaintenanceShareButton from "@/src/components/maintenance-share-button";
 
 type AttachmentView = {
   id: string;
@@ -44,10 +45,10 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
   const { id } = await params;
   const userId = cookieStore.get("userId")?.value;
 
-  const [ticket, apartments, technicians, manager] = await Promise.all([
+  const [ticket, tokenRecord, apartments, technicians, manager] = await Promise.all([
     prisma.maintenanceTicket.findUnique({
       where: { id },
-      include: { 
+      include: {
         messages: {
           orderBy: { createdAt: "asc" },
           include: { attachment: true }
@@ -57,6 +58,10 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
           orderBy: { createdAt: "asc" }
         }
       }
+    }),
+    prisma.maintenanceTicket.findUnique({
+      where: { id },
+      select: { maintenanceAccessToken: true },
     }),
     prisma.apartment.findMany({ select: { id: true, name: true } }),
     prisma.user.findMany({ where: { role: "MAINTENANCE" }, select: { id: true, name: true } }),
@@ -76,6 +81,17 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
           </Link>
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Dettagli Ticket #{id.slice(0, 8)}</h1>
           <p className="text-gray-500 mt-1">Gestisci la segnalazione e comunica con il tecnico</p>
+        </div>
+
+        {/* Link condivisibile per il manutentore */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2">
+          <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+            🔗 Link manutentore (accesso senza login)
+          </p>
+          <MaintenanceShareButton
+            ticketId={id}
+            existingToken={tokenRecord?.maintenanceAccessToken ?? null}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -140,7 +156,8 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
                 description: ticket.description,
                 scheduledStart: ticket.scheduledStart,
                 scheduledEnd: ticket.scheduledEnd,
-                status: ticket.status
+                status: ticket.status,
+                maintenanceTasks: ticket.maintenanceTasks,
               }}
             />
             

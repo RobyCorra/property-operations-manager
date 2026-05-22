@@ -4,6 +4,8 @@ import { useActionState, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { getApartmentSchedule } from "@/src/app/actions/operational";
 import { formatRomeDateInputValue, formatRomeTimeInputValue } from "@/src/lib/rome-datetime";
+import MaintenanceTaskEditor from "@/src/components/maintenance-task-editor";
+import type { MaintenanceTask } from "@/src/components/maintenance-task-editor";
 
 interface ApartmentSchedule {
   bookings: Booking[];
@@ -35,6 +37,7 @@ interface OperationalInitialData {
   scheduledStart?: Date | null;
   scheduledEnd?: Date | null;
   status: string;
+  maintenanceTasks?: unknown;
 }
 
 interface OperationalFormProps {
@@ -404,6 +407,17 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                   rows={3}
                   defaultValue={initialData?.description || ""}
                   className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent" 
+                />
+              </div>
+
+              {/* Maintenance Tasks */}
+              <div className="pt-4 border-t border-gray-50">
+                <MaintenanceTaskEditor
+                  initialTasks={
+                    Array.isArray(initialData?.maintenanceTasks)
+                      ? (initialData.maintenanceTasks as MaintenanceTask[])
+                      : []
+                  }
                 />
               </div>
 

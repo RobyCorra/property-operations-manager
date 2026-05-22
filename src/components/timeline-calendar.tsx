@@ -11,6 +11,7 @@ import React, {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getApartmentOperationalStatus, type ApartmentStatus } from "@/src/lib/apartment-status";
+import { calculateLinen } from "@/src/lib/linen-calculator";
 import { deleteBooking, confirmCheckIn } from "@/src/app/actions/booking";
 import {
   deleteCleaningTask,
@@ -47,6 +48,7 @@ interface Booking {
   checkInDate: Date | string;
   checkOutDate: Date | string;
   totalGuests?: number;
+  cullaRequested?: boolean;
   status?: string;
   source?: string;
   externalId?: string;
@@ -110,6 +112,8 @@ interface Apartment {
   name: string;
   status: ApartmentStatus;
   address?: string;
+  bathrooms?: number;
+  bedConfig?: unknown;
 }
 
 interface TimelineCalendarProps {
@@ -968,33 +972,125 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                         {selectedEvent.type === 'cleaning' && (
                             <div className="space-y-6">
-                                <div>
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Target Preparazione</h4>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {(() => {
-                                            const taskDayStart = new Date(selectedEvent.data.date);
-                                            taskDayStart.setUTCHours(0, 0, 0, 0);
-                                            const nextB = bookings
-                                                .filter(b => b.apartmentId === selectedEvent.data.apartmentId && new Date(b.checkInDate) >= taskDayStart)
-                                                .sort((a, b) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
-                                            
-                                            return (
-                                                <>
-                                                    <SummaryBox 
+                                {(() => {
+                                    const taskDayStart = new Date(selectedEvent.data.date);
+                                    taskDayStart.setUTCHours(0, 0, 0, 0);
+                                    const nextB = bookings
+                                        .filter(b => b.apartmentId === selectedEvent.data.apartmentId && new Date(b.checkInDate) >= taskDayStart)
+                                        .sort((a, b) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
+                                    const apt = apartments.find(a => a.id === selectedEvent.data.apartmentId);
+                                    const linen = nextB
+                                        ? calculateLinen(apt?.bedConfig, nextB.totalGuests ?? 0, !!(nextB.cullaRequested))
+                                        : null;
+
+                                    return (
+                                        <>
+                                            {/* Target Preparazione */}
+                                            <div>
+                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Target Preparazione</h4>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <SummaryBox
                                                         icon={<UserCircle size={16} />}
-                                                        label="Preparazione Per" 
-                                                        value={nextB ? (nextB.guestName || "Ospite") : "Nessun arrivo"} 
+                                                        label="Preparazione Per"
+                                                        value={nextB ? (nextB.guestName || "Ospite") : "Nessun arrivo"}
                                                     />
-                                                    <SummaryBox 
+                                                    <SummaryBox
                                                         icon={<Users size={16} />}
-                                                        label="Numero Ospiti" 
-                                                        value={nextB ? `${nextB.totalGuests} Persone` : "Non disponibile"} 
+                                                        label="Numero Ospiti"
+                                                        value={nextB ? `${nextB.totalGuests} Persone` : "Non disponibile"}
                                                     />
-                                                </>
-                                            );
-                                        })()}
-                                    </div>
-                                </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Biancheria */}
+                                            {nextB && linen && (
+                                                <div>
+                                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Biancheria & Servizi</h4>
+
+                                                    {/* Asciugamani + Tappetini */}
+                                                    <div className="grid grid-cols-2 gap-3 mb-3">
+                                                        <div className="bg-white/40 backdrop-blur-md rounded-xl border border-white/20 p-3 flex items-center gap-3">
+                                                            <span className="text-base">🛁</span>
+                                                            <div>
+                                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Asciugamani</p>
+                                                                <p className="text-lg font-black text-slate-900 leading-none">{(nextB.totalGuests ?? 0) * 2}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="bg-white/40 backdrop-blur-md rounded-xl border border-white/20 p-3 flex items-center gap-3">
+                                                            <span className="text-base">🚿</span>
+                                                            <div>
+                                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Tappetini</p>
+                                                                <p className="text-lg font-black text-slate-900 leading-none">{apt?.bathrooms ?? "—"}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Letti */}
+                                                    <div className="space-y-2 mb-2">
+                                                        {linen.beds.map(bed => (
+                                                            <div key={bed.key} className={`flex items-center justify-between rounded-xl px-3 py-2 border ${bed.isFixed ? "bg-blue-50/80 border-blue-200/60" : "bg-amber-50/80 border-amber-200/60"}`}>
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className={`w-2 h-2 rounded-full ${bed.isFixed ? "bg-blue-500" : "bg-amber-500"}`} />
+                                                                    <div>
+                                                                        <p className="text-[10px] font-black text-slate-700 uppercase tracking-tight">{bed.label} ×{bed.count}</p>
+                                                                        <p className="text-[9px] text-slate-400 font-semibold">{bed.isFixed ? "fisso" : "aggiunto"}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex gap-1.5">
+                                                                    {[
+                                                                        { v: bed.linen.lenzuola, l: "Lenz." },
+                                                                        { v: bed.linen.federe,   l: "Fed."  },
+                                                                        { v: bed.linen.copriPiumino, l: "Cop." },
+                                                                    ].map(chip => (
+                                                                        <div key={chip.l} className="bg-white/70 border border-white/40 rounded-lg px-2 py-1 text-center min-w-[32px]">
+                                                                            <p className="text-[11px] font-black text-slate-900 leading-none">{chip.v}</p>
+                                                                            <p className="text-[7px] font-black uppercase tracking-wide text-slate-400">{chip.l}</p>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Totali */}
+                                                    <div className="bg-slate-900 rounded-xl px-3 py-2 flex mb-2">
+                                                        {[
+                                                            { v: linen.adults.lenzuola,     l: "Lenzuola" },
+                                                            { v: linen.adults.federe,       l: "Federe"   },
+                                                            { v: linen.adults.copriPiumino, l: "Copripium." },
+                                                        ].map((t, i) => (
+                                                            <div key={t.l} className={`flex-1 text-center ${i > 0 ? "border-l border-white/10" : ""}`}>
+                                                                <p className="text-[8px] font-black uppercase tracking-widest text-white/40">{t.l}</p>
+                                                                <p className="text-base font-black text-white leading-none mt-0.5">{t.v}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Culla */}
+                                                    {linen.culla && (
+                                                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 flex items-center justify-between">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="bg-emerald-500 text-white text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded">culla</span>
+                                                                <span className="text-[10px] font-black text-emerald-800 uppercase tracking-tight">Lettino Neonato</span>
+                                                            </div>
+                                                            <div className="flex gap-1.5">
+                                                                {[
+                                                                    { v: linen.culla.lenzuola, l: "Lenz." },
+                                                                    { v: linen.culla.federe,   l: "Fed."  },
+                                                                ].map(chip => (
+                                                                    <div key={chip.l} className="bg-emerald-100 border border-emerald-200 rounded-lg px-2 py-1 text-center min-w-[32px]">
+                                                                        <p className="text-[11px] font-black text-emerald-900 leading-none">{chip.v}</p>
+                                                                        <p className="text-[7px] font-black uppercase tracking-wide text-emerald-500">{chip.l}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </>
+                                    );
+                                })()}
 
                                 {selectedEvent.data.notes && (
                                     <div>
