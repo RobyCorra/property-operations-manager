@@ -231,12 +231,25 @@ export default async function CleanerDashboardPage() {
                   compactContent={<></>}
                   expandedContent={(
                     <div className="space-y-3">
-                      {/* Tappetini bagno */}
-                      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
-                        <div className="text-2xl">🟩</div>
-                        <div>
-                          <div className="text-[9px] font-black uppercase tracking-wider text-emerald-600">Tappetini bagno</div>
-                          <div className="text-2xl font-black text-emerald-700 leading-none">{task.apartment.bathrooms} <span className="text-[10px] text-emerald-400 font-semibold">1 per bagno</span></div>
+                      {/* Asciugamani + Tappetini */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center shadow-sm">
+                          <div className="text-2xl mb-1">🛁</div>
+                          <div className="text-3xl font-black text-blue-700 leading-none">
+                            {task.nextBooking ? task.nextBooking.totalGuests * 2 : "—"}
+                          </div>
+                          <div className="text-[9px] font-black uppercase tracking-wider text-blue-600 mt-1">Asciugamani</div>
+                          {task.nextBooking ? (
+                            <div className="text-[9px] text-blue-400 mt-0.5">{task.nextBooking.totalGuests} ospiti × 2</div>
+                          ) : (
+                            <div className="text-[9px] text-blue-300 mt-0.5">nessuna prenotazione</div>
+                          )}
+                        </div>
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center shadow-sm">
+                          <div className="text-2xl mb-1">🟩</div>
+                          <div className="text-3xl font-black text-emerald-700 leading-none">{task.apartment.bathrooms}</div>
+                          <div className="text-[9px] font-black uppercase tracking-wider text-emerald-600 mt-1">Tappetini bagno</div>
+                          <div className="text-[9px] text-emerald-400 mt-0.5">1 per bagno</div>
                         </div>
                       </div>
 
