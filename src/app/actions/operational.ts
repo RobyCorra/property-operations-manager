@@ -256,10 +256,15 @@ export async function syncCleaningTaskFromBooking(bookingId: string, tx?: any) {
  * Dynamically enriches a single cleaning task or an array of tasks with the next incoming booking.
  */
 export async function enrichCleaningTaskWithNextBooking<T>(task: T & { apartmentId: string; date: Date }): Promise<T & { nextBooking: any }> {
+  // Tronca l'ora del task (es. 10:00 Roma = 08:00 UTC) a mezzanotte UTC
+  // così il confronto con checkInDate (sempre mezzanotte UTC) è corretto
+  const startOfTaskDay = new Date(task.date);
+  startOfTaskDay.setUTCHours(0, 0, 0, 0);
+
   const nextBooking = await prisma.booking.findFirst({
     where: {
       apartmentId: task.apartmentId,
-      checkInDate: { gte: task.date },
+      checkInDate: { gte: startOfTaskDay },
       status: { in: ["ACTIVE", "CONFIRMED", "CHECKED_IN"] }
     },
     orderBy: { checkInDate: "asc" }
