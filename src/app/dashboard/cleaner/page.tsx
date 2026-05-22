@@ -255,7 +255,11 @@ export default async function CleanerDashboardPage() {
 
                       {/* Biancheria calcolata */}
                       {(() => {
-                        if (!task.nextBooking) {
+                        // cullaRequested: OR tra nextBooking e booking corrente (qualunque sia il caso)
+                        const cullaRequested = !!(task.nextBooking?.cullaRequested || task.booking?.cullaRequested);
+                        const totalGuests = task.nextBooking?.totalGuests ?? (task.booking as { totalGuests?: number } | null)?.totalGuests ?? 0;
+
+                        if (!task.nextBooking && !cullaRequested) {
                           return (
                             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center text-slate-400 text-xs font-semibold">
                               🛏 Biancheria — nessuna prenotazione in arrivo
@@ -264,12 +268,12 @@ export default async function CleanerDashboardPage() {
                         }
                         const linen = calculateLinen(
                           task.apartment.bedConfig,
-                          task.nextBooking.totalGuests,
-                          task.nextBooking.cullaRequested ?? task.booking?.cullaRequested ?? false,
+                          totalGuests,
+                          cullaRequested,
                         );
                         return (
                           <div className="space-y-2">
-                            <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 px-1">🛏 Biancheria — {task.nextBooking.totalGuests} ospiti</p>
+                            <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 px-1">🛏 Biancheria — {totalGuests} ospiti</p>
                             {/* Letti attivati */}
                             {linen.beds.map((bed) => (
                               <div key={bed.key} className={`rounded-2xl border p-3 flex items-center gap-3 ${bed.isFixed ? "bg-blue-50 border-blue-200" : "bg-amber-50 border-amber-200"}`}>
