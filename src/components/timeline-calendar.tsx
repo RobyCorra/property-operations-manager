@@ -972,8 +972,10 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Target Preparazione</h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         {(() => {
+                                            const taskDayStart = new Date(selectedEvent.data.date);
+                                            taskDayStart.setUTCHours(0, 0, 0, 0);
                                             const nextB = bookings
-                                                .filter(b => b.apartmentId === selectedEvent.data.apartmentId && new Date(b.checkInDate) >= new Date(selectedEvent.data.date))
+                                                .filter(b => b.apartmentId === selectedEvent.data.apartmentId && new Date(b.checkInDate) >= taskDayStart)
                                                 .sort((a, b) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
                                             
                                             return (

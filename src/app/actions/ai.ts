@@ -783,8 +783,13 @@ function bookingTag(checkInDate: Date, checkOutDate: Date, now: Date = new Date(
   const outKey   = formatDate(checkOutDate);
   if (inKey === todayKey) return "[CHECK-IN OGGI]";
   if (outKey === todayKey) return "[CHECK-OUT OGGI]";
-  if (checkInDate < now && checkOutDate > now) return "[SOGGIORNO IN CORSO]";
-  if (checkInDate > now) return "[FUTURO]";
+  // Confronta solo la parte data (mezzanotte UTC) per evitare falsi positivi
+  // dovuti all'orario di `now` vs checkInDate/checkOutDate memorizzati come mezzanotte UTC
+  const nowDay = new Date(now); nowDay.setUTCHours(0, 0, 0, 0);
+  const inDay  = new Date(checkInDate); inDay.setUTCHours(0, 0, 0, 0);
+  const outDay = new Date(checkOutDate); outDay.setUTCHours(0, 0, 0, 0);
+  if (inDay <= nowDay && outDay > nowDay) return "[SOGGIORNO IN CORSO]";
+  if (inDay > nowDay) return "[FUTURO]";
   return "[PASSATO]";
 }
 

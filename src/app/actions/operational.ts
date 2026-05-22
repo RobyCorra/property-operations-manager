@@ -40,8 +40,17 @@ const toSafePositiveInt = (value: unknown, fallback = 1) => {
   return Math.max(1, Math.round(parsed));
 };
 
+const startOfDayUTC = (date: Date): Date => {
+  const d = new Date(date);
+  d.setUTCHours(0, 0, 0, 0);
+  return d;
+};
+
 const isIncomingBookingForTask = (booking: { apartmentId: string; checkInDate: Date }, apartmentId: string, taskDate: Date) => {
-  return booking.apartmentId === apartmentId && new Date(booking.checkInDate).getTime() >= taskDate.getTime();
+  // Confronta solo la parte data (senza ora) per evitare falsi negativi
+  // dovuti al task con orario (es. 10:00 Roma = 08:00 UTC) vs checkInDate (mezzanotte UTC)
+  return booking.apartmentId === apartmentId &&
+    new Date(booking.checkInDate).getTime() >= startOfDayUTC(taskDate).getTime();
 };
 
 const DEFAULT_CLEANING_TIME = "10:00";
@@ -80,7 +89,7 @@ export async function computeChecklistSnapshot(db: any, apartmentId: string, tas
     nextBooking = await db.booking.findFirst({
       where: {
         apartmentId,
-        checkInDate: { gte: taskDate },
+        checkInDate: { gte: startOfDayUTC(taskDate) },
         status: { in: ["ACTIVE", "CONFIRMED", "CHECKED_IN"] }
       },
       orderBy: { checkInDate: "asc" }
@@ -256,15 +265,10 @@ export async function syncCleaningTaskFromBooking(bookingId: string, tx?: any) {
  * Dynamically enriches a single cleaning task or an array of tasks with the next incoming booking.
  */
 export async function enrichCleaningTaskWithNextBooking<T>(task: T & { apartmentId: string; date: Date }): Promise<T & { nextBooking: any }> {
-  // Tronca l'ora del task (es. 10:00 Roma = 08:00 UTC) a mezzanotte UTC
-  // così il confronto con checkInDate (sempre mezzanotte UTC) è corretto
-  const startOfTaskDay = new Date(task.date);
-  startOfTaskDay.setUTCHours(0, 0, 0, 0);
-
   const nextBooking = await prisma.booking.findFirst({
     where: {
       apartmentId: task.apartmentId,
-      checkInDate: { gte: startOfTaskDay },
+      checkInDate: { gte: startOfDayUTC(task.date) },
       status: { in: ["ACTIVE", "CONFIRMED", "CHECKED_IN"] }
     },
     orderBy: { checkInDate: "asc" }
