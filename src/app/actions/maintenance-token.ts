@@ -22,6 +22,49 @@ export interface MaintenanceTaskItem {
   photoUrl: string | null;
 }
 
+export interface MaintenanceNote {
+  id: string;
+  text: string;
+  photoUrls: string[];
+  authorName: string | null;
+  createdAt: string; // ISO string
+}
+
+/**
+ * Aggiunge una nota testuale (con eventuali foto già uploadate) al ticket.
+ */
+export async function addMaintenanceNote(
+  ticketId: string,
+  text: string,
+  photoUrls: string[],
+  authorName: string | null,
+): Promise<MaintenanceNote> {
+  const ticket = await prisma.maintenanceTicket.findUnique({
+    where: { id: ticketId },
+    select: { maintenanceNotes: true },
+  });
+  if (!ticket) throw new Error("Ticket non trovato.");
+
+  const existing: MaintenanceNote[] = Array.isArray(ticket.maintenanceNotes)
+    ? (ticket.maintenanceNotes as unknown as MaintenanceNote[])
+    : [];
+
+  const newNote: MaintenanceNote = {
+    id: randomBytes(8).toString("hex"),
+    text: text.trim(),
+    photoUrls,
+    authorName,
+    createdAt: new Date().toISOString(),
+  };
+
+  await prisma.maintenanceTicket.update({
+    where: { id: ticketId },
+    data: { maintenanceNotes: [...existing, newNote] as unknown as never },
+  });
+
+  return newNote;
+}
+
 /**
  * Aggiorna il progresso di un singolo task (completed + photoUrl).
  */
@@ -100,6 +143,7 @@ export async function getMaintenanceByToken(token: string) {
       priority: true,
       scheduledStart: true,
       maintenanceTasks: true,
+      maintenanceNotes: true,
       apartment: {
         select: { id: true, name: true, address: true },
       },

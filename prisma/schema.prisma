@@ -129,6 +129,7 @@ model MaintenanceTicket {
   resolvedAt                DateTime?
   correctionProgress        Json?
   maintenanceTasks          Json?
+  maintenanceNotes          Json?
   maintenanceAccessToken    String?              @unique
   apartment                 Apartment            @relation(fields: [apartmentId], references: [id])
   assignedTo                User?                @relation(fields: [assignedToId], references: [id])

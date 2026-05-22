@@ -29,6 +29,7 @@ export default async function PublicMaintenancePage({
       attachments={ticket.attachments}
       currentStatus={ticket.status}
       tasks={Array.isArray(ticket.maintenanceTasks) ? (ticket.maintenanceTasks as any[]) : []}
+      notes={Array.isArray(ticket.maintenanceNotes) ? (ticket.maintenanceNotes as any[]) : []}
     />
   );
 }
