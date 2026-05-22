@@ -42,9 +42,12 @@ export default async function ApartmentChecklistPage({ params }: { params: { id:
           <p className="text-gray-500 mt-1">Configura gli standard di pulizia per <span className="font-bold text-gray-900">{apartment.name}</span></p>
         </div>
 
-        <ChecklistManager 
+        <ChecklistManager
           apartmentId={apartment.id}
-          initialItems={apartment.checklistItems}
+          initialItems={apartment.checklistItems.map((item) => ({
+            ...item,
+            labelTranslations: item.labelTranslations as Record<string, string> | null,
+          }))}
         />
 
       </div>

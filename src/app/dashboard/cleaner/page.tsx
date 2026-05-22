@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
 import { prisma } from "@/src/lib/prisma";
-import SafeDate from "@/src/components/safe-date";
 import ExpandableCleaningCard from "@/src/components/expandable-cleaning-card";
 import CleanerStartButton from "@/src/components/cleaner-start-button";
 import CleanerContinueButton from "@/src/components/cleaner-continue-button";
@@ -53,6 +52,7 @@ type CleanerDashboardTask = {
     address: string;
     latitude: number;
     longitude: number;
+    bathrooms: number;
     accessInstructions: string | null;
   };
   status: string;
@@ -122,8 +122,6 @@ export default async function CleanerDashboardPage() {
 
     return { ...task, checklistItems };
   }));
-
-  const serverDate = new Date().toISOString();
 
   return (
     <CleanerLangGate>
@@ -229,31 +227,27 @@ export default async function CleanerDashboardPage() {
                   compactContent={<></>}
                   expandedContent={(
                     <div className="space-y-3">
-                      {/* Check-out / Check-in */}
+                      {/* Forniture: asciugamani + tappetini */}
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-1">🚪 Check-out</p>
-                          <p className="text-sm font-bold text-slate-900 truncate">
-                            {task.booking ? task.booking.guestName || "—" : "Evento manuale"}
-                          </p>
-                          {task.booking && (
-                            <p className="text-[10px] text-slate-400 mt-0.5">
-                              <SafeDate date={task.booking.checkOutDate} serverDate={serverDate} format={{ day: "numeric", month: "short" }} />
-                            </p>
+                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center shadow-sm">
+                          <div className="text-3xl mb-1">🛁</div>
+                          <div className="text-3xl font-black text-blue-700 leading-none">
+                            {task.nextBooking ? task.nextBooking.totalGuests * 2 : "—"}
+                          </div>
+                          <div className="text-[9px] font-black uppercase tracking-wider text-blue-600 mt-1">Asciugamani</div>
+                          {task.nextBooking ? (
+                            <div className="text-[9px] text-blue-400 mt-0.5">{task.nextBooking.totalGuests} ospiti × 2</div>
+                          ) : (
+                            <div className="text-[9px] text-blue-300 mt-0.5">nessuna prenotazione</div>
                           )}
                         </div>
-                        <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500 mb-1">🛎 Check-in</p>
-                          {task.nextBooking ? (
-                            <>
-                              <p className="text-sm font-bold text-slate-900 truncate">{task.nextBooking.guestName || "—"}</p>
-                              <p className="text-[10px] text-slate-400 mt-0.5">
-                                {task.nextBooking.totalGuests} osp · <SafeDate date={task.nextBooking.checkInDate} serverDate={serverDate} format={{ day: "numeric", month: "short" }} />
-                              </p>
-                            </>
-                          ) : (
-                            <p className="text-sm font-bold text-slate-400">Nessun arrivo</p>
-                          )}
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center shadow-sm">
+                          <div className="text-3xl mb-1">🟩</div>
+                          <div className="text-3xl font-black text-emerald-700 leading-none">
+                            {task.apartment.bathrooms}
+                          </div>
+                          <div className="text-[9px] font-black uppercase tracking-wider text-emerald-600 mt-1">Tappetini bagno</div>
+                          <div className="text-[9px] text-emerald-400 mt-0.5">1 per bagno</div>
                         </div>
                       </div>
 

@@ -1,21 +1,29 @@
 "use client";
 
 import { useActionState, useState, useTransition, useEffect } from "react";
-import { 
-  addChecklistItem, 
-  deleteChecklistItem, 
-  updateChecklistItem, 
+import {
+  addChecklistItem,
+  deleteChecklistItem,
+  updateChecklistItem,
   generateDefaultChecklist,
-  reorderChecklistItems
+  reorderChecklistItems,
+  translateAllChecklistItems,
 } from "@/src/app/actions/checklist";
 
 interface Item {
   id: string;
   label: string;
+  labelTranslations?: Record<string, string> | null;
   type: string;
   formula?: string | null;
   required: boolean;
+  photoRequired: boolean;
 }
+
+const AVAILABLE_LANGS = [
+  { code: "en", flag: "🇬🇧", name: "Inglese" },
+  { code: "es", flag: "🇪🇸", name: "Spagnolo" },
+];
 
 interface ChecklistManagerProps {
   apartmentId: string;
@@ -31,6 +39,30 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
   const [isGenerating, startTransition] = useTransition();
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
   const [showToast, setShowToast] = useState(false);
+
+  // Translation state
+  const [selectedLangs, setSelectedLangs] = useState<string[]>(["en", "es"]);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translateResult, setTranslateResult] = useState<{ count?: number; error?: string } | null>(null);
+
+  const toggleLang = (code: string) => {
+    setSelectedLangs((prev) =>
+      prev.includes(code) ? prev.filter((l) => l !== code) : [...prev, code]
+    );
+  };
+
+  const handleTranslateAll = async () => {
+    if (selectedLangs.length === 0) return;
+    setIsTranslating(true);
+    setTranslateResult(null);
+    const result = await translateAllChecklistItems(apartmentId, selectedLangs);
+    setIsTranslating(false);
+    setTranslateResult(result);
+    // Auto-hide success message after 4s
+    if (result.count !== undefined) {
+      setTimeout(() => setTranslateResult(null), 4000);
+    }
+  };
 
   // Sync with server data
   useEffect(() => {
@@ -119,6 +151,70 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
         </section>
       )}
 
+      {/* ── Sezione Traduzioni ── */}
+      {initialItems.length > 0 && (
+        <section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400">🌐 Traduzioni automatiche</h3>
+              <p className="text-xs text-gray-400 mt-1">AI traduce tutti i punti nella lingua selezionata</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {AVAILABLE_LANGS.map((l) => (
+              <label
+                key={l.code}
+                className={`flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-xl border transition-colors ${
+                  selectedLangs.includes(l.code)
+                    ? "bg-violet-50 border-violet-200 text-violet-700"
+                    : "bg-gray-50 border-gray-200 text-gray-500"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedLangs.includes(l.code)}
+                  onChange={() => toggleLang(l.code)}
+                  className="w-4 h-4 accent-violet-600"
+                />
+                <span className="text-lg">{l.flag}</span>
+                <span className="text-sm font-semibold">{l.name}</span>
+              </label>
+            ))}
+
+            <button
+              onClick={handleTranslateAll}
+              disabled={isTranslating || selectedLangs.length === 0}
+              className="flex items-center gap-2 bg-violet-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-violet-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isTranslating ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  Traduzione in corso...
+                </>
+              ) : (
+                <>
+                  🤖 Traduci tutti
+                </>
+              )}
+            </button>
+          </div>
+
+          {translateResult && (
+            <div className={`mt-3 px-4 py-2.5 rounded-xl text-sm font-semibold ${
+              translateResult.error
+                ? "bg-red-50 text-red-700 border border-red-100"
+                : "bg-emerald-50 text-emerald-700 border border-emerald-100"
+            }`}>
+              {translateResult.error
+                ? `❌ ${translateResult.error}`
+                : `✅ ${translateResult.count} ${translateResult.count === 1 ? "punto tradotto" : "punti tradotti"} in ${selectedLangs.map((l) => AVAILABLE_LANGS.find((a) => a.code === l)?.flag).join(" ")}`
+              }
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Add Form */}
       <section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative">
         <div className="flex items-center justify-between mb-4">
@@ -162,7 +258,11 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
               <input type="checkbox" name="required" defaultChecked className="w-4 h-4 accent-black" />
               <span className="text-sm font-medium text-gray-700">Obbligatorio</span>
             </label>
-            <button 
+            <label className="flex items-center gap-2 cursor-pointer bg-amber-50 px-4 py-2.5 rounded-xl border border-amber-100">
+              <input type="checkbox" name="photoRequired" className="w-4 h-4 accent-amber-500" />
+              <span className="text-sm font-medium text-amber-700">📸 Foto obbligatoria</span>
+            </label>
+            <button
               disabled={isAdding}
               className="bg-black text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-all disabled:bg-gray-300"
             >
@@ -241,7 +341,16 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-gray-900">{item.label}</span>
                         {item.required && <span className="text-[9px] font-black text-red-500 uppercase tracking-tighter bg-red-50 px-1.5 py-0.5 rounded border border-red-100">Obbligatorio</span>}
+                        {item.photoRequired && <span className="text-[9px] font-black text-amber-600 uppercase tracking-tighter bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">📸 Foto</span>}
                         {item.type === "dynamic" && <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">Dinamico</span>}
+                        {/* Translation badges */}
+                        {AVAILABLE_LANGS.map((l) =>
+                          item.labelTranslations?.[l.code] ? (
+                            <span key={l.code} className="text-[11px]" title={item.labelTranslations[l.code]}>
+                              {l.flag}
+                            </span>
+                          ) : null
+                        )}
                       </div>
                       {item.type === "dynamic" && item.formula && (
                         <span className="text-[10px] text-blue-400 font-medium mt-0.5">Formula: {item.formula}</span>
@@ -278,7 +387,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
   );
 }
 
-function EditItemForm({ item, apartmentId, onCancel }: { item: Item, apartmentId: string, onCancel: () => void }) {
+function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId: string; onCancel: () => void }) {
   const [state, formAction, isPending] = useActionState(updateChecklistItem.bind(null, item.id), null);
   const [editType, setEditType] = useState<string>(item.type);
 
@@ -306,6 +415,11 @@ function EditItemForm({ item, apartmentId, onCancel }: { item: Item, apartmentId
         <label className="flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-gray-200">
           <input type="checkbox" name="required" defaultChecked={item.required} className="w-3.5 h-3.5 accent-black" />
           <span className="text-xs font-medium text-gray-600">Obbligatorio</span>
+        </label>
+
+        <label className="flex items-center gap-2 cursor-pointer bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
+          <input type="checkbox" name="photoRequired" defaultChecked={item.photoRequired} className="w-3.5 h-3.5 accent-amber-500" />
+          <span className="text-xs font-medium text-amber-700">📸 Foto</span>
         </label>
 
         <div className="flex gap-2">
