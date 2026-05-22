@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { Camera, Plus, Trash2, GripVertical } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
+
+// crypto.randomUUID() è nativo in Node.js 14.17+ e browser moderni — no dipendenze esterne
+function newId() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
 
 export interface MaintenanceTask {
   id: string;
@@ -22,7 +27,7 @@ export default function MaintenanceTaskEditor({ initialTasks = [] }: Props) {
   function addTask() {
     setTasks(prev => [
       ...prev,
-      { id: uuidv4(), label: "", photoRequired: false, completed: false, photoUrl: null },
+      { id: newId(), label: "", photoRequired: false, completed: false, photoUrl: null },
     ]);
   }
 
