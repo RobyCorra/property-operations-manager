@@ -2,52 +2,51 @@
 
 import { useState, useRef } from "react";
 import { upload } from "@vercel/blob/client";
-import { addMaintenanceNote } from "@/src/app/actions/maintenance-token";
-import type { MaintenanceNote } from "@/src/app/actions/maintenance-token";
-import { Camera, Loader2, Send, X } from "lucide-react";
+import { sendMaintenancePublicNote } from "@/src/app/actions/maintenance-token";
+import type { MaintenancePublicMessage } from "@/src/app/actions/maintenance-token";
+import { Camera, Send, X, Loader2 } from "lucide-react";
 
 interface Props {
   ticketId: string;
   authorName: string | null;
-  initialNotes: MaintenanceNote[];
+  initialMessages: MaintenancePublicMessage[];
   isDone: boolean;
 }
 
-function formatTime(iso: string) {
-  const d = new Date(iso);
+function formatTime(date: Date) {
+  const d = new Date(date);
   const now = new Date();
   const isToday =
     d.getDate() === now.getDate() &&
     d.getMonth() === now.getMonth() &&
     d.getFullYear() === now.getFullYear();
   const time = d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
-  if (isToday) return `Oggi ${time}`;
-  return d.toLocaleDateString("it-IT", { day: "numeric", month: "short" }) + ` · ${time}`;
+  return isToday ? `Oggi ${time}` : d.toLocaleDateString("it-IT", { day: "numeric", month: "short" }) + ` · ${time}`;
 }
 
-export default function MaintenanceNoteForm({ ticketId, authorName, initialNotes, isDone }: Props) {
-  const [notes, setNotes]           = useState<MaintenanceNote[]>(initialNotes);
-  const [text, setText]             = useState("");
-  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
-  const [previews, setPreviews]     = useState<string[]>([]);
-  const [sending, setSending]       = useState(false);
-  const [justSent, setJustSent]     = useState(false);
-  const [error, setError]           = useState<string | null>(null);
+export default function MaintenanceNoteForm({ ticketId, authorName, initialMessages, isDone }: Props) {
+  const [messages, setMessages] = useState<MaintenancePublicMessage[]>(initialMessages);
+  const [text, setText]         = useState("");
+  const [photos, setPhotos]     = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [sending, setSending]   = useState(false);
+  const [justSent, setJustSent] = useState(false);
+  const [error, setError]       = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const canSend = (text.trim().length > 0 || photoFiles.length > 0) && !sending;
+  const canSend = (text.trim().length > 0 || photos.length > 0) && !sending;
 
-  function addPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+  function addPhotos(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-    setPhotoFiles((prev) => [...prev, ...files]);
-    setPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+    setPhotos((p) => [...p, ...files]);
+    setPreviews((p) => [...p, ...files.map((f) => URL.createObjectURL(f))]);
     if (fileRef.current) fileRef.current.value = "";
   }
 
   function removePhoto(idx: number) {
-    setPhotoFiles((prev) => prev.filter((_, i) => i !== idx));
-    setPreviews((prev) => prev.filter((_, i) => i !== idx));
+    setPhotos((p) => p.filter((_, i) => i !== idx));
+    setPreviews((p) => p.filter((_, i) => i !== idx));
   }
 
   async function handleSend() {
@@ -56,21 +55,33 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialNotes
     setError(null);
 
     try {
-      // Upload tutte le foto
-      const uploadedUrls: string[] = [];
-      for (const file of photoFiles) {
-        const blob = await upload(
-          `uploads/maintenance/${ticketId}/notes/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
-          file,
-          { access: "public", handleUploadUrl: "/api/blob-upload" }
-        );
-        uploadedUrls.push(blob.url);
+      const newMessages: MaintenancePublicMessage[] = [];
+
+      if (photos.length === 0) {
+        // Solo testo
+        const msg = await sendMaintenancePublicNote(ticketId, text, null, authorName);
+        newMessages.push(msg);
+      } else {
+        // Prima foto (con testo), poi foto extra (senza testo)
+        for (let i = 0; i < photos.length; i++) {
+          const blob = await upload(
+            `uploads/maintenance/${ticketId}/notes/${Date.now()}-${photos[i].name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
+            photos[i],
+            { access: "public", handleUploadUrl: "/api/blob-upload" }
+          );
+          const msg = await sendMaintenancePublicNote(
+            ticketId,
+            i === 0 ? text : "",
+            blob.url,
+            authorName,
+          );
+          newMessages.push(msg);
+        }
       }
 
-      const newNote = await addMaintenanceNote(ticketId, text, uploadedUrls, authorName);
-      setNotes((prev) => [...prev, newNote]);
+      setMessages((prev) => [...prev, ...newMessages]);
       setText("");
-      setPhotoFiles([]);
+      setPhotos([]);
       setPreviews([]);
       setJustSent(true);
       setTimeout(() => setJustSent(false), 3000);
@@ -81,8 +92,8 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialNotes
     }
   }
 
-  // Ticket completato e nessuna nota → nascondi tutto
-  if (isDone && notes.length === 0) return null;
+  // Ticket completato e nessun messaggio → nascondi
+  if (isDone && messages.length === 0) return null;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -95,7 +106,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialNotes
           </p>
           <p className="text-[10px] text-slate-400 mt-0.5">
             {isDone
-              ? "Riepilogo comunicazioni con il manager"
+              ? "Riepilogo comunicazioni inviate"
               : "Segnala problemi, materiali mancanti o info extra"}
           </p>
         </div>
@@ -103,47 +114,50 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialNotes
 
       <div className="px-4 py-3 flex flex-col gap-3">
 
-        {/* Conferma invio */}
+        {/* Banner conferma */}
         {justSent && (
           <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
-            <span className="text-base">✅</span>
+            <span>✅</span>
             <span className="text-xs font-bold text-emerald-700">Nota inviata al manager!</span>
           </div>
         )}
 
-        {/* Storico note */}
-        {notes.length > 0 && (
+        {/* Storico messaggi */}
+        {messages.length > 0 && (
           <div className="flex flex-col gap-2">
-            {notes.length > 0 && !isDone && (
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                Note inviate
-              </p>
+            {!isDone && (
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Note inviate</p>
             )}
-            {notes.map((note) => (
-              <div key={note.id} className="bg-orange-50 border border-orange-100 rounded-xl px-3 py-2.5">
+            {messages.map((msg) => (
+              <div key={msg.id} className="bg-orange-50 border border-orange-100 rounded-xl px-3 py-2.5">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] font-black text-orange-600">
-                    👷 {note.authorName ?? "Manutentore"}
+                    👷 {msg.senderName}
                   </span>
                   <span className="text-[9px] text-slate-400 font-semibold">
-                    {formatTime(note.createdAt)}
+                    {formatTime(msg.createdAt)}
                   </span>
                 </div>
-                {note.text && (
-                  <p className="text-xs text-slate-700 leading-relaxed">{note.text}</p>
+                {msg.text && (
+                  <p className="text-xs text-slate-700 leading-relaxed">{msg.text}</p>
                 )}
-                {note.photoUrls.length > 0 && (
-                  <div className="flex gap-1.5 mt-2 flex-wrap">
-                    {note.photoUrls.map((url, i) => (
-                      <a key={i} href={url} target="_blank" rel="noreferrer">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                {msg.attachment && (
+                  <div className="mt-2">
+                    <a href={msg.attachment.url} target="_blank" rel="noreferrer">
+                      {msg.attachment.fileType?.startsWith("image/") || msg.attachment.url.match(/\.(jpg|jpeg|png|webp|gif)$/i) ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={url}
-                          alt={`foto ${i + 1}`}
-                          className="w-12 h-12 rounded-lg object-cover border border-orange-200 hover:scale-105 transition-transform"
+                          src={msg.attachment.url}
+                          alt={msg.attachment.fileName}
+                          className="w-24 h-24 object-cover rounded-lg border border-orange-200 hover:scale-105 transition-transform"
                         />
-                      </a>
-                    ))}
+                      ) : (
+                        <div className="flex items-center gap-2 bg-white border border-orange-200 rounded-lg px-3 py-2">
+                          <span>📄</span>
+                          <span className="text-xs text-slate-600 truncate">{msg.attachment.fileName}</span>
+                        </div>
+                      )}
+                    </a>
                   </div>
                 )}
               </div>
@@ -151,48 +165,36 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialNotes
           </div>
         )}
 
-        {/* Form — nascosto se ticket completato */}
+        {/* Form — solo se non completato */}
         {!isDone && (
           <>
-            {/* Textarea */}
-            <div>
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value.slice(0, 500))}
-                placeholder="Scrivi una nota per il manager…"
-                rows={3}
-                className={`w-full border rounded-xl px-3 py-2.5 text-sm text-slate-800 font-normal resize-none outline-none transition-colors bg-slate-50 ${
-                  text.length > 0
-                    ? "border-orange-300 bg-white"
-                    : "border-slate-200"
-                }`}
-              />
-              <p className={`text-right text-[9px] font-bold mt-0.5 ${text.length > 0 ? "text-orange-500" : "text-slate-300"}`}>
-                {text.length} / 500
-              </p>
-            </div>
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value.slice(0, 500))}
+              placeholder="Scrivi una nota per il manager…"
+              rows={3}
+              className={`w-full border rounded-xl px-3 py-2.5 text-sm text-slate-800 resize-none outline-none transition-colors bg-slate-50 ${
+                text.length > 0 ? "border-orange-300 bg-white" : "border-slate-200"
+              }`}
+            />
+            <p className={`text-right text-[9px] font-bold -mt-1 ${text.length > 0 ? "text-orange-500" : "text-slate-300"}`}>
+              {text.length} / 500
+            </p>
 
-            {/* Foto strip */}
+            {/* Strip foto */}
             <div className="flex items-center gap-2 flex-wrap">
-              {/* Aggiungi foto */}
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 className="w-14 h-14 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-0.5 hover:border-orange-300 hover:bg-orange-50 transition-colors flex-shrink-0"
               >
                 <Camera size={16} className="text-slate-400" />
-                <span className="text-[8px] font-700 text-slate-400 uppercase tracking-wide">Foto</span>
+                <span className="text-[8px] font-bold text-slate-400 uppercase">Foto</span>
               </button>
-
-              {/* Preview foto selezionate */}
               {previews.map((src, idx) => (
                 <div key={idx} className="relative w-14 h-14 flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={src}
-                    alt={`foto ${idx + 1}`}
-                    className="w-14 h-14 object-cover rounded-xl border border-slate-200"
-                  />
+                  <img src={src} alt="" className="w-14 h-14 object-cover rounded-xl border border-slate-200" />
                   <button
                     type="button"
                     onClick={() => removePhoto(idx)}
@@ -211,17 +213,15 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialNotes
               capture="environment"
               multiple
               className="hidden"
-              onChange={addPhoto}
+              onChange={addPhotos}
             />
 
-            {/* Errore */}
             {error && (
               <p className="text-xs text-rose-600 bg-rose-50 border border-rose-100 rounded-xl px-3 py-2">
                 ⚠️ {error}
               </p>
             )}
 
-            {/* Bottone invia */}
             <button
               type="button"
               onClick={handleSend}
@@ -237,8 +237,8 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialNotes
               ) : (
                 <>
                   <Send size={15} />
-                  {photoFiles.length > 0
-                    ? `Invia nota${text.trim() ? "" : " "} + ${photoFiles.length} foto`
+                  {photos.length > 0
+                    ? `Invia nota${text.trim() ? "" : " "} + ${photos.length} foto`
                     : "Invia nota"}
                 </>
               )}

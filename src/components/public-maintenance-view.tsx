@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { startMaintenancePublic } from "@/src/app/actions/maintenance-token";
-import type { MaintenanceTaskItem, MaintenanceNote } from "@/src/app/actions/maintenance-token";
+import type { MaintenanceTaskItem, MaintenancePublicMessage } from "@/src/app/actions/maintenance-token";
 import MaintenanceChecklistInteractive from "@/src/components/maintenance-checklist-interactive";
 import MaintenanceNoteForm from "@/src/components/maintenance-note-form";
 import { ChevronDown } from "lucide-react";
@@ -27,7 +27,7 @@ interface Props {
   attachments: Attachment[];
   currentStatus: string;
   tasks: MaintenanceTaskItem[];
-  notes: MaintenanceNote[];
+  messages: MaintenancePublicMessage[];
 }
 
 const PRIORITY_LABEL: Record<string, string> = {
@@ -61,7 +61,7 @@ export default function PublicMaintenanceView({
   attachments,
   currentStatus,
   tasks,
-  notes,
+  messages,
 }: Props) {
   const [actionLoading, setActionLoading] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
@@ -161,7 +161,7 @@ export default function PublicMaintenanceView({
         <MaintenanceNoteForm
           ticketId={ticketId}
           authorName={assignedToName}
-          initialNotes={notes}
+          initialMessages={messages}
           isDone={isDone}
         />
 

@@ -217,7 +217,6 @@ exports.Prisma.MaintenanceTicketScalarFieldEnum = {
   resolvedAt: 'resolvedAt',
   correctionProgress: 'correctionProgress',
   maintenanceTasks: 'maintenanceTasks',
-  maintenanceNotes: 'maintenanceNotes',
   maintenanceAccessToken: 'maintenanceAccessToken'
 };
 

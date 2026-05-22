@@ -61,7 +61,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
     }),
     prisma.maintenanceTicket.findUnique({
       where: { id },
-      select: { maintenanceAccessToken: true, maintenanceNotes: true },
+      select: { maintenanceAccessToken: true },
     }),
     prisma.apartment.findMany({ select: { id: true, name: true } }),
     prisma.user.findMany({ where: { role: "MAINTENANCE" }, select: { id: true, name: true } }),
@@ -93,55 +93,6 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
             existingToken={tokenRecord?.maintenanceAccessToken ?? null}
           />
         </div>
-
-        {/* Note del manutentore */}
-        {Array.isArray(tokenRecord?.maintenanceNotes) && tokenRecord.maintenanceNotes.length > 0 && (() => {
-          type NoteItem = { id: string; text: string; photoUrls: string[]; authorName: string | null; createdAt: string };
-          const notes = tokenRecord.maintenanceNotes as unknown as NoteItem[];
-          return (
-            <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-5 space-y-4">
-              <p className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                📝 Note dal manutentore
-                <span className="text-[10px] font-black bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
-                  {notes.length}
-                </span>
-              </p>
-              <div className="flex flex-col gap-3">
-                {notes.map((note) => {
-                  const d = new Date(note.createdAt);
-                  const label = d.toLocaleDateString("it-IT", { day: "numeric", month: "short" }) +
-                    " · " + d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
-                  return (
-                    <div key={note.id} className="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-black text-orange-600">
-                          👷 {note.authorName ?? "Manutentore"}
-                        </span>
-                        <span className="text-[10px] text-slate-400 font-semibold">{label}</span>
-                      </div>
-                      {note.text && (
-                        <p className="text-sm text-slate-700 leading-relaxed">{note.text}</p>
-                      )}
-                      {note.photoUrls?.length > 0 && (
-                        <div className="flex gap-2 mt-2 flex-wrap">
-                          {note.photoUrls.map((url: string, i: number) => (
-                            <a key={i} href={url} target="_blank" rel="noreferrer">
-                              <img
-                                src={url}
-                                alt={`foto ${i + 1}`}
-                                className="w-16 h-16 object-cover rounded-lg border border-orange-200 hover:scale-105 transition-transform"
-                              />
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })()}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="space-y-6">

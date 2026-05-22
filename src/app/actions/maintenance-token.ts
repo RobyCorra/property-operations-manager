@@ -6,7 +6,7 @@ import { updateMaintenanceStatus } from "@/src/app/actions/operational";
 
 /** Genera (o rigenera) il token di accesso pubblico per un ticket di manutenzione. */
 export async function generateMaintenanceAccessToken(ticketId: string): Promise<string> {
-  const token = randomBytes(24).toString("hex"); // 48 caratteri hex
+  const token = randomBytes(24).toString("hex");
   await prisma.maintenanceTicket.update({
     where: { id: ticketId },
     data: { maintenanceAccessToken: token },
@@ -22,47 +22,68 @@ export interface MaintenanceTaskItem {
   photoUrl: string | null;
 }
 
-export interface MaintenanceNote {
+/** Messaggio inviato dal manutentore dalla scheda pubblica. */
+export interface MaintenancePublicMessage {
   id: string;
-  text: string;
-  photoUrls: string[];
-  authorName: string | null;
-  createdAt: string; // ISO string
+  text: string | null;
+  senderName: string;
+  createdAt: Date;
+  attachment: {
+    url: string;
+    fileName: string;
+    fileType: string | null;
+  } | null;
 }
 
 /**
- * Aggiunge una nota testuale (con eventuali foto già uploadate) al ticket.
+ * Invia una nota (testo + foto opzionale già uploadata su blob) dal manutentore.
+ * Crea un Message con role "MAINTENANCE" nel sistema messaggi esistente.
+ * Le foto aggiuntive vengono inviate come messaggi separati (testo vuoto).
  */
-export async function addMaintenanceNote(
+export async function sendMaintenancePublicNote(
   ticketId: string,
   text: string,
-  photoUrls: string[],
+  photoUrl: string | null,
   authorName: string | null,
-): Promise<MaintenanceNote> {
-  const ticket = await prisma.maintenanceTicket.findUnique({
-    where: { id: ticketId },
-    select: { maintenanceNotes: true },
+): Promise<MaintenancePublicMessage> {
+  const senderName = authorName?.trim() || "Manutentore";
+
+  const message = await prisma.message.create({
+    data: {
+      text: text.trim() || "",
+      role: "MAINTENANCE",
+      senderName,
+      maintenanceTicketId: ticketId,
+    },
   });
-  if (!ticket) throw new Error("Ticket non trovato.");
 
-  const existing: MaintenanceNote[] = Array.isArray(ticket.maintenanceNotes)
-    ? (ticket.maintenanceNotes as unknown as MaintenanceNote[])
-    : [];
+  let attachment = null;
 
-  const newNote: MaintenanceNote = {
-    id: randomBytes(8).toString("hex"),
-    text: text.trim(),
-    photoUrls,
-    authorName,
-    createdAt: new Date().toISOString(),
+  if (photoUrl) {
+    const att = await prisma.attachment.create({
+      data: {
+        url: photoUrl,
+        fileName: "foto-manutentore.jpg",
+        fileType: "image/jpeg",
+        size: 0,
+        category: "OTHER",
+        maintenanceTicketId: ticketId,
+      },
+    });
+    await prisma.message.update({
+      where: { id: message.id },
+      data: { attachmentId: att.id },
+    });
+    attachment = { url: att.url, fileName: att.fileName, fileType: att.fileType };
+  }
+
+  return {
+    id: message.id,
+    text: message.text,
+    senderName: message.senderName,
+    createdAt: message.createdAt,
+    attachment,
   };
-
-  await prisma.maintenanceTicket.update({
-    where: { id: ticketId },
-    data: { maintenanceNotes: [...existing, newNote] as unknown as never },
-  });
-
-  return newNote;
 }
 
 /**
@@ -106,13 +127,11 @@ export async function startMaintenancePublic(ticketId: string): Promise<void> {
   if (!ticket) throw new Error("Ticket non trovato.");
 
   if (ticket.status === "PENDING") {
-    // Porta prima a OPEN, poi a IN_PROGRESS
     await updateMaintenanceStatus(ticketId, "OPEN");
     await updateMaintenanceStatus(ticketId, "IN_PROGRESS");
   } else if (ticket.status === "OPEN") {
     await updateMaintenanceStatus(ticketId, "IN_PROGRESS");
   }
-  // Se già IN_PROGRESS, non fa nulla
 }
 
 /**
@@ -143,7 +162,6 @@ export async function getMaintenanceByToken(token: string) {
       priority: true,
       scheduledStart: true,
       maintenanceTasks: true,
-      maintenanceNotes: true,
       apartment: {
         select: { id: true, name: true, address: true },
       },
@@ -152,6 +170,19 @@ export async function getMaintenanceByToken(token: string) {
         orderBy: { createdAt: "desc" },
         take: 20,
         select: { id: true, fileName: true, fileType: true, url: true },
+      },
+      messages: {
+        where: { role: "MAINTENANCE" },
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          text: true,
+          senderName: true,
+          createdAt: true,
+          attachment: {
+            select: { url: true, fileName: true, fileType: true },
+          },
+        },
       },
     },
   });
