@@ -255,11 +255,13 @@ export default async function CleanerDashboardPage() {
 
                       {/* Biancheria calcolata */}
                       {(() => {
-                        // cullaRequested: OR tra nextBooking e booking corrente (qualunque sia il caso)
-                        const cullaRequested = !!(task.nextBooking?.cullaRequested || task.booking?.cullaRequested);
-                        const totalGuests = task.nextBooking?.totalGuests ?? (task.booking as { totalGuests?: number } | null)?.totalGuests ?? 0;
+                        // La culla e gli ospiti vengono sempre dalla prenotazione in ARRIVO (nextBooking),
+                        // non da quella in uscita (task.booking). Il fix del fuso orario garantisce
+                        // che nextBooking trovi correttamente le prenotazioni con check-in stesso giorno.
+                        const cullaRequested = !!(task.nextBooking?.cullaRequested);
+                        const totalGuests = task.nextBooking?.totalGuests ?? 0;
 
-                        if (!task.nextBooking && !cullaRequested) {
+                        if (!task.nextBooking) {
                           return (
                             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center text-slate-400 text-xs font-semibold">
                               🛏 Biancheria — nessuna prenotazione in arrivo
