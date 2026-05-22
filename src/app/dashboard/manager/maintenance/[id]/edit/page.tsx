@@ -127,6 +127,38 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
                 </div>
               </div>
             </div>
+            {/* Riepilogo lavori eseguiti dal manutentore */}
+            {Array.isArray(ticket.maintenanceTasks) && (ticket.maintenanceTasks as any[]).some((t: any) => t.completed) && (
+              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">🔧 Riepilogo lavori eseguiti</p>
+                <div className="space-y-3">
+                  {(ticket.maintenanceTasks as any[]).map((task: any, idx: number) => (
+                    <div key={task.id ?? idx} className={`flex items-start gap-3 rounded-xl p-3 ${task.completed ? "bg-emerald-50 border border-emerald-100" : "bg-gray-50 border border-gray-100"}`}>
+                      <span className="text-base mt-0.5 flex-shrink-0">{task.completed ? "✅" : "⬜"}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-semibold ${task.completed ? "text-emerald-800" : "text-gray-400"}`}>
+                          {task.label || `Task ${idx + 1}`}
+                        </p>
+                        {task.photoRequired && !task.photoUrl && !task.completed && (
+                          <p className="text-[10px] text-gray-400 mt-0.5">📷 Foto richiesta — non ancora scattata</p>
+                        )}
+                      </div>
+                      {task.photoUrl && (
+                        <a href={task.photoUrl} target="_blank" rel="noreferrer" className="flex-shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={task.photoUrl}
+                            alt="Foto task"
+                            className="w-16 h-16 object-cover rounded-lg border border-emerald-200 hover:scale-105 transition-transform"
+                          />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {role === "MANAGER" && ticket.status === "RESOLVED" && (
               <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                 <div>
