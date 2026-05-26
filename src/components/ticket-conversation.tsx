@@ -4,6 +4,7 @@ import { useTransition, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SafeDate from "@/src/components/safe-date";
 import { upload } from "@vercel/blob/client";
+import { playNotificationSound } from "@/src/lib/notification-sound";
 
 interface Message {
   id: string;
@@ -80,11 +81,20 @@ export default function TicketConversation({
   const [barHeights, setBarHeights] = useState<number[]>(Array(7).fill(4));
   const barTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const prevMsgCount = useRef(initialMessages.length);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [initialMessages]);
+    // Suona se arrivano messaggi nuovi dall'altra parte (non dal ruolo corrente)
+    if (initialMessages.length > prevMsgCount.current) {
+      const newOnes = initialMessages.slice(prevMsgCount.current);
+      const hasOtherParty = newOnes.some(m => m.role !== currentUserRole && m.role !== "SYSTEM");
+      if (hasOtherParty) playNotificationSound();
+    }
+    prevMsgCount.current = initialMessages.length;
+  }, [initialMessages, currentUserRole]);
 
   useEffect(() => {
     return () => {

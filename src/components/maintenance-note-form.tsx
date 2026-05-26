@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { upload } from "@vercel/blob/client";
 import { sendMaintenancePublicNote, fetchMaintenanceMessages } from "@/src/app/actions/maintenance-token";
 import type { MaintenancePublicMessage } from "@/src/app/actions/maintenance-token";
+import { playNotificationSound } from "@/src/lib/notification-sound";
 import { Camera, Send, X, Loader2, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
 
 interface Props {
@@ -76,6 +77,9 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
         const newMsgs = await fetchMaintenanceMessages(ticketId, lastMessageAt.current);
         if (newMsgs.length > 0) {
           lastMessageAt.current = new Date(newMsgs[newMsgs.length - 1].createdAt);
+          // Suona solo se almeno un messaggio viene dal manager (non dal manutentore stesso)
+          const hasManagerMsg = newMsgs.some(m => m.role === "MANAGER");
+          if (hasManagerMsg) playNotificationSound();
           setMessages(prev => {
             const existingIds = new Set(prev.map(m => m.id));
             return [...prev, ...newMsgs.filter(m => !existingIds.has(m.id))];
