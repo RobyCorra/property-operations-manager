@@ -155,6 +155,45 @@ export async function completeMaintenancePublic(ticketId: string): Promise<void>
   }
 }
 
+/**
+ * Recupera i messaggi (MAINTENANCE + MANAGER) più recenti di `since`.
+ * Usato dal polling del componente chat.
+ */
+export async function fetchMaintenanceMessages(
+  ticketId: string,
+  since: Date,
+): Promise<MaintenancePublicMessage[]> {
+  const rows = await prisma.message.findMany({
+    where: {
+      maintenanceTicketId: ticketId,
+      role: { in: ["MAINTENANCE", "MANAGER"] },
+      createdAt: { gt: since },
+    },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      role: true,
+      text: true,
+      senderName: true,
+      createdAt: true,
+      attachment: {
+        select: { url: true, fileName: true, fileType: true },
+      },
+    },
+  });
+
+  return rows.map(m => ({
+    id: m.id,
+    role: m.role,
+    text: m.text,
+    senderName: m.senderName,
+    createdAt: m.createdAt,
+    attachment: m.attachment
+      ? { url: m.attachment.url, fileName: m.attachment.fileName, fileType: m.attachment.fileType }
+      : null,
+  }));
+}
+
 /** Legge il ticket dal token pubblico — usato dalla pagina pubblica del manutentore. */
 export async function getMaintenanceByToken(token: string) {
   return prisma.maintenanceTicket.findUnique({

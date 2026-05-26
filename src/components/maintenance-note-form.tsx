@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { upload } from "@vercel/blob/client";
-import { sendMaintenancePublicNote } from "@/src/app/actions/maintenance-token";
+import { sendMaintenancePublicNote, fetchMaintenanceMessages } from "@/src/app/actions/maintenance-token";
 import type { MaintenancePublicMessage } from "@/src/app/actions/maintenance-token";
 import { Camera, Send, X, Loader2, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
 
@@ -60,8 +60,58 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
   const audioChunksRef   = useRef<BlobPart[]>([]);
   const timerRef         = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamRef        = useRef<MediaStream | null>(null);
+  const pollRef          = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastMessageAt    = useRef<Date>(
+    initialMessages.length > 0
+      ? new Date(initialMessages[initialMessages.length - 1].createdAt)
+      : new Date()
+  );
 
-  // Cleanup on unmount
+  // Polling intelligente con Page Visibility API
+  useEffect(() => {
+    if (isDone) return; // nessun polling se ticket chiuso
+
+    async function poll() {
+      try {
+        const newMsgs = await fetchMaintenanceMessages(ticketId, lastMessageAt.current);
+        if (newMsgs.length > 0) {
+          lastMessageAt.current = new Date(newMsgs[newMsgs.length - 1].createdAt);
+          setMessages(prev => {
+            const existingIds = new Set(prev.map(m => m.id));
+            return [...prev, ...newMsgs.filter(m => !existingIds.has(m.id))];
+          });
+        }
+      } catch {
+        // polling silenzioso — nessun errore mostrato all'utente
+      }
+    }
+
+    const INTERVAL = 8000;
+
+    function startPoll() {
+      poll(); // fetch immediato al ritorno in foreground
+      pollRef.current = setInterval(poll, INTERVAL);
+    }
+
+    function stopPoll() {
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    }
+
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible") startPoll();
+      else stopPoll();
+    }
+
+    startPoll();
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      stopPoll();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [ticketId, isDone]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cleanup audio on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
