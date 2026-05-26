@@ -11,6 +11,7 @@ interface Props {
   authorName: string | null;
   initialMessages: MaintenancePublicMessage[];
   isDone: boolean;
+  title?: string;
 }
 
 function formatTime(date: Date) {
@@ -24,7 +25,7 @@ function formatTime(date: Date) {
   return isToday ? `Oggi ${time}` : d.toLocaleDateString("it-IT", { day: "numeric", month: "short" }) + ` · ${time}`;
 }
 
-export default function MaintenanceNoteForm({ ticketId, authorName, initialMessages, isDone }: Props) {
+export default function MaintenanceNoteForm({ ticketId, authorName, initialMessages, isDone, title }: Props) {
   const [messages, setMessages] = useState<MaintenancePublicMessage[]>(initialMessages);
   const [text, setText]         = useState("");
   const [photos, setPhotos]     = useState<File[]>([]);
@@ -102,7 +103,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
         <span className="text-base mt-0.5">📝</span>
         <div>
           <p className="text-sm font-bold text-slate-800">
-            {isDone ? "Note inviate" : "Note al manager"}
+            {isDone ? "Note inviate" : (title ?? "Note al manager")}
           </p>
           <p className="text-[10px] text-slate-400 mt-0.5">
             {isDone

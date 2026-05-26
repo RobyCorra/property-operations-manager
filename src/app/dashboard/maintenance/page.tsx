@@ -2,12 +2,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
-import { updateMaintenanceStatus, createTicketMessage, submitMaintenanceForReview } from "@/src/app/actions/operational";
+import { updateMaintenanceStatus, submitMaintenanceForReview } from "@/src/app/actions/operational";
 import SubmitForReviewButton from "@/src/components/submit-for-review-button";
 import StatusUpdateButton from "@/src/components/status-update-button";
 import { prisma } from "@/src/lib/prisma";
 import MaintenanceResolutionForm from "@/src/components/maintenance-resolution-form";
-import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
 import MaintenanceChecklistInteractive from "@/src/components/maintenance-checklist-interactive";
 import MaintenanceNoteForm from "@/src/components/maintenance-note-form";
@@ -19,7 +18,6 @@ import {
   LogOut,
   Navigation,
   CalendarDays,
-  MessageSquare,
   CircleCheck
 } from "@/src/components/icons";
 import { ScrollText, Wrench } from "lucide-react";
@@ -363,7 +361,7 @@ export default async function MaintenanceDashboardPage({
                         </div>
                       )}
 
-                      {/* Note al manager */}
+                      {/* Chat con Manager (note + foto) */}
                       {(() => {
                         const isDone = ["AWAITING_REVIEW", "RESOLVED", "CLOSED"].includes(ticket.status);
                         const notes = ticket.messages
@@ -383,37 +381,22 @@ export default async function MaintenanceDashboardPage({
                             authorName={user.name}
                             initialMessages={notes}
                             isDone={isDone}
+                            title="Chat con Manager"
                           />
                         );
                       })()}
 
-                      {/* Chat + AI */}
-                      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-                        {!isHistoryView && (
-                          <AIAssistant
-                            role="MAINTENANCE"
-                            type="maintenance"
-                            apartmentId={ticket.apartmentId}
-                            maintenanceTicketId={ticket.id}
-                            initialMessages={ticket.aiAssistantMessages}
-                            compact
-                          />
-                        )}
-                        <div className={`${isHistoryView ? "lg:col-span-2" : ""} rounded-3xl border border-slate-100 bg-white/70 p-4 shadow-sm`}>
-                          <div className="mb-3 flex items-center gap-2">
-                            <MessageSquare size={16} className="text-violet-600" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chat</p>
-                          </div>
-                          <TicketConversation
-                            entityId={ticket.id}
-                            initialMessages={ticket.messages}
-                            currentUserRole="MAINTENANCE"
-                            currentUserName={user.name}
-                            submitAction={createTicketMessage}
-                            heightClass="h-[380px]"
-                          />
-                        </div>
-                      </div>
+                      {/* AI Assistant */}
+                      {!isHistoryView && (
+                        <AIAssistant
+                          role="MAINTENANCE"
+                          type="maintenance"
+                          apartmentId={ticket.apartmentId}
+                          maintenanceTicketId={ticket.id}
+                          initialMessages={ticket.aiAssistantMessages}
+                          compact
+                        />
+                      )}
 
                       {/* Allegati */}
                       <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
