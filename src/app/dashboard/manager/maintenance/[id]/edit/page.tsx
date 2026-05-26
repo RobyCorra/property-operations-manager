@@ -9,6 +9,7 @@ import AIAssistant from "@/src/components/ai-assistant";
 import { updateMaintenanceTicket, createTicketMessage, reopenMaintenanceTicket } from "@/src/app/actions/operational";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import MaintenanceShareButton from "@/src/components/maintenance-share-button";
+import AutoRefresh from "@/src/components/auto-refresh";
 
 type AttachmentView = {
   id: string;
@@ -74,6 +75,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
 
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
+      <AutoRefresh intervalMs={10000} />
       <div className="max-w-7xl mx-auto space-y-8">
         <div>
           <Link href="/dashboard/manager/maintenance" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block text-sm">

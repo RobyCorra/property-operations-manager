@@ -2,6 +2,7 @@
 
 import { prisma } from "@/src/lib/prisma";
 import { randomBytes } from "crypto";
+import { revalidatePath } from "next/cache";
 import { updateMaintenanceStatus } from "@/src/app/actions/operational";
 
 /** Genera (o rigenera) il token di accesso pubblico per un ticket di manutenzione. */
@@ -80,6 +81,9 @@ export async function sendMaintenancePublicNote(
     });
     attachment = { url: att.url, fileName: att.fileName, fileType: att.fileType };
   }
+
+  revalidatePath(`/dashboard/manager/maintenance/${ticketId}/edit`);
+  revalidatePath("/dashboard/manager/maintenance");
 
   return {
     id: message.id,
