@@ -351,9 +351,10 @@ export default async function MaintenanceDashboardPage({
                       {(() => {
                         const isDone = ["AWAITING_REVIEW", "RESOLVED", "CLOSED"].includes(ticket.status);
                         const notes = ticket.messages
-                          .filter(m => m.role === "MAINTENANCE")
+                          .filter(m => m.role === "MAINTENANCE" || m.role === "MANAGER")
                           .map(m => ({
                             id: m.id,
+                            role: m.role,
                             text: m.text,
                             senderName: m.senderName,
                             createdAt: m.createdAt,

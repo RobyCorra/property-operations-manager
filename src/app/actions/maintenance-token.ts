@@ -22,9 +22,10 @@ export interface MaintenanceTaskItem {
   photoUrl: string | null;
 }
 
-/** Messaggio inviato dal manutentore dalla scheda pubblica. */
+/** Messaggio nella chat manutentore ↔ manager. */
 export interface MaintenancePublicMessage {
   id: string;
+  role: string;
   text: string | null;
   senderName: string;
   createdAt: Date;
@@ -79,6 +80,7 @@ export async function sendMaintenancePublicNote(
 
   return {
     id: message.id,
+    role: message.role,
     text: message.text,
     senderName: message.senderName,
     createdAt: message.createdAt,
@@ -172,10 +174,11 @@ export async function getMaintenanceByToken(token: string) {
         select: { id: true, fileName: true, fileType: true, url: true },
       },
       messages: {
-        where: { role: "MAINTENANCE" },
+        where: { role: { in: ["MAINTENANCE", "MANAGER"] } },
         orderBy: { createdAt: "asc" },
         select: {
           id: true,
+          role: true,
           text: true,
           senderName: true,
           createdAt: true,

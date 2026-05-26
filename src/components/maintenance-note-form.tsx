@@ -127,42 +127,55 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
         {messages.length > 0 && (
           <div className="flex flex-col gap-2">
             {!isDone && (
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Note inviate</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Messaggi</p>
             )}
-            {messages.map((msg) => (
-              <div key={msg.id} className="bg-orange-50 border border-orange-100 rounded-xl px-3 py-2.5">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-black text-orange-600">
-                    👷 {msg.senderName}
-                  </span>
-                  <span className="text-[9px] text-slate-400 font-semibold">
-                    {formatTime(msg.createdAt)}
-                  </span>
-                </div>
-                {msg.text && (
-                  <p className="text-xs text-slate-700 leading-relaxed">{msg.text}</p>
-                )}
-                {msg.attachment && (
-                  <div className="mt-2">
-                    <a href={msg.attachment.url} target="_blank" rel="noreferrer">
-                      {msg.attachment.fileType?.startsWith("image/") || msg.attachment.url.match(/\.(jpg|jpeg|png|webp|gif)$/i) ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={msg.attachment.url}
-                          alt={msg.attachment.fileName}
-                          className="w-24 h-24 object-cover rounded-lg border border-orange-200 hover:scale-105 transition-transform"
-                        />
-                      ) : (
-                        <div className="flex items-center gap-2 bg-white border border-orange-200 rounded-lg px-3 py-2">
-                          <span>📄</span>
-                          <span className="text-xs text-slate-600 truncate">{msg.attachment.fileName}</span>
-                        </div>
-                      )}
-                    </a>
+            {messages.map((msg) => {
+              const isManager = msg.role === "MANAGER";
+              return (
+                <div key={msg.id} className={`flex flex-col gap-1 ${isManager ? "items-end" : "items-start"}`}>
+                  <div className={`max-w-[85%] rounded-xl px-3 py-2.5 ${
+                    isManager
+                      ? "bg-slate-100 border border-slate-200"
+                      : "bg-orange-50 border border-orange-100"
+                  }`}>
+                    <div className={`flex items-center gap-2 mb-1.5 ${isManager ? "flex-row-reverse" : ""}`}>
+                      <span className={`text-[10px] font-black ${isManager ? "text-slate-600" : "text-orange-600"}`}>
+                        {isManager ? `💼 ${msg.senderName}` : `👷 ${msg.senderName}`}
+                      </span>
+                      <span className="text-[9px] text-slate-400 font-semibold">
+                        {formatTime(msg.createdAt)}
+                      </span>
+                    </div>
+                    {msg.text && (
+                      <p className="text-xs text-slate-700 leading-relaxed">{msg.text}</p>
+                    )}
+                    {msg.attachment && (
+                      <div className="mt-2">
+                        <a href={msg.attachment.url} target="_blank" rel="noreferrer">
+                          {msg.attachment.fileType?.startsWith("image/") || msg.attachment.url.match(/\.(jpg|jpeg|png|webp|gif)$/i) ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={msg.attachment.url}
+                              alt={msg.attachment.fileName}
+                              className={`w-24 h-24 object-cover rounded-lg hover:scale-105 transition-transform ${
+                                isManager ? "border border-slate-200" : "border border-orange-200"
+                              }`}
+                            />
+                          ) : (
+                            <div className={`flex items-center gap-2 bg-white rounded-lg px-3 py-2 ${
+                              isManager ? "border border-slate-200" : "border border-orange-200"
+                            }`}>
+                              <span>📄</span>
+                              <span className="text-xs text-slate-600 truncate">{msg.attachment.fileName}</span>
+                            </div>
+                          )}
+                        </a>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
 
