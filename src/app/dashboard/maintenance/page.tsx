@@ -9,6 +9,9 @@ import { prisma } from "@/src/lib/prisma";
 import MaintenanceResolutionForm from "@/src/components/maintenance-resolution-form";
 import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
+import MaintenanceChecklistInteractive from "@/src/components/maintenance-checklist-interactive";
+import MaintenanceNoteForm from "@/src/components/maintenance-note-form";
+import type { MaintenanceTaskItem } from "@/src/app/actions/maintenance-token";
 import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableMaintenanceCard from "@/src/components/expandable-maintenance-card";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
@@ -49,7 +52,13 @@ type MaintenanceTicketView = {
     accessInstructions: string | null;
   };
   attachments: AttachmentLink[];
+  maintenanceTasks?: unknown;
   messages: {
+    id: string;
+    text: string | null;
+    senderName: string;
+    role: string;
+    createdAt: Date;
     attachment?: AttachmentLink | null;
   }[];
   aiAssistantMessages: {
@@ -339,6 +348,44 @@ export default async function MaintenanceDashboardPage({
                           </div>
                         </div>
                       </div>
+
+                      {/* Checklist task — solo IN_PROGRESS con task presenti */}
+                      {ticket.status === "IN_PROGRESS" && Array.isArray(ticket.maintenanceTasks) && (ticket.maintenanceTasks as MaintenanceTaskItem[]).length > 0 && (
+                        <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
+                          <div className="mb-4 flex items-center gap-2">
+                            <span className="text-lg">📋</span>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Task intervento</p>
+                          </div>
+                          <MaintenanceChecklistInteractive
+                            ticketId={ticket.id}
+                            initialTasks={ticket.maintenanceTasks as MaintenanceTaskItem[]}
+                          />
+                        </div>
+                      )}
+
+                      {/* Note al manager */}
+                      {(() => {
+                        const isDone = ["AWAITING_REVIEW", "RESOLVED", "CLOSED"].includes(ticket.status);
+                        const notes = ticket.messages
+                          .filter(m => m.role === "MAINTENANCE")
+                          .map(m => ({
+                            id: m.id,
+                            text: m.text,
+                            senderName: m.senderName,
+                            createdAt: m.createdAt,
+                            attachment: m.attachment
+                              ? { url: m.attachment.url, fileName: m.attachment.fileName, fileType: m.attachment.fileType ?? null }
+                              : null,
+                          }));
+                        return (
+                          <MaintenanceNoteForm
+                            ticketId={ticket.id}
+                            authorName={user.name}
+                            initialMessages={notes}
+                            isDone={isDone}
+                          />
+                        );
+                      })()}
 
                       {/* Chat + AI */}
                       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
