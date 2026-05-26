@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { getCleaningByToken } from "@/src/app/actions/cleaning-token";
 import PublicCleaningView from "@/src/components/public-cleaning-view";
+import { enrichCleaningTaskWithNextBooking } from "@/src/app/actions/operational";
+import { calculateLinen } from "@/src/lib/linen-calculator";
 
 function formatDateFull(date: Date): string {
   const d = new Date(date);
@@ -23,6 +25,20 @@ export default async function PublicCleaningPage({
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
   const dateLabel = formatDateFull(task.date as Date);
+
+  // Prenotazione in ARRIVO — usata per calcolare biancheria e asciugamani
+  const { nextBooking } = await enrichCleaningTaskWithNextBooking({
+    apartmentId: task.apartment.id,
+    date: task.date as Date,
+  });
+
+  const nextGuests       = nextBooking?.totalGuests ?? 0;
+  const cullaRequested   = !!(nextBooking?.cullaRequested);
+  const towels           = nextGuests > 0 ? nextGuests * 2 : null;
+  const bathMats         = task.apartment.bathrooms ?? null;
+  const linenCalc        = nextGuests > 0
+    ? calculateLinen(task.apartment.bedConfig, nextGuests, cullaRequested)
+    : null;
 
   const checklistItems = (() => {
     const master = task.apartment.checklistItems;
@@ -65,6 +81,11 @@ export default async function PublicCleaningPage({
       canComplete={canComplete}
       isWaiting={isWaiting}
       isDone={isDone}
+      towels={towels}
+      bathMats={bathMats}
+      nextGuestCount={nextGuests > 0 ? nextGuests : null}
+      linen={linenCalc?.adults ?? null}
+      cullaLinen={linenCalc?.culla ?? null}
     />
   );
 }

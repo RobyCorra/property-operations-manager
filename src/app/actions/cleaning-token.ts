@@ -23,6 +23,8 @@ export async function getCleaningByToken(token: string) {
           id: true,
           name: true,
           address: true,
+          bathrooms: true,
+          bedConfig: true,
           checklistItems: {
             orderBy: [{ order: "asc" }, { createdAt: "asc" }],
           },
@@ -35,6 +37,7 @@ export async function getCleaningByToken(token: string) {
           totalGuests: true,
           checkInDate: true,
           checkOutDate: true,
+          cullaRequested: true,
         },
       },
       attachments: {
