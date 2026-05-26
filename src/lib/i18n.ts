@@ -10,6 +10,18 @@ export const translations = {
     dateLabel: "Data pulizia",
     notesLabel: "Note del responsabile",
 
+    // Biancheria & asciugamani
+    towelsLabel: "Asciugamani",
+    towelsSub: (n: number) => `${n} ospiti × 2`,
+    bathMatsLabel: "Tappetini bagno",
+    bathMatsSub: "1 per bagno",
+    totalBedsLabel: (n: number) => `🛏 Totale letti — ${n} ospiti`,
+    sheetsLabel: "Lenzuola",
+    pillowcasesLabel: "Federe",
+    duvetLabel: "Copriletto",
+    cullaLabel: "🪺 Culla",
+    noNextBooking: "Nessuna prenotazione in arrivo",
+
     // Buttons
     startBtn: "▶ Avvia pulizia",
     startingBtn: "🟣 Pulizia in corso...",
@@ -88,6 +100,18 @@ export const translations = {
     dateLabel: "Cleaning date",
     notesLabel: "Manager's notes",
 
+    // Linen & towels
+    towelsLabel: "Towels",
+    towelsSub: (n: number) => `${n} guests × 2`,
+    bathMatsLabel: "Bath mats",
+    bathMatsSub: "1 per bathroom",
+    totalBedsLabel: (n: number) => `🛏 Total beds — ${n} guests`,
+    sheetsLabel: "Sheets",
+    pillowcasesLabel: "Pillowcases",
+    duvetLabel: "Duvet cover",
+    cullaLabel: "🪺 Cot",
+    noNextBooking: "No upcoming booking",
+
     startBtn: "▶ Start cleaning",
     startingBtn: "🟣 Cleaning in progress...",
 
@@ -160,6 +184,18 @@ export const translations = {
 
     dateLabel: "Fecha de limpieza",
     notesLabel: "Notas del responsable",
+
+    // Ropa de cama & toallas
+    towelsLabel: "Toallas",
+    towelsSub: (n: number) => `${n} huéspedes × 2`,
+    bathMatsLabel: "Alfombrillas de baño",
+    bathMatsSub: "1 por baño",
+    totalBedsLabel: (n: number) => `🛏 Total camas — ${n} huéspedes`,
+    sheetsLabel: "Sábanas",
+    pillowcasesLabel: "Fundas de almohada",
+    duvetLabel: "Funda nórdica",
+    cullaLabel: "🪺 Cuna",
+    noNextBooking: "Sin reserva próxima",
 
     startBtn: "▶ Iniciar limpieza",
     startingBtn: "🟣 Limpieza en curso...",

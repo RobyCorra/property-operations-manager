@@ -17,6 +17,7 @@ import { calculateLinen } from "@/src/lib/linen-calculator";
 import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
 import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
 import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
+import CleanerLinenSection from "@/src/components/cleaner-linen-section";
 
 type CleanerTaskNextBooking = {
   guestName: string | null;
@@ -231,108 +232,22 @@ export default async function CleanerDashboardPage() {
                   compactContent={<></>}
                   expandedContent={(
                     <div className="space-y-3">
-                      {/* Asciugamani + Tappetini */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center shadow-sm">
-                          <div className="text-2xl mb-1">🛁</div>
-                          <div className="text-3xl font-black text-blue-700 leading-none">
-                            {task.nextBooking ? task.nextBooking.totalGuests * 2 : "—"}
-                          </div>
-                          <div className="text-[9px] font-black uppercase tracking-wider text-blue-600 mt-1">Asciugamani</div>
-                          {task.nextBooking ? (
-                            <div className="text-[9px] text-blue-400 mt-0.5">{task.nextBooking.totalGuests} ospiti × 2</div>
-                          ) : (
-                            <div className="text-[9px] text-blue-300 mt-0.5">nessuna prenotazione</div>
-                          )}
-                        </div>
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center shadow-sm">
-                          <div className="text-2xl mb-1">🟩</div>
-                          <div className="text-3xl font-black text-emerald-700 leading-none">{task.apartment.bathrooms}</div>
-                          <div className="text-[9px] font-black uppercase tracking-wider text-emerald-600 mt-1">Tappetini bagno</div>
-                          <div className="text-[9px] text-emerald-400 mt-0.5">1 per bagno</div>
-                        </div>
-                      </div>
-
-                      {/* Biancheria calcolata */}
+                      {/* Biancheria & asciugamani (tradotti via LinenSection) */}
                       {(() => {
-                        // La culla e gli ospiti vengono sempre dalla prenotazione in ARRIVO (nextBooking),
-                        // non da quella in uscita (task.booking). Il fix del fuso orario garantisce
-                        // che nextBooking trovi correttamente le prenotazioni con check-in stesso giorno.
                         const cullaRequested = !!(task.nextBooking?.cullaRequested);
                         const totalGuests = task.nextBooking?.totalGuests ?? 0;
-
-                        if (!task.nextBooking) {
-                          return (
-                            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center text-slate-400 text-xs font-semibold">
-                              🛏 Biancheria — nessuna prenotazione in arrivo
-                            </div>
-                          );
-                        }
-                        const linen = calculateLinen(
-                          task.apartment.bedConfig,
-                          totalGuests,
-                          cullaRequested,
-                        );
+                        const linen = totalGuests > 0
+                          ? calculateLinen(task.apartment.bedConfig, totalGuests, cullaRequested)
+                          : null;
                         return (
-                          <div className="space-y-2">
-                            <p className="text-[9px] font-black uppercase tracking-wider text-slate-400 px-1">🛏 Biancheria — {totalGuests} ospiti</p>
-                            {/* Letti attivati */}
-                            {linen.beds.map((bed) => (
-                              <div key={bed.key} className={`rounded-2xl border p-3 flex items-center gap-3 ${bed.isFixed ? "bg-blue-50 border-blue-200" : "bg-amber-50 border-amber-200"}`}>
-                                <span className="text-lg">{bed.icon}</span>
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-[10px] font-black text-slate-600 truncate">{bed.label}</div>
-                                  <div className="text-[9px] text-slate-400">{bed.count} × {bed.capacity / bed.count === 2 ? "2 posti" : "1 posto"}</div>
-                                </div>
-                                <div className="flex gap-2">
-                                  {[
-                                    { v: bed.linen.lenzuola, l: "lenz." },
-                                    { v: bed.linen.federe, l: "fed." },
-                                    { v: bed.linen.copriPiumino, l: "copri" },
-                                  ].map(({ v, l }) => (
-                                    <div key={l} className="bg-white rounded-lg px-2 py-1 text-center border border-white/80">
-                                      <div className="text-sm font-black text-indigo-700">{v}</div>
-                                      <div className="text-[8px] text-slate-400 uppercase">{l}</div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                            {/* Totale adulti */}
-                            <div className="bg-slate-900 rounded-2xl p-3 flex items-center justify-between gap-2">
-                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Totale letti</span>
-                              <div className="flex gap-2">
-                                {[
-                                  { v: linen.adults.lenzuola, l: "Lenzuola" },
-                                  { v: linen.adults.federe, l: "Federe" },
-                                  { v: linen.adults.copriPiumino, l: "Copri p." },
-                                ].map(({ v, l }) => (
-                                  <div key={l} className="bg-slate-800 rounded-xl px-3 py-1.5 text-center">
-                                    <div className="text-lg font-black text-white">{v}</div>
-                                    <div className="text-[8px] text-slate-500 uppercase">{l}</div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                            {/* Culla separata */}
-                            {linen.culla && (
-                              <div className="bg-emerald-900 rounded-2xl p-3 flex items-center justify-between gap-2">
-                                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">🪺 Culla</span>
-                                <div className="flex gap-2">
-                                  {[
-                                    { v: linen.culla.lenzuola, l: "Lenzuola" },
-                                    { v: linen.culla.federe, l: "Federe" },
-                                    { v: linen.culla.copriPiumino, l: "Copri p." },
-                                  ].map(({ v, l }) => (
-                                    <div key={l} className="bg-emerald-800 rounded-xl px-3 py-1.5 text-center">
-                                      <div className="text-lg font-black text-white">{v}</div>
-                                      <div className="text-[8px] text-emerald-500 uppercase">{l}</div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
+                          <CleanerLinenSection
+                            towels={totalGuests > 0 ? totalGuests * 2 : null}
+                            bathMats={task.apartment.bathrooms}
+                            nextGuestCount={totalGuests > 0 ? totalGuests : null}
+                            linen={linen?.adults ?? null}
+                            cullaLinen={linen?.culla ?? null}
+                            noBookingText="Nessuna prenotazione in arrivo"
+                          />
                         );
                       })()}
 

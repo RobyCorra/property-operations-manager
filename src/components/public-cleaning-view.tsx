@@ -7,6 +7,7 @@ import { useLang } from "@/src/components/lang-context";
 import ChecklistInteractive from "@/src/components/checklist-interactive";
 import PublicStatusButton from "@/src/components/public-status-button";
 import PublicStatusPoller from "@/src/components/public-status-poller";
+import LinenSection from "@/src/components/linen-section";
 import { useState, useEffect, useRef } from "react";
 
 interface ChecklistItem {
@@ -150,74 +151,14 @@ function CleaningContent({
           </div>
         )}
 
-        {/* ── Biancheria & asciugamani (se disponibili) ── */}
-        {(towels != null || bathMats != null || linen != null) && (
-          <div className="flex flex-col gap-2">
-            {/* Asciugamani + Tappetini */}
-            {(towels != null || bathMats != null) && (
-              <div className="grid grid-cols-2 gap-2">
-                {towels != null && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 text-center shadow-sm">
-                    <div className="text-2xl mb-1">🛁</div>
-                    <div className="text-3xl font-black text-blue-700 leading-none">{towels}</div>
-                    <div className="text-[9px] font-black uppercase tracking-wider text-blue-600 mt-1">Asciugamani</div>
-                    {nextGuestCount != null && (
-                      <div className="text-[9px] text-blue-400 mt-0.5">{nextGuestCount} ospiti × 2</div>
-                    )}
-                  </div>
-                )}
-                {bathMats != null && (
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center shadow-sm">
-                    <div className="text-2xl mb-1">🟩</div>
-                    <div className="text-3xl font-black text-emerald-700 leading-none">{bathMats}</div>
-                    <div className="text-[9px] font-black uppercase tracking-wider text-emerald-600 mt-1">Tappetini bagno</div>
-                    <div className="text-[9px] text-emerald-400 mt-0.5">1 per bagno</div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Totale biancheria adulti */}
-            {linen != null && (
-              <div className="bg-slate-900 rounded-2xl p-3 flex items-center justify-between gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                  🛏 Totale letti{nextGuestCount != null ? ` — ${nextGuestCount} ospiti` : ""}
-                </span>
-                <div className="flex gap-2">
-                  {[
-                    { v: linen.lenzuola,     l: "Lenzuola" },
-                    { v: linen.federe,       l: "Federe" },
-                    { v: linen.copriPiumino, l: "Copri p." },
-                  ].map(({ v, l }) => (
-                    <div key={l} className="bg-slate-800 rounded-xl px-3 py-1.5 text-center">
-                      <div className="text-lg font-black text-white">{v}</div>
-                      <div className="text-[8px] text-slate-500 uppercase">{l}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Culla */}
-            {cullaLinen != null && (
-              <div className="bg-emerald-900 rounded-2xl p-3 flex items-center justify-between gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400">🪺 Culla</span>
-                <div className="flex gap-2">
-                  {[
-                    { v: cullaLinen.lenzuola,     l: "Lenzuola" },
-                    { v: cullaLinen.federe,       l: "Federe" },
-                    { v: cullaLinen.copriPiumino, l: "Copri p." },
-                  ].map(({ v, l }) => (
-                    <div key={l} className="bg-emerald-800 rounded-xl px-3 py-1.5 text-center">
-                      <div className="text-lg font-black text-white">{v}</div>
-                      <div className="text-[8px] text-emerald-500 uppercase">{l}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        {/* ── Biancheria & asciugamani ── */}
+        <LinenSection
+          towels={towels}
+          bathMats={bathMats}
+          nextGuestCount={nextGuestCount}
+          linen={linen}
+          cullaLinen={cullaLinen}
+        />
 
         {/* Card note */}
         {notes && (
