@@ -4,7 +4,7 @@ import { useTransition, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SafeDate from "@/src/components/safe-date";
 import { upload } from "@vercel/blob/client";
-import { playNotificationSound, unlockAudio } from "@/src/lib/notification-sound";
+import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notification-sound";
 
 interface Message {
   id: string;
@@ -83,6 +83,9 @@ export default function TicketConversation({
 
   const prevMsgCount = useRef(initialMessages.length);
 
+  // Sblocca AudioContext al primo gesto utente sulla pagina
+  useEffect(() => { setupNotificationAudio(); }, []);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -108,7 +111,6 @@ export default function TicketConversation({
   // ── Text / file submit ────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    unlockAudio();
     setError(null);
     const formData = new FormData(e.currentTarget);
     formData.append("role", currentUserRole);
@@ -162,7 +164,6 @@ export default function TicketConversation({
 
   // ── Voice recording ───────────────────────────────────────────────────────
   const startRecording = async () => {
-    unlockAudio();
     setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

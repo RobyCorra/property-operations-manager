@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { upload } from "@vercel/blob/client";
 import { sendMaintenancePublicNote, fetchMaintenanceMessages } from "@/src/app/actions/maintenance-token";
 import type { MaintenancePublicMessage } from "@/src/app/actions/maintenance-token";
-import { playNotificationSound, unlockAudio } from "@/src/lib/notification-sound";
+import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notification-sound";
 import { Camera, Send, X, Loader2, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
 
 interface Props {
@@ -114,6 +114,9 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [ticketId, isDone]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sblocca AudioContext al primo gesto utente sulla pagina
+  useEffect(() => { setupNotificationAudio(); }, []);
 
   // Cleanup audio on unmount
   useEffect(() => {
@@ -429,7 +432,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                 {/* Foto */}
                 <button
                   type="button"
-                  onClick={() => { unlockAudio(); fileRef.current?.click(); }}
+                  onClick={() => { fileRef.current?.click(); }}
                   className="w-14 h-14 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-0.5 hover:border-orange-300 hover:bg-orange-50 transition-colors flex-shrink-0"
                 >
                   <Camera size={16} className="text-slate-400" />
@@ -438,7 +441,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                 {/* Microfono */}
                 <button
                   type="button"
-                  onClick={() => { unlockAudio(); startRecording(); }}
+                  onClick={() => { startRecording(); }}
                   className="w-14 h-14 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-0.5 hover:border-red-300 hover:bg-red-50 transition-colors flex-shrink-0"
                 >
                   <Mic size={16} className="text-slate-400" />
@@ -481,7 +484,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
             {!isRecording && !audioBlob && (
               <button
                 type="button"
-                onClick={() => { unlockAudio(); handleSend(); }}
+                onClick={() => { handleSend(); }}
                 disabled={!canSend}
                 className={`w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-colors ${
                   canSend

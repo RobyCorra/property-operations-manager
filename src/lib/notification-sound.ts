@@ -1,18 +1,16 @@
 /**
- * Suono di notifica messaggio — Web Audio API con pattern "unlock".
+ * Suono di notifica messaggio — Web Audio API.
  *
- * I browser bloccano l'audio se l'AudioContext viene creato fuori da un
- * gesto utente diretto (es. dentro setInterval/setTimeout).
- * Soluzione: creare/sbloccare il contesto al primo gesto, poi riusarlo.
- *
- * Uso:
- *   - chiamare unlockAudio() su onClick/onTouchStart di qualsiasi pulsante
- *   - chiamare playNotificationSound() quando arriva un messaggio nuovo
+ * L'AudioContext viene sbloccato al PRIMO gesto utente sulla pagina
+ * (qualsiasi click o tap), non solo sui pulsanti di invio.
+ * Questo garantisce che il suono funzioni anche per chi sta solo
+ * aspettando messaggi senza scrivere nulla.
  */
 
 let ctx: AudioContext | null = null;
+let isSetup = false;
 
-function getCtx(): AudioContext | null {
+function getOrCreateCtx(): AudioContext | null {
   try {
     if (ctx && ctx.state !== "closed") return ctx;
     const Klass = window.AudioContext ?? (window as any).webkitAudioContext;
@@ -24,12 +22,31 @@ function getCtx(): AudioContext | null {
   }
 }
 
-/** Chiama questo su ogni click/tap per sbloccare l'audio sul dispositivo. */
-export function unlockAudio() {
-  const c = getCtx();
+function doUnlock() {
+  const c = getOrCreateCtx();
   if (c && c.state === "suspended") {
     c.resume().catch(() => {});
   }
+}
+
+/**
+ * Registra un listener globale che sblocca l'AudioContext al primo
+ * click/tap sulla pagina. Va chiamato una volta in un useEffect.
+ */
+export function setupNotificationAudio() {
+  if (typeof window === "undefined" || isSetup) return;
+  isSetup = true;
+
+  const unlock = () => {
+    doUnlock();
+    window.removeEventListener("click",      unlock, true);
+    window.removeEventListener("touchstart", unlock, true);
+    window.removeEventListener("keydown",    unlock, true);
+  };
+
+  window.addEventListener("click",      unlock, { capture: true, passive: true });
+  window.addEventListener("touchstart", unlock, { capture: true, passive: true });
+  window.addEventListener("keydown",    unlock, { capture: true, passive: true });
 }
 
 function doPing(c: AudioContext, startTime: number, freq: number, vol = 0.18) {
@@ -46,16 +63,16 @@ function doPing(c: AudioContext, startTime: number, freq: number, vol = 0.18) {
   osc.stop(startTime + 0.5);
 }
 
-/** Suona un doppio ping (La5 + Mi6). Funziona solo dopo unlockAudio(). */
+/** Suona un doppio ping. Funziona dopo il primo gesto utente sulla pagina. */
 export function playNotificationSound() {
   try {
-    const c = getCtx();
+    const c = getOrCreateCtx();
     if (!c) return;
 
     const play = () => {
       const t = c.currentTime;
-      doPing(c, t,        880);   // La5
-      doPing(c, t + 0.14, 1320);  // Mi6
+      doPing(c, t,        880);
+      doPing(c, t + 0.14, 1320);
     };
 
     if (c.state === "suspended") {
