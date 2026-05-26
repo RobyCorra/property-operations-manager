@@ -44,8 +44,9 @@ export interface MaintenancePublicMessage {
 export async function sendMaintenancePublicNote(
   ticketId: string,
   text: string,
-  photoUrl: string | null,
+  attachmentUrl: string | null,
   authorName: string | null,
+  attachmentMeta?: { fileName: string; fileType: string },
 ): Promise<MaintenancePublicMessage> {
   const senderName = authorName?.trim() || "Manutentore";
 
@@ -60,12 +61,14 @@ export async function sendMaintenancePublicNote(
 
   let attachment = null;
 
-  if (photoUrl) {
+  if (attachmentUrl) {
+    const fileName = attachmentMeta?.fileName ?? "allegato-manutentore";
+    const fileType = attachmentMeta?.fileType ?? "application/octet-stream";
     const att = await prisma.attachment.create({
       data: {
-        url: photoUrl,
-        fileName: "foto-manutentore.jpg",
-        fileType: "image/jpeg",
+        url: attachmentUrl,
+        fileName,
+        fileType,
         size: 0,
         category: "OTHER",
         maintenanceTicketId: ticketId,
