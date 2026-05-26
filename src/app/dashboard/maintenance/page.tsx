@@ -2,11 +2,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
-import { updateMaintenanceStatus, submitMaintenanceForReview } from "@/src/app/actions/operational";
-import SubmitForReviewButton from "@/src/components/submit-for-review-button";
+import { updateMaintenanceStatus } from "@/src/app/actions/operational";
 import StatusUpdateButton from "@/src/components/status-update-button";
 import { prisma } from "@/src/lib/prisma";
-import MaintenanceResolutionForm from "@/src/components/maintenance-resolution-form";
 import AIAssistant from "@/src/components/ai-assistant";
 import MaintenanceChecklistInteractive from "@/src/components/maintenance-checklist-interactive";
 import MaintenanceNoteForm from "@/src/components/maintenance-note-form";
@@ -260,14 +258,7 @@ export default async function MaintenanceDashboardPage({
                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse mr-2 align-middle" />
                         Intervento in corso — apri dettagli per chiudere
                       </div>
-                    ) : !isHistoryView && ticket.status === "RESOLVED" ? (
-                      <SubmitForReviewButton
-                        id={ticket.id}
-                        action={submitMaintenanceForReview}
-                        label="Invia per revisione"
-                        className="w-full bg-yellow-500 text-white text-xs font-black uppercase tracking-widest py-4 shadow-lg shadow-yellow-200 hover:bg-yellow-600 active:scale-95"
-                      />
-                    ) : !isHistoryView && ticket.status === "AWAITING_REVIEW" ? (
+                    ) : !isHistoryView && (ticket.status === "RESOLVED" || ticket.status === "AWAITING_REVIEW") ? (
                       <div className="w-full rounded-full bg-yellow-50 border border-yellow-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-yellow-700">
                         ⏳ In attesa di revisione
                       </div>
@@ -308,11 +299,6 @@ export default async function MaintenanceDashboardPage({
                               </div>
                             )}
                           </div>
-                          {!isHistoryView && ticket.status === "IN_PROGRESS" && (
-                            <div className="mt-4">
-                              <MaintenanceResolutionForm ticketId={ticket.id} />
-                            </div>
-                          )}
                           <a
                             href={`https://www.google.com/maps/dir/?api=1&destination=${ticket.apartment.latitude},${ticket.apartment.longitude}`}
                             target="_blank"
