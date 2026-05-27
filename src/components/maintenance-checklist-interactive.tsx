@@ -1,15 +1,30 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { upload } from "@vercel/blob/client";
 import { updateMaintenanceTaskProgress, completeMaintenancePublic } from "@/src/app/actions/maintenance-token";
 import type { MaintenanceTaskItem } from "@/src/app/actions/maintenance-token";
-import { Camera, ChevronRight, ChevronLeft, CheckCircle2, Loader2, AlertCircle, Trash2 } from "lucide-react";
+import { compressImage } from "@/src/lib/compress-image";
+import {
+  saveToQueue,
+  getQueueForTask,
+  deleteFromQueue,
+  clearQueueForTask,
+} from "@/src/lib/photo-queue-db";
+import { Camera, ChevronRight, ChevronLeft, CheckCircle2, Loader2, AlertCircle, Trash2, Upload } from "lucide-react";
 
 interface Props {
-  ticketId: string;
+  ticketId:     string;
   initialTasks: MaintenanceTaskItem[];
 }
+
+interface PendingPhoto {
+  localUrl: string;
+  blob:     Blob;
+  filename: string;
+}
+
+const UPLOAD_INTERVAL_MS = 15_000;
 
 export default function MaintenanceChecklistInteractive({ ticketId, initialTasks }: Props) {
   const [tasks, setTasks] = useState<MaintenanceTaskItem[]>(initialTasks);
@@ -19,28 +34,97 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
     firstUnprocessed === -1 ? initialTasks.length : firstUnprocessed
   );
 
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [photoFile, setPhotoFile]       = useState<File | null>(null);
-  const [isUploading, setIsUploading]   = useState(false);
-  const [isSaving, setIsSaving]         = useState(false);
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [uploadError, setUploadError]   = useState<string | null>(null);
-  const [justCompleted, setJustCompleted] = useState<string | null>(null);
+  const [photoPreview, setPhotoPreview]     = useState<string | null>(null);
+  const [photoFile, setPhotoFile]           = useState<File | null>(null);
+  const [isCompressing, setIsCompressing]   = useState(false);
+  const [isSaving, setIsSaving]             = useState(false);
+  const [isCompleting, setIsCompleting]     = useState(false);
+  const [uploadError, setUploadError]       = useState<string | null>(null);
+  const [justCompleted, setJustCompleted]   = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
-  const currentTask    = tasks[currentIndex];
-  const completedCount = tasks.filter((t) => t.completed).length;
-  const allDone        = currentIndex >= tasks.length;
-  const allCompleted   = tasks.every((t) => t.completed);
+  // ── Coda foto pendenti ─────────────────────────────────────────────────────
+  const [pendingPhotos, setPendingPhotos] = useState<Map<string, PendingPhoto>>(new Map());
+  const [uploadingIds,  setUploadingIds]  = useState<Set<string>>(new Set());
 
-  // Il bottone "Fatto" è bloccato se foto obbligatoria non ancora selezionata/caricata
-  const photoMissing =
-    currentTask &&
-    currentTask.photoRequired &&
-    !photoFile &&
-    !currentTask.photoUrl;
+  const tasksRef         = useRef(tasks);
+  const pendingRef       = useRef(pendingPhotos);
+  const uploadingIdsRef  = useRef(uploadingIds);
+  tasksRef.current        = tasks;
+  pendingRef.current      = pendingPhotos;
+  uploadingIdsRef.current = uploadingIds;
 
-  /* ── Helpers ── */
+  // ── Ripristino IndexedDB al mount ──────────────────────────────────────────
+  useEffect(() => {
+    getQueueForTask(ticketId).then((entries) => {
+      if (!entries.length) return;
+      const restored = new Map<string, PendingPhoto>();
+      for (const e of entries) {
+        restored.set(e.itemId, {
+          localUrl: URL.createObjectURL(e.blob),
+          blob:     e.blob,
+          filename: e.filename,
+        });
+      }
+      setPendingPhotos(restored);
+    });
+  }, [ticketId]);
+
+  // ── Upload singola foto ────────────────────────────────────────────────────
+  const uploadOne = useCallback(async (taskId: string) => {
+    const pending = pendingRef.current.get(taskId);
+    if (!pending) return;
+    if (uploadingIdsRef.current.has(taskId)) return;
+
+    setUploadingIds((prev) => new Set(prev).add(taskId));
+
+    try {
+      const file = new File([pending.blob], pending.filename, { type: pending.blob.type });
+      const result = await upload(
+        `uploads/maintenance/${ticketId}/tasks/${taskId}/${Date.now()}-${pending.filename}`,
+        file,
+        { access: "public", handleUploadUrl: "/api/blob-upload" },
+      );
+      const blobUrl = result.url;
+
+      // Aggiorna task con URL reale
+      const updatedTasks = tasksRef.current.map((t) =>
+        t.id === taskId ? { ...t, photoUrl: blobUrl } : t
+      );
+      setTasks(updatedTasks);
+      await updateMaintenanceTaskProgress(ticketId, taskId, true, blobUrl).catch(() => {});
+
+      // Rimuovi dalla coda
+      setPendingPhotos((prev) => {
+        const next = new Map(prev);
+        URL.revokeObjectURL(next.get(taskId)?.localUrl ?? "");
+        next.delete(taskId);
+        return next;
+      });
+      await deleteFromQueue(ticketId, taskId);
+    } catch {
+      // Lascia in coda, riprova al prossimo giro
+    } finally {
+      setUploadingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(taskId);
+        return next;
+      });
+    }
+  }, [ticketId]);
+
+  // ── Loop background ogni 15s ───────────────────────────────────────────────
+  useEffect(() => {
+    const drain = () => {
+      for (const id of pendingRef.current.keys()) {
+        if (!uploadingIdsRef.current.has(id)) uploadOne(id);
+      }
+    };
+    const interval = setInterval(drain, UPLOAD_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [uploadOne]);
+
+  // ── Helpers foto ───────────────────────────────────────────────────────────
   const clearPhoto = () => {
     setPhotoFile(null);
     setPhotoPreview(null);
@@ -55,79 +139,88 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
     setUploadError(null);
   };
 
-  const goBack = () => {
-    if (currentIndex <= 0) return;
-    clearPhoto();
-    setJustCompleted(null);
-    setCurrentIndex((p) => p - 1);
-  };
+  function getPhotoUrl(task: MaintenanceTaskItem): string | null {
+    return task.photoUrl ?? pendingRef.current.get(task.id)?.localUrl ?? null;
+  }
+  function isPending(id: string)   { return pendingRef.current.has(id) && !uploadingIdsRef.current.has(id); }
+  function isUploading(id: string) { return uploadingIdsRef.current.has(id); }
 
-  const goForward = () => {
-    clearPhoto();
-    setJustCompleted(null);
-    setCurrentIndex((p) => p + 1);
-  };
-
-  const goToItem = (idx: number) => {
-    clearPhoto();
-    setJustCompleted(null);
-    setCurrentIndex(idx);
-  };
+  // ── Navigazione ────────────────────────────────────────────────────────────
+  const goBack    = () => { if (currentIndex <= 0) return; clearPhoto(); setJustCompleted(null); setCurrentIndex((p) => p - 1); };
+  const goForward = () => { clearPhoto(); setJustCompleted(null); setCurrentIndex((p) => p + 1); };
+  const goToItem  = (idx: number) => { clearPhoto(); setJustCompleted(null); setCurrentIndex(idx); };
 
   const resetTask = async (idx: number) => {
-    const updated = tasks.map((t, i) =>
-      i === idx ? { ...t, completed: false, photoUrl: null } : t
-    );
+    const tid = tasks[idx].id;
+    const updated = tasks.map((t, i) => i === idx ? { ...t, completed: false, photoUrl: null } : t);
     setTasks(updated);
-    try { await updateMaintenanceTaskProgress(ticketId, updated[idx].id, false, null); }
-    catch { /* best-effort */ }
+    if (pendingRef.current.has(tid)) {
+      URL.revokeObjectURL(pendingRef.current.get(tid)!.localUrl);
+      setPendingPhotos((prev) => { const next = new Map(prev); next.delete(tid); return next; });
+      await deleteFromQueue(ticketId, tid);
+    }
+    try { await updateMaintenanceTaskProgress(ticketId, tid, false, null); } catch { /* best-effort */ }
   };
 
+  // ── Avanza passo ───────────────────────────────────────────────────────────
   const advance = async () => {
-    if (photoMissing || isSaving || isUploading) return;
+    if (isSaving || isCompressing) return;
+
+    const hasPhoto =
+      !!photoFile ||
+      !!currentTask.photoUrl ||
+      pendingRef.current.has(currentTask.id);
+
+    if (currentTask.photoRequired && !hasPhoto) return; // già gestito dal disabled
 
     setIsSaving(true);
     setUploadError(null);
 
-    let photoUrl: string | null = currentTask.photoUrl ?? null;
-
     if (photoFile) {
-      setIsUploading(true);
+      setIsCompressing(true);
       try {
-        const blob = await upload(
-          `uploads/maintenance/${ticketId}/tasks/${currentTask.id}/${Date.now()}-${photoFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
-          photoFile,
-          { access: "public", handleUploadUrl: "/api/blob-upload" }
-        );
-        photoUrl = blob.url;
+        const compressed = await compressImage(photoFile);
+        const localUrl   = URL.createObjectURL(compressed);
+
+        setPendingPhotos((prev) => new Map(prev).set(currentTask.id, {
+          localUrl,
+          blob:     compressed,
+          filename: compressed.name,
+        }));
+        await saveToQueue(ticketId, currentTask.id, compressed, compressed.name);
+        uploadOne(currentTask.id); // avvio immediato in background
       } catch {
-        setUploadError("Errore upload foto. Riprova.");
-        setIsUploading(false);
+        setUploadError("Errore nella preparazione della foto. Riprova.");
+        setIsCompressing(false);
         setIsSaving(false);
         return;
       }
-      setIsUploading(false);
+      setIsCompressing(false);
     }
 
     const updated = tasks.map((t, i) =>
-      i === currentIndex ? { ...t, completed: true, photoUrl } : t
+      i === currentIndex ? { ...t, completed: true, photoUrl: t.photoUrl ?? null } : t
     );
     setTasks(updated);
-
-    try { await updateMaintenanceTaskProgress(ticketId, currentTask.id, true, photoUrl); }
-    catch { /* best-effort */ }
+    try { await updateMaintenanceTaskProgress(ticketId, currentTask.id, true, currentTask.photoUrl ?? null); } catch { /* best-effort */ }
 
     setJustCompleted(currentTask.label);
     clearPhoto();
-
     const nextIdx = updated.findIndex((t, i) => i > currentIndex && !t.completed);
     setCurrentIndex(nextIdx === -1 ? updated.length : nextIdx);
     setIsSaving(false);
   };
 
+  // ── Completamento intervento ───────────────────────────────────────────────
   const handleComplete = async () => {
+    if (pendingRef.current.size > 0) {
+      setIsCompleting(true);
+      await Promise.allSettled(Array.from(pendingRef.current.keys()).map(uploadOne));
+      if (pendingRef.current.size > 0) { setIsCompleting(false); return; }
+    }
     setIsCompleting(true);
     try {
+      await clearQueueForTask(ticketId);
       await completeMaintenancePublic(ticketId);
       window.location.reload();
     } catch (err: unknown) {
@@ -136,13 +229,18 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
     }
   };
 
-  /* ══════════════════════════════════════════════════════
-     SCHERMATA COMPLETAMENTO
-  ══════════════════════════════════════════════════════ */
-  if (allDone) {
-    const photosWithUrls = tasks.filter((t) => t.photoUrl);
+  // ── Valori derivati ────────────────────────────────────────────────────────
+  const currentTask    = tasks[currentIndex];
+  const completedCount = tasks.filter((t) => t.completed).length;
+  const allDone        = currentIndex >= tasks.length;
+  const allCompleted   = tasks.every((t) => t.completed);
+  const pendingCount   = pendingPhotos.size;
+  const uploadingCount = uploadingIds.size;
 
-    // Ci sono task saltate / non completate
+  // ── Schermata completamento ────────────────────────────────────────────────
+  if (allDone) {
+    const photosWithUrls = tasks.filter((t) => t.photoUrl || pendingPhotos.has(t.id));
+
     if (!allCompleted) {
       const incomplete = tasks.map((t, idx) => ({ ...t, idx })).filter((t) => !t.completed);
       return (
@@ -159,8 +257,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
             </div>
             <div className="space-y-2">
               {incomplete.map((task) => (
-                <div key={task.id}
-                  className="flex items-center justify-between gap-3 rounded-xl bg-white border border-amber-100 px-4 py-3">
+                <div key={task.id} className="flex items-center justify-between gap-3 rounded-xl bg-white border border-amber-100 px-4 py-3">
                   <p className="text-xs font-semibold text-slate-800 truncate min-w-0">{task.label}</p>
                   <button type="button" onClick={() => goToItem(task.idx)}
                     className="shrink-0 flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 transition-all">
@@ -170,19 +267,16 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
               ))}
             </div>
           </div>
-
-          <button type="button" disabled
-            className="w-full py-4 rounded-2xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed">
+          <button type="button" disabled className="w-full py-4 rounded-2xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed">
             ✅ Completa intervento
           </button>
-          <p className="text-[10px] text-slate-400 mt-2 text-center">
-            Completa tutte le task per inviare al manager.
-          </p>
+          <p className="text-[10px] text-slate-400 mt-2 text-center">Completa tutte le task per inviare al manager.</p>
         </div>
       );
     }
 
-    // 🎉 Tutto completato
+    const showUploadBanner = pendingCount > 0 || uploadingCount > 0;
+
     return (
       <div className="text-center py-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="text-6xl mb-3">🎉</div>
@@ -191,82 +285,133 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
           {completedCount} di {tasks.length} task {tasks.length === 1 ? "completata" : "completate"}
         </p>
 
+        {/* Banner foto in caricamento */}
+        {showUploadBanner && (
+          <div className="mb-5 rounded-2xl bg-blue-50 border border-blue-200 px-4 py-4">
+            <div className="flex items-center gap-3 mb-3">
+              <Loader2 size={16} className="text-blue-500 animate-spin shrink-0" />
+              <p className="text-sm font-bold text-blue-800 text-left">
+                {uploadingCount > 0
+                  ? `📤 Caricamento foto in corso... (${uploadingCount} rimaste)`
+                  : `📸 ${pendingCount} foto da caricare`}
+              </p>
+            </div>
+            <p className="text-[11px] text-blue-600 text-left mb-3 leading-relaxed">
+              Le foto vengono inviate in background. Puoi aspettare o riprovare subito.
+            </p>
+            <button type="button"
+              onClick={() => { for (const id of pendingRef.current.keys()) uploadOne(id); }}
+              disabled={uploadingCount > 0}
+              className="flex items-center gap-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-full disabled:opacity-50 hover:bg-blue-700 transition-colors">
+              <Upload size={12} /> Riprova ora
+            </button>
+          </div>
+        )}
+
+        {/* Miniature foto */}
         {photosWithUrls.length > 0 && (
           <div className="mb-5">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
               {photosWithUrls.length} foto {photosWithUrls.length === 1 ? "allegata" : "allegate"}
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
-              {photosWithUrls.map((task) => (
-                <a key={task.id} href={task.photoUrl!} target="_blank" rel="noreferrer">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={task.photoUrl!} alt={task.label}
-                    className="w-16 h-16 object-cover rounded-xl border border-slate-100 shadow-sm hover:scale-105 transition-transform" />
-                </a>
-              ))}
+              {photosWithUrls.map((task) => {
+                const url     = task.photoUrl ?? pendingPhotos.get(task.id)?.localUrl;
+                const pend    = isPending(task.id);
+                const loading = isUploading(task.id);
+                return (
+                  <div key={task.id} className="relative">
+                    <a href={url} target="_blank" rel="noreferrer">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt={task.label}
+                        className={`w-16 h-16 object-cover rounded-xl border shadow-sm hover:scale-105 transition-transform ${pend || loading ? "border-blue-300 opacity-75" : "border-slate-100"}`} />
+                    </a>
+                    {(pend || loading) && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-blue-500/20">
+                        {loading ? <Loader2 size={14} className="text-blue-600 animate-spin" /> : <span className="text-[8px] font-black text-blue-700">⏳</span>}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
 
-        <button type="button" onClick={handleComplete} disabled={isCompleting}
-          className="w-full py-4 rounded-2xl text-sm font-bold bg-black text-white hover:bg-gray-800 transition-all shadow-xl active:scale-95 disabled:opacity-50">
-          {isCompleting
-            ? <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> Invio...</span>
-            : "✅ Completa intervento"
-          }
+        <button type="button" onClick={handleComplete} disabled={isCompleting || showUploadBanner}
+          className="w-full py-4 rounded-2xl text-sm font-bold bg-black text-white hover:bg-gray-800 transition-all shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+          {isCompleting ? (
+            <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> Invio...</span>
+          ) : showUploadBanner ? (
+            <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> Caricamento foto...</span>
+          ) : "✅ Completa intervento"}
         </button>
         <p className="text-[10px] text-slate-400 mt-3">Il manager riceverà una notifica.</p>
       </div>
     );
   }
 
-  /* ══════════════════════════════════════════════════════
-     VISTA STEP
-  ══════════════════════════════════════════════════════ */
-  const progress = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
+  // ── Vista step ─────────────────────────────────────────────────────────────
+  const progress      = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
+  const photoMissing  = currentTask.photoRequired && !photoFile && !currentTask.photoUrl && !pendingRef.current.has(currentTask.id);
 
-  /* ── Task già completata ─────────────────────────────── */
+  // ── Task già completata ────────────────────────────────────────────────────
   if (currentTask.completed) {
+    const photoUrl    = getPhotoUrl(currentTask);
+    const photoIsPend = isPending(currentTask.id);
+    const photoIsLoad = isUploading(currentTask.id);
+
     return (
       <div className="animate-in fade-in duration-300">
-        {/* Progress bar */}
         <div className="mb-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Task {currentIndex + 1} di {tasks.length}
             </span>
-            <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
+            <div className="flex items-center gap-2">
+              {pendingCount > 0 && (
+                <span className="text-[9px] font-black text-blue-500 flex items-center gap-1">
+                  {uploadingCount > 0 ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} foto</> : <>📸 {pendingCount} in coda</>}
+                </span>
+              )}
+              <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
+            </div>
           </div>
           <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }} />
+            <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
           </div>
         </div>
 
-        {/* Card completata */}
         <div className="rounded-2xl bg-green-50 border border-green-200 p-4 shadow-sm mb-4">
           <div className="flex items-center gap-3">
             <CheckCircle2 size={20} className="text-green-600 shrink-0" />
             <span className="flex-1 text-base font-bold text-green-800 leading-snug">{currentTask.label}</span>
             <button type="button" onClick={() => resetTask(currentIndex)}
-              className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center text-red-500 hover:bg-red-200 active:scale-95 transition-all shrink-0"
-              title="Annulla e rifai">
+              className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center text-red-500 hover:bg-red-200 active:scale-95 transition-all shrink-0">
               <Trash2 size={15} />
             </button>
           </div>
-          {currentTask.photoUrl && (
+          {photoUrl && (
             <div className="mt-3 flex items-center gap-3 pl-8">
-              <a href={currentTask.photoUrl} target="_blank" rel="noreferrer">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={currentTask.photoUrl} alt="foto"
-                  className="w-12 h-12 object-cover rounded-xl border border-green-200 shadow-sm hover:scale-105 transition-transform" />
-              </a>
-              <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider">Foto allegata</span>
+              <div className="relative shrink-0">
+                <a href={photoUrl} target="_blank" rel="noreferrer">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photoUrl} alt="foto"
+                    className={`w-12 h-12 object-cover rounded-xl border shadow-sm hover:scale-105 transition-transform ${photoIsPend || photoIsLoad ? "border-blue-300 opacity-75" : "border-green-200"}`} />
+                </a>
+                {(photoIsPend || photoIsLoad) && (
+                  <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-blue-500/20">
+                    {photoIsLoad ? <Loader2 size={12} className="text-blue-600 animate-spin" /> : <span className="text-[8px]">⏳</span>}
+                  </div>
+                )}
+              </div>
+              <span className={`text-[10px] font-bold uppercase tracking-wider ${photoIsPend ? "text-blue-500" : photoIsLoad ? "text-blue-400" : "text-green-600"}`}>
+                {photoIsLoad ? "Caricamento..." : photoIsPend ? "In coda" : "Foto allegata"}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Navigazione */}
         <div className="flex gap-2">
           <button type="button" onClick={goBack} disabled={currentIndex === 0}
             className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
@@ -281,24 +426,28 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
     );
   }
 
-  /* ── Task da completare ────────────────────────────────── */
+  // ── Task da completare ─────────────────────────────────────────────────────
   return (
     <div className="animate-in fade-in duration-300">
-      {/* Progress bar */}
       <div className="mb-5">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
             Task {currentIndex + 1} di {tasks.length}
           </span>
-          <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
+          <div className="flex items-center gap-2">
+            {pendingCount > 0 && (
+              <span className="text-[9px] font-black text-blue-500 flex items-center gap-1">
+                {uploadingCount > 0 ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} foto</> : <>📸 {pendingCount} in coda</>}
+              </span>
+            )}
+            <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
+          </div>
         </div>
         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-          <div className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }} />
+          <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
-      {/* Toast: step precedente completato */}
       {justCompleted && (
         <div className="mb-3 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 animate-in fade-in slide-in-from-top-2 duration-300">
           <CheckCircle2 size={13} />
@@ -306,79 +455,63 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
         </div>
       )}
 
-      {/* Card task */}
       <div className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm mb-4 text-center">
         <h3 className="text-lg font-bold text-slate-900 leading-snug">{currentTask.label}</h3>
       </div>
 
-      {/* Sezione foto (sempre visibile — obbligatoria o facoltativa) */}
+      {/* Sezione foto */}
       <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-4">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Foto</p>
           {currentTask.photoRequired
             ? <span className="text-[9px] font-black uppercase tracking-wide text-white bg-rose-500 rounded-full px-2 py-0.5">Obbligatoria</span>
-            : <span className="text-[9px] font-black uppercase tracking-wide text-slate-400 bg-slate-200 rounded-full px-2 py-0.5">Facoltativa</span>
-          }
+            : <span className="text-[9px] font-black uppercase tracking-wide text-slate-400 bg-slate-200 rounded-full px-2 py-0.5">Facoltativa</span>}
         </div>
 
         {uploadError && (
-          <p className="text-xs text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mb-3 border border-rose-100">
-            ⚠️ {uploadError}
-          </p>
+          <p className="text-xs text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mb-3 border border-rose-100">⚠️ {uploadError}</p>
         )}
 
         {photoPreview ? (
-          /* Anteprima foto selezionata */
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photoPreview} alt="Anteprima"
-              className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0" />
+            <img src={photoPreview} alt="Anteprima" className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
-              <p className="text-[10px] text-emerald-600 font-bold mt-0.5">Foto pronta ✓</p>
+              <p className="text-[10px] text-blue-600 font-bold mt-0.5">📸 Pronta — verrà inviata in background</p>
             </div>
             <button type="button" onClick={clearPhoto}
-              className="w-7 h-7 rounded-full bg-rose-100 text-rose-500 text-[10px] flex items-center justify-center hover:bg-rose-200 shrink-0">
-              ✕
-            </button>
+              className="w-7 h-7 rounded-full bg-rose-100 text-rose-500 text-[10px] flex items-center justify-center hover:bg-rose-200 shrink-0">✕</button>
           </div>
         ) : (
-          /* Bottone scatta foto */
           <button type="button" onClick={() => photoInputRef.current?.click()}
             className={`w-full flex items-center justify-center gap-2 rounded-xl border-2 py-4 text-sm font-bold transition-colors ${
               currentTask.photoRequired
                 ? "bg-slate-500 border-rose-400 text-white hover:bg-slate-600"
-                : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
-            }`}>
-            <Camera size={18} />
-            Scatta foto
+                : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"}`}>
+            <Camera size={18} /> Scatta foto
           </button>
         )}
 
-        <input ref={photoInputRef} type="file" accept="image/*" capture="environment"
-          className="hidden" onChange={handlePhotoSelect} />
+        <input ref={photoInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoSelect} />
       </div>
 
       {/* Azioni */}
       <div className="flex gap-2">
-        {/* Indietro */}
-        <button type="button" onClick={goBack}
-          disabled={currentIndex === 0 || isSaving}
+        <button type="button" onClick={goBack} disabled={currentIndex === 0 || isSaving}
           className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-          <ChevronLeft size={13} />
-          Indietro
+          <ChevronLeft size={13} /> Indietro
         </button>
 
-        {/* Fatto — grigio se foto obbligatoria mancante, verde altrimenti */}
         <button type="button" onClick={advance}
-          disabled={!!photoMissing || isSaving || isUploading}
+          disabled={!!photoMissing || isSaving || isCompressing}
           className={`flex-1 flex items-center justify-center gap-2 rounded-full py-3.5 text-[10px] font-black uppercase tracking-widest transition-all ${
-            photoMissing
-              ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-              : "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 shadow-lg shadow-emerald-600/20"
-          }`}>
-          {isSaving || isUploading ? (
-            <><Loader2 size={13} className="animate-spin" />{isUploading ? "Upload..." : "Salvataggio..."}</>
+            photoMissing ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+              : "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 shadow-lg shadow-emerald-600/20"}`}>
+          {isCompressing ? (
+            <><Loader2 size={13} className="animate-spin" /> Preparazione...</>
+          ) : isSaving ? (
+            <><Loader2 size={13} className="animate-spin" /> Salvataggio...</>
           ) : (
             <><CheckCircle2 size={13} /> Fatto <ChevronRight size={13} /></>
           )}

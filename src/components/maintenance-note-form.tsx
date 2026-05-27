@@ -5,6 +5,7 @@ import { upload } from "@vercel/blob/client";
 import { sendMaintenancePublicNote, fetchMaintenanceMessages } from "@/src/app/actions/maintenance-token";
 import type { MaintenancePublicMessage } from "@/src/app/actions/maintenance-token";
 import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notification-sound";
+import { compressImage } from "@/src/lib/compress-image";
 import { Camera, Send, X, Loader2, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
 
 interface Props {
@@ -229,9 +230,10 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
         newMessages.push(msg);
       } else {
         for (let i = 0; i < photos.length; i++) {
+          const compressed = await compressImage(photos[i]);
           const blob = await upload(
-            `uploads/maintenance/${ticketId}/notes/${Date.now()}-${photos[i].name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
-            photos[i],
+            `uploads/maintenance/${ticketId}/notes/${Date.now()}-${compressed.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`,
+            compressed,
             { access: "public", handleUploadUrl: "/api/blob-upload" }
           );
           const msg = await sendMaintenancePublicNote(
