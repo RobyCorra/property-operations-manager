@@ -1226,7 +1226,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       let assignedToId: string | undefined;
       if (assignedToName) {
         const user = await prisma.user.findFirst({
-          where: { name: { equals: assignedToName, mode: "insensitive" } },
+          where: { name: { contains: assignedToName, mode: "insensitive" } },
           select: { id: true },
         });
         if (!user) return { success: false, error: `Cleaner non trovato: "${assignedToName}".` };
@@ -1253,7 +1253,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       let assignedToId: string | undefined;
       if (assignedToName) {
         const user = await prisma.user.findFirst({
-          where: { name: { equals: assignedToName, mode: "insensitive" } },
+          where: { name: { contains: assignedToName, mode: "insensitive" } },
           select: { id: true },
         });
         if (!user) return { success: false, error: `Tecnico non trovato: "${assignedToName}".` };
@@ -1312,7 +1312,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       let resolvedAssignedToId: string | undefined;
       if (fields.assignedToName) {
         const user = await prisma.user.findFirst({
-          where: { name: { equals: fields.assignedToName, mode: "insensitive" } },
+          where: { name: { contains: fields.assignedToName, mode: "insensitive" } },
           select: { id: true },
         });
         if (!user) return { success: false, error: `Cleaner non trovato: "${fields.assignedToName}".` };
@@ -1335,7 +1335,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       let assignedToId: string | undefined;
       if (fields.assignedToName) {
         const user = await prisma.user.findFirst({
-          where: { name: { equals: fields.assignedToName, mode: "insensitive" } },
+          where: { name: { contains: fields.assignedToName, mode: "insensitive" } },
           select: { id: true },
         });
         if (!user) return { success: false, error: `Tecnico non trovato: "${fields.assignedToName}".` };
