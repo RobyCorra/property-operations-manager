@@ -1170,7 +1170,7 @@ export type AIActionPayload =
   | { type: "UPDATE_BOOKING"; apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }>; description: string }
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToName: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string; status: string; assignedToName: string }>; description: string }
-  | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; description: string }
+  | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToId: string; unassignedOnly?: boolean; description: string }
   | { type: "PURGE_CANCELLED"; description: string };
 
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
@@ -1356,16 +1356,16 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/maintenance");
     } else if (payload.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") {
-      const { apartmentIds, dateFrom, dateTo, assignedToId } = payload;
-      if (!apartmentIds.length) return { success: false, error: "Nessun appartamento specificato." };
+      const { apartmentIds, dateFrom, dateTo, assignedToId, unassignedOnly } = payload;
       const from = new Date(dateFrom);
       const to = new Date(dateTo);
       to.setHours(23, 59, 59, 999);
       const result = await prisma.cleaningTask.updateMany({
         where: {
-          apartmentId: { in: apartmentIds },
+          ...(apartmentIds.length > 0 ? { apartmentId: { in: apartmentIds } } : {}),
           date: { gte: from, lte: to },
           status: { notIn: ["CANCELLED", "APPROVED"] },
+          ...(unassignedOnly ? { assignedToId: null } : {}),
         },
         data: { assignedToId },
       });

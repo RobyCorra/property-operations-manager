@@ -16,6 +16,7 @@ type AIContext = {
   apartmentId?: string | null;
   cleaningTaskId?: string | null;
   maintenanceTicketId?: string | null;
+  forceWebSearch?: boolean;
 };
 
 type ApartmentChecklistItemForAI = {
@@ -371,6 +372,10 @@ ACTION: {"type":"UPDATE_TICKET","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fie
 
 ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1>","<apartmentId2>"],"dateFrom":"2026-05-01","dateTo":"2026-05-31","assignedToId":"<userId>","description":"Assegno tutte le pulizie di maggio di Trastevere 156 e 68 a Mario"}
 
+ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":[],"dateFrom":"2026-05-01","dateTo":"2026-06-30","assignedToId":"<userId>","unassignedOnly":true,"description":"Assegno tutte le pulizie di maggio e giugno non ancora assegnate a Valentina"}
+
+- BULK_ASSIGN_CLEANINGS_BY_FILTER: se l'utente dice "tutti gli appartamenti" o non specifica appartamenti, usa apartmentIds: [] (array vuoto = tutti). Se dice "non ancora assegnate" / "senza cleaner", aggiungi unassignedOnly: true. assignedToId: prendi l'id dalla sezione PERSONALE DISPONIBILE.
+
 ACTION: {"type":"PURGE_CANCELLED","description":"Elimino dal database tutte le prenotazioni e pulizie con stato CANCELLED"}
 
 ════ REGOLE OBBLIGATORIE ════
@@ -489,7 +494,9 @@ function shouldUseWebSearch(question: string) {
     "cerca sul web",
     "cerca su internet",
     "fai una ricerca",
+    "fai ricerca",
     "ricerca aggiornata",
+    "perplexity",
     "aggiornato",
     "aggiornata",
     "ultime notizie",
@@ -504,6 +511,8 @@ function shouldUseWebSearch(question: string) {
     "alternative",
     "competitor",
     "best practice aggiornate",
+    "codice errore",
+    "codici errore",
     // domande su eventi / attività esterne
     "eventi",
     "cosa fare",
@@ -528,8 +537,8 @@ function shouldUseWebSearch(question: string) {
 
   if (webSearchTriggers.some((trigger) => q.includes(trigger))) return true;
 
-  // "cerca ..." generico: la parola "cerca" da sola come verbo (non "ricercatore", ecc.)
-  if (/\bcerca\b/.test(q)) return true;
+  // "cerca ..." / "cercare ..." generico: la parola "cerca" come verbo (non "ricercatore", ecc.)
+  if (/\bcercar?e?\b/.test(q)) return true;
 
   return false;
 }
@@ -2420,10 +2429,15 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
     });
   }
 
-  // Perplexity solo per dominio GENERALE con trigger espliciti — mai per domini operativi interni
+  // Perplexity: trigger esplicito dall'utente (bottone Web Search) oppure rilevamento automatico
   const isRealWebSearchQuery = shouldUseWebSearch(userMessage);
   const shouldUsePerplexity =
-    context.type === "MANAGER_DASHBOARD" && intent === "GENERALE" && isRealWebSearchQuery;
+    Boolean(context.forceWebSearch) ||
+    (
+      ["MANAGER_DASHBOARD", "maintenance", "cleaning"].includes(context.type) &&
+      intent === "GENERALE" &&
+      isRealWebSearchQuery
+    );
   let perplexityContext: string | null = null;
   let usedWeb = false;
 

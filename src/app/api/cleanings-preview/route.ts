@@ -9,8 +9,10 @@ export async function GET(req: NextRequest) {
   const dateFrom = searchParams.get("dateFrom");
   const dateTo = searchParams.get("dateTo");
 
-  if (!apartmentIds.length || !dateFrom || !dateTo) {
-    return NextResponse.json({ error: "Missing params", apartmentIds, dateFrom, dateTo }, { status: 400 });
+  const unassignedOnly = searchParams.get("unassignedOnly") === "true";
+
+  if (!dateFrom || !dateTo) {
+    return NextResponse.json({ error: "Missing params", dateFrom, dateTo }, { status: 400 });
   }
 
   const from = new Date(dateFrom);
@@ -19,9 +21,10 @@ export async function GET(req: NextRequest) {
 
   const filtered = await prisma.cleaningTask.findMany({
     where: {
-      apartmentId: { in: apartmentIds },
+      ...(apartmentIds.length > 0 ? { apartmentId: { in: apartmentIds } } : {}),
       date: { gte: from, lte: to },
       status: { notIn: ["CANCELLED", "APPROVED"] },
+      ...(unassignedOnly ? { assignedToId: null } : {}),
     },
     include: {
       apartment: { select: { name: true } },

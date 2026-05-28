@@ -360,7 +360,7 @@ export default function FloatingManagerChat({
 
   const CONFIRM_WORDS = /^(ok|sì|si|yes|confermo|conferma|vai|procedi|fatto|esegui|assegna)$/i;
 
-  async function handleAsk() {
+  async function handleAsk(webSearch = false) {
     if (isPastSession) return;
     const content = input.trim();
     if (!content || loading) return;
@@ -388,7 +388,7 @@ export default function FloatingManagerChat({
 
     const res = await askAI(
       nextMessages.map((m) => ({ role: m.role, content: m.content })),
-      { role: "MANAGER", type: "MANAGER_DASHBOARD" }
+      { role: "MANAGER", type: "MANAGER_DASHBOARD", forceWebSearch: webSearch }
     );
 
     const { text, action } = parseAction(res || "");
@@ -400,6 +400,7 @@ export default function FloatingManagerChat({
       action.apartmentIds.forEach((id) => params.append("apartmentId", id));
       params.set("dateFrom", action.dateFrom);
       params.set("dateTo", action.dateTo);
+      if (action.unassignedOnly) params.set("unassignedOnly", "true");
       try {
         const r = await fetch(`/api/cleanings-preview?${params}`);
         preview = r.ok ? await r.json() : [];
@@ -650,14 +651,6 @@ export default function FloatingManagerChat({
           {!isPastSession && (
             <div className="px-3 pt-2 pb-1 border-t border-slate-100 flex flex-col gap-2 flex-shrink-0 bg-white">
               <div className="flex gap-2 items-end">
-                {lastPendingIdx && (
-                  <button
-                    onClick={() => handleConfirmAction(lastPendingIdx.i)}
-                    className="text-[10px] font-black uppercase tracking-widest text-white bg-amber-500 hover:bg-amber-600 px-3 py-2 rounded-full transition-colors animate-pulse flex-shrink-0"
-                  >
-                    ✓ Conferma
-                  </button>
-                )}
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -670,7 +663,7 @@ export default function FloatingManagerChat({
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
-                      setTimeout(handleAsk, 0);
+                      setTimeout(() => handleAsk(false), 0);
                     }
                   }}
                   placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare..." : "Chiedi all'AI… (Shift+Enter per andare a capo)"}
@@ -691,12 +684,30 @@ export default function FloatingManagerChat({
                 >
                   🎤
                 </button>
+              </div>
+              {/* Due pulsanti di invio */}
+              <div className="flex gap-2">
+                {lastPendingIdx && (
+                  <button
+                    onClick={() => handleConfirmAction(lastPendingIdx.i)}
+                    className="text-[10px] font-black uppercase tracking-widest text-white bg-amber-500 hover:bg-amber-600 px-3 py-2 rounded-full transition-colors animate-pulse flex-shrink-0"
+                  >
+                    ✓ Conferma
+                  </button>
+                )}
                 <button
-                  onClick={() => setTimeout(handleAsk, 0)}
+                  onClick={() => setTimeout(() => handleAsk(false), 0)}
                   disabled={loading || !input.trim()}
-                  className="w-8 h-8 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 flex items-center justify-center text-white text-sm transition-colors flex-shrink-0"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest disabled:opacity-40 transition-colors"
                 >
-                  →
+                  {loading ? "..." : <><span>🧠</span> AI Interna</>}
+                </button>
+                <button
+                  onClick={() => setTimeout(() => handleAsk(true), 0)}
+                  disabled={loading || !input.trim()}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest disabled:opacity-40 transition-colors"
+                >
+                  <span>🔍</span> Web Search
                 </button>
               </div>
               {/* Resize grip */}
