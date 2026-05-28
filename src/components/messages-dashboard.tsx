@@ -268,11 +268,11 @@ export default function MessagesDashboard({
   }
 
   return (
-    <div className="relative flex w-full h-screen md:h-[calc(100vh-80px)] bg-white overflow-hidden">
+    <div className="relative flex w-full max-w-full min-w-0 h-screen md:h-[calc(100vh-80px)] bg-white overflow-hidden">
 
       {/* ── COL 1: Thread list ─────────────────────────────── */}
       {/* Mobile: hidden when a thread is selected; Desktop: always visible */}
-      <div className={`${selectedThread ? "hidden md:flex" : "flex"} w-full md:w-[300px] flex-col border-r border-slate-100 md:shrink-0`}>
+      <div className={`${selectedThread ? "hidden md:flex" : "flex"} w-full md:w-[300px] min-w-0 overflow-x-hidden flex-col border-r border-slate-100 md:shrink-0`}>
 
         {/* Header */}
         <div className="px-4 pt-5 pb-3 border-b border-slate-100">
@@ -325,7 +325,7 @@ export default function MessagesDashboard({
         </div>
 
         {/* Thread list */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
           {filteredThreads.map((thread) => {
             const isActive = selectedId === thread.id && selectedType === thread.type;
             const isMaintenance = thread.type === "MAINTENANCE";
