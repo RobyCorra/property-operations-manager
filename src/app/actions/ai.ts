@@ -370,11 +370,11 @@ ACTION: {"type":"UPDATE_TICKET","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fie
 
 ACTION: {"type":"UPDATE_TICKET","id":"3fa85f64-5717-4562-b3fc-2c963f66afa6","fields":{"status":"CANCELLED"},"description":"Cancello il ticket di manutenzione"}
 
-ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1>","<apartmentId2>"],"dateFrom":"2026-05-01","dateTo":"2026-05-31","assignedToId":"<userId>","description":"Assegno tutte le pulizie di maggio di Trastevere 156 e 68 a Mario"}
+ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":["<apartmentId1>","<apartmentId2>"],"dateFrom":"2026-05-01","dateTo":"2026-05-31","assignedToName":"Mario Rossi","description":"Assegno tutte le pulizie di maggio di Trastevere 156 e 68 a Mario"}
 
-ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":[],"dateFrom":"2026-05-01","dateTo":"2026-06-30","assignedToId":"<userId>","unassignedOnly":true,"description":"Assegno tutte le pulizie di maggio e giugno non ancora assegnate a Valentina"}
+ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":[],"dateFrom":"2026-05-01","dateTo":"2026-06-30","assignedToName":"Valentina Bianchi","unassignedOnly":true,"description":"Assegno tutte le pulizie di maggio e giugno non ancora assegnate a Valentina"}
 
-- BULK_ASSIGN_CLEANINGS_BY_FILTER: se l'utente dice "tutti gli appartamenti" o non specifica appartamenti, usa apartmentIds: [] (array vuoto = tutti). Se dice "non ancora assegnate" / "senza cleaner", aggiungi unassignedOnly: true. assignedToId: prendi l'id dalla sezione PERSONALE DISPONIBILE.
+- BULK_ASSIGN_CLEANINGS_BY_FILTER: usa assignedToName (nome esatto dalla sezione PERSONALE DISPONIBILE, NON l'id). Se l'utente non specifica appartamenti, usa apartmentIds: [] (= tutti). Se dice "non ancora assegnate" / "senza cleaner", aggiungi unassignedOnly: true.
 
 ACTION: {"type":"PURGE_CANCELLED","description":"Elimino dal database tutte le prenotazioni e pulizie con stato CANCELLED"}
 
