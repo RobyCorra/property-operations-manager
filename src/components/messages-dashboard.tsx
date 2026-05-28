@@ -433,20 +433,23 @@ export default function MessagesDashboard({
 
               {/* Title */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-black text-slate-900 truncate">
-                    {selectedThread.apartmentName}
+                <span className="text-sm font-black text-slate-900 truncate block">
+                  {selectedThread.apartmentName}
+                </span>
+                {/* Subtitle — su mobile mostra tipo + assegnato + stato (come nel mockup) */}
+                <p className="text-[10px] font-medium truncate flex items-center gap-1">
+                  <span className={selectedThread.type === "MAINTENANCE" ? "text-amber-500" : "text-violet-500"}>
+                    {selectedThread.type === "MAINTENANCE" ? "🔧" : "🧹"}
                   </span>
-                  <span className={`hidden sm:inline text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${
-                    selectedThread.type === "MAINTENANCE"
-                      ? "text-amber-600 bg-amber-50 border-amber-100"
-                      : "text-violet-600 bg-violet-50 border-violet-100"
-                  }`}>
-                    {selectedThread.type === "MAINTENANCE" ? "Manutenzione" : "Pulizia"}
-                  </span>
-                </div>
-                <p className="text-[10px] text-slate-400 font-medium truncate">
-                  {selectedThread.assignedUser}
+                  <span className="text-slate-500">{selectedThread.assignedUser}</span>
+                  {STATUS_LABELS[selectedThread.status] && (
+                    <>
+                      <span className="text-slate-300">·</span>
+                      <span className={`${STATUS_LABELS[selectedThread.status].color} px-1.5 py-0.5 rounded-full text-[9px] font-black`}>
+                        {STATUS_LABELS[selectedThread.status].label}
+                      </span>
+                    </>
+                  )}
                 </p>
               </div>
 
@@ -460,8 +463,7 @@ export default function MessagesDashboard({
               </button>
             </div>
 
-            {/* Messages — su mobile aggiungi spazio per il peek del bottom sheet */}
-            <div className="flex-1 overflow-hidden flex flex-col p-4 pb-[72px] md:pb-4">
+            <div className="flex-1 overflow-hidden flex flex-col p-4">
               <TicketConversation
                 entityId={selectedThread.id}
                 initialMessages={selectedThread.messages}
@@ -506,51 +508,7 @@ export default function MessagesDashboard({
         )}
       </div>
 
-      {/* ── Bottom sheet (peek) — mobile only, sempre visibile quando chat aperta ── */}
-      {selectedThread && (
-        <div className="md:hidden absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-[0_-6px_24px_rgba(0,0,0,0.10)] z-30">
-          {/* Handle + expand toggle */}
-          <button
-            type="button"
-            onClick={() => setShowInfoSheet((v) => !v)}
-            className="w-full flex flex-col items-center pt-2.5 pb-2 gap-0.5"
-          >
-            <div className="w-9 h-1 bg-slate-200 rounded-full" />
-          </button>
-
-          {/* Peek content — sempre visibile */}
-          <div className="px-4 pb-3 flex items-center gap-3">
-            {/* Type badge + name */}
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-              selectedThread.type === "MAINTENANCE" ? "bg-amber-100" : "bg-violet-100"
-            }`}>
-              {selectedThread.type === "MAINTENANCE"
-                ? <Wrench size={15} className="text-amber-600" />
-                : <Brush size={15} className="text-violet-600" />
-              }
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-black text-slate-900 truncate">{selectedThread.title || "Pulizia Appartamento"}</p>
-              <p className="text-[10px] text-slate-400 truncate">{selectedThread.apartmentName} · {selectedThread.assignedUser}</p>
-            </div>
-            {/* Stat chips */}
-            <div className="flex gap-1.5 shrink-0">
-              {STATUS_LABELS[selectedThread.status] && (
-                <span className={`text-[9px] font-black px-2 py-1 rounded-full ${STATUS_LABELS[selectedThread.status].color}`}>
-                  {STATUS_LABELS[selectedThread.status].label}
-                </span>
-              )}
-              {selectedThread.priority && PRIORITY_LABELS[selectedThread.priority] && (
-                <span className={`text-[9px] font-black px-2 py-1 rounded-full ${PRIORITY_LABELS[selectedThread.priority].color}`}>
-                  {PRIORITY_LABELS[selectedThread.priority].label}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Bottom sheet espanso — mobile only ──────────────── */}
+      {/* ── Bottom sheet info completo — mobile only (aperto da ℹ) ──────────── */}
       {showInfoSheet && selectedThread && (
         <>
           <div
