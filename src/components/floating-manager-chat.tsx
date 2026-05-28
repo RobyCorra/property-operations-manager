@@ -195,6 +195,7 @@ export default function FloatingManagerChat({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [sessionDates, setSessionDates] = useState<string[]>([]);
   const [activeDateStr, setActiveDateStr] = useState<string>("");
   const [isPastSession, setIsPastSession] = useState(false);
@@ -432,18 +433,27 @@ export default function FloatingManagerChat({
 
   const handleConfirmAction = useCallback(async (msgIndex: number) => {
     const msg = messagesRef.current[msgIndex];
-    if (!msg.action) return;
+    if (!msg.action || confirming) return;
+    setConfirming(true);
     setMessages((prev) => prev.map((m, i) => i === msgIndex ? { ...m, actionError: undefined } : m));
-    const result = await executeAIAction(msg.action);
-    if (result.success) {
-      setMessages((prev) => prev.map((m, i) => i === msgIndex ? { ...m, actionState: "done" as const } : m));
-      router.refresh();
-    } else {
+    try {
+      const result = await executeAIAction(msg.action);
+      if (result.success) {
+        setMessages((prev) => prev.map((m, i) => i === msgIndex ? { ...m, actionState: "done" as const } : m));
+        router.refresh();
+      } else {
+        setMessages((prev) => prev.map((m, i) =>
+          i === msgIndex ? { ...m, actionState: "pending" as const, actionError: result.error } : m
+        ));
+      }
+    } catch (err: any) {
       setMessages((prev) => prev.map((m, i) =>
-        i === msgIndex ? { ...m, actionState: "pending" as const, actionError: result.error } : m
+        i === msgIndex ? { ...m, actionState: "pending" as const, actionError: err?.message || "Errore imprevisto." } : m
       ));
+    } finally {
+      setConfirming(false);
     }
-  }, [router]);
+  }, [router, confirming]);
 
   function handleDismissAction(msgIndex: number) {
     setMessages((prev) => prev.map((m, i) => i === msgIndex ? { ...m, action: undefined, actionState: undefined } : m));
@@ -613,10 +623,10 @@ export default function FloatingManagerChat({
                     <div className="flex gap-1.5 pt-0.5">
                       <button
                         onClick={() => handleConfirmAction(index)}
-                        disabled={msg.action?.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER" && (msg.preview == null || msg.preview.length === 0)}
+                        disabled={confirming || (msg.action?.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER" && (msg.preview == null || msg.preview.length === 0))}
                         className="flex-1 rounded-full bg-amber-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-amber-600 transition-colors disabled:opacity-40"
                       >
-                        ✓ Conferma
+                        {confirming ? "⏳ Esecuzione..." : "✓ Conferma"}
                       </button>
                       <button
                         onClick={() => handleDismissAction(index)}
@@ -690,9 +700,10 @@ export default function FloatingManagerChat({
                 {lastPendingIdx && (
                   <button
                     onClick={() => handleConfirmAction(lastPendingIdx.i)}
-                    className="text-[10px] font-black uppercase tracking-widest text-white bg-amber-500 hover:bg-amber-600 px-3 py-2 rounded-full transition-colors animate-pulse flex-shrink-0"
+                    disabled={confirming}
+                    className="text-[10px] font-black uppercase tracking-widest text-white bg-amber-500 hover:bg-amber-600 px-3 py-2 rounded-full transition-colors animate-pulse flex-shrink-0 disabled:opacity-50 disabled:animate-none"
                   >
-                    ✓ Conferma
+                    {confirming ? "⏳..." : "✓ Conferma"}
                   </button>
                 )}
                 <button
