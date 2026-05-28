@@ -10,6 +10,7 @@ import {
   getSessionByDate,
   saveManagerChatMessage,
   getSessionDates,
+  getSessionMessages,
 } from "@/src/app/actions/manager-chat";
 import { useRouter } from "next/navigation";
 
@@ -335,6 +336,36 @@ export default function FloatingManagerChat({
       setInitialized(true);
     })();
   }, [open, initialized]);
+
+  // Poll for new messages from DB every 15s (sync between devices)
+  const sessionIdRef = useRef<string | null>(null);
+  useEffect(() => { sessionIdRef.current = sessionId; }, [sessionId]);
+
+  useEffect(() => {
+    if (!open || isPastSession) return;
+    const interval = setInterval(async () => {
+      const sid = sessionIdRef.current;
+      if (!sid || loading || confirming) return;
+      try {
+        const dbMessages = await getSessionMessages(sid);
+        setMessages((prev) => {
+          // Only add messages that aren't already in local state (match by content+role)
+          const newFromDB = dbMessages.filter(
+            (dbMsg) => !prev.some(
+              (localMsg) => localMsg.role === dbMsg.role && localMsg.content === dbMsg.content
+            )
+          );
+          if (newFromDB.length === 0) return prev;
+          const toAdd = newFromDB.map((m) => ({
+            role: m.role as "user" | "assistant",
+            content: m.content,
+          }));
+          return [...prev, ...toAdd];
+        });
+      } catch { /* ignore polling errors */ }
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [open, isPastSession, loading, confirming]);
 
   // Switch to a date session
   async function loadSessionByDate(dateStr: string) {

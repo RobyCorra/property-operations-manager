@@ -42,6 +42,14 @@ export async function saveManagerChatMessage(
   });
 }
 
+export async function getSessionMessages(sessionId: string) {
+  return prisma.managerChatMessage.findMany({
+    where: { sessionId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, role: true, content: true, createdAt: true },
+  });
+}
+
 export async function getSessionDates(): Promise<string[]> {
   const sessions = await prisma.managerChatSession.findMany({
     orderBy: { date: "desc" },
