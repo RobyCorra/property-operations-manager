@@ -268,7 +268,7 @@ export default function MessagesDashboard({
   }
 
   return (
-    <div className="relative flex h-[calc(100vh-80px)] bg-white overflow-hidden">
+    <div className="relative flex w-full h-screen md:h-[calc(100vh-80px)] bg-white overflow-hidden">
 
       {/* ── COL 1: Thread list ─────────────────────────────── */}
       {/* Mobile: hidden when a thread is selected; Desktop: always visible */}
@@ -297,11 +297,11 @@ export default function MessagesDashboard({
             />
           </div>
 
-          {/* Filter pills */}
-          <div className="flex gap-1">
+          {/* Filter pills — scrollabili orizzontalmente su mobile */}
+          <div className="flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {(["ALL", "MAINTENANCE", "CLEANING", "UNREAD"] as FilterType[]).map((f) => {
               const labels: Record<FilterType, string> = {
-                ALL: "Tutti", MAINTENANCE: "Manut.", CLEANING: "Pulizie", UNREAD: "Non letti",
+                ALL: "Tutti", MAINTENANCE: "Manutenzioni", CLEANING: "Pulizie", UNREAD: "Non letti",
               };
               const isActive = filter === f;
               return (
@@ -309,12 +309,12 @@ export default function MessagesDashboard({
                   key={f}
                   type="button"
                   onClick={() => setFilter(f)}
-                  className={`flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wide transition-colors ${
+                  className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
                     isActive
                       ? f === "UNREAD"
                         ? "bg-rose-500 text-white"
                         : "bg-slate-900 text-white"
-                      : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                      : "bg-slate-100 text-slate-500 hover:bg-slate-200 border border-slate-200"
                   }`}
                 >
                   {labels[f]}
@@ -450,18 +450,18 @@ export default function MessagesDashboard({
                 </p>
               </div>
 
-              {/* Info button — mobile only */}
+              {/* Info button — mobile only (apre il bottom sheet espanso) */}
               <button
                 type="button"
                 onClick={() => setShowInfoSheet(true)}
-                className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl hover:bg-slate-100 transition-colors shrink-0"
+                className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
               >
-                <Info size={18} className="text-slate-500" />
+                <Info size={16} className="text-slate-600" />
               </button>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-hidden flex flex-col p-4">
+            {/* Messages — su mobile aggiungi spazio per il peek del bottom sheet */}
+            <div className="flex-1 overflow-hidden flex flex-col p-4 pb-[72px] md:pb-4">
               <TicketConversation
                 entityId={selectedThread.id}
                 initialMessages={selectedThread.messages}
@@ -506,28 +506,68 @@ export default function MessagesDashboard({
         )}
       </div>
 
-      {/* ── Bottom sheet — mobile only ─────────────────────── */}
+      {/* ── Bottom sheet (peek) — mobile only, sempre visibile quando chat aperta ── */}
+      {selectedThread && (
+        <div className="md:hidden absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-[0_-6px_24px_rgba(0,0,0,0.10)] z-30">
+          {/* Handle + expand toggle */}
+          <button
+            type="button"
+            onClick={() => setShowInfoSheet((v) => !v)}
+            className="w-full flex flex-col items-center pt-2.5 pb-2 gap-0.5"
+          >
+            <div className="w-9 h-1 bg-slate-200 rounded-full" />
+          </button>
+
+          {/* Peek content — sempre visibile */}
+          <div className="px-4 pb-3 flex items-center gap-3">
+            {/* Type badge + name */}
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+              selectedThread.type === "MAINTENANCE" ? "bg-amber-100" : "bg-violet-100"
+            }`}>
+              {selectedThread.type === "MAINTENANCE"
+                ? <Wrench size={15} className="text-amber-600" />
+                : <Brush size={15} className="text-violet-600" />
+              }
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-black text-slate-900 truncate">{selectedThread.title || "Pulizia Appartamento"}</p>
+              <p className="text-[10px] text-slate-400 truncate">{selectedThread.apartmentName} · {selectedThread.assignedUser}</p>
+            </div>
+            {/* Stat chips */}
+            <div className="flex gap-1.5 shrink-0">
+              {STATUS_LABELS[selectedThread.status] && (
+                <span className={`text-[9px] font-black px-2 py-1 rounded-full ${STATUS_LABELS[selectedThread.status].color}`}>
+                  {STATUS_LABELS[selectedThread.status].label}
+                </span>
+              )}
+              {selectedThread.priority && PRIORITY_LABELS[selectedThread.priority] && (
+                <span className={`text-[9px] font-black px-2 py-1 rounded-full ${PRIORITY_LABELS[selectedThread.priority].color}`}>
+                  {PRIORITY_LABELS[selectedThread.priority].label}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Bottom sheet espanso — mobile only ──────────────── */}
       {showInfoSheet && selectedThread && (
         <>
-          {/* Backdrop */}
           <div
             className="md:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
             onClick={() => setShowInfoSheet(false)}
           />
-          {/* Sheet */}
           <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col max-h-[85vh]">
-            {/* Drag handle + close */}
-            <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0">
-              <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto" />
+            <div className="flex items-center justify-between px-5 pt-3 pb-2 shrink-0">
+              <div className="w-9 h-1 bg-slate-200 rounded-full mx-auto" />
               <button
                 type="button"
                 onClick={() => setShowInfoSheet(false)}
-                className="absolute right-4 top-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
+                className="absolute right-4 top-3 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
               >
                 <X size={14} className="text-slate-500" />
               </button>
             </div>
-            {/* Info content — scrollable */}
             <div className="overflow-y-auto flex-1">
               <InfoPanelContent thread={selectedThread} />
             </div>
