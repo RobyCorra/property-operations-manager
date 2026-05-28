@@ -353,3 +353,9 @@ export const LogIn = withIcon(
     <line x1="15" x2="3" y1="12" y2="12" />
   </>
 );
+export const X = withIcon(
+  <>
+    <line x1="18" x2="6" y1="6" y2="18" />
+    <line x1="6" x2="18" y1="6" y2="18" />
+  </>
+);

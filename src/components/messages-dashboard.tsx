@@ -13,6 +13,9 @@ import {
   Building2,
   CalendarDays,
   Clock,
+  ChevronLeft,
+  Info,
+  X,
 } from "./icons";
 
 interface Message {
@@ -92,6 +95,7 @@ export default function MessagesDashboard({
 }: Props) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("ALL");
+  const [showInfoSheet, setShowInfoSheet] = useState(false);
 
   const filteredThreads = useMemo(() => {
     return initialThreads.filter((t) => {
@@ -115,11 +119,160 @@ export default function MessagesDashboard({
 
   const unreadCount = initialThreads.filter((t) => t.hasUnread).length;
 
+  /** Info panel content — shared between desktop col-3 and mobile bottom sheet */
+  function InfoPanelContent({ thread }: { thread: Thread }) {
+    return (
+      <div className="flex flex-col h-full overflow-y-auto">
+        {/* Panel header */}
+        <div className="px-5 pt-5 pb-4 border-b border-slate-100">
+          <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">
+            {thread.type === "MAINTENANCE" ? "Scheda Manutenzione" : "Scheda Pulizia"}
+          </p>
+          <h3 className="text-sm font-black text-slate-900 leading-snug mb-3">
+            {thread.type === "MAINTENANCE" ? thread.title : "Pulizia Appartamento"}
+          </h3>
+          {/* Status + Priority */}
+          <div className="flex flex-wrap gap-1.5">
+            {STATUS_LABELS[thread.status] && (
+              <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${STATUS_LABELS[thread.status].color}`}>
+                {STATUS_LABELS[thread.status].label}
+              </span>
+            )}
+            {thread.priority && PRIORITY_LABELS[thread.priority] && (
+              <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${PRIORITY_LABELS[thread.priority].color}`}>
+                {PRIORITY_LABELS[thread.priority].label}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Details */}
+        <div className="px-5 py-4 space-y-4 flex-1">
+          {/* Apartment */}
+          <div className="flex items-start gap-3">
+            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+              <Building2 size={13} className="text-slate-500" />
+            </div>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Appartamento</p>
+              <p className="text-xs font-bold text-slate-800 mt-0.5">{thread.apartmentName}</p>
+              {thread.apartmentAddress && (
+                <p className="text-[10px] text-slate-400 mt-0.5">{thread.apartmentAddress}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Assigned */}
+          <div className="flex items-start gap-3">
+            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+              <User size={13} className="text-slate-500" />
+            </div>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Assegnato a</p>
+              <p className="text-xs font-bold text-slate-800 mt-0.5">{thread.assignedUser}</p>
+            </div>
+          </div>
+
+          {/* Date / Scheduled */}
+          {thread.type === "CLEANING" && thread.date && (
+            <div className="flex items-start gap-3">
+              <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center shrink-0">
+                <CalendarDays size={13} className="text-violet-500" />
+              </div>
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Data pulizia</p>
+                <p className="text-xs font-bold text-slate-800 mt-0.5">
+                  {new Date(thread.date).toLocaleDateString("it-IT", {
+                    weekday: "short", day: "numeric", month: "long",
+                  })}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {thread.type === "MAINTENANCE" && thread.scheduledStart && (
+            <div className="flex items-start gap-3">
+              <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                <Clock size={13} className="text-amber-500" />
+              </div>
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Intervento programmato</p>
+                <p className="text-xs font-bold text-slate-800 mt-0.5">
+                  {new Date(thread.scheduledStart).toLocaleDateString("it-IT", {
+                    day: "numeric", month: "short",
+                  })}
+                </p>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                  {new Date(thread.scheduledStart).toLocaleTimeString("it-IT", {
+                    hour: "2-digit", minute: "2-digit",
+                  })}
+                  {thread.scheduledEnd && (
+                    <> → {new Date(thread.scheduledEnd).toLocaleTimeString("it-IT", {
+                      hour: "2-digit", minute: "2-digit",
+                    })}</>
+                  )}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Description */}
+          {thread.description && (
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Note</p>
+              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 rounded-xl p-3 border border-slate-100">
+                {thread.description}
+              </p>
+            </div>
+          )}
+
+          {/* Checklist progress (cleaning) */}
+          {thread.type === "CLEANING" && thread.checklistProgress && thread.checklistProgress.length > 0 && (() => {
+            const total = thread.checklistProgress!.length;
+            const done = thread.checklistProgress!.filter((i) => i.completed).length;
+            const pct = Math.round((done / total) * 100);
+            return (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Checklist</p>
+                  <span className="text-[10px] font-black text-slate-600">{done}/{total}</span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-violet-500 rounded-full transition-all"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">{pct}% completato</p>
+              </div>
+            );
+          })()}
+        </div>
+
+        {/* CTA */}
+        <div className="px-5 pb-5 pt-3 border-t border-slate-100 mt-auto">
+          <Link
+            href={
+              thread.type === "MAINTENANCE"
+                ? `/dashboard/manager/maintenance/${thread.id}/edit`
+                : `/dashboard/manager/cleanings/${thread.id}/edit`
+            }
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-violet-600 transition-colors shadow-sm"
+          >
+            Apri scheda
+            <ArrowRight size={12} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex h-[calc(100vh-80px)] bg-white">
+    <div className="relative flex h-[calc(100vh-80px)] bg-white overflow-hidden">
 
       {/* ── COL 1: Thread list ─────────────────────────────── */}
-      <div className="w-[300px] flex flex-col border-r border-slate-100 shrink-0">
+      {/* Mobile: hidden when a thread is selected; Desktop: always visible */}
+      <div className={`${selectedThread ? "hidden md:flex" : "flex"} w-full md:w-[300px] flex-col border-r border-slate-100 md:shrink-0`}>
 
         {/* Header */}
         <div className="px-4 pt-5 pb-3 border-b border-slate-100">
@@ -249,11 +402,22 @@ export default function MessagesDashboard({
       </div>
 
       {/* ── COL 2: Chat ────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#faf8ff]">
+      {/* Mobile: hidden when no thread selected; Desktop: always visible */}
+      <div className={`${!selectedThread ? "hidden md:flex" : "flex"} flex-1 flex-col min-w-0 bg-[#faf8ff]`}>
         {selectedThread ? (
           <>
             {/* Chat header */}
-            <div className="h-[60px] bg-white border-b border-slate-100 flex items-center px-5 gap-3 shrink-0">
+            <div className="h-[60px] bg-white border-b border-slate-100 flex items-center px-3 md:px-5 gap-2 md:gap-3 shrink-0">
+
+              {/* Back button — mobile only */}
+              <Link
+                href="/dashboard/manager/messages"
+                className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl hover:bg-slate-100 transition-colors shrink-0"
+              >
+                <ChevronLeft size={20} className="text-slate-600" />
+              </Link>
+
+              {/* Avatar */}
               <div
                 className={`w-9 h-9 rounded-2xl flex items-center justify-center shadow-md shrink-0 ${
                   selectedThread.type === "MAINTENANCE"
@@ -266,12 +430,14 @@ export default function MessagesDashboard({
                   : <Brush size={15} className="text-white" />
                 }
               </div>
+
+              {/* Title */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-black text-slate-900 truncate">
                     {selectedThread.apartmentName}
                   </span>
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${
+                  <span className={`hidden sm:inline text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${
                     selectedThread.type === "MAINTENANCE"
                       ? "text-amber-600 bg-amber-50 border-amber-100"
                       : "text-violet-600 bg-violet-50 border-violet-100"
@@ -283,6 +449,15 @@ export default function MessagesDashboard({
                   {selectedThread.assignedUser}
                 </p>
               </div>
+
+              {/* Info button — mobile only */}
+              <button
+                type="button"
+                onClick={() => setShowInfoSheet(true)}
+                className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl hover:bg-slate-100 transition-colors shrink-0"
+              >
+                <Info size={18} className="text-slate-500" />
+              </button>
             </div>
 
             {/* Messages */}
@@ -313,154 +488,10 @@ export default function MessagesDashboard({
         )}
       </div>
 
-      {/* ── COL 3: Info panel ──────────────────────────────── */}
-      <div className="w-[280px] flex flex-col border-l border-slate-100 bg-white shrink-0">
+      {/* ── COL 3: Info panel — desktop only ───────────────── */}
+      <div className="hidden md:flex w-[280px] flex-col border-l border-slate-100 bg-white shrink-0">
         {selectedThread ? (
-          <div className="flex flex-col h-full overflow-y-auto">
-
-            {/* Panel header */}
-            <div className="px-5 pt-5 pb-4 border-b border-slate-100">
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">
-                {selectedThread.type === "MAINTENANCE" ? "Scheda Manutenzione" : "Scheda Pulizia"}
-              </p>
-              <h3 className="text-sm font-black text-slate-900 leading-snug mb-3">
-                {selectedThread.type === "MAINTENANCE" ? selectedThread.title : "Pulizia Appartamento"}
-              </h3>
-
-              {/* Status + Priority */}
-              <div className="flex flex-wrap gap-1.5">
-                {STATUS_LABELS[selectedThread.status] && (
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${STATUS_LABELS[selectedThread.status].color}`}>
-                    {STATUS_LABELS[selectedThread.status].label}
-                  </span>
-                )}
-                {selectedThread.priority && PRIORITY_LABELS[selectedThread.priority] && (
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${PRIORITY_LABELS[selectedThread.priority].color}`}>
-                    {PRIORITY_LABELS[selectedThread.priority].label}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Details */}
-            <div className="px-5 py-4 space-y-4 flex-1">
-
-              {/* Apartment */}
-              <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                  <Building2 size={13} className="text-slate-500" />
-                </div>
-                <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Appartamento</p>
-                  <p className="text-xs font-bold text-slate-800 mt-0.5">{selectedThread.apartmentName}</p>
-                  {selectedThread.apartmentAddress && (
-                    <p className="text-[10px] text-slate-400 mt-0.5">{selectedThread.apartmentAddress}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Assigned */}
-              <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                  <User size={13} className="text-slate-500" />
-                </div>
-                <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Assegnato a</p>
-                  <p className="text-xs font-bold text-slate-800 mt-0.5">{selectedThread.assignedUser}</p>
-                </div>
-              </div>
-
-              {/* Date / Scheduled */}
-              {selectedThread.type === "CLEANING" && selectedThread.date && (
-                <div className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center shrink-0">
-                    <CalendarDays size={13} className="text-violet-500" />
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Data pulizia</p>
-                    <p className="text-xs font-bold text-slate-800 mt-0.5">
-                      {new Date(selectedThread.date).toLocaleDateString("it-IT", {
-                        weekday: "short", day: "numeric", month: "long",
-                      })}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {selectedThread.type === "MAINTENANCE" && selectedThread.scheduledStart && (
-                <div className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
-                    <Clock size={13} className="text-amber-500" />
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Intervento programmato</p>
-                    <p className="text-xs font-bold text-slate-800 mt-0.5">
-                      {new Date(selectedThread.scheduledStart).toLocaleDateString("it-IT", {
-                        day: "numeric", month: "short",
-                      })}
-                    </p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">
-                      {new Date(selectedThread.scheduledStart).toLocaleTimeString("it-IT", {
-                        hour: "2-digit", minute: "2-digit",
-                      })}
-                      {selectedThread.scheduledEnd && (
-                        <> → {new Date(selectedThread.scheduledEnd).toLocaleTimeString("it-IT", {
-                          hour: "2-digit", minute: "2-digit",
-                        })}</>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Description */}
-              {selectedThread.description && (
-                <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Note</p>
-                  <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 rounded-xl p-3 border border-slate-100">
-                    {selectedThread.description}
-                  </p>
-                </div>
-              )}
-
-              {/* Checklist progress (cleaning) */}
-              {selectedThread.type === "CLEANING" && selectedThread.checklistProgress && selectedThread.checklistProgress.length > 0 && (() => {
-                const total = selectedThread.checklistProgress.length;
-                const done = selectedThread.checklistProgress.filter((i) => i.completed).length;
-                const pct = Math.round((done / total) * 100);
-                return (
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Checklist</p>
-                      <span className="text-[10px] font-black text-slate-600">{done}/{total}</span>
-                    </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-violet-500 rounded-full transition-all"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-1">{pct}% completato</p>
-                  </div>
-                );
-              })()}
-            </div>
-
-            {/* CTA */}
-            <div className="px-5 pb-5 pt-3 border-t border-slate-100 mt-auto">
-              <Link
-                href={
-                  selectedThread.type === "MAINTENANCE"
-                    ? `/dashboard/manager/maintenance/${selectedThread.id}/edit`
-                    : `/dashboard/manager/cleanings/${selectedThread.id}/edit`
-                }
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-violet-600 transition-colors shadow-sm"
-              >
-                Apri scheda
-                <ArrowRight size={12} />
-              </Link>
-            </div>
-          </div>
+          <InfoPanelContent thread={selectedThread} />
         ) : (
           <div className="flex-1 flex items-center justify-center px-5">
             <div className="text-center">
@@ -474,6 +505,35 @@ export default function MessagesDashboard({
           </div>
         )}
       </div>
+
+      {/* ── Bottom sheet — mobile only ─────────────────────── */}
+      {showInfoSheet && selectedThread && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+            onClick={() => setShowInfoSheet(false)}
+          />
+          {/* Sheet */}
+          <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col max-h-[85vh]">
+            {/* Drag handle + close */}
+            <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0">
+              <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto" />
+              <button
+                type="button"
+                onClick={() => setShowInfoSheet(false)}
+                className="absolute right-4 top-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
+              >
+                <X size={14} className="text-slate-500" />
+              </button>
+            </div>
+            {/* Info content — scrollable */}
+            <div className="overflow-y-auto flex-1">
+              <InfoPanelContent thread={selectedThread} />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
