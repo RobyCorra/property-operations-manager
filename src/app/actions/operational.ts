@@ -1358,7 +1358,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
     } else if (payload.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") {
       const { apartmentIds, dateFrom, dateTo, assignedToName, unassignedOnly } = payload;
       const user = await prisma.user.findFirst({
-        where: { name: { equals: assignedToName, mode: "insensitive" } },
+        where: { name: { contains: assignedToName, mode: "insensitive" } },
       });
       if (!user) return { success: false, error: `Cleaner non trovato: "${assignedToName}".` };
       const from = new Date(dateFrom);
