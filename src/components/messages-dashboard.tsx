@@ -463,14 +463,98 @@ export default function MessagesDashboard({
               </button>
             </div>
 
-            <div className="flex-1 overflow-hidden flex flex-col p-4">
+            {/* Messages — flex-1, TicketConversation riempie tutto */}
+            <div className="flex-1 overflow-hidden flex flex-col p-3 min-h-0">
               <TicketConversation
                 entityId={selectedThread.id}
                 initialMessages={selectedThread.messages}
                 currentUserRole="MANAGER"
                 currentUserName={userName}
                 submitAction={submitAction}
+                heightClass="flex-1 min-h-0"
               />
+            </div>
+
+            {/* ── Bottom sheet peek — MOBILE ONLY, nel flex column (no absolute) ── */}
+            <div className="md:hidden shrink-0 bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.10)] border-t border-slate-100">
+
+              {/* Handle — tap per aprire pannello completo */}
+              <button
+                type="button"
+                onClick={() => setShowInfoSheet(true)}
+                className="w-full pt-2.5 pb-1 flex justify-center"
+                aria-label="Apri dettagli intervento"
+              >
+                <div className="w-10 h-1 bg-slate-300 rounded-full" />
+              </button>
+
+              {/* Header riga: avatar + titolo + assegnato */}
+              <div className="px-4 pt-1 pb-2 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                  selectedThread.type === "MAINTENANCE" ? "bg-amber-100" : "bg-violet-100"
+                }`}>
+                  {selectedThread.type === "MAINTENANCE"
+                    ? <Wrench size={16} className="text-amber-600" />
+                    : <Brush size={16} className="text-violet-600" />
+                  }
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-black text-slate-900 truncate">
+                    {selectedThread.type === "MAINTENANCE"
+                      ? selectedThread.title
+                      : "Pulizia Appartamento"
+                    }
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate">
+                    {selectedThread.apartmentName} · {selectedThread.assignedUser}
+                  </p>
+                </div>
+              </div>
+
+              {/* Stat chips: Stato + Priorità + Checklist */}
+              <div className="px-4 pb-2 flex gap-2">
+                {STATUS_LABELS[selectedThread.status] && (
+                  <div className="flex flex-col items-center bg-slate-50 rounded-xl px-3 py-1.5 flex-1">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Stato</span>
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${STATUS_LABELS[selectedThread.status].color}`}>
+                      {STATUS_LABELS[selectedThread.status].label}
+                    </span>
+                  </div>
+                )}
+                {selectedThread.priority && PRIORITY_LABELS[selectedThread.priority] && (
+                  <div className="flex flex-col items-center bg-slate-50 rounded-xl px-3 py-1.5 flex-1">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Priorità</span>
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${PRIORITY_LABELS[selectedThread.priority].color}`}>
+                      {PRIORITY_LABELS[selectedThread.priority].label}
+                    </span>
+                  </div>
+                )}
+                {selectedThread.checklistProgress && selectedThread.checklistProgress.length > 0 && (() => {
+                  const total = selectedThread.checklistProgress!.length;
+                  const done = selectedThread.checklistProgress!.filter(i => i.completed).length;
+                  return (
+                    <div className="flex flex-col items-center bg-slate-50 rounded-xl px-3 py-1.5 flex-1">
+                      <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Checklist</span>
+                      <span className="text-[11px] font-black text-slate-700">{done}/{total}</span>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* CTA */}
+              <div className="px-4 pb-4">
+                <Link
+                  href={
+                    selectedThread.type === "MAINTENANCE"
+                      ? `/dashboard/manager/maintenance/${selectedThread.id}/edit`
+                      : `/dashboard/manager/cleanings/${selectedThread.id}/edit`
+                  }
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest hover:bg-violet-600 transition-colors"
+                >
+                  Apri scheda completa
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
             </div>
           </>
         ) : (
