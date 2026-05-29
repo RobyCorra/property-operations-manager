@@ -1113,71 +1113,170 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     </div>
 
                     {/* Right Column: Status & Extras */}
-                    <div className="space-y-10">
+                    <div className="space-y-6">
+
+                        {/* ── Stato Operativo — compatto ── */}
                         <div>
-                            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-6">Stato Operativo</h4>
-                            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-semibold text-slate-500">Stato Attuale</span>
-                                    <span className="px-4 py-1.5 rounded-full text-xs font-semibold uppercase bg-white border border-slate-200 shadow-sm">
-                                        {selectedEvent.data.status || 'ATTIVO'}
-                                    </span>
-                                </div>
-                                {selectedEvent.type === 'cleaning' && selectedEvent.data.checklistProgress && (
-                                    <div className="pt-8 border-t border-slate-100">
-                                        {(() => {
-                                            const items = (selectedEvent.data.checklistProgress as any[]);
-                                            const total = items.length;
-                                            const completed = items.filter(i => i.completed).length;
-                                            const isFullyCompleted = completed === total && total > 0;
-                                            
-                                            return (
-                                                <>
-                                                    <div className="flex justify-between items-end mb-4">
-                                                        <div>
-                                                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Checklist Qualità</p>
-                                                            <p className={`text-2xl font-semibold tracking-tight ${isFullyCompleted ? "text-emerald-600" : "text-slate-900"}`}>
-                                                                {completed} <span className="text-sm font-medium text-slate-400">/ {total} Punti</span>
-                                                            </p>
-                                                        </div>
-                                                        {isFullyCompleted && (
-                                                            <span className="bg-emerald-500/10 text-emerald-600 text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide flex items-center gap-2">
-                                                                <CircleCheck size={12} />
-                                                                Completata
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    
-                                                    {/* Segmented Progress Bar */}
-                                                    <div className="flex gap-2 h-3">
-                                                        {items.map((item, idx) => (
-                                                            <div 
-                                                                key={idx}
-                                                                className={`flex-1 rounded-full transition-all duration-500 ${
-                                                                    item.completed 
-                                                                        ? (isFullyCompleted ? "bg-emerald-500 shadow-lg shadow-emerald-200/50" : "bg-violet-500 shadow-lg shadow-violet-200/50") 
-                                                                        : "bg-black/5"
-                                                                }`}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </>
-                                            );
-                                        })()}
+                            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Stato Operativo</h4>
+
+                            {/* Cleaning: box con checklist */}
+                            {selectedEvent.type === 'cleaning' && (
+                                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 shadow-sm space-y-6">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-slate-500">Stato Attuale</span>
+                                        <span className="px-4 py-1.5 rounded-full text-xs font-semibold uppercase bg-white border border-slate-200 shadow-sm">
+                                            {selectedEvent.data.status || 'ATTIVO'}
+                                        </span>
                                     </div>
-                                )}
-                                {selectedEvent.type === 'maintenance' && (
-                                    <div className="pt-6 border-t border-slate-100">
-                                        <div className="flex justify-between text-sm font-semibold">
-                                            <span className="text-slate-500">Priorità</span>
-                                            <span className={selectedEvent.data.priority === "URGENT" ? "text-red-600" : "text-slate-900"}>
-                                                {selectedEvent.data.priority}
+                                    {selectedEvent.data.checklistProgress && (
+                                        <div className="pt-6 border-t border-slate-100">
+                                            {(() => {
+                                                const items = (selectedEvent.data.checklistProgress as any[]);
+                                                const total = items.length;
+                                                const completed = items.filter(i => i.completed).length;
+                                                const isFullyCompleted = completed === total && total > 0;
+                                                return (
+                                                    <>
+                                                        <div className="flex justify-between items-end mb-4">
+                                                            <div>
+                                                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Checklist Qualità</p>
+                                                                <p className={`text-2xl font-semibold tracking-tight ${isFullyCompleted ? "text-emerald-600" : "text-slate-900"}`}>
+                                                                    {completed} <span className="text-sm font-medium text-slate-400">/ {total} Punti</span>
+                                                                </p>
+                                                            </div>
+                                                            {isFullyCompleted && (
+                                                                <span className="bg-emerald-500/10 text-emerald-600 text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide flex items-center gap-2">
+                                                                    <CircleCheck size={12} />
+                                                                    Completata
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex gap-2 h-3">
+                                                            {items.map((item, idx) => (
+                                                                <div
+                                                                    key={idx}
+                                                                    className={`flex-1 rounded-full transition-all duration-500 ${
+                                                                        item.completed
+                                                                            ? (isFullyCompleted ? "bg-emerald-500 shadow-lg shadow-emerald-200/50" : "bg-violet-500 shadow-lg shadow-violet-200/50")
+                                                                            : "bg-black/5"
+                                                                    }`}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                );
+                                            })()}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Maintenance: singola riga compatta Stato + Priorità */}
+                            {selectedEvent.type === 'maintenance' && (() => {
+                                const priorityMap: Record<string, { label: string; color: string }> = {
+                                    LOW:    { label: "Bassa",   color: "bg-slate-100 text-slate-500" },
+                                    MEDIUM: { label: "Media",   color: "bg-amber-50 text-amber-600" },
+                                    HIGH:   { label: "Alta",    color: "bg-orange-50 text-orange-600" },
+                                    URGENT: { label: "Urgente", color: "bg-rose-50 text-rose-600" },
+                                };
+                                const statusMap: Record<string, { label: string; color: string }> = {
+                                    PENDING:         { label: "In attesa",    color: "bg-slate-100 text-slate-600" },
+                                    IN_PROGRESS:     { label: "In corso",     color: "bg-blue-50 text-blue-600" },
+                                    AWAITING_REVIEW: { label: "In revisione", color: "bg-yellow-50 text-yellow-700" },
+                                    APPROVED:        { label: "Approvato",    color: "bg-emerald-50 text-emerald-600" },
+                                    RESOLVED:        { label: "Risolto",      color: "bg-emerald-50 text-emerald-600" },
+                                };
+                                const s = statusMap[selectedEvent.data.status] ?? { label: selectedEvent.data.status, color: "bg-slate-100 text-slate-600" };
+                                const p = priorityMap[selectedEvent.data.priority] ?? { label: selectedEvent.data.priority, color: "bg-slate-100 text-slate-500" };
+                                return (
+                                    <div className="bg-slate-50 rounded-2xl px-5 py-4 border border-slate-100 shadow-sm flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm font-semibold text-slate-500">Stato</span>
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase border border-slate-200 shadow-sm ${s.color}`}>
+                                                {s.label}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm font-semibold text-slate-500">Priorità</span>
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${p.color}`}>
+                                                {p.label}
                                             </span>
                                         </div>
                                     </div>
-                                )}
-                            </div>
+                                );
+                            })()}
                         </div>
+
+                        {/* ── Task da Eseguire — manutenzione ── */}
+                        {selectedEvent.type === 'maintenance' && (() => {
+                            const tasks = (selectedEvent.data.maintenanceTasks as any[] | null | undefined);
+                            if (!tasks || tasks.length === 0) return null;
+                            const total = tasks.length;
+                            const done = tasks.filter(t => t.completed).length;
+                            const isAll = done === total;
+                            return (
+                                <div>
+                                    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Task da Eseguire</h4>
+
+                                    {/* Contatore + barra segmentata */}
+                                    <div className="mb-4">
+                                        <p className={`text-2xl font-semibold tracking-tight mb-2 ${isAll ? "text-emerald-600" : "text-slate-900"}`}>
+                                            {done} <span className="text-sm font-medium text-slate-400">/ {total} Task</span>
+                                            {isAll && (
+                                                <span className="ml-3 text-xs font-semibold bg-emerald-500/10 text-emerald-600 px-3 py-1 rounded-full uppercase tracking-wide align-middle">
+                                                    ✓ Tutte completate
+                                                </span>
+                                            )}
+                                        </p>
+                                        <div className="flex gap-1.5 h-3">
+                                            {tasks.map((task, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className={`flex-1 rounded-full transition-all duration-500 ${
+                                                        task.completed
+                                                            ? (isAll ? "bg-emerald-500 shadow-sm shadow-emerald-200/50" : "bg-amber-500 shadow-sm shadow-amber-200/50")
+                                                            : "bg-black/5"
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Lista task */}
+                                    <div className="space-y-2">
+                                        {tasks.map((task, idx) => (
+                                            <div
+                                                key={idx}
+                                                className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${
+                                                    task.completed ? "bg-slate-50 border-slate-100" : "bg-white border-slate-200"
+                                                }`}
+                                            >
+                                                {/* Checkbox */}
+                                                {task.completed ? (
+                                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${isAll ? "bg-emerald-500" : "bg-amber-500"}`}>
+                                                        <span className="text-white text-[10px] font-black">✓</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-5 h-5 rounded-full border-2 border-slate-300 shrink-0" />
+                                                )}
+                                                {/* Label */}
+                                                <p className={`text-xs font-semibold flex-1 ${task.completed ? "text-slate-400 line-through" : "text-slate-800"}`}>
+                                                    {task.label}
+                                                </p>
+                                                {/* Foto badge */}
+                                                {task.photoRequired && (
+                                                    task.photoUrl ? (
+                                                        <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-600 shrink-0">📷 ✓</span>
+                                                    ) : (
+                                                        <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100 shrink-0">📷</span>
+                                                    )
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })()}
 
                         {/* External IDs */}
                         {selectedEvent.data.externalId && (
