@@ -139,7 +139,7 @@ export function getApartmentOperationalStatus(
 
   const openUrgentTicket = tickets.find(t => {
     if (t.status === "CANCELLED" || t.status === "RESOLVED" || t.status === "APPROVED") return false;
-    return (t.status === "PENDING" || t.status === "OPEN" || t.status === "IN_PROGRESS") && t.priority === "URGENT";
+    return (t.status === "PENDING" || t.status === "IN_PROGRESS") && t.priority === "URGENT";
   });
 
   // --- 2. GERARCHIA DI STATO (5 livelli) ---
@@ -191,7 +191,7 @@ export function getTodayUTC(): Date {
 
 export function isMaintenanceActive(status: string): boolean {
     const s = status.toUpperCase();
-    return s === "PENDING" || s === "OPEN" || s === "IN_PROGRESS";
+    return s === "PENDING" || s === "IN_PROGRESS";
 }
 
 // Deprecated signature for compatibility

@@ -82,7 +82,7 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
       label: "Stato", 
       type: "select", 
       options: [
-        { value: "OPEN", label: "Aperto" },
+        { value: "PENDING", label: "In attesa" },
         { value: "IN_PROGRESS", label: "In Corso" },
         { value: "RESOLVED", label: "Risolto" }
       ],

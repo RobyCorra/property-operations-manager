@@ -80,7 +80,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   COMPLETED:       { label: "Completato",      color: "bg-emerald-50 text-emerald-600" },
   AWAITING_REVIEW: { label: "In revisione",    color: "bg-yellow-50 text-yellow-700" },
   APPROVED:        { label: "Approvata",       color: "bg-emerald-50 text-emerald-600" },
-  OPEN:            { label: "Aperto",          color: "bg-amber-50 text-amber-600" },
+  OPEN:            { label: "In attesa",        color: "bg-slate-100 text-slate-600" },
   RESOLVED:        { label: "Risolto",         color: "bg-emerald-50 text-emerald-600" },
   CANCELLED:       { label: "Annullato",       color: "bg-slate-100 text-slate-500" },
 };
@@ -337,7 +337,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
         {/* Maintenance actions */}
         {thread.type === "MAINTENANCE" && (
           <>
-            {thread.status === "OPEN" && (
+            {thread.status === "PENDING" && (
               <button
                 type="button"
                 disabled={isActing}

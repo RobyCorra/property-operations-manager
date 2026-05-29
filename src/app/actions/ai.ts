@@ -2006,7 +2006,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
       maintenanceTickets: {
         where: {
           OR: [
-            { status: { in: ["OPEN", "IN_PROGRESS"] } },
+            { status: { in: ["PENDING", "IN_PROGRESS"] } },
             { createdAt: { gte: historySince } },
             { resolvedAt: { gte: historySince } },
           ],
@@ -2184,7 +2184,7 @@ async function buildGeneralManagerContext(now: Date) {
     prisma.maintenanceTicket.findMany({
       where: {
         OR: [
-          { status: { in: ["OPEN", "IN_PROGRESS"] } },
+          { status: { in: ["PENDING", "IN_PROGRESS"] } },
           { priority: "URGENT" },
           { resolvedAt: { gte: recent14Days } },
           { createdAt: { gte: recent14Days } },

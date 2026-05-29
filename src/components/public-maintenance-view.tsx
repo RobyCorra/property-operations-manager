@@ -66,7 +66,7 @@ export default function PublicMaintenanceView({
   const [actionLoading, setActionLoading] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
 
-  const canStart  = currentStatus === "PENDING" || currentStatus === "OPEN";
+  const canStart  = currentStatus === "PENDING";
   const canComplete = currentStatus === "IN_PROGRESS";
   const isDone    = ["AWAITING_REVIEW", "RESOLVED", "CLOSED"].includes(currentStatus);
 

@@ -169,7 +169,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
                 </div>
                 <StatusUpdateButton
                   id={ticket.id}
-                  nextStatus="OPEN"
+                  nextStatus="PENDING"
                   label="Riapri manutenzione"
                   action={reopenMaintenanceTicket}
                   className="shrink-0 bg-slate-900 text-white uppercase tracking-widest hover:bg-slate-700"

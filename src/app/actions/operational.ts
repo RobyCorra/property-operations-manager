@@ -799,10 +799,9 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   });
   if (!ticket) throw new Error("Ticket non trovato.");
 
-  // Flusso: PENDING -> OPEN -> IN_PROGRESS -> AWAITING_REVIEW
+  // Flusso: PENDING -> IN_PROGRESS -> AWAITING_REVIEW
   const transitions: Record<string, string> = {
-    "PENDING": "OPEN",
-    "OPEN": "IN_PROGRESS",
+    "PENDING": "IN_PROGRESS",
     "IN_PROGRESS": "AWAITING_REVIEW",
   };
 
@@ -987,13 +986,13 @@ export async function reopenMaintenanceTicket(id: string) {
   const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
   if (!ticket) throw new Error("Ticket non trovato.");
   if (ticket.status !== "RESOLVED") {
-    throw new Error(`Transizione non valida: ${ticket.status} -> OPEN`);
+    throw new Error(`Transizione non valida: ${ticket.status} -> PENDING`);
   }
 
   await prisma.maintenanceTicket.update({
     where: { id },
     data: {
-      status: "OPEN",
+      status: "PENDING",
       resolvedAt: null,
     },
   });

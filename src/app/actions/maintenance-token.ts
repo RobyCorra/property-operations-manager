@@ -136,9 +136,6 @@ export async function startMaintenancePublic(ticketId: string): Promise<void> {
   if (!ticket) throw new Error("Ticket non trovato.");
 
   if (ticket.status === "PENDING") {
-    await updateMaintenanceStatus(ticketId, "OPEN");
-    await updateMaintenanceStatus(ticketId, "IN_PROGRESS");
-  } else if (ticket.status === "OPEN") {
     await updateMaintenanceStatus(ticketId, "IN_PROGRESS");
   }
 }

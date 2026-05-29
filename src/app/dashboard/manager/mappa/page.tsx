@@ -108,7 +108,7 @@ export default async function CalendarioOperativoPage() {
       }
     }),
     prisma.maintenanceTicket.findMany({
-      where: { status: { in: ["OPEN", "IN_PROGRESS"] } },
+      where: { status: { in: ["PENDING", "IN_PROGRESS"] } },
       include: { apartment: true, assignedTo: true }
     }),
     prisma.maintenanceTicket.findMany({
@@ -159,7 +159,7 @@ export default async function CalendarioOperativoPage() {
         apartmentName: t.apartment.name,
         subject: t.title,
         status: t.status,
-        statusLabel: t.status === "OPEN" ? "Aperto" : t.status === "IN_PROGRESS" ? "In Carico" : "Risolto",
+        statusLabel: t.status === "PENDING" ? "In attesa" : t.status === "IN_PROGRESS" ? "In Carico" : "Risolto",
         actorName: t.assignedTo?.name || "Non assegnato"
       });
     }

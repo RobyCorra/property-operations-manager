@@ -392,7 +392,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                     defaultValue={initialData.status}
                     className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   >
-                    <option value="OPEN">Da fare</option>
+                    <option value="PENDING">In attesa</option>
                     <option value="IN_PROGRESS">In corso</option>
                     <option value="AWAITING_REVIEW">In verifica</option>
                     <option value="APPROVED">Approvato</option>

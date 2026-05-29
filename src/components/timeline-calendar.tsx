@@ -366,7 +366,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
   };
 
   const isUrgentOpenTicket = (ticket: MaintenanceTicket) => (
-    ticket.priority === "URGENT" && ["OPEN", "IN_PROGRESS"].includes(ticket.status)
+    ticket.priority === "URGENT" && ["PENDING", "IN_PROGRESS"].includes(ticket.status)
   );
 
   const isCleaningLate = (cleaning: CleaningTask) => {
@@ -831,14 +831,12 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
     {/* Event Modal Overlay */}
     {selectedEvent && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-            {/* Modal Backdrop click to close */}
-            <div className="absolute inset-0" onClick={() => setSelectedEvent(null)}></div>
-            
-            {/* Modal Content */}
-            <div className="relative bg-white/60 backdrop-blur-2xl w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-white/20 overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 animate-in fade-in duration-200" onClick={() => setSelectedEvent(null)}>
+
+            {/* Modal Content — stopPropagation impedisce al click interno di chiudere il modal */}
+            <div className="relative bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 [transform:translateZ(0)]" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className="p-10 border-b border-white/20 flex items-start justify-between bg-white/40">
+                <div className="p-10 border-b border-slate-100 flex items-start justify-between bg-white">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                              <div className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide flex items-center gap-2 ${
@@ -863,16 +861,17 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                             {selectedEvent.data.apartment?.name || apartments.find(a => a.id === selectedEvent.data.apartmentId)?.name}
                         </p>
                     </div>
-                    <button 
+                    <button
                         onClick={() => setSelectedEvent(null)}
-                        className="p-3 hover:bg-black/5 rounded-full transition-colors text-slate-400 hover:text-slate-900"
+                        className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 hover:text-slate-900 text-lg font-bold transition-colors"
+                        aria-label="Chiudi"
                     >
                         ✕
                     </button>
                 </div>
 
                 {/* Body Content */}
-                <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-12 text-slate-900">
+                <div className="flex-1 overflow-y-auto bg-white p-8 grid grid-cols-1 md:grid-cols-2 gap-12 text-slate-900">
                     {/* Left Column: Details */}
                     <div className="space-y-8">
                         <div>
@@ -1009,14 +1008,14 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                                                     {/* Asciugamani + Tappetini */}
                                                     <div className="grid grid-cols-2 gap-3 mb-3">
-                                                        <div className="bg-white/40 backdrop-blur-md rounded-xl border border-white/20 p-3 flex items-center gap-3">
+                                                        <div className="bg-slate-50 rounded-xl border border-slate-100 p-3 flex items-center gap-3">
                                                             <span className="text-base">🛁</span>
                                                             <div>
                                                                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Asciugamani</p>
                                                                 <p className="text-lg font-black text-slate-900 leading-none">{(nextB.totalGuests ?? 0) * 2}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="bg-white/40 backdrop-blur-md rounded-xl border border-white/20 p-3 flex items-center gap-3">
+                                                        <div className="bg-slate-50 rounded-xl border border-slate-100 p-3 flex items-center gap-3">
                                                             <span className="text-base">🚿</span>
                                                             <div>
                                                                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Tappetini</p>
@@ -1117,15 +1116,15 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     <div className="space-y-10">
                         <div>
                             <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-6">Stato Operativo</h4>
-                            <div className="bg-white/40 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl shadow-black/5 space-y-6">
+                            <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 shadow-sm space-y-6">
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm font-semibold text-slate-500">Stato Attuale</span>
-                                    <span className="px-4 py-1.5 rounded-full text-xs font-semibold uppercase bg-white/60 border border-white/20 shadow-sm">
+                                    <span className="px-4 py-1.5 rounded-full text-xs font-semibold uppercase bg-white border border-slate-200 shadow-sm">
                                         {selectedEvent.data.status || 'ATTIVO'}
                                     </span>
                                 </div>
                                 {selectedEvent.type === 'cleaning' && selectedEvent.data.checklistProgress && (
-                                    <div className="pt-8 border-t border-white/20">
+                                    <div className="pt-8 border-t border-slate-100">
                                         {(() => {
                                             const items = (selectedEvent.data.checklistProgress as any[]);
                                             const total = items.length;
@@ -1168,7 +1167,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     </div>
                                 )}
                                 {selectedEvent.type === 'maintenance' && (
-                                    <div className="pt-6 border-t border-white/20">
+                                    <div className="pt-6 border-t border-slate-100">
                                         <div className="flex justify-between text-sm font-semibold">
                                             <span className="text-slate-500">Priorità</span>
                                             <span className={selectedEvent.data.priority === "URGENT" ? "text-red-600" : "text-slate-900"}>
@@ -1184,14 +1183,14 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         {selectedEvent.data.externalId && (
                             <div>
                                 <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">ID Esterno</h4>
-                                <code className="text-xs font-mono bg-white/40 backdrop-blur-md p-3 rounded-xl border border-white/20 block shadow-inner">{selectedEvent.data.externalId}</code>
+                                <code className="text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-100 block shadow-inner">{selectedEvent.data.externalId}</code>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Footer Modal */}
-                <div className="p-10 bg-white/40 backdrop-blur-xl border-t border-white/20 flex items-center justify-between mt-auto">
+                <div className="p-10 bg-white border-t border-slate-100 flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-4">
                         {!readOnly && selectedEvent.type === 'cleaning' && (
                             <>
@@ -1199,7 +1198,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     <button 
                                         disabled={isPending}
                                         onClick={() => handleAction(() => updateCleaningStatus(selectedEvent.data.id, 'IN_PROGRESS'))}
-                                        className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                        className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
                                     >
                                         Avvia Pulizia
                                     </button>
@@ -1236,11 +1235,11 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         )}
                         {!readOnly && selectedEvent.type === 'maintenance' && (
                             <>
-                                {selectedEvent.data.status === 'OPEN' && (
+                                {selectedEvent.data.status === 'PENDING' && (
                                     <button
                                         disabled={isPending}
                                         onClick={() => handleAction(() => updateMaintenanceStatus(selectedEvent.data.id, 'IN_PROGRESS'))}
-                                        className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                        className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
                                     >
                                         Prendi in Carico
                                     </button>
@@ -1278,7 +1277,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         {selectedEvent.type === 'booking' && (
                             <Link
                                 href={`/dashboard/manager/bookings/${selectedEvent.data.id}/edit`}
-                                className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl"
+                                className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
                                 Modifica prenotazione
                             </Link>
@@ -1286,7 +1285,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         {selectedEvent.type === 'cleaning' && (
                             <Link
                                 href={`/dashboard/manager/cleanings/${selectedEvent.data.id}/edit`}
-                                className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibond uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl"
+                                className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
                                 Modifica pulizia
                             </Link>
@@ -1294,7 +1293,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         {selectedEvent.type === 'maintenance' && (
                             <Link
                                 href={`/dashboard/manager/maintenance/${selectedEvent.data.id}/edit`}
-                                className="px-8 py-3.5 bg-white/60 border border-white/20 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white/80 transition-all duration-200 shadow-lg hover:shadow-xl"
+                                className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
                                 Modifica ticket
                             </Link>
@@ -1323,7 +1322,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         ) : (
                             <button
                                 onClick={() => setShowDeleteConfirm(true)}
-                                className="px-8 py-3.5 bg-white/60 text-red-500 border border-red-500/20 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-red-50/50 transition-all duration-200 shadow-md hover:shadow-lg"
+                                className="px-8 py-3.5 bg-white text-red-500 border border-red-200 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
                                 Elimina
                             </button>

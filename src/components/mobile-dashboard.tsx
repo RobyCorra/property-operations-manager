@@ -141,9 +141,9 @@ function diffDays(a: string, b: string) {
 }
 // ── Mappa status → label unificata ────────────────────────────────
 function statusLabel(s: string, assigned = false) {
-  if ((s === "PENDING" || s === "OPEN") && assigned) return "Assegnato";
+  if (s === "PENDING" && assigned) return "Assegnato";
   const map: Record<string, string> = {
-    PENDING: "Da fare", OPEN: "Da fare",
+    PENDING: "Da fare",
     IN_PROGRESS: "In corso",
     COMPLETED: "Completata",
     AWAITING_REVIEW: "In verifica", RESOLVED: "In verifica",
@@ -154,14 +154,14 @@ function statusLabel(s: string, assigned = false) {
 }
 
 // ── Colori status unificati (pulizie e ticket) ─────────────────────
-// assigned: true = PENDING/OPEN con assegnatario → giallo
+// assigned: true = PENDING con assegnatario → giallo
 function unifiedStatusColor(s: string, assigned = false): string {
   if (s === "APPROVED") return "bg-emerald-50 text-emerald-700";
   if (s === "AWAITING_REVIEW" || s === "RESOLVED") return "bg-amber-50 text-amber-700";
   if (s === "COMPLETED") return "bg-sky-50 text-sky-700";
   if (s === "IN_PROGRESS") return "bg-violet-50 text-violet-700";
-  if ((s === "PENDING" || s === "OPEN") && assigned) return "bg-yellow-50 text-yellow-700";
-  return "bg-red-50 text-red-700"; // PENDING/OPEN senza assegnatario
+  if (s === "PENDING" && assigned) return "bg-yellow-50 text-yellow-700";
+  return "bg-red-50 text-red-700"; // PENDING senza assegnatario
 }
 
 // ── Legacy aliases ─────────────────────────────────────────────────
@@ -187,7 +187,7 @@ function unifiedDotHex(status: string, assigned = false): string {
   if (["AWAITING_REVIEW","RESOLVED"].includes(status))             return "#f59e0b"; // amber
   if (status === "COMPLETED")                                       return "#0ea5e9"; // sky
   if (status === "IN_PROGRESS")                                     return "#7c3aed"; // violet
-  if ((status === "PENDING" || status === "OPEN") && assigned)     return "#eab308"; // yellow
+  if (status === "PENDING" && assigned)                            return "#eab308"; // yellow
   return "#ef4444"; // red — non assegnato
 }
 
