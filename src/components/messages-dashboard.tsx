@@ -541,19 +541,16 @@ export default function MessagesDashboard({
                 })()}
               </div>
 
-              {/* CTA */}
+              {/* CTA — apre il pannello in-page senza navigare via */}
               <div className="px-4 pb-4">
-                <Link
-                  href={
-                    selectedThread.type === "MAINTENANCE"
-                      ? `/dashboard/manager/maintenance/${selectedThread.id}/edit`
-                      : `/dashboard/manager/cleanings/${selectedThread.id}/edit`
-                  }
+                <button
+                  type="button"
+                  onClick={() => setShowInfoSheet(true)}
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest hover:bg-violet-600 transition-colors"
                 >
                   Apri scheda completa
-                  <ArrowRight size={13} />
-                </Link>
+                  <ChevronLeft size={13} className="rotate-90" />
+                </button>
               </div>
             </div>
           </>
@@ -592,26 +589,47 @@ export default function MessagesDashboard({
         )}
       </div>
 
-      {/* ── Bottom sheet info completo — mobile only (aperto da ℹ) ──────────── */}
+      {/* ── Pannello dettaglio in-page — mobile only ─────────────────────────── */}
       {showInfoSheet && selectedThread && (
         <>
+          {/* Backdrop — tap per chiudere */}
           <div
             className="md:hidden fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
             onClick={() => setShowInfoSheet(false)}
           />
-          <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between px-5 pt-3 pb-2 shrink-0">
-              <div className="w-9 h-1 bg-slate-200 rounded-full mx-auto" />
+          {/* Pannello slide-up */}
+          <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col max-h-[88vh]">
+
+            {/* Handle + ✕ */}
+            <div className="relative flex items-center justify-center px-5 pt-3 pb-2 shrink-0">
+              <div className="w-9 h-1 bg-slate-200 rounded-full" />
               <button
                 type="button"
                 onClick={() => setShowInfoSheet(false)}
-                className="absolute right-4 top-3 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
+                className="absolute right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
               >
                 <X size={14} className="text-slate-500" />
               </button>
             </div>
+
+            {/* Contenuto scrollabile */}
             <div className="overflow-y-auto flex-1">
               <InfoPanelContent thread={selectedThread} />
+            </div>
+
+            {/* Footer: chiudi pannello e torna alla chat */}
+            <div className="shrink-0 px-5 pb-6 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowInfoSheet(false)}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-slate-100 text-slate-600 text-[11px] font-black uppercase tracking-widest hover:bg-slate-200 transition-colors"
+              >
+                <ChevronLeft size={13} className="-rotate-90" />
+                Chiudi scheda
+              </button>
+              <p className="text-center text-[9px] text-slate-400 mt-2">
+                La chat rimane aperta in background
+              </p>
             </div>
           </div>
         </>
