@@ -20,7 +20,7 @@ self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
 });
 
-// ── Push: mostra notifica nativa ─────────────────────────────────────────────
+// ── Push: mostra notifica nativa + badge ─────────────────────────────────────
 self.addEventListener("push", (event) => {
   let payload = { title: "PropOps", body: "Nuova notifica", url: "/dashboard/manager", tag: "propops" };
   if (event.data) {
@@ -34,23 +34,30 @@ self.addEventListener("push", (event) => {
       icon: "/icons/icon-192.png",
       tag: payload.tag,
       data: { url: payload.url },
+    }).then(() => {
+      // Imposta il badge sull'icona PWA (supportato su iOS 16.4+ e Chrome desktop)
+      if ("setAppBadge" in self.navigator) {
+        return self.navigator.setAppBadge().catch(() => {});
+      }
     })
   );
 });
 
-// ── NotificationClick: apre la pagina giusta ─────────────────────────────────
+// ── NotificationClick: apre la pagina giusta + azzera badge ──────────────────
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = event.notification.data?.url || "/dashboard/manager";
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url.includes(url) && "focus" in client) {
-          return client.focus();
+    Promise.all([
+      // Azzera badge quando l'utente tocca la notifica
+      "clearAppBadge" in self.navigator ? self.navigator.clearAppBadge().catch(() => {}) : Promise.resolve(),
+      clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+        for (const client of clientList) {
+          if (client.url.includes(url) && "focus" in client) return client.focus();
         }
-      }
-      if (clients.openWindow) return clients.openWindow(url);
-    })
+        if (clients.openWindow) return clients.openWindow(url);
+      }),
+    ])
   );
 });
 

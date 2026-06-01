@@ -5,6 +5,18 @@ import { useEffect } from "react";
 export default function PWARegister() {
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Azzera il badge PWA quando l'utente apre/torna sull'app
+    function clearBadge() {
+      if ("clearAppBadge" in navigator) {
+        (navigator as Navigator & { clearAppBadge: () => Promise<void> }).clearAppBadge().catch(() => {});
+      }
+    }
+    clearBadge();
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") clearBadge();
+    });
+
     if (!("serviceWorker" in navigator)) return;
 
     navigator.serviceWorker
