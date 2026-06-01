@@ -195,7 +195,14 @@ export default async function MaintenanceDashboardPage({
               return (
                 <ExpandableMaintenanceCard
                   key={ticket.id}
-                  className="space-y-5 rounded-[2.5rem] border border-white/60 bg-white/55 p-5 shadow-2xl shadow-black/5 backdrop-blur-xl lg:p-7"
+                  className={`space-y-5 rounded-[2.5rem] border p-5 shadow-2xl backdrop-blur-xl lg:p-7 ${
+                    (() => {
+                      const msgs = ticket.messages ?? [];
+                      const hasUnread = msgs.length > 0 && msgs[msgs.length - 1].role === "MANAGER";
+                      if (hasUnread) return "border-rose-400 bg-white/80 ring-2 ring-rose-400/40 shadow-rose-100";
+                      return "border-white/60 bg-white/55 shadow-black/5";
+                    })()
+                  }`}
                   headerMain={(
                     <div className="min-w-0 space-y-2">
                       {/* Priority badge — prominent on mobile */}
