@@ -120,11 +120,23 @@ export default async function CleanerDashboardPage() {
   const enrichedTasks = await enrichCleaningTasksWithNextBooking(user.cleaningTasks) as CleanerDashboardTask[];
 
   const tasksWithChecklists = await Promise.all(enrichedTasks.map(async (task: CleanerDashboardTask) => {
-    const computedSnapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date, task.bookingId);
+    const computedSnapshot = await computeChecklistSnapshot(prisma, task.apartmentId, task.date, task.bookingId) as CleanerTaskChecklistItem[];
 
-    const checklistItems = Array.isArray(task.checklistProgress) && task.checklistProgress.length > 0
-      ? task.checklistProgress as CleanerTaskChecklistItem[]
-      : computedSnapshot;
+    // Usa sempre lo snapshot fresco (photoRequired, label, type aggiornati dal master).
+    // Preserva solo i dati di progresso (completed, photoUrl, skipped, value) dal snapshot salvato.
+    const oldProgress = Array.isArray(task.checklistProgress) ? task.checklistProgress as CleanerTaskChecklistItem[] : [];
+    const progressById = new Map(oldProgress.filter(i => i.id).map(i => [i.id, i]));
+
+    const checklistItems = computedSnapshot.map(newItem => {
+      const old = progressById.get(newItem.id);
+      return {
+        ...newItem,                              // metadati freschi: photoRequired, label, type, required
+        completed: old?.completed ?? false,
+        photoUrl:  old?.photoUrl  ?? null,
+        skipped:   old?.skipped   ?? false,
+        value:     old?.value     ?? newItem.value,
+      };
+    });
 
     return { ...task, checklistItems };
   }));
