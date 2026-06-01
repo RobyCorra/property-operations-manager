@@ -407,7 +407,7 @@ export default function MobileDashboard({
               </svg>
               Mappa
             </button>
-            <NotificationBell initialNotifications={initialNotifications} serverDate={serverDate} />
+            <NotificationBell initialNotifications={initialNotifications} serverDate={serverDate} unreadMessagesCount={unreadMessagesCount} />
           </div>
         </div>
 

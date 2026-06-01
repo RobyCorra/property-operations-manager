@@ -510,7 +510,7 @@ export default async function ManagerDashboardPage() {
           </div>
 
           <div className="flex justify-center">
-            <NotificationBell initialNotifications={initialNotifications} serverDate={serverDate} />
+            <NotificationBell initialNotifications={initialNotifications} serverDate={serverDate} unreadMessagesCount={unreadMessagesCount} />
           </div>
 
           <div className="flex items-center gap-2">
