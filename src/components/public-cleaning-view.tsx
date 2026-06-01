@@ -8,6 +8,8 @@ import ChecklistInteractive from "@/src/components/checklist-interactive";
 import PublicStatusButton from "@/src/components/public-status-button";
 import PublicStatusPoller from "@/src/components/public-status-poller";
 import LinenSection from "@/src/components/linen-section";
+import TicketConversation from "@/src/components/ticket-conversation";
+import { createCleaningTaskMessage } from "@/src/app/actions/operational";
 import { useState, useEffect, useRef } from "react";
 
 interface ChecklistItem {
@@ -48,6 +50,11 @@ interface Props {
   nextGuestCount?: number | null;
   linen?: LinenResult | null;
   cullaLinen?: LinenResult | null;
+  // Chat (solo versione login)
+  showChat?: boolean;
+  initialMessages?: any[];
+  currentUserRole?: string;
+  currentUserName?: string;
 }
 
 function useTranslatedNote(taskId: string, notes: string | null, lang: string | null) {
@@ -108,6 +115,10 @@ function CleaningContent({
   nextGuestCount,
   linen,
   cullaLinen,
+  showChat,
+  initialMessages,
+  currentUserRole,
+  currentUserName,
 }: Props) {
   const { t, lang } = useLang();
   const { translatedNote, translating } = useTranslatedNote(taskId, notes, lang);
@@ -204,6 +215,24 @@ function CleaningContent({
             </div>
             <div className="p-3">
               <ChecklistInteractive taskId={taskId} initialItems={checklistItems} />
+            </div>
+          </div>
+        )}
+
+        {/* Chat con il Manager — solo versione login */}
+        {showChat && (
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-4 py-3 border-b border-slate-100">
+              <p className="font-semibold text-slate-800 text-sm">💬 Chat con il Manager</p>
+            </div>
+            <div className="p-3">
+              <TicketConversation
+                entityId={taskId}
+                initialMessages={initialMessages ?? []}
+                currentUserRole={currentUserRole ?? "CLEANER"}
+                currentUserName={currentUserName ?? "Cleaner"}
+                submitAction={createCleaningTaskMessage}
+              />
             </div>
           </div>
         )}

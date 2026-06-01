@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import PublicCleaningView from "@/src/components/public-cleaning-view";
+import { getCleaningTaskMessages } from "@/src/app/actions/operational";
 import { ChevronLeft } from "lucide-react";
 
 function formatDateFull(date: Date): string {
@@ -27,26 +28,30 @@ export default async function CleanerTaskPage({
 
   const { taskId } = await params;
 
-  const task = await prisma.cleaningTask.findFirst({
-    where: {
-      id: taskId,
-      assignedToId: userId,
-    },
-    include: {
-      apartment: {
-        select: {
-          id: true,
-          name: true,
-          address: true,
-          latitude: true,
-          longitude: true,
-          checklistItems: {
-            orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+  const [task, userRecord, messages] = await Promise.all([
+    prisma.cleaningTask.findFirst({
+      where: {
+        id: taskId,
+        assignedToId: userId,
+      },
+      include: {
+        apartment: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            latitude: true,
+            longitude: true,
+            checklistItems: {
+              orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+            },
           },
         },
       },
-    },
-  });
+    }),
+    prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
+    getCleaningTaskMessages(taskId),
+  ]);
 
   if (!task) notFound();
 
@@ -108,6 +113,10 @@ export default async function CleanerTaskPage({
           canComplete={canComplete}
           isWaiting={isWaiting}
           isDone={isDone}
+          showChat={true}
+          initialMessages={messages}
+          currentUserRole="CLEANER"
+          currentUserName={userRecord?.name ?? "Cleaner"}
         />
       </div>
     </div>
