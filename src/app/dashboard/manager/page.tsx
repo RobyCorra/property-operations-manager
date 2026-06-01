@@ -29,6 +29,7 @@ import {
   Ticket,
   KeyRound,
 } from "@/src/components/icons";
+import { getUnreadMessagesCount } from "@/src/app/actions/messages";
 
 const isMaintenanceActive = (ticket: { status: string }) => {
   return !["RESOLVED", "CANCELLED", "APPROVED"].includes(ticket.status);
@@ -110,7 +111,7 @@ export default async function ManagerDashboardPage() {
   }
 
   // Fetch all necessary data
-  const [apartments, bookings, cleanings, tickets, initialNotifications] = await Promise.all([
+  const [apartments, bookings, cleanings, tickets, initialNotifications, unreadMessagesCount] = await Promise.all([
     prisma.apartment.findMany(),
     prisma.booking.findMany({
       where: { status: { not: "CANCELLED" } },
@@ -134,6 +135,7 @@ export default async function ManagerDashboardPage() {
       include: { apartment: true, assignedTo: true },
     }),
     getNotifications(),
+    getUnreadMessagesCount(),
   ]);
 
   const now = new Date();
@@ -484,6 +486,7 @@ export default async function ManagerDashboardPage() {
         serverDate={serverDate}
         dateLabel={mobileDateLabel}
         calendarDataByApt={mobileCalendarByApt}
+        unreadMessagesCount={unreadMessagesCount}
       />
     </div>
 

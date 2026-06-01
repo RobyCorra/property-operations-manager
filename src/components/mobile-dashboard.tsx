@@ -229,6 +229,7 @@ type Props = {
   serverDate: string;
   dateLabel: string;
   calendarDataByApt: Record<string, CalendarData>;
+  unreadMessagesCount?: number;
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────
@@ -306,6 +307,7 @@ export default function MobileDashboard({
   serverDate,
   dateLabel,
   calendarDataByApt,
+  unreadMessagesCount = 0,
 }: Props) {
   const [activeTab, setActiveTab]           = useState<"dashboard" | "calendar">("dashboard");
   const [sidebarOpen, setSidebarOpen]       = useState(false);
@@ -1266,11 +1268,21 @@ export default function MobileDashboard({
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
+                  {unreadMessagesCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border border-white leading-none">
+                      {unreadMessagesCount > 9 ? "9+" : unreadMessagesCount}
+                    </span>
+                  )}
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-sm font-bold text-slate-700">Messaggi</p>
                   <p className="text-[10px] text-slate-400">Chat con il team</p>
                 </div>
+                {unreadMessagesCount > 0 && (
+                  <span className="min-w-[20px] h-[20px] px-1 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-md shadow-rose-200">
+                    {unreadMessagesCount > 9 ? "9+" : unreadMessagesCount}
+                  </span>
+                )}
               </Link>
 
               <button
