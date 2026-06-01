@@ -14,6 +14,7 @@ import CleanerActionBanner from "@/src/components/cleaner-action-banner";
 import { enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
 import { calculateLinen } from "@/src/lib/linen-calculator";
+import PushPermissionRequest from "@/src/components/push-permission";
 import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
 import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
 import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
@@ -317,6 +318,7 @@ export default async function CleanerDashboardPage() {
         </form>
       </nav>
     </main>
+    <PushPermissionRequest />
     </CleanerLangGate>
   );
 }

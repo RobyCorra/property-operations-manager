@@ -98,6 +98,16 @@ export type ManagerChatSession = $Result.DefaultSelection<Prisma.$ManagerChatSes
  * 
  */
 export type ManagerChatMessage = $Result.DefaultSelection<Prisma.$ManagerChatMessagePayload>
+/**
+ * Model PushSubscription
+ * 
+ */
+export type PushSubscription = $Result.DefaultSelection<Prisma.$PushSubscriptionPayload>
+/**
+ * Model ApartmentProduct
+ * 
+ */
+export type ApartmentProduct = $Result.DefaultSelection<Prisma.$ApartmentProductPayload>
 
 /**
  * Enums
@@ -421,6 +431,26 @@ export class PrismaClient<
     * ```
     */
   get managerChatMessage(): Prisma.ManagerChatMessageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.pushSubscription`: Exposes CRUD operations for the **PushSubscription** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PushSubscriptions
+    * const pushSubscriptions = await prisma.pushSubscription.findMany()
+    * ```
+    */
+  get pushSubscription(): Prisma.PushSubscriptionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.apartmentProduct`: Exposes CRUD operations for the **ApartmentProduct** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ApartmentProducts
+    * const apartmentProducts = await prisma.apartmentProduct.findMany()
+    * ```
+    */
+  get apartmentProduct(): Prisma.ApartmentProductDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -871,7 +901,9 @@ export namespace Prisma {
     ApartmentSupervisor: 'ApartmentSupervisor',
     ApartmentOwner: 'ApartmentOwner',
     ManagerChatSession: 'ManagerChatSession',
-    ManagerChatMessage: 'ManagerChatMessage'
+    ManagerChatMessage: 'ManagerChatMessage',
+    PushSubscription: 'PushSubscription',
+    ApartmentProduct: 'ApartmentProduct'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -887,7 +919,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage"
+      modelProps: "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apartmentProduct"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2149,6 +2181,154 @@ export namespace Prisma {
           }
         }
       }
+      PushSubscription: {
+        payload: Prisma.$PushSubscriptionPayload<ExtArgs>
+        fields: Prisma.PushSubscriptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PushSubscriptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PushSubscriptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+          }
+          findFirst: {
+            args: Prisma.PushSubscriptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PushSubscriptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+          }
+          findMany: {
+            args: Prisma.PushSubscriptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>[]
+          }
+          create: {
+            args: Prisma.PushSubscriptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+          }
+          createMany: {
+            args: Prisma.PushSubscriptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PushSubscriptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>[]
+          }
+          delete: {
+            args: Prisma.PushSubscriptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+          }
+          update: {
+            args: Prisma.PushSubscriptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.PushSubscriptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PushSubscriptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PushSubscriptionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>[]
+          }
+          upsert: {
+            args: Prisma.PushSubscriptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushSubscriptionPayload>
+          }
+          aggregate: {
+            args: Prisma.PushSubscriptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePushSubscription>
+          }
+          groupBy: {
+            args: Prisma.PushSubscriptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PushSubscriptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PushSubscriptionCountArgs<ExtArgs>
+            result: $Utils.Optional<PushSubscriptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      ApartmentProduct: {
+        payload: Prisma.$ApartmentProductPayload<ExtArgs>
+        fields: Prisma.ApartmentProductFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ApartmentProductFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ApartmentProductFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>
+          }
+          findFirst: {
+            args: Prisma.ApartmentProductFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ApartmentProductFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>
+          }
+          findMany: {
+            args: Prisma.ApartmentProductFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>[]
+          }
+          create: {
+            args: Prisma.ApartmentProductCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>
+          }
+          createMany: {
+            args: Prisma.ApartmentProductCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ApartmentProductCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>[]
+          }
+          delete: {
+            args: Prisma.ApartmentProductDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>
+          }
+          update: {
+            args: Prisma.ApartmentProductUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>
+          }
+          deleteMany: {
+            args: Prisma.ApartmentProductDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ApartmentProductUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ApartmentProductUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>[]
+          }
+          upsert: {
+            args: Prisma.ApartmentProductUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApartmentProductPayload>
+          }
+          aggregate: {
+            args: Prisma.ApartmentProductAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateApartmentProduct>
+          }
+          groupBy: {
+            args: Prisma.ApartmentProductGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ApartmentProductGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ApartmentProductCountArgs<ExtArgs>
+            result: $Utils.Optional<ApartmentProductCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2274,6 +2454,8 @@ export namespace Prisma {
     apartmentOwner?: ApartmentOwnerOmit
     managerChatSession?: ManagerChatSessionOmit
     managerChatMessage?: ManagerChatMessageOmit
+    pushSubscription?: PushSubscriptionOmit
+    apartmentProduct?: ApartmentProductOmit
   }
 
   /* Types for Logging */
@@ -2359,6 +2541,7 @@ export namespace Prisma {
     supervisorReviews: number
     supervisedApartments: number
     ownedApartments: number
+    pushSubscriptions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2367,6 +2550,7 @@ export namespace Prisma {
     supervisorReviews?: boolean | UserCountOutputTypeCountSupervisorReviewsArgs
     supervisedApartments?: boolean | UserCountOutputTypeCountSupervisedApartmentsArgs
     ownedApartments?: boolean | UserCountOutputTypeCountOwnedApartmentsArgs
+    pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
   }
 
   // Custom InputTypes
@@ -2415,6 +2599,13 @@ export namespace Prisma {
     where?: ApartmentOwnerWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PushSubscriptionWhereInput
+  }
+
 
   /**
    * Count Type ApartmentCountOutputType
@@ -2430,6 +2621,7 @@ export namespace Prisma {
     apartmentAttachments: number
     supervisors: number
     owners: number
+    products: number
   }
 
   export type ApartmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2442,6 +2634,7 @@ export namespace Prisma {
     apartmentAttachments?: boolean | ApartmentCountOutputTypeCountApartmentAttachmentsArgs
     supervisors?: boolean | ApartmentCountOutputTypeCountSupervisorsArgs
     owners?: boolean | ApartmentCountOutputTypeCountOwnersArgs
+    products?: boolean | ApartmentCountOutputTypeCountProductsArgs
   }
 
   // Custom InputTypes
@@ -2516,6 +2709,13 @@ export namespace Prisma {
    */
   export type ApartmentCountOutputTypeCountOwnersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApartmentOwnerWhereInput
+  }
+
+  /**
+   * ApartmentCountOutputType without action
+   */
+  export type ApartmentCountOutputTypeCountProductsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApartmentProductWhereInput
   }
 
 
@@ -2887,6 +3087,7 @@ export namespace Prisma {
     supervisorReviews?: boolean | User$supervisorReviewsArgs<ExtArgs>
     supervisedApartments?: boolean | User$supervisedApartmentsArgs<ExtArgs>
     ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
+    pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2924,6 +3125,7 @@ export namespace Prisma {
     supervisorReviews?: boolean | User$supervisorReviewsArgs<ExtArgs>
     supervisedApartments?: boolean | User$supervisedApartmentsArgs<ExtArgs>
     ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
+    pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2937,6 +3139,7 @@ export namespace Prisma {
       supervisorReviews: Prisma.$SupervisorReviewPayload<ExtArgs>[]
       supervisedApartments: Prisma.$ApartmentSupervisorPayload<ExtArgs>[]
       ownedApartments: Prisma.$ApartmentOwnerPayload<ExtArgs>[]
+      pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3344,6 +3547,7 @@ export namespace Prisma {
     supervisorReviews<T extends User$supervisorReviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$supervisorReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supervisedApartments<T extends User$supervisedApartmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$supervisedApartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedApartments<T extends User$ownedApartmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedApartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pushSubscriptions<T extends User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3892,6 +4096,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.pushSubscriptions
+   */
+  export type User$pushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    where?: PushSubscriptionWhereInput
+    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    cursor?: PushSubscriptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4221,6 +4449,7 @@ export namespace Prisma {
     apartmentAttachments?: boolean | Apartment$apartmentAttachmentsArgs<ExtArgs>
     supervisors?: boolean | Apartment$supervisorsArgs<ExtArgs>
     owners?: boolean | Apartment$ownersArgs<ExtArgs>
+    products?: boolean | Apartment$productsArgs<ExtArgs>
     _count?: boolean | ApartmentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["apartment"]>
 
@@ -4295,6 +4524,7 @@ export namespace Prisma {
     apartmentAttachments?: boolean | Apartment$apartmentAttachmentsArgs<ExtArgs>
     supervisors?: boolean | Apartment$supervisorsArgs<ExtArgs>
     owners?: boolean | Apartment$ownersArgs<ExtArgs>
+    products?: boolean | Apartment$productsArgs<ExtArgs>
     _count?: boolean | ApartmentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApartmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4312,6 +4542,7 @@ export namespace Prisma {
       apartmentAttachments: Prisma.$ApartmentAttachmentPayload<ExtArgs>[]
       supervisors: Prisma.$ApartmentSupervisorPayload<ExtArgs>[]
       owners: Prisma.$ApartmentOwnerPayload<ExtArgs>[]
+      products: Prisma.$ApartmentProductPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4734,6 +4965,7 @@ export namespace Prisma {
     apartmentAttachments<T extends Apartment$apartmentAttachmentsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$apartmentAttachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supervisors<T extends Apartment$supervisorsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$supervisorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     owners<T extends Apartment$ownersArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$ownersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    products<T extends Apartment$productsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5386,6 +5618,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ApartmentOwnerScalarFieldEnum | ApartmentOwnerScalarFieldEnum[]
+  }
+
+  /**
+   * Apartment.products
+   */
+  export type Apartment$productsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    where?: ApartmentProductWhereInput
+    orderBy?: ApartmentProductOrderByWithRelationInput | ApartmentProductOrderByWithRelationInput[]
+    cursor?: ApartmentProductWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApartmentProductScalarFieldEnum | ApartmentProductScalarFieldEnum[]
   }
 
   /**
@@ -6581,6 +6837,7 @@ export namespace Prisma {
     title: string | null
     message: string | null
     isRead: boolean | null
+    readAt: Date | null
     createdAt: Date | null
     apartmentId: string | null
   }
@@ -6591,6 +6848,7 @@ export namespace Prisma {
     title: string | null
     message: string | null
     isRead: boolean | null
+    readAt: Date | null
     createdAt: Date | null
     apartmentId: string | null
   }
@@ -6601,6 +6859,7 @@ export namespace Prisma {
     title: number
     message: number
     isRead: number
+    readAt: number
     createdAt: number
     apartmentId: number
     _all: number
@@ -6613,6 +6872,7 @@ export namespace Prisma {
     title?: true
     message?: true
     isRead?: true
+    readAt?: true
     createdAt?: true
     apartmentId?: true
   }
@@ -6623,6 +6883,7 @@ export namespace Prisma {
     title?: true
     message?: true
     isRead?: true
+    readAt?: true
     createdAt?: true
     apartmentId?: true
   }
@@ -6633,6 +6894,7 @@ export namespace Prisma {
     title?: true
     message?: true
     isRead?: true
+    readAt?: true
     createdAt?: true
     apartmentId?: true
     _all?: true
@@ -6716,6 +6978,7 @@ export namespace Prisma {
     title: string
     message: string
     isRead: boolean
+    readAt: Date | null
     createdAt: Date
     apartmentId: string | null
     _count: NotificationCountAggregateOutputType | null
@@ -6743,6 +7006,7 @@ export namespace Prisma {
     title?: boolean
     message?: boolean
     isRead?: boolean
+    readAt?: boolean
     createdAt?: boolean
     apartmentId?: boolean
     apartment?: boolean | Notification$apartmentArgs<ExtArgs>
@@ -6754,6 +7018,7 @@ export namespace Prisma {
     title?: boolean
     message?: boolean
     isRead?: boolean
+    readAt?: boolean
     createdAt?: boolean
     apartmentId?: boolean
     apartment?: boolean | Notification$apartmentArgs<ExtArgs>
@@ -6765,6 +7030,7 @@ export namespace Prisma {
     title?: boolean
     message?: boolean
     isRead?: boolean
+    readAt?: boolean
     createdAt?: boolean
     apartmentId?: boolean
     apartment?: boolean | Notification$apartmentArgs<ExtArgs>
@@ -6776,11 +7042,12 @@ export namespace Prisma {
     title?: boolean
     message?: boolean
     isRead?: boolean
+    readAt?: boolean
     createdAt?: boolean
     apartmentId?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "title" | "message" | "isRead" | "createdAt" | "apartmentId", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "title" | "message" | "isRead" | "readAt" | "createdAt" | "apartmentId", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | Notification$apartmentArgs<ExtArgs>
   }
@@ -6802,6 +7069,7 @@ export namespace Prisma {
       title: string
       message: string
       isRead: boolean
+      readAt: Date | null
       createdAt: Date
       apartmentId: string | null
     }, ExtArgs["result"]["notification"]>
@@ -7233,6 +7501,7 @@ export namespace Prisma {
     readonly title: FieldRef<"Notification", 'String'>
     readonly message: FieldRef<"Notification", 'String'>
     readonly isRead: FieldRef<"Notification", 'Boolean'>
+    readonly readAt: FieldRef<"Notification", 'DateTime'>
     readonly createdAt: FieldRef<"Notification", 'DateTime'>
     readonly apartmentId: FieldRef<"Notification", 'String'>
   }
@@ -22740,6 +23009,2265 @@ export namespace Prisma {
 
 
   /**
+   * Model PushSubscription
+   */
+
+  export type AggregatePushSubscription = {
+    _count: PushSubscriptionCountAggregateOutputType | null
+    _min: PushSubscriptionMinAggregateOutputType | null
+    _max: PushSubscriptionMaxAggregateOutputType | null
+  }
+
+  export type PushSubscriptionMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    endpoint: string | null
+    p256dh: string | null
+    auth: string | null
+    createdAt: Date | null
+  }
+
+  export type PushSubscriptionMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    endpoint: string | null
+    p256dh: string | null
+    auth: string | null
+    createdAt: Date | null
+  }
+
+  export type PushSubscriptionCountAggregateOutputType = {
+    id: number
+    userId: number
+    endpoint: number
+    p256dh: number
+    auth: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PushSubscriptionMinAggregateInputType = {
+    id?: true
+    userId?: true
+    endpoint?: true
+    p256dh?: true
+    auth?: true
+    createdAt?: true
+  }
+
+  export type PushSubscriptionMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    endpoint?: true
+    p256dh?: true
+    auth?: true
+    createdAt?: true
+  }
+
+  export type PushSubscriptionCountAggregateInputType = {
+    id?: true
+    userId?: true
+    endpoint?: true
+    p256dh?: true
+    auth?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PushSubscriptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PushSubscription to aggregate.
+     */
+    where?: PushSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PushSubscriptions to fetch.
+     */
+    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PushSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PushSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PushSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PushSubscriptions
+    **/
+    _count?: true | PushSubscriptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PushSubscriptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PushSubscriptionMaxAggregateInputType
+  }
+
+  export type GetPushSubscriptionAggregateType<T extends PushSubscriptionAggregateArgs> = {
+        [P in keyof T & keyof AggregatePushSubscription]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePushSubscription[P]>
+      : GetScalarType<T[P], AggregatePushSubscription[P]>
+  }
+
+
+
+
+  export type PushSubscriptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PushSubscriptionWhereInput
+    orderBy?: PushSubscriptionOrderByWithAggregationInput | PushSubscriptionOrderByWithAggregationInput[]
+    by: PushSubscriptionScalarFieldEnum[] | PushSubscriptionScalarFieldEnum
+    having?: PushSubscriptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PushSubscriptionCountAggregateInputType | true
+    _min?: PushSubscriptionMinAggregateInputType
+    _max?: PushSubscriptionMaxAggregateInputType
+  }
+
+  export type PushSubscriptionGroupByOutputType = {
+    id: string
+    userId: string
+    endpoint: string
+    p256dh: string
+    auth: string
+    createdAt: Date
+    _count: PushSubscriptionCountAggregateOutputType | null
+    _min: PushSubscriptionMinAggregateOutputType | null
+    _max: PushSubscriptionMaxAggregateOutputType | null
+  }
+
+  type GetPushSubscriptionGroupByPayload<T extends PushSubscriptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PushSubscriptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PushSubscriptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PushSubscriptionGroupByOutputType[P]>
+            : GetScalarType<T[P], PushSubscriptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PushSubscriptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    endpoint?: boolean
+    p256dh?: boolean
+    auth?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pushSubscription"]>
+
+  export type PushSubscriptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    endpoint?: boolean
+    p256dh?: boolean
+    auth?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pushSubscription"]>
+
+  export type PushSubscriptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    endpoint?: boolean
+    p256dh?: boolean
+    auth?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pushSubscription"]>
+
+  export type PushSubscriptionSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    endpoint?: boolean
+    p256dh?: boolean
+    auth?: boolean
+    createdAt?: boolean
+  }
+
+  export type PushSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "endpoint" | "p256dh" | "auth" | "createdAt", ExtArgs["result"]["pushSubscription"]>
+  export type PushSubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PushSubscriptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PushSubscriptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PushSubscriptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PushSubscription"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      endpoint: string
+      p256dh: string
+      auth: string
+      createdAt: Date
+    }, ExtArgs["result"]["pushSubscription"]>
+    composites: {}
+  }
+
+  type PushSubscriptionGetPayload<S extends boolean | null | undefined | PushSubscriptionDefaultArgs> = $Result.GetResult<Prisma.$PushSubscriptionPayload, S>
+
+  type PushSubscriptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PushSubscriptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PushSubscriptionCountAggregateInputType | true
+    }
+
+  export interface PushSubscriptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PushSubscription'], meta: { name: 'PushSubscription' } }
+    /**
+     * Find zero or one PushSubscription that matches the filter.
+     * @param {PushSubscriptionFindUniqueArgs} args - Arguments to find a PushSubscription
+     * @example
+     * // Get one PushSubscription
+     * const pushSubscription = await prisma.pushSubscription.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PushSubscriptionFindUniqueArgs>(args: SelectSubset<T, PushSubscriptionFindUniqueArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PushSubscription that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PushSubscriptionFindUniqueOrThrowArgs} args - Arguments to find a PushSubscription
+     * @example
+     * // Get one PushSubscription
+     * const pushSubscription = await prisma.pushSubscription.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PushSubscriptionFindUniqueOrThrowArgs>(args: SelectSubset<T, PushSubscriptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PushSubscription that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushSubscriptionFindFirstArgs} args - Arguments to find a PushSubscription
+     * @example
+     * // Get one PushSubscription
+     * const pushSubscription = await prisma.pushSubscription.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PushSubscriptionFindFirstArgs>(args?: SelectSubset<T, PushSubscriptionFindFirstArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PushSubscription that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushSubscriptionFindFirstOrThrowArgs} args - Arguments to find a PushSubscription
+     * @example
+     * // Get one PushSubscription
+     * const pushSubscription = await prisma.pushSubscription.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PushSubscriptionFindFirstOrThrowArgs>(args?: SelectSubset<T, PushSubscriptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PushSubscriptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushSubscriptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PushSubscriptions
+     * const pushSubscriptions = await prisma.pushSubscription.findMany()
+     * 
+     * // Get first 10 PushSubscriptions
+     * const pushSubscriptions = await prisma.pushSubscription.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pushSubscriptionWithIdOnly = await prisma.pushSubscription.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PushSubscriptionFindManyArgs>(args?: SelectSubset<T, PushSubscriptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PushSubscription.
+     * @param {PushSubscriptionCreateArgs} args - Arguments to create a PushSubscription.
+     * @example
+     * // Create one PushSubscription
+     * const PushSubscription = await prisma.pushSubscription.create({
+     *   data: {
+     *     // ... data to create a PushSubscription
+     *   }
+     * })
+     * 
+     */
+    create<T extends PushSubscriptionCreateArgs>(args: SelectSubset<T, PushSubscriptionCreateArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PushSubscriptions.
+     * @param {PushSubscriptionCreateManyArgs} args - Arguments to create many PushSubscriptions.
+     * @example
+     * // Create many PushSubscriptions
+     * const pushSubscription = await prisma.pushSubscription.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PushSubscriptionCreateManyArgs>(args?: SelectSubset<T, PushSubscriptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PushSubscriptions and returns the data saved in the database.
+     * @param {PushSubscriptionCreateManyAndReturnArgs} args - Arguments to create many PushSubscriptions.
+     * @example
+     * // Create many PushSubscriptions
+     * const pushSubscription = await prisma.pushSubscription.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PushSubscriptions and only return the `id`
+     * const pushSubscriptionWithIdOnly = await prisma.pushSubscription.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PushSubscriptionCreateManyAndReturnArgs>(args?: SelectSubset<T, PushSubscriptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PushSubscription.
+     * @param {PushSubscriptionDeleteArgs} args - Arguments to delete one PushSubscription.
+     * @example
+     * // Delete one PushSubscription
+     * const PushSubscription = await prisma.pushSubscription.delete({
+     *   where: {
+     *     // ... filter to delete one PushSubscription
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PushSubscriptionDeleteArgs>(args: SelectSubset<T, PushSubscriptionDeleteArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PushSubscription.
+     * @param {PushSubscriptionUpdateArgs} args - Arguments to update one PushSubscription.
+     * @example
+     * // Update one PushSubscription
+     * const pushSubscription = await prisma.pushSubscription.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PushSubscriptionUpdateArgs>(args: SelectSubset<T, PushSubscriptionUpdateArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PushSubscriptions.
+     * @param {PushSubscriptionDeleteManyArgs} args - Arguments to filter PushSubscriptions to delete.
+     * @example
+     * // Delete a few PushSubscriptions
+     * const { count } = await prisma.pushSubscription.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PushSubscriptionDeleteManyArgs>(args?: SelectSubset<T, PushSubscriptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PushSubscriptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushSubscriptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PushSubscriptions
+     * const pushSubscription = await prisma.pushSubscription.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PushSubscriptionUpdateManyArgs>(args: SelectSubset<T, PushSubscriptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PushSubscriptions and returns the data updated in the database.
+     * @param {PushSubscriptionUpdateManyAndReturnArgs} args - Arguments to update many PushSubscriptions.
+     * @example
+     * // Update many PushSubscriptions
+     * const pushSubscription = await prisma.pushSubscription.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PushSubscriptions and only return the `id`
+     * const pushSubscriptionWithIdOnly = await prisma.pushSubscription.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PushSubscriptionUpdateManyAndReturnArgs>(args: SelectSubset<T, PushSubscriptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PushSubscription.
+     * @param {PushSubscriptionUpsertArgs} args - Arguments to update or create a PushSubscription.
+     * @example
+     * // Update or create a PushSubscription
+     * const pushSubscription = await prisma.pushSubscription.upsert({
+     *   create: {
+     *     // ... data to create a PushSubscription
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PushSubscription we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PushSubscriptionUpsertArgs>(args: SelectSubset<T, PushSubscriptionUpsertArgs<ExtArgs>>): Prisma__PushSubscriptionClient<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PushSubscriptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushSubscriptionCountArgs} args - Arguments to filter PushSubscriptions to count.
+     * @example
+     * // Count the number of PushSubscriptions
+     * const count = await prisma.pushSubscription.count({
+     *   where: {
+     *     // ... the filter for the PushSubscriptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends PushSubscriptionCountArgs>(
+      args?: Subset<T, PushSubscriptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PushSubscriptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PushSubscription.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushSubscriptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PushSubscriptionAggregateArgs>(args: Subset<T, PushSubscriptionAggregateArgs>): Prisma.PrismaPromise<GetPushSubscriptionAggregateType<T>>
+
+    /**
+     * Group by PushSubscription.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushSubscriptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PushSubscriptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PushSubscriptionGroupByArgs['orderBy'] }
+        : { orderBy?: PushSubscriptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PushSubscriptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPushSubscriptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PushSubscription model
+   */
+  readonly fields: PushSubscriptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PushSubscription.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PushSubscriptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PushSubscription model
+   */
+  interface PushSubscriptionFieldRefs {
+    readonly id: FieldRef<"PushSubscription", 'String'>
+    readonly userId: FieldRef<"PushSubscription", 'String'>
+    readonly endpoint: FieldRef<"PushSubscription", 'String'>
+    readonly p256dh: FieldRef<"PushSubscription", 'String'>
+    readonly auth: FieldRef<"PushSubscription", 'String'>
+    readonly createdAt: FieldRef<"PushSubscription", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PushSubscription findUnique
+   */
+  export type PushSubscriptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PushSubscription to fetch.
+     */
+    where: PushSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * PushSubscription findUniqueOrThrow
+   */
+  export type PushSubscriptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PushSubscription to fetch.
+     */
+    where: PushSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * PushSubscription findFirst
+   */
+  export type PushSubscriptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PushSubscription to fetch.
+     */
+    where?: PushSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PushSubscriptions to fetch.
+     */
+    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PushSubscriptions.
+     */
+    cursor?: PushSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PushSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PushSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PushSubscriptions.
+     */
+    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * PushSubscription findFirstOrThrow
+   */
+  export type PushSubscriptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PushSubscription to fetch.
+     */
+    where?: PushSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PushSubscriptions to fetch.
+     */
+    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PushSubscriptions.
+     */
+    cursor?: PushSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PushSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PushSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PushSubscriptions.
+     */
+    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * PushSubscription findMany
+   */
+  export type PushSubscriptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which PushSubscriptions to fetch.
+     */
+    where?: PushSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PushSubscriptions to fetch.
+     */
+    orderBy?: PushSubscriptionOrderByWithRelationInput | PushSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PushSubscriptions.
+     */
+    cursor?: PushSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PushSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PushSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PushSubscriptions.
+     */
+    distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * PushSubscription create
+   */
+  export type PushSubscriptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PushSubscription.
+     */
+    data: XOR<PushSubscriptionCreateInput, PushSubscriptionUncheckedCreateInput>
+  }
+
+  /**
+   * PushSubscription createMany
+   */
+  export type PushSubscriptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PushSubscriptions.
+     */
+    data: PushSubscriptionCreateManyInput | PushSubscriptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PushSubscription createManyAndReturn
+   */
+  export type PushSubscriptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * The data used to create many PushSubscriptions.
+     */
+    data: PushSubscriptionCreateManyInput | PushSubscriptionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PushSubscription update
+   */
+  export type PushSubscriptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PushSubscription.
+     */
+    data: XOR<PushSubscriptionUpdateInput, PushSubscriptionUncheckedUpdateInput>
+    /**
+     * Choose, which PushSubscription to update.
+     */
+    where: PushSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * PushSubscription updateMany
+   */
+  export type PushSubscriptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PushSubscriptions.
+     */
+    data: XOR<PushSubscriptionUpdateManyMutationInput, PushSubscriptionUncheckedUpdateManyInput>
+    /**
+     * Filter which PushSubscriptions to update
+     */
+    where?: PushSubscriptionWhereInput
+    /**
+     * Limit how many PushSubscriptions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PushSubscription updateManyAndReturn
+   */
+  export type PushSubscriptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * The data used to update PushSubscriptions.
+     */
+    data: XOR<PushSubscriptionUpdateManyMutationInput, PushSubscriptionUncheckedUpdateManyInput>
+    /**
+     * Filter which PushSubscriptions to update
+     */
+    where?: PushSubscriptionWhereInput
+    /**
+     * Limit how many PushSubscriptions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PushSubscription upsert
+   */
+  export type PushSubscriptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PushSubscription to update in case it exists.
+     */
+    where: PushSubscriptionWhereUniqueInput
+    /**
+     * In case the PushSubscription found by the `where` argument doesn't exist, create a new PushSubscription with this data.
+     */
+    create: XOR<PushSubscriptionCreateInput, PushSubscriptionUncheckedCreateInput>
+    /**
+     * In case the PushSubscription was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PushSubscriptionUpdateInput, PushSubscriptionUncheckedUpdateInput>
+  }
+
+  /**
+   * PushSubscription delete
+   */
+  export type PushSubscriptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter which PushSubscription to delete.
+     */
+    where: PushSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * PushSubscription deleteMany
+   */
+  export type PushSubscriptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PushSubscriptions to delete
+     */
+    where?: PushSubscriptionWhereInput
+    /**
+     * Limit how many PushSubscriptions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PushSubscription without action
+   */
+  export type PushSubscriptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushSubscription
+     */
+    select?: PushSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushSubscription
+     */
+    omit?: PushSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushSubscriptionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ApartmentProduct
+   */
+
+  export type AggregateApartmentProduct = {
+    _count: ApartmentProductCountAggregateOutputType | null
+    _avg: ApartmentProductAvgAggregateOutputType | null
+    _sum: ApartmentProductSumAggregateOutputType | null
+    _min: ApartmentProductMinAggregateOutputType | null
+    _max: ApartmentProductMaxAggregateOutputType | null
+  }
+
+  export type ApartmentProductAvgAggregateOutputType = {
+    stock: number | null
+    minStock: number | null
+    consumptionValue: number | null
+  }
+
+  export type ApartmentProductSumAggregateOutputType = {
+    stock: number | null
+    minStock: number | null
+    consumptionValue: number | null
+  }
+
+  export type ApartmentProductMinAggregateOutputType = {
+    id: string | null
+    apartmentId: string | null
+    name: string | null
+    emoji: string | null
+    unit: string | null
+    stock: number | null
+    minStock: number | null
+    consumptionType: string | null
+    consumptionValue: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ApartmentProductMaxAggregateOutputType = {
+    id: string | null
+    apartmentId: string | null
+    name: string | null
+    emoji: string | null
+    unit: string | null
+    stock: number | null
+    minStock: number | null
+    consumptionType: string | null
+    consumptionValue: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ApartmentProductCountAggregateOutputType = {
+    id: number
+    apartmentId: number
+    name: number
+    emoji: number
+    unit: number
+    stock: number
+    minStock: number
+    consumptionType: number
+    consumptionValue: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ApartmentProductAvgAggregateInputType = {
+    stock?: true
+    minStock?: true
+    consumptionValue?: true
+  }
+
+  export type ApartmentProductSumAggregateInputType = {
+    stock?: true
+    minStock?: true
+    consumptionValue?: true
+  }
+
+  export type ApartmentProductMinAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    name?: true
+    emoji?: true
+    unit?: true
+    stock?: true
+    minStock?: true
+    consumptionType?: true
+    consumptionValue?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ApartmentProductMaxAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    name?: true
+    emoji?: true
+    unit?: true
+    stock?: true
+    minStock?: true
+    consumptionType?: true
+    consumptionValue?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ApartmentProductCountAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    name?: true
+    emoji?: true
+    unit?: true
+    stock?: true
+    minStock?: true
+    consumptionType?: true
+    consumptionValue?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ApartmentProductAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApartmentProduct to aggregate.
+     */
+    where?: ApartmentProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentProducts to fetch.
+     */
+    orderBy?: ApartmentProductOrderByWithRelationInput | ApartmentProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ApartmentProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentProducts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentProducts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ApartmentProducts
+    **/
+    _count?: true | ApartmentProductCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ApartmentProductAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ApartmentProductSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ApartmentProductMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ApartmentProductMaxAggregateInputType
+  }
+
+  export type GetApartmentProductAggregateType<T extends ApartmentProductAggregateArgs> = {
+        [P in keyof T & keyof AggregateApartmentProduct]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateApartmentProduct[P]>
+      : GetScalarType<T[P], AggregateApartmentProduct[P]>
+  }
+
+
+
+
+  export type ApartmentProductGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApartmentProductWhereInput
+    orderBy?: ApartmentProductOrderByWithAggregationInput | ApartmentProductOrderByWithAggregationInput[]
+    by: ApartmentProductScalarFieldEnum[] | ApartmentProductScalarFieldEnum
+    having?: ApartmentProductScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ApartmentProductCountAggregateInputType | true
+    _avg?: ApartmentProductAvgAggregateInputType
+    _sum?: ApartmentProductSumAggregateInputType
+    _min?: ApartmentProductMinAggregateInputType
+    _max?: ApartmentProductMaxAggregateInputType
+  }
+
+  export type ApartmentProductGroupByOutputType = {
+    id: string
+    apartmentId: string
+    name: string
+    emoji: string
+    unit: string
+    stock: number
+    minStock: number
+    consumptionType: string
+    consumptionValue: number
+    createdAt: Date
+    updatedAt: Date
+    _count: ApartmentProductCountAggregateOutputType | null
+    _avg: ApartmentProductAvgAggregateOutputType | null
+    _sum: ApartmentProductSumAggregateOutputType | null
+    _min: ApartmentProductMinAggregateOutputType | null
+    _max: ApartmentProductMaxAggregateOutputType | null
+  }
+
+  type GetApartmentProductGroupByPayload<T extends ApartmentProductGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ApartmentProductGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ApartmentProductGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ApartmentProductGroupByOutputType[P]>
+            : GetScalarType<T[P], ApartmentProductGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ApartmentProductSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    name?: boolean
+    emoji?: boolean
+    unit?: boolean
+    stock?: boolean
+    minStock?: boolean
+    consumptionType?: boolean
+    consumptionValue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentProduct"]>
+
+  export type ApartmentProductSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    name?: boolean
+    emoji?: boolean
+    unit?: boolean
+    stock?: boolean
+    minStock?: boolean
+    consumptionType?: boolean
+    consumptionValue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentProduct"]>
+
+  export type ApartmentProductSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    name?: boolean
+    emoji?: boolean
+    unit?: boolean
+    stock?: boolean
+    minStock?: boolean
+    consumptionType?: boolean
+    consumptionValue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apartmentProduct"]>
+
+  export type ApartmentProductSelectScalar = {
+    id?: boolean
+    apartmentId?: boolean
+    name?: boolean
+    emoji?: boolean
+    unit?: boolean
+    stock?: boolean
+    minStock?: boolean
+    consumptionType?: boolean
+    consumptionValue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ApartmentProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "name" | "emoji" | "unit" | "stock" | "minStock" | "consumptionType" | "consumptionValue" | "createdAt" | "updatedAt", ExtArgs["result"]["apartmentProduct"]>
+  export type ApartmentProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+  export type ApartmentProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+  export type ApartmentProductIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+
+  export type $ApartmentProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ApartmentProduct"
+    objects: {
+      apartment: Prisma.$ApartmentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      apartmentId: string
+      name: string
+      emoji: string
+      unit: string
+      stock: number
+      minStock: number
+      consumptionType: string
+      consumptionValue: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["apartmentProduct"]>
+    composites: {}
+  }
+
+  type ApartmentProductGetPayload<S extends boolean | null | undefined | ApartmentProductDefaultArgs> = $Result.GetResult<Prisma.$ApartmentProductPayload, S>
+
+  type ApartmentProductCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ApartmentProductFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ApartmentProductCountAggregateInputType | true
+    }
+
+  export interface ApartmentProductDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ApartmentProduct'], meta: { name: 'ApartmentProduct' } }
+    /**
+     * Find zero or one ApartmentProduct that matches the filter.
+     * @param {ApartmentProductFindUniqueArgs} args - Arguments to find a ApartmentProduct
+     * @example
+     * // Get one ApartmentProduct
+     * const apartmentProduct = await prisma.apartmentProduct.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ApartmentProductFindUniqueArgs>(args: SelectSubset<T, ApartmentProductFindUniqueArgs<ExtArgs>>): Prisma__ApartmentProductClient<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ApartmentProduct that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ApartmentProductFindUniqueOrThrowArgs} args - Arguments to find a ApartmentProduct
+     * @example
+     * // Get one ApartmentProduct
+     * const apartmentProduct = await prisma.apartmentProduct.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ApartmentProductFindUniqueOrThrowArgs>(args: SelectSubset<T, ApartmentProductFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ApartmentProductClient<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApartmentProduct that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentProductFindFirstArgs} args - Arguments to find a ApartmentProduct
+     * @example
+     * // Get one ApartmentProduct
+     * const apartmentProduct = await prisma.apartmentProduct.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ApartmentProductFindFirstArgs>(args?: SelectSubset<T, ApartmentProductFindFirstArgs<ExtArgs>>): Prisma__ApartmentProductClient<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApartmentProduct that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentProductFindFirstOrThrowArgs} args - Arguments to find a ApartmentProduct
+     * @example
+     * // Get one ApartmentProduct
+     * const apartmentProduct = await prisma.apartmentProduct.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ApartmentProductFindFirstOrThrowArgs>(args?: SelectSubset<T, ApartmentProductFindFirstOrThrowArgs<ExtArgs>>): Prisma__ApartmentProductClient<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ApartmentProducts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentProductFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ApartmentProducts
+     * const apartmentProducts = await prisma.apartmentProduct.findMany()
+     * 
+     * // Get first 10 ApartmentProducts
+     * const apartmentProducts = await prisma.apartmentProduct.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const apartmentProductWithIdOnly = await prisma.apartmentProduct.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ApartmentProductFindManyArgs>(args?: SelectSubset<T, ApartmentProductFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ApartmentProduct.
+     * @param {ApartmentProductCreateArgs} args - Arguments to create a ApartmentProduct.
+     * @example
+     * // Create one ApartmentProduct
+     * const ApartmentProduct = await prisma.apartmentProduct.create({
+     *   data: {
+     *     // ... data to create a ApartmentProduct
+     *   }
+     * })
+     * 
+     */
+    create<T extends ApartmentProductCreateArgs>(args: SelectSubset<T, ApartmentProductCreateArgs<ExtArgs>>): Prisma__ApartmentProductClient<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ApartmentProducts.
+     * @param {ApartmentProductCreateManyArgs} args - Arguments to create many ApartmentProducts.
+     * @example
+     * // Create many ApartmentProducts
+     * const apartmentProduct = await prisma.apartmentProduct.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ApartmentProductCreateManyArgs>(args?: SelectSubset<T, ApartmentProductCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ApartmentProducts and returns the data saved in the database.
+     * @param {ApartmentProductCreateManyAndReturnArgs} args - Arguments to create many ApartmentProducts.
+     * @example
+     * // Create many ApartmentProducts
+     * const apartmentProduct = await prisma.apartmentProduct.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ApartmentProducts and only return the `id`
+     * const apartmentProductWithIdOnly = await prisma.apartmentProduct.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ApartmentProductCreateManyAndReturnArgs>(args?: SelectSubset<T, ApartmentProductCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ApartmentProduct.
+     * @param {ApartmentProductDeleteArgs} args - Arguments to delete one ApartmentProduct.
+     * @example
+     * // Delete one ApartmentProduct
+     * const ApartmentProduct = await prisma.apartmentProduct.delete({
+     *   where: {
+     *     // ... filter to delete one ApartmentProduct
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ApartmentProductDeleteArgs>(args: SelectSubset<T, ApartmentProductDeleteArgs<ExtArgs>>): Prisma__ApartmentProductClient<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ApartmentProduct.
+     * @param {ApartmentProductUpdateArgs} args - Arguments to update one ApartmentProduct.
+     * @example
+     * // Update one ApartmentProduct
+     * const apartmentProduct = await prisma.apartmentProduct.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ApartmentProductUpdateArgs>(args: SelectSubset<T, ApartmentProductUpdateArgs<ExtArgs>>): Prisma__ApartmentProductClient<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ApartmentProducts.
+     * @param {ApartmentProductDeleteManyArgs} args - Arguments to filter ApartmentProducts to delete.
+     * @example
+     * // Delete a few ApartmentProducts
+     * const { count } = await prisma.apartmentProduct.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ApartmentProductDeleteManyArgs>(args?: SelectSubset<T, ApartmentProductDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApartmentProducts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentProductUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ApartmentProducts
+     * const apartmentProduct = await prisma.apartmentProduct.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ApartmentProductUpdateManyArgs>(args: SelectSubset<T, ApartmentProductUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApartmentProducts and returns the data updated in the database.
+     * @param {ApartmentProductUpdateManyAndReturnArgs} args - Arguments to update many ApartmentProducts.
+     * @example
+     * // Update many ApartmentProducts
+     * const apartmentProduct = await prisma.apartmentProduct.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ApartmentProducts and only return the `id`
+     * const apartmentProductWithIdOnly = await prisma.apartmentProduct.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ApartmentProductUpdateManyAndReturnArgs>(args: SelectSubset<T, ApartmentProductUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ApartmentProduct.
+     * @param {ApartmentProductUpsertArgs} args - Arguments to update or create a ApartmentProduct.
+     * @example
+     * // Update or create a ApartmentProduct
+     * const apartmentProduct = await prisma.apartmentProduct.upsert({
+     *   create: {
+     *     // ... data to create a ApartmentProduct
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ApartmentProduct we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ApartmentProductUpsertArgs>(args: SelectSubset<T, ApartmentProductUpsertArgs<ExtArgs>>): Prisma__ApartmentProductClient<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ApartmentProducts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentProductCountArgs} args - Arguments to filter ApartmentProducts to count.
+     * @example
+     * // Count the number of ApartmentProducts
+     * const count = await prisma.apartmentProduct.count({
+     *   where: {
+     *     // ... the filter for the ApartmentProducts we want to count
+     *   }
+     * })
+    **/
+    count<T extends ApartmentProductCountArgs>(
+      args?: Subset<T, ApartmentProductCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ApartmentProductCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ApartmentProduct.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentProductAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ApartmentProductAggregateArgs>(args: Subset<T, ApartmentProductAggregateArgs>): Prisma.PrismaPromise<GetApartmentProductAggregateType<T>>
+
+    /**
+     * Group by ApartmentProduct.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApartmentProductGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ApartmentProductGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ApartmentProductGroupByArgs['orderBy'] }
+        : { orderBy?: ApartmentProductGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ApartmentProductGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetApartmentProductGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ApartmentProduct model
+   */
+  readonly fields: ApartmentProductFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ApartmentProduct.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ApartmentProductClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    apartment<T extends ApartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApartmentDefaultArgs<ExtArgs>>): Prisma__ApartmentClient<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ApartmentProduct model
+   */
+  interface ApartmentProductFieldRefs {
+    readonly id: FieldRef<"ApartmentProduct", 'String'>
+    readonly apartmentId: FieldRef<"ApartmentProduct", 'String'>
+    readonly name: FieldRef<"ApartmentProduct", 'String'>
+    readonly emoji: FieldRef<"ApartmentProduct", 'String'>
+    readonly unit: FieldRef<"ApartmentProduct", 'String'>
+    readonly stock: FieldRef<"ApartmentProduct", 'Int'>
+    readonly minStock: FieldRef<"ApartmentProduct", 'Int'>
+    readonly consumptionType: FieldRef<"ApartmentProduct", 'String'>
+    readonly consumptionValue: FieldRef<"ApartmentProduct", 'Float'>
+    readonly createdAt: FieldRef<"ApartmentProduct", 'DateTime'>
+    readonly updatedAt: FieldRef<"ApartmentProduct", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ApartmentProduct findUnique
+   */
+  export type ApartmentProductFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentProduct to fetch.
+     */
+    where: ApartmentProductWhereUniqueInput
+  }
+
+  /**
+   * ApartmentProduct findUniqueOrThrow
+   */
+  export type ApartmentProductFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentProduct to fetch.
+     */
+    where: ApartmentProductWhereUniqueInput
+  }
+
+  /**
+   * ApartmentProduct findFirst
+   */
+  export type ApartmentProductFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentProduct to fetch.
+     */
+    where?: ApartmentProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentProducts to fetch.
+     */
+    orderBy?: ApartmentProductOrderByWithRelationInput | ApartmentProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApartmentProducts.
+     */
+    cursor?: ApartmentProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentProducts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentProducts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentProducts.
+     */
+    distinct?: ApartmentProductScalarFieldEnum | ApartmentProductScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentProduct findFirstOrThrow
+   */
+  export type ApartmentProductFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentProduct to fetch.
+     */
+    where?: ApartmentProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentProducts to fetch.
+     */
+    orderBy?: ApartmentProductOrderByWithRelationInput | ApartmentProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApartmentProducts.
+     */
+    cursor?: ApartmentProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentProducts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentProducts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentProducts.
+     */
+    distinct?: ApartmentProductScalarFieldEnum | ApartmentProductScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentProduct findMany
+   */
+  export type ApartmentProductFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * Filter, which ApartmentProducts to fetch.
+     */
+    where?: ApartmentProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApartmentProducts to fetch.
+     */
+    orderBy?: ApartmentProductOrderByWithRelationInput | ApartmentProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ApartmentProducts.
+     */
+    cursor?: ApartmentProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApartmentProducts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApartmentProducts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApartmentProducts.
+     */
+    distinct?: ApartmentProductScalarFieldEnum | ApartmentProductScalarFieldEnum[]
+  }
+
+  /**
+   * ApartmentProduct create
+   */
+  export type ApartmentProductCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ApartmentProduct.
+     */
+    data: XOR<ApartmentProductCreateInput, ApartmentProductUncheckedCreateInput>
+  }
+
+  /**
+   * ApartmentProduct createMany
+   */
+  export type ApartmentProductCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ApartmentProducts.
+     */
+    data: ApartmentProductCreateManyInput | ApartmentProductCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ApartmentProduct createManyAndReturn
+   */
+  export type ApartmentProductCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * The data used to create many ApartmentProducts.
+     */
+    data: ApartmentProductCreateManyInput | ApartmentProductCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApartmentProduct update
+   */
+  export type ApartmentProductUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ApartmentProduct.
+     */
+    data: XOR<ApartmentProductUpdateInput, ApartmentProductUncheckedUpdateInput>
+    /**
+     * Choose, which ApartmentProduct to update.
+     */
+    where: ApartmentProductWhereUniqueInput
+  }
+
+  /**
+   * ApartmentProduct updateMany
+   */
+  export type ApartmentProductUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ApartmentProducts.
+     */
+    data: XOR<ApartmentProductUpdateManyMutationInput, ApartmentProductUncheckedUpdateManyInput>
+    /**
+     * Filter which ApartmentProducts to update
+     */
+    where?: ApartmentProductWhereInput
+    /**
+     * Limit how many ApartmentProducts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApartmentProduct updateManyAndReturn
+   */
+  export type ApartmentProductUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * The data used to update ApartmentProducts.
+     */
+    data: XOR<ApartmentProductUpdateManyMutationInput, ApartmentProductUncheckedUpdateManyInput>
+    /**
+     * Filter which ApartmentProducts to update
+     */
+    where?: ApartmentProductWhereInput
+    /**
+     * Limit how many ApartmentProducts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApartmentProduct upsert
+   */
+  export type ApartmentProductUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ApartmentProduct to update in case it exists.
+     */
+    where: ApartmentProductWhereUniqueInput
+    /**
+     * In case the ApartmentProduct found by the `where` argument doesn't exist, create a new ApartmentProduct with this data.
+     */
+    create: XOR<ApartmentProductCreateInput, ApartmentProductUncheckedCreateInput>
+    /**
+     * In case the ApartmentProduct was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ApartmentProductUpdateInput, ApartmentProductUncheckedUpdateInput>
+  }
+
+  /**
+   * ApartmentProduct delete
+   */
+  export type ApartmentProductDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+    /**
+     * Filter which ApartmentProduct to delete.
+     */
+    where: ApartmentProductWhereUniqueInput
+  }
+
+  /**
+   * ApartmentProduct deleteMany
+   */
+  export type ApartmentProductDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApartmentProducts to delete
+     */
+    where?: ApartmentProductWhereInput
+    /**
+     * Limit how many ApartmentProducts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApartmentProduct without action
+   */
+  export type ApartmentProductDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApartmentProduct
+     */
+    select?: ApartmentProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApartmentProduct
+     */
+    omit?: ApartmentProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApartmentProductInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -22810,6 +25338,7 @@ export namespace Prisma {
     title: 'title',
     message: 'message',
     isRead: 'isRead',
+    readAt: 'readAt',
     createdAt: 'createdAt',
     apartmentId: 'apartmentId'
   };
@@ -23000,6 +25529,35 @@ export namespace Prisma {
   export type ManagerChatMessageScalarFieldEnum = (typeof ManagerChatMessageScalarFieldEnum)[keyof typeof ManagerChatMessageScalarFieldEnum]
 
 
+  export const PushSubscriptionScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    endpoint: 'endpoint',
+    p256dh: 'p256dh',
+    auth: 'auth',
+    createdAt: 'createdAt'
+  };
+
+  export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
+
+
+  export const ApartmentProductScalarFieldEnum: {
+    id: 'id',
+    apartmentId: 'apartmentId',
+    name: 'name',
+    emoji: 'emoji',
+    unit: 'unit',
+    stock: 'stock',
+    minStock: 'minStock',
+    consumptionType: 'consumptionType',
+    consumptionValue: 'consumptionValue',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ApartmentProductScalarFieldEnum = (typeof ApartmentProductScalarFieldEnum)[keyof typeof ApartmentProductScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -23169,6 +25727,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewListRelationFilter
     supervisedApartments?: ApartmentSupervisorListRelationFilter
     ownedApartments?: ApartmentOwnerListRelationFilter
+    pushSubscriptions?: PushSubscriptionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -23183,6 +25742,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewOrderByRelationAggregateInput
     supervisedApartments?: ApartmentSupervisorOrderByRelationAggregateInput
     ownedApartments?: ApartmentOwnerOrderByRelationAggregateInput
+    pushSubscriptions?: PushSubscriptionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -23200,6 +25760,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewListRelationFilter
     supervisedApartments?: ApartmentSupervisorListRelationFilter
     ownedApartments?: ApartmentOwnerListRelationFilter
+    pushSubscriptions?: PushSubscriptionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -23256,6 +25817,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentListRelationFilter
     supervisors?: ApartmentSupervisorListRelationFilter
     owners?: ApartmentOwnerListRelationFilter
+    products?: ApartmentProductListRelationFilter
   }
 
   export type ApartmentOrderByWithRelationInput = {
@@ -23285,6 +25847,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentOrderByRelationAggregateInput
     supervisors?: ApartmentSupervisorOrderByRelationAggregateInput
     owners?: ApartmentOwnerOrderByRelationAggregateInput
+    products?: ApartmentProductOrderByRelationAggregateInput
   }
 
   export type ApartmentWhereUniqueInput = Prisma.AtLeast<{
@@ -23317,6 +25880,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentListRelationFilter
     supervisors?: ApartmentSupervisorListRelationFilter
     owners?: ApartmentOwnerListRelationFilter
+    products?: ApartmentProductListRelationFilter
   }, "id" | "apartmentCode">
 
   export type ApartmentOrderByWithAggregationInput = {
@@ -23458,6 +26022,7 @@ export namespace Prisma {
     title?: StringFilter<"Notification"> | string
     message?: StringFilter<"Notification"> | string
     isRead?: BoolFilter<"Notification"> | boolean
+    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     apartmentId?: StringNullableFilter<"Notification"> | string | null
     apartment?: XOR<ApartmentNullableScalarRelationFilter, ApartmentWhereInput> | null
@@ -23469,6 +26034,7 @@ export namespace Prisma {
     title?: SortOrder
     message?: SortOrder
     isRead?: SortOrder
+    readAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     apartmentId?: SortOrderInput | SortOrder
     apartment?: ApartmentOrderByWithRelationInput
@@ -23483,6 +26049,7 @@ export namespace Prisma {
     title?: StringFilter<"Notification"> | string
     message?: StringFilter<"Notification"> | string
     isRead?: BoolFilter<"Notification"> | boolean
+    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     apartmentId?: StringNullableFilter<"Notification"> | string | null
     apartment?: XOR<ApartmentNullableScalarRelationFilter, ApartmentWhereInput> | null
@@ -23494,6 +26061,7 @@ export namespace Prisma {
     title?: SortOrder
     message?: SortOrder
     isRead?: SortOrder
+    readAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     apartmentId?: SortOrderInput | SortOrder
     _count?: NotificationCountOrderByAggregateInput
@@ -23510,6 +26078,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Notification"> | string
     message?: StringWithAggregatesFilter<"Notification"> | string
     isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
+    readAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
     apartmentId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
   }
@@ -24506,6 +27075,153 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"ManagerChatMessage"> | Date | string
   }
 
+  export type PushSubscriptionWhereInput = {
+    AND?: PushSubscriptionWhereInput | PushSubscriptionWhereInput[]
+    OR?: PushSubscriptionWhereInput[]
+    NOT?: PushSubscriptionWhereInput | PushSubscriptionWhereInput[]
+    id?: StringFilter<"PushSubscription"> | string
+    userId?: StringFilter<"PushSubscription"> | string
+    endpoint?: StringFilter<"PushSubscription"> | string
+    p256dh?: StringFilter<"PushSubscription"> | string
+    auth?: StringFilter<"PushSubscription"> | string
+    createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type PushSubscriptionOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    endpoint?: SortOrder
+    p256dh?: SortOrder
+    auth?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type PushSubscriptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    endpoint?: string
+    AND?: PushSubscriptionWhereInput | PushSubscriptionWhereInput[]
+    OR?: PushSubscriptionWhereInput[]
+    NOT?: PushSubscriptionWhereInput | PushSubscriptionWhereInput[]
+    userId?: StringFilter<"PushSubscription"> | string
+    p256dh?: StringFilter<"PushSubscription"> | string
+    auth?: StringFilter<"PushSubscription"> | string
+    createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "endpoint">
+
+  export type PushSubscriptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    endpoint?: SortOrder
+    p256dh?: SortOrder
+    auth?: SortOrder
+    createdAt?: SortOrder
+    _count?: PushSubscriptionCountOrderByAggregateInput
+    _max?: PushSubscriptionMaxOrderByAggregateInput
+    _min?: PushSubscriptionMinOrderByAggregateInput
+  }
+
+  export type PushSubscriptionScalarWhereWithAggregatesInput = {
+    AND?: PushSubscriptionScalarWhereWithAggregatesInput | PushSubscriptionScalarWhereWithAggregatesInput[]
+    OR?: PushSubscriptionScalarWhereWithAggregatesInput[]
+    NOT?: PushSubscriptionScalarWhereWithAggregatesInput | PushSubscriptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PushSubscription"> | string
+    userId?: StringWithAggregatesFilter<"PushSubscription"> | string
+    endpoint?: StringWithAggregatesFilter<"PushSubscription"> | string
+    p256dh?: StringWithAggregatesFilter<"PushSubscription"> | string
+    auth?: StringWithAggregatesFilter<"PushSubscription"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"PushSubscription"> | Date | string
+  }
+
+  export type ApartmentProductWhereInput = {
+    AND?: ApartmentProductWhereInput | ApartmentProductWhereInput[]
+    OR?: ApartmentProductWhereInput[]
+    NOT?: ApartmentProductWhereInput | ApartmentProductWhereInput[]
+    id?: StringFilter<"ApartmentProduct"> | string
+    apartmentId?: StringFilter<"ApartmentProduct"> | string
+    name?: StringFilter<"ApartmentProduct"> | string
+    emoji?: StringFilter<"ApartmentProduct"> | string
+    unit?: StringFilter<"ApartmentProduct"> | string
+    stock?: IntFilter<"ApartmentProduct"> | number
+    minStock?: IntFilter<"ApartmentProduct"> | number
+    consumptionType?: StringFilter<"ApartmentProduct"> | string
+    consumptionValue?: FloatFilter<"ApartmentProduct"> | number
+    createdAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
+    updatedAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+  }
+
+  export type ApartmentProductOrderByWithRelationInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    consumptionType?: SortOrder
+    consumptionValue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    apartment?: ApartmentOrderByWithRelationInput
+  }
+
+  export type ApartmentProductWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ApartmentProductWhereInput | ApartmentProductWhereInput[]
+    OR?: ApartmentProductWhereInput[]
+    NOT?: ApartmentProductWhereInput | ApartmentProductWhereInput[]
+    apartmentId?: StringFilter<"ApartmentProduct"> | string
+    name?: StringFilter<"ApartmentProduct"> | string
+    emoji?: StringFilter<"ApartmentProduct"> | string
+    unit?: StringFilter<"ApartmentProduct"> | string
+    stock?: IntFilter<"ApartmentProduct"> | number
+    minStock?: IntFilter<"ApartmentProduct"> | number
+    consumptionType?: StringFilter<"ApartmentProduct"> | string
+    consumptionValue?: FloatFilter<"ApartmentProduct"> | number
+    createdAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
+    updatedAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+  }, "id">
+
+  export type ApartmentProductOrderByWithAggregationInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    consumptionType?: SortOrder
+    consumptionValue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ApartmentProductCountOrderByAggregateInput
+    _avg?: ApartmentProductAvgOrderByAggregateInput
+    _max?: ApartmentProductMaxOrderByAggregateInput
+    _min?: ApartmentProductMinOrderByAggregateInput
+    _sum?: ApartmentProductSumOrderByAggregateInput
+  }
+
+  export type ApartmentProductScalarWhereWithAggregatesInput = {
+    AND?: ApartmentProductScalarWhereWithAggregatesInput | ApartmentProductScalarWhereWithAggregatesInput[]
+    OR?: ApartmentProductScalarWhereWithAggregatesInput[]
+    NOT?: ApartmentProductScalarWhereWithAggregatesInput | ApartmentProductScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ApartmentProduct"> | string
+    apartmentId?: StringWithAggregatesFilter<"ApartmentProduct"> | string
+    name?: StringWithAggregatesFilter<"ApartmentProduct"> | string
+    emoji?: StringWithAggregatesFilter<"ApartmentProduct"> | string
+    unit?: StringWithAggregatesFilter<"ApartmentProduct"> | string
+    stock?: IntWithAggregatesFilter<"ApartmentProduct"> | number
+    minStock?: IntWithAggregatesFilter<"ApartmentProduct"> | number
+    consumptionType?: StringWithAggregatesFilter<"ApartmentProduct"> | string
+    consumptionValue?: FloatWithAggregatesFilter<"ApartmentProduct"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"ApartmentProduct"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ApartmentProduct"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -24518,6 +27234,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -24532,6 +27249,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -24546,6 +27264,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -24560,6 +27279,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -24616,6 +27336,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateInput = {
@@ -24645,6 +27366,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUpdateInput = {
@@ -24674,6 +27396,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateInput = {
@@ -24703,6 +27426,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateManyInput = {
@@ -24861,6 +27585,7 @@ export namespace Prisma {
     title: string
     message: string
     isRead?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
     apartment?: ApartmentCreateNestedOneWithoutNotificationsInput
   }
@@ -24871,6 +27596,7 @@ export namespace Prisma {
     title: string
     message: string
     isRead?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
     apartmentId?: string | null
   }
@@ -24881,6 +27607,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartment?: ApartmentUpdateOneWithoutNotificationsNestedInput
   }
@@ -24891,6 +27618,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartmentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -24901,6 +27629,7 @@ export namespace Prisma {
     title: string
     message: string
     isRead?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
     apartmentId?: string | null
   }
@@ -24911,6 +27640,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -24920,6 +27650,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartmentId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -25958,6 +28689,165 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PushSubscriptionCreateInput = {
+    id?: string
+    endpoint: string
+    p256dh: string
+    auth: string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPushSubscriptionsInput
+  }
+
+  export type PushSubscriptionUncheckedCreateInput = {
+    id?: string
+    userId: string
+    endpoint: string
+    p256dh: string
+    auth: string
+    createdAt?: Date | string
+  }
+
+  export type PushSubscriptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPushSubscriptionsNestedInput
+  }
+
+  export type PushSubscriptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushSubscriptionCreateManyInput = {
+    id?: string
+    userId: string
+    endpoint: string
+    p256dh: string
+    auth: string
+    createdAt?: Date | string
+  }
+
+  export type PushSubscriptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushSubscriptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApartmentProductCreateInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    consumptionType?: string
+    consumptionValue?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    apartment: ApartmentCreateNestedOneWithoutProductsInput
+  }
+
+  export type ApartmentProductUncheckedCreateInput = {
+    id?: string
+    apartmentId: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    consumptionType?: string
+    consumptionValue?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApartmentProductUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    consumptionType?: StringFieldUpdateOperationsInput | string
+    consumptionValue?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    apartment?: ApartmentUpdateOneRequiredWithoutProductsNestedInput
+  }
+
+  export type ApartmentProductUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    consumptionType?: StringFieldUpdateOperationsInput | string
+    consumptionValue?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApartmentProductCreateManyInput = {
+    id?: string
+    apartmentId: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    consumptionType?: string
+    consumptionValue?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApartmentProductUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    consumptionType?: StringFieldUpdateOperationsInput | string
+    consumptionValue?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApartmentProductUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    consumptionType?: StringFieldUpdateOperationsInput | string
+    consumptionValue?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -26021,6 +28911,12 @@ export namespace Prisma {
     none?: ApartmentOwnerWhereInput
   }
 
+  export type PushSubscriptionListRelationFilter = {
+    every?: PushSubscriptionWhereInput
+    some?: PushSubscriptionWhereInput
+    none?: PushSubscriptionWhereInput
+  }
+
   export type CleaningTaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -26038,6 +28934,10 @@ export namespace Prisma {
   }
 
   export type ApartmentOwnerOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PushSubscriptionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26211,6 +29111,12 @@ export namespace Prisma {
     none?: ApartmentAttachmentWhereInput
   }
 
+  export type ApartmentProductListRelationFilter = {
+    every?: ApartmentProductWhereInput
+    some?: ApartmentProductWhereInput
+    none?: ApartmentProductWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -26233,6 +29139,10 @@ export namespace Prisma {
   }
 
   export type ApartmentAttachmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ApartmentProductOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26472,6 +29382,7 @@ export namespace Prisma {
     title?: SortOrder
     message?: SortOrder
     isRead?: SortOrder
+    readAt?: SortOrder
     createdAt?: SortOrder
     apartmentId?: SortOrder
   }
@@ -26482,6 +29393,7 @@ export namespace Prisma {
     title?: SortOrder
     message?: SortOrder
     isRead?: SortOrder
+    readAt?: SortOrder
     createdAt?: SortOrder
     apartmentId?: SortOrder
   }
@@ -26492,6 +29404,7 @@ export namespace Prisma {
     title?: SortOrder
     message?: SortOrder
     isRead?: SortOrder
+    readAt?: SortOrder
     createdAt?: SortOrder
     apartmentId?: SortOrder
   }
@@ -27081,6 +29994,87 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type PushSubscriptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    endpoint?: SortOrder
+    p256dh?: SortOrder
+    auth?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PushSubscriptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    endpoint?: SortOrder
+    p256dh?: SortOrder
+    auth?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PushSubscriptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    endpoint?: SortOrder
+    p256dh?: SortOrder
+    auth?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ApartmentProductCountOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    consumptionType?: SortOrder
+    consumptionValue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ApartmentProductAvgOrderByAggregateInput = {
+    stock?: SortOrder
+    minStock?: SortOrder
+    consumptionValue?: SortOrder
+  }
+
+  export type ApartmentProductMaxOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    consumptionType?: SortOrder
+    consumptionValue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ApartmentProductMinOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    consumptionType?: SortOrder
+    consumptionValue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ApartmentProductSumOrderByAggregateInput = {
+    stock?: SortOrder
+    minStock?: SortOrder
+    consumptionValue?: SortOrder
+  }
+
   export type CleaningTaskCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -27116,6 +30110,13 @@ export namespace Prisma {
     connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
   }
 
+  export type PushSubscriptionCreateNestedManyWithoutUserInput = {
+    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
+    createMany?: PushSubscriptionCreateManyUserInputEnvelope
+    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+  }
+
   export type CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -27149,6 +30150,13 @@ export namespace Prisma {
     connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutUserInput | ApartmentOwnerCreateOrConnectWithoutUserInput[]
     createMany?: ApartmentOwnerCreateManyUserInputEnvelope
     connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+  }
+
+  export type PushSubscriptionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
+    createMany?: PushSubscriptionCreateManyUserInputEnvelope
+    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -27233,6 +30241,20 @@ export namespace Prisma {
     deleteMany?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
   }
 
+  export type PushSubscriptionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
+    upsert?: PushSubscriptionUpsertWithWhereUniqueWithoutUserInput | PushSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PushSubscriptionCreateManyUserInputEnvelope
+    set?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    disconnect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    delete?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
+  }
+
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -27303,6 +30325,20 @@ export namespace Prisma {
     deleteMany?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
   }
 
+  export type PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput> | PushSubscriptionCreateWithoutUserInput[] | PushSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
+    upsert?: PushSubscriptionUpsertWithWhereUniqueWithoutUserInput | PushSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PushSubscriptionCreateManyUserInputEnvelope
+    set?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    disconnect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    delete?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+    update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
+  }
+
   export type BookingCreateNestedManyWithoutApartmentInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -27366,6 +30402,13 @@ export namespace Prisma {
     connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
   }
 
+  export type ApartmentProductCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<ApartmentProductCreateWithoutApartmentInput, ApartmentProductUncheckedCreateWithoutApartmentInput> | ApartmentProductCreateWithoutApartmentInput[] | ApartmentProductUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentProductCreateOrConnectWithoutApartmentInput | ApartmentProductCreateOrConnectWithoutApartmentInput[]
+    createMany?: ApartmentProductCreateManyApartmentInputEnvelope
+    connect?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+  }
+
   export type BookingUncheckedCreateNestedManyWithoutApartmentInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -27427,6 +30470,13 @@ export namespace Prisma {
     connectOrCreate?: ApartmentOwnerCreateOrConnectWithoutApartmentInput | ApartmentOwnerCreateOrConnectWithoutApartmentInput[]
     createMany?: ApartmentOwnerCreateManyApartmentInputEnvelope
     connect?: ApartmentOwnerWhereUniqueInput | ApartmentOwnerWhereUniqueInput[]
+  }
+
+  export type ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<ApartmentProductCreateWithoutApartmentInput, ApartmentProductUncheckedCreateWithoutApartmentInput> | ApartmentProductCreateWithoutApartmentInput[] | ApartmentProductUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentProductCreateOrConnectWithoutApartmentInput | ApartmentProductCreateOrConnectWithoutApartmentInput[]
+    createMany?: ApartmentProductCreateManyApartmentInputEnvelope
+    connect?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
@@ -27579,6 +30629,20 @@ export namespace Prisma {
     deleteMany?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
   }
 
+  export type ApartmentProductUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<ApartmentProductCreateWithoutApartmentInput, ApartmentProductUncheckedCreateWithoutApartmentInput> | ApartmentProductCreateWithoutApartmentInput[] | ApartmentProductUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentProductCreateOrConnectWithoutApartmentInput | ApartmentProductCreateOrConnectWithoutApartmentInput[]
+    upsert?: ApartmentProductUpsertWithWhereUniqueWithoutApartmentInput | ApartmentProductUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: ApartmentProductCreateManyApartmentInputEnvelope
+    set?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+    disconnect?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+    delete?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+    connect?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+    update?: ApartmentProductUpdateWithWhereUniqueWithoutApartmentInput | ApartmentProductUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: ApartmentProductUpdateManyWithWhereWithoutApartmentInput | ApartmentProductUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: ApartmentProductScalarWhereInput | ApartmentProductScalarWhereInput[]
+  }
+
   export type BookingUncheckedUpdateManyWithoutApartmentNestedInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -27703,6 +30767,20 @@ export namespace Prisma {
     update?: ApartmentOwnerUpdateWithWhereUniqueWithoutApartmentInput | ApartmentOwnerUpdateWithWhereUniqueWithoutApartmentInput[]
     updateMany?: ApartmentOwnerUpdateManyWithWhereWithoutApartmentInput | ApartmentOwnerUpdateManyWithWhereWithoutApartmentInput[]
     deleteMany?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
+  }
+
+  export type ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<ApartmentProductCreateWithoutApartmentInput, ApartmentProductUncheckedCreateWithoutApartmentInput> | ApartmentProductCreateWithoutApartmentInput[] | ApartmentProductUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: ApartmentProductCreateOrConnectWithoutApartmentInput | ApartmentProductCreateOrConnectWithoutApartmentInput[]
+    upsert?: ApartmentProductUpsertWithWhereUniqueWithoutApartmentInput | ApartmentProductUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: ApartmentProductCreateManyApartmentInputEnvelope
+    set?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+    disconnect?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+    delete?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+    connect?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+    update?: ApartmentProductUpdateWithWhereUniqueWithoutApartmentInput | ApartmentProductUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: ApartmentProductUpdateManyWithWhereWithoutApartmentInput | ApartmentProductUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: ApartmentProductScalarWhereInput | ApartmentProductScalarWhereInput[]
   }
 
   export type ApartmentCreateNestedOneWithoutChecklistItemsInput = {
@@ -28605,6 +31683,34 @@ export namespace Prisma {
     update?: XOR<XOR<ManagerChatSessionUpdateToOneWithWhereWithoutMessagesInput, ManagerChatSessionUpdateWithoutMessagesInput>, ManagerChatSessionUncheckedUpdateWithoutMessagesInput>
   }
 
+  export type UserCreateNestedOneWithoutPushSubscriptionsInput = {
+    create?: XOR<UserCreateWithoutPushSubscriptionsInput, UserUncheckedCreateWithoutPushSubscriptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPushSubscriptionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutPushSubscriptionsNestedInput = {
+    create?: XOR<UserCreateWithoutPushSubscriptionsInput, UserUncheckedCreateWithoutPushSubscriptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPushSubscriptionsInput
+    upsert?: UserUpsertWithoutPushSubscriptionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPushSubscriptionsInput, UserUpdateWithoutPushSubscriptionsInput>, UserUncheckedUpdateWithoutPushSubscriptionsInput>
+  }
+
+  export type ApartmentCreateNestedOneWithoutProductsInput = {
+    create?: XOR<ApartmentCreateWithoutProductsInput, ApartmentUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutProductsInput
+    connect?: ApartmentWhereUniqueInput
+  }
+
+  export type ApartmentUpdateOneRequiredWithoutProductsNestedInput = {
+    create?: XOR<ApartmentCreateWithoutProductsInput, ApartmentUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutProductsInput
+    upsert?: ApartmentUpsertWithoutProductsInput
+    connect?: ApartmentWhereUniqueInput
+    update?: XOR<XOR<ApartmentUpdateToOneWithWhereWithoutProductsInput, ApartmentUpdateWithoutProductsInput>, ApartmentUncheckedUpdateWithoutProductsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -29045,6 +32151,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PushSubscriptionCreateWithoutUserInput = {
+    id?: string
+    endpoint: string
+    p256dh: string
+    auth: string
+    createdAt?: Date | string
+  }
+
+  export type PushSubscriptionUncheckedCreateWithoutUserInput = {
+    id?: string
+    endpoint: string
+    p256dh: string
+    auth: string
+    createdAt?: Date | string
+  }
+
+  export type PushSubscriptionCreateOrConnectWithoutUserInput = {
+    where: PushSubscriptionWhereUniqueInput
+    create: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type PushSubscriptionCreateManyUserInputEnvelope = {
+    data: PushSubscriptionCreateManyUserInput | PushSubscriptionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CleaningTaskUpsertWithWhereUniqueWithoutAssignedToInput = {
     where: CleaningTaskWhereUniqueInput
     update: XOR<CleaningTaskUpdateWithoutAssignedToInput, CleaningTaskUncheckedUpdateWithoutAssignedToInput>
@@ -29193,6 +32325,34 @@ export namespace Prisma {
     NOT?: ApartmentOwnerScalarWhereInput | ApartmentOwnerScalarWhereInput[]
     apartmentId?: StringFilter<"ApartmentOwner"> | string
     userId?: StringFilter<"ApartmentOwner"> | string
+  }
+
+  export type PushSubscriptionUpsertWithWhereUniqueWithoutUserInput = {
+    where: PushSubscriptionWhereUniqueInput
+    update: XOR<PushSubscriptionUpdateWithoutUserInput, PushSubscriptionUncheckedUpdateWithoutUserInput>
+    create: XOR<PushSubscriptionCreateWithoutUserInput, PushSubscriptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type PushSubscriptionUpdateWithWhereUniqueWithoutUserInput = {
+    where: PushSubscriptionWhereUniqueInput
+    data: XOR<PushSubscriptionUpdateWithoutUserInput, PushSubscriptionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PushSubscriptionUpdateManyWithWhereWithoutUserInput = {
+    where: PushSubscriptionScalarWhereInput
+    data: XOR<PushSubscriptionUpdateManyMutationInput, PushSubscriptionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PushSubscriptionScalarWhereInput = {
+    AND?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
+    OR?: PushSubscriptionScalarWhereInput[]
+    NOT?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
+    id?: StringFilter<"PushSubscription"> | string
+    userId?: StringFilter<"PushSubscription"> | string
+    endpoint?: StringFilter<"PushSubscription"> | string
+    p256dh?: StringFilter<"PushSubscription"> | string
+    auth?: StringFilter<"PushSubscription"> | string
+    createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
   }
 
   export type BookingCreateWithoutApartmentInput = {
@@ -29373,6 +32533,7 @@ export namespace Prisma {
     title: string
     message: string
     isRead?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -29382,6 +32543,7 @@ export namespace Prisma {
     title: string
     message: string
     isRead?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -29496,6 +32658,42 @@ export namespace Prisma {
 
   export type ApartmentOwnerCreateManyApartmentInputEnvelope = {
     data: ApartmentOwnerCreateManyApartmentInput | ApartmentOwnerCreateManyApartmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ApartmentProductCreateWithoutApartmentInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    consumptionType?: string
+    consumptionValue?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApartmentProductUncheckedCreateWithoutApartmentInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    consumptionType?: string
+    consumptionValue?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApartmentProductCreateOrConnectWithoutApartmentInput = {
+    where: ApartmentProductWhereUniqueInput
+    create: XOR<ApartmentProductCreateWithoutApartmentInput, ApartmentProductUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type ApartmentProductCreateManyApartmentInputEnvelope = {
+    data: ApartmentProductCreateManyApartmentInput | ApartmentProductCreateManyApartmentInput[]
     skipDuplicates?: boolean
   }
 
@@ -29621,6 +32819,7 @@ export namespace Prisma {
     title?: StringFilter<"Notification"> | string
     message?: StringFilter<"Notification"> | string
     isRead?: BoolFilter<"Notification"> | boolean
+    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     apartmentId?: StringNullableFilter<"Notification"> | string | null
   }
@@ -29721,6 +32920,39 @@ export namespace Prisma {
     data: XOR<ApartmentOwnerUpdateManyMutationInput, ApartmentOwnerUncheckedUpdateManyWithoutApartmentInput>
   }
 
+  export type ApartmentProductUpsertWithWhereUniqueWithoutApartmentInput = {
+    where: ApartmentProductWhereUniqueInput
+    update: XOR<ApartmentProductUpdateWithoutApartmentInput, ApartmentProductUncheckedUpdateWithoutApartmentInput>
+    create: XOR<ApartmentProductCreateWithoutApartmentInput, ApartmentProductUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type ApartmentProductUpdateWithWhereUniqueWithoutApartmentInput = {
+    where: ApartmentProductWhereUniqueInput
+    data: XOR<ApartmentProductUpdateWithoutApartmentInput, ApartmentProductUncheckedUpdateWithoutApartmentInput>
+  }
+
+  export type ApartmentProductUpdateManyWithWhereWithoutApartmentInput = {
+    where: ApartmentProductScalarWhereInput
+    data: XOR<ApartmentProductUpdateManyMutationInput, ApartmentProductUncheckedUpdateManyWithoutApartmentInput>
+  }
+
+  export type ApartmentProductScalarWhereInput = {
+    AND?: ApartmentProductScalarWhereInput | ApartmentProductScalarWhereInput[]
+    OR?: ApartmentProductScalarWhereInput[]
+    NOT?: ApartmentProductScalarWhereInput | ApartmentProductScalarWhereInput[]
+    id?: StringFilter<"ApartmentProduct"> | string
+    apartmentId?: StringFilter<"ApartmentProduct"> | string
+    name?: StringFilter<"ApartmentProduct"> | string
+    emoji?: StringFilter<"ApartmentProduct"> | string
+    unit?: StringFilter<"ApartmentProduct"> | string
+    stock?: IntFilter<"ApartmentProduct"> | number
+    minStock?: IntFilter<"ApartmentProduct"> | number
+    consumptionType?: StringFilter<"ApartmentProduct"> | string
+    consumptionValue?: FloatFilter<"ApartmentProduct"> | number
+    createdAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
+    updatedAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
+  }
+
   export type ApartmentCreateWithoutChecklistItemsInput = {
     id?: string
     name: string
@@ -29747,6 +32979,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutChecklistItemsInput = {
@@ -29775,6 +33008,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutChecklistItemsInput = {
@@ -29819,6 +33053,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutChecklistItemsInput = {
@@ -29847,6 +33082,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateWithoutNotificationsInput = {
@@ -29875,6 +33111,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutNotificationsInput = {
@@ -29903,6 +33140,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutNotificationsInput = {
@@ -29947,6 +33185,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutNotificationsInput = {
@@ -29975,6 +33214,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateWithoutBookingsInput = {
@@ -30003,6 +33243,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutBookingsInput = {
@@ -30031,6 +33272,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutBookingsInput = {
@@ -30118,6 +33360,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutBookingsInput = {
@@ -30146,6 +33389,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type CleaningTaskUpsertWithoutBookingInput = {
@@ -30256,6 +33500,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutCleaningTasksInput = {
@@ -30284,6 +33529,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutCleaningTasksInput = {
@@ -30302,6 +33548,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCleaningTasksInput = {
@@ -30315,6 +33562,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCleaningTasksInput = {
@@ -30526,6 +33774,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutCleaningTasksInput = {
@@ -30554,6 +33803,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutCleaningTasksInput = {
@@ -30578,6 +33828,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleaningTasksInput = {
@@ -30591,6 +33842,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CleaningTaskMessageUpsertWithWhereUniqueWithoutCleaningTaskInput = {
@@ -30713,6 +33965,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -30741,6 +33994,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -30759,6 +34013,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -30772,6 +34027,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -30944,6 +34200,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -30972,6 +34229,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutMaintenanceTicketsInput = {
@@ -30996,6 +34254,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -31009,6 +34268,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AttachmentUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
@@ -31115,6 +34375,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutAiAssistantMessagesInput = {
@@ -31143,6 +34404,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutAiAssistantMessagesInput = {
@@ -31277,6 +34539,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutAiAssistantMessagesInput = {
@@ -31305,6 +34568,7 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type CleaningTaskUpsertWithoutAiAssistantMessagesInput = {
@@ -31719,6 +34983,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutApartmentAttachmentsInput = {
@@ -31747,6 +35012,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutApartmentAttachmentsInput = {
@@ -31791,6 +35057,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutApartmentAttachmentsInput = {
@@ -31819,6 +35086,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type MaintenanceTicketCreateWithoutMessagesInput = {
@@ -32168,6 +35436,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupervisorReviewsInput = {
@@ -32181,6 +35450,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupervisorReviewsInput = {
@@ -32300,6 +35570,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisorReviewsInput = {
@@ -32313,6 +35584,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CleaningTaskUpsertWithoutSupervisorReviewsInput = {
@@ -32443,6 +35715,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutSupervisorsInput = {
@@ -32471,6 +35744,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutSupervisorsInput = {
@@ -32489,6 +35763,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupervisedApartmentsInput = {
@@ -32502,6 +35777,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupervisedApartmentsInput = {
@@ -32546,6 +35822,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutSupervisorsInput = {
@@ -32574,6 +35851,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutSupervisedApartmentsInput = {
@@ -32598,6 +35876,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisedApartmentsInput = {
@@ -32611,6 +35890,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ApartmentCreateWithoutOwnersInput = {
@@ -32639,6 +35919,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutOwnersInput = {
@@ -32667,6 +35948,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutOwnersInput = {
@@ -32685,6 +35967,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedApartmentsInput = {
@@ -32698,6 +35981,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedApartmentsInput = {
@@ -32742,6 +36026,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutOwnersInput = {
@@ -32770,6 +36055,7 @@ export namespace Prisma {
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutOwnedApartmentsInput = {
@@ -32794,6 +36080,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedApartmentsInput = {
@@ -32807,6 +36094,7 @@ export namespace Prisma {
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ManagerChatMessageCreateWithoutSessionInput = {
@@ -32900,6 +36188,210 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateWithoutPushSubscriptionsInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPushSubscriptionsInput, UserUncheckedCreateWithoutPushSubscriptionsInput>
+  }
+
+  export type UserUpsertWithoutPushSubscriptionsInput = {
+    update: XOR<UserUpdateWithoutPushSubscriptionsInput, UserUncheckedUpdateWithoutPushSubscriptionsInput>
+    create: XOR<UserCreateWithoutPushSubscriptionsInput, UserUncheckedCreateWithoutPushSubscriptionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPushSubscriptionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPushSubscriptionsInput, UserUncheckedUpdateWithoutPushSubscriptionsInput>
+  }
+
+  export type UserUpdateWithoutPushSubscriptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ApartmentCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bookings?: BookingCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentUncheckedCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentCreateOrConnectWithoutProductsInput = {
+    where: ApartmentWhereUniqueInput
+    create: XOR<ApartmentCreateWithoutProductsInput, ApartmentUncheckedCreateWithoutProductsInput>
+  }
+
+  export type ApartmentUpsertWithoutProductsInput = {
+    update: XOR<ApartmentUpdateWithoutProductsInput, ApartmentUncheckedUpdateWithoutProductsInput>
+    create: XOR<ApartmentCreateWithoutProductsInput, ApartmentUncheckedCreateWithoutProductsInput>
+    where?: ApartmentWhereInput
+  }
+
+  export type ApartmentUpdateToOneWithWhereWithoutProductsInput = {
+    where?: ApartmentWhereInput
+    data: XOR<ApartmentUpdateWithoutProductsInput, ApartmentUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type ApartmentUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookings?: BookingUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type ApartmentUncheckedUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+  }
+
   export type CleaningTaskCreateManyAssignedToInput = {
     id?: string
     apartmentId: string
@@ -32948,6 +36440,14 @@ export namespace Prisma {
 
   export type ApartmentOwnerCreateManyUserInput = {
     apartmentId: string
+  }
+
+  export type PushSubscriptionCreateManyUserInput = {
+    id?: string
+    endpoint: string
+    p256dh: string
+    auth: string
+    createdAt?: Date | string
   }
 
   export type CleaningTaskUpdateWithoutAssignedToInput = {
@@ -33116,6 +36616,30 @@ export namespace Prisma {
     apartmentId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type PushSubscriptionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushSubscriptionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushSubscriptionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    p256dh?: StringFieldUpdateOperationsInput | string
+    auth?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type BookingCreateManyApartmentInput = {
     id?: string
     guestName?: string | null
@@ -33179,6 +36703,7 @@ export namespace Prisma {
     title: string
     message: string
     isRead?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -33212,6 +36737,19 @@ export namespace Prisma {
 
   export type ApartmentOwnerCreateManyApartmentInput = {
     userId: string
+  }
+
+  export type ApartmentProductCreateManyApartmentInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    consumptionType?: string
+    consumptionValue?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type BookingUpdateWithoutApartmentInput = {
@@ -33409,6 +36947,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -33418,6 +36957,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -33427,6 +36967,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     message?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -33524,6 +37065,45 @@ export namespace Prisma {
 
   export type ApartmentOwnerUncheckedUpdateManyWithoutApartmentInput = {
     userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ApartmentProductUpdateWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    consumptionType?: StringFieldUpdateOperationsInput | string
+    consumptionValue?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApartmentProductUncheckedUpdateWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    consumptionType?: StringFieldUpdateOperationsInput | string
+    consumptionValue?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApartmentProductUncheckedUpdateManyWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    consumptionType?: StringFieldUpdateOperationsInput | string
+    consumptionValue?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CleaningTaskMessageCreateManyCleaningTaskInput = {

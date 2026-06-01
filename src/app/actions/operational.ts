@@ -7,6 +7,8 @@ import { prisma } from "@/src/lib/prisma";
 import type { Prisma } from "@/src/generated/prisma/client";
 import { evaluateChecklistFormula } from "@/src/lib/formulas";
 import { parseRomeDateTime, preserveRomeTimeOnDate, setRomeTimeOnDate } from "@/src/lib/rome-datetime";
+import { sendPushToUser, sendPushToRole, sendPushToRoles } from "@/src/lib/push";
+import type { Role } from "@/src/generated/prisma/client";
 
 type ChecklistSnapshotItem = {
   id: string;
@@ -307,6 +309,17 @@ export async function createCleaningTask(prevState: any, formData: FormData) {
     },
   });
 
+  // Push al cleaner assegnato
+  if (assignedToId) {
+    const apt = await prisma.apartment.findUnique({ where: { id: apartmentId }, select: { name: true } });
+    await sendPushToUser(assignedToId, {
+      title: "🧹 Nuova pulizia assegnata",
+      body: `Hai una nuova pulizia presso ${apt?.name ?? "un appartamento"}.`,
+      url: "/dashboard/cleaner",
+      tag: "cleaning-assigned",
+    }).catch(console.error);
+  }
+
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath("/dashboard/cleaner");
@@ -349,6 +362,19 @@ export async function updateCleaningTask(id: string, prevState: any, formData: F
     where: { id: targetId },
     select: { id: true, date: true, apartmentId: true, assignedToId: true, notes: true, status: true }
   });
+
+  // Push al cleaner se è stato (ri)assegnato
+  const newAssignee = afterUpdate?.assignedToId;
+  const oldAssignee = beforeUpdate?.assignedToId;
+  if (newAssignee && newAssignee !== oldAssignee) {
+    const apt = await prisma.apartment.findUnique({ where: { id: apartmentId }, select: { name: true } });
+    await sendPushToUser(newAssignee, {
+      title: "🧹 Nuova pulizia assegnata",
+      body: `Hai una nuova pulizia presso ${apt?.name ?? "un appartamento"}.`,
+      url: "/dashboard/cleaner",
+      tag: "cleaning-assigned",
+    }).catch(console.error);
+  }
 
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/cleanings");
@@ -460,6 +486,28 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
   const uploadResult = await uploadMaintenanceAttachment(ticket.id, formData);
   if (!uploadResult.success) {
     return { error: uploadResult.error || "Errore durante il caricamento allegato." };
+  }
+
+  const apt = await prisma.apartment.findUnique({ where: { id: apartmentId }, select: { name: true } });
+
+  // Push al tecnico assegnato
+  if (assignedToId) {
+    await sendPushToUser(assignedToId, {
+      title: "🔧 Nuovo ticket assegnato",
+      body: `"${title}" presso ${apt?.name ?? "un appartamento"}.`,
+      url: "/dashboard/maintenance",
+      tag: `maintenance-assigned-${ticket.id}`,
+    }).catch(console.error);
+  }
+
+  // Push al manager se urgente
+  if (priority === "URGENTE") {
+    await sendPushToRole("MANAGER" as Role, {
+      title: "⚠️ Ticket urgente aperto",
+      body: `"${title}" presso ${apt?.name ?? "un appartamento"} richiede attenzione immediata.`,
+      url: `/dashboard/manager/maintenance/${ticket.id}/edit`,
+      tag: `maintenance-urgent-${ticket.id}`,
+    }).catch(console.error);
   }
 
   revalidatePath("/dashboard/manager/maintenance");
@@ -605,6 +653,15 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
         },
       }),
     ]);
+    // Push a manager e supervisor
+    const cleanerName = task.assignedTo?.name ?? "Il cleaner";
+    const aptName = apartment?.name ?? "un appartamento";
+    await sendPushToRoles(["MANAGER" as Role, "SUPERVISOR" as Role], {
+      title: "🧹 Pulizia da verificare",
+      body: `${cleanerName} ha completato la pulizia presso ${aptName}.`,
+      url: `/dashboard/manager/cleanings/${id}/edit`,
+      tag: `cleaning-review-${id}`,
+    }).catch(console.error);
   }
 
   revalidatePath("/dashboard/cleaner");
@@ -843,6 +900,15 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
         },
       }),
     ]);
+    // Push a manager e supervisor
+    const techName = ticket.assignedTo?.name ?? "Il tecnico";
+    const aptName = apartment?.name ?? "un appartamento";
+    await sendPushToRoles(["MANAGER" as Role, "SUPERVISOR" as Role], {
+      title: "🔧 Ticket finito — da verificare",
+      body: `${techName} ha completato "${ticket.title}" presso ${aptName}.`,
+      url: `/dashboard/manager/maintenance/${id}/edit`,
+      tag: `maintenance-review-${id}`,
+    }).catch(console.error);
   }
 
   revalidatePath("/dashboard/maintenance");
@@ -1064,6 +1130,29 @@ export async function createTicketMessage(ticketId: string, prevState: any, form
       }
     }
 
+    // Push al destinatario del messaggio
+    const ticket = await prisma.maintenanceTicket.findUnique({
+      where: { id: ticketId },
+      select: { assignedToId: true, title: true },
+    });
+    if (role === "MANAGER" && ticket?.assignedToId) {
+      // Manager scrive al tecnico
+      await sendPushToUser(ticket.assignedToId, {
+        title: `💬 Messaggio da Manager`,
+        body: text ? `${senderName}: ${text.slice(0, 80)}` : `${senderName} ha inviato un allegato`,
+        url: `/manutenzione/${ticketId}`,
+        tag: `chat-maintenance-${ticketId}`,
+      }).catch(console.error);
+    } else if (role !== "MANAGER") {
+      // Tecnico scrive al manager
+      await sendPushToRole("MANAGER" as Role, {
+        title: `💬 Messaggio da ${senderName}`,
+        body: text ? text.slice(0, 80) : "Ha inviato un allegato",
+        url: `/dashboard/manager/maintenance/${ticketId}/edit`,
+        tag: `chat-maintenance-${ticketId}`,
+      }).catch(console.error);
+    }
+
     revalidatePath("/dashboard/maintenance");
     revalidatePath("/dashboard/manager/maintenance");
     revalidatePath(`/dashboard/manager/maintenance/${ticketId}/edit`);
@@ -1114,6 +1203,29 @@ export async function createCleaningTaskMessage(taskId: string, prevState: any, 
         await prisma.cleaningTaskMessage.delete({ where: { id: message.id } });
         return { error: uploadResult.error || "Errore durante il caricamento allegato." };
       }
+    }
+
+    // Push al destinatario del messaggio
+    const task = await prisma.cleaningTask.findUnique({
+      where: { id: taskId },
+      select: { assignedToId: true },
+    });
+    if (role === "MANAGER" && task?.assignedToId) {
+      // Manager scrive al cleaner
+      await sendPushToUser(task.assignedToId, {
+        title: `💬 Messaggio da Manager`,
+        body: text ? `${senderName}: ${text.slice(0, 80)}` : `${senderName} ha inviato un allegato`,
+        url: `/dashboard/cleaner`,
+        tag: `chat-cleaning-${taskId}`,
+      }).catch(console.error);
+    } else if (role !== "MANAGER") {
+      // Cleaner scrive al manager
+      await sendPushToRole("MANAGER" as Role, {
+        title: `💬 Messaggio da ${senderName}`,
+        body: text ? text.slice(0, 80) : "Ha inviato un allegato",
+        url: `/dashboard/manager/cleanings/${taskId}/edit`,
+        tag: `chat-cleaning-${taskId}`,
+      }).catch(console.error);
     }
 
     revalidatePath("/dashboard/cleaner");

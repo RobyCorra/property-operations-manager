@@ -168,6 +168,7 @@ exports.Prisma.NotificationScalarFieldEnum = {
   title: 'title',
   message: 'message',
   isRead: 'isRead',
+  readAt: 'readAt',
   createdAt: 'createdAt',
   apartmentId: 'apartmentId'
 };
@@ -316,6 +317,29 @@ exports.Prisma.ManagerChatMessageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PushSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  endpoint: 'endpoint',
+  p256dh: 'p256dh',
+  auth: 'auth',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ApartmentProductScalarFieldEnum = {
+  id: 'id',
+  apartmentId: 'apartmentId',
+  name: 'name',
+  emoji: 'emoji',
+  unit: 'unit',
+  stock: 'stock',
+  minStock: 'minStock',
+  consumptionType: 'consumptionType',
+  consumptionValue: 'consumptionValue',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -371,7 +395,9 @@ exports.Prisma.ModelName = {
   ApartmentSupervisor: 'ApartmentSupervisor',
   ApartmentOwner: 'ApartmentOwner',
   ManagerChatSession: 'ManagerChatSession',
-  ManagerChatMessage: 'ManagerChatMessage'
+  ManagerChatMessage: 'ManagerChatMessage',
+  PushSubscription: 'PushSubscription',
+  ApartmentProduct: 'ApartmentProduct'
 };
 
 /**

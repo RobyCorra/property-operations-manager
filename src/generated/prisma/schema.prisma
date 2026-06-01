@@ -19,6 +19,7 @@ model User {
   supervisorReviews    SupervisorReview[]    @relation("SupervisorReviews")
   supervisedApartments ApartmentSupervisor[]
   ownedApartments      ApartmentOwner[]
+  pushSubscriptions    PushSubscription[]
 }
 
 model Apartment {
@@ -48,6 +49,7 @@ model Apartment {
   apartmentAttachments ApartmentAttachment[]
   supervisors          ApartmentSupervisor[]
   owners               ApartmentOwner[]
+  products             ApartmentProduct[]
 }
 
 model ChecklistItem {
@@ -70,6 +72,7 @@ model Notification {
   title       String
   message     String
   isRead      Boolean    @default(false)
+  readAt      DateTime?
   createdAt   DateTime   @default(now())
   apartmentId String?
   apartment   Apartment? @relation(fields: [apartmentId], references: [id])
@@ -290,4 +293,33 @@ enum Role {
 enum AIAssistantMessageRole {
   USER
   ASSISTANT
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model ApartmentProduct {
+  id               String    @id @default(uuid())
+  apartmentId      String
+  apartment        Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  name             String
+  emoji            String    @default("📦")
+  unit             String    @default("pz")
+  stock            Int       @default(0)
+  minStock         Int       @default(0)
+  consumptionType  String    @default("STATIC")
+  consumptionValue Float     @default(1)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([apartmentId])
 }

@@ -4,6 +4,8 @@ import { prisma } from "@/src/lib/prisma";
 import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { updateMaintenanceStatus } from "@/src/app/actions/operational";
+import { sendPushToRole } from "@/src/lib/push";
+import type { Role } from "@/src/generated/prisma/client";
 
 /** Genera (o rigenera) il token di accesso pubblico per un ticket di manutenzione. */
 export async function generateMaintenanceAccessToken(ticketId: string): Promise<string> {
@@ -84,6 +86,14 @@ export async function sendMaintenancePublicNote(
 
   revalidatePath(`/dashboard/manager/maintenance/${ticketId}/edit`);
   revalidatePath("/dashboard/manager/maintenance");
+
+  // Push al manager
+  await sendPushToRole("MANAGER" as Role, {
+    title: `💬 Messaggio da ${senderName}`,
+    body: text.trim() ? text.trim().slice(0, 80) : "Ha inviato un allegato",
+    url: `/dashboard/manager/maintenance/${ticketId}/edit`,
+    tag: `chat-maintenance-${ticketId}`,
+  }).catch((e) => console.error("[Push] sendMaintenancePublicNote error:", e));
 
   return {
     id: message.id,

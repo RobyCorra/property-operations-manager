@@ -118,7 +118,14 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                             lastSyncAt={apt.lastSyncAt} 
                         />
                         )}
-                        <Link 
+                        <Link
+                        href={`/dashboard/manager/apartments/${apt.id}/products`}
+                        className="h-10 px-5 flex items-center gap-2 bg-violet-500/5 text-violet-600 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-violet-500 hover:text-white transition-all border border-violet-500/10"
+                        >
+                        <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
+                        Prodotti
+                        </Link>
+                        <Link
                         href={`/dashboard/manager/apartments/${apt.id}/checklist`}
                         className="h-10 px-5 flex items-center gap-2 bg-emerald-500/5 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-emerald-500 hover:text-white transition-all border border-emerald-500/10"
                         >

@@ -12,6 +12,7 @@ import type { MaintenanceTaskItem } from "@/src/app/actions/maintenance-token";
 import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableMaintenanceCard from "@/src/components/expandable-maintenance-card";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import PushPermissionRequest from "@/src/components/push-permission";
 import {
   LogOut,
   Navigation,
@@ -139,6 +140,7 @@ export default async function MaintenanceDashboardPage({
   };
 
   return (
+    <>
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-6xl mx-auto space-y-12">
 
@@ -450,5 +452,7 @@ export default async function MaintenanceDashboardPage({
         </form>
       </nav>
     </main>
+    <PushPermissionRequest />
+    </>
   );
 }

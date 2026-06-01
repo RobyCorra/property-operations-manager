@@ -141,9 +141,55 @@ export default function NotificationBell({ initialNotifications, serverDate }: N
               </div>
             )}
           </div>
+
+          {/* Footer: testa push */}
+          <PushTestFooter />
         </div>
       )}
     </div>
 
+  );
+}
+
+function PushTestFooter() {
+  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
+  const [subCount, setSubCount] = useState<number | null>(null);
+
+  async function checkSubs() {
+    try {
+      const res = await fetch("/api/push/debug");
+      const data = await res.json();
+      setSubCount(data.total ?? 0);
+    } catch { setSubCount(-1); }
+  }
+
+  async function sendTest() {
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/push/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target: "self" }),
+      });
+      setStatus(res.ok ? "ok" : "error");
+      setTimeout(() => setStatus("idle"), 3000);
+    } catch { setStatus("error"); setTimeout(() => setStatus("idle"), 3000); }
+  }
+
+  useEffect(() => { checkSubs(); }, []);
+
+  return (
+    <div className="border-t border-slate-100 px-4 py-3 flex items-center justify-between gap-2">
+      <span className="text-[10px] text-slate-400">
+        {subCount === null ? "..." : subCount === -1 ? "Errore DB" : `${subCount} dispositivi registrati`}
+      </span>
+      <button
+        onClick={sendTest}
+        disabled={status === "sending"}
+        className="text-[10px] font-bold text-violet-600 hover:text-violet-800 uppercase tracking-wider disabled:opacity-40"
+      >
+        {status === "idle" ? "🔔 Testa push" : status === "sending" ? "Invio..." : status === "ok" ? "✅ Inviato" : "❌ Errore"}
+      </button>
+    </div>
   );
 }

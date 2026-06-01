@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import { logoutAction } from "@/src/app/actions/auth";
 import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
 import { LogOut, ClipboardList, Wrench, Home, Clock, Building2 } from "lucide-react";
+import PushPermissionRequest from "@/src/components/push-permission";
 
 export default async function SupervisorDashboardPage() {
   const cookieStore = await cookies();
@@ -81,6 +82,7 @@ export default async function SupervisorDashboardPage() {
   const totalPending = correctionPendingTasks.length + ticketsCorrectionPending.length;
 
   return (
+    <>
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-4xl mx-auto space-y-10">
 
@@ -329,5 +331,7 @@ export default async function SupervisorDashboardPage() {
         </form>
       </nav>
     </main>
+    <PushPermissionRequest />
+    </>
   );
 }
