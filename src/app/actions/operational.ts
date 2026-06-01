@@ -1140,7 +1140,7 @@ export async function createTicketMessage(ticketId: string, prevState: any, form
       await sendPushToUser(ticket.assignedToId, {
         title: `💬 Messaggio da Manager`,
         body: text ? `${senderName}: ${text.slice(0, 80)}` : `${senderName} ha inviato un allegato`,
-        url: `/manutenzione/${ticketId}`,
+        url: `/dashboard/maintenance`,
         tag: `chat-maintenance-${ticketId}`,
       }).catch(console.error);
     } else if (role !== "MANAGER") {
@@ -1215,7 +1215,7 @@ export async function createCleaningTaskMessage(taskId: string, prevState: any, 
       await sendPushToUser(task.assignedToId, {
         title: `💬 Messaggio da Manager`,
         body: text ? `${senderName}: ${text.slice(0, 80)}` : `${senderName} ha inviato un allegato`,
-        url: `/dashboard/cleaner`,
+        url: `/dashboard/cleaner/task/${taskId}`,
         tag: `chat-cleaning-${taskId}`,
       }).catch(console.error);
     } else if (role !== "MANAGER") {
