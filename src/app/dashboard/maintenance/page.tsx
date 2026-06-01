@@ -197,12 +197,6 @@ export default async function MaintenanceDashboardPage({
 
               return (
                 <>
-                  {hasUnreadMsg && (
-                    <MarkMessagesRead
-                      ticketId={ticket.id}
-                      markAsRead={markMaintenanceMessagesReadByWorker}
-                    />
-                  )}
                 <ExpandableMaintenanceCard
                   key={ticket.id}
                   className={`space-y-5 rounded-[2.5rem] border p-5 shadow-2xl backdrop-blur-xl lg:p-7 ${
@@ -276,6 +270,12 @@ export default async function MaintenanceDashboardPage({
                   )}
                   expandedContent={(
                     <>
+                      {hasUnreadMsg && (
+                        <MarkMessagesRead
+                          ticketId={ticket.id}
+                          markAsRead={markMaintenanceMessagesReadByWorker}
+                        />
+                      )}
                       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         {/* Azione / Tempi */}
                         <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
