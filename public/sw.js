@@ -29,17 +29,18 @@ self.addEventListener("push", (event) => {
   }
 
   event.waitUntil(
-    self.registration.showNotification(payload.title, {
-      body: payload.body,
-      icon: "/icons/icon-192.png",
-      tag: payload.tag,
-      data: { url: payload.url },
-    }).then(() => {
-      // Imposta il badge sull'icona PWA (supportato su iOS 16.4+ e Chrome desktop)
-      if ("setAppBadge" in self.navigator) {
-        return self.navigator.setAppBadge().catch(() => {});
-      }
-    })
+    Promise.all([
+      self.registration.showNotification(payload.title, {
+        body: payload.body,
+        icon: "/icons/icon-192.png",
+        tag: payload.tag,
+        data: { url: payload.url },
+      }),
+      // Badge sull'icona PWA (iOS 16.4+ e Chrome installato come PWA)
+      "setAppBadge" in self.navigator
+        ? self.navigator.setAppBadge(1).catch(() => {})
+        : Promise.resolve(),
+    ])
   );
 });
 
