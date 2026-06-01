@@ -211,6 +211,7 @@ model Message {
   attachmentId        String?
   attachment          Attachment?       @relation(fields: [attachmentId], references: [id])
   readByManagerAt     DateTime?
+  readByWorkerAt      DateTime?
 }
 
 model CleaningTaskMessage {
@@ -224,6 +225,7 @@ model CleaningTaskMessage {
   attachmentId    String?
   attachment      Attachment?  @relation(fields: [attachmentId], references: [id])
   readByManagerAt DateTime?
+  readByWorkerAt  DateTime?
 }
 
 model SupervisorReview {

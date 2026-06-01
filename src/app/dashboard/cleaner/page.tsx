@@ -199,7 +199,7 @@ export default async function CleanerDashboardPage() {
                   className={`space-y-5 rounded-[2.5rem] border p-5 shadow-xl backdrop-blur-xl transition-all duration-500 lg:p-7 ${
                     (() => {
                       const msgs = (task as any).messages ?? [];
-                      const hasUnread = msgs.length > 0 && msgs[msgs.length - 1].role === "MANAGER";
+                      const hasUnread = msgs.some((m: any) => m.role === "MANAGER" && !m.readByWorkerAt);
                       if (hasUnread) return "border-rose-400 bg-white/80 ring-2 ring-rose-400/40 shadow-rose-100";
                       if (task.status === "IN_PROGRESS") return "border-violet-200/60 bg-white/80 ring-2 ring-violet-500/20";
                       if (task.status === "APPROVED" || task.status === "COMPLETED") return "border-emerald-200/60 bg-emerald-50/60";

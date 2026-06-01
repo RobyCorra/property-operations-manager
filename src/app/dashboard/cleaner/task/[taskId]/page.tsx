@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import PublicCleaningView from "@/src/components/public-cleaning-view";
-import { getCleaningTaskMessages } from "@/src/app/actions/operational";
+import { getCleaningTaskMessages, markCleaningMessagesReadByWorker } from "@/src/app/actions/operational";
 import { ChevronLeft } from "lucide-react";
 
 function formatDateFull(date: Date): string {
@@ -54,6 +54,9 @@ export default async function CleanerTaskPage({
   ]);
 
   if (!task) notFound();
+
+  // Marca i messaggi del manager come letti dal worker
+  await markCleaningMessagesReadByWorker(taskId);
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
   const dateLabel = formatDateFull(task.date as Date);

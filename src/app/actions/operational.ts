@@ -1512,3 +1512,29 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
     return { success: false, error: err.message || "Errore durante l'aggiornamento." };
   }
 }
+
+// ── Mark cleaning task messages as read by worker ────────────────────────────
+export async function markCleaningMessagesReadByWorker(taskId: string) {
+  await prisma.cleaningTaskMessage.updateMany({
+    where: {
+      cleaningTaskId: taskId,
+      role: "MANAGER",
+      readByWorkerAt: null,
+    },
+    data: { readByWorkerAt: new Date() },
+  });
+  revalidatePath("/dashboard/cleaner");
+}
+
+// ── Mark maintenance messages as read by worker ──────────────────────────────
+export async function markMaintenanceMessagesReadByWorker(ticketId: string) {
+  await prisma.message.updateMany({
+    where: {
+      maintenanceTicketId: ticketId,
+      role: "MANAGER",
+      readByWorkerAt: null,
+    },
+    data: { readByWorkerAt: new Date() },
+  });
+  revalidatePath("/dashboard/maintenance");
+}

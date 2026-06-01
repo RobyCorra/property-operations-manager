@@ -2,7 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
-import { updateMaintenanceStatus } from "@/src/app/actions/operational";
+import { updateMaintenanceStatus, markMaintenanceMessagesReadByWorker } from "@/src/app/actions/operational";
+import MarkMessagesRead from "@/src/components/mark-messages-read";
 import StatusUpdateButton from "@/src/components/status-update-button";
 import { prisma } from "@/src/lib/prisma";
 import AIAssistant from "@/src/components/ai-assistant";
@@ -192,16 +193,20 @@ export default async function MaintenanceDashboardPage({
             {user.maintenanceTickets.map((ticket: MaintenanceTicketView) => {
               const ticketAttachments = linkedAttachments({ attachments: ticket.attachments, messages: ticket.messages });
 
+              const hasUnreadMsg = ticket.messages?.some((m: any) => m.role === "MANAGER" && !m.readByWorkerAt) ?? false;
+
               return (
+                <>
+                  {hasUnreadMsg && (
+                    <MarkMessagesRead
+                      ticketId={ticket.id}
+                      markAsRead={markMaintenanceMessagesReadByWorker}
+                    />
+                  )}
                 <ExpandableMaintenanceCard
                   key={ticket.id}
                   className={`space-y-5 rounded-[2.5rem] border p-5 shadow-2xl backdrop-blur-xl lg:p-7 ${
-                    (() => {
-                      const msgs = ticket.messages ?? [];
-                      const hasUnread = msgs.length > 0 && msgs[msgs.length - 1].role === "MANAGER";
-                      if (hasUnread) return "border-rose-400 bg-white/80 ring-2 ring-rose-400/40 shadow-rose-100";
-                      return "border-white/60 bg-white/55 shadow-black/5";
-                    })()
+                    hasUnreadMsg ? "border-rose-400 bg-white/80 ring-2 ring-rose-400/40 shadow-rose-100" : "border-white/60 bg-white/55 shadow-black/5"
                   }`}
                   headerMain={(
                     <div className="min-w-0 space-y-2">
@@ -410,6 +415,7 @@ export default async function MaintenanceDashboardPage({
                     </>
                   )}
                 />
+                </>
               );
             })}
 
