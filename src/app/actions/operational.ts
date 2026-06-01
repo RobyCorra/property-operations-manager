@@ -1515,6 +1515,8 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
 
 // ── Mark cleaning task messages as read by worker ────────────────────────────
 export async function markCleaningMessagesReadByWorker(taskId: string) {
+  // Chiamata da Server Component (page render) — no revalidatePath permesso lì.
+  // La dashboard cleaner è server-rendered fresh ad ogni visita, nessuna cache da invalidare.
   await prisma.cleaningTaskMessage.updateMany({
     where: {
       cleaningTaskId: taskId,
@@ -1523,11 +1525,11 @@ export async function markCleaningMessagesReadByWorker(taskId: string) {
     },
     data: { readByWorkerAt: new Date() },
   });
-  revalidatePath("/dashboard/cleaner");
 }
 
 // ── Mark maintenance messages as read by worker ──────────────────────────────
 export async function markMaintenanceMessagesReadByWorker(ticketId: string) {
+  // Chiamata da Client Component (useEffect) — revalidatePath è OK qui.
   await prisma.message.updateMany({
     where: {
       maintenanceTicketId: ticketId,
