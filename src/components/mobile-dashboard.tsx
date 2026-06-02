@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
@@ -331,6 +331,30 @@ export default function MobileDashboard({
   const nowDate = new Date();
   const [calMonth, setCalMonth]             = useState({ year: nowDate.getFullYear(), month: nowDate.getMonth() });
 
+  // Restaura lo stato del calendario dal sessionStorage quando torna indietro
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedCalendarState = sessionStorage.getItem('mobileCalendarState');
+      if (savedCalendarState) {
+        try {
+          const state = JSON.parse(savedCalendarState);
+          if (state.selectedApt) {
+            setSelectedApt(state.selectedApt);
+            setCalendarTab(state.calendarTab || "calendar");
+            setCalMonth(state.calMonth || { year: nowDate.getFullYear(), month: nowDate.getMonth() });
+            setSelectedDay(state.selectedDay || null);
+            if (state.selectedApt.id && calendarDataByApt[state.selectedApt.id]) {
+              setCalendarData(calendarDataByApt[state.selectedApt.id]);
+            }
+          }
+          sessionStorage.removeItem('mobileCalendarState');
+        } catch (e) {
+          console.error('Failed to restore calendar state:', e);
+        }
+      }
+    }
+  }, []);
+
   function openApartmentCalendar(apt: MobileApartmentData) {
     setSelectedApt(apt);
     setCalendarTab("calendar");
@@ -367,6 +391,19 @@ export default function MobileDashboard({
   function openSearch() {
     closeSidebar();
     setSearchOpen(true);
+  }
+
+  // Salva lo stato del calendario nel sessionStorage prima di navigare
+  function saveCalendarStateAndNavigate(href: string) {
+    if (typeof window !== 'undefined' && selectedApt) {
+      sessionStorage.setItem('mobileCalendarState', JSON.stringify({
+        selectedApt,
+        calendarTab,
+        calMonth,
+        selectedDay,
+      }));
+    }
+    // Naviga usando Link normalmente, questo sarà gestito dal browser
   }
 
   // ── Hamburger button (reused in multiple headers) ──────────────────
@@ -868,6 +905,7 @@ export default function MobileDashboard({
                           const label = isCI ? "Check-in" : isCO ? "Check-out" : "In soggiorno";
                           return (
                             <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`}
+                              onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/bookings/${b.id}/edit`)}
                               className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 active:bg-violet-50/40 last:border-b-0">
                               <div className="w-1 self-stretch rounded-full bg-violet-500 shrink-0" />
                               <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center shrink-0 text-base">🏠</div>
@@ -886,6 +924,7 @@ export default function MobileDashboard({
                           const info = cleaningStatusInfo(c);
                           return (
                             <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`}
+                              onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/cleanings/${c.id}`)}
                               className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 active:bg-blue-50/40 last:border-b-0">
                               <div className="w-1 self-stretch rounded-full bg-blue-400 shrink-0" />
                               <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-base">🧹</div>
@@ -903,6 +942,7 @@ export default function MobileDashboard({
                           const info = ticketStatusInfo(t);
                           return (
                             <Link key={t.id} href={`/dashboard/manager/maintenance/${t.id}`}
+                              onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/maintenance/${t.id}`)}
                               className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 active:bg-red-50/40 last:border-b-0">
                               <div className="w-1 self-stretch rounded-full shrink-0" style={{ backgroundColor: info.barHex }} />
                               <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-base" style={{ backgroundColor: info.barHex + "18" }}>🔧</div>
@@ -1142,7 +1182,7 @@ export default function MobileDashboard({
                   {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
                   {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessuna prenotazione in questa data</div>}
                   {items.map((b) => (
-                    <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                    <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`} onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/bookings/${b.id}/edit`)} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
                       <div className="h-1 bg-violet-500" />
                       <div className="px-4 py-3">
                         <div className="flex items-start justify-between gap-2">
@@ -1180,7 +1220,7 @@ export default function MobileDashboard({
                   {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
                   {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia in questa data</div>}
                   {items.map((c) => (
-                    <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                    <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`} onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/cleanings/${c.id}`)} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
                       <div className="h-1 bg-blue-400" />
                       <div className="px-4 py-3 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-lg">🧹</div>
@@ -1214,7 +1254,7 @@ export default function MobileDashboard({
                   {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
                   {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessun ticket in questa data</div>}
                   {items.map((t) => (
-                    <Link key={t.id} href={`/dashboard/manager/maintenance/${t.id}`} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
+                    <Link key={t.id} href={`/dashboard/manager/maintenance/${t.id}`} onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/maintenance/${t.id}`)} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
                       <div className="h-1 bg-rose-400" />
                       <div className="px-4 py-3">
                         <div className="flex items-start justify-between gap-2 mb-1">
