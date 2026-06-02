@@ -411,7 +411,7 @@ export default function MobileDashboard({
     <button
       onClick={openSidebar}
       aria-label="Apri menu"
-      className="w-10 h-10 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-1.5 px-2.5 shrink-0"
+      className="w-12 h-12 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-1.5 px-2.5 shrink-0"
     >
       <span className="block w-full h-0.5 bg-slate-700 rounded-full" />
       <span className="block w-4/5 h-0.5 bg-slate-700 rounded-full self-start" />
@@ -432,7 +432,6 @@ export default function MobileDashboard({
           <HamburgerBtn />
           <div className="flex-1">
             <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{dateLabel}</p>
-            <h1 className="text-[20px] font-bold text-slate-900 leading-tight">Buongiorno 👋</h1>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
