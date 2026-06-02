@@ -1050,6 +1050,9 @@ export default function MobileDashboard({
                     ))}
                   </div>
 
+                  {/* Pannello giorno selezionato */}
+                  <SelectedDayPanel />
+
                   {/* ── Legenda ── */}
                   <div className="mb-4 space-y-2">
 
@@ -1116,8 +1119,6 @@ export default function MobileDashboard({
 
                   </div>
 
-                  {/* Pannello giorno selezionato (o oggi di default) */}
-                  <SelectedDayPanel />
                 </div>
               );
             })()}
