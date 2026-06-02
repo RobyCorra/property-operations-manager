@@ -161,7 +161,7 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
       </section>
 
       {/* Mobile Card View */}
-      <div className="md:hidden space-y-3">
+      <div className="md:hidden space-y-2">
         {filteredApartments.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
@@ -171,42 +171,42 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
           </div>
         ) : (
           filteredApartments.map((apt) => (
-            <div key={apt.id} className="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/40 shadow-md overflow-hidden transition-all duration-200 hover:bg-white/60">
-              <div className="p-4 space-y-3">
+            <div key={apt.id} className="bg-white/40 backdrop-blur-xl rounded-xl border border-white/40 shadow-sm overflow-hidden transition-all duration-200 hover:bg-white/60">
+              <div className="p-3 space-y-2">
                 {/* Name and Address */}
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-violet-600 shadow-sm border border-slate-100 shrink-0">
-                    <span className="inline-block w-5 h-5 rounded-full bg-violet-300" />
+                <div className="flex items-start gap-2">
+                  <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-violet-600 shadow-sm border border-slate-100 shrink-0">
+                    <span className="inline-block w-4 h-4 rounded-full bg-violet-300" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-900 tracking-tight uppercase truncate">{apt.name}</p>
-                    <p className="text-[10px] font-medium text-slate-400 mt-1 uppercase tracking-wide truncate">{apt.address}</p>
+                    <p className="text-xs font-semibold text-slate-900 tracking-tight uppercase truncate">{apt.name}</p>
+                    <p className="text-[8px] font-medium text-slate-400 mt-0.5 uppercase tracking-wide truncate">{apt.address}</p>
                   </div>
                 </div>
 
                 {/* Details Grid */}
-                <div className="grid grid-cols-2 gap-2 text-[10px]">
-                  <div className="flex items-center gap-2 font-bold text-slate-700">
-                    <span className="inline-block w-3 h-3 rounded-full bg-slate-300" />
+                <div className="grid grid-cols-2 gap-1.5 text-[8px]">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-700">
+                    <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
                     <span>{apt.maxGuests} ospiti</span>
                   </div>
-                  <div className="flex items-center gap-2 font-bold text-slate-700">
-                    <span className="inline-block w-3 h-3 rounded-full bg-slate-300" />
+                  <div className="flex items-center gap-1.5 font-bold text-slate-700">
+                    <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
                     <span>{apt.squareMeters} m²</span>
                   </div>
-                  <div className="flex items-center gap-2 font-bold text-slate-600">
-                    <span className="inline-block w-3 h-3 rounded-full bg-slate-300" />
+                  <div className="flex items-center gap-1.5 font-bold text-slate-600">
+                    <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
                     <span>{apt.bedrooms} letti</span>
                   </div>
-                  <div className="flex items-center gap-2 font-bold text-slate-600">
-                    <span className="inline-block w-3 h-3 rounded-full bg-slate-300" />
+                  <div className="flex items-center gap-1.5 font-bold text-slate-600">
+                    <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
                     <span>{apt.bathrooms} bagni</span>
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col gap-2 pt-2 border-t border-white/20">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-1.5 pt-1.5 border-t border-white/20">
+                  <div className="flex items-center gap-1.5">
                     {apt.icalUrl && (
                       <div className="flex-1">
                         <SyncIcalButton
@@ -217,21 +217,21 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                     )}
                     <Link
                       href={`/dashboard/manager/apartments/${apt.id}/products`}
-                      className="flex-1 px-3 py-2 flex items-center justify-center gap-1.5 bg-violet-500/5 text-violet-600 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-violet-500 hover:text-white transition-all border border-violet-500/10"
+                      className="flex-1 px-2 py-1.5 flex items-center justify-center gap-1 bg-violet-500/5 text-violet-600 text-[7px] font-black uppercase tracking-widest rounded-md hover:bg-violet-500 hover:text-white transition-all border border-violet-500/10"
                     >
                       Prodotti
                     </Link>
                     <Link
                       href={`/dashboard/manager/apartments/${apt.id}/checklist`}
-                      className="flex-1 px-3 py-2 flex items-center justify-center gap-1.5 bg-emerald-500/5 text-emerald-600 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-emerald-500 hover:text-white transition-all border border-emerald-500/10"
+                      className="flex-1 px-2 py-1.5 flex items-center justify-center gap-1 bg-emerald-500/5 text-emerald-600 text-[7px] font-black uppercase tracking-widest rounded-md hover:bg-emerald-500 hover:text-white transition-all border border-emerald-500/10"
                     >
                       Checklist
                     </Link>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <Link
                       href={`/dashboard/manager/apartments/${apt.id}/edit`}
-                      className="flex-1 px-3 py-2 flex items-center justify-center gap-1.5 rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100 text-[9px] font-bold uppercase"
+                      className="flex-1 px-2 py-1.5 flex items-center justify-center gap-1 rounded-md bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100 text-[7px] font-bold uppercase"
                       title="Modifica"
                     >
                       Modifica

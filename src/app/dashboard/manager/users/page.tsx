@@ -146,20 +146,20 @@ export default async function UsersListPage() {
         </section>
 
         {/* List — Mobile (card view) */}
-        <div className="md:hidden space-y-3">
+        <div className="md:hidden space-y-2">
           {users.map((u: UserView) => (
-            <div key={u.id} className="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/40 shadow-md overflow-hidden transition-all duration-200 hover:bg-white/60">
-              <div className="p-4 space-y-3">
+            <div key={u.id} className="bg-white/40 backdrop-blur-xl rounded-xl border border-white/40 shadow-sm overflow-hidden transition-all duration-200 hover:bg-white/60">
+              <div className="p-3 space-y-2">
                 {/* Name and Role */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
-                      <User size={18} />
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
+                      <User size={16} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 tracking-tight uppercase truncate">{u.name}</p>
-                      <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border shadow-sm mt-1 ${roleColors[u.role] || "bg-white text-slate-400 border-slate-100"}`}>
-                        <Fingerprint size={10} />
+                      <p className="text-xs font-semibold text-slate-900 tracking-tight uppercase truncate">{u.name}</p>
+                      <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest border shadow-sm mt-0.5 ${roleColors[u.role] || "bg-white text-slate-400 border-slate-100"}`}>
+                        <Fingerprint size={8} />
                         {u.role}
                       </div>
                     </div>
@@ -167,26 +167,26 @@ export default async function UsersListPage() {
                 </div>
 
                 {/* Email */}
-                <div className="flex items-center gap-2 text-slate-500 font-medium lowercase text-[10px]">
-                  <Mail size={12} className="text-slate-300 shrink-0" />
+                <div className="flex items-center gap-1.5 text-slate-500 font-medium lowercase text-[9px]">
+                  <Mail size={10} className="text-slate-300 shrink-0" />
                   <span className="truncate">{u.email}</span>
                 </div>
 
                 {/* Date */}
-                <div className="flex items-center gap-2 text-slate-400 text-[9px] font-bold uppercase tracking-widest">
-                  <CalendarDays size={12} className="text-slate-300 shrink-0" />
+                <div className="flex items-center gap-1.5 text-slate-400 text-[8px] font-bold uppercase tracking-widest">
+                  <CalendarDays size={10} className="text-slate-300 shrink-0" />
                   <SafeDate date={u.createdAt} format={{ day: 'numeric', month: 'numeric', year: 'numeric' }} />
                 </div>
 
                 {/* Actions */}
                 {role === "MANAGER" && u.email !== "manager@propertyops.com" && (
-                  <div className="flex items-center gap-2 pt-2 border-t border-white/20">
+                  <div className="flex items-center gap-1.5 pt-1.5 border-t border-white/20">
                     <Link
                       href={`/dashboard/manager/users/${u.id}/edit`}
-                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-all text-[10px] font-bold"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-all text-[8px] font-bold"
                       title="Modifica utente"
                     >
-                      <Pencil size={14} />
+                      <Pencil size={12} />
                       Modifica
                     </Link>
                     <div className="flex-1">
