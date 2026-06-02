@@ -40,6 +40,11 @@ export default function PushPermissionRequest() {
 
   async function ensureSubscribed(): Promise<boolean> {
     try {
+      if (!VAPID_PUBLIC_KEY) {
+        setErrorMsg("VAPID key non configurata in questo ambiente.");
+        return false;
+      }
+
       // Aspetta che il SW sia pronto (max 5s)
       const reg = await Promise.race([
         navigator.serviceWorker.ready,
