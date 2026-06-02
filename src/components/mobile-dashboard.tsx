@@ -906,21 +906,32 @@ export default function MobileDashboard({
                   </div>
 
                   {/* Calendar grid — struttura a settimane con pill prenotazione */}
-                  <div className="bg-white rounded-2xl px-3 pt-2 pb-1 shadow-sm border border-slate-100 mb-3">
+                  <div className="bg-white rounded-2xl pt-2 pb-1 shadow-sm border border-slate-100 mb-3 overflow-hidden">
                     {/* Intestazione giorni */}
-                    <div className="grid grid-cols-7 gap-[2px] mb-1">
-                      {["Lun","Mar","Mer","Gio","Ven","Sab","Dom"].map((d) => (
-                        <div key={d} className="text-center text-[8px] font-black text-slate-400 uppercase py-1">{d}</div>
+                    <div className="grid grid-cols-7" style={{ borderBottom: "2px solid #e2e8f0", borderLeft: "1px solid #e2e8f0" }}>
+                      {["Lun","Mar","Mer","Gio","Ven","Sab","Dom"].map((d, i) => (
+                        <div
+                          key={d}
+                          className="text-center text-[8px] font-black uppercase py-1.5"
+                          style={{
+                            borderRight: "1px solid #e2e8f0",
+                            color: i >= 5 ? "#64748b" : "#94a3b8",
+                            background: i >= 5 ? "#f4f6f9" : "white",
+                          }}
+                        >{d}</div>
                       ))}
                     </div>
 
                     {/* Settimane */}
                     {weeks.map((week, wi) => (
-                      <div key={wi}>
+                      <div key={wi} style={{ borderBottom: wi < weeks.length - 1 ? "2px solid #e2e8f0" : undefined }}>
                         {/* Riga numeri */}
-                        <div className="grid grid-cols-7 gap-[2px]">
+                        <div className="grid grid-cols-7" style={{ borderLeft: "1px solid #e2e8f0" }}>
                           {week.map((d, di) => {
-                            if (!d) return <div key={di} className="h-7" />;
+                            const isWeekend = di >= 5;
+                            if (!d) return (
+                              <div key={di} style={{ height: 32, borderRight: "1px solid #e2e8f0", background: isWeekend ? "#f4f6f9" : undefined }} />
+                            );
                             const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
                             const isToday = ymd === todayYMD;
                             const isSelected = selectedDay === d;
@@ -928,8 +939,13 @@ export default function MobileDashboard({
                               <div
                                 key={di}
                                 onClick={() => setSelectedDay(isSelected ? null : d)}
-                                className="h-7 flex items-center justify-center cursor-pointer rounded-lg"
-                                style={isSelected ? { boxShadow: "0 0 0 2px #1e1b4b" } : undefined}
+                                className="flex items-center justify-center cursor-pointer"
+                                style={{
+                                  height: 32,
+                                  borderRight: "1px solid #e2e8f0",
+                                  background: isWeekend ? "#f4f6f9" : undefined,
+                                  boxShadow: isSelected ? "inset 0 0 0 2px #1e1b4b" : undefined,
+                                }}
                               >
                                 <span
                                   className={`w-6 h-6 flex items-center justify-center rounded-full text-[11px] font-semibold ${isToday ? "bg-violet-600 text-white font-black" : "text-slate-600"}`}
@@ -942,11 +958,12 @@ export default function MobileDashboard({
                         </div>
 
                         {/* Riga pill prenotazione */}
-                        <div className="grid grid-cols-7 gap-[2px] my-[2px]" style={{ height: 24 }}>
+                        <div className="grid grid-cols-7" style={{ height: 24, borderLeft: "1px solid #e2e8f0" }}>
                           {week.map((d, di) => {
+                            const isWeekend = di >= 5;
                             const segs = d ? (bookingSegments.get(d) ?? []) : [];
                             return (
-                              <div key={di} className="relative" style={{ height: 24, overflow: "visible" }}>
+                              <div key={di} className="relative" style={{ height: 24, overflow: "visible", borderRight: "1px solid #e2e8f0", background: isWeekend ? "#f4f6f9" : undefined }}>
                                 {segs.map((seg, si) => {
                                   const isLeft  = seg.type === "ci" || seg.type === "same";
                                   const isRight = seg.type === "co" || seg.type === "same";
@@ -959,13 +976,13 @@ export default function MobileDashboard({
                                       style={{
                                         top: topPct,
                                         transform: "translateY(-50%)",
-                                        left:  isLeft  ? "50%" : -2,
-                                        right: isRight ? "50%" : -2,
-                                        height: 20,
+                                        left:  isLeft  ? "50%" : -1,
+                                        right: isRight ? "50%" : -1,
+                                        height: 18,
                                         background: "#111827",
-                                        borderRadius: seg.type === "ci" ? "10px 0 0 10px" :
-                                                      seg.type === "co" ? "0 10px 10px 0" :
-                                                      seg.type === "same" ? 10 : 0,
+                                        borderRadius: seg.type === "ci" ? "9px 0 0 9px" :
+                                                      seg.type === "co" ? "0 9px 9px 0" :
+                                                      seg.type === "same" ? 9 : 0,
                                         zIndex: 10,
                                         overflow: "hidden",
                                       }}
@@ -984,12 +1001,13 @@ export default function MobileDashboard({
                         </div>
 
                         {/* Riga dot pulizie/ticket */}
-                        <div className="grid grid-cols-7 gap-[2px] mb-1" style={{ height: 10 }}>
+                        <div className="grid grid-cols-7" style={{ height: 14, borderLeft: "1px solid #e2e8f0" }}>
                           {week.map((d, di) => {
+                            const isWeekend = di >= 5;
                             const cleans  = d ? (dayCleaningsMap.get(d) ?? []) : [];
                             const tickets = d ? (dayTicketsMap.get(d) ?? []) : [];
                             return (
-                              <div key={di} className="flex items-center justify-center gap-[2px]">
+                              <div key={di} className="flex items-center justify-center gap-[2px]" style={{ borderRight: "1px solid #e2e8f0", background: isWeekend ? "#f4f6f9" : undefined }}>
                                 {cleans.map((c, ci) => (
                                   <Link key={ci} href={`/dashboard/manager/cleanings/${c.id}`} style={{ display: "flex" }}>
                                     <span style={{ width: 5, height: 5, borderRadius: "50%", background: cleaningDotHex(c), display: "block", flexShrink: 0 }} />
