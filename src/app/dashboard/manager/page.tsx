@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import { getNotifications } from "@/src/app/actions/notification";
@@ -110,15 +111,17 @@ export default async function ManagerDashboardPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   // Fetch all necessary data
   const [apartments, bookings, cleanings, tickets, initialNotifications, unreadMessagesCount] = await Promise.all([
-    prisma.apartment.findMany(),
+    prisma.apartment.findMany({ where: { organizationId: orgId } }),
     prisma.booking.findMany({
-      where: { status: { not: "CANCELLED" } },
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: { apartment: true }
     }),
     prisma.cleaningTask.findMany({
-      where: { status: { not: "CANCELLED" } },
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: {
         apartment: true,
         assignedTo: true,
@@ -131,7 +134,7 @@ export default async function ManagerDashboardPage() {
       }
     }),
     prisma.maintenanceTicket.findMany({
-      where: { status: { not: "CANCELLED" } },
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: { apartment: true, assignedTo: true },
     }),
     getNotifications(),

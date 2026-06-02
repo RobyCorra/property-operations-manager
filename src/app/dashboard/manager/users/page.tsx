@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import DeleteUserButton from "@/src/components/delete-user-button";
 import SafeDate from "@/src/components/safe-date";
@@ -34,7 +35,10 @@ export default async function UsersListPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const users = await prisma.user.findMany({
+    where: { organizationId: orgId },
     orderBy: { createdAt: "desc" },
   });
 

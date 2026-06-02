@@ -8,6 +8,7 @@ import { DEFAULT_CHECKLIST } from "@/src/lib/constants";
 import { generateUniqueApartmentCode } from "@/src/lib/apartment-code";
 import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
 import { geocodeAddress } from "@/src/lib/geocoding";
+import { getCurrentOrg } from "@/src/lib/tenant";
 
 function textValue(formData: FormData, key: string) {
   return (formData.get(key) as string | null) ?? "";
@@ -319,6 +320,8 @@ export async function createApartment(formData: FormData) {
       ? technicalProfile.generalAttachments
       : [];
 
+    const orgId = await getCurrentOrg();
+
     const apartment = await prisma.apartment.create({
       data: {
         id,
@@ -336,6 +339,7 @@ export async function createApartment(formData: FormData) {
         icalUrl: (formData.get("icalUrl") as string | null) || "",
         bedConfig: parseBedConfigFromForm(formData),
         technicalProfile,
+        organizationId: orgId,
         apartmentAttachments: directAttachments.length > 0 ? {
           create: directAttachments.map((attachment) => ({
             filename: attachment.filename || "Allegato",

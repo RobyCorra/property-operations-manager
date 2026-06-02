@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import BookingsListTable from "@/src/components/bookings-list-table";
 import BackButton from "@/src/components/back-button";
@@ -16,9 +17,12 @@ export default async function BookingsListPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const [bookings, apartments] = await Promise.all([
     prisma.booking.findMany({
-      where: { 
+      where: {
+        apartment: { organizationId: orgId },
         OR: [
           { status: { not: "CANCELLED" } },
           { status: null }
@@ -31,7 +35,7 @@ export default async function BookingsListPage() {
         checkInDate: "asc",
       },
     }),
-    prisma.apartment.findMany({ select: { id: true, name: true } })
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } })
   ]);
 
   return (

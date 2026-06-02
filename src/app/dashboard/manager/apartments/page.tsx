@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import ApartmentsListTable from "@/src/components/apartments-list-table";
 import BackButton from "@/src/components/back-button";
@@ -13,7 +14,10 @@ export default async function ApartmentsListPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const apartments = await prisma.apartment.findMany({
+    where: { organizationId: orgId },
     orderBy: { createdAt: "desc" },
   });
 

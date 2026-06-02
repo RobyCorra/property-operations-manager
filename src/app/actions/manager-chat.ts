@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 
 // Today's date at midnight UTC (used as session key)
 function todayUTC(): Date {
@@ -10,9 +11,11 @@ function todayUTC(): Date {
 
 export async function getOrCreateTodaySession() {
   const date = todayUTC();
+  const orgId = await getCurrentOrg();
+
   const session = await prisma.managerChatSession.upsert({
-    where: { date },
-    create: { date },
+    where: { date_organizationId: { date, organizationId: orgId ?? "org_default" } },
+    create: { date, organizationId: orgId },
     update: {},
     include: {
       messages: { orderBy: { createdAt: "asc" } },
@@ -23,8 +26,10 @@ export async function getOrCreateTodaySession() {
 
 export async function getSessionByDate(dateStr: string) {
   const date = new Date(dateStr);
+  const orgId = await getCurrentOrg();
+
   const session = await prisma.managerChatSession.findUnique({
-    where: { date },
+    where: { date_organizationId: { date, organizationId: orgId ?? "org_default" } },
     include: {
       messages: { orderBy: { createdAt: "asc" } },
     },
@@ -51,7 +56,10 @@ export async function getSessionMessages(sessionId: string) {
 }
 
 export async function getSessionDates(): Promise<string[]> {
+  const orgId = await getCurrentOrg();
+
   const sessions = await prisma.managerChatSession.findMany({
+    where: { organizationId: orgId },
     orderBy: { date: "desc" },
     take: 30,
     select: { date: true },

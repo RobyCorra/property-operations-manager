@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import MaintenanceListTable from "@/src/components/maintenance-list-table";
 import BackButton from "@/src/components/back-button";
@@ -13,8 +14,11 @@ export default async function MaintenanceListPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const [tickets, apartments, collaborators] = await Promise.all([
     prisma.maintenanceTicket.findMany({
+      where: { apartment: { organizationId: orgId } },
       include: {
         apartment: true,
         assignedTo: true,
@@ -24,8 +28,8 @@ export default async function MaintenanceListPage() {
         createdAt: "desc",
       },
     }),
-    prisma.apartment.findMany({ select: { id: true, name: true } }),
-    prisma.user.findMany({ where: { role: "MAINTENANCE" }, select: { id: true, name: true } })
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
+    prisma.user.findMany({ where: { role: "MAINTENANCE", organizationId: orgId }, select: { id: true, name: true } })
   ]);
 
   return (

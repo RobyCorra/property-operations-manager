@@ -15,6 +15,7 @@ export async function loginAction(prevState: any, formData: FormData) {
 
   const user = await prisma.user.findUnique({
     where: { email },
+    include: { organization: { select: { id: true } } },
   });
 
   if (!user) {
@@ -29,20 +30,16 @@ export async function loginAction(prevState: any, formData: FormData) {
 
   // Set cookies
   const cookieStore = await cookies();
-  cookieStore.set("role", user.role, { 
-    path: "/", 
+  const cookieOptions = {
+    path: "/",
     maxAge: 60 * 60 * 24, // 1 day
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax"
-  });
-  cookieStore.set("userId", user.id, { 
-    path: "/", 
-    maxAge: 60 * 60 * 24,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax"
-  });
+    sameSite: "lax" as const,
+  };
+  cookieStore.set("role", user.role, cookieOptions);
+  cookieStore.set("userId", user.id, cookieOptions);
+  cookieStore.set("organizationId", user.organization?.id ?? "org_default", cookieOptions);
 
   // Redirect based on role
   if (user.role === "MANAGER") {
@@ -64,5 +61,6 @@ export async function logoutAction() {
   const cookieStore = await cookies();
   cookieStore.set("role", "", { path: "/", maxAge: 0 });
   cookieStore.set("userId", "", { path: "/", maxAge: 0 });
+  cookieStore.set("organizationId", "", { path: "/", maxAge: 0 });
   redirect("/login");
 }

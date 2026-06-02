@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import { enrichCleaningTasksWithNextBooking } from "@/src/app/actions/operational";
 import CleaningsListTable from "@/src/components/cleanings-list-table";
@@ -14,9 +15,11 @@ export default async function CleaningsListPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const [cleanings, apartments, collaborators] = await Promise.all([
     prisma.cleaningTask.findMany({
-      where: { status: { not: "CANCELLED" } },
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: {
         apartment: true,
         assignedTo: true,
@@ -25,8 +28,8 @@ export default async function CleaningsListPage() {
         date: "desc",
       },
     }),
-    prisma.apartment.findMany({ select: { id: true, name: true } }),
-    prisma.user.findMany({ where: { role: "CLEANER" }, select: { id: true, name: true } })
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
+    prisma.user.findMany({ where: { role: "CLEANER", organizationId: orgId }, select: { id: true, name: true } })
   ]);
 
   const enrichedCleanings = await enrichCleaningTasksWithNextBooking(cleanings);

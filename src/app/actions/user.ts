@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import bcrypt from "bcryptjs";
+import { getCurrentOrg } from "@/src/lib/tenant";
 
 type Role = "MANAGER" | "CLEANER" | "MAINTENANCE" | "SUPERVISOR" | "OWNER";
 
@@ -24,9 +25,10 @@ export async function createUser(prevState: any, formData: FormData) {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
+  const orgId = await getCurrentOrg();
 
   const user = await prisma.user.create({
-    data: { name, email, password: passwordHash, role },
+    data: { name, email, password: passwordHash, role, organizationId: orgId },
   });
 
   if (role === "SUPERVISOR" && apartmentIds.length > 0) {
