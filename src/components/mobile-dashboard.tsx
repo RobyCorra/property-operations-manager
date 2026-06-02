@@ -973,9 +973,8 @@ export default function MobileDashboard({
                                   const isLeft  = seg.type === "ci" || seg.type === "same";
                                   const isRight = seg.type === "co" || seg.type === "same";
                                   return (
-                                    <Link
+                                    <div
                                       key={si}
-                                      href={`/dashboard/manager/bookings/${seg.id}/edit`}
                                       className="absolute flex items-center"
                                       style={{
                                         top: "50%",
@@ -996,7 +995,7 @@ export default function MobileDashboard({
                                           👤 {seg.guests}
                                         </span>
                                       )}
-                                    </Link>
+                                    </div>
                                   );
                                 })}
                               </div>
@@ -1013,14 +1012,10 @@ export default function MobileDashboard({
                             return (
                               <div key={di} className="flex items-center justify-center gap-[2px]" style={{ borderRight: "1px solid #e2e8f0", background: isWeekend ? "#f4f6f9" : undefined }}>
                                 {cleans.map((c, ci) => (
-                                  <Link key={ci} href={`/dashboard/manager/cleanings/${c.id}`} style={{ display: "flex" }}>
-                                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: cleaningDotHex(c), display: "block", flexShrink: 0 }} />
-                                  </Link>
+                                  <span key={ci} style={{ width: 5, height: 5, borderRadius: "50%", background: cleaningDotHex(c), display: "block", flexShrink: 0 }} />
                                 ))}
                                 {tickets.map((t, ti) => (
-                                  <Link key={ti} href={`/dashboard/manager/maintenance/${t.id}`} style={{ display: "flex" }}>
-                                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: ticketDotHex(t), display: "block", flexShrink: 0 }} />
-                                  </Link>
+                                  <span key={ti} style={{ width: 5, height: 5, borderRadius: "50%", background: ticketDotHex(t), display: "block", flexShrink: 0 }} />
                                 ))}
                               </div>
                             );
