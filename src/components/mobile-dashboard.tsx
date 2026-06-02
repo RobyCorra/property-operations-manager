@@ -1060,24 +1060,22 @@ export default function MobileDashboard({
                     <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
                       <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Stato Appartamento</p>
                       <div className="space-y-1.5">
-                        {(["GREEN","BLUE","VIOLET","YELLOW","RED"] as const).map((s) => {
-                          const c = aptStatusColors(s);
-                          const labels: Record<string, string> = { GREEN:"Pronto", BLUE:"Non pronto", VIOLET:"In corso", YELLOW:"In verifica", RED:"Occupato" };
-                          return (
-                            <div key={s} className="flex items-center gap-2">
-                              <div className="w-4 h-3.5 rounded-sm shrink-0" style={{ background: `linear-gradient(${c.ciGrad})` }} />
-                              <div className="w-4 h-3.5 rounded-sm shrink-0" style={{ backgroundColor: c.occBg }} />
-                              <div className="w-4 h-3.5 rounded-sm shrink-0" style={{ background: `linear-gradient(${c.coGrad})` }} />
-                              <span className="text-[8px] font-bold" style={{ color: c.textColor }}>{labels[s]}</span>
-                              <span className="text-[7px] text-slate-400">CI · Occ · CO</span>
+                        {([
+                          { color: "#22c55e", label: "Pronto",      textColor: "#15803d" },
+                          { color: "#3b82f6", label: "Non pronto",  textColor: "#1d4ed8" },
+                          { color: "#7c3aed", label: "In corso",    textColor: "#6d28d9" },
+                          { color: "#eab308", label: "In verifica", textColor: "#a16207" },
+                          { color: "#ef4444", label: "Occupato",    textColor: "#b91c1c" },
+                        ] as const).map(({ color, label, textColor }) => (
+                          <div key={label} className="flex items-center gap-2">
+                            <div className="flex shrink-0" style={{ height: 14 }}>
+                              <div style={{ width: 14, background: color, borderRadius: "7px 0 0 7px" }} />
+                              <div style={{ width: 20, background: color }} />
+                              <div style={{ width: 14, background: color, borderRadius: "0 7px 7px 0" }} />
                             </div>
-                          );
-                        })}
-                        {/* Riga stesso giorno CI+CO */}
-                        <div className="flex items-center gap-2 pt-0.5 border-t border-slate-50 mt-1">
-                          <div className="w-4 h-3.5 rounded-sm shrink-0" style={{ background: "linear-gradient(135deg, #f87171 50%, #a7f3d0 50%)" }} />
-                          <span className="text-[8px] font-bold text-slate-600">Stesso giorno CO + CI</span>
-                        </div>
+                            <span className="text-[9px] font-bold" style={{ color: textColor }}>{label}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
