@@ -7,6 +7,16 @@ datasource db {
   provider = "postgresql"
 }
 
+model Organization {
+  id           String       @id @default(cuid())
+  name         String
+  slug         String       @unique
+  createdAt    DateTime     @default(now())
+  users        User[]
+  apartments   Apartment[]
+  chatSessions ManagerChatSession[]
+}
+
 model User {
   id                   String                @id @default(uuid())
   email                String                @unique
@@ -14,18 +24,24 @@ model User {
   role                 Role
   createdAt            DateTime              @default(now())
   name                 String
+  organizationId       String?
+  organization         Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   cleaningTasks        CleaningTask[]
   maintenanceTickets   MaintenanceTicket[]
   supervisorReviews    SupervisorReview[]    @relation("SupervisorReviews")
   supervisedApartments ApartmentSupervisor[]
   ownedApartments      ApartmentOwner[]
   pushSubscriptions    PushSubscription[]
+
+  @@index([organizationId])
 }
 
 model Apartment {
   id                   String                @id @default(uuid())
   name                 String
   apartmentCode        String?               @unique
+  organizationId       String?
+  organization         Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   address              String
   latitude             Float
   longitude            Float
@@ -50,6 +66,8 @@ model Apartment {
   supervisors          ApartmentSupervisor[]
   owners               ApartmentOwner[]
   products             ApartmentProduct[]
+
+  @@index([organizationId])
 }
 
 model ChecklistItem {
@@ -265,12 +283,15 @@ model ApartmentOwner {
 }
 
 model ManagerChatSession {
-  id        String               @id @default(uuid())
-  date      DateTime             @db.Date
-  createdAt DateTime             @default(now())
-  messages  ManagerChatMessage[]
+  id             String               @id @default(uuid())
+  date           DateTime             @db.Date
+  createdAt      DateTime             @default(now())
+  organizationId String?
+  organization   Organization?        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  messages       ManagerChatMessage[]
 
-  @@unique([date])
+  @@unique([date, organizationId])
+  @@index([organizationId])
 }
 
 model ManagerChatMessage {

@@ -120,19 +120,28 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.OrganizationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   password: 'password',
   role: 'role',
   createdAt: 'createdAt',
-  name: 'name'
+  name: 'name',
+  organizationId: 'organizationId'
 };
 
 exports.Prisma.ApartmentScalarFieldEnum = {
   id: 'id',
   name: 'name',
   apartmentCode: 'apartmentCode',
+  organizationId: 'organizationId',
   address: 'address',
   latitude: 'latitude',
   longitude: 'longitude',
@@ -308,7 +317,8 @@ exports.Prisma.ApartmentOwnerScalarFieldEnum = {
 exports.Prisma.ManagerChatSessionScalarFieldEnum = {
   id: 'id',
   date: 'date',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  organizationId: 'organizationId'
 };
 
 exports.Prisma.ManagerChatMessageScalarFieldEnum = {
@@ -357,15 +367,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 exports.Role = exports.$Enums.Role = {
   MANAGER: 'MANAGER',
@@ -381,6 +391,7 @@ exports.AIAssistantMessageRole = exports.$Enums.AIAssistantMessageRole = {
 };
 
 exports.Prisma.ModelName = {
+  Organization: 'Organization',
   User: 'User',
   Apartment: 'Apartment',
   ChecklistItem: 'ChecklistItem',
