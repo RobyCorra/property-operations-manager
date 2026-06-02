@@ -752,14 +752,15 @@ export default function MobileDashboard({
               const dayCleaningsMap = new Map<number, CalCleaning[]>();
               const dayTicketsMap   = new Map<number, CalTicket[]>();
 
-              // Booking segments: day → [{id, type, guests}]
+              // Booking segments: day → [{id, type, guests, showGuests}]
               type SegType = "ci" | "co" | "occ" | "same";
-              const bookingSegments = new Map<number, { id: string; type: SegType; guests: number }[]>();
+              const bookingSegments = new Map<number, { id: string; type: SegType; guests: number; showGuests: boolean }[]>();
 
               calendarData.bookings.forEach((b) => {
                 const ciYMD = isoToYMD(b.checkInDate);
                 const coYMD = isoToYMD(b.checkOutDate);
                 const guests = b.totalGuests ?? 0;
+                let firstOccSet = false;
                 for (let d = 1; d <= daysInMonth; d++) {
                   const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
                   let type: SegType | null = null;
@@ -768,8 +769,12 @@ export default function MobileDashboard({
                   else if (ymd === coYMD)              type = "co";
                   else if (ymd > ciYMD && ymd < coYMD) type = "occ";
                   if (type) {
+                    // Mostra ospiti sul primo giorno OCC (giorno dopo CI), o su "same" se non c'è OCC
+                    const isFirstOcc = type === "occ" && !firstOccSet;
+                    if (isFirstOcc) firstOccSet = true;
+                    const showGuests = type === "same" || isFirstOcc;
                     const arr = bookingSegments.get(d) ?? [];
-                    arr.push({ id: b.id, type, guests });
+                    arr.push({ id: b.id, type, guests, showGuests });
                     bookingSegments.set(d, arr);
                   }
                 }
@@ -986,7 +991,7 @@ export default function MobileDashboard({
                                         overflow: "hidden",
                                       }}
                                     >
-                                      {(seg.type === "ci" || seg.type === "same") && seg.guests > 0 && (
+                                      {seg.showGuests && seg.guests > 0 && (
                                         <span className="text-white pl-2 whitespace-nowrap" style={{ fontSize: 8, fontWeight: 800 }}>
                                           👤 {seg.guests}
                                         </span>
