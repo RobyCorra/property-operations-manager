@@ -4,6 +4,7 @@
 import OpenAI from "openai";
 import { prisma } from "@/src/lib/prisma";
 import { formatDateKey, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
+import { getCurrentOrg } from "@/src/lib/tenant";
 
 type AIMessage = {
   role: "user" | "assistant";
@@ -1420,8 +1421,10 @@ type ApartmentMatchCandidate = {
 };
 
 async function findApartmentsForAINameMatch(): Promise<ApartmentMatchCandidate[]> {
+  const orgId = await getCurrentOrg();
   try {
     return await prisma.apartment.findMany({
+      where: { organizationId: orgId },
       select: { id: true, name: true, apartmentCode: true, address: true },
     });
   } catch (error) {
@@ -1430,6 +1433,7 @@ async function findApartmentsForAINameMatch(): Promise<ApartmentMatchCandidate[]
     return prisma.$queryRaw<ApartmentMatchCandidate[]>`
       SELECT id, name, "apartmentCode", address
       FROM "Apartment"
+      WHERE "organizationId" = ${orgId}
     `;
   }
 }
@@ -1947,6 +1951,7 @@ ${limitSection(apartment.aiAssistantMessages.map((message: AIAssistantMessageFor
 async function buildApartmentManagerContext(apartmentId: string, now: Date) {
   const historySince = addDays(now, -HISTORY_DAYS);
   const futureUntil = addDays(now, 30);
+  const orgId = await getCurrentOrg();
 
   const [apartment, personnel] = await Promise.all([
   prisma.apartment.findUnique({
@@ -2030,7 +2035,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
     },
   }),
   prisma.user.findMany({
-    where: { role: { in: ["CLEANER", "MAINTENANCE"] } },
+    where: { role: { in: ["CLEANER", "MAINTENANCE"] }, organizationId: orgId },
     select: { id: true, name: true, role: true },
     orderBy: { name: "asc" },
   }),
@@ -2115,9 +2120,11 @@ async function buildGeneralManagerContext(now: Date) {
   const windowStart = addDays(todayStart, -30);
   const windowEnd = addDays(todayStart, 60);
   const recent14Days = addDays(todayStart, -14);
+  const orgId = await getCurrentOrg();
 
   const [apartments, bookings, cleanings, tickets, personnel] = await Promise.all([
     prisma.apartment.findMany({
+      where: { organizationId: orgId },
       take: 50,
       orderBy: { name: "asc" },
       include: {
@@ -2140,6 +2147,7 @@ async function buildGeneralManagerContext(now: Date) {
     }),
     prisma.booking.findMany({
       where: {
+        apartment: { organizationId: orgId },
         OR: [
           { checkInDate: { gte: windowStart, lte: windowEnd } },
           { checkOutDate: { gte: windowStart, lte: windowEnd } },
@@ -2158,6 +2166,7 @@ async function buildGeneralManagerContext(now: Date) {
     }),
     prisma.cleaningTask.findMany({
       where: {
+        apartment: { organizationId: orgId },
         OR: [
           { status: { in: ["PENDING", "IN_PROGRESS", "AWAITING_REVIEW"] } },
           { date: { gte: recent14Days } },
@@ -2183,6 +2192,7 @@ async function buildGeneralManagerContext(now: Date) {
     }),
     prisma.maintenanceTicket.findMany({
       where: {
+        apartment: { organizationId: orgId },
         OR: [
           { status: { in: ["PENDING", "IN_PROGRESS"] } },
           { priority: "URGENT" },
@@ -2208,7 +2218,7 @@ async function buildGeneralManagerContext(now: Date) {
       },
     }),
     prisma.user.findMany({
-      where: { role: { in: ["CLEANER", "MAINTENANCE"] } },
+      where: { role: { in: ["CLEANER", "MAINTENANCE"] }, organizationId: orgId },
       select: { id: true, name: true, role: true },
       orderBy: { name: "asc" },
     }),
