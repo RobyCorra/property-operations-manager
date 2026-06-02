@@ -22,18 +22,16 @@ export default async function ApartmentsListPage() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           <BackButton />
-          <div className="flex-1 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-900 uppercase">Appartamenti</h1>
-              <p className="text-slate-500 mt-1 font-medium">Gestione immobili e configurazione checklist</p>
-            </div>
+          <div className="flex-1 flex items-center justify-between gap-3">
+            <h1 className="text-xl md:text-3xl font-semibold tracking-tight text-slate-900 uppercase">Appartamenti</h1>
             <Link
               href="/dashboard/manager/apartments/new"
-              className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-8 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] active:scale-95 uppercase tracking-wide"
+              className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 md:px-8 py-2 md:py-3 text-xs md:text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] active:scale-95 uppercase tracking-wide shrink-0"
             >
-              + Nuovo Appartamento
+              <span className="md:hidden">+Nuovo</span>
+              <span className="hidden md:inline">+ Nuovo Appartamento</span>
             </Link>
           </div>
         </div>
