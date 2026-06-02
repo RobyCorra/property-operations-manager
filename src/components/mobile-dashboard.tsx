@@ -748,52 +748,33 @@ export default function MobileDashboard({
               const daysInMonth = new Date(year, month + 1, 0).getDate();
               const todayYMD = isoToYMD(new Date().toISOString());
 
-              // ── Dati per getApartmentOperationalStatus (stessa logica del desktop) ──
-              const booksForStatus = calendarData.bookings.map((b) => ({
-                id: b.id, apartmentId: selectedApt!.id,
-                checkInDate: b.checkInDate, checkOutDate: b.checkOutDate, status: b.status,
-              }));
-              const cleansForStatus = calendarData.cleanings.map((c) => ({
-                id: c.id, apartmentId: selectedApt!.id, date: c.date, status: c.status,
-              }));
-              const ticketsForStatus = calendarData.tickets.map((t) => ({
-                id: t.id, apartmentId: selectedApt!.id,
-                status: t.status, priority: t.priority ?? "LOW",
-                scheduledStart: t.scheduledStart ?? null, scheduledEnd: null,
-              }));
-
               // ── Per-day maps ──────────────────────────────────
-              const checkinDays  = new Set<number>();
-              const checkoutDays = new Set<number>();
-              const occupiedDays = new Set<number>();
               const dayCleaningsMap = new Map<number, CalCleaning[]>();
               const dayTicketsMap   = new Map<number, CalTicket[]>();
 
-              // Colore per ogni giorno — separato per CI, CO, occupato
-              // (serve per gestire il caso stesso giorno CI+CO con diagonale)
-              const dayCI  = new Map<number, string>(); // giorno → colore del check-in
-              const dayCO  = new Map<number, string>(); // giorno → colore del check-out
-              const dayOcc = new Map<number, string>(); // giorno → colore occupato
+              // Booking segments: day → [{id, type, guests}]
+              type SegType = "ci" | "co" | "occ" | "same";
+              const bookingSegments = new Map<number, { id: string; type: SegType; guests: number }[]>();
 
               calendarData.bookings.forEach((b) => {
                 const ciYMD = isoToYMD(b.checkInDate);
                 const coYMD = isoToYMD(b.checkOutDate);
-
-                // Logica desktop: se il booking è attivo oggi usa now, altrimenti usa checkInDate
-                const isActiveNow = todayYMD >= ciYMD && todayYMD < coYMD;
-                const targetDate = isActiveNow ? new Date() : new Date(b.checkInDate);
-                const bookingStatus = getApartmentOperationalStatus(
-                  targetDate, booksForStatus, cleansForStatus, ticketsForStatus
-                );
-                const bookingColor = bookingStatus.color;
-
+                const guests = b.totalGuests ?? 0;
                 for (let d = 1; d <= daysInMonth; d++) {
                   const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-                  if (ymd === ciYMD)                        { checkinDays.add(d);  dayCI.set(d, bookingColor); }
-                  else if (ymd === coYMD)                   { checkoutDays.add(d); dayCO.set(d, bookingColor); }
-                  else if (ymd > ciYMD && ymd < coYMD)     { occupiedDays.add(d); dayOcc.set(d, bookingColor); }
+                  let type: SegType | null = null;
+                  if (ymd === ciYMD && ymd === coYMD) type = "same";
+                  else if (ymd === ciYMD)              type = "ci";
+                  else if (ymd === coYMD)              type = "co";
+                  else if (ymd > ciYMD && ymd < coYMD) type = "occ";
+                  if (type) {
+                    const arr = bookingSegments.get(d) ?? [];
+                    arr.push({ id: b.id, type, guests });
+                    bookingSegments.set(d, arr);
+                  }
                 }
               });
+
               calendarData.cleanings.forEach((c) => {
                 const [cy, cm, cd] = isoToYMD(c.date).split("-").map(Number);
                 if (cy === year && cm === month + 1) {
@@ -812,49 +793,14 @@ export default function MobileDashboard({
                 }
               });
 
+              // Raggruppa in settimane
               const cells: (number | null)[] = [
                 ...Array(startOffset).fill(null),
                 ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
               ];
               while (cells.length % 7 !== 0) cells.push(null);
-
-              // Helper: estrae i due colori da una stringa gradient tipo "135deg, #aaa 50%, #bbb 50%"
-              function gradColors(grad: string): [string, string] {
-                const parts = grad.split(",");
-                return [parts[1].trim().split(" ")[0], parts[2].trim().split(" ")[0]];
-              }
-
-              // ── Day cell style — gestisce anche il caso stesso giorno CI+CO ──
-              function dayCellStyle(d: number): React.CSSProperties {
-                const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-                if (ymd === todayYMD) return { background: "#7c3aed" };
-                const ciColor  = dayCI.get(d);
-                const coColor  = dayCO.get(d);
-                const occColor = dayOcc.get(d);
-                if (ciColor && coColor) {
-                  // Stesso giorno CI + CO: diagonale 135°, metà sinistra = CO dark, metà destra = CI light
-                  const [coDark]  = gradColors(aptStatusColors(coColor).coGrad); // colore scuro del checkout
-                  const [, ciLight] = gradColors(aptStatusColors(ciColor).ciGrad); // colore chiaro del checkin
-                  return { background: `linear-gradient(135deg, ${coDark} 50%, ${ciLight} 50%)` };
-                }
-                if (ciColor) return { background: `linear-gradient(${aptStatusColors(ciColor).ciGrad})` };
-                if (coColor) return { background: `linear-gradient(${aptStatusColors(coColor).coGrad})` };
-                if (occColor) return { backgroundColor: aptStatusColors(occColor).occBg };
-                return {};
-              }
-              function dayNumColor(d: number): string {
-                const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-                if (ymd === todayYMD) return "#fff";
-                const ciColor  = dayCI.get(d);
-                const coColor  = dayCO.get(d);
-                const occColor = dayOcc.get(d);
-                // Caso same-day: numero neutro scuro (metà cella chiara, metà scura)
-                if (ciColor && coColor) return "#1e293b";
-                if (ciColor)  return aptStatusColors(ciColor).textColor;
-                if (coColor)  return aptStatusColors(coColor).textColor;
-                if (occColor) return aptStatusColors(occColor).textColor;
-                return "#475569";
-              }
+              const weeks: (number | null)[][] = [];
+              for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
 
               // ── Selected day event panel ───────────────────────
               function SelectedDayPanel() {
@@ -959,45 +905,107 @@ export default function MobileDashboard({
                     </button>
                   </div>
 
-                  {/* Calendar grid */}
-                  <div className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 mb-3">
-                    <div className="grid grid-cols-7 gap-1 mb-1">
+                  {/* Calendar grid — struttura a settimane con pill prenotazione */}
+                  <div className="bg-white rounded-2xl px-3 pt-2 pb-1 shadow-sm border border-slate-100 mb-3">
+                    {/* Intestazione giorni */}
+                    <div className="grid grid-cols-7 gap-[2px] mb-1">
                       {["Lun","Mar","Mer","Gio","Ven","Sab","Dom"].map((d) => (
                         <div key={d} className="text-center text-[8px] font-black text-slate-400 uppercase py-1">{d}</div>
                       ))}
                     </div>
-                    <div className="grid grid-cols-7 gap-1">
-                      {cells.map((d, i) => {
-                        if (!d) return <div key={i} />;
-                        const isSelected = selectedDay === d;
-                        const cleans = dayCleaningsMap.get(d) ?? [];
-                        const tickets = dayTicketsMap.get(d) ?? [];
-                        const hasEvents = cleans.length > 0 || tickets.length > 0;
-                        return (
-                          <div
-                            key={i}
-                            onClick={() => setSelectedDay(isSelected ? null : d)}
-                            className="aspect-square relative flex items-center justify-center rounded-xl cursor-pointer overflow-hidden"
-                            style={{
-                              ...dayCellStyle(d),
-                              boxShadow: isSelected ? "0 0 0 2.5px #1e1b4b" : undefined,
-                            }}
-                          >
-                            <span className="text-[11px] font-semibold relative z-10" style={{ color: dayNumColor(d), fontWeight: isSelected || (isoToYMD(new Date().toISOString()) === `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`) ? "900" : "600" }}>{d}</span>
-                            {hasEvents && (
-                              <div className="absolute bottom-[2px] left-0 right-0 flex justify-center gap-[2px] z-10">
+
+                    {/* Settimane */}
+                    {weeks.map((week, wi) => (
+                      <div key={wi}>
+                        {/* Riga numeri */}
+                        <div className="grid grid-cols-7 gap-[2px]">
+                          {week.map((d, di) => {
+                            if (!d) return <div key={di} className="h-7" />;
+                            const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+                            const isToday = ymd === todayYMD;
+                            const isSelected = selectedDay === d;
+                            return (
+                              <div
+                                key={di}
+                                onClick={() => setSelectedDay(isSelected ? null : d)}
+                                className="h-7 flex items-center justify-center cursor-pointer rounded-lg"
+                                style={isSelected ? { boxShadow: "0 0 0 2px #1e1b4b" } : undefined}
+                              >
+                                <span
+                                  className={`w-6 h-6 flex items-center justify-center rounded-full text-[11px] font-semibold ${isToday ? "bg-violet-600 text-white font-black" : "text-slate-600"}`}
+                                >
+                                  {d}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Riga pill prenotazione */}
+                        <div className="grid grid-cols-7 gap-[2px] my-[2px]" style={{ height: 24 }}>
+                          {week.map((d, di) => {
+                            const segs = d ? (bookingSegments.get(d) ?? []) : [];
+                            return (
+                              <div key={di} className="relative" style={{ height: 24, overflow: "visible" }}>
+                                {segs.map((seg, si) => {
+                                  const isLeft  = seg.type === "ci" || seg.type === "same";
+                                  const isRight = seg.type === "co" || seg.type === "same";
+                                  const topPct  = segs.length > 1 ? (si === 0 ? "20%" : "60%") : "50%";
+                                  return (
+                                    <Link
+                                      key={si}
+                                      href={`/dashboard/manager/bookings/${seg.id}/edit`}
+                                      className="absolute flex items-center"
+                                      style={{
+                                        top: topPct,
+                                        transform: "translateY(-50%)",
+                                        left:  isLeft  ? "50%" : -2,
+                                        right: isRight ? "50%" : -2,
+                                        height: 20,
+                                        background: "#111827",
+                                        borderRadius: seg.type === "ci" ? "10px 0 0 10px" :
+                                                      seg.type === "co" ? "0 10px 10px 0" :
+                                                      seg.type === "same" ? 10 : 0,
+                                        zIndex: 10,
+                                        overflow: "hidden",
+                                      }}
+                                    >
+                                      {(seg.type === "ci" || seg.type === "same") && seg.guests > 0 && (
+                                        <span className="text-white pl-2 whitespace-nowrap" style={{ fontSize: 8, fontWeight: 800 }}>
+                                          👤 {seg.guests}
+                                        </span>
+                                      )}
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Riga dot pulizie/ticket */}
+                        <div className="grid grid-cols-7 gap-[2px] mb-1" style={{ height: 10 }}>
+                          {week.map((d, di) => {
+                            const cleans  = d ? (dayCleaningsMap.get(d) ?? []) : [];
+                            const tickets = d ? (dayTicketsMap.get(d) ?? []) : [];
+                            return (
+                              <div key={di} className="flex items-center justify-center gap-[2px]">
                                 {cleans.map((c, ci) => (
-                                  <div key={ci} style={{ width: 4, height: 4, borderRadius: "50%", background: cleaningDotHex(c), flexShrink: 0 }} />
+                                  <Link key={ci} href={`/dashboard/manager/cleanings/${c.id}`} style={{ display: "flex" }}>
+                                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: cleaningDotHex(c), display: "block", flexShrink: 0 }} />
+                                  </Link>
                                 ))}
                                 {tickets.map((t, ti) => (
-                                  <div key={ti} style={{ width: 4, height: 4, borderRadius: "50%", background: ticketDotHex(t), flexShrink: 0 }} />
+                                  <Link key={ti} href={`/dashboard/manager/maintenance/${t.id}`} style={{ display: "flex" }}>
+                                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: ticketDotHex(t), display: "block", flexShrink: 0 }} />
+                                  </Link>
                                 ))}
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* ── Legenda ── */}
