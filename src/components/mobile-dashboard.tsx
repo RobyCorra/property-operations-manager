@@ -766,15 +766,15 @@ export default function MobileDashboard({
                 scheduledStart: t.scheduledStart ?? null, scheduledEnd: null,
               }));
 
-              // Colori vivaci per testo su sfondo nero
-              const statusGuestColor: Record<string, string> = {
-                GREEN: "#4ade80", BLUE: "#60a5fa", VIOLET: "#c084fc",
-                YELLOW: "#fbbf24", RED: "#f87171",
+              // Colori barra per stato appartamento
+              const statusBarColor: Record<string, string> = {
+                GREEN: "#22c55e", BLUE: "#3b82f6", VIOLET: "#7c3aed",
+                YELLOW: "#eab308", RED: "#ef4444",
               };
 
-              // Booking segments: day → [{id, type, guests, showGuests, guestColor}]
+              // Booking segments: day → [{id, type, guests, showGuests, barColor}]
               type SegType = "ci" | "co" | "occ" | "same";
-              const bookingSegments = new Map<number, { id: string; type: SegType; guests: number; showGuests: boolean; guestColor: string }[]>();
+              const bookingSegments = new Map<number, { id: string; type: SegType; guests: number; showGuests: boolean; barColor: string }[]>();
 
               calendarData.bookings.forEach((b) => {
                 const ciYMD = isoToYMD(b.checkInDate);
@@ -784,7 +784,7 @@ export default function MobileDashboard({
                 const isActiveNow = todayYMD >= ciYMD && todayYMD < coYMD;
                 const targetDate = isActiveNow ? new Date() : new Date(b.checkInDate);
                 const bookingStatus = getApartmentOperationalStatus(targetDate, booksForStatus, cleansForStatus, ticketsForStatus);
-                const guestColor = statusGuestColor[bookingStatus.color] ?? "#4ade80";
+                const barColor = statusBarColor[bookingStatus.color] ?? "#22c55e";
                 let firstOccSet = false;
                 for (let d = 1; d <= daysInMonth; d++) {
                   const ymd = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
@@ -799,7 +799,7 @@ export default function MobileDashboard({
                     if (isFirstOcc) firstOccSet = true;
                     const showGuests = type === "same" || isFirstOcc;
                     const arr = bookingSegments.get(d) ?? [];
-                    arr.push({ id: b.id, type, guests, showGuests, guestColor });
+                    arr.push({ id: b.id, type, guests, showGuests, barColor });
                     bookingSegments.set(d, arr);
                   }
                 }
@@ -1007,7 +1007,7 @@ export default function MobileDashboard({
                                         left:  isLeft  ? "50%" : -1,
                                         right: isRight ? "50%" : -1,
                                         height: 18,
-                                        background: "#111827",
+                                        background: seg.barColor,
                                         borderRadius: seg.type === "ci" ? "9px 0 0 9px" :
                                                       seg.type === "co" ? "0 9px 9px 0" :
                                                       seg.type === "same" ? 9 : 0,
@@ -1016,7 +1016,7 @@ export default function MobileDashboard({
                                       }}
                                     >
                                       {seg.showGuests && seg.guests > 0 && (
-                                        <span className="pl-2 whitespace-nowrap" style={{ fontSize: 8, fontWeight: 800, color: seg.guestColor }}>
+                                        <span className="pl-2 whitespace-nowrap text-white" style={{ fontSize: 8, fontWeight: 800 }}>
                                           👤 {seg.guests}
                                         </span>
                                       )}
