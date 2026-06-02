@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup Calendario — Griglia visibile</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f1f5f9;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 16px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .label {
+    font-size: 10px; color: #94a3b8; font-weight: 700;
+    margin-bottom: 8px; display: block;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+
+  /* ────────────────────────────────────────────
+     VARIANTE A — Separatori verticali sottili
+     ──────────────────────────────────────────── */
+  .cal-card {
+    background: white;
+    border-radius: 18px;
+    padding: 14px 0px 8px 0px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .month-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px; padding: 0 12px;
+  }
+  .month-nav span { font-size: 16px; font-weight: 900; color: #0f172a; }
+  .month-nav button {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #f1f5f9; border: none; cursor: pointer;
+    font-size: 16px; color: #475569;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Header colonne giorni della settimana */
+  .dow-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .dow-row div {
+    text-align: center; font-size: 9px; font-weight: 900;
+    color: #94a3b8; text-transform: uppercase;
+    padding: 4px 0 6px;
+  }
+  /* Weekend più scuro */
+  .dow-row div:nth-child(6),
+  .dow-row div:nth-child(7) {
+    color: #64748b;
+    background: #fafafa;
+  }
+
+  /* ── Una riga = .week ── */
+  .week {
+    /* Linea separatrice tra settimane */
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .week:last-child { border-bottom: none; }
+
+  /* Le tre sub-row condividono lo stesso grid con colonne separate */
+  .num-row, .bar-row, .dot-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    /* Separatori verticali tra colonne */
+    border-left: 1px solid #f1f5f9;
+  }
+
+  /* ── Celle numero giorno ── */
+  .num-row {
+    border-top: none;
+  }
+  .day-num-cell {
+    border-right: 1px solid #f1f5f9;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+  /* Sfondo weekend leggermente diverso */
+  .day-num-cell.weekend { background: #fafafa; }
+
+  .day-num {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    font-size: 11px; font-weight: 600; color: #334155;
+  }
+  .day-num-cell.today .day-num {
+    background: #7c3aed; color: white; font-weight: 900;
+  }
+  .day-num-cell.empty { pointer-events: none; }
+
+  /* ── Celle barra prenotazione ── */
+  .bar-row {
+    height: 22px;
+  }
+  .bar-cell {
+    border-right: 1px solid #f1f5f9;
+    position: relative;
+    height: 22px;
+    overflow: visible;
+  }
+  .bar-cell.weekend { background: #fafafa; }
+
+  .bar {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    height: 18px;
+    background: #111827;
+    z-index: 5;
+    display: flex; align-items: center;
+  }
+  .bar.ci   { left: 50%; right: -1px; border-radius: 9px 0 0 9px; }
+  .bar.occ  { left: -1px; right: -1px; border-radius: 0; }
+  .bar.co   { left: -1px; right: 50%; border-radius: 0 9px 9px 0; }
+  .bar.same { left: 8%; right: 8%; border-radius: 9px; }
+
+  .bar-guests {
+    font-size: 8px; font-weight: 800; color: white;
+    padding-left: 8px; white-space: nowrap;
+  }
+
+  /* ── Celle dot pulizie/ticket ── */
+  .dot-row { height: 12px; }
+  .dot-cell {
+    border-right: 1px solid #f1f5f9;
+    height: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 2px;
+  }
+  .dot-cell.weekend { background: #fafafa; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ────────────────────────────────────────────
+     VARIANTE B — Celle giorno con sfondo card
+     ──────────────────────────────────────────── */
+  .cal-card-b {
+    background: #f8fafc;
+    border-radius: 18px;
+    padding: 14px 10px 8px 10px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    margin-bottom: 20px;
+  }
+
+  .dow-row-b {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+    margin-bottom: 4px;
+  }
+  .dow-row-b div {
+    text-align: center; font-size: 9px; font-weight: 900;
+    color: #94a3b8; text-transform: uppercase; padding: 2px 0 4px;
+  }
+  .dow-row-b div:nth-child(6),
+  .dow-row-b div:nth-child(7) { color: #64748b; }
+
+  .week-b { margin-bottom: 3px; }
+
+  /* Le tre sub-row con gap tra celle */
+  .num-row-b, .bar-row-b, .dot-row-b {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+
+  .day-num-cell-b {
+    background: white;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+    height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .day-num-cell-b.weekend { background: #f8f8ff; border-color: #ebebff; }
+  .day-num-cell-b.today   { background: #7c3aed; border-color: #7c3aed; }
+  .day-num-cell-b.today .day-num-b { color: white; font-weight: 900; }
+  .day-num-b { font-size: 11px; font-weight: 600; color: #334155; }
+
+  .bar-row-b { height: 20px; }
+  .bar-cell-b {
+    position: relative; height: 20px; overflow: visible;
+    background: transparent;
+  }
+  /* Pill in variante B — stesse regole ma gap piccolo tra celle */
+  .bar-b {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    height: 16px; background: #111827; z-index: 5;
+    display: flex; align-items: center;
+  }
+  .bar-b.ci   { left: 50%; right: -3px; border-radius: 8px 0 0 8px; }
+  .bar-b.occ  { left: -3px; right: -3px; border-radius: 0; }
+  .bar-b.co   { left: -3px; right: 50%; border-radius: 0 8px 8px 0; }
+  .bar-b.same { left: 4px; right: 4px; border-radius: 8px; }
+  .bar-b-guests { font-size: 8px; font-weight: 800; color: white; padding-left: 7px; white-space: nowrap; }
+
+  .dot-row-b { height: 10px; }
+  .dot-cell-b {
+    height: 10px; display: flex; align-items: center;
+    justify-content: center; gap: 2px;
+  }
+  .dot-b { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     VARIANTE A — Linee di separazione colonne
+     ══════════════════════════════════════════════ -->
+<span class="label">Variante A — Separatori colonne sottili</span>
+
+<div class="cal-card">
+  <div class="month-nav">
+    <button>‹</button>
+    <span>Giugno 2026</span>
+    <button>›</button>
+  </div>
+  <div class="dow-row">
+    <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div>
+    <div>Ven</div><div>Sab</div><div>Dom</div>
+  </div>
+  <div id="calBodyA"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VARIANTE B — Celle giorno su sfondo card
+     ══════════════════════════════════════════════ -->
+<span class="label">Variante B — Celle giorno in rilievo</span>
+
+<div class="cal-card-b">
+  <div class="month-nav" style="padding:0">
+    <button>‹</button>
+    <span>Giugno 2026</span>
+    <button>›</button>
+  </div>
+  <div class="dow-row-b" style="margin-top:10px">
+    <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div>
+    <div>Ven</div><div>Sab</div><div>Dom</div>
+  </div>
+  <div id="calBodyB"></div>
+</div>
+
+<script>
+// Dati Giugno 2026
+// Offset 0 (lunedì), 30 giorni
+const bookings = [
+  { ci: 3,  co: 7,  guests: 2 },
+  { ci: 9,  co: 14, guests: 4 },
+  { ci: 16, co: 21, guests: 1 },
+  { ci: 22, co: 27, guests: 3 },
+];
+const cleaningDays = { 2: "#22c55e", 8: "#eab308", 15: "#22c55e", 21: "#f97316" };
+const ticketDays   = { 5: "#ef4444", 18: "#f97316" };
+const TODAY = 2;
+const TOTAL_DAYS = 30;
+const START_OFFSET = 0;
+
+// Calcola tipo segmento per un giorno e booking
+function segmentFor(day, b) {
+  if (day === b.ci && day === b.co) return "same";
+  if (day === b.ci) return "ci";
+  if (day === b.co) return "co";
+  if (day > b.ci && day < b.co) return "occ";
+  return null;
+}
+
+// Crea array giorni
+const allDays = [...Array(START_OFFSET).fill(null), ...Array.from({length: TOTAL_DAYS}, (_, i) => i + 1)];
+while (allDays.length % 7 !== 0) allDays.push(null);
+const weeks = [];
+for (let i = 0; i < allDays.length; i += 7) weeks.push(allDays.slice(i, i + 7));
+
+// isWeekend: col 5 = Sab (index 5), col 6 = Dom (index 6) — offset 0 (Lun primo)
+function isWeekend(colIndex) { return colIndex === 5 || colIndex === 6; }
+
+// ═══════════ VARIANTE A ═══════════
+function buildCalA(containerId, prefix) {
+  const body = document.getElementById(containerId);
+
+  weeks.forEach((week) => {
+    const weekDiv = document.createElement("div");
+    weekDiv.className = "week";
+
+    // Num row
+    const numRow = document.createElement("div");
+    numRow.className = "num-row";
+    week.forEach((d, ci) => {
+      const cell = document.createElement("div");
+      const classes = ["day-num-cell"];
+      if (!d) { classes.push("empty"); }
+      if (isWeekend(ci)) classes.push("weekend");
+      if (d === TODAY) classes.push("today");
+      cell.className = classes.join(" ");
+      if (d) {
+        const span = document.createElement("span");
+        span.className = "day-num";
+        span.textContent = d;
+        cell.appendChild(span);
+      }
+      numRow.appendChild(cell);
+    });
+
+    // Bar row
+    const barRow = document.createElement("div");
+    barRow.className = "bar-row";
+    week.forEach((d, ci) => {
+      const cell = document.createElement("div");
+      cell.className = "bar-cell" + (isWeekend(ci) ? " weekend" : "");
+      if (d) {
+        bookings.forEach((b, bi) => {
+          const seg = segmentFor(d, b);
+          if (seg) {
+            const bar = document.createElement("div");
+            bar.className = `bar ${seg}`;
+            if (bi > 0 && bookings.slice(0, bi).some(pb => segmentFor(d, pb))) {
+              bar.style.top = "25%";
+            }
+            if ((seg === "ci" || seg === "same") && b.guests) {
+              const g = document.createElement("span");
+              g.className = "bar-guests";
+              g.textContent = "👤 " + b.guests;
+              bar.appendChild(g);
+            }
+            cell.appendChild(bar);
+          }
+        });
+      }
+      barRow.appendChild(cell);
+    });
+
+    // Dot row
+    const dotRow = document.createElement("div");
+    dotRow.className = "dot-row";
+    week.forEach((d, ci) => {
+      const cell = document.createElement("div");
+      cell.className = "dot-cell" + (isWeekend(ci) ? " weekend" : "");
+      if (d) {
+        const clean = cleaningDays[d];
+        const ticket = ticketDays[d];
+        if (clean) {
+          const dot = document.createElement("div");
+          dot.className = "dot"; dot.style.background = clean;
+          cell.appendChild(dot);
+        }
+        if (ticket) {
+          const dot = document.createElement("div");
+          dot.className = "dot"; dot.style.background = ticket;
+          cell.appendChild(dot);
+        }
+      }
+      dotRow.appendChild(cell);
+    });
+
+    weekDiv.appendChild(numRow);
+    weekDiv.appendChild(barRow);
+    weekDiv.appendChild(dotRow);
+    body.appendChild(weekDiv);
+  });
+}
+
+// ═══════════ VARIANTE B ═══════════
+function buildCalB(containerId) {
+  const body = document.getElementById(containerId);
+
+  weeks.forEach((week) => {
+    const weekDiv = document.createElement("div");
+    weekDiv.className = "week-b";
+
+    // Num row
+    const numRow = document.createElement("div");
+    numRow.className = "num-row-b";
+    week.forEach((d, ci) => {
+      const cell = document.createElement("div");
+      const classes = ["day-num-cell-b"];
+      if (!d) { cell.style.background = "transparent"; cell.style.border = "none"; }
+      if (isWeekend(ci)) classes.push("weekend");
+      if (d === TODAY) classes.push("today");
+      cell.className = classes.join(" ");
+      if (d) {
+        const span = document.createElement("span");
+        span.className = "day-num-b";
+        span.textContent = d;
+        cell.appendChild(span);
+      }
+      numRow.appendChild(cell);
+    });
+
+    // Bar row
+    const barRow = document.createElement("div");
+    barRow.className = "bar-row-b";
+    week.forEach((d, ci) => {
+      const cell = document.createElement("div");
+      cell.className = "bar-cell-b";
+      if (d) {
+        bookings.forEach((b, bi) => {
+          const seg = segmentFor(d, b);
+          if (seg) {
+            const bar = document.createElement("div");
+            bar.className = `bar-b ${seg}`;
+            if (bi > 0 && bookings.slice(0, bi).some(pb => segmentFor(d, pb))) {
+              bar.style.top = "25%";
+            }
+            if ((seg === "ci" || seg === "same") && b.guests) {
+              const g = document.createElement("span");
+              g.className = "bar-b-guests";
+              g.textContent = "👤 " + b.guests;
+              bar.appendChild(g);
+            }
+            cell.appendChild(bar);
+          }
+        });
+      }
+      barRow.appendChild(cell);
+    });
+
+    // Dot row
+    const dotRow = document.createElement("div");
+    dotRow.className = "dot-row-b";
+    week.forEach((d) => {
+      const cell = document.createElement("div");
+      cell.className = "dot-cell-b";
+      if (d) {
+        const clean = cleaningDays[d];
+        const ticket = ticketDays[d];
+        if (clean) { const dot = document.createElement("div"); dot.className = "dot-b"; dot.style.background = clean; cell.appendChild(dot); }
+        if (ticket) { const dot = document.createElement("div"); dot.className = "dot-b"; dot.style.background = ticket; cell.appendChild(dot); }
+      }
+      dotRow.appendChild(cell);
+    });
+
+    weekDiv.appendChild(numRow);
+    weekDiv.appendChild(barRow);
+    weekDiv.appendChild(dotRow);
+    body.appendChild(weekDiv);
+  });
+}
+
+buildCalA("calBodyA");
+buildCalB("calBodyB");
+</script>
+</body>
+</html>

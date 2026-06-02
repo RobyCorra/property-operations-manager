@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup Calendario — Pill Prenotazione</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 16px; max-width: 420px; margin: 0 auto; }
+
+  .label { font-size: 10px; color: #94a3b8; font-weight: 700; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: .08em; }
+
+  /* ── Calendar card ── */
+  .cal-card {
+    background: white;
+    border-radius: 18px;
+    padding: 14px 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    margin-bottom: 16px;
+  }
+
+  .month-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .month-nav span { font-size: 16px; font-weight: 900; color: #0f172a; }
+  .month-nav button {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #f1f5f9; border: none; cursor: pointer;
+    font-size: 16px; color: #475569;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Header giorni ── */
+  .dow-row {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 4px;
+  }
+  .dow-row div {
+    text-align: center; font-size: 9px; font-weight: 900;
+    color: #94a3b8; text-transform: uppercase; padding: 2px 0;
+  }
+
+  /* ── Grid principale ──
+     Ogni "riga" del calendario è composta da:
+     - una riga di numeri (date)
+     - una riga di barre (bookings)
+     Le trattiamo come due sub-row per ogni settimana.
+  */
+  .week {
+    margin-bottom: 2px;
+  }
+
+  /* Riga numeri */
+  .num-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 0;
+  }
+
+  .day-num-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    position: relative;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .day-num-cell:hover { background: #f8fafc; }
+
+  .day-num {
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+  }
+  .day-num-cell.today {
+    background: #7c3aed;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    margin: 0 auto;
+  }
+  .day-num-cell.today .day-num { color: white; font-weight: 900; }
+  .day-num-cell.empty { pointer-events: none; }
+
+  /* Riga barre */
+  .bar-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    height: 26px;      /* altezza della riga barre */
+    margin-bottom: 4px;
+  }
+
+  .bar-cell {
+    position: relative;
+    height: 26px;
+    overflow: visible;
+  }
+
+  /* La barra è un div assoluto verticalmente centrato */
+  .bar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 22px;
+    background: #111827;
+    z-index: 5;
+  }
+
+  /* CI: da metà cella → bordo destro + sconfina nel gap */
+  .bar.ci {
+    left: 50%;
+    right: -2px;
+    border-radius: 11px 0 0 11px; /* arrotondato a sinistra */
+  }
+
+  /* Occupato: full width + sconfina su entrambi i lati */
+  .bar.occ {
+    left: -2px;
+    right: -2px;
+    border-radius: 0;
+  }
+
+  /* CO: da bordo sinistro al centro */
+  .bar.co {
+    left: -2px;
+    right: 50%;
+    border-radius: 0 11px 11px 0; /* arrotondato a destra */
+  }
+
+  /* Same-day CI+CO: pillola intera centrata */
+  .bar.same {
+    left: 8%;
+    right: 8%;
+    border-radius: 11px;
+  }
+
+  /* Testo ospiti dentro la pill — appare sul segmento CI */
+  .bar-guests {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 10px;
+    gap: 3px;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .bar-guests span {
+    font-size: 9px;
+    font-weight: 800;
+    color: white;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  /* ── Dot pulizie/ticket ── */
+  .dots-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: 8px;
+  }
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .dot-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 4px;
+  }
+
+  /* ── Legenda ── */
+  .legend {
+    background: white; border-radius: 14px; padding: 12px;
+    border: 1px solid #e2e8f0; margin-bottom: 12px;
+  }
+  .legend-title { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; color: #94a3b8; margin-bottom: 10px; }
+  .legend-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .legend-label { font-size: 9px; font-weight: 600; color: #475569; }
+
+  .legend-pill-ci {
+    width: 36px; height: 14px; background: #111827;
+    border-radius: 8px 0 0 8px; flex-shrink: 0;
+  }
+  .legend-pill-occ {
+    width: 36px; height: 14px; background: #111827;
+    border-radius: 0; flex-shrink: 0;
+  }
+  .legend-pill-co {
+    width: 36px; height: 14px; background: #111827;
+    border-radius: 0 8px 8px 0; flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<span class="label">Nuovo — Pill stile Airbnb</span>
+
+<div class="cal-card">
+  <div class="month-nav">
+    <button>‹</button>
+    <span>Giugno 2026</span>
+    <button>›</button>
+  </div>
+  <div class="dow-row">
+    <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
+  </div>
+  <div id="calBody"></div>
+</div>
+
+<!-- Legenda -->
+<div class="legend">
+  <div class="legend-title">Legenda</div>
+  <div class="legend-row">
+    <div class="legend-pill-ci"></div>
+    <span class="legend-label">Giorno di Check-in (arrotondato sinistra)</span>
+  </div>
+  <div class="legend-row">
+    <div class="legend-pill-occ"></div>
+    <span class="legend-label">Giorni occupati</span>
+  </div>
+  <div class="legend-row">
+    <div class="legend-pill-co"></div>
+    <span class="legend-label">Giorno di Check-out (arrotondato destra)</span>
+  </div>
+  <div class="legend-row">
+    <div style="display:flex;gap:3px">
+      <div class="dot" style="background:#eab308"></div>
+      <div class="dot" style="background:#22c55e"></div>
+      <div class="dot" style="background:#ef4444"></div>
+    </div>
+    <span class="legend-label">Pulizie &amp; Ticket (invariati)</span>
+  </div>
+</div>
+
+<script>
+// Giugno 2026: lunedì=0 offset, 30 giorni
+// Booking 1: CI=3, CO=7
+// Booking 2: CI=9, CO=14
+// Booking 3: CI=16, CO=21
+// Booking 4: CI=22, CO=27
+
+const bookings = [
+  { ci: 3,  co: 7,  guests: 2 },
+  { ci: 9,  co: 14, guests: 4 },
+  { ci: 16, co: 21, guests: 1 },
+  { ci: 22, co: 27, guests: 3 },
+];
+
+const cleaningDays = { 2: "#22c55e", 8: "#eab308", 15: "#22c55e", 21: "#f97316" };
+const ticketDays   = { 5: "#ef4444", 18: "#f97316" };
+
+const TODAY = 2;
+const TOTAL_DAYS = 30;
+const START_OFFSET = 0; // Giugno 2026 inizia lunedì
+
+// Calcola per ogni giorno il tipo di segmento per ogni booking
+function segmentFor(day, b) {
+  if (day === b.ci && day === b.co) return "same";
+  if (day === b.ci)  return "ci";
+  if (day === b.co)  return "co";
+  if (day > b.ci && day < b.co) return "occ";
+  return null;
+}
+
+// Costruisce array di celle: null (vuota) o numero giorno
+const allDays = [
+  ...Array(START_OFFSET).fill(null),
+  ...Array.from({length: TOTAL_DAYS}, (_, i) => i + 1),
+];
+while (allDays.length % 7 !== 0) allDays.push(null);
+
+// Raggruppa in settimane
+const weeks = [];
+for (let i = 0; i < allDays.length; i += 7) {
+  weeks.push(allDays.slice(i, i + 7));
+}
+
+const body = document.getElementById("calBody");
+
+weeks.forEach((week) => {
+  const weekDiv = document.createElement("div");
+  weekDiv.className = "week";
+
+  // ── Riga numeri ──
+  const numRow = document.createElement("div");
+  numRow.className = "num-row";
+
+  week.forEach((d) => {
+    const cell = document.createElement("div");
+    if (!d) {
+      cell.className = "day-num-cell empty";
+    } else if (d === TODAY) {
+      cell.className = "day-num-cell today";
+      const span = document.createElement("span");
+      span.className = "day-num";
+      span.textContent = d;
+      cell.appendChild(span);
+    } else {
+      cell.className = "day-num-cell";
+      const span = document.createElement("span");
+      span.className = "day-num";
+      span.textContent = d;
+      cell.appendChild(span);
+    }
+    numRow.appendChild(cell);
+  });
+
+  // ── Riga barre ──
+  const barRow = document.createElement("div");
+  barRow.className = "bar-row";
+
+  week.forEach((d) => {
+    const cell = document.createElement("div");
+    cell.className = "bar-cell";
+
+    if (d) {
+      bookings.forEach((b, bi) => {
+        const seg = segmentFor(d, b);
+        if (seg) {
+          const bar = document.createElement("div");
+          bar.className = `bar ${seg}`;
+          // Se c'è più di un booking nello stesso giorno, shifta verticalmente
+          if (bi > 0 && bookings.slice(0, bi).some(pb => segmentFor(d, pb))) {
+            bar.style.top = "25%";
+          }
+          // Mostra il numero di ospiti solo sul segmento CI (o same-day)
+          if ((seg === "ci" || seg === "same") && b.guests) {
+            const label = document.createElement("div");
+            label.className = "bar-guests";
+            label.innerHTML = `<span>👤 ${b.guests}</span>`;
+            bar.appendChild(label);
+          }
+          cell.appendChild(bar);
+        }
+      });
+    }
+
+    barRow.appendChild(cell);
+  });
+
+  // ── Riga dot ──
+  const dotRow = document.createElement("div");
+  dotRow.className = "dot-row";
+
+  week.forEach((d) => {
+    const cell = document.createElement("div");
+    cell.className = "dots-cell";
+    if (d) {
+      const clean = cleaningDays[d];
+      const ticket = ticketDays[d];
+      if (clean) {
+        const dot = document.createElement("div");
+        dot.className = "dot";
+        dot.style.background = clean;
+        cell.appendChild(dot);
+      }
+      if (ticket) {
+        const dot = document.createElement("div");
+        dot.className = "dot";
+        dot.style.background = ticket;
+        cell.appendChild(dot);
+      }
+    }
+    dotRow.appendChild(cell);
+  });
+
+  weekDiv.appendChild(numRow);
+  weekDiv.appendChild(barRow);
+  weekDiv.appendChild(dotRow);
+  body.appendChild(weekDiv);
+});
+</script>
+</body>
+</html>

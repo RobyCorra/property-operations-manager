@@ -204,7 +204,7 @@ export default function AIAssistant({
 
   const CONFIRM_WORDS = /^(ok|sì|si|yes|confermo|conferma|vai|procedi|fatto|esegui|assegna)$/i;
 
-  async function handleAsk() {
+  async function handleAsk(webSearch = false) {
     const content = input.trim();
     if (!content || loading) return;
 
@@ -228,7 +228,7 @@ export default function AIAssistant({
 
     const res = await askAI(
       nextMessages.map((m) => ({ role: m.role, content: m.content })),
-      { role, type, apartmentId, cleaningTaskId, maintenanceTicketId }
+      { role, type, apartmentId, cleaningTaskId, maintenanceTicketId, forceWebSearch: webSearch }
     );
 
     const { text, action } = parseAction(res || "");
@@ -308,17 +308,25 @@ export default function AIAssistant({
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
-            handleAsk();
+            handleAsk(false);
           }
         }}
       />
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <button
-          onClick={handleAsk}
-          className="px-4 py-2 bg-black text-white rounded-full text-xs font-black uppercase tracking-widest"
+          onClick={() => handleAsk(false)}
+          disabled={loading}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest disabled:opacity-40"
         >
-          {loading ? "Caricamento..." : "Chiedi"}
+          {loading ? "..." : <><span>🧠</span> AI Interna</>}
+        </button>
+        <button
+          onClick={() => handleAsk(true)}
+          disabled={loading}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40"
+        >
+          <span>🔍</span> Web Search
         </button>
         {lastPendingIdx && (
           <button

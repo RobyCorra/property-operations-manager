@@ -15441,6 +15441,7 @@ export namespace Prisma {
     maintenanceTicketId: string | null
     attachmentId: string | null
     readByManagerAt: Date | null
+    readByWorkerAt: Date | null
   }
 
   export type MessageMaxAggregateOutputType = {
@@ -15452,6 +15453,7 @@ export namespace Prisma {
     maintenanceTicketId: string | null
     attachmentId: string | null
     readByManagerAt: Date | null
+    readByWorkerAt: Date | null
   }
 
   export type MessageCountAggregateOutputType = {
@@ -15463,6 +15465,7 @@ export namespace Prisma {
     maintenanceTicketId: number
     attachmentId: number
     readByManagerAt: number
+    readByWorkerAt: number
     _all: number
   }
 
@@ -15476,6 +15479,7 @@ export namespace Prisma {
     maintenanceTicketId?: true
     attachmentId?: true
     readByManagerAt?: true
+    readByWorkerAt?: true
   }
 
   export type MessageMaxAggregateInputType = {
@@ -15487,6 +15491,7 @@ export namespace Prisma {
     maintenanceTicketId?: true
     attachmentId?: true
     readByManagerAt?: true
+    readByWorkerAt?: true
   }
 
   export type MessageCountAggregateInputType = {
@@ -15498,6 +15503,7 @@ export namespace Prisma {
     maintenanceTicketId?: true
     attachmentId?: true
     readByManagerAt?: true
+    readByWorkerAt?: true
     _all?: true
   }
 
@@ -15582,6 +15588,7 @@ export namespace Prisma {
     maintenanceTicketId: string
     attachmentId: string | null
     readByManagerAt: Date | null
+    readByWorkerAt: Date | null
     _count: MessageCountAggregateOutputType | null
     _min: MessageMinAggregateOutputType | null
     _max: MessageMaxAggregateOutputType | null
@@ -15610,6 +15617,7 @@ export namespace Prisma {
     maintenanceTicketId?: boolean
     attachmentId?: boolean
     readByManagerAt?: boolean
+    readByWorkerAt?: boolean
     maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
     attachment?: boolean | Message$attachmentArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -15623,6 +15631,7 @@ export namespace Prisma {
     maintenanceTicketId?: boolean
     attachmentId?: boolean
     readByManagerAt?: boolean
+    readByWorkerAt?: boolean
     maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
     attachment?: boolean | Message$attachmentArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -15636,6 +15645,7 @@ export namespace Prisma {
     maintenanceTicketId?: boolean
     attachmentId?: boolean
     readByManagerAt?: boolean
+    readByWorkerAt?: boolean
     maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
     attachment?: boolean | Message$attachmentArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -15649,9 +15659,10 @@ export namespace Prisma {
     maintenanceTicketId?: boolean
     attachmentId?: boolean
     readByManagerAt?: boolean
+    readByWorkerAt?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "text" | "role" | "senderName" | "createdAt" | "maintenanceTicketId" | "attachmentId" | "readByManagerAt", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "text" | "role" | "senderName" | "createdAt" | "maintenanceTicketId" | "attachmentId" | "readByManagerAt" | "readByWorkerAt", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
     attachment?: boolean | Message$attachmentArgs<ExtArgs>
@@ -15680,6 +15691,7 @@ export namespace Prisma {
       maintenanceTicketId: string
       attachmentId: string | null
       readByManagerAt: Date | null
+      readByWorkerAt: Date | null
     }, ExtArgs["result"]["message"]>
     composites: {}
   }
@@ -16113,6 +16125,7 @@ export namespace Prisma {
     readonly maintenanceTicketId: FieldRef<"Message", 'String'>
     readonly attachmentId: FieldRef<"Message", 'String'>
     readonly readByManagerAt: FieldRef<"Message", 'DateTime'>
+    readonly readByWorkerAt: FieldRef<"Message", 'DateTime'>
   }
     
 
@@ -16570,6 +16583,7 @@ export namespace Prisma {
     cleaningTaskId: string | null
     attachmentId: string | null
     readByManagerAt: Date | null
+    readByWorkerAt: Date | null
   }
 
   export type CleaningTaskMessageMaxAggregateOutputType = {
@@ -16581,6 +16595,7 @@ export namespace Prisma {
     cleaningTaskId: string | null
     attachmentId: string | null
     readByManagerAt: Date | null
+    readByWorkerAt: Date | null
   }
 
   export type CleaningTaskMessageCountAggregateOutputType = {
@@ -16592,6 +16607,7 @@ export namespace Prisma {
     cleaningTaskId: number
     attachmentId: number
     readByManagerAt: number
+    readByWorkerAt: number
     _all: number
   }
 
@@ -16605,6 +16621,7 @@ export namespace Prisma {
     cleaningTaskId?: true
     attachmentId?: true
     readByManagerAt?: true
+    readByWorkerAt?: true
   }
 
   export type CleaningTaskMessageMaxAggregateInputType = {
@@ -16616,6 +16633,7 @@ export namespace Prisma {
     cleaningTaskId?: true
     attachmentId?: true
     readByManagerAt?: true
+    readByWorkerAt?: true
   }
 
   export type CleaningTaskMessageCountAggregateInputType = {
@@ -16627,6 +16645,7 @@ export namespace Prisma {
     cleaningTaskId?: true
     attachmentId?: true
     readByManagerAt?: true
+    readByWorkerAt?: true
     _all?: true
   }
 
@@ -16711,6 +16730,7 @@ export namespace Prisma {
     cleaningTaskId: string
     attachmentId: string | null
     readByManagerAt: Date | null
+    readByWorkerAt: Date | null
     _count: CleaningTaskMessageCountAggregateOutputType | null
     _min: CleaningTaskMessageMinAggregateOutputType | null
     _max: CleaningTaskMessageMaxAggregateOutputType | null
@@ -16739,6 +16759,7 @@ export namespace Prisma {
     cleaningTaskId?: boolean
     attachmentId?: boolean
     readByManagerAt?: boolean
+    readByWorkerAt?: boolean
     cleaningTask?: boolean | CleaningTaskDefaultArgs<ExtArgs>
     attachment?: boolean | CleaningTaskMessage$attachmentArgs<ExtArgs>
   }, ExtArgs["result"]["cleaningTaskMessage"]>
@@ -16752,6 +16773,7 @@ export namespace Prisma {
     cleaningTaskId?: boolean
     attachmentId?: boolean
     readByManagerAt?: boolean
+    readByWorkerAt?: boolean
     cleaningTask?: boolean | CleaningTaskDefaultArgs<ExtArgs>
     attachment?: boolean | CleaningTaskMessage$attachmentArgs<ExtArgs>
   }, ExtArgs["result"]["cleaningTaskMessage"]>
@@ -16765,6 +16787,7 @@ export namespace Prisma {
     cleaningTaskId?: boolean
     attachmentId?: boolean
     readByManagerAt?: boolean
+    readByWorkerAt?: boolean
     cleaningTask?: boolean | CleaningTaskDefaultArgs<ExtArgs>
     attachment?: boolean | CleaningTaskMessage$attachmentArgs<ExtArgs>
   }, ExtArgs["result"]["cleaningTaskMessage"]>
@@ -16778,9 +16801,10 @@ export namespace Prisma {
     cleaningTaskId?: boolean
     attachmentId?: boolean
     readByManagerAt?: boolean
+    readByWorkerAt?: boolean
   }
 
-  export type CleaningTaskMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "text" | "role" | "senderName" | "createdAt" | "cleaningTaskId" | "attachmentId" | "readByManagerAt", ExtArgs["result"]["cleaningTaskMessage"]>
+  export type CleaningTaskMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "text" | "role" | "senderName" | "createdAt" | "cleaningTaskId" | "attachmentId" | "readByManagerAt" | "readByWorkerAt", ExtArgs["result"]["cleaningTaskMessage"]>
   export type CleaningTaskMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     cleaningTask?: boolean | CleaningTaskDefaultArgs<ExtArgs>
     attachment?: boolean | CleaningTaskMessage$attachmentArgs<ExtArgs>
@@ -16809,6 +16833,7 @@ export namespace Prisma {
       cleaningTaskId: string
       attachmentId: string | null
       readByManagerAt: Date | null
+      readByWorkerAt: Date | null
     }, ExtArgs["result"]["cleaningTaskMessage"]>
     composites: {}
   }
@@ -17242,6 +17267,7 @@ export namespace Prisma {
     readonly cleaningTaskId: FieldRef<"CleaningTaskMessage", 'String'>
     readonly attachmentId: FieldRef<"CleaningTaskMessage", 'String'>
     readonly readByManagerAt: FieldRef<"CleaningTaskMessage", 'DateTime'>
+    readonly readByWorkerAt: FieldRef<"CleaningTaskMessage", 'DateTime'>
   }
     
 
@@ -25459,7 +25485,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     maintenanceTicketId: 'maintenanceTicketId',
     attachmentId: 'attachmentId',
-    readByManagerAt: 'readByManagerAt'
+    readByManagerAt: 'readByManagerAt',
+    readByWorkerAt: 'readByWorkerAt'
   };
 
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
@@ -25473,7 +25500,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     cleaningTaskId: 'cleaningTaskId',
     attachmentId: 'attachmentId',
-    readByManagerAt: 'readByManagerAt'
+    readByManagerAt: 'readByManagerAt',
+    readByWorkerAt: 'readByWorkerAt'
   };
 
   export type CleaningTaskMessageScalarFieldEnum = (typeof CleaningTaskMessageScalarFieldEnum)[keyof typeof CleaningTaskMessageScalarFieldEnum]
@@ -26677,6 +26705,7 @@ export namespace Prisma {
     maintenanceTicketId?: StringFilter<"Message"> | string
     attachmentId?: StringNullableFilter<"Message"> | string | null
     readByManagerAt?: DateTimeNullableFilter<"Message"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"Message"> | Date | string | null
     maintenanceTicket?: XOR<MaintenanceTicketScalarRelationFilter, MaintenanceTicketWhereInput>
     attachment?: XOR<AttachmentNullableScalarRelationFilter, AttachmentWhereInput> | null
   }
@@ -26690,6 +26719,7 @@ export namespace Prisma {
     maintenanceTicketId?: SortOrder
     attachmentId?: SortOrderInput | SortOrder
     readByManagerAt?: SortOrderInput | SortOrder
+    readByWorkerAt?: SortOrderInput | SortOrder
     maintenanceTicket?: MaintenanceTicketOrderByWithRelationInput
     attachment?: AttachmentOrderByWithRelationInput
   }
@@ -26706,6 +26736,7 @@ export namespace Prisma {
     maintenanceTicketId?: StringFilter<"Message"> | string
     attachmentId?: StringNullableFilter<"Message"> | string | null
     readByManagerAt?: DateTimeNullableFilter<"Message"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"Message"> | Date | string | null
     maintenanceTicket?: XOR<MaintenanceTicketScalarRelationFilter, MaintenanceTicketWhereInput>
     attachment?: XOR<AttachmentNullableScalarRelationFilter, AttachmentWhereInput> | null
   }, "id">
@@ -26719,6 +26750,7 @@ export namespace Prisma {
     maintenanceTicketId?: SortOrder
     attachmentId?: SortOrderInput | SortOrder
     readByManagerAt?: SortOrderInput | SortOrder
+    readByWorkerAt?: SortOrderInput | SortOrder
     _count?: MessageCountOrderByAggregateInput
     _max?: MessageMaxOrderByAggregateInput
     _min?: MessageMinOrderByAggregateInput
@@ -26736,6 +26768,7 @@ export namespace Prisma {
     maintenanceTicketId?: StringWithAggregatesFilter<"Message"> | string
     attachmentId?: StringNullableWithAggregatesFilter<"Message"> | string | null
     readByManagerAt?: DateTimeNullableWithAggregatesFilter<"Message"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableWithAggregatesFilter<"Message"> | Date | string | null
   }
 
   export type CleaningTaskMessageWhereInput = {
@@ -26750,6 +26783,7 @@ export namespace Prisma {
     cleaningTaskId?: StringFilter<"CleaningTaskMessage"> | string
     attachmentId?: StringNullableFilter<"CleaningTaskMessage"> | string | null
     readByManagerAt?: DateTimeNullableFilter<"CleaningTaskMessage"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"CleaningTaskMessage"> | Date | string | null
     cleaningTask?: XOR<CleaningTaskScalarRelationFilter, CleaningTaskWhereInput>
     attachment?: XOR<AttachmentNullableScalarRelationFilter, AttachmentWhereInput> | null
   }
@@ -26763,6 +26797,7 @@ export namespace Prisma {
     cleaningTaskId?: SortOrder
     attachmentId?: SortOrderInput | SortOrder
     readByManagerAt?: SortOrderInput | SortOrder
+    readByWorkerAt?: SortOrderInput | SortOrder
     cleaningTask?: CleaningTaskOrderByWithRelationInput
     attachment?: AttachmentOrderByWithRelationInput
   }
@@ -26779,6 +26814,7 @@ export namespace Prisma {
     cleaningTaskId?: StringFilter<"CleaningTaskMessage"> | string
     attachmentId?: StringNullableFilter<"CleaningTaskMessage"> | string | null
     readByManagerAt?: DateTimeNullableFilter<"CleaningTaskMessage"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"CleaningTaskMessage"> | Date | string | null
     cleaningTask?: XOR<CleaningTaskScalarRelationFilter, CleaningTaskWhereInput>
     attachment?: XOR<AttachmentNullableScalarRelationFilter, AttachmentWhereInput> | null
   }, "id">
@@ -26792,6 +26828,7 @@ export namespace Prisma {
     cleaningTaskId?: SortOrder
     attachmentId?: SortOrderInput | SortOrder
     readByManagerAt?: SortOrderInput | SortOrder
+    readByWorkerAt?: SortOrderInput | SortOrder
     _count?: CleaningTaskMessageCountOrderByAggregateInput
     _max?: CleaningTaskMessageMaxOrderByAggregateInput
     _min?: CleaningTaskMessageMinOrderByAggregateInput
@@ -26809,6 +26846,7 @@ export namespace Prisma {
     cleaningTaskId?: StringWithAggregatesFilter<"CleaningTaskMessage"> | string
     attachmentId?: StringNullableWithAggregatesFilter<"CleaningTaskMessage"> | string | null
     readByManagerAt?: DateTimeNullableWithAggregatesFilter<"CleaningTaskMessage"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableWithAggregatesFilter<"CleaningTaskMessage"> | Date | string | null
   }
 
   export type SupervisorReviewWhereInput = {
@@ -28303,6 +28341,7 @@ export namespace Prisma {
     senderName: string
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
     maintenanceTicket: MaintenanceTicketCreateNestedOneWithoutMessagesInput
     attachment?: AttachmentCreateNestedOneWithoutMessagesInput
   }
@@ -28316,6 +28355,7 @@ export namespace Prisma {
     maintenanceTicketId: string
     attachmentId?: string | null
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type MessageUpdateInput = {
@@ -28325,6 +28365,7 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maintenanceTicket?: MaintenanceTicketUpdateOneRequiredWithoutMessagesNestedInput
     attachment?: AttachmentUpdateOneWithoutMessagesNestedInput
   }
@@ -28338,6 +28379,7 @@ export namespace Prisma {
     maintenanceTicketId?: StringFieldUpdateOperationsInput | string
     attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type MessageCreateManyInput = {
@@ -28349,6 +28391,7 @@ export namespace Prisma {
     maintenanceTicketId: string
     attachmentId?: string | null
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type MessageUpdateManyMutationInput = {
@@ -28358,6 +28401,7 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type MessageUncheckedUpdateManyInput = {
@@ -28369,6 +28413,7 @@ export namespace Prisma {
     maintenanceTicketId?: StringFieldUpdateOperationsInput | string
     attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CleaningTaskMessageCreateInput = {
@@ -28378,6 +28423,7 @@ export namespace Prisma {
     senderName: string
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
     cleaningTask: CleaningTaskCreateNestedOneWithoutMessagesInput
     attachment?: AttachmentCreateNestedOneWithoutCleaningMessagesInput
   }
@@ -28391,6 +28437,7 @@ export namespace Prisma {
     cleaningTaskId: string
     attachmentId?: string | null
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type CleaningTaskMessageUpdateInput = {
@@ -28400,6 +28447,7 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTask?: CleaningTaskUpdateOneRequiredWithoutMessagesNestedInput
     attachment?: AttachmentUpdateOneWithoutCleaningMessagesNestedInput
   }
@@ -28413,6 +28461,7 @@ export namespace Prisma {
     cleaningTaskId?: StringFieldUpdateOperationsInput | string
     attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CleaningTaskMessageCreateManyInput = {
@@ -28424,6 +28473,7 @@ export namespace Prisma {
     cleaningTaskId: string
     attachmentId?: string | null
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type CleaningTaskMessageUpdateManyMutationInput = {
@@ -28433,6 +28483,7 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CleaningTaskMessageUncheckedUpdateManyInput = {
@@ -28444,6 +28495,7 @@ export namespace Prisma {
     cleaningTaskId?: StringFieldUpdateOperationsInput | string
     attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SupervisorReviewCreateInput = {
@@ -29799,6 +29851,7 @@ export namespace Prisma {
     maintenanceTicketId?: SortOrder
     attachmentId?: SortOrder
     readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
   }
 
   export type MessageMaxOrderByAggregateInput = {
@@ -29810,6 +29863,7 @@ export namespace Prisma {
     maintenanceTicketId?: SortOrder
     attachmentId?: SortOrder
     readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
   }
 
   export type MessageMinOrderByAggregateInput = {
@@ -29821,6 +29875,7 @@ export namespace Prisma {
     maintenanceTicketId?: SortOrder
     attachmentId?: SortOrder
     readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
   }
 
   export type CleaningTaskScalarRelationFilter = {
@@ -29837,6 +29892,7 @@ export namespace Prisma {
     cleaningTaskId?: SortOrder
     attachmentId?: SortOrder
     readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
   }
 
   export type CleaningTaskMessageMaxOrderByAggregateInput = {
@@ -29848,6 +29904,7 @@ export namespace Prisma {
     cleaningTaskId?: SortOrder
     attachmentId?: SortOrder
     readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
   }
 
   export type CleaningTaskMessageMinOrderByAggregateInput = {
@@ -29859,6 +29916,7 @@ export namespace Prisma {
     cleaningTaskId?: SortOrder
     attachmentId?: SortOrder
     readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
   }
 
   export type UserScalarRelationFilter = {
@@ -33577,6 +33635,7 @@ export namespace Prisma {
     senderName: string
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
     attachment?: AttachmentCreateNestedOneWithoutCleaningMessagesInput
   }
 
@@ -33588,6 +33647,7 @@ export namespace Prisma {
     createdAt?: Date | string
     attachmentId?: string | null
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type CleaningTaskMessageCreateOrConnectWithoutCleaningTaskInput = {
@@ -33873,6 +33933,7 @@ export namespace Prisma {
     cleaningTaskId?: StringFilter<"CleaningTaskMessage"> | string
     attachmentId?: StringNullableFilter<"CleaningTaskMessage"> | string | null
     readByManagerAt?: DateTimeNullableFilter<"CleaningTaskMessage"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"CleaningTaskMessage"> | Date | string | null
   }
 
   export type AttachmentUpsertWithWhereUniqueWithoutCleaningTaskInput = {
@@ -34080,6 +34141,7 @@ export namespace Prisma {
     senderName: string
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
     attachment?: AttachmentCreateNestedOneWithoutMessagesInput
   }
 
@@ -34091,6 +34153,7 @@ export namespace Prisma {
     createdAt?: Date | string
     attachmentId?: string | null
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type MessageCreateOrConnectWithoutMaintenanceTicketInput = {
@@ -34315,6 +34378,7 @@ export namespace Prisma {
     maintenanceTicketId?: StringFilter<"Message"> | string
     attachmentId?: StringNullableFilter<"Message"> | string | null
     readByManagerAt?: DateTimeNullableFilter<"Message"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"Message"> | Date | string | null
   }
 
   export type AIAssistantMessageUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
@@ -34770,6 +34834,7 @@ export namespace Prisma {
     senderName: string
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
     maintenanceTicket: MaintenanceTicketCreateNestedOneWithoutMessagesInput
   }
 
@@ -34781,6 +34846,7 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicketId: string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type MessageCreateOrConnectWithoutAttachmentInput = {
@@ -34800,6 +34866,7 @@ export namespace Prisma {
     senderName: string
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
     cleaningTask: CleaningTaskCreateNestedOneWithoutMessagesInput
   }
 
@@ -34811,6 +34878,7 @@ export namespace Prisma {
     createdAt?: Date | string
     cleaningTaskId: string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type CleaningTaskMessageCreateOrConnectWithoutAttachmentInput = {
@@ -37114,6 +37182,7 @@ export namespace Prisma {
     createdAt?: Date | string
     attachmentId?: string | null
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type AttachmentCreateManyCleaningTaskInput = {
@@ -37155,6 +37224,7 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachment?: AttachmentUpdateOneWithoutCleaningMessagesNestedInput
   }
 
@@ -37166,6 +37236,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskInput = {
@@ -37176,6 +37247,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AttachmentUpdateWithoutCleaningTaskInput = {
@@ -37298,6 +37370,7 @@ export namespace Prisma {
     createdAt?: Date | string
     attachmentId?: string | null
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type AIAssistantMessageCreateManyMaintenanceTicketInput = {
@@ -37367,6 +37440,7 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachment?: AttachmentUpdateOneWithoutMessagesNestedInput
   }
 
@@ -37378,6 +37452,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type MessageUncheckedUpdateManyWithoutMaintenanceTicketInput = {
@@ -37388,6 +37463,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AIAssistantMessageUpdateWithoutMaintenanceTicketInput = {
@@ -37458,6 +37534,7 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicketId: string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type CleaningTaskMessageCreateManyAttachmentInput = {
@@ -37468,6 +37545,7 @@ export namespace Prisma {
     createdAt?: Date | string
     cleaningTaskId: string
     readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
   }
 
   export type MessageUpdateWithoutAttachmentInput = {
@@ -37477,6 +37555,7 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maintenanceTicket?: MaintenanceTicketUpdateOneRequiredWithoutMessagesNestedInput
   }
 
@@ -37488,6 +37567,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: StringFieldUpdateOperationsInput | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type MessageUncheckedUpdateManyWithoutAttachmentInput = {
@@ -37498,6 +37578,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: StringFieldUpdateOperationsInput | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CleaningTaskMessageUpdateWithoutAttachmentInput = {
@@ -37507,6 +37588,7 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTask?: CleaningTaskUpdateOneRequiredWithoutMessagesNestedInput
   }
 
@@ -37518,6 +37600,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTaskId?: StringFieldUpdateOperationsInput | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CleaningTaskMessageUncheckedUpdateManyWithoutAttachmentInput = {
@@ -37528,6 +37611,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTaskId?: StringFieldUpdateOperationsInput | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ManagerChatMessageCreateManySessionInput = {

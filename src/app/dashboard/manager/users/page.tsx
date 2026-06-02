@@ -53,27 +53,26 @@ export default async function UsersListPage() {
 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">
-                Il Tuo Team <span className="text-violet-600">.</span>
-            </h1>
-            <p className="text-slate-500 text-sm mt-1 font-medium tracking-normal">Gestione collaboratori e permessi di accesso</p>
-          </div>
+          <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-slate-900 uppercase">
+            Team <span className="text-violet-600">.</span>
+          </h1>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link
               href="/dashboard/manager/users/history"
-              className="flex items-center gap-3 px-8 py-3.5 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
+              className="flex items-center gap-3 px-4 md:px-8 py-2.5 md:py-3.5 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
             >
               <Activity size={16} />
-              Storico Attività
+              <span className="md:hidden">Storico</span>
+              <span className="hidden md:inline">Storico Attività</span>
             </Link>
             <Link
               href="/dashboard/manager/users/new"
-              className="flex items-center gap-3 bg-gradient-to-r from-violet-600 to-blue-500 px-8 py-3.5 text-[10px] font-black text-white shadow-xl shadow-violet-200/50 transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-95 uppercase tracking-widest whitespace-nowrap rounded-full"
+              className="flex items-center gap-3 bg-gradient-to-r from-violet-600 to-blue-500 px-4 md:px-8 py-2.5 md:py-3.5 text-[10px] font-black text-white shadow-xl shadow-violet-200/50 transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-95 uppercase tracking-widest whitespace-nowrap rounded-full"
             >
               <Plus size={16} />
-              Nuovo Collaboratore
+              <span className="md:hidden">Nuovo</span>
+              <span className="hidden md:inline">Nuovo Collaboratore</span>
             </Link>
           </div>
         </div>

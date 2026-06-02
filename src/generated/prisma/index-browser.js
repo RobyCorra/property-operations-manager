@@ -268,7 +268,8 @@ exports.Prisma.MessageScalarFieldEnum = {
   createdAt: 'createdAt',
   maintenanceTicketId: 'maintenanceTicketId',
   attachmentId: 'attachmentId',
-  readByManagerAt: 'readByManagerAt'
+  readByManagerAt: 'readByManagerAt',
+  readByWorkerAt: 'readByWorkerAt'
 };
 
 exports.Prisma.CleaningTaskMessageScalarFieldEnum = {
@@ -279,7 +280,8 @@ exports.Prisma.CleaningTaskMessageScalarFieldEnum = {
   createdAt: 'createdAt',
   cleaningTaskId: 'cleaningTaskId',
   attachmentId: 'attachmentId',
-  readByManagerAt: 'readByManagerAt'
+  readByManagerAt: 'readByManagerAt',
+  readByWorkerAt: 'readByWorkerAt'
 };
 
 exports.Prisma.SupervisorReviewScalarFieldEnum = {

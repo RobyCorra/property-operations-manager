@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mockup — Popup Manutenzione con Task</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f1f5f9; }
+  .modal { animation: zoomIn .2s ease; }
+  @keyframes zoomIn { from { opacity:0; transform:scale(.95); } to { opacity:1; transform:scale(1); } }
+</style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+<div class="modal bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+
+  <!-- ── HEADER ─────────────────────────────────────────── -->
+  <div class="p-10 border-b border-slate-100 flex items-start justify-between bg-white">
+    <div>
+      <div class="flex items-center gap-3 mb-2">
+        <div class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide flex items-center gap-2 bg-red-500/10 text-red-600">
+          🔧 Manutenzione
+        </div>
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+          ● IN_PROGRESS
+        </span>
+      </div>
+      <h2 class="text-4xl font-semibold text-slate-900 tracking-tight">Sostituzione Caldaia</h2>
+      <p class="text-slate-500 font-semibold mt-1 uppercase text-sm tracking-wide">Appartamento Milano Centro</p>
+    </div>
+    <button class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-lg font-bold transition-colors">✕</button>
+  </div>
+
+  <!-- ── BODY ───────────────────────────────────────────── -->
+  <div class="flex-1 overflow-y-auto bg-white p-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+
+    <!-- LEFT: Informazioni + Descrizione -->
+    <div class="space-y-8">
+      <div>
+        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Informazioni Chiave</h4>
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="text-violet-600">📅</span>
+            <div>
+              <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Quando</p>
+              <p class="text-sm font-semibold text-slate-800">3 giu 2026 · 09:00 → 13:00</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-violet-600">📍</span>
+            <div>
+              <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Indirizzo</p>
+              <p class="text-sm font-semibold text-slate-800">Via Brera 12, Milano</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-violet-600">👤</span>
+            <div>
+              <p class="text-[9px] font-black uppercase tracking-widest text-slate-400">Tecnico</p>
+              <p class="text-sm font-semibold text-slate-800">Marco Ferretti</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descrizione -->
+      <div>
+        <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-4">Descrizione</h4>
+        <div class="bg-red-500/5 p-5 rounded-2xl border border-red-500/10 text-sm text-slate-700 leading-relaxed">
+          La caldaia esistente non scalda più l'acqua oltre 35°C. Necessaria sostituzione completa con modello ad alta efficienza. Portare valvole di sicurezza e raccordi.
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Stato Operativo compatto + Task da Eseguire -->
+    <div class="space-y-6">
+
+      <!-- Stato Operativo — più compatto -->
+      <div>
+        <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Stato Operativo</h4>
+        <div class="bg-slate-50 rounded-2xl px-5 py-4 border border-slate-100 shadow-sm flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-semibold text-slate-500">Stato</span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase bg-blue-50 border border-slate-200 shadow-sm text-blue-600">
+              In corso
+            </span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-semibold text-slate-500">Priorità</span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase bg-orange-50 text-orange-600">
+              Alta
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task da Eseguire — sotto Stato Operativo -->
+      <div>
+        <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Task da Eseguire</h4>
+
+        <!-- Barra segmentata + contatore -->
+        <div class="mb-4">
+          <div class="flex justify-between items-end mb-2">
+            <p class="text-2xl font-semibold tracking-tight text-slate-900">
+              3 <span class="text-sm font-medium text-slate-400">/ 5 Task</span>
+            </p>
+          </div>
+          <div class="flex gap-1.5 h-3">
+            <div class="flex-1 rounded-full bg-amber-500 shadow-sm shadow-amber-200/50"></div>
+            <div class="flex-1 rounded-full bg-amber-500 shadow-sm shadow-amber-200/50"></div>
+            <div class="flex-1 rounded-full bg-amber-500 shadow-sm shadow-amber-200/50"></div>
+            <div class="flex-1 rounded-full bg-black/5"></div>
+            <div class="flex-1 rounded-full bg-black/5"></div>
+          </div>
+        </div>
+
+        <!-- Lista task -->
+        <div class="space-y-2">
+          <!-- Completata -->
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-50 border border-slate-100">
+            <div class="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center shrink-0">
+              <span class="text-white text-[10px] font-black">✓</span>
+            </div>
+            <p class="text-xs font-semibold text-slate-400 line-through flex-1">Chiusura acqua e gas</p>
+          </div>
+          <!-- Completata -->
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-50 border border-slate-100">
+            <div class="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center shrink-0">
+              <span class="text-white text-[10px] font-black">✓</span>
+            </div>
+            <p class="text-xs font-semibold text-slate-400 line-through flex-1">Smontaggio caldaia vecchia</p>
+          </div>
+          <!-- Completata con foto caricata -->
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-50 border border-slate-100">
+            <div class="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center shrink-0">
+              <span class="text-white text-[10px] font-black">✓</span>
+            </div>
+            <p class="text-xs font-semibold text-slate-400 line-through flex-1">Installazione nuova caldaia</p>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-600 shrink-0">📷 ✓</span>
+          </div>
+          <!-- Da fare con foto richiesta -->
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-slate-200">
+            <div class="w-5 h-5 rounded-full border-2 border-slate-300 shrink-0"></div>
+            <p class="text-xs font-semibold text-slate-800 flex-1">Test collaudo e pressione</p>
+            <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100 shrink-0">📷</span>
+          </div>
+          <!-- Da fare -->
+          <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-slate-200">
+            <div class="w-5 h-5 rounded-full border-2 border-slate-300 shrink-0"></div>
+            <p class="text-xs font-semibold text-slate-800 flex-1">Ripristino acqua e gas</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── FOOTER ─────────────────────────────────────────── -->
+  <div class="p-10 bg-white border-t border-slate-100 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <button class="px-8 py-3.5 bg-amber-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-amber-400 transition-all shadow-lg active:scale-95">
+        ✓ Completato — Invia per verifica
+      </button>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="#" class="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all shadow-sm">
+        Modifica ticket
+      </a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- LEGENDA -->
+<div class="fixed bottom-4 left-4 bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl p-4 shadow-lg max-w-xs">
+  <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Legenda task</p>
+  <div class="space-y-1.5">
+    <div class="flex items-center gap-2">
+      <div class="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center"><span class="text-white text-[8px] font-black">✓</span></div>
+      <span class="text-xs text-slate-600">Task completata</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="w-4 h-4 rounded-full border-2 border-slate-300"></div>
+      <span class="text-xs text-slate-600">Task da fare</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100">📷</span>
+      <span class="text-xs text-slate-600">Foto richiesta</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-600">📷 ✓</span>
+      <span class="text-xs text-slate-600">Foto caricata</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
