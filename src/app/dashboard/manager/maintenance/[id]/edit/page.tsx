@@ -10,6 +10,7 @@ import { updateMaintenanceTicket, createTicketMessage, reopenMaintenanceTicket }
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import MaintenanceShareButton from "@/src/components/maintenance-share-button";
 import AutoRefresh from "@/src/components/auto-refresh";
+import BackButton from "@/src/components/back-button";
 
 type AttachmentView = {
   id: string;
@@ -78,9 +79,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
       <AutoRefresh intervalMs={10000} />
       <div className="max-w-7xl mx-auto space-y-8">
         <div>
-          <Link href="/dashboard/manager/maintenance" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block text-sm">
-            &larr; Torna all'elenco manutenzioni
-          </Link>
+          <BackButton />
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Dettagli Ticket #{id.slice(0, 8)}</h1>
           <p className="text-gray-500 mt-1">Gestisci la segnalazione e comunica con il tecnico</p>
         </div>

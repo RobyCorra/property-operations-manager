@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import { updateApartment } from "@/src/app/actions/apartment";
 import ApartmentForm from "@/src/components/apartment-form";
 import ApartmentAttachmentsPanel, { type ApartmentItem } from "@/src/components/apartment-attachments-panel";
+import BackButton from "@/src/components/back-button";
 
 interface EditApartmentPageProps {
   params: Promise<{ id: string }>;
@@ -64,9 +65,7 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
 
         {/* Header */}
         <div>
-          <Link href="/dashboard/manager/apartments" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block">
-            &larr; Torna agli appartamenti
-          </Link>
+          <BackButton />
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Modifica Appartamento</h1>
             <p className="text-gray-500 mt-1">Aggiorna i dettagli della proprietà: {apartment.name}</p>

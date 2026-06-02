@@ -4,6 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { createCleaningTask } from "@/src/app/actions/operational";
 import OperationalForm from "@/src/components/operational-form";
+import BackButton from "@/src/components/back-button";
 
 export default async function NewCleaningPage() {
   const cookieStore = await cookies();
@@ -22,10 +23,8 @@ export default async function NewCleaningPage() {
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
-          <Link href="/dashboard/manager" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block">
-            &larr; Torna alla Dashboard
-          </Link>
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Programma Pulizia</h1>
+          <BackButton />
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900 mt-3">Programma Pulizia</h1>
           <p className="text-gray-500 mt-1">Assegna un intervento di pulizia a un addetto</p>
         </div>
 

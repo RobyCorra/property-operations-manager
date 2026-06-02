@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createApartment } from "@/src/app/actions/apartment";
 import ApartmentCreateWizard from "@/src/components/apartment-create-wizard";
+import BackButton from "@/src/components/back-button";
 export default async function NewApartmentPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -17,9 +18,7 @@ export default async function NewApartmentPage() {
         
         {/* Header */}
         <div>
-          <Link href="/dashboard/manager/apartments" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block">
-            &larr; Torna agli appartamenti
-          </Link>
+          <BackButton />
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Aggiungi Appartamento</h1>
           <p className="text-gray-500 mt-1">Censisci una nuova proprietà per l'operatività</p>
         </div>

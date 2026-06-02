@@ -5,6 +5,7 @@ import Link from "next/link";
 import CleaningDetailView from "@/src/components/cleaning-detail-view";
 import CleaningShareButton from "@/src/components/cleaning-share-button";
 import { getCleaningTaskMessages, enrichCleaningTaskWithNextBooking } from "@/src/app/actions/operational";
+import BackButton from "@/src/components/back-button";
 
 export default async function EditCleaningPage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
@@ -47,12 +48,7 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <div className="max-w-5xl mx-auto space-y-6">
-        <Link
-          href="/dashboard/manager/cleanings"
-          className="text-gray-400 hover:text-gray-600 transition-colors text-sm inline-block"
-        >
-          &larr; Torna all'elenco pulizie
-        </Link>
+        <BackButton />
 
         {/* Link condivisibile per il cleaner */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2">

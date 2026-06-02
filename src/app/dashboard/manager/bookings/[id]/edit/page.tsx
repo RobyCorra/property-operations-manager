@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import BookingForm from "@/src/components/booking-form";
+import BackButton from "@/src/components/back-button";
 
 export default async function EditBookingPage({ params }: { params: { id: string } }) {
   const cookieStore = await cookies();
@@ -36,9 +37,7 @@ export default async function EditBookingPage({ params }: { params: { id: string
         {/* Header */}
         <div>
           <div className="flex items-center gap-3">
-            <Link href="/dashboard/manager/bookings" className="text-gray-400 hover:text-gray-600 transition-colors text-sm">
-              &larr; Torna alle prenotazioni
-            </Link>
+            <BackButton />
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900 mt-2">Modifica Prenotazione</h1>
           <p className="text-gray-500 mt-1">Aggiorna i dettagli del soggiorno per {booking.guestName}</p>

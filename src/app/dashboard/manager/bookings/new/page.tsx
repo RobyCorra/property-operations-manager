@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import BookingForm from "@/src/components/booking-form";
+import BackButton from "@/src/components/back-button";
 
 export default async function NewBookingPage() {
   const cookieStore = await cookies();
@@ -30,9 +31,7 @@ export default async function NewBookingPage() {
         
         {/* Header */}
         <div>
-          <Link href="/dashboard/manager/bookings" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block">
-            &larr; Torna alle prenotazioni
-          </Link>
+          <BackButton />
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Nuova Prenotazione</h1>
           <p className="text-gray-500 mt-1">Inserisci i dettagli del soggiorno e verifica disponibilità</p>
         </div>

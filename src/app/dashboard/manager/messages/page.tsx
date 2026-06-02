@@ -5,6 +5,7 @@ import TicketConversation from "@/src/components/ticket-conversation";
 import { createTicketMessage, createCleaningTaskMessage } from "@/src/app/actions/operational";
 import MarkReadTrigger from "@/src/components/mark-read-trigger";
 import MessagesDashboard from "@/src/components/messages-dashboard";
+import BackButton from "@/src/components/back-button";
 
 export default async function ManagerMessagesPage({
   searchParams,
@@ -83,6 +84,9 @@ export default async function ManagerMessagesPage({
 
   return (
     <main className="min-h-screen bg-gray-50/20">
+      <div className="p-4">
+        <BackButton />
+      </div>
       {selectedThread && (
         <MarkReadTrigger id={selectedThread.id} type={selectedThread.type} />
       )}

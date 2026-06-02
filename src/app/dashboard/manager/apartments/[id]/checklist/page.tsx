@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import ChecklistManager from "@/src/components/checklist-manager";
+import BackButton from "@/src/components/back-button";
 import { prisma } from "@/src/lib/prisma";
 
 export default async function ApartmentChecklistPage({ params }: { params: { id: string } }) {
@@ -34,9 +35,7 @@ export default async function ApartmentChecklistPage({ params }: { params: { id:
         {/* Header */}
         <div>
           <div className="flex items-center gap-3">
-            <Link href="/dashboard/manager/apartments" className="text-gray-400 hover:text-gray-600 transition-colors text-sm font-medium">
-              &larr; Torna agli appartamenti
-            </Link>
+            <BackButton />
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900 mt-2">Quality Checklist</h1>
           <p className="text-gray-500 mt-1">Configura gli standard di pulizia per <span className="font-bold text-gray-900">{apartment.name}</span></p>

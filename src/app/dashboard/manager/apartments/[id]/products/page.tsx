@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import ApartmentProductsPanel from "@/src/components/apartment-products-panel";
+import BackButton from "@/src/components/back-button";
 
 interface ProductsPageProps {
   params: Promise<{ id: string }>;
@@ -47,12 +48,7 @@ export default async function ApartmentProductsPage({ params }: ProductsPageProp
 
         {/* Header */}
         <div>
-          <Link
-            href="/dashboard/manager/apartments"
-            className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block"
-          >
-            &larr; Torna agli appartamenti
-          </Link>
+          <BackButton />
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
               Prodotti &amp; Scorte
