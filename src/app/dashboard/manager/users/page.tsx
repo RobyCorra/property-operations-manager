@@ -4,6 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import DeleteUserButton from "@/src/components/delete-user-button";
 import SafeDate from "@/src/components/safe-date";
+import BackButton from "@/src/components/back-button";
 import {
   User,
   Mail,
@@ -48,7 +49,8 @@ export default async function UsersListPage() {
   return (
     <main className="min-h-screen bg-[#faf8ff] p-6 lg:p-10 font-sans text-slate-900">
       <div className="max-w-7xl mx-auto space-y-12">
-        
+        <BackButton />
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -76,8 +78,8 @@ export default async function UsersListPage() {
           </div>
         </div>
 
-        {/* List */}
-        <section className="bg-white/40 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-2xl shadow-black/5 overflow-hidden transition-all duration-200">
+        {/* List — Desktop (table view) */}
+        <section className="hidden md:block bg-white/40 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-2xl shadow-black/5 overflow-hidden transition-all duration-200">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-600 border-collapse">
               <thead className="bg-white/20 border-b border-white/40">
@@ -142,6 +144,60 @@ export default async function UsersListPage() {
             </table>
           </div>
         </section>
+
+        {/* List — Mobile (card view) */}
+        <div className="md:hidden space-y-3">
+          {users.map((u: UserView) => (
+            <div key={u.id} className="bg-white/40 backdrop-blur-xl rounded-2xl border border-white/40 shadow-md overflow-hidden transition-all duration-200 hover:bg-white/60">
+              <div className="p-4 space-y-3">
+                {/* Name and Role */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
+                      <User size={18} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 tracking-tight uppercase truncate">{u.name}</p>
+                      <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border shadow-sm mt-1 ${roleColors[u.role] || "bg-white text-slate-400 border-slate-100"}`}>
+                        <Fingerprint size={10} />
+                        {u.role}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div className="flex items-center gap-2 text-slate-500 font-medium lowercase text-[10px]">
+                  <Mail size={12} className="text-slate-300 shrink-0" />
+                  <span className="truncate">{u.email}</span>
+                </div>
+
+                {/* Date */}
+                <div className="flex items-center gap-2 text-slate-400 text-[9px] font-bold uppercase tracking-widest">
+                  <CalendarDays size={12} className="text-slate-300 shrink-0" />
+                  <SafeDate date={u.createdAt} format={{ day: 'numeric', month: 'numeric', year: 'numeric' }} />
+                </div>
+
+                {/* Actions */}
+                {role === "MANAGER" && u.email !== "manager@propertyops.com" && (
+                  <div className="flex items-center gap-2 pt-2 border-t border-white/20">
+                    <Link
+                      href={`/dashboard/manager/users/${u.id}/edit`}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-all text-[10px] font-bold"
+                      title="Modifica utente"
+                    >
+                      <Pencil size={14} />
+                      Modifica
+                    </Link>
+                    <div className="flex-1">
+                      <DeleteUserButton id={u.id} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
 
       </div>
     </main>
