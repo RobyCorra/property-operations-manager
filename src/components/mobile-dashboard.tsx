@@ -967,14 +967,13 @@ export default function MobileDashboard({
                                 {segs.map((seg, si) => {
                                   const isLeft  = seg.type === "ci" || seg.type === "same";
                                   const isRight = seg.type === "co" || seg.type === "same";
-                                  const topPct  = segs.length > 1 ? (si === 0 ? "20%" : "60%") : "50%";
                                   return (
                                     <Link
                                       key={si}
                                       href={`/dashboard/manager/bookings/${seg.id}/edit`}
                                       className="absolute flex items-center"
                                       style={{
-                                        top: topPct,
+                                        top: "50%",
                                         transform: "translateY(-50%)",
                                         left:  isLeft  ? "50%" : -1,
                                         right: isRight ? "50%" : -1,
