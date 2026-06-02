@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import { getTeamActivityHistory } from "@/src/app/actions/activity";
 import Link from "next/link";
 import ActivityHistoryTable from "@/src/components/activity-history-table";
@@ -15,12 +16,14 @@ export default async function SharedHistoryPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   // Fetch data with RBAC handled inside the action
   const [apartments, collaborators, initialActivities] = await Promise.all([
-    prisma.apartment.findMany({ select: { id: true, name: true } }),
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
     // Only managers see the collaborator filter
-    role === "MANAGER" 
-      ? prisma.user.findMany({ where: { role: { not: "MANAGER" } }, select: { id: true, name: true, role: true } })
+    role === "MANAGER"
+      ? prisma.user.findMany({ where: { role: { not: "MANAGER" }, organizationId: orgId }, select: { id: true, name: true, role: true } })
       : Promise.resolve([]),
     getTeamActivityHistory({
       currentUserId: userId,

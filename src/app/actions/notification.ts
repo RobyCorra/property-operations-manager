@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
@@ -25,7 +26,14 @@ export async function getNotifications() {
     // Cleanup silenzioso prima di restituire la lista
     await deleteExpiredNotifications();
 
+    const orgId = await getCurrentOrg();
     const notifications = await prisma.notification.findMany({
+      where: {
+        OR: [
+          { apartmentId: null },
+          { apartment: { organizationId: orgId } },
+        ],
+      },
       orderBy: { createdAt: "desc" },
       take: 20,
     });

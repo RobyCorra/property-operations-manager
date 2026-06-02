@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import CleaningDetailView from "@/src/components/cleaning-detail-view";
 import CleaningShareButton from "@/src/components/cleaning-share-button";
@@ -17,6 +18,7 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
   }
 
   const { id } = await params;
+  const orgId = await getCurrentOrg();
 
   const [task, apartments, cleaners, messages] = await Promise.all([
     prisma.cleaningTask.findUnique({
@@ -28,8 +30,8 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
         aiAssistantMessages: { orderBy: { createdAt: "asc" } },
       },
     }),
-    prisma.apartment.findMany({ select: { id: true, name: true } }),
-    prisma.user.findMany({ where: { role: "CLEANER" }, select: { id: true, name: true } }),
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
+    prisma.user.findMany({ where: { role: "CLEANER", organizationId: orgId }, select: { id: true, name: true } }),
     getCleaningTaskMessages(id),
   ]);
 

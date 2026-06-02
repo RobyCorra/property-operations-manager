@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
+import { cookies } from "next/headers";
+import { getCurrentOrg } from "@/src/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -19,8 +21,11 @@ export async function GET(req: NextRequest) {
   const to = new Date(dateTo);
   to.setHours(23, 59, 59, 999);
 
+  const orgId = await getCurrentOrg();
+
   const filtered = await prisma.cleaningTask.findMany({
     where: {
+      apartment: { organizationId: orgId },
       ...(apartmentIds.length > 0 ? { apartmentId: { in: apartmentIds } } : {}),
       date: { gte: from, lte: to },
       status: { notIn: ["CANCELLED", "APPROVED"] },

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import BookingForm from "@/src/components/booking-form";
 import BackButton from "@/src/components/back-button";
 
@@ -13,7 +14,10 @@ export default async function NewBookingPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const apartments = await prisma.apartment.findMany({
+    where: { organizationId: orgId },
     select: {
       id: true,
       name: true,

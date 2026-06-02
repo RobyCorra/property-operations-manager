@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import TicketConversation from "@/src/components/ticket-conversation";
 import { createTicketMessage, createCleaningTaskMessage } from "@/src/app/actions/operational";
 import MarkReadTrigger from "@/src/components/mark-read-trigger";
@@ -21,9 +22,11 @@ export default async function ManagerMessagesPage({
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const [maintenanceTickets, cleaningTasks, apartments] = await Promise.all([
     prisma.maintenanceTicket.findMany({
-      where: { messages: { some: {} } },
+      where: { messages: { some: {} }, apartment: { organizationId: orgId } },
       include: {
         apartment: { select: { name: true, address: true } },
         assignedTo: { select: { name: true } },
@@ -31,14 +34,14 @@ export default async function ManagerMessagesPage({
       },
     }),
     prisma.cleaningTask.findMany({
-      where: { messages: { some: {} } },
+      where: { messages: { some: {} }, apartment: { organizationId: orgId } },
       include: {
         apartment: { select: { name: true, address: true } },
         assignedTo: { select: { name: true } },
         messages: { orderBy: { createdAt: "asc" }, include: { attachment: true } },
       },
     }),
-    prisma.apartment.findMany({ select: { id: true, name: true } }),
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
   ]);
 
   const threads = [

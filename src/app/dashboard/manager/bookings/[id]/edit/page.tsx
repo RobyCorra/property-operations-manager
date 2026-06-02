@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import BookingForm from "@/src/components/booking-form";
 import BackButton from "@/src/components/back-button";
@@ -14,12 +15,14 @@ export default async function EditBookingPage({ params }: { params: { id: string
   }
 
   const { id } = await params;
+  const orgId = await getCurrentOrg();
 
   const [booking, apartments] = await Promise.all([
     prisma.booking.findUnique({
       where: { id },
     }),
     prisma.apartment.findMany({
+      where: { organizationId: orgId },
       orderBy: { name: "asc" },
     }),
   ]);

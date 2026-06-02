@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import { getNotifications } from "@/src/app/actions/notification";
 
@@ -88,14 +89,16 @@ export default async function CalendarioOperativoPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const [apartments, bookings, cleanings, tickets, calendarTickets, initialNotifications] = await Promise.all([
-    prisma.apartment.findMany(),
+    prisma.apartment.findMany({ where: { organizationId: orgId } }),
     prisma.booking.findMany({
-      where: { status: { not: "CANCELLED" } },
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: { apartment: true }
     }),
     prisma.cleaningTask.findMany({
-      where: { status: { not: "CANCELLED" } },
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: {
         apartment: true,
         assignedTo: true,
@@ -108,11 +111,11 @@ export default async function CalendarioOperativoPage() {
       }
     }),
     prisma.maintenanceTicket.findMany({
-      where: { status: { in: ["PENDING", "IN_PROGRESS"] } },
+      where: { status: { in: ["PENDING", "IN_PROGRESS"] }, apartment: { organizationId: orgId } },
       include: { apartment: true, assignedTo: true }
     }),
     prisma.maintenanceTicket.findMany({
-      where: { status: { not: "CANCELLED" } },
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: { apartment: true, assignedTo: true },
       orderBy: { createdAt: "desc" },
     }),

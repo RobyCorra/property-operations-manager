@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import UserEditForm from "@/src/components/user-edit-form";
 import BackButton from "@/src/components/back-button";
 
@@ -12,6 +13,8 @@ export default async function EditUserPage({ params }: { params: Promise<{ id: s
 
   if (role !== "MANAGER") redirect("/login");
 
+  const orgId = await getCurrentOrg();
+
   const [user, apartments] = await Promise.all([
     prisma.user.findUnique({
       where: { id },
@@ -20,7 +23,7 @@ export default async function EditUserPage({ params }: { params: Promise<{ id: s
         ownedApartments: { select: { apartmentId: true } },
       },
     }),
-    prisma.apartment.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
 
   if (!user) notFound();

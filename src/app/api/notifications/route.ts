@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,14 @@ export async function GET() {
       },
     });
 
+    const orgId = await getCurrentOrg();
     const notifications = await prisma.notification.findMany({
+      where: {
+        OR: [
+          { apartmentId: null },
+          { apartment: { organizationId: orgId } },
+        ],
+      },
       orderBy: { createdAt: "desc" },
       take: 20,
     });

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import { createCleaningTask } from "@/src/app/actions/operational";
 import OperationalForm from "@/src/components/operational-form";
 import BackButton from "@/src/components/back-button";
@@ -14,9 +15,11 @@ export default async function NewCleaningPage() {
     redirect("/login");
   }
 
+  const orgId = await getCurrentOrg();
+
   const [apartments, cleaners] = await Promise.all([
-    prisma.apartment.findMany({ select: { id: true, name: true } }),
-    prisma.user.findMany({ where: { role: "CLEANER" }, select: { id: true, name: true } }),
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
+    prisma.user.findMany({ where: { role: "CLEANER", organizationId: orgId }, select: { id: true, name: true } }),
   ]);
 
   return (

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import OperationalForm from "@/src/components/operational-form";
 import TicketConversation from "@/src/components/ticket-conversation";
@@ -46,6 +47,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
 
   const { id } = await params;
   const userId = cookieStore.get("userId")?.value;
+  const orgId = await getCurrentOrg();
 
   const [ticket, tokenRecord, apartments, technicians, manager] = await Promise.all([
     prisma.maintenanceTicket.findUnique({
@@ -65,8 +67,8 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
       where: { id },
       select: { maintenanceAccessToken: true },
     }),
-    prisma.apartment.findMany({ select: { id: true, name: true } }),
-    prisma.user.findMany({ where: { role: "MAINTENANCE" }, select: { id: true, name: true } }),
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
+    prisma.user.findMany({ where: { role: "MAINTENANCE", organizationId: orgId }, select: { id: true, name: true } }),
     prisma.user.findUnique({ where: { id: userId }, select: { name: true } })
   ]);
 

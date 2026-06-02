@@ -2,6 +2,7 @@
 
 import { prisma } from "@/src/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getCurrentOrg } from "@/src/lib/tenant";
 
 export interface Activity {
   id: string;
@@ -62,7 +63,10 @@ export async function getTeamActivityHistory(filters: {
 }) {
   const { collaboratorId, apartmentId, status, type, startDate, endDate, currentUserId, currentUserRole } = filters;
 
-  const whereClause: any = {};
+  const orgId = await getCurrentOrg();
+  const whereClause: any = {
+    apartment: { organizationId: orgId },
+  };
 
   // RBAC: If not manager, only see own tasks
   if (currentUserRole !== "MANAGER") {
