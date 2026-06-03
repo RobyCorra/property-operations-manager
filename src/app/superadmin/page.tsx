@@ -226,6 +226,11 @@ export default async function SuperAdminPage() {
                   const actionColor: Record<string, string> = {
                     LOGIN: "text-emerald-400",
                     LOGIN_FALLITO: "text-red-400",
+                    LOGIN_MANAGER: "text-emerald-300",
+                    LOGIN_CLEANER: "text-emerald-300",
+                    LOGIN_MAINTENANCE: "text-emerald-300",
+                    LOGIN_SUPERVISOR: "text-emerald-300",
+                    LOGIN_OWNER: "text-emerald-300",
                     IMPERSONA: "text-violet-400",
                     CREA_ORG: "text-sky-400",
                     CREA_MANAGER: "text-sky-400",

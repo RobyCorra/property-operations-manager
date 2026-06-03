@@ -15,17 +15,47 @@ export async function loginAction(prevState: any, formData: FormData) {
 
   const user = await prisma.user.findUnique({
     where: { email },
-    include: { organization: { select: { id: true } } },
+    include: { organization: { select: { id: true, name: true } } },
   });
 
   if (!user) {
+    try {
+      await prisma.superAdminLog.create({
+        data: { id: `${Date.now()}-lf`, action: "LOGIN_FALLITO", detail: `Email non trovata: ${email}` },
+      });
+    } catch {}
     return { error: "Credenziali non valide." };
   }
 
   const isValid = await bcrypt.compare(password, user.password);
 
   if (!isValid) {
+    try {
+      await prisma.superAdminLog.create({
+        data: {
+          id: `${Date.now()}-lf`,
+          action: "LOGIN_FALLITO",
+          detail: `Password errata: ${user.name} (${email})`,
+          orgId: user.organization?.id ?? null,
+          orgName: user.organization?.name ?? null,
+        },
+      });
+    } catch {}
     return { error: "Credenziali non valide." };
+  }
+
+  try {
+    await prisma.superAdminLog.create({
+      data: {
+        id: `${Date.now()}-lu`,
+        action: `LOGIN_${user.role}`,
+        detail: `${user.name} (${email})`,
+        orgId: user.organization?.id ?? null,
+        orgName: user.organization?.name ?? null,
+      },
+    });
+  } catch (e) {
+    console.error("[SuperAdminLog] login log error:", e);
   }
 
   // Set cookies
