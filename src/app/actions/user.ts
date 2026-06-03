@@ -14,6 +14,12 @@ export async function createUser(prevState: any, formData: FormData) {
   const password = formData.get("password") as string;
   const role = formData.get("role") as Role;
   const apartmentIds = formData.getAll("apartmentIds") as string[];
+  const phone = (formData.get("phone") as string)?.trim() || null;
+  const address = (formData.get("address") as string)?.trim() || null;
+  const isExternal = formData.get("isExternal") === "true";
+  const companyName = isExternal ? (formData.get("companyName") as string)?.trim() || null : null;
+  const vatNumber = isExternal ? (formData.get("vatNumber") as string)?.trim() || null : null;
+  const iban = isExternal ? (formData.get("iban") as string)?.trim() || null : null;
 
   if (!name || !email || !password || !role) {
     return { error: "Tutti i campi sono obbligatori." };
@@ -28,7 +34,7 @@ export async function createUser(prevState: any, formData: FormData) {
   const orgId = await getCurrentOrg();
 
   const user = await prisma.user.create({
-    data: { name, email, password: passwordHash, role, organizationId: orgId },
+    data: { name, email, password: passwordHash, role, organizationId: orgId, phone, address, isExternal, companyName, vatNumber, iban },
   });
 
   if (role === "SUPERVISOR" && apartmentIds.length > 0) {
@@ -56,6 +62,12 @@ export async function updateUser(prevState: any, formData: FormData) {
   const password = formData.get("password") as string;
   const role = formData.get("role") as Role;
   const apartmentIds = formData.getAll("apartmentIds") as string[];
+  const phone = (formData.get("phone") as string)?.trim() || null;
+  const address = (formData.get("address") as string)?.trim() || null;
+  const isExternal = formData.get("isExternal") === "true";
+  const companyName = isExternal ? (formData.get("companyName") as string)?.trim() || null : null;
+  const vatNumber = isExternal ? (formData.get("vatNumber") as string)?.trim() || null : null;
+  const iban = isExternal ? (formData.get("iban") as string)?.trim() || null : null;
 
   if (!id || !name || !email || !role) {
     return { error: "Tutti i campi obbligatori mancanti." };
@@ -66,7 +78,7 @@ export async function updateUser(prevState: any, formData: FormData) {
     return { error: "L'email è già in uso da un altro utente." };
   }
 
-  const data: any = { name, email, role };
+  const data: any = { name, email, role, phone, address, isExternal, companyName, vatNumber, iban };
   if (password && password.length >= 8) {
     data.password = await bcrypt.hash(password, 10);
   } else if (password && password.length > 0) {

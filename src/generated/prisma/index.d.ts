@@ -4185,6 +4185,12 @@ export namespace Prisma {
     role: $Enums.Role | null
     createdAt: Date | null
     name: string | null
+    phone: string | null
+    address: string | null
+    isExternal: boolean | null
+    companyName: string | null
+    vatNumber: string | null
+    iban: string | null
     organizationId: string | null
   }
 
@@ -4195,6 +4201,12 @@ export namespace Prisma {
     role: $Enums.Role | null
     createdAt: Date | null
     name: string | null
+    phone: string | null
+    address: string | null
+    isExternal: boolean | null
+    companyName: string | null
+    vatNumber: string | null
+    iban: string | null
     organizationId: string | null
   }
 
@@ -4205,6 +4217,12 @@ export namespace Prisma {
     role: number
     createdAt: number
     name: number
+    phone: number
+    address: number
+    isExternal: number
+    companyName: number
+    vatNumber: number
+    iban: number
     organizationId: number
     _all: number
   }
@@ -4217,6 +4235,12 @@ export namespace Prisma {
     role?: true
     createdAt?: true
     name?: true
+    phone?: true
+    address?: true
+    isExternal?: true
+    companyName?: true
+    vatNumber?: true
+    iban?: true
     organizationId?: true
   }
 
@@ -4227,6 +4251,12 @@ export namespace Prisma {
     role?: true
     createdAt?: true
     name?: true
+    phone?: true
+    address?: true
+    isExternal?: true
+    companyName?: true
+    vatNumber?: true
+    iban?: true
     organizationId?: true
   }
 
@@ -4237,6 +4267,12 @@ export namespace Prisma {
     role?: true
     createdAt?: true
     name?: true
+    phone?: true
+    address?: true
+    isExternal?: true
+    companyName?: true
+    vatNumber?: true
+    iban?: true
     organizationId?: true
     _all?: true
   }
@@ -4320,6 +4356,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt: Date
     name: string
+    phone: string | null
+    address: string | null
+    isExternal: boolean
+    companyName: string | null
+    vatNumber: string | null
+    iban: string | null
     organizationId: string | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
@@ -4347,6 +4389,12 @@ export namespace Prisma {
     role?: boolean
     createdAt?: boolean
     name?: boolean
+    phone?: boolean
+    address?: boolean
+    isExternal?: boolean
+    companyName?: boolean
+    vatNumber?: boolean
+    iban?: boolean
     organizationId?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
     cleaningTasks?: boolean | User$cleaningTasksArgs<ExtArgs>
@@ -4365,6 +4413,12 @@ export namespace Prisma {
     role?: boolean
     createdAt?: boolean
     name?: boolean
+    phone?: boolean
+    address?: boolean
+    isExternal?: boolean
+    companyName?: boolean
+    vatNumber?: boolean
+    iban?: boolean
     organizationId?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -4376,6 +4430,12 @@ export namespace Prisma {
     role?: boolean
     createdAt?: boolean
     name?: boolean
+    phone?: boolean
+    address?: boolean
+    isExternal?: boolean
+    companyName?: boolean
+    vatNumber?: boolean
+    iban?: boolean
     organizationId?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -4387,10 +4447,16 @@ export namespace Prisma {
     role?: boolean
     createdAt?: boolean
     name?: boolean
+    phone?: boolean
+    address?: boolean
+    isExternal?: boolean
+    companyName?: boolean
+    vatNumber?: boolean
+    iban?: boolean
     organizationId?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "role" | "createdAt" | "name" | "organizationId", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "role" | "createdAt" | "name" | "phone" | "address" | "isExternal" | "companyName" | "vatNumber" | "iban" | "organizationId", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | User$organizationArgs<ExtArgs>
     cleaningTasks?: boolean | User$cleaningTasksArgs<ExtArgs>
@@ -4426,6 +4492,12 @@ export namespace Prisma {
       role: $Enums.Role
       createdAt: Date
       name: string
+      phone: string | null
+      address: string | null
+      isExternal: boolean
+      companyName: string | null
+      vatNumber: string | null
+      iban: string | null
       organizationId: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
@@ -4863,6 +4935,12 @@ export namespace Prisma {
     readonly role: FieldRef<"User", 'Role'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly name: FieldRef<"User", 'String'>
+    readonly phone: FieldRef<"User", 'String'>
+    readonly address: FieldRef<"User", 'String'>
+    readonly isExternal: FieldRef<"User", 'Boolean'>
+    readonly companyName: FieldRef<"User", 'String'>
+    readonly vatNumber: FieldRef<"User", 'String'>
+    readonly iban: FieldRef<"User", 'String'>
     readonly organizationId: FieldRef<"User", 'String'>
   }
     
@@ -26732,6 +26810,12 @@ export namespace Prisma {
     role: 'role',
     createdAt: 'createdAt',
     name: 'name',
+    phone: 'phone',
+    address: 'address',
+    isExternal: 'isExternal',
+    companyName: 'companyName',
+    vatNumber: 'vatNumber',
+    iban: 'iban',
     organizationId: 'organizationId'
   };
 
@@ -27096,6 +27180,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -27134,13 +27225,6 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -27227,6 +27311,12 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     createdAt?: DateTimeFilter<"User"> | Date | string
     name?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
+    isExternal?: BoolFilter<"User"> | boolean
+    companyName?: StringNullableFilter<"User"> | string | null
+    vatNumber?: StringNullableFilter<"User"> | string | null
+    iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     cleaningTasks?: CleaningTaskListRelationFilter
@@ -27244,6 +27334,12 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrderInput | SortOrder
+    vatNumber?: SortOrderInput | SortOrder
+    iban?: SortOrderInput | SortOrder
     organizationId?: SortOrderInput | SortOrder
     organization?: OrganizationOrderByWithRelationInput
     cleaningTasks?: CleaningTaskOrderByRelationAggregateInput
@@ -27264,6 +27360,12 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     createdAt?: DateTimeFilter<"User"> | Date | string
     name?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
+    isExternal?: BoolFilter<"User"> | boolean
+    companyName?: StringNullableFilter<"User"> | string | null
+    vatNumber?: StringNullableFilter<"User"> | string | null
+    iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     cleaningTasks?: CleaningTaskListRelationFilter
@@ -27281,6 +27383,12 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrderInput | SortOrder
+    vatNumber?: SortOrderInput | SortOrder
+    iban?: SortOrderInput | SortOrder
     organizationId?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -27297,6 +27405,12 @@ export namespace Prisma {
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     name?: StringWithAggregatesFilter<"User"> | string
+    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    address?: StringNullableWithAggregatesFilter<"User"> | string | null
+    isExternal?: BoolWithAggregatesFilter<"User"> | boolean
+    companyName?: StringNullableWithAggregatesFilter<"User"> | string | null
+    vatNumber?: StringNullableWithAggregatesFilter<"User"> | string | null
+    iban?: StringNullableWithAggregatesFilter<"User"> | string | null
     organizationId?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
@@ -28830,6 +28944,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -28846,6 +28966,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
@@ -28862,6 +28988,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -28878,6 +29010,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
@@ -28894,6 +29032,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
   }
 
@@ -28904,6 +29048,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -28913,6 +29063,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -30612,6 +30768,11 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type OrganizationNullableScalarRelationFilter = {
     is?: OrganizationWhereInput | null
     isNot?: OrganizationWhereInput | null
@@ -30689,6 +30850,12 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrder
+    vatNumber?: SortOrder
+    iban?: SortOrder
     organizationId?: SortOrder
   }
 
@@ -30699,6 +30866,12 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrder
+    vatNumber?: SortOrder
+    iban?: SortOrder
     organizationId?: SortOrder
   }
 
@@ -30709,6 +30882,12 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrder
+    vatNumber?: SortOrder
+    iban?: SortOrder
     organizationId?: SortOrder
   }
 
@@ -30738,6 +30917,14 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type FloatFilter<$PrismaModel = never> = {
@@ -31003,11 +31190,6 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type ApartmentScalarRelationFilter = {
     is?: ApartmentWhereInput
     isNot?: ApartmentWhereInput
@@ -31056,14 +31238,6 @@ export namespace Prisma {
 
   export type ChecklistItemSumOrderByAggregateInput = {
     order?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type ApartmentNullableScalarRelationFilter = {
@@ -32012,6 +32186,14 @@ export namespace Prisma {
     set?: $Enums.Role
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type OrganizationUpdateOneWithoutUsersNestedInput = {
     create?: XOR<OrganizationCreateWithoutUsersInput, OrganizationUncheckedCreateWithoutUsersInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutUsersInput
@@ -32104,10 +32286,6 @@ export namespace Prisma {
     update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
@@ -32654,10 +32832,6 @@ export namespace Prisma {
     create?: XOR<ApartmentCreateWithoutChecklistItemsInput, ApartmentUncheckedCreateWithoutChecklistItemsInput>
     connectOrCreate?: ApartmentCreateOrConnectWithoutChecklistItemsInput
     connect?: ApartmentWhereUniqueInput
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type ApartmentUpdateOneRequiredWithoutChecklistItemsNestedInput = {
@@ -33682,6 +33856,11 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedEnumRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
     in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
@@ -33718,6 +33897,14 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedFloatFilter<$PrismaModel = never> = {
@@ -33811,19 +33998,6 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedEnumAIAssistantMessageRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.AIAssistantMessageRole | EnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
     in?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
@@ -33875,6 +34049,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -33890,6 +34070,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -34028,6 +34214,12 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     createdAt?: DateTimeFilter<"User"> | Date | string
     name?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
+    isExternal?: BoolFilter<"User"> | boolean
+    companyName?: StringNullableFilter<"User"> | string | null
+    vatNumber?: StringNullableFilter<"User"> | string | null
+    iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
   }
 
@@ -35774,6 +35966,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -35789,6 +35987,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -36060,6 +36264,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -36075,6 +36285,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -36250,6 +36466,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -36265,6 +36487,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -36497,6 +36725,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -36512,6 +36746,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -37694,6 +37934,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -37709,6 +37955,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
@@ -37830,6 +38082,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -37845,6 +38103,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
@@ -38027,6 +38291,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -38042,6 +38312,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
@@ -38144,6 +38420,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -38159,6 +38441,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
@@ -38239,6 +38527,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -38254,6 +38548,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
@@ -38356,6 +38656,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -38371,6 +38677,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
@@ -38533,6 +38845,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -38548,6 +38866,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
@@ -38579,6 +38903,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -38594,6 +38924,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
@@ -38745,6 +39081,12 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
   }
 
   export type ApartmentCreateManyOrganizationInput = {
@@ -38780,6 +39122,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -38795,6 +39143,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -38810,6 +39164,12 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ApartmentUpdateWithoutOrganizationInput = {

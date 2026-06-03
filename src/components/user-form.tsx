@@ -11,6 +11,7 @@ export default function UserForm({ apartments = [] }: { apartments?: Apartment[]
   const [state, formAction, isPending] = useActionState(createUser, null);
   const [selectedRole, setSelectedRole] = useState("CLEANER");
   const [selectedApts, setSelectedApts] = useState<Set<string>>(new Set());
+  const [isExternal, setIsExternal] = useState(false);
 
   const needsApartments = selectedRole === "SUPERVISOR" || selectedRole === "OWNER";
 
@@ -59,6 +60,88 @@ export default function UserForm({ apartments = [] }: { apartments?: Apartment[]
               />
             </div>
           </div>
+
+          {/* Contatti */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="+39 333 1234567"
+                className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Indirizzo</label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                placeholder="Via Roma 1, Milano"
+                className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Interno / Esterno */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tipo collaboratore</label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setIsExternal(false)}
+                className={`flex-1 py-2.5 rounded-full text-sm font-medium border transition-all ${!isExternal ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
+              >
+                Interno
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsExternal(true)}
+                className={`flex-1 py-2.5 rounded-full text-sm font-medium border transition-all ${isExternal ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
+              >
+                Esterno / Fornitore
+              </button>
+            </div>
+            <input type="hidden" name="isExternal" value={String(isExternal)} />
+          </div>
+
+          {/* Dati azienda (solo esterno) */}
+          {isExternal && (
+            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Dati azienda / fornitore</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome ditta</label>
+                  <input
+                    type="text"
+                    name="companyName"
+                    placeholder="Es. Pulizie Rossi Srl"
+                    className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Partita IVA</label>
+                  <input
+                    type="text"
+                    name="vatNumber"
+                    placeholder="IT12345678901"
+                    className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">IBAN</label>
+                  <input
+                    type="text"
+                    name="iban"
+                    placeholder="IT60 X054 2811 1010 0000 0123 456"
+                    className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent font-mono text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
