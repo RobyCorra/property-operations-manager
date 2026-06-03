@@ -2312,6 +2312,18 @@ async function buildGeneralManagerContext(now: Date) {
     `- id:${(ticket as any).id} | ${ticket.apartment.name} | ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"}${(ticket.assignedTo as any)?.id ? ` (assignedToId:${(ticket.assignedTo as any).id})` : ""} | programmato: ${formatDateTime(ticket.scheduledStart)} | messaggi: ${formatManagerMessages(ticket.messages)}`
   ));
 
+  // Raggruppamento ticket per data scheduledStart (o createdAt se non schedulato) — pre-calcolato
+  const ticketsByDate: Record<string, string[]> = {};
+  tickets.forEach((t: MaintenanceTicketWithApartmentForAI) => {
+    const dateKey = t.scheduledStart ? formatDate(t.scheduledStart as Date) : formatDate(t.createdAt as Date);
+    if (!ticketsByDate[dateKey]) ticketsByDate[dateKey] = [];
+    const techTag = t.assignedTo?.name ? `[${t.assignedTo.name}]` : "[DA ASSEGNARE]";
+    ticketsByDate[dateKey].push(`${t.apartment.name} | ${t.title} | ${t.priority} | ${t.status} | ${techTag}`);
+  });
+  const ticketsByDateLines = Object.entries(ticketsByDate)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, items]) => `${date} (${items.length} ticket): ${items.join(" | ")}`);
+
   const recentMessageLines = [
     ...cleanings.flatMap((task: CleaningTaskWithApartmentForAI) => task.messages.map((message: OperationalMessageForAI) => (
       `- Pulizia | ${task.apartment.name} | ${formatDateTime(message.createdAt)} | ${message.senderName} (${message.role}): ${truncateText(message.text, 160) || "n/d"}`
@@ -2411,7 +2423,11 @@ ${upcomingCheckouts.length > 0 ? upcomingCheckouts.map(bookingLine).join("\n") :
 ════ STATO APPARTAMENTI ════
 ${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
 
-════ MANUTENZIONI OPERATIVE ════
+════ MANUTENZIONI — RAGGRUPPATE PER DATA (fonte autoritativa per range di date) ════
+ISTRUZIONE: Per domande su "quanti ticket ci sono tra X e Y" o "manutenzioni di questa settimana", leggere QUESTA sezione. La data usata è scheduledStart se presente, altrimenti createdAt.
+${ticketsByDateLines.length > 0 ? ticketsByDateLines.join("\n") : "- Nessun ticket nel periodo."}
+
+════ MANUTENZIONI OPERATIVE — DETTAGLIO COMPLETO (usare per dettagli specifici, NON per conteggi per data) ════
 ${ticketLines.length > 0 ? ticketLines.join("\n") : "- Nessuna manutenzione operativa."}
 
 ════ MESSAGGI OPERATIVI RECENTI ════
