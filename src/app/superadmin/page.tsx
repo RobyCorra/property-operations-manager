@@ -3,6 +3,8 @@ import Link from "next/link";
 import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats, getSuperAdminLogs } from "@/src/app/actions/superadmin";
 import CreateOrgForm from "@/src/components/superadmin/create-org-form";
 
+export const dynamic = "force-dynamic";
+
 function formatDate(d: Date | null) {
   if (!d) return "—";
   return new Date(d).toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
