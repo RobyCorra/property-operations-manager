@@ -1,11 +1,6 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  isSuperAdminAuthenticated,
-  getOrgDetail,
-  impersonateOrg,
-  deleteTestData,
-} from "@/src/app/actions/superadmin";
+import { isSuperAdminAuthenticated, getOrgDetail, deleteTestData } from "@/src/app/actions/superadmin";
 import ResetPasswordForm from "@/src/components/superadmin/reset-password-form";
 import CreateManagerForm from "@/src/components/superadmin/create-manager-form";
 
@@ -13,7 +8,6 @@ const ROLE_LABELS: Record<string, string> = {
   MANAGER: "Manager", CLEANER: "Pulizie", MAINTENANCE: "Manutenzione",
   SUPERVISOR: "Supervisore", OWNER: "Proprietario",
 };
-
 const STATUS_COLORS: Record<string, string> = {
   PENDING: "text-amber-400", IN_PROGRESS: "text-blue-400",
   AWAITING_REVIEW: "text-purple-400", COMPLETED: "text-emerald-400",
@@ -43,42 +37,32 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
 
   return (
     <main className="min-h-screen bg-slate-950 text-white font-sans p-6 space-y-8">
-
-      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <Link href="/superadmin" className="text-xs text-slate-500 hover:text-slate-300 transition-colors mb-2 inline-block">
-            ← Torna al pannello
-          </Link>
+          <Link href="/superadmin" className="text-xs text-slate-500 hover:text-slate-300 mb-2 inline-block">← Torna al pannello</Link>
           <h1 className="text-2xl font-black tracking-tight">{org.name}</h1>
           <p className="text-sm text-slate-500 mt-0.5">slug: {org.slug} · creata: {formatDate(org.createdAt)}</p>
         </div>
         {hasManager && (
-          <form action={impersonateOrg}>
+          <form action="/api/superadmin/impersonate" method="POST">
             <input type="hidden" name="orgId" value={orgId} />
-            <button className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold transition-all flex items-center gap-2">
+            <button className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold transition-all">
               👤 Impersona org
             </button>
           </form>
         )}
       </div>
 
-      {/* Alert section */}
+      {/* Alert */}
       {(urgentTickets.length > 0 || overdueCleanings.length > 0 || !hasManager) && (
         <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-5 space-y-2">
           <h2 className="text-xs font-bold uppercase tracking-widest text-red-400 mb-3">⚠ Alert</h2>
-          {!hasManager && (
-            <p className="text-sm text-red-300 font-medium">Nessun manager configurato — l'org non può fare login</p>
-          )}
+          {!hasManager && <p className="text-sm text-red-300 font-medium">Nessun manager configurato</p>}
           {overdueCleanings.map(c => (
-            <p key={c.id} className="text-sm text-amber-300">
-              Pulizia in ritardo: <span className="font-bold">{c.aptName}</span> — {formatDate(c.date)}
-            </p>
+            <p key={c.id} className="text-sm text-amber-300">Pulizia in ritardo: <span className="font-bold">{c.aptName}</span> — {formatDate(c.date)}</p>
           ))}
           {urgentTickets.map(t => (
-            <p key={t.id} className="text-sm text-red-300">
-              Ticket urgente: <span className="font-bold">{t.aptName}</span> — {t.title}
-            </p>
+            <p key={t.id} className="text-sm text-red-300">Ticket urgente: <span className="font-bold">{t.aptName}</span> — {t.title}</p>
           ))}
         </div>
       )}
@@ -93,23 +77,21 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
         ].map(k => (
           <div key={k.label} className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
             <div className="text-3xl font-black text-white">{k.value}</div>
-            <div className="text-xs text-slate-500 font-medium mt-0.5">{k.label}</div>
+            <div className="text-xs text-slate-500 mt-0.5">{k.label}</div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
         {/* Utenti */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-800">
             <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Utenti</h2>
           </div>
           <div className="divide-y divide-slate-800">
-            {org.users.length === 0 ? (
-              <p className="px-5 py-4 text-sm text-slate-500">Nessun utente</p>
-            ) : (
-              org.users.map(u => (
+            {org.users.length === 0
+              ? <p className="px-5 py-4 text-sm text-slate-500">Nessun utente</p>
+              : org.users.map(u => (
                 <div key={u.id} className="px-5 py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-white truncate">{u.name}</p>
@@ -118,8 +100,7 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
                   </div>
                   <ResetPasswordForm userId={u.id} userName={u.name} />
                 </div>
-              ))
-            )}
+              ))}
           </div>
         </div>
 
@@ -129,30 +110,22 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
             <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Appartamenti</h2>
           </div>
           <div className="divide-y divide-slate-800">
-            {org.apartments.length === 0 ? (
-              <p className="px-5 py-4 text-sm text-slate-500">Nessun appartamento</p>
-            ) : (
-              org.apartments.map(a => (
+            {org.apartments.length === 0
+              ? <p className="px-5 py-4 text-sm text-slate-500">Nessun appartamento</p>
+              : org.apartments.map(a => (
                 <div key={a.id} className="px-5 py-3">
                   <p className="text-sm font-bold text-white">{a.name}</p>
                   <div className="flex gap-3 mt-1">
-                    {a.cleaningTasks.length > 0 && (
-                      <span className="text-[10px] text-amber-400">{a.cleaningTasks.length} pulizie</span>
-                    )}
-                    {a.maintenanceTickets.length > 0 && (
-                      <span className="text-[10px] text-red-400">{a.maintenanceTickets.length} ticket</span>
-                    )}
-                    {a.cleaningTasks.length === 0 && a.maintenanceTickets.length === 0 && (
-                      <span className="text-[10px] text-slate-500">Nessuna attività aperta</span>
-                    )}
+                    {a.cleaningTasks.length > 0 && <span className="text-[10px] text-amber-400">{a.cleaningTasks.length} pulizie</span>}
+                    {a.maintenanceTickets.length > 0 && <span className="text-[10px] text-red-400">{a.maintenanceTickets.length} ticket</span>}
+                    {a.cleaningTasks.length === 0 && a.maintenanceTickets.length === 0 && <span className="text-[10px] text-slate-500">Nessuna attività aperta</span>}
                   </div>
                 </div>
-              ))
-            )}
+              ))}
           </div>
         </div>
 
-        {/* Pulizie attive */}
+        {/* Pulizie */}
         {allCleanings.length > 0 && (
           <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-800">
@@ -172,7 +145,7 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
           </div>
         )}
 
-        {/* Ticket aperti */}
+        {/* Ticket */}
         {allTickets.length > 0 && (
           <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-800">
@@ -185,9 +158,7 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
                     <p className="text-sm font-bold text-white truncate">{t.title}</p>
                     <p className="text-[10px] text-slate-500">{t.aptName} · {formatDate(t.createdAt)}</p>
                   </div>
-                  <span className={`text-[10px] font-bold shrink-0 ${t.priority === "URGENT" ? "text-red-400" : "text-slate-400"}`}>
-                    {t.priority}
-                  </span>
+                  <span className={`text-[10px] font-bold shrink-0 ${t.priority === "URGENT" ? "text-red-400" : "text-slate-400"}`}>{t.priority}</span>
                 </div>
               ))}
             </div>
@@ -198,31 +169,23 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
       {/* Fix rapidi */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-5">
         <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">🔧 Fix rapidi</h2>
-
-        {/* Crea primo manager */}
         {!hasManager && (
           <div className="rounded-xl border border-violet-500/20 bg-violet-500/5 p-4">
             <h3 className="text-sm font-bold text-violet-300 mb-3">Crea primo manager</h3>
             <CreateManagerForm orgId={orgId} />
           </div>
         )}
-
-        {/* Cancella dati di test */}
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4">
           <h3 className="text-sm font-bold text-red-300 mb-1">Cancella dati di test</h3>
-          <p className="text-xs text-slate-500 mb-3">Rimuove appartamenti, prenotazioni, pulizie e ticket. Gli utenti manager vengono mantenuti.</p>
+          <p className="text-xs text-slate-500 mb-3">Rimuove appartamenti, prenotazioni, pulizie e ticket. I manager vengono mantenuti.</p>
           <form action={deleteTestData}>
             <input type="hidden" name="orgId" value={orgId} />
-            <button
-              className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all"
-              onClick={(e) => { if (!confirm("Sicuro? Questa azione è irreversibile.")) e.preventDefault(); }}
-            >
+            <button className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all">
               🗑 Cancella dati di test
             </button>
           </form>
         </div>
       </div>
-
     </main>
   );
 }

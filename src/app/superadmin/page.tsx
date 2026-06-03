@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, logoutSuperAdmin, impersonateOrg } from "@/src/app/actions/superadmin";
+import { isSuperAdminAuthenticated, getAllOrgsWithMetrics } from "@/src/app/actions/superadmin";
 
 function formatDate(d: Date | null) {
   if (!d) return "—";
@@ -15,7 +15,7 @@ function BarChart({ data }: { data: { label: string; value: number }[] }) {
         <div key={d.label} className="flex flex-col items-center gap-1 flex-1">
           <span className="text-[10px] text-slate-400 font-bold">{d.value || ""}</span>
           <div
-            className="w-full rounded-t-md bg-violet-500/70 transition-all"
+            className="w-full rounded-t-md bg-violet-500/70"
             style={{ height: `${Math.round((d.value / max) * 72)}px`, minHeight: d.value > 0 ? "4px" : "0" }}
           />
           <span className="text-[9px] text-slate-500 truncate w-full text-center">{d.label}</span>
@@ -31,7 +31,6 @@ export default async function SuperAdminPage() {
 
   const orgs = await getAllOrgsWithMetrics();
 
-  // Grafici: org create negli ultimi 6 mesi
   const now = new Date();
   const monthlyGrowth = Array.from({ length: 6 }, (_, i) => {
     const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
@@ -48,21 +47,19 @@ export default async function SuperAdminPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white font-sans p-6 space-y-8">
-
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-white">⚡ Super Admin</h1>
+          <h1 className="text-2xl font-black tracking-tight">⚡ Super Admin</h1>
           <p className="text-sm text-slate-500 mt-0.5">Property Operations Manager — Pannello di controllo</p>
         </div>
-        <form action={logoutSuperAdmin}>
+        <form action="/api/superadmin/logout" method="POST">
           <button className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
             Esci
           </button>
         </form>
       </div>
 
-      {/* KPI strip */}
+      {/* KPI */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: "Organizzazioni", value: orgs.length, icon: "🏢" },
@@ -70,9 +67,9 @@ export default async function SuperAdminPage() {
           { label: "Appartamenti", value: orgs.reduce((s, o) => s + o.apartmentCount, 0), icon: "🏠" },
           { label: "Alert attivi", value: totalAlerts, icon: "⚠️", alert: totalAlerts > 0 },
         ].map(kpi => (
-          <div key={kpi.label} className={`rounded-2xl border p-4 ${kpi.alert ? "border-red-500/30 bg-red-500/5" : "border-slate-800 bg-slate-900"}`}>
+          <div key={kpi.label} className={`rounded-2xl border p-4 ${(kpi as any).alert ? "border-red-500/30 bg-red-500/5" : "border-slate-800 bg-slate-900"}`}>
             <div className="text-2xl mb-1">{kpi.icon}</div>
-            <div className={`text-3xl font-black ${kpi.alert ? "text-red-400" : "text-white"}`}>{kpi.value}</div>
+            <div className={`text-3xl font-black ${(kpi as any).alert ? "text-red-400" : "text-white"}`}>{kpi.value}</div>
             <div className="text-xs text-slate-500 font-medium mt-0.5">{kpi.label}</div>
           </div>
         ))}
@@ -84,13 +81,12 @@ export default async function SuperAdminPage() {
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Crescita organizzazioni</h2>
           <BarChart data={monthlyGrowth} />
         </div>
-
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
-            Alert attivi {orgsWithAlerts.length > 0 && <span className="text-red-400">({orgsWithAlerts.length} org)</span>}
+            Alert {orgsWithAlerts.length > 0 && <span className="text-red-400">({orgsWithAlerts.length} org)</span>}
           </h2>
           {orgsWithAlerts.length === 0 ? (
-            <p className="text-sm text-slate-500">✅ Nessun alert — tutto ok</p>
+            <p className="text-sm text-slate-500">✅ Nessun alert</p>
           ) : (
             <div className="space-y-2 max-h-32 overflow-y-auto">
               {orgsWithAlerts.map(org => (
@@ -107,13 +103,12 @@ export default async function SuperAdminPage() {
         </div>
       </div>
 
-      {/* Tabella organizzazioni */}
+      {/* Tabella org */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Organizzazioni</h2>
           <span className="text-xs text-slate-500">{orgs.length} totali</span>
         </div>
-
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -127,9 +122,7 @@ export default async function SuperAdminPage() {
               {orgs.map(org => (
                 <tr key={org.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
                   <td className="px-4 py-3">
-                    <Link href={`/superadmin/${org.id}`} className="font-bold text-white hover:text-violet-400 transition-colors">
-                      {org.name}
-                    </Link>
+                    <Link href={`/superadmin/${org.id}`} className="font-bold text-white hover:text-violet-400 transition-colors">{org.name}</Link>
                     <p className="text-[10px] text-slate-500">{org.slug}</p>
                   </td>
                   <td className="px-4 py-3 text-slate-300">{org.userCount}</td>
@@ -138,15 +131,9 @@ export default async function SuperAdminPage() {
                   <td className="px-4 py-3 text-slate-300">{org.openTickets}</td>
                   <td className="px-4 py-3 text-slate-500 text-xs">{formatDate(org.createdAt)}</td>
                   <td className="px-4 py-3">
-                    {org.alerts.length > 0 ? (
-                      <div className="flex flex-col gap-0.5">
-                        {org.alerts.map(a => (
-                          <span key={a} className="text-[10px] text-red-400 font-medium">⚠ {a}</span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-[10px] text-emerald-400 font-medium">✓ Ok</span>
-                    )}
+                    {org.alerts.length > 0
+                      ? org.alerts.map(a => <p key={a} className="text-[10px] text-red-400 font-medium">⚠ {a}</p>)
+                      : <span className="text-[10px] text-emerald-400 font-medium">✓ Ok</span>}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -154,7 +141,7 @@ export default async function SuperAdminPage() {
                         Dettaglio
                       </Link>
                       {org.hasManager && (
-                        <form action={impersonateOrg}>
+                        <form action="/api/superadmin/impersonate" method="POST">
                           <input type="hidden" name="orgId" value={org.id} />
                           <button className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-[10px] font-bold transition-all">
                             Impersona
