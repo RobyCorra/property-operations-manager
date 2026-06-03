@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { isSuperAdminAuthenticated, getAllOrgsWithMetrics } from "@/src/app/actions/superadmin";
+import CreateOrgForm from "@/src/components/superadmin/create-org-form";
 
 function formatDate(d: Date | null) {
   if (!d) return "—";
@@ -52,11 +53,14 @@ export default async function SuperAdminPage() {
           <h1 className="text-2xl font-black tracking-tight">⚡ Super Admin</h1>
           <p className="text-sm text-slate-500 mt-0.5">Property Operations Manager — Pannello di controllo</p>
         </div>
-        <form action="/api/superadmin/logout" method="POST">
-          <button className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
-            Esci
-          </button>
-        </form>
+        <div className="flex items-center gap-3">
+          <CreateOrgForm />
+          <form action="/api/superadmin/logout" method="POST">
+            <button className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
+              Esci
+            </button>
+          </form>
+        </div>
       </div>
 
       {/* KPI */}

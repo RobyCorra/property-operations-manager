@@ -14,6 +14,35 @@ export async function isSuperAdminAuthenticated(): Promise<boolean> {
   return token === expected;
 }
 
+export async function createOrganization(prevState: any, formData: FormData) {
+  const orgName = (formData.get("orgName") as string)?.trim();
+  const managerName = (formData.get("managerName") as string)?.trim();
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
+  const password = formData.get("password") as string;
+
+  if (!orgName || !managerName || !email || !password || password.length < 8) {
+    return { error: "Tutti i campi sono obbligatori (password min 8 caratteri)." };
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) return { error: "Email già in uso." };
+
+  const baseSlug = orgName.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  const slug = `${baseSlug}-${Math.random().toString(36).slice(2, 7)}`;
+  const hashed = await bcrypt.hash(password, 10);
+
+  const { org } = await prisma.$transaction(async (tx) => {
+    const org = await tx.organization.create({ data: { name: orgName, slug } });
+    await tx.user.create({
+      data: { name: managerName, email, password: hashed, role: "MANAGER", organizationId: org.id },
+    });
+    return { org };
+  });
+
+  revalidatePath("/superadmin");
+  return { success: true, orgId: org.id, orgName };
+}
+
 export async function resetUserPassword(prevState: any, formData: FormData) {
   const userId = formData.get("userId") as string;
   const newPassword = formData.get("newPassword") as string;
