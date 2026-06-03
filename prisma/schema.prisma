@@ -336,6 +336,19 @@ model PushSubscription {
   @@index([userId])
 }
 
+model SuperAdminLog {
+  id        String   @id @default(cuid())
+  action    String
+  detail    String?
+  orgId     String?
+  orgName   String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([orgId])
+}
+
 model ApartmentProduct {
   id               String    @id @default(uuid())
   apartmentId      String

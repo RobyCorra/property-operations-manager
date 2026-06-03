@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats } from "@/src/app/actions/superadmin";
+import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats, getSuperAdminLogs } from "@/src/app/actions/superadmin";
 import CreateOrgForm from "@/src/components/superadmin/create-org-form";
 
 function formatDate(d: Date | null) {
@@ -30,7 +30,7 @@ export default async function SuperAdminPage() {
   const auth = await isSuperAdminAuthenticated();
   if (!auth) redirect("/superadmin/login");
 
-  const [orgs, dbStats] = await Promise.all([getAllOrgsWithMetrics(), getDbStats()]);
+  const [orgs, dbStats, logs] = await Promise.all([getAllOrgsWithMetrics(), getDbStats(), getSuperAdminLogs(100)]);
 
   const now = new Date();
   const monthlyGrowth = Array.from({ length: 6 }, (_, i) => {
@@ -200,6 +200,63 @@ export default async function SuperAdminPage() {
             </tbody>
           </table>
         </div>
+      </div>
+      {/* Activity Log */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">📋 Log attività admin</h2>
+          <span className="text-xs text-slate-500">{logs.length} eventi recenti</span>
+        </div>
+        {logs.length === 0 ? (
+          <p className="px-6 py-4 text-sm text-slate-500">Nessun evento registrato.</p>
+        ) : (
+          <div className="overflow-x-auto max-h-96 overflow-y-auto">
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 bg-slate-900">
+                <tr className="border-b border-slate-800">
+                  {["Data / Ora", "Azione", "Dettaglio", "Organizzazione", "IP"].map(h => (
+                    <th key={h} className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-slate-500 whitespace-nowrap">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map(log => {
+                  const actionColor: Record<string, string> = {
+                    LOGIN: "text-emerald-400",
+                    LOGIN_FALLITO: "text-red-400",
+                    IMPERSONA: "text-violet-400",
+                    CREA_ORG: "text-sky-400",
+                    CREA_MANAGER: "text-sky-400",
+                    RESET_PASSWORD: "text-amber-400",
+                    ELIMINA_DATI_TEST: "text-red-400",
+                  };
+                  const color = actionColor[log.action] ?? "text-slate-300";
+                  const dt = new Date(log.createdAt);
+                  const dateStr = dt.toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
+                  const timeStr = dt.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                  return (
+                    <tr key={log.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                      <td className="px-4 py-2.5 text-slate-500 text-xs whitespace-nowrap">
+                        <span className="block">{dateStr}</span>
+                        <span className="text-slate-600">{timeStr}</span>
+                      </td>
+                      <td className="px-4 py-2.5 whitespace-nowrap">
+                        <span className={`text-xs font-bold font-mono ${color}`}>{log.action}</span>
+                      </td>
+                      <td className="px-4 py-2.5 text-slate-400 text-xs max-w-xs truncate">{log.detail ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-xs">
+                        {log.orgName ? (
+                          <Link href={`/superadmin/${log.orgId}`} className="text-slate-300 hover:text-violet-400 transition-colors">{log.orgName}</Link>
+                        ) : <span className="text-slate-600">—</span>}
+                      </td>
+                      <td className="px-4 py-2.5 text-slate-600 text-xs font-mono">{log.ip ?? "—"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -11,12 +11,15 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const orgId = formData.get("orgId") as string;
 
-  const manager = await prisma.user.findFirst({
-    where: { organizationId: orgId, role: "MANAGER" },
-  });
+  const [manager, org] = await Promise.all([
+    prisma.user.findFirst({ where: { organizationId: orgId, role: "MANAGER" } }),
+    prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } }),
+  ]);
   if (!manager) {
     return NextResponse.redirect(new URL("/superadmin", req.url));
   }
+
+  await prisma.superAdminLog.create({ data: { id: `${Date.now()}-imp`, action: "IMPERSONA", detail: `Manager: ${manager.name}`, orgId, orgName: org?.name ?? undefined } });
 
   const res = NextResponse.redirect(new URL("/dashboard/manager", req.url));
   const opts = { path: "/", maxAge: 60 * 60 * 24, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" as const };

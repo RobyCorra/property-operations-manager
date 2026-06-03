@@ -6,6 +6,21 @@ import { prisma } from "@/src/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+async function logAction(action: string, detail?: string, orgId?: string, orgName?: string) {
+  try {
+    await prisma.superAdminLog.create({
+      data: { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, action, detail, orgId, orgName },
+    });
+  } catch {}
+}
+
+export async function getSuperAdminLogs(limit = 100) {
+  return prisma.superAdminLog.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+}
+
 export async function isSuperAdminAuthenticated(): Promise<boolean> {
   const expected = (process.env.SUPERADMIN_SECRET ?? "").trim();
   if (!expected) return false;
@@ -39,6 +54,7 @@ export async function createOrganization(prevState: any, formData: FormData) {
     return { org };
   });
 
+  await logAction("CREA_ORG", `Manager: ${managerName} (${email})`, org.id, orgName);
   revalidatePath("/superadmin");
   return { success: true, orgId: org.id, orgName };
 }
@@ -50,7 +66,8 @@ export async function resetUserPassword(prevState: any, formData: FormData) {
     return { error: "Password minimo 8 caratteri." };
   }
   const hashed = await bcrypt.hash(newPassword, 10);
-  await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+  const u = await prisma.user.update({ where: { id: userId }, data: { password: hashed }, include: { organization: { select: { id: true, name: true } } } });
+  await logAction("RESET_PASSWORD", `Utente: ${u.name} (${u.email})`, u.organization?.id, u.organization?.name ?? undefined);
   revalidatePath("/superadmin");
   return { success: true };
 }
@@ -66,9 +83,11 @@ export async function createFirstManager(prevState: any, formData: FormData) {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return { error: "Email già in uso." };
   const hashed = await bcrypt.hash(password, 10);
+  const org = await prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } });
   await prisma.user.create({
     data: { name, email, password: hashed, role: "MANAGER", organizationId: orgId },
   });
+  await logAction("CREA_MANAGER", `${name} (${email})`, orgId, org?.name ?? undefined);
   revalidatePath("/superadmin");
   return { success: true };
 }
@@ -76,6 +95,7 @@ export async function createFirstManager(prevState: any, formData: FormData) {
 export async function deleteTestData(formData: FormData) {
   const orgId = formData.get("orgId") as string;
   if (!orgId) return;
+  const org = await prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } });
   const apartments = await prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true } });
   const aptIds = apartments.map(a => a.id);
   await prisma.$transaction([
@@ -85,6 +105,7 @@ export async function deleteTestData(formData: FormData) {
     prisma.apartment.deleteMany({ where: { organizationId: orgId } }),
     prisma.user.deleteMany({ where: { organizationId: orgId, role: { not: "MANAGER" } } }),
   ]);
+  await logAction("ELIMINA_DATI_TEST", `${apartments.length} appartamenti rimossi`, orgId, org?.name ?? undefined);
   revalidatePath("/superadmin");
   redirect(`/superadmin/${orgId}`);
 }

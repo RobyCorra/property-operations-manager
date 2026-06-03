@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/src/lib/prisma";
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -10,8 +11,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (!secret || secret !== expected) {
+    await prisma.superAdminLog.create({ data: { id: `${Date.now()}-err`, action: "LOGIN_FALLITO", ip: req.headers.get("x-forwarded-for") ?? undefined } });
     return NextResponse.json({ error: "Password non valida." }, { status: 401 });
   }
+
+  await prisma.superAdminLog.create({ data: { id: `${Date.now()}-ok`, action: "LOGIN", ip: req.headers.get("x-forwarded-for") ?? undefined } });
 
   const res = NextResponse.redirect(new URL("/superadmin", req.url));
   res.cookies.set("superadmin_token", expected, {
