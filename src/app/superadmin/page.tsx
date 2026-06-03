@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { isSuperAdminAuthenticated, getAllOrgsWithMetrics } from "@/src/app/actions/superadmin";
+import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats } from "@/src/app/actions/superadmin";
 import CreateOrgForm from "@/src/components/superadmin/create-org-form";
 
 function formatDate(d: Date | null) {
@@ -30,7 +30,7 @@ export default async function SuperAdminPage() {
   const auth = await isSuperAdminAuthenticated();
   if (!auth) redirect("/superadmin/login");
 
-  const orgs = await getAllOrgsWithMetrics();
+  const [orgs, dbStats] = await Promise.all([getAllOrgsWithMetrics(), getDbStats()]);
 
   const now = new Date();
   const monthlyGrowth = Array.from({ length: 6 }, (_, i) => {
@@ -77,6 +77,47 @@ export default async function SuperAdminPage() {
             <div className="text-xs text-slate-500 font-medium mt-0.5">{kpi.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* DB Usage */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">💾 Database — Utilizzo storage</h2>
+          <span className="text-xs text-slate-500">Limite free tier: 512 MB</span>
+        </div>
+
+        {/* Barra principale */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-bold text-white">{dbStats.totalSize} usati</span>
+            <span className={`font-bold ${dbStats.usedPercent >= 80 ? "text-red-400" : dbStats.usedPercent >= 60 ? "text-amber-400" : "text-emerald-400"}`}>
+              {dbStats.usedPercent}%
+            </span>
+          </div>
+          <div className="h-3 w-full rounded-full bg-slate-800 overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${dbStats.usedPercent >= 80 ? "bg-red-500" : dbStats.usedPercent >= 60 ? "bg-amber-500" : "bg-emerald-500"}`}
+              style={{ width: `${Math.max(dbStats.usedPercent, 1)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Tabelle più pesanti */}
+        <div className="space-y-2 pt-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Tabelle più pesanti</p>
+          {dbStats.tables.slice(0, 8).map(t => (
+            <div key={t.table} className="flex items-center gap-3">
+              <span className="text-[10px] text-slate-400 w-40 truncate font-mono">{t.table}</span>
+              <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-violet-500/60"
+                  style={{ width: `${Math.max(t.percent, 1)}%` }}
+                />
+              </div>
+              <span className="text-[10px] text-slate-500 w-14 text-right">{t.size}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Chart + Alerts */}

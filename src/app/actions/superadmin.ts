@@ -89,6 +89,39 @@ export async function deleteTestData(formData: FormData) {
   redirect(`/superadmin/${orgId}`);
 }
 
+export async function getDbStats() {
+  const [sizeResult, tablesResult] = await Promise.all([
+    prisma.$queryRaw<{ size: string; bytes: bigint }[]>`
+      SELECT pg_size_pretty(pg_database_size(current_database())) AS size,
+             pg_database_size(current_database()) AS bytes
+    `,
+    prisma.$queryRaw<{ table: string; size: string; bytes: bigint }[]>`
+      SELECT tablename AS table,
+             pg_size_pretty(pg_total_relation_size('public.' || quote_ident(tablename))) AS size,
+             pg_total_relation_size('public.' || quote_ident(tablename)) AS bytes
+      FROM pg_tables
+      WHERE schemaname = 'public'
+      ORDER BY pg_total_relation_size('public.' || quote_ident(tablename)) DESC
+      LIMIT 15
+    `,
+  ]);
+
+  const totalBytes = Number(sizeResult[0]?.bytes ?? 0);
+  const totalSize = sizeResult[0]?.size ?? "—";
+  // Neon free tier: 512 MB
+  const limitBytes = 512 * 1024 * 1024;
+  const usedPercent = Math.min(Math.round((totalBytes / limitBytes) * 100), 100);
+
+  const tables = tablesResult.map(t => ({
+    table: t.table,
+    size: t.size,
+    bytes: Number(t.bytes),
+    percent: totalBytes > 0 ? Math.round((Number(t.bytes) / totalBytes) * 100) : 0,
+  }));
+
+  return { totalSize, totalBytes, usedPercent, limitBytes, tables };
+}
+
 export async function getAllOrgsWithMetrics() {
   const orgs = await prisma.organization.findMany({
     orderBy: { createdAt: "desc" },
