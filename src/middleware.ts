@@ -10,11 +10,23 @@ const ROLE_ALLOWED_PREFIXES: Record<string, string[]> = {
 };
 
 export function middleware(request: NextRequest) {
-  const role = request.cookies.get("role")?.value;
   const path = request.nextUrl.pathname;
 
+  // ── Superadmin routes ──────────────────────────────────────────────────────
+  if (path.startsWith("/superadmin")) {
+    if (path === "/superadmin/login") return NextResponse.next();
+    const token = request.cookies.get("superadmin_token")?.value;
+    const secret = process.env.SUPERADMIN_SECRET;
+    if (!secret || token !== secret) {
+      return NextResponse.redirect(new URL("/superadmin/login", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // ── Dashboard routes ───────────────────────────────────────────────────────
   if (!path.startsWith("/dashboard")) return NextResponse.next();
 
+  const role = request.cookies.get("role")?.value;
   if (!role) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -31,5 +43,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/superadmin/:path*"],
 };
