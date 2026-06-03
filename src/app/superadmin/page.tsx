@@ -48,8 +48,26 @@ export default async function SuperAdminPage() {
   const totalAlerts = orgs.reduce((s, o) => s + o.alerts.length, 0);
   const orgsWithAlerts = orgs.filter(o => o.alerts.length > 0);
 
+  // Severità alert per colore
+  const CRITICAL = ["Nessun manager", "login falliti"];
+  function alertSeverity(a: string) {
+    return CRITICAL.some(k => a.includes(k)) ? "critical" : "warning";
+  }
+
   return (
     <main className="min-h-screen bg-slate-950 text-white font-sans p-6 space-y-8">
+
+      {/* Banner DB quasi pieno */}
+      {dbStats.usedPercent >= 80 && (
+        <div className={`rounded-xl px-4 py-3 flex items-center gap-3 ${dbStats.usedPercent >= 95 ? "bg-red-500/15 border border-red-500/40" : "bg-amber-500/10 border border-amber-500/30"}`}>
+          <span className="text-lg">{dbStats.usedPercent >= 95 ? "🚨" : "⚠️"}</span>
+          <p className="text-sm font-bold text-white">
+            Database al <span className={dbStats.usedPercent >= 95 ? "text-red-400" : "text-amber-400"}>{dbStats.usedPercent}%</span> — {dbStats.totalSize} su 512 MB utilizzati.
+            {dbStats.usedPercent >= 95 ? " Richiede intervento immediato." : " Considera un upgrade del piano."}
+          </p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black tracking-tight">⚡ Super Admin</h1>
@@ -135,16 +153,25 @@ export default async function SuperAdminPage() {
           {orgsWithAlerts.length === 0 ? (
             <p className="text-sm text-slate-500">✅ Nessun alert</p>
           ) : (
-            <div className="space-y-2 max-h-32 overflow-y-auto">
-              {orgsWithAlerts.map(org => (
-                <Link key={org.id} href={`/superadmin/${org.id}`} className="flex items-start gap-3 rounded-xl bg-slate-800 hover:bg-slate-700 px-3 py-2 transition-all">
-                  <span className="text-red-400 text-xs mt-0.5">⚠</span>
-                  <div>
-                    <p className="text-xs font-bold text-white">{org.name}</p>
-                    <p className="text-[10px] text-slate-400">{org.alerts.join(" · ")}</p>
-                  </div>
-                </Link>
-              ))}
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {orgsWithAlerts.map(org => {
+                const hasCritical = org.alerts.some(a => alertSeverity(a) === "critical");
+                return (
+                  <Link key={org.id} href={`/superadmin/${org.id}`} className="flex items-start gap-3 rounded-xl bg-slate-800 hover:bg-slate-700 px-3 py-2 transition-all">
+                    <span className={`text-xs mt-0.5 ${hasCritical ? "text-red-400" : "text-amber-400"}`}>⚠</span>
+                    <div>
+                      <p className="text-xs font-bold text-white">{org.name}</p>
+                      <div className="flex flex-wrap gap-1 mt-0.5">
+                        {org.alerts.map(a => (
+                          <span key={a} className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${alertSeverity(a) === "critical" ? "bg-red-500/20 text-red-400" : "bg-amber-500/20 text-amber-400"}`}>
+                            {a}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
@@ -179,7 +206,11 @@ export default async function SuperAdminPage() {
                   <td className="px-4 py-3 text-slate-500 text-xs">{formatDate(org.createdAt)}</td>
                   <td className="px-4 py-3">
                     {org.alerts.length > 0
-                      ? org.alerts.map(a => <p key={a} className="text-[10px] text-red-400 font-medium">⚠ {a}</p>)
+                      ? org.alerts.map(a => (
+                          <p key={a} className={`text-[10px] font-medium ${alertSeverity(a) === "critical" ? "text-red-400" : "text-amber-400"}`}>
+                            ⚠ {a}
+                          </p>
+                        ))
                       : <span className="text-[10px] text-emerald-400 font-medium">✓ Ok</span>}
                   </td>
                   <td className="px-4 py-3">

@@ -157,34 +157,72 @@ export async function getDbStats() {
 }
 
 export async function getAllOrgsWithMetrics() {
-  const orgs = await prisma.organization.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      users: { select: { id: true, name: true, email: true, role: true, createdAt: true } },
-      apartments: {
-        select: {
-          id: true, name: true,
-          cleaningTasks: { where: { status: { in: ["PENDING", "IN_PROGRESS"] } }, select: { id: true, date: true, status: true } },
-          maintenanceTickets: { where: { status: { in: ["PENDING", "IN_PROGRESS"] } }, select: { id: true, priority: true, status: true, createdAt: true } },
-          bookings: { where: { status: { not: "CANCELLED" } }, select: { id: true } },
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const LOGIN_ACTIONS = ["LOGIN_MANAGER", "LOGIN_CLEANER", "LOGIN_MAINTENANCE", "LOGIN_SUPERVISOR", "LOGIN_OWNER"];
+
+  const [orgs, recentLoginLogs, everLoginLogs, failedLoginLogs] = await Promise.all([
+    prisma.organization.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        users: { select: { id: true, name: true, email: true, role: true, createdAt: true } },
+        apartments: {
+          select: {
+            id: true, name: true,
+            cleaningTasks: { where: { status: { in: ["PENDING", "IN_PROGRESS"] } }, select: { id: true } },
+            maintenanceTickets: { where: { status: { in: ["PENDING", "IN_PROGRESS"] } }, select: { id: true } },
+            bookings: { where: { status: { not: "CANCELLED" } }, select: { id: true } },
+          },
         },
       },
-    },
+    }),
+    // Org con login negli ultimi 30 giorni
+    prisma.superAdminLog.findMany({
+      where: { action: { in: LOGIN_ACTIONS }, createdAt: { gte: thirtyDaysAgo }, orgId: { not: null } },
+      select: { orgId: true },
+      distinct: ["orgId"],
+    }),
+    // Org che hanno mai fatto login
+    prisma.superAdminLog.findMany({
+      where: { action: { in: LOGIN_ACTIONS }, orgId: { not: null } },
+      select: { orgId: true },
+      distinct: ["orgId"],
+    }),
+    // Login falliti per org nelle ultime 24h
+    prisma.superAdminLog.findMany({
+      where: { action: "LOGIN_FALLITO", createdAt: { gte: oneDayAgo }, orgId: { not: null } },
+      select: { orgId: true },
+    }),
+  ]);
+
+  const recentLoginOrgIds = new Set(recentLoginLogs.map(l => l.orgId!));
+  const everLoginOrgIds = new Set(everLoginLogs.map(l => l.orgId!));
+  const failedCountByOrg: Record<string, number> = {};
+  failedLoginLogs.forEach(l => {
+    failedCountByOrg[l.orgId!] = (failedCountByOrg[l.orgId!] ?? 0) + 1;
   });
 
   const now = new Date();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+
   return orgs.map(org => {
     const allCleanings = org.apartments.flatMap(a => a.cleaningTasks);
     const allTickets = org.apartments.flatMap(a => a.maintenanceTickets);
-    const overdueCleanings = allCleanings.filter(c =>
-      c.status === "PENDING" && new Date(c.date) < new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)
-    );
-    const urgentTickets = allTickets.filter(t => t.priority === "URGENT");
     const hasManager = org.users.some(u => u.role === "MANAGER");
+    const ageMs = now.getTime() - new Date(org.createdAt).getTime();
+    const isNewOrg = ageMs < oneDayMs;
+
     const alerts: string[] = [];
+
+    // 🔴 Critici — blocco funzionamento
     if (!hasManager) alerts.push("Nessun manager");
-    if (overdueCleanings.length > 0) alerts.push(`${overdueCleanings.length} pulizie in ritardo`);
-    if (urgentTickets.length > 0) alerts.push(`${urgentTickets.length} ticket urgenti`);
+    if ((failedCountByOrg[org.id] ?? 0) >= 5) alerts.push(`${failedCountByOrg[org.id]} login falliti (24h)`);
+
+    // 🟠 Rischio abbandono / onboarding incompleto
+    if (!isNewOrg && !everLoginOrgIds.has(org.id)) alerts.push("Mai effettuato accesso");
+    else if (everLoginOrgIds.has(org.id) && !recentLoginOrgIds.has(org.id)) alerts.push("Inattiva da 30+ giorni");
+    if (!isNewOrg && org.apartments.length === 0) alerts.push("Nessun appartamento");
+
     return {
       id: org.id, name: org.name, slug: org.slug, createdAt: org.createdAt,
       userCount: org.users.length,
