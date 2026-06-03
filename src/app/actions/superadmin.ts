@@ -9,9 +9,17 @@ import { redirect } from "next/navigation";
 async function logAction(action: string, detail?: string, orgId?: string, orgName?: string) {
   try {
     await prisma.superAdminLog.create({
-      data: { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, action, detail, orgId, orgName },
+      data: {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        action,
+        detail: detail ?? null,
+        orgId: orgId ?? null,
+        orgName: orgName ?? null,
+      },
     });
-  } catch {}
+  } catch (e) {
+    console.error("[SuperAdminLog] errore salvataggio log:", action, e);
+  }
 }
 
 export async function getSuperAdminLogs(limit = 100) {
@@ -66,8 +74,13 @@ export async function resetUserPassword(prevState: any, formData: FormData) {
     return { error: "Password minimo 8 caratteri." };
   }
   const hashed = await bcrypt.hash(newPassword, 10);
-  const u = await prisma.user.update({ where: { id: userId }, data: { password: hashed }, include: { organization: { select: { id: true, name: true } } } });
-  await logAction("RESET_PASSWORD", `Utente: ${u.name} (${u.email})`, u.organization?.id, u.organization?.name ?? undefined);
+  const u = await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+  let orgName: string | undefined;
+  if (u.organizationId) {
+    const org = await prisma.organization.findUnique({ where: { id: u.organizationId }, select: { name: true } });
+    orgName = org?.name ?? undefined;
+  }
+  await logAction("RESET_PASSWORD", `${u.name} (${u.email})`, u.organizationId ?? undefined, orgName);
   revalidatePath("/superadmin");
   return { success: true };
 }

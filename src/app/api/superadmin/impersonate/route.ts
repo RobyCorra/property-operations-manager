@@ -19,7 +19,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(new URL("/superadmin", req.url));
   }
 
-  try { await prisma.superAdminLog.create({ data: { id: `${Date.now()}-imp`, action: "IMPERSONA", detail: `Manager: ${manager.name} (${manager.email})`, orgId, orgName: org?.name ?? undefined } }); } catch {}
+  try {
+    await prisma.superAdminLog.create({
+      data: {
+        id: `${Date.now()}-imp`,
+        action: "IMPERSONA",
+        detail: `Manager: ${manager.name} (${manager.email})`,
+        orgId,
+        orgName: org?.name ?? null,
+        ip: req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? req.headers.get("x-real-ip") ?? null,
+      },
+    });
+  } catch (e) { console.error("[SuperAdminLog] impersonate log error:", e); }
 
   const res = NextResponse.redirect(new URL("/dashboard/manager", req.url));
   const opts = { path: "/", maxAge: 60 * 60 * 24, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" as const };
