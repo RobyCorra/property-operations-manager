@@ -239,8 +239,8 @@ export default async function SuperAdminPage() {
                   };
                   const color = actionColor[log.action] ?? "text-slate-300";
                   const dt = new Date(log.createdAt);
-                  const dateStr = dt.toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
-                  const timeStr = dt.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                  const dateStr = dt.toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric", timeZone: "Europe/Rome" });
+                  const timeStr = dt.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: "Europe/Rome" });
                   return (
                     <tr key={log.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
                       <td className="px-4 py-2.5 text-slate-500 text-xs whitespace-nowrap">

@@ -1,23 +1,27 @@
-"use client";
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
 
-import { useActionState } from "react";
-import { loginAction } from "@/src/app/actions/auth";
-
-export default function LoginPage() {
-  const [state, formAction, isPending] = useActionState(loginAction, null);
+  const errorMessage =
+    error === "required"
+      ? "Email e password richiesti."
+      : error === "invalid"
+      ? "Credenziali non valide."
+      : null;
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 p-6 font-sans">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm border border-gray-100">
         <h1 className="text-2xl font-semibold mb-2 text-gray-900 tracking-tight">Login</h1>
-        <p className="text-sm text-gray-500 mb-8">
-          Property Operations Manager
-        </p>
+        <p className="text-sm text-gray-500 mb-8">Property Operations Manager</p>
 
-        <form action={formAction} className="space-y-5">
-          {state?.error && (
+        <form action="/api/auth/login" method="POST" className="space-y-5">
+          {errorMessage && (
             <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-medium">
-              {state.error}
+              {errorMessage}
             </div>
           )}
 
@@ -45,10 +49,9 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={isPending}
-            className="w-full rounded-full bg-black text-white py-2.5 font-medium shadow-sm hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:bg-gray-400 mt-2"
+            className="w-full rounded-full bg-black text-white py-2.5 font-medium shadow-sm hover:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-900 mt-2"
           >
-            {isPending ? "Accesso in corso..." : "Accedi"}
+            Accedi
           </button>
         </form>
 
@@ -62,12 +65,9 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-6 pt-6 border-t border-gray-50">
-          <p className="text-xs text-center text-gray-400">
-            © 2026 Property Operations Manager
-          </p>
+          <p className="text-xs text-center text-gray-400">© 2026 Property Operations Manager</p>
         </div>
       </div>
     </main>
   );
 }
-
