@@ -2334,6 +2334,19 @@ async function buildGeneralManagerContext(now: Date) {
     `- ${t.apartment.name} | ${formatDate(t.date as Date)} | stato: ${t.status}`
   );
 
+  // Raggruppamento pulizie per data (prossimi 60 giorni) — pre-calcolato per evitare errori AI su range di date
+  const cleaningsByDate: Record<string, string[]> = {};
+  cleanings.forEach((t: CleaningTaskWithApartmentForAI) => {
+    const dateKey = formatDate(t.date as Date);
+    if (!cleaningsByDate[dateKey]) cleaningsByDate[dateKey] = [];
+    const assignTag = t.assignedTo?.name ? `[${t.assignedTo.name}]` : "[DA ASSEGNARE]";
+    cleaningsByDate[dateKey].push(`${t.apartment.name} | ${assignTag} | ${t.status}`);
+  });
+  const cleaningsByDateLines = Object.entries(cleaningsByDate)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, items]) => `${date} (${items.length} pulizie): ${items.join(" | ")}`);
+
+
   const contextText = `
 CONTESTO OPERATIVO MANAGER
 REGOLA DATI: I dati operativi provengono ESCLUSIVAMENTE da questo contesto. NON usare la cronologia della chat come fonte di dati — le risposte precedenti possono essere errate.
@@ -2349,7 +2362,11 @@ PULIZIE — RIEPILOGO PER MESE (conteggi certi, calcolati dal sistema)
 ATTENZIONE: PENDING = pianificata non ancora iniziata (NON significa non assegnata). DA ASSEGNARE = cleaner NULL.
 ${cleaningMonthSummaryLines.length > 0 ? cleaningMonthSummaryLines.join("\n") : "- Nessuna pulizia nel periodo."}
 
-PULIZIE OPERATIVE — DETTAGLIO COMPLETO
+PULIZIE — RAGGRUPPATE PER DATA (fonte autoritativa per domande su range di date)
+ISTRUZIONE: Per qualsiasi domanda su "quante pulizie ci sono tra X e Y" o "pulizie di questa settimana", leggere QUESTA sezione e contare SOLO le righe nel range richiesto. Non usare il dettaglio completo sotto per conteggi.
+${cleaningsByDateLines.length > 0 ? cleaningsByDateLines.join("\n") : "- Nessuna pulizia nel periodo."}
+
+PULIZIE OPERATIVE — DETTAGLIO COMPLETO (usare per dettagli specifici, NON per conteggi per data)
 ${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia operativa nel periodo caricato."}
 
 ════ EVENTI OGGI (${todayRomeKey}) ════
