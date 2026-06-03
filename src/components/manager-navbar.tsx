@@ -14,6 +14,7 @@ import {
   LogOut,
   ChevronLeft,
   MapPin,
+  BarChart2,
 } from "./icons";
 
 const NAV_ITEMS = [
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { label: "Pulizie", href: "/dashboard/manager/cleanings", icon: Brush },
   { label: "Manutenzione", href: "/dashboard/manager/maintenance", icon: Wrench },
   { label: "Team", href: "/dashboard/manager/users", icon: Users },
+  { label: "Analytics", href: "/dashboard/manager/analytics", icon: BarChart2 },
 ];
 
 interface ManagerNavbarProps {
