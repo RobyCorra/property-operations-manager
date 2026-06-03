@@ -52,7 +52,16 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-gray-50">
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
+            Non hai un account?{" "}
+            <a href="/register" className="font-medium text-gray-900 hover:underline">
+              Registrati
+            </a>
+          </p>
+        </div>
+
+        <div className="mt-6 pt-6 border-t border-gray-50">
           <p className="text-xs text-center text-gray-400">
             © 2026 Property Operations Manager
           </p>

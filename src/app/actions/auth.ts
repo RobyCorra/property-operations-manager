@@ -39,6 +39,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   };
   cookieStore.set("role", user.role, cookieOptions);
   cookieStore.set("userId", user.id, cookieOptions);
+  cookieStore.set("userName", user.name, cookieOptions);
   cookieStore.set("organizationId", user.organization?.id ?? "org_default", cookieOptions);
 
   // Redirect based on role
@@ -61,6 +62,7 @@ export async function logoutAction() {
   const cookieStore = await cookies();
   cookieStore.set("role", "", { path: "/", maxAge: 0 });
   cookieStore.set("userId", "", { path: "/", maxAge: 0 });
+  cookieStore.set("userName", "", { path: "/", maxAge: 0 });
   cookieStore.set("organizationId", "", { path: "/", maxAge: 0 });
   redirect("/login");
 }
