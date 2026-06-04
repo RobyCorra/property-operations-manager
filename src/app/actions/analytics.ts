@@ -9,6 +9,7 @@ export type PeriodStats = {
   total: number;
   late: number;
   reviews: number;
+  pending: number;
 };
 
 export type PersonRow = {
@@ -40,7 +41,7 @@ function initials(name: string) {
   return name.split(" ").map(p => p[0]).join("").toUpperCase().slice(0, 2);
 }
 
-function emptyStats(): PeriodStats { return { total: 0, late: 0, reviews: 0 }; }
+function emptyStats(): PeriodStats { return { total: 0, late: 0, reviews: 0, pending: 0 }; }
 
 function emptyMonths(months: MonthKey[]): Record<MonthKey, PeriodStats> {
   return Object.fromEntries(months.map(m => [m, emptyStats()]));
@@ -57,7 +58,7 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
   });
 
   // Fetch base lists + raw data in parallel
-  const [allApts, allCleaners, allManut, rawCleanings, rawTickets] = await Promise.all([
+  const [allApts, allCleaners, allManut, rawCleanings, pendingCleanings, rawTickets] = await Promise.all([
     prisma.apartment.findMany({
       where: { organizationId: orgId },
       select: { id: true, name: true },
@@ -73,11 +74,12 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
-    // All cleanings in last 6 months — no status filter so we count everything
+    // Completed/in-progress cleanings for stats and sparkline
     prisma.cleaningTask.findMany({
       where: {
         apartment: { organizationId: orgId },
         date: { gte: sixMonthsAgo },
+        status: { not: "PENDING" },
       },
       select: {
         date: true,
@@ -86,6 +88,15 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
         assignedToId: true,
         supervisorReviews: { select: { decision: true } },
       },
+    }),
+    // Pending cleanings per apartment (separate count, not in sparkline)
+    prisma.cleaningTask.findMany({
+      where: {
+        apartment: { organizationId: orgId },
+        date: { gte: sixMonthsAgo },
+        status: "PENDING",
+      },
+      select: { date: true, apartmentId: true },
     }),
     // All tickets in last 6 months
     prisma.maintenanceTicket.findMany({
@@ -137,6 +148,14 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
         if (c.supervisorReviews.some(r => r.decision !== "APPROVED")) cleaner.months[mk].reviews++;
       }
     }
+  }
+
+  // ── Fill pending cleanings ────────────────────────────────────
+  for (const c of pendingCleanings) {
+    const mk = monthKey(new Date(c.date));
+    if (!months.includes(mk)) continue;
+    const apt = aptMap.get(c.apartmentId);
+    if (apt) apt.cleanings[mk].pending++;
   }
 
   // ── Fill maintenance stats ────────────────────────────────────

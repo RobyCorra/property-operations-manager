@@ -100,6 +100,7 @@ function AptStatBlock({
 }) {
   const warn = stats.late > 0 || stats.reviews > 0;
   const isClean = type === "clean";
+  const pendingWarn = isClean && stats.pending > 0 && warn;
   return (
     <div className="flex-1 rounded-[11px] bg-[#f2f2f7] p-3">
       <div className="flex items-center gap-1.5 mb-2">
@@ -111,13 +112,33 @@ function AptStatBlock({
         </span>
       </div>
       <div className="flex items-end justify-between">
-        <span className="text-[28px] font-[800] leading-none text-[#1c1c1e]">{stats.total}</span>
+        <div>
+          <span className="text-[28px] font-[800] leading-none text-[#1c1c1e]">{stats.total}</span>
+          <div className="text-[10px] text-[#8e8e93] mt-0.5">completate</div>
+        </div>
         <Sparkline values={monthValues} warn={warn} width={80} height={28} />
       </div>
       <div className="flex gap-1 mt-1.5">
         <StatPill n={stats.late} type="late" />
         <StatPill n={stats.reviews} type="review" />
       </div>
+      {isClean && (
+        <>
+          <div className="h-px bg-[#d1d1d6] my-2" />
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-[500] text-[#8e8e93]">⏳ Da fare</span>
+            <span className={`text-[11px] font-[700] px-2 py-0.5 rounded-[6px] ${
+              stats.pending === 0
+                ? "bg-[#f2f2f7] text-[#8e8e93] font-[500]"
+                : pendingWarn
+                ? "bg-[#fff3e0] text-[#e65100]"
+                : "bg-[#e5f0ff] text-[#0071e3]"
+            }`}>
+              {stats.pending}
+            </span>
+          </div>
+        </>
+      )}
     </div>
   );
 }
