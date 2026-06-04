@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import type { AnalyticsData, PeriodStats, MonthKey, PersonRow, ApartmentRow } from "@/src/app/actions/analytics";
 import { Clock, RotateCcw, Building2, Sparkles, Wrench, BarChart2 } from "lucide-react";
+
+const MONTH_NAMES = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
 type Filters = {
   cleaners: { id: string; name: string }[];
@@ -144,11 +147,36 @@ function AptStatBlock({
 }
 
 // ── Main component ────────────────────────────────────────────────────────
-export default function AnalyticsDashboard({ data, filters }: {
+export default function AnalyticsDashboard({ data, filters, selectedYear, selectedMonth: selectedMonthProp }: {
   data: AnalyticsData;
   filters: Filters;
+  selectedYear?: number;
+  selectedMonth?: number;
 }) {
-  const [selectedMonth, setSelectedMonth] = useState<MonthKey>(data.months[data.months.length - 1]);
+  const router = useRouter();
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+
+  const activeYear = selectedYear ?? currentYear;
+  const activeMonth = selectedMonthProp ?? currentMonth;
+  const activeMonthKey: MonthKey = `${activeYear}-${String(activeMonth).padStart(2, "0")}`;
+
+  // Years from 2024 to current year
+  const yearOptions = Array.from({ length: currentYear - 2024 + 1 }, (_, i) => 2024 + i).reverse();
+
+  const handleYearChange = (y: number) => {
+    router.push(`?year=${y}&month=${activeMonth}`);
+  };
+  const handleMonthChange = (m: number) => {
+    router.push(`?year=${activeYear}&month=${m}`);
+  };
+
+  // Use activeMonthKey as the selected month for stats display
+  const selectedMonth = data.months.includes(activeMonthKey)
+    ? activeMonthKey
+    : data.months[data.months.length - 1];
+
   const [filterCleaner, setFilterCleaner] = useState("");
   const [filterManut, setFilterManut] = useState("");
   const [filterAptClean, setFilterAptClean] = useState("");
@@ -205,20 +233,37 @@ export default function AnalyticsDashboard({ data, filters }: {
             </div>
           </div>
 
-          {/* Month selector */}
-          <div className="flex gap-1 rounded-[10px] p-[3px]" style={{ background: "#e5e5ea" }}>
-            {data.months.map(m => (
-              <button
-                key={m}
-                onClick={() => setSelectedMonth(m)}
-                className="text-[12px] font-[600] px-[14px] py-[5px] rounded-[8px] border-none cursor-pointer transition-all"
-                style={m === selectedMonth
-                  ? { background: "white", color: "#1c1c1e", boxShadow: "0 1px 4px rgba(0,0,0,.12),0 .5px 1px rgba(0,0,0,.08)" }
-                  : { background: "transparent", color: "#6e6e73" }}
+          {/* Year + Month selectors */}
+          <div className="flex items-center gap-2">
+            <span className="text-[12px] font-[500] text-[#8e8e93]">Periodo</span>
+            <div className="relative">
+              <select
+                value={activeYear}
+                onChange={e => handleYearChange(Number(e.target.value))}
+                className="appearance-none bg-white border border-[#d1d1d6] rounded-[10px] px-3 py-[6px] pr-7 text-[14px] font-[600] text-[#1c1c1e] outline-none cursor-pointer"
+                style={{ boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}
               >
-                {monthLabel(m)}{m === data.months[data.months.length - 1] ? " ●" : ""}
-              </button>
-            ))}
+                {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
+              </select>
+              <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-[#8e8e93]">▾</span>
+            </div>
+            <div className="relative">
+              <select
+                value={activeMonth}
+                onChange={e => handleMonthChange(Number(e.target.value))}
+                className="appearance-none bg-white border border-[#d1d1d6] rounded-[10px] px-3 py-[6px] pr-7 text-[14px] font-[600] text-[#1c1c1e] outline-none cursor-pointer"
+                style={{ boxShadow: "0 1px 3px rgba(0,0,0,.06)", minWidth: 120 }}
+              >
+                {MONTH_NAMES.map((name, i) => (
+                  <option key={i + 1} value={i + 1}>{name}</option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-[#8e8e93]">▾</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-[#1c1c1e] text-white text-[13px] font-[600] px-3 py-[5px] rounded-full">
+              <span className="w-[6px] h-[6px] rounded-full bg-[#30d158]" />
+              {MONTH_NAMES[activeMonth - 1]?.slice(0, 3)} {activeYear}
+            </div>
           </div>
         </div>
       </div>

@@ -47,13 +47,17 @@ function emptyMonths(months: MonthKey[]): Record<MonthKey, PeriodStats> {
   return Object.fromEntries(months.map(m => [m, emptyStats()]));
 }
 
-export async function getAnalyticsData(): Promise<AnalyticsData> {
+export async function getAnalyticsData(year?: number, month?: number): Promise<AnalyticsData> {
   const orgId = await getCurrentOrg();
   const now = new Date();
-  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const refYear = year ?? now.getFullYear();
+  const refMonth = month ?? now.getMonth() + 1; // 1-based
+  // Build 6-month window ending at the selected month
+  const refDate = new Date(refYear, refMonth - 1, 1);
+  const sixMonthsAgo = new Date(refYear, refMonth - 6, 1);
 
   const months: MonthKey[] = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    const d = new Date(refDate.getFullYear(), refDate.getMonth() - (5 - i), 1);
     return monthKey(d);
   });
 
