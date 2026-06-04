@@ -26,7 +26,7 @@ export type ApartmentRow = {
 };
 
 export type AnalyticsData = {
-  months: MonthKey[];          // ordered oldest → newest
+  months: MonthKey[];
   apartments: ApartmentRow[];
   cleaners: PersonRow[];
   manutentori: PersonRow[];
@@ -42,137 +42,132 @@ function initials(name: string) {
 
 function emptyStats(): PeriodStats { return { total: 0, late: 0, reviews: 0 }; }
 
+function emptyMonths(months: MonthKey[]): Record<MonthKey, PeriodStats> {
+  return Object.fromEntries(months.map(m => [m, emptyStats()]));
+}
+
 export async function getAnalyticsData(): Promise<AnalyticsData> {
   const orgId = await getCurrentOrg();
   const now = new Date();
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
 
-  // Build ordered month keys (last 6 months)
   const months: MonthKey[] = Array.from({ length: 6 }, (_, i) => {
     const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
     return monthKey(d);
   });
 
-  const [rawCleanings, rawTickets] = await Promise.all([
+  // Fetch base lists + raw data in parallel
+  const [allApts, allCleaners, allManut, rawCleanings, rawTickets] = await Promise.all([
+    prisma.apartment.findMany({
+      where: { organizationId: orgId },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.user.findMany({
+      where: { organizationId: orgId, role: "CLEANER" },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.user.findMany({
+      where: { organizationId: orgId, role: "MAINTENANCE" },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+    // All cleanings in last 6 months — no status filter so we count everything
     prisma.cleaningTask.findMany({
       where: {
         apartment: { organizationId: orgId },
         date: { gte: sixMonthsAgo },
-        status: { in: ["COMPLETED", "AWAITING_REVIEW"] },
       },
       select: {
-        id: true,
         date: true,
         startedAt: true,
         apartmentId: true,
-        apartment: { select: { id: true, name: true } },
         assignedToId: true,
-        assignedTo: { select: { id: true, name: true } },
         supervisorReviews: { select: { decision: true } },
       },
     }),
+    // All tickets in last 6 months
     prisma.maintenanceTicket.findMany({
       where: {
         apartment: { organizationId: orgId },
         createdAt: { gte: sixMonthsAgo },
-        status: { in: ["COMPLETED", "RESOLVED"] },
       },
       select: {
-        id: true,
         createdAt: true,
         scheduledStart: true,
         startedAt: true,
         apartmentId: true,
-        apartment: { select: { id: true, name: true } },
         assignedToId: true,
-        assignedTo: { select: { id: true, name: true } },
         supervisorReviews: { select: { decision: true } },
       },
     }),
   ]);
 
-  // ── Apartments ────────────────────────────────────────────────
-  const aptMap = new Map<string, ApartmentRow>();
+  // ── Pre-populate maps from full lists ─────────────────────────
+  const aptMap = new Map<string, ApartmentRow>(
+    allApts.map(a => [a.id, { id: a.id, name: a.name, cleanings: emptyMonths(months), maintenance: emptyMonths(months) }])
+  );
 
-  const ensureApt = (apt: { id: string; name: string }) => {
-    if (!aptMap.has(apt.id)) {
-      aptMap.set(apt.id, {
-        id: apt.id,
-        name: apt.name,
-        cleanings: Object.fromEntries(months.map(m => [m, emptyStats()])),
-        maintenance: Object.fromEntries(months.map(m => [m, emptyStats()])),
-      });
-    }
-    return aptMap.get(apt.id)!;
-  };
+  const cleanerMap = new Map<string, PersonRow>(
+    allCleaners.map(u => [u.id, { id: u.id, name: u.name, initials: initials(u.name), months: emptyMonths(months) }])
+  );
 
+  const manutMap = new Map<string, PersonRow>(
+    allManut.map(u => [u.id, { id: u.id, name: u.name, initials: initials(u.name), months: emptyMonths(months) }])
+  );
+
+  // ── Fill cleanings stats ──────────────────────────────────────
   for (const c of rawCleanings) {
     const mk = monthKey(new Date(c.date));
     if (!months.includes(mk)) continue;
-    const row = ensureApt(c.apartment);
-    row.cleanings[mk].total++;
-    if (c.startedAt && new Date(c.startedAt) > new Date(c.date)) row.cleanings[mk].late++;
-    if (c.supervisorReviews.some(r => r.decision !== "APPROVED")) row.cleanings[mk].reviews++;
+
+    const apt = aptMap.get(c.apartmentId);
+    if (apt) {
+      apt.cleanings[mk].total++;
+      if (c.startedAt && new Date(c.startedAt) > new Date(c.date)) apt.cleanings[mk].late++;
+      if (c.supervisorReviews.some(r => r.decision !== "APPROVED")) apt.cleanings[mk].reviews++;
+    }
+
+    if (c.assignedToId) {
+      const cleaner = cleanerMap.get(c.assignedToId);
+      if (cleaner) {
+        cleaner.months[mk].total++;
+        if (c.startedAt && new Date(c.startedAt) > new Date(c.date)) cleaner.months[mk].late++;
+        if (c.supervisorReviews.some(r => r.decision !== "APPROVED")) cleaner.months[mk].reviews++;
+      }
+    }
   }
 
+  // ── Fill maintenance stats ────────────────────────────────────
   for (const t of rawTickets) {
     const mk = monthKey(new Date(t.createdAt));
     if (!months.includes(mk)) continue;
-    const row = ensureApt(t.apartment);
-    row.maintenance[mk].total++;
-    if (t.startedAt && t.scheduledStart && new Date(t.startedAt) > new Date(t.scheduledStart))
-      row.maintenance[mk].late++;
-    if (t.supervisorReviews.some(r => r.decision !== "APPROVED")) row.maintenance[mk].reviews++;
-  }
 
-  // ── Cleaners ─────────────────────────────────────────────────
-  const cleanerMap = new Map<string, PersonRow>();
-
-  for (const c of rawCleanings) {
-    if (!c.assignedToId || !c.assignedTo) continue;
-    const mk = monthKey(new Date(c.date));
-    if (!months.includes(mk)) continue;
-    if (!cleanerMap.has(c.assignedToId)) {
-      cleanerMap.set(c.assignedToId, {
-        id: c.assignedToId,
-        name: c.assignedTo.name,
-        initials: initials(c.assignedTo.name),
-        months: Object.fromEntries(months.map(m => [m, emptyStats()])),
-      });
+    const apt = aptMap.get(t.apartmentId);
+    if (apt) {
+      apt.maintenance[mk].total++;
+      if (t.startedAt && t.scheduledStart && new Date(t.startedAt) > new Date(t.scheduledStart))
+        apt.maintenance[mk].late++;
+      if (t.supervisorReviews.some(r => r.decision !== "APPROVED")) apt.maintenance[mk].reviews++;
     }
-    const row = cleanerMap.get(c.assignedToId)!;
-    row.months[mk].total++;
-    if (c.startedAt && new Date(c.startedAt) > new Date(c.date)) row.months[mk].late++;
-    if (c.supervisorReviews.some(r => r.decision !== "APPROVED")) row.months[mk].reviews++;
-  }
 
-  // ── Manutentori ───────────────────────────────────────────────
-  const manutMap = new Map<string, PersonRow>();
-
-  for (const t of rawTickets) {
-    if (!t.assignedToId || !t.assignedTo) continue;
-    const mk = monthKey(new Date(t.createdAt));
-    if (!months.includes(mk)) continue;
-    if (!manutMap.has(t.assignedToId)) {
-      manutMap.set(t.assignedToId, {
-        id: t.assignedToId,
-        name: t.assignedTo.name,
-        initials: initials(t.assignedTo.name),
-        months: Object.fromEntries(months.map(m => [m, emptyStats()])),
-      });
+    if (t.assignedToId) {
+      const manut = manutMap.get(t.assignedToId);
+      if (manut) {
+        manut.months[mk].total++;
+        if (t.startedAt && t.scheduledStart && new Date(t.startedAt) > new Date(t.scheduledStart))
+          manut.months[mk].late++;
+        if (t.supervisorReviews.some(r => r.decision !== "APPROVED")) manut.months[mk].reviews++;
+      }
     }
-    const row = manutMap.get(t.assignedToId)!;
-    row.months[mk].total++;
-    if (t.startedAt && t.scheduledStart && new Date(t.startedAt) > new Date(t.scheduledStart))
-      row.months[mk].late++;
-    if (t.supervisorReviews.some(r => r.decision !== "APPROVED")) row.months[mk].reviews++;
   }
 
   return {
     months,
-    apartments: [...aptMap.values()].sort((a, b) => a.name.localeCompare(b.name)),
-    cleaners: [...cleanerMap.values()].sort((a, b) => a.name.localeCompare(b.name)),
-    manutentori: [...manutMap.values()].sort((a, b) => a.name.localeCompare(b.name)),
+    apartments: [...aptMap.values()],
+    cleaners: [...cleanerMap.values()],
+    manutentori: [...manutMap.values()],
   };
 }
 
