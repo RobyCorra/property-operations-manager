@@ -628,6 +628,30 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     data: updateData,
   });
 
+  // Quando il cleaner avvia la pulizia → notifica manager
+  if (nextStatus === "IN_PROGRESS") {
+    const apartment = await prisma.apartment.findUnique({
+      where: { id: task.apartmentId },
+      select: { name: true },
+    });
+    const cleanerName = task.assignedTo?.name ?? "Il cleaner";
+    const aptName = apartment?.name ?? "un appartamento";
+    await prisma.notification.create({
+      data: {
+        type: "CLEANING",
+        title: "🧹 Pulizia avviata",
+        message: `${cleanerName} ha iniziato la pulizia presso ${aptName}.`,
+        apartmentId: task.apartmentId,
+      },
+    });
+    await sendPushToRole("MANAGER" as Role, {
+      title: "🧹 Pulizia avviata",
+      body: `${cleanerName} ha iniziato la pulizia presso ${aptName}.`,
+      url: `/dashboard/manager/cleanings/${id}/edit`,
+      tag: `cleaning-started-${id}`,
+    }).catch(console.error);
+  }
+
   // Quando il cleaner invia per verifica → notifica manager E supervisor
   if (nextStatus === "AWAITING_REVIEW") {
     const apartment = await prisma.apartment.findUnique({
