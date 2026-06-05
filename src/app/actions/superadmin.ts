@@ -142,8 +142,8 @@ export async function getDbStats() {
 
   const totalBytes = Number(sizeResult[0]?.bytes ?? 0);
   const totalSize = sizeResult[0]?.size ?? "—";
-  // Neon free tier: 512 MB
-  const limitBytes = 512 * 1024 * 1024;
+  // Prisma Postgres: 10 GB inclusi nel piano
+  const limitBytes = 10 * 1024 * 1024 * 1024;
   const usedPercent = Math.min(Math.round((totalBytes / limitBytes) * 100), 100);
 
   const tables = tablesResult.map(t => ({

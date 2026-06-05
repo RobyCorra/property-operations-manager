@@ -63,7 +63,7 @@ export default async function SuperAdminPage() {
         <div className={`rounded-xl px-4 py-3 flex items-center gap-3 ${dbStats.usedPercent >= 95 ? "bg-red-500/15 border border-red-500/40" : "bg-amber-500/10 border border-amber-500/30"}`}>
           <span className="text-lg">{dbStats.usedPercent >= 95 ? "🚨" : "⚠️"}</span>
           <p className="text-sm font-bold text-white">
-            Database al <span className={dbStats.usedPercent >= 95 ? "text-red-400" : "text-amber-400"}>{dbStats.usedPercent}%</span> — {dbStats.totalSize} su 512 MB utilizzati.
+            Database al <span className={dbStats.usedPercent >= 95 ? "text-red-400" : "text-amber-400"}>{dbStats.usedPercent}%</span> — {dbStats.totalSize} su 10 GB utilizzati.
             {dbStats.usedPercent >= 95 ? " Richiede intervento immediato." : " Considera un upgrade del piano."}
           </p>
         </div>
@@ -104,7 +104,7 @@ export default async function SuperAdminPage() {
       <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">💾 Database — Utilizzo storage</h2>
-          <span className="text-xs text-slate-500">Limite free tier: 512 MB</span>
+          <span className="text-xs text-slate-500">Limite piano: 10 GB</span>
         </div>
 
         {/* Barra principale */}
