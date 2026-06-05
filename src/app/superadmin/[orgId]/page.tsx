@@ -166,6 +166,30 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
         )}
       </div>
 
+      {/* Dati fiscali */}
+      {(org.legalName || org.vatNumber || org.fiscalCode || org.address || org.pec || org.sdiCode) && (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">🧾 Dati fiscali</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+            {[
+              { label: "Ragione sociale", value: org.legalName },
+              { label: "Partita IVA",     value: org.vatNumber },
+              { label: "Codice fiscale",  value: org.fiscalCode },
+              { label: "Indirizzo",       value: [org.address, org.zip, org.city, org.country].filter(Boolean).join(", ") || null },
+              { label: "Telefono",        value: org.phone },
+              { label: "Email",           value: org.email },
+              { label: "PEC",             value: org.pec },
+              { label: "Codice SDI",      value: org.sdiCode },
+            ].filter(f => f.value).map(f => (
+              <div key={f.label}>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-0.5">{f.label}</p>
+                <p className="text-sm text-slate-200 font-medium">{f.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Fix rapidi */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-5">
         <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">🔧 Fix rapidi</h2>

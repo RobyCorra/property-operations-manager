@@ -249,6 +249,7 @@ export async function getOrgDetail(orgId: string) {
         },
       },
     },
+    // include fiscal fields via direct select override not needed — include fetches all scalar fields
   });
 }
 
