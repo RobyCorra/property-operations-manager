@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats, getSuperAdminLogs } from "@/src/app/actions/superadmin";
+import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats, getSuperAdminLogs, getAIUsageAllOrgs } from "@/src/app/actions/superadmin";
 import CreateOrgForm from "@/src/components/superadmin/create-org-form";
+import AIUsageTable from "@/src/components/superadmin/ai-usage-table";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function SuperAdminPage() {
   const auth = await isSuperAdminAuthenticated();
   if (!auth) redirect("/superadmin/login");
 
-  const [orgs, dbStats, logs] = await Promise.all([getAllOrgsWithMetrics(), getDbStats(), getSuperAdminLogs(100)]);
+  const [orgs, dbStats, logs, aiUsage] = await Promise.all([getAllOrgsWithMetrics(), getDbStats(), getSuperAdminLogs(100), getAIUsageAllOrgs()]);
 
   const now = new Date();
   const monthlyGrowth = Array.from({ length: 6 }, (_, i) => {
@@ -234,6 +235,17 @@ export default async function SuperAdminPage() {
           </table>
         </div>
       </div>
+      {/* AI Usage */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">🤖 Consumo AI per organizzazione</h2>
+          <span className="text-xs text-slate-500">reset il 1° del mese</span>
+        </div>
+        <div className="p-4">
+          <AIUsageTable orgs={aiUsage} />
+        </div>
+      </div>
+
       {/* Activity Log */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">

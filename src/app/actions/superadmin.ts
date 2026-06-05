@@ -251,3 +251,41 @@ export async function getOrgDetail(orgId: string) {
     },
   });
 }
+
+export async function getAIUsageAllOrgs() {
+  const orgs = await prisma.organization.findMany({
+    orderBy: { name: "asc" },
+    select: {
+      id: true, name: true,
+      aiMonthlyTokenLimit: true, aiTokensUsed: true, aiTokensResetAt: true,
+      perplexityMonthlyLimit: true, perplexityRequestsUsed: true, perplexityRequestsResetAt: true,
+    },
+  });
+
+  const now = new Date();
+  const isNewMonth = (d: Date | null) => {
+    if (!d) return true;
+    return now.getFullYear() !== d.getFullYear() || now.getMonth() !== d.getMonth();
+  };
+
+  return orgs.map(org => ({
+    id: org.id,
+    name: org.name,
+    tokens: {
+      used: isNewMonth(org.aiTokensResetAt) ? 0 : org.aiTokensUsed,
+      limit: org.aiMonthlyTokenLimit,
+    },
+    perplexity: {
+      used: isNewMonth(org.perplexityRequestsResetAt) ? 0 : org.perplexityRequestsUsed,
+      limit: org.perplexityMonthlyLimit,
+    },
+  }));
+}
+
+export async function updateAILimits(orgId: string, aiMonthlyTokenLimit: number, perplexityMonthlyLimit: number) {
+  await prisma.organization.update({
+    where: { id: orgId },
+    data: { aiMonthlyTokenLimit, perplexityMonthlyLimit },
+  });
+  revalidatePath("/superadmin");
+}

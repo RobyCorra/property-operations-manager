@@ -5,6 +5,7 @@ import OpenAI from "openai";
 import { prisma } from "@/src/lib/prisma";
 import { formatDateKey, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import { getCurrentOrg } from "@/src/lib/tenant";
+import { checkTokenLimit, consumeTokens, checkAndConsumePerplexity } from "@/src/lib/ai-limits";
 
 type AIMessage = {
   role: "user" | "assistant";
@@ -617,9 +618,14 @@ function formatLinksAsMarkdown(text: string) {
   });
 }
 
-async function askPerplexitySearch(query: string) {
+async function askPerplexitySearch(query: string, orgId?: string | null) {
   if (!process.env.PERPLEXITY_API_KEY) {
     return null;
+  }
+
+  if (orgId) {
+    const check = await checkAndConsumePerplexity(orgId);
+    if (!check.allowed) return `⚠️ ${check.reason}`;
   }
 
   try {
@@ -2454,6 +2460,7 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
+    const orgId = await getCurrentOrg();
     const userMessage = messages[messages.length - 1]?.content || "";
 
   // Intent classification — deve stare PRIMA di tutto il resto
@@ -2492,8 +2499,8 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
   });
 
   if (shouldUsePerplexity) {
-    perplexityContext = await askPerplexitySearch(userMessage);
-    usedWeb = Boolean(perplexityContext);
+    perplexityContext = await askPerplexitySearch(userMessage, orgId);
+    usedWeb = Boolean(perplexityContext) && !perplexityContext?.startsWith("⚠️");
   }
 
   console.log("[PERPLEXITY RESULT]", {
@@ -2571,6 +2578,12 @@ RICERCA WEB — REGOLA ASSOLUTA:
     systemPromptLength: systemPrompt.length,
   });
 
+  // Check token limit before calling GPT
+  if (orgId) {
+    const check = await checkTokenLimit(orgId);
+    if (!check.allowed) return check.reason!;
+  }
+
   const response = await openai.chat.completions.create({
     model: "gpt-4.1",
     temperature: 0,   // risposta deterministica: stessa domanda → stesso risultato
@@ -2579,6 +2592,12 @@ RICERCA WEB — REGOLA ASSOLUTA:
       ...messages,
     ],
   });
+
+  // Accumulate actual tokens used
+  const actualTokens = response.usage?.total_tokens ?? 0;
+  if (orgId && actualTokens > 0) {
+    await consumeTokens(orgId, actualTokens).catch(console.error);
+  }
 
   const answer = response.choices[0].message.content || "";
   const finalAnswer = usedWeb

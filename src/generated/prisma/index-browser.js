@@ -125,6 +125,12 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   logoUrl: 'logoUrl',
+  aiMonthlyTokenLimit: 'aiMonthlyTokenLimit',
+  aiTokensUsed: 'aiTokensUsed',
+  aiTokensResetAt: 'aiTokensResetAt',
+  perplexityMonthlyLimit: 'perplexityMonthlyLimit',
+  perplexityRequestsUsed: 'perplexityRequestsUsed',
+  perplexityRequestsResetAt: 'perplexityRequestsResetAt',
   createdAt: 'createdAt'
 };
 
