@@ -31,6 +31,11 @@ export type AnalyticsData = {
   apartments: ApartmentRow[];
   cleaners: PersonRow[];
   manutentori: PersonRow[];
+  // association indexes for client-side filtering
+  cleanerApts: Record<string, string[]>;   // cleanerId → aptId[]
+  manutApts: Record<string, string[]>;     // manutId  → aptId[]
+  aptCleaners: Record<string, string[]>;   // aptId    → cleanerId[]
+  aptManuts: Record<string, string[]>;     // aptId    → manutId[]
 };
 
 function monthKey(d: Date): MonthKey {
@@ -132,6 +137,12 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
     allManut.map(u => [u.id, { id: u.id, name: u.name, initials: initials(u.name), months: emptyMonths(months) }])
   );
 
+  // Association indexes
+  const cleanerAptsMap = new Map<string, Set<string>>();
+  const manutAptsMap = new Map<string, Set<string>>();
+  const aptCleanersMap = new Map<string, Set<string>>();
+  const aptManutsMap = new Map<string, Set<string>>();
+
   // ── Fill cleanings stats ──────────────────────────────────────
   for (const c of rawCleanings) {
     const mk = monthKey(new Date(c.date));
@@ -151,6 +162,10 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
         if (c.startedAt && new Date(c.startedAt) > new Date(c.date)) cleaner.months[mk].late++;
         if (c.supervisorReviews.some(r => r.decision !== "APPROVED")) cleaner.months[mk].reviews++;
       }
+      if (!cleanerAptsMap.has(c.assignedToId)) cleanerAptsMap.set(c.assignedToId, new Set());
+      cleanerAptsMap.get(c.assignedToId)!.add(c.apartmentId);
+      if (!aptCleanersMap.has(c.apartmentId)) aptCleanersMap.set(c.apartmentId, new Set());
+      aptCleanersMap.get(c.apartmentId)!.add(c.assignedToId);
     }
   }
 
@@ -183,14 +198,25 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
           manut.months[mk].late++;
         if (t.supervisorReviews.some(r => r.decision !== "APPROVED")) manut.months[mk].reviews++;
       }
+      if (!manutAptsMap.has(t.assignedToId)) manutAptsMap.set(t.assignedToId, new Set());
+      manutAptsMap.get(t.assignedToId)!.add(t.apartmentId);
+      if (!aptManutsMap.has(t.apartmentId)) aptManutsMap.set(t.apartmentId, new Set());
+      aptManutsMap.get(t.apartmentId)!.add(t.assignedToId);
     }
   }
+
+  const toRecord = (m: Map<string, Set<string>>) =>
+    Object.fromEntries([...m.entries()].map(([k, v]) => [k, [...v]]));
 
   return {
     months,
     apartments: [...aptMap.values()],
     cleaners: [...cleanerMap.values()],
     manutentori: [...manutMap.values()],
+    cleanerApts: toRecord(cleanerAptsMap),
+    manutApts: toRecord(manutAptsMap),
+    aptCleaners: toRecord(aptCleanersMap),
+    aptManuts: toRecord(aptManutsMap),
   };
 }
 

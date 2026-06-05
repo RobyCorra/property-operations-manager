@@ -182,20 +182,25 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
   const [filterAptClean, setFilterAptClean] = useState("");
   const [filterAptManut, setFilterAptManut] = useState("");
 
-  // Filter apartments by cleaner/manutentore (client-side via raw data is simplified here)
-  const apartments = data.apartments;
+  // Filter apartments by cleaner/manutentore
+  const apartments = useMemo(() => {
+    return data.apartments.filter(apt => {
+      if (filterCleaner && !(data.aptCleaners[apt.id] ?? []).includes(filterCleaner)) return false;
+      if (filterManut && !(data.aptManuts[apt.id] ?? []).includes(filterManut)) return false;
+      return true;
+    });
+  }, [data.apartments, data.aptCleaners, data.aptManuts, filterCleaner, filterManut]);
 
   // Filter cleaners by apartment
   const cleaners = useMemo(() => {
     if (!filterAptClean) return data.cleaners;
-    // For now show all - full filtering would require per-apartment breakdown
-    return data.cleaners;
-  }, [data.cleaners, filterAptClean]);
+    return data.cleaners.filter(c => (data.cleanerApts[c.id] ?? []).includes(filterAptClean));
+  }, [data.cleaners, data.cleanerApts, filterAptClean]);
 
   const manutentori = useMemo(() => {
     if (!filterAptManut) return data.manutentori;
-    return data.manutentori;
-  }, [data.manutentori, filterAptManut]);
+    return data.manutentori.filter(m => (data.manutApts[m.id] ?? []).includes(filterAptManut));
+  }, [data.manutentori, data.manutApts, filterAptManut]);
 
   const getStats = (row: ApartmentRow | PersonRow, month: MonthKey, key?: "cleanings" | "maintenance") => {
     if ("cleanings" in row) {
