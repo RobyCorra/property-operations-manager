@@ -500,15 +500,13 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
     }).catch(console.error);
   }
 
-  // Push al manager se urgente
-  if (priority === "URGENTE") {
-    await sendPushToRole("MANAGER" as Role, {
-      title: "⚠️ Ticket urgente aperto",
-      body: `"${title}" presso ${apt?.name ?? "un appartamento"} richiede attenzione immediata.`,
-      url: `/dashboard/manager/maintenance/${ticket.id}/edit`,
-      tag: `maintenance-urgent-${ticket.id}`,
-    }).catch(console.error);
-  }
+  // Push al manager per nuovo ticket (urgente = titolo diverso)
+  await sendPushToRole("MANAGER" as Role, {
+    title: priority === "URGENTE" ? "⚠️ Ticket urgente aperto" : "🔧 Nuovo ticket manutenzione",
+    body: `"${title}" presso ${apt?.name ?? "un appartamento"}.`,
+    url: `/dashboard/manager/maintenance/${ticket.id}/edit`,
+    tag: `maintenance-new-${ticket.id}`,
+  }, "maintenanceNew").catch(console.error);
 
   revalidatePath("/dashboard/manager/maintenance");
   revalidatePath("/dashboard/maintenance");
@@ -649,7 +647,7 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       body: `${cleanerName} ha iniziato la pulizia presso ${aptName}.`,
       url: `/dashboard/manager/cleanings/${id}/edit`,
       tag: `cleaning-started-${id}`,
-    }).catch(console.error);
+    }, "cleaningStarted").catch(console.error);
   }
 
   // Quando il cleaner invia per verifica → notifica manager E supervisor
@@ -685,7 +683,7 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       body: `${cleanerName} ha completato la pulizia presso ${aptName}.`,
       url: `/dashboard/manager/cleanings/${id}/edit`,
       tag: `cleaning-review-${id}`,
-    }).catch(console.error);
+    }, "cleaningCompleted").catch(console.error);
   }
 
   revalidatePath("/dashboard/cleaner");

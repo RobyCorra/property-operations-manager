@@ -140,7 +140,8 @@ exports.Prisma.UserScalarFieldEnum = {
   companyName: 'companyName',
   vatNumber: 'vatNumber',
   iban: 'iban',
-  organizationId: 'organizationId'
+  organizationId: 'organizationId',
+  notificationPrefs: 'notificationPrefs'
 };
 
 exports.Prisma.ApartmentScalarFieldEnum = {
@@ -344,6 +345,16 @@ exports.Prisma.PushSubscriptionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.SuperAdminLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  detail: 'detail',
+  orgId: 'orgId',
+  orgName: 'orgName',
+  ip: 'ip',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ApartmentProductScalarFieldEnum = {
   id: 'id',
   apartmentId: 'apartmentId',
@@ -373,15 +384,15 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
-};
-
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
 };
 exports.Role = exports.$Enums.Role = {
   MANAGER: 'MANAGER',
@@ -416,6 +427,7 @@ exports.Prisma.ModelName = {
   ManagerChatSession: 'ManagerChatSession',
   ManagerChatMessage: 'ManagerChatMessage',
   PushSubscription: 'PushSubscription',
+  SuperAdminLog: 'SuperAdminLog',
   ApartmentProduct: 'ApartmentProduct'
 };
 

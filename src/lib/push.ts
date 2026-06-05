@@ -32,22 +32,38 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
 
 // ─── Send to all users with a given role ────────────────────────────────────
 
-export async function sendPushToRole(role: Role, payload: PushPayload) {
-  const subs = await prisma.pushSubscription.findMany({
-    where: { user: { role } },
+export async function sendPushToRole(role: Role, payload: PushPayload, prefKey?: string) {
+  const users = await prisma.user.findMany({
+    where: { role },
+    select: { id: true, notificationPrefs: true, pushSubscriptions: true },
   });
-  console.log(`[Push] sendPushToRole role=${role} — ${subs.length} subscription(s)`);
+  const subs = users
+    .filter(u => _prefEnabled(u.notificationPrefs, prefKey))
+    .flatMap(u => u.pushSubscriptions);
+  console.log(`[Push] sendPushToRole role=${role} prefKey=${prefKey ?? "—"} — ${subs.length} subscription(s)`);
   await _sendToSubs(subs, payload);
 }
 
 // ─── Send to multiple roles ──────────────────────────────────────────────────
 
-export async function sendPushToRoles(roles: Role[], payload: PushPayload) {
-  const subs = await prisma.pushSubscription.findMany({
-    where: { user: { role: { in: roles } } },
+export async function sendPushToRoles(roles: Role[], payload: PushPayload, prefKey?: string) {
+  const users = await prisma.user.findMany({
+    where: { role: { in: roles } },
+    select: { id: true, notificationPrefs: true, pushSubscriptions: true },
   });
-  console.log(`[Push] sendPushToRoles roles=${roles.join(",")} — ${subs.length} subscription(s)`);
+  const subs = users
+    .filter(u => _prefEnabled(u.notificationPrefs, prefKey))
+    .flatMap(u => u.pushSubscriptions);
+  console.log(`[Push] sendPushToRoles roles=${roles.join(",")} prefKey=${prefKey ?? "—"} — ${subs.length} subscription(s)`);
   await _sendToSubs(subs, payload);
+}
+
+// ─── Pref check ───────────────────────────────────────────────────────────────
+
+function _prefEnabled(prefs: unknown, key?: string): boolean {
+  if (!key) return true;
+  if (!prefs || typeof prefs !== "object") return true; // default on
+  return (prefs as Record<string, boolean>)[key] !== false;
 }
 
 // ─── Internal ────────────────────────────────────────────────────────────────

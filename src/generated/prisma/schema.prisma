@@ -31,6 +31,7 @@ model User {
   vatNumber            String?
   iban                 String?
   organizationId       String?
+  notificationPrefs    Json?
   organization         Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   cleaningTasks        CleaningTask[]
   maintenanceTickets   MaintenanceTicket[]
@@ -334,6 +335,19 @@ model PushSubscription {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model SuperAdminLog {
+  id        String   @id @default(cuid())
+  action    String
+  detail    String?
+  orgId     String?
+  orgName   String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([orgId])
 }
 
 model ApartmentProduct {

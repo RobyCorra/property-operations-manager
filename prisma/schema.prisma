@@ -31,6 +31,7 @@ model User {
   vatNumber            String?
   iban                 String?
   organizationId       String?
+  notificationPrefs    Json?
   organization         Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   cleaningTasks        CleaningTask[]
   maintenanceTickets   MaintenanceTicket[]
