@@ -9,6 +9,7 @@ import {
   updateOrgName,
   updateNotificationPrefs,
   uploadOrgLogo,
+  updateOrgFiscal,
   type NotificationPrefs,
 } from "@/src/app/actions/settings";
 
@@ -69,6 +70,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
   const [pwResult, setPwResult] = useState<{ success?: boolean; error?: string } | null>(null);
   // org form
   const [orgResult, setOrgResult] = useState<{ success?: boolean; error?: string } | null>(null);
+  const [fiscalResult, setFiscalResult] = useState<{ success?: boolean; error?: string } | null>(null);
   const [logoResult, setLogoResult] = useState<{ success?: boolean; error?: string } | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
   // notification prefs
@@ -222,6 +224,67 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
                   </Field>
                   <div className="flex items-center justify-between pt-1">
                     <StatusMsg result={orgResult} />
+                    <button type="submit" className={btnCls}>Salva</button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Dati fiscali */}
+              <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
+                <p className="text-[13px] font-[700] text-[#1c1c1e]">Dati fiscali</p>
+                <form
+                  action={async (fd) => {
+                    setFiscalResult(null);
+                    const res = await updateOrgFiscal(fd);
+                    setFiscalResult(res ?? { success: true });
+                  }}
+                  className="flex flex-col gap-3"
+                >
+                  <Field label="Ragione sociale">
+                    <input name="legalName" defaultValue={data.organization?.legalName ?? ""} className={inputCls} placeholder="Es. Mario Rossi S.r.l." />
+                  </Field>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Field label="Partita IVA">
+                      <input name="vatNumber" defaultValue={data.organization?.vatNumber ?? ""} className={inputCls} placeholder="IT12345678901" />
+                    </Field>
+                    <Field label="Codice fiscale">
+                      <input name="fiscalCode" defaultValue={data.organization?.fiscalCode ?? ""} className={inputCls} placeholder="RSSMRA80A01H501U" />
+                    </Field>
+                  </div>
+                  <Field label="Indirizzo">
+                    <input name="address" defaultValue={data.organization?.address ?? ""} className={inputCls} placeholder="Via Roma 1" />
+                  </Field>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Field label="CAP">
+                      <input name="zip" defaultValue={data.organization?.zip ?? ""} className={inputCls} placeholder="00100" />
+                    </Field>
+                    <div className="col-span-2">
+                      <Field label="Città">
+                        <input name="city" defaultValue={data.organization?.city ?? ""} className={inputCls} placeholder="Roma" />
+                      </Field>
+                    </div>
+                  </div>
+                  <Field label="Paese">
+                    <input name="country" defaultValue={data.organization?.country ?? "Italia"} className={inputCls} />
+                  </Field>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Field label="Telefono">
+                      <input name="phone" defaultValue={data.organization?.phone ?? ""} className={inputCls} placeholder="+39 06 1234567" />
+                    </Field>
+                    <Field label="Email">
+                      <input name="email" type="email" defaultValue={data.organization?.email ?? ""} className={inputCls} placeholder="info@azienda.it" />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Field label="PEC">
+                      <input name="pec" defaultValue={data.organization?.pec ?? ""} className={inputCls} placeholder="azienda@pec.it" />
+                    </Field>
+                    <Field label="Codice SDI">
+                      <input name="sdiCode" defaultValue={data.organization?.sdiCode ?? ""} className={inputCls} placeholder="Es. ABCDE12" />
+                    </Field>
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <StatusMsg result={fiscalResult} />
                     <button type="submit" className={btnCls}>Salva</button>
                   </div>
                 </form>

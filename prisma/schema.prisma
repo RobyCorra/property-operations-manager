@@ -12,6 +12,17 @@ model Organization {
   name                      String
   slug                      String       @unique
   logoUrl                   String?
+  legalName                 String?
+  vatNumber                 String?
+  fiscalCode                String?
+  address                   String?
+  city                      String?
+  zip                       String?
+  country                   String?
+  phone                     String?
+  email                     String?
+  pec                       String?
+  sdiCode                   String?
   aiMonthlyTokenLimit       Int          @default(1800000)
   aiTokensUsed              Int          @default(0)
   aiTokensResetAt           DateTime?

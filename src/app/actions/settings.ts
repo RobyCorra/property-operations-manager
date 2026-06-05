@@ -29,7 +29,14 @@ export async function getSettingsData() {
       name: true,
       email: true,
       notificationPrefs: true,
-      organization: { select: { id: true, name: true, logoUrl: true } },
+      organization: {
+        select: {
+          id: true, name: true, logoUrl: true,
+          legalName: true, vatNumber: true, fiscalCode: true,
+          address: true, city: true, zip: true, country: true,
+          phone: true, email: true, pec: true, sdiCode: true,
+        },
+      },
     },
   });
   if (!full) throw new Error("Utente non trovato");
@@ -130,5 +137,35 @@ export async function updateNotificationPrefs(prefs: NotificationPrefs) {
     where: { id: user.id },
     data: { notificationPrefs: prefs },
   });
+  return { success: true };
+}
+
+export async function updateOrgFiscal(formData: FormData) {
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Non autenticato");
+
+  const full = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { organizationId: true },
+  });
+  if (!full?.organizationId) return { error: "Organizzazione non trovata." };
+
+  await prisma.organization.update({
+    where: { id: full.organizationId },
+    data: {
+      legalName:   (formData.get("legalName")   as string)?.trim() || null,
+      vatNumber:   (formData.get("vatNumber")    as string)?.trim() || null,
+      fiscalCode:  (formData.get("fiscalCode")   as string)?.trim() || null,
+      address:     (formData.get("address")      as string)?.trim() || null,
+      city:        (formData.get("city")         as string)?.trim() || null,
+      zip:         (formData.get("zip")          as string)?.trim() || null,
+      country:     (formData.get("country")      as string)?.trim() || null,
+      phone:       (formData.get("phone")        as string)?.trim() || null,
+      email:       (formData.get("email")        as string)?.trim() || null,
+      pec:         (formData.get("pec")          as string)?.trim() || null,
+      sdiCode:     (formData.get("sdiCode")      as string)?.trim() || null,
+    },
+  });
+  revalidatePath("/dashboard/manager");
   return { success: true };
 }

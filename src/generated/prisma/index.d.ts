@@ -3172,6 +3172,17 @@ export namespace Prisma {
     name: string | null
     slug: string | null
     logoUrl: string | null
+    legalName: string | null
+    vatNumber: string | null
+    fiscalCode: string | null
+    address: string | null
+    city: string | null
+    zip: string | null
+    country: string | null
+    phone: string | null
+    email: string | null
+    pec: string | null
+    sdiCode: string | null
     aiMonthlyTokenLimit: number | null
     aiTokensUsed: number | null
     aiTokensResetAt: Date | null
@@ -3186,6 +3197,17 @@ export namespace Prisma {
     name: string | null
     slug: string | null
     logoUrl: string | null
+    legalName: string | null
+    vatNumber: string | null
+    fiscalCode: string | null
+    address: string | null
+    city: string | null
+    zip: string | null
+    country: string | null
+    phone: string | null
+    email: string | null
+    pec: string | null
+    sdiCode: string | null
     aiMonthlyTokenLimit: number | null
     aiTokensUsed: number | null
     aiTokensResetAt: Date | null
@@ -3200,6 +3222,17 @@ export namespace Prisma {
     name: number
     slug: number
     logoUrl: number
+    legalName: number
+    vatNumber: number
+    fiscalCode: number
+    address: number
+    city: number
+    zip: number
+    country: number
+    phone: number
+    email: number
+    pec: number
+    sdiCode: number
     aiMonthlyTokenLimit: number
     aiTokensUsed: number
     aiTokensResetAt: number
@@ -3230,6 +3263,17 @@ export namespace Prisma {
     name?: true
     slug?: true
     logoUrl?: true
+    legalName?: true
+    vatNumber?: true
+    fiscalCode?: true
+    address?: true
+    city?: true
+    zip?: true
+    country?: true
+    phone?: true
+    email?: true
+    pec?: true
+    sdiCode?: true
     aiMonthlyTokenLimit?: true
     aiTokensUsed?: true
     aiTokensResetAt?: true
@@ -3244,6 +3288,17 @@ export namespace Prisma {
     name?: true
     slug?: true
     logoUrl?: true
+    legalName?: true
+    vatNumber?: true
+    fiscalCode?: true
+    address?: true
+    city?: true
+    zip?: true
+    country?: true
+    phone?: true
+    email?: true
+    pec?: true
+    sdiCode?: true
     aiMonthlyTokenLimit?: true
     aiTokensUsed?: true
     aiTokensResetAt?: true
@@ -3258,6 +3313,17 @@ export namespace Prisma {
     name?: true
     slug?: true
     logoUrl?: true
+    legalName?: true
+    vatNumber?: true
+    fiscalCode?: true
+    address?: true
+    city?: true
+    zip?: true
+    country?: true
+    phone?: true
+    email?: true
+    pec?: true
+    sdiCode?: true
     aiMonthlyTokenLimit?: true
     aiTokensUsed?: true
     aiTokensResetAt?: true
@@ -3359,6 +3425,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl: string | null
+    legalName: string | null
+    vatNumber: string | null
+    fiscalCode: string | null
+    address: string | null
+    city: string | null
+    zip: string | null
+    country: string | null
+    phone: string | null
+    email: string | null
+    pec: string | null
+    sdiCode: string | null
     aiMonthlyTokenLimit: number
     aiTokensUsed: number
     aiTokensResetAt: Date | null
@@ -3392,6 +3469,17 @@ export namespace Prisma {
     name?: boolean
     slug?: boolean
     logoUrl?: boolean
+    legalName?: boolean
+    vatNumber?: boolean
+    fiscalCode?: boolean
+    address?: boolean
+    city?: boolean
+    zip?: boolean
+    country?: boolean
+    phone?: boolean
+    email?: boolean
+    pec?: boolean
+    sdiCode?: boolean
     aiMonthlyTokenLimit?: boolean
     aiTokensUsed?: boolean
     aiTokensResetAt?: boolean
@@ -3410,6 +3498,17 @@ export namespace Prisma {
     name?: boolean
     slug?: boolean
     logoUrl?: boolean
+    legalName?: boolean
+    vatNumber?: boolean
+    fiscalCode?: boolean
+    address?: boolean
+    city?: boolean
+    zip?: boolean
+    country?: boolean
+    phone?: boolean
+    email?: boolean
+    pec?: boolean
+    sdiCode?: boolean
     aiMonthlyTokenLimit?: boolean
     aiTokensUsed?: boolean
     aiTokensResetAt?: boolean
@@ -3424,6 +3523,17 @@ export namespace Prisma {
     name?: boolean
     slug?: boolean
     logoUrl?: boolean
+    legalName?: boolean
+    vatNumber?: boolean
+    fiscalCode?: boolean
+    address?: boolean
+    city?: boolean
+    zip?: boolean
+    country?: boolean
+    phone?: boolean
+    email?: boolean
+    pec?: boolean
+    sdiCode?: boolean
     aiMonthlyTokenLimit?: boolean
     aiTokensUsed?: boolean
     aiTokensResetAt?: boolean
@@ -3438,6 +3548,17 @@ export namespace Prisma {
     name?: boolean
     slug?: boolean
     logoUrl?: boolean
+    legalName?: boolean
+    vatNumber?: boolean
+    fiscalCode?: boolean
+    address?: boolean
+    city?: boolean
+    zip?: boolean
+    country?: boolean
+    phone?: boolean
+    email?: boolean
+    pec?: boolean
+    sdiCode?: boolean
     aiMonthlyTokenLimit?: boolean
     aiTokensUsed?: boolean
     aiTokensResetAt?: boolean
@@ -3447,7 +3568,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "logoUrl" | "aiMonthlyTokenLimit" | "aiTokensUsed" | "aiTokensResetAt" | "perplexityMonthlyLimit" | "perplexityRequestsUsed" | "perplexityRequestsResetAt" | "createdAt", ExtArgs["result"]["organization"]>
+  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "logoUrl" | "legalName" | "vatNumber" | "fiscalCode" | "address" | "city" | "zip" | "country" | "phone" | "email" | "pec" | "sdiCode" | "aiMonthlyTokenLimit" | "aiTokensUsed" | "aiTokensResetAt" | "perplexityMonthlyLimit" | "perplexityRequestsUsed" | "perplexityRequestsResetAt" | "createdAt", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Organization$usersArgs<ExtArgs>
     apartments?: boolean | Organization$apartmentsArgs<ExtArgs>
@@ -3469,6 +3590,17 @@ export namespace Prisma {
       name: string
       slug: string
       logoUrl: string | null
+      legalName: string | null
+      vatNumber: string | null
+      fiscalCode: string | null
+      address: string | null
+      city: string | null
+      zip: string | null
+      country: string | null
+      phone: string | null
+      email: string | null
+      pec: string | null
+      sdiCode: string | null
       aiMonthlyTokenLimit: number
       aiTokensUsed: number
       aiTokensResetAt: Date | null
@@ -3906,6 +4038,17 @@ export namespace Prisma {
     readonly name: FieldRef<"Organization", 'String'>
     readonly slug: FieldRef<"Organization", 'String'>
     readonly logoUrl: FieldRef<"Organization", 'String'>
+    readonly legalName: FieldRef<"Organization", 'String'>
+    readonly vatNumber: FieldRef<"Organization", 'String'>
+    readonly fiscalCode: FieldRef<"Organization", 'String'>
+    readonly address: FieldRef<"Organization", 'String'>
+    readonly city: FieldRef<"Organization", 'String'>
+    readonly zip: FieldRef<"Organization", 'String'>
+    readonly country: FieldRef<"Organization", 'String'>
+    readonly phone: FieldRef<"Organization", 'String'>
+    readonly email: FieldRef<"Organization", 'String'>
+    readonly pec: FieldRef<"Organization", 'String'>
+    readonly sdiCode: FieldRef<"Organization", 'String'>
     readonly aiMonthlyTokenLimit: FieldRef<"Organization", 'Int'>
     readonly aiTokensUsed: FieldRef<"Organization", 'Int'>
     readonly aiTokensResetAt: FieldRef<"Organization", 'DateTime'>
@@ -28061,6 +28204,17 @@ export namespace Prisma {
     name: 'name',
     slug: 'slug',
     logoUrl: 'logoUrl',
+    legalName: 'legalName',
+    vatNumber: 'vatNumber',
+    fiscalCode: 'fiscalCode',
+    address: 'address',
+    city: 'city',
+    zip: 'zip',
+    country: 'country',
+    phone: 'phone',
+    email: 'email',
+    pec: 'pec',
+    sdiCode: 'sdiCode',
     aiMonthlyTokenLimit: 'aiMonthlyTokenLimit',
     aiTokensUsed: 'aiTokensUsed',
     aiTokensResetAt: 'aiTokensResetAt',
@@ -28537,6 +28691,17 @@ export namespace Prisma {
     name?: StringFilter<"Organization"> | string
     slug?: StringFilter<"Organization"> | string
     logoUrl?: StringNullableFilter<"Organization"> | string | null
+    legalName?: StringNullableFilter<"Organization"> | string | null
+    vatNumber?: StringNullableFilter<"Organization"> | string | null
+    fiscalCode?: StringNullableFilter<"Organization"> | string | null
+    address?: StringNullableFilter<"Organization"> | string | null
+    city?: StringNullableFilter<"Organization"> | string | null
+    zip?: StringNullableFilter<"Organization"> | string | null
+    country?: StringNullableFilter<"Organization"> | string | null
+    phone?: StringNullableFilter<"Organization"> | string | null
+    email?: StringNullableFilter<"Organization"> | string | null
+    pec?: StringNullableFilter<"Organization"> | string | null
+    sdiCode?: StringNullableFilter<"Organization"> | string | null
     aiMonthlyTokenLimit?: IntFilter<"Organization"> | number
     aiTokensUsed?: IntFilter<"Organization"> | number
     aiTokensResetAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
@@ -28554,6 +28719,17 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrder
     logoUrl?: SortOrderInput | SortOrder
+    legalName?: SortOrderInput | SortOrder
+    vatNumber?: SortOrderInput | SortOrder
+    fiscalCode?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    zip?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    pec?: SortOrderInput | SortOrder
+    sdiCode?: SortOrderInput | SortOrder
     aiMonthlyTokenLimit?: SortOrder
     aiTokensUsed?: SortOrder
     aiTokensResetAt?: SortOrderInput | SortOrder
@@ -28574,6 +28750,17 @@ export namespace Prisma {
     NOT?: OrganizationWhereInput | OrganizationWhereInput[]
     name?: StringFilter<"Organization"> | string
     logoUrl?: StringNullableFilter<"Organization"> | string | null
+    legalName?: StringNullableFilter<"Organization"> | string | null
+    vatNumber?: StringNullableFilter<"Organization"> | string | null
+    fiscalCode?: StringNullableFilter<"Organization"> | string | null
+    address?: StringNullableFilter<"Organization"> | string | null
+    city?: StringNullableFilter<"Organization"> | string | null
+    zip?: StringNullableFilter<"Organization"> | string | null
+    country?: StringNullableFilter<"Organization"> | string | null
+    phone?: StringNullableFilter<"Organization"> | string | null
+    email?: StringNullableFilter<"Organization"> | string | null
+    pec?: StringNullableFilter<"Organization"> | string | null
+    sdiCode?: StringNullableFilter<"Organization"> | string | null
     aiMonthlyTokenLimit?: IntFilter<"Organization"> | number
     aiTokensUsed?: IntFilter<"Organization"> | number
     aiTokensResetAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
@@ -28591,6 +28778,17 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrder
     logoUrl?: SortOrderInput | SortOrder
+    legalName?: SortOrderInput | SortOrder
+    vatNumber?: SortOrderInput | SortOrder
+    fiscalCode?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    zip?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    pec?: SortOrderInput | SortOrder
+    sdiCode?: SortOrderInput | SortOrder
     aiMonthlyTokenLimit?: SortOrder
     aiTokensUsed?: SortOrder
     aiTokensResetAt?: SortOrderInput | SortOrder
@@ -28613,6 +28811,17 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Organization"> | string
     slug?: StringWithAggregatesFilter<"Organization"> | string
     logoUrl?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    legalName?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    vatNumber?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    fiscalCode?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    city?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    zip?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    country?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    pec?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    sdiCode?: StringNullableWithAggregatesFilter<"Organization"> | string | null
     aiMonthlyTokenLimit?: IntWithAggregatesFilter<"Organization"> | number
     aiTokensUsed?: IntWithAggregatesFilter<"Organization"> | number
     aiTokensResetAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
@@ -30269,6 +30478,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -30286,6 +30506,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -30303,6 +30534,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -30320,6 +30562,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -30337,6 +30590,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -30351,6 +30615,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -30365,6 +30640,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -32254,6 +32540,17 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrder
     logoUrl?: SortOrder
+    legalName?: SortOrder
+    vatNumber?: SortOrder
+    fiscalCode?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    zip?: SortOrder
+    country?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    pec?: SortOrder
+    sdiCode?: SortOrder
     aiMonthlyTokenLimit?: SortOrder
     aiTokensUsed?: SortOrder
     aiTokensResetAt?: SortOrder
@@ -32275,6 +32572,17 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrder
     logoUrl?: SortOrder
+    legalName?: SortOrder
+    vatNumber?: SortOrder
+    fiscalCode?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    zip?: SortOrder
+    country?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    pec?: SortOrder
+    sdiCode?: SortOrder
     aiMonthlyTokenLimit?: SortOrder
     aiTokensUsed?: SortOrder
     aiTokensResetAt?: SortOrder
@@ -32289,6 +32597,17 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrder
     logoUrl?: SortOrder
+    legalName?: SortOrder
+    vatNumber?: SortOrder
+    fiscalCode?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    zip?: SortOrder
+    country?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    pec?: SortOrder
+    sdiCode?: SortOrder
     aiMonthlyTokenLimit?: SortOrder
     aiTokensUsed?: SortOrder
     aiTokensResetAt?: SortOrder
@@ -35877,6 +36196,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -35893,6 +36223,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -36117,6 +36458,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36133,6 +36485,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36327,6 +36690,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -36343,6 +36717,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -36717,6 +37102,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -36733,6 +37129,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -40355,6 +40762,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -40371,6 +40789,17 @@ export namespace Prisma {
     name: string
     slug: string
     logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
     aiMonthlyTokenLimit?: number
     aiTokensUsed?: number
     aiTokensResetAt?: Date | string | null
@@ -40427,6 +40856,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -40443,6 +40883,17 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
     aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
     aiTokensUsed?: IntFieldUpdateOperationsInput | number
     aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
