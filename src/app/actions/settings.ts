@@ -1,6 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { put } from "@vercel/blob";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUserId } from "@/src/lib/tenant";
 import { revalidatePath } from "next/cache";
@@ -28,7 +29,7 @@ export async function getSettingsData() {
       name: true,
       email: true,
       notificationPrefs: true,
-      organization: { select: { id: true, name: true } },
+      organization: { select: { id: true, name: true, logoUrl: true } },
     },
   });
   if (!full) throw new Error("Utente non trovato");
@@ -79,6 +80,28 @@ export async function updatePassword(formData: FormData) {
   const hashed = await bcrypt.hash(next, 12);
   await prisma.user.update({ where: { id: user.id }, data: { password: hashed } });
   return { success: true };
+}
+
+export async function uploadOrgLogo(formData: FormData) {
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Non autenticato");
+  const user = { id: userId };
+
+  const file = formData.get("logo") as File | null;
+  if (!file || file.size === 0) return { error: "Nessun file selezionato." };
+  if (!["image/jpeg", "image/png", "image/webp", "image/svg+xml"].includes(file.type))
+    return { error: "Formato non supportato. Usa JPG, PNG, WEBP o SVG." };
+  if (file.size > 2 * 1024 * 1024) return { error: "Il file supera i 2MB." };
+
+  const full = await prisma.user.findUnique({ where: { id: user.id }, select: { organizationId: true } });
+  if (!full?.organizationId) return { error: "Organizzazione non trovata." };
+
+  const ext = file.name.split(".").pop() ?? "png";
+  const blob = await put(`org-logos/${full.organizationId}.${ext}`, file, { access: "public", addRandomSuffix: false });
+
+  await prisma.organization.update({ where: { id: full.organizationId }, data: { logoUrl: blob.url } });
+  revalidatePath("/dashboard/manager");
+  return { success: true, url: blob.url };
 }
 
 export async function updateOrgName(formData: FormData) {

@@ -9,9 +9,11 @@ import SettingsDrawer from "./settings-drawer";
 interface SidebarLayoutProps {
   children: React.ReactNode;
   unreadCount: number;
+  orgName?: string;
+  orgLogo?: string | null;
 }
 
-export default function SidebarLayout({ children, unreadCount }: SidebarLayoutProps) {
+export default function SidebarLayout({ children, unreadCount, orgName, orgLogo }: SidebarLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
@@ -89,13 +91,16 @@ export default function SidebarLayout({ children, unreadCount }: SidebarLayoutPr
             <div className="w-[1px] h-6 bg-slate-200" />
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-slate-900 leading-none">Roberto Corradino</p>
-                <p className="text-[10px] font-semibold text-violet-600 uppercase tracking-widest mt-1">
-                  Property Manager
-                </p>
+                <p className="text-xs font-bold text-slate-900 leading-none">{orgName ?? "La tua organizzazione"}</p>
               </div>
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-white font-bold shadow-lg">
-                RC
+              <div className="w-10 h-10 rounded-2xl overflow-hidden shadow-lg shrink-0">
+                {orgLogo ? (
+                  <img src={orgLogo} alt={orgName ?? "Logo"} className="w-full h-full object-contain bg-white" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-white font-bold text-[13px]">
+                    {(orgName ?? "??").slice(0, 2).toUpperCase()}
+                  </div>
+                )}
               </div>
             </div>
           </div>

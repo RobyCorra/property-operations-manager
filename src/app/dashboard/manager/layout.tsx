@@ -10,6 +10,7 @@ export default async function ManagerLayout({ children }: { children: React.Reac
   const unreadCount = await getUnreadMessagesCount();
   const cookieStore = await cookies();
   const impersonatingOrgId = cookieStore.get("impersonating")?.value;
+  const orgId = cookieStore.get("organizationId")?.value;
 
   let impersonatingOrgName: string | null = null;
   if (impersonatingOrgId) {
@@ -17,8 +18,16 @@ export default async function ManagerLayout({ children }: { children: React.Reac
     impersonatingOrgName = org?.name ?? null;
   }
 
+  let orgName: string | undefined;
+  let orgLogo: string | null = null;
+  if (orgId) {
+    const org = await prisma.organization.findUnique({ where: { id: orgId }, select: { name: true, logoUrl: true } });
+    orgName = org?.name ?? undefined;
+    orgLogo = org?.logoUrl ?? null;
+  }
+
   return (
-    <SidebarLayout unreadCount={unreadCount}>
+    <SidebarLayout unreadCount={unreadCount} orgName={orgName} orgLogo={orgLogo}>
       {impersonatingOrgName && <ImpersonateBanner orgName={impersonatingOrgName} />}
       <div className={impersonatingOrgName ? "pt-9" : ""}>
         {children}

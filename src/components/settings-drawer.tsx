@@ -8,6 +8,7 @@ import {
   updatePassword,
   updateOrgName,
   updateNotificationPrefs,
+  uploadOrgLogo,
   type NotificationPrefs,
 } from "@/src/app/actions/settings";
 
@@ -68,6 +69,8 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
   const [pwResult, setPwResult] = useState<{ success?: boolean; error?: string } | null>(null);
   // org form
   const [orgResult, setOrgResult] = useState<{ success?: boolean; error?: string } | null>(null);
+  const [logoResult, setLogoResult] = useState<{ success?: boolean; error?: string } | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
   // notification prefs
   const [prefs, setPrefs] = useState<NotificationPrefs>({ cleaningStarted: true, cleaningCompleted: true, maintenanceNew: true });
   const [prefsSaved, setPrefsSaved] = useState(false);
@@ -222,6 +225,43 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
                     <button type="submit" className={btnCls}>Salva</button>
                   </div>
                 </form>
+              </div>
+
+              {/* Logo upload */}
+              <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
+                <p className="text-[13px] font-[700] text-[#1c1c1e]">Logo organizzazione</p>
+                <div className="flex items-center gap-4">
+                  {data.organization?.logoUrl ? (
+                    <img src={data.organization.logoUrl} alt="Logo" className="w-[48px] h-[48px] rounded-[10px] object-contain border border-[#e5e5ea] bg-[#f9f9fb]" />
+                  ) : (
+                    <div className="w-[48px] h-[48px] rounded-[10px] bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-white text-[13px] font-[800] shrink-0">
+                      {(data.organization?.name ?? "?").slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                  <form
+                    action={async (fd) => {
+                      setLogoResult(null);
+                      setLogoUploading(true);
+                      const res = await uploadOrgLogo(fd);
+                      setLogoUploading(false);
+                      setLogoResult(res);
+                      if (res?.success && res.url) {
+                        setData(d => d ? { ...d, organization: d.organization ? { ...d.organization, logoUrl: res.url! } : null } : d);
+                      }
+                    }}
+                    className="flex flex-col gap-2 flex-1"
+                  >
+                    <input name="logo" type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="text-[13px] text-[#3c3c43] file:mr-3 file:rounded-[8px] file:border-0 file:bg-[#f2f2f7] file:px-3 file:py-1.5 file:text-[12px] file:font-[600] file:text-[#1c1c1e]" />
+                    <div className="flex items-center gap-3">
+                      <button type="submit" disabled={logoUploading} className={btnCls}>
+                        {logoUploading ? <Loader2 size={14} className="animate-spin" /> : null}
+                        Carica
+                      </button>
+                      <StatusMsg result={logoResult} />
+                    </div>
+                    <p className="text-[11px] text-[#8e8e93]">JPG, PNG, WEBP o SVG — max 2MB</p>
+                  </form>
+                </div>
               </div>
 
               <a
