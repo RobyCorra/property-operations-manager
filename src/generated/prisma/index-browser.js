@@ -124,6 +124,24 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
+  logoUrl: 'logoUrl',
+  legalName: 'legalName',
+  vatNumber: 'vatNumber',
+  fiscalCode: 'fiscalCode',
+  address: 'address',
+  city: 'city',
+  zip: 'zip',
+  country: 'country',
+  phone: 'phone',
+  email: 'email',
+  pec: 'pec',
+  sdiCode: 'sdiCode',
+  aiMonthlyTokenLimit: 'aiMonthlyTokenLimit',
+  aiTokensUsed: 'aiTokensUsed',
+  aiTokensResetAt: 'aiTokensResetAt',
+  perplexityMonthlyLimit: 'perplexityMonthlyLimit',
+  perplexityRequestsUsed: 'perplexityRequestsUsed',
+  perplexityRequestsResetAt: 'perplexityRequestsResetAt',
   createdAt: 'createdAt'
 };
 
@@ -134,7 +152,14 @@ exports.Prisma.UserScalarFieldEnum = {
   role: 'role',
   createdAt: 'createdAt',
   name: 'name',
-  organizationId: 'organizationId'
+  phone: 'phone',
+  address: 'address',
+  isExternal: 'isExternal',
+  companyName: 'companyName',
+  vatNumber: 'vatNumber',
+  iban: 'iban',
+  organizationId: 'organizationId',
+  notificationPrefs: 'notificationPrefs'
 };
 
 exports.Prisma.ApartmentScalarFieldEnum = {
@@ -338,6 +363,16 @@ exports.Prisma.PushSubscriptionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.SuperAdminLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  detail: 'detail',
+  orgId: 'orgId',
+  orgName: 'orgName',
+  ip: 'ip',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ApartmentProductScalarFieldEnum = {
   id: 'id',
   apartmentId: 'apartmentId',
@@ -410,6 +445,7 @@ exports.Prisma.ModelName = {
   ManagerChatSession: 'ManagerChatSession',
   ManagerChatMessage: 'ManagerChatMessage',
   PushSubscription: 'PushSubscription',
+  SuperAdminLog: 'SuperAdminLog',
   ApartmentProduct: 'ApartmentProduct'
 };
 

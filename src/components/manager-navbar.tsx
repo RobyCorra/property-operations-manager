@@ -14,6 +14,7 @@ import {
   LogOut,
   ChevronLeft,
   MapPin,
+  BarChart2,
 } from "./icons";
 
 const NAV_ITEMS = [
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { label: "Pulizie", href: "/dashboard/manager/cleanings", icon: Brush },
   { label: "Manutenzione", href: "/dashboard/manager/maintenance", icon: Wrench },
   { label: "Team", href: "/dashboard/manager/users", icon: Users },
+  { label: "Analytics", href: "/dashboard/manager/analytics", icon: BarChart2 },
 ];
 
 interface ManagerNavbarProps {
@@ -143,31 +145,6 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle }: 
         })}
       </nav>
 
-      {/* Account Info + Logout */}
-      <div className={`pt-4 border-t border-slate-100/60 mt-auto ${collapsed ? "px-2" : "px-4"}`}>
-        {/* Account row */}
-        <div
-          className={`relative flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer group ${
-            collapsed ? "justify-center" : ""
-          }`}
-        >
-          <div className="w-9 h-9 flex-shrink-0 rounded-full bg-slate-100 shadow-inner flex items-center justify-center border border-slate-200 text-slate-400">
-            <UserCircle size={24} />
-          </div>
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">Manager Account</p>
-              <p className="text-[10px] font-medium text-slate-400 uppercase tracking-tighter">Proprietario</p>
-            </div>
-          )}
-          {collapsed && (
-            <span className="pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 shadow-xl">
-              Account
-              <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900" />
-            </span>
-          )}
-        </div>
-      </div>
     </aside>
   );
 }

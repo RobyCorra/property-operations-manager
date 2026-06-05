@@ -109,6 +109,11 @@ export type ManagerChatMessage = $Result.DefaultSelection<Prisma.$ManagerChatMes
  */
 export type PushSubscription = $Result.DefaultSelection<Prisma.$PushSubscriptionPayload>
 /**
+ * Model SuperAdminLog
+ * 
+ */
+export type SuperAdminLog = $Result.DefaultSelection<Prisma.$SuperAdminLogPayload>
+/**
  * Model ApartmentProduct
  * 
  */
@@ -456,6 +461,16 @@ export class PrismaClient<
     * ```
     */
   get pushSubscription(): Prisma.PushSubscriptionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.superAdminLog`: Exposes CRUD operations for the **SuperAdminLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SuperAdminLogs
+    * const superAdminLogs = await prisma.superAdminLog.findMany()
+    * ```
+    */
+  get superAdminLog(): Prisma.SuperAdminLogDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.apartmentProduct`: Exposes CRUD operations for the **ApartmentProduct** model.
@@ -919,6 +934,7 @@ export namespace Prisma {
     ManagerChatSession: 'ManagerChatSession',
     ManagerChatMessage: 'ManagerChatMessage',
     PushSubscription: 'PushSubscription',
+    SuperAdminLog: 'SuperAdminLog',
     ApartmentProduct: 'ApartmentProduct'
   };
 
@@ -935,7 +951,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apartmentProduct"
+      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "superAdminLog" | "apartmentProduct"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2345,6 +2361,80 @@ export namespace Prisma {
           }
         }
       }
+      SuperAdminLog: {
+        payload: Prisma.$SuperAdminLogPayload<ExtArgs>
+        fields: Prisma.SuperAdminLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SuperAdminLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SuperAdminLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>
+          }
+          findFirst: {
+            args: Prisma.SuperAdminLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SuperAdminLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>
+          }
+          findMany: {
+            args: Prisma.SuperAdminLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>[]
+          }
+          create: {
+            args: Prisma.SuperAdminLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>
+          }
+          createMany: {
+            args: Prisma.SuperAdminLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SuperAdminLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>[]
+          }
+          delete: {
+            args: Prisma.SuperAdminLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>
+          }
+          update: {
+            args: Prisma.SuperAdminLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.SuperAdminLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SuperAdminLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SuperAdminLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.SuperAdminLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SuperAdminLogPayload>
+          }
+          aggregate: {
+            args: Prisma.SuperAdminLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSuperAdminLog>
+          }
+          groupBy: {
+            args: Prisma.SuperAdminLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SuperAdminLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SuperAdminLogCountArgs<ExtArgs>
+            result: $Utils.Optional<SuperAdminLogCountAggregateOutputType> | number
+          }
+        }
+      }
       ApartmentProduct: {
         payload: Prisma.$ApartmentProductPayload<ExtArgs>
         fields: Prisma.ApartmentProductFieldRefs
@@ -2546,6 +2636,7 @@ export namespace Prisma {
     managerChatSession?: ManagerChatSessionOmit
     managerChatMessage?: ManagerChatMessageOmit
     pushSubscription?: PushSubscriptionOmit
+    superAdminLog?: SuperAdminLogOmit
     apartmentProduct?: ApartmentProductOmit
   }
 
@@ -3056,14 +3147,48 @@ export namespace Prisma {
 
   export type AggregateOrganization = {
     _count: OrganizationCountAggregateOutputType | null
+    _avg: OrganizationAvgAggregateOutputType | null
+    _sum: OrganizationSumAggregateOutputType | null
     _min: OrganizationMinAggregateOutputType | null
     _max: OrganizationMaxAggregateOutputType | null
+  }
+
+  export type OrganizationAvgAggregateOutputType = {
+    aiMonthlyTokenLimit: number | null
+    aiTokensUsed: number | null
+    perplexityMonthlyLimit: number | null
+    perplexityRequestsUsed: number | null
+  }
+
+  export type OrganizationSumAggregateOutputType = {
+    aiMonthlyTokenLimit: number | null
+    aiTokensUsed: number | null
+    perplexityMonthlyLimit: number | null
+    perplexityRequestsUsed: number | null
   }
 
   export type OrganizationMinAggregateOutputType = {
     id: string | null
     name: string | null
     slug: string | null
+    logoUrl: string | null
+    legalName: string | null
+    vatNumber: string | null
+    fiscalCode: string | null
+    address: string | null
+    city: string | null
+    zip: string | null
+    country: string | null
+    phone: string | null
+    email: string | null
+    pec: string | null
+    sdiCode: string | null
+    aiMonthlyTokenLimit: number | null
+    aiTokensUsed: number | null
+    aiTokensResetAt: Date | null
+    perplexityMonthlyLimit: number | null
+    perplexityRequestsUsed: number | null
+    perplexityRequestsResetAt: Date | null
     createdAt: Date | null
   }
 
@@ -3071,6 +3196,24 @@ export namespace Prisma {
     id: string | null
     name: string | null
     slug: string | null
+    logoUrl: string | null
+    legalName: string | null
+    vatNumber: string | null
+    fiscalCode: string | null
+    address: string | null
+    city: string | null
+    zip: string | null
+    country: string | null
+    phone: string | null
+    email: string | null
+    pec: string | null
+    sdiCode: string | null
+    aiMonthlyTokenLimit: number | null
+    aiTokensUsed: number | null
+    aiTokensResetAt: Date | null
+    perplexityMonthlyLimit: number | null
+    perplexityRequestsUsed: number | null
+    perplexityRequestsResetAt: Date | null
     createdAt: Date | null
   }
 
@@ -3078,15 +3221,65 @@ export namespace Prisma {
     id: number
     name: number
     slug: number
+    logoUrl: number
+    legalName: number
+    vatNumber: number
+    fiscalCode: number
+    address: number
+    city: number
+    zip: number
+    country: number
+    phone: number
+    email: number
+    pec: number
+    sdiCode: number
+    aiMonthlyTokenLimit: number
+    aiTokensUsed: number
+    aiTokensResetAt: number
+    perplexityMonthlyLimit: number
+    perplexityRequestsUsed: number
+    perplexityRequestsResetAt: number
     createdAt: number
     _all: number
   }
 
 
+  export type OrganizationAvgAggregateInputType = {
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+  }
+
+  export type OrganizationSumAggregateInputType = {
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+  }
+
   export type OrganizationMinAggregateInputType = {
     id?: true
     name?: true
     slug?: true
+    logoUrl?: true
+    legalName?: true
+    vatNumber?: true
+    fiscalCode?: true
+    address?: true
+    city?: true
+    zip?: true
+    country?: true
+    phone?: true
+    email?: true
+    pec?: true
+    sdiCode?: true
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    aiTokensResetAt?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+    perplexityRequestsResetAt?: true
     createdAt?: true
   }
 
@@ -3094,6 +3287,24 @@ export namespace Prisma {
     id?: true
     name?: true
     slug?: true
+    logoUrl?: true
+    legalName?: true
+    vatNumber?: true
+    fiscalCode?: true
+    address?: true
+    city?: true
+    zip?: true
+    country?: true
+    phone?: true
+    email?: true
+    pec?: true
+    sdiCode?: true
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    aiTokensResetAt?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+    perplexityRequestsResetAt?: true
     createdAt?: true
   }
 
@@ -3101,6 +3312,24 @@ export namespace Prisma {
     id?: true
     name?: true
     slug?: true
+    logoUrl?: true
+    legalName?: true
+    vatNumber?: true
+    fiscalCode?: true
+    address?: true
+    city?: true
+    zip?: true
+    country?: true
+    phone?: true
+    email?: true
+    pec?: true
+    sdiCode?: true
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    aiTokensResetAt?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+    perplexityRequestsResetAt?: true
     createdAt?: true
     _all?: true
   }
@@ -3143,6 +3372,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: OrganizationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: OrganizationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: OrganizationMinAggregateInputType
@@ -3173,6 +3414,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: OrganizationCountAggregateInputType | true
+    _avg?: OrganizationAvgAggregateInputType
+    _sum?: OrganizationSumAggregateInputType
     _min?: OrganizationMinAggregateInputType
     _max?: OrganizationMaxAggregateInputType
   }
@@ -3181,8 +3424,28 @@ export namespace Prisma {
     id: string
     name: string
     slug: string
+    logoUrl: string | null
+    legalName: string | null
+    vatNumber: string | null
+    fiscalCode: string | null
+    address: string | null
+    city: string | null
+    zip: string | null
+    country: string | null
+    phone: string | null
+    email: string | null
+    pec: string | null
+    sdiCode: string | null
+    aiMonthlyTokenLimit: number
+    aiTokensUsed: number
+    aiTokensResetAt: Date | null
+    perplexityMonthlyLimit: number
+    perplexityRequestsUsed: number
+    perplexityRequestsResetAt: Date | null
     createdAt: Date
     _count: OrganizationCountAggregateOutputType | null
+    _avg: OrganizationAvgAggregateOutputType | null
+    _sum: OrganizationSumAggregateOutputType | null
     _min: OrganizationMinAggregateOutputType | null
     _max: OrganizationMaxAggregateOutputType | null
   }
@@ -3205,6 +3468,24 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     slug?: boolean
+    logoUrl?: boolean
+    legalName?: boolean
+    vatNumber?: boolean
+    fiscalCode?: boolean
+    address?: boolean
+    city?: boolean
+    zip?: boolean
+    country?: boolean
+    phone?: boolean
+    email?: boolean
+    pec?: boolean
+    sdiCode?: boolean
+    aiMonthlyTokenLimit?: boolean
+    aiTokensUsed?: boolean
+    aiTokensResetAt?: boolean
+    perplexityMonthlyLimit?: boolean
+    perplexityRequestsUsed?: boolean
+    perplexityRequestsResetAt?: boolean
     createdAt?: boolean
     users?: boolean | Organization$usersArgs<ExtArgs>
     apartments?: boolean | Organization$apartmentsArgs<ExtArgs>
@@ -3216,6 +3497,24 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     slug?: boolean
+    logoUrl?: boolean
+    legalName?: boolean
+    vatNumber?: boolean
+    fiscalCode?: boolean
+    address?: boolean
+    city?: boolean
+    zip?: boolean
+    country?: boolean
+    phone?: boolean
+    email?: boolean
+    pec?: boolean
+    sdiCode?: boolean
+    aiMonthlyTokenLimit?: boolean
+    aiTokensUsed?: boolean
+    aiTokensResetAt?: boolean
+    perplexityMonthlyLimit?: boolean
+    perplexityRequestsUsed?: boolean
+    perplexityRequestsResetAt?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["organization"]>
 
@@ -3223,6 +3522,24 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     slug?: boolean
+    logoUrl?: boolean
+    legalName?: boolean
+    vatNumber?: boolean
+    fiscalCode?: boolean
+    address?: boolean
+    city?: boolean
+    zip?: boolean
+    country?: boolean
+    phone?: boolean
+    email?: boolean
+    pec?: boolean
+    sdiCode?: boolean
+    aiMonthlyTokenLimit?: boolean
+    aiTokensUsed?: boolean
+    aiTokensResetAt?: boolean
+    perplexityMonthlyLimit?: boolean
+    perplexityRequestsUsed?: boolean
+    perplexityRequestsResetAt?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["organization"]>
 
@@ -3230,10 +3547,28 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     slug?: boolean
+    logoUrl?: boolean
+    legalName?: boolean
+    vatNumber?: boolean
+    fiscalCode?: boolean
+    address?: boolean
+    city?: boolean
+    zip?: boolean
+    country?: boolean
+    phone?: boolean
+    email?: boolean
+    pec?: boolean
+    sdiCode?: boolean
+    aiMonthlyTokenLimit?: boolean
+    aiTokensUsed?: boolean
+    aiTokensResetAt?: boolean
+    perplexityMonthlyLimit?: boolean
+    perplexityRequestsUsed?: boolean
+    perplexityRequestsResetAt?: boolean
     createdAt?: boolean
   }
 
-  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "createdAt", ExtArgs["result"]["organization"]>
+  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "logoUrl" | "legalName" | "vatNumber" | "fiscalCode" | "address" | "city" | "zip" | "country" | "phone" | "email" | "pec" | "sdiCode" | "aiMonthlyTokenLimit" | "aiTokensUsed" | "aiTokensResetAt" | "perplexityMonthlyLimit" | "perplexityRequestsUsed" | "perplexityRequestsResetAt" | "createdAt", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Organization$usersArgs<ExtArgs>
     apartments?: boolean | Organization$apartmentsArgs<ExtArgs>
@@ -3254,6 +3589,24 @@ export namespace Prisma {
       id: string
       name: string
       slug: string
+      logoUrl: string | null
+      legalName: string | null
+      vatNumber: string | null
+      fiscalCode: string | null
+      address: string | null
+      city: string | null
+      zip: string | null
+      country: string | null
+      phone: string | null
+      email: string | null
+      pec: string | null
+      sdiCode: string | null
+      aiMonthlyTokenLimit: number
+      aiTokensUsed: number
+      aiTokensResetAt: Date | null
+      perplexityMonthlyLimit: number
+      perplexityRequestsUsed: number
+      perplexityRequestsResetAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["organization"]>
     composites: {}
@@ -3684,6 +4037,24 @@ export namespace Prisma {
     readonly id: FieldRef<"Organization", 'String'>
     readonly name: FieldRef<"Organization", 'String'>
     readonly slug: FieldRef<"Organization", 'String'>
+    readonly logoUrl: FieldRef<"Organization", 'String'>
+    readonly legalName: FieldRef<"Organization", 'String'>
+    readonly vatNumber: FieldRef<"Organization", 'String'>
+    readonly fiscalCode: FieldRef<"Organization", 'String'>
+    readonly address: FieldRef<"Organization", 'String'>
+    readonly city: FieldRef<"Organization", 'String'>
+    readonly zip: FieldRef<"Organization", 'String'>
+    readonly country: FieldRef<"Organization", 'String'>
+    readonly phone: FieldRef<"Organization", 'String'>
+    readonly email: FieldRef<"Organization", 'String'>
+    readonly pec: FieldRef<"Organization", 'String'>
+    readonly sdiCode: FieldRef<"Organization", 'String'>
+    readonly aiMonthlyTokenLimit: FieldRef<"Organization", 'Int'>
+    readonly aiTokensUsed: FieldRef<"Organization", 'Int'>
+    readonly aiTokensResetAt: FieldRef<"Organization", 'DateTime'>
+    readonly perplexityMonthlyLimit: FieldRef<"Organization", 'Int'>
+    readonly perplexityRequestsUsed: FieldRef<"Organization", 'Int'>
+    readonly perplexityRequestsResetAt: FieldRef<"Organization", 'DateTime'>
     readonly createdAt: FieldRef<"Organization", 'DateTime'>
   }
     
@@ -4185,6 +4556,12 @@ export namespace Prisma {
     role: $Enums.Role | null
     createdAt: Date | null
     name: string | null
+    phone: string | null
+    address: string | null
+    isExternal: boolean | null
+    companyName: string | null
+    vatNumber: string | null
+    iban: string | null
     organizationId: string | null
   }
 
@@ -4195,6 +4572,12 @@ export namespace Prisma {
     role: $Enums.Role | null
     createdAt: Date | null
     name: string | null
+    phone: string | null
+    address: string | null
+    isExternal: boolean | null
+    companyName: string | null
+    vatNumber: string | null
+    iban: string | null
     organizationId: string | null
   }
 
@@ -4205,7 +4588,14 @@ export namespace Prisma {
     role: number
     createdAt: number
     name: number
+    phone: number
+    address: number
+    isExternal: number
+    companyName: number
+    vatNumber: number
+    iban: number
     organizationId: number
+    notificationPrefs: number
     _all: number
   }
 
@@ -4217,6 +4607,12 @@ export namespace Prisma {
     role?: true
     createdAt?: true
     name?: true
+    phone?: true
+    address?: true
+    isExternal?: true
+    companyName?: true
+    vatNumber?: true
+    iban?: true
     organizationId?: true
   }
 
@@ -4227,6 +4623,12 @@ export namespace Prisma {
     role?: true
     createdAt?: true
     name?: true
+    phone?: true
+    address?: true
+    isExternal?: true
+    companyName?: true
+    vatNumber?: true
+    iban?: true
     organizationId?: true
   }
 
@@ -4237,7 +4639,14 @@ export namespace Prisma {
     role?: true
     createdAt?: true
     name?: true
+    phone?: true
+    address?: true
+    isExternal?: true
+    companyName?: true
+    vatNumber?: true
+    iban?: true
     organizationId?: true
+    notificationPrefs?: true
     _all?: true
   }
 
@@ -4320,7 +4729,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt: Date
     name: string
+    phone: string | null
+    address: string | null
+    isExternal: boolean
+    companyName: string | null
+    vatNumber: string | null
+    iban: string | null
     organizationId: string | null
+    notificationPrefs: JsonValue | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -4347,7 +4763,14 @@ export namespace Prisma {
     role?: boolean
     createdAt?: boolean
     name?: boolean
+    phone?: boolean
+    address?: boolean
+    isExternal?: boolean
+    companyName?: boolean
+    vatNumber?: boolean
+    iban?: boolean
     organizationId?: boolean
+    notificationPrefs?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
     cleaningTasks?: boolean | User$cleaningTasksArgs<ExtArgs>
     maintenanceTickets?: boolean | User$maintenanceTicketsArgs<ExtArgs>
@@ -4365,7 +4788,14 @@ export namespace Prisma {
     role?: boolean
     createdAt?: boolean
     name?: boolean
+    phone?: boolean
+    address?: boolean
+    isExternal?: boolean
+    companyName?: boolean
+    vatNumber?: boolean
+    iban?: boolean
     organizationId?: boolean
+    notificationPrefs?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4376,7 +4806,14 @@ export namespace Prisma {
     role?: boolean
     createdAt?: boolean
     name?: boolean
+    phone?: boolean
+    address?: boolean
+    isExternal?: boolean
+    companyName?: boolean
+    vatNumber?: boolean
+    iban?: boolean
     organizationId?: boolean
+    notificationPrefs?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4387,10 +4824,17 @@ export namespace Prisma {
     role?: boolean
     createdAt?: boolean
     name?: boolean
+    phone?: boolean
+    address?: boolean
+    isExternal?: boolean
+    companyName?: boolean
+    vatNumber?: boolean
+    iban?: boolean
     organizationId?: boolean
+    notificationPrefs?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "role" | "createdAt" | "name" | "organizationId", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "role" | "createdAt" | "name" | "phone" | "address" | "isExternal" | "companyName" | "vatNumber" | "iban" | "organizationId" | "notificationPrefs", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | User$organizationArgs<ExtArgs>
     cleaningTasks?: boolean | User$cleaningTasksArgs<ExtArgs>
@@ -4426,7 +4870,14 @@ export namespace Prisma {
       role: $Enums.Role
       createdAt: Date
       name: string
+      phone: string | null
+      address: string | null
+      isExternal: boolean
+      companyName: string | null
+      vatNumber: string | null
+      iban: string | null
       organizationId: string | null
+      notificationPrefs: Prisma.JsonValue | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -4863,7 +5314,14 @@ export namespace Prisma {
     readonly role: FieldRef<"User", 'Role'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly name: FieldRef<"User", 'String'>
+    readonly phone: FieldRef<"User", 'String'>
+    readonly address: FieldRef<"User", 'String'>
+    readonly isExternal: FieldRef<"User", 'Boolean'>
+    readonly companyName: FieldRef<"User", 'String'>
+    readonly vatNumber: FieldRef<"User", 'String'>
+    readonly iban: FieldRef<"User", 'String'>
     readonly organizationId: FieldRef<"User", 'String'>
+    readonly notificationPrefs: FieldRef<"User", 'Json'>
   }
     
 
@@ -25519,6 +25977,1032 @@ export namespace Prisma {
 
 
   /**
+   * Model SuperAdminLog
+   */
+
+  export type AggregateSuperAdminLog = {
+    _count: SuperAdminLogCountAggregateOutputType | null
+    _min: SuperAdminLogMinAggregateOutputType | null
+    _max: SuperAdminLogMaxAggregateOutputType | null
+  }
+
+  export type SuperAdminLogMinAggregateOutputType = {
+    id: string | null
+    action: string | null
+    detail: string | null
+    orgId: string | null
+    orgName: string | null
+    ip: string | null
+    createdAt: Date | null
+  }
+
+  export type SuperAdminLogMaxAggregateOutputType = {
+    id: string | null
+    action: string | null
+    detail: string | null
+    orgId: string | null
+    orgName: string | null
+    ip: string | null
+    createdAt: Date | null
+  }
+
+  export type SuperAdminLogCountAggregateOutputType = {
+    id: number
+    action: number
+    detail: number
+    orgId: number
+    orgName: number
+    ip: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type SuperAdminLogMinAggregateInputType = {
+    id?: true
+    action?: true
+    detail?: true
+    orgId?: true
+    orgName?: true
+    ip?: true
+    createdAt?: true
+  }
+
+  export type SuperAdminLogMaxAggregateInputType = {
+    id?: true
+    action?: true
+    detail?: true
+    orgId?: true
+    orgName?: true
+    ip?: true
+    createdAt?: true
+  }
+
+  export type SuperAdminLogCountAggregateInputType = {
+    id?: true
+    action?: true
+    detail?: true
+    orgId?: true
+    orgName?: true
+    ip?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type SuperAdminLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SuperAdminLog to aggregate.
+     */
+    where?: SuperAdminLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SuperAdminLogs to fetch.
+     */
+    orderBy?: SuperAdminLogOrderByWithRelationInput | SuperAdminLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SuperAdminLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SuperAdminLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SuperAdminLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SuperAdminLogs
+    **/
+    _count?: true | SuperAdminLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SuperAdminLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SuperAdminLogMaxAggregateInputType
+  }
+
+  export type GetSuperAdminLogAggregateType<T extends SuperAdminLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateSuperAdminLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSuperAdminLog[P]>
+      : GetScalarType<T[P], AggregateSuperAdminLog[P]>
+  }
+
+
+
+
+  export type SuperAdminLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SuperAdminLogWhereInput
+    orderBy?: SuperAdminLogOrderByWithAggregationInput | SuperAdminLogOrderByWithAggregationInput[]
+    by: SuperAdminLogScalarFieldEnum[] | SuperAdminLogScalarFieldEnum
+    having?: SuperAdminLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SuperAdminLogCountAggregateInputType | true
+    _min?: SuperAdminLogMinAggregateInputType
+    _max?: SuperAdminLogMaxAggregateInputType
+  }
+
+  export type SuperAdminLogGroupByOutputType = {
+    id: string
+    action: string
+    detail: string | null
+    orgId: string | null
+    orgName: string | null
+    ip: string | null
+    createdAt: Date
+    _count: SuperAdminLogCountAggregateOutputType | null
+    _min: SuperAdminLogMinAggregateOutputType | null
+    _max: SuperAdminLogMaxAggregateOutputType | null
+  }
+
+  type GetSuperAdminLogGroupByPayload<T extends SuperAdminLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SuperAdminLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SuperAdminLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SuperAdminLogGroupByOutputType[P]>
+            : GetScalarType<T[P], SuperAdminLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SuperAdminLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    detail?: boolean
+    orgId?: boolean
+    orgName?: boolean
+    ip?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["superAdminLog"]>
+
+  export type SuperAdminLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    detail?: boolean
+    orgId?: boolean
+    orgName?: boolean
+    ip?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["superAdminLog"]>
+
+  export type SuperAdminLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    action?: boolean
+    detail?: boolean
+    orgId?: boolean
+    orgName?: boolean
+    ip?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["superAdminLog"]>
+
+  export type SuperAdminLogSelectScalar = {
+    id?: boolean
+    action?: boolean
+    detail?: boolean
+    orgId?: boolean
+    orgName?: boolean
+    ip?: boolean
+    createdAt?: boolean
+  }
+
+  export type SuperAdminLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "detail" | "orgId" | "orgName" | "ip" | "createdAt", ExtArgs["result"]["superAdminLog"]>
+
+  export type $SuperAdminLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SuperAdminLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      action: string
+      detail: string | null
+      orgId: string | null
+      orgName: string | null
+      ip: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["superAdminLog"]>
+    composites: {}
+  }
+
+  type SuperAdminLogGetPayload<S extends boolean | null | undefined | SuperAdminLogDefaultArgs> = $Result.GetResult<Prisma.$SuperAdminLogPayload, S>
+
+  type SuperAdminLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SuperAdminLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SuperAdminLogCountAggregateInputType | true
+    }
+
+  export interface SuperAdminLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SuperAdminLog'], meta: { name: 'SuperAdminLog' } }
+    /**
+     * Find zero or one SuperAdminLog that matches the filter.
+     * @param {SuperAdminLogFindUniqueArgs} args - Arguments to find a SuperAdminLog
+     * @example
+     * // Get one SuperAdminLog
+     * const superAdminLog = await prisma.superAdminLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SuperAdminLogFindUniqueArgs>(args: SelectSubset<T, SuperAdminLogFindUniqueArgs<ExtArgs>>): Prisma__SuperAdminLogClient<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SuperAdminLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SuperAdminLogFindUniqueOrThrowArgs} args - Arguments to find a SuperAdminLog
+     * @example
+     * // Get one SuperAdminLog
+     * const superAdminLog = await prisma.superAdminLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SuperAdminLogFindUniqueOrThrowArgs>(args: SelectSubset<T, SuperAdminLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SuperAdminLogClient<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SuperAdminLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SuperAdminLogFindFirstArgs} args - Arguments to find a SuperAdminLog
+     * @example
+     * // Get one SuperAdminLog
+     * const superAdminLog = await prisma.superAdminLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SuperAdminLogFindFirstArgs>(args?: SelectSubset<T, SuperAdminLogFindFirstArgs<ExtArgs>>): Prisma__SuperAdminLogClient<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SuperAdminLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SuperAdminLogFindFirstOrThrowArgs} args - Arguments to find a SuperAdminLog
+     * @example
+     * // Get one SuperAdminLog
+     * const superAdminLog = await prisma.superAdminLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SuperAdminLogFindFirstOrThrowArgs>(args?: SelectSubset<T, SuperAdminLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__SuperAdminLogClient<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SuperAdminLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SuperAdminLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SuperAdminLogs
+     * const superAdminLogs = await prisma.superAdminLog.findMany()
+     * 
+     * // Get first 10 SuperAdminLogs
+     * const superAdminLogs = await prisma.superAdminLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const superAdminLogWithIdOnly = await prisma.superAdminLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SuperAdminLogFindManyArgs>(args?: SelectSubset<T, SuperAdminLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SuperAdminLog.
+     * @param {SuperAdminLogCreateArgs} args - Arguments to create a SuperAdminLog.
+     * @example
+     * // Create one SuperAdminLog
+     * const SuperAdminLog = await prisma.superAdminLog.create({
+     *   data: {
+     *     // ... data to create a SuperAdminLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends SuperAdminLogCreateArgs>(args: SelectSubset<T, SuperAdminLogCreateArgs<ExtArgs>>): Prisma__SuperAdminLogClient<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SuperAdminLogs.
+     * @param {SuperAdminLogCreateManyArgs} args - Arguments to create many SuperAdminLogs.
+     * @example
+     * // Create many SuperAdminLogs
+     * const superAdminLog = await prisma.superAdminLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SuperAdminLogCreateManyArgs>(args?: SelectSubset<T, SuperAdminLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SuperAdminLogs and returns the data saved in the database.
+     * @param {SuperAdminLogCreateManyAndReturnArgs} args - Arguments to create many SuperAdminLogs.
+     * @example
+     * // Create many SuperAdminLogs
+     * const superAdminLog = await prisma.superAdminLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SuperAdminLogs and only return the `id`
+     * const superAdminLogWithIdOnly = await prisma.superAdminLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SuperAdminLogCreateManyAndReturnArgs>(args?: SelectSubset<T, SuperAdminLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SuperAdminLog.
+     * @param {SuperAdminLogDeleteArgs} args - Arguments to delete one SuperAdminLog.
+     * @example
+     * // Delete one SuperAdminLog
+     * const SuperAdminLog = await prisma.superAdminLog.delete({
+     *   where: {
+     *     // ... filter to delete one SuperAdminLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SuperAdminLogDeleteArgs>(args: SelectSubset<T, SuperAdminLogDeleteArgs<ExtArgs>>): Prisma__SuperAdminLogClient<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SuperAdminLog.
+     * @param {SuperAdminLogUpdateArgs} args - Arguments to update one SuperAdminLog.
+     * @example
+     * // Update one SuperAdminLog
+     * const superAdminLog = await prisma.superAdminLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SuperAdminLogUpdateArgs>(args: SelectSubset<T, SuperAdminLogUpdateArgs<ExtArgs>>): Prisma__SuperAdminLogClient<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SuperAdminLogs.
+     * @param {SuperAdminLogDeleteManyArgs} args - Arguments to filter SuperAdminLogs to delete.
+     * @example
+     * // Delete a few SuperAdminLogs
+     * const { count } = await prisma.superAdminLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SuperAdminLogDeleteManyArgs>(args?: SelectSubset<T, SuperAdminLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SuperAdminLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SuperAdminLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SuperAdminLogs
+     * const superAdminLog = await prisma.superAdminLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SuperAdminLogUpdateManyArgs>(args: SelectSubset<T, SuperAdminLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SuperAdminLogs and returns the data updated in the database.
+     * @param {SuperAdminLogUpdateManyAndReturnArgs} args - Arguments to update many SuperAdminLogs.
+     * @example
+     * // Update many SuperAdminLogs
+     * const superAdminLog = await prisma.superAdminLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SuperAdminLogs and only return the `id`
+     * const superAdminLogWithIdOnly = await prisma.superAdminLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SuperAdminLogUpdateManyAndReturnArgs>(args: SelectSubset<T, SuperAdminLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SuperAdminLog.
+     * @param {SuperAdminLogUpsertArgs} args - Arguments to update or create a SuperAdminLog.
+     * @example
+     * // Update or create a SuperAdminLog
+     * const superAdminLog = await prisma.superAdminLog.upsert({
+     *   create: {
+     *     // ... data to create a SuperAdminLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SuperAdminLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SuperAdminLogUpsertArgs>(args: SelectSubset<T, SuperAdminLogUpsertArgs<ExtArgs>>): Prisma__SuperAdminLogClient<$Result.GetResult<Prisma.$SuperAdminLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SuperAdminLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SuperAdminLogCountArgs} args - Arguments to filter SuperAdminLogs to count.
+     * @example
+     * // Count the number of SuperAdminLogs
+     * const count = await prisma.superAdminLog.count({
+     *   where: {
+     *     // ... the filter for the SuperAdminLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends SuperAdminLogCountArgs>(
+      args?: Subset<T, SuperAdminLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SuperAdminLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SuperAdminLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SuperAdminLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SuperAdminLogAggregateArgs>(args: Subset<T, SuperAdminLogAggregateArgs>): Prisma.PrismaPromise<GetSuperAdminLogAggregateType<T>>
+
+    /**
+     * Group by SuperAdminLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SuperAdminLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SuperAdminLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SuperAdminLogGroupByArgs['orderBy'] }
+        : { orderBy?: SuperAdminLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SuperAdminLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSuperAdminLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SuperAdminLog model
+   */
+  readonly fields: SuperAdminLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SuperAdminLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SuperAdminLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SuperAdminLog model
+   */
+  interface SuperAdminLogFieldRefs {
+    readonly id: FieldRef<"SuperAdminLog", 'String'>
+    readonly action: FieldRef<"SuperAdminLog", 'String'>
+    readonly detail: FieldRef<"SuperAdminLog", 'String'>
+    readonly orgId: FieldRef<"SuperAdminLog", 'String'>
+    readonly orgName: FieldRef<"SuperAdminLog", 'String'>
+    readonly ip: FieldRef<"SuperAdminLog", 'String'>
+    readonly createdAt: FieldRef<"SuperAdminLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SuperAdminLog findUnique
+   */
+  export type SuperAdminLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * Filter, which SuperAdminLog to fetch.
+     */
+    where: SuperAdminLogWhereUniqueInput
+  }
+
+  /**
+   * SuperAdminLog findUniqueOrThrow
+   */
+  export type SuperAdminLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * Filter, which SuperAdminLog to fetch.
+     */
+    where: SuperAdminLogWhereUniqueInput
+  }
+
+  /**
+   * SuperAdminLog findFirst
+   */
+  export type SuperAdminLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * Filter, which SuperAdminLog to fetch.
+     */
+    where?: SuperAdminLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SuperAdminLogs to fetch.
+     */
+    orderBy?: SuperAdminLogOrderByWithRelationInput | SuperAdminLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SuperAdminLogs.
+     */
+    cursor?: SuperAdminLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SuperAdminLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SuperAdminLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SuperAdminLogs.
+     */
+    distinct?: SuperAdminLogScalarFieldEnum | SuperAdminLogScalarFieldEnum[]
+  }
+
+  /**
+   * SuperAdminLog findFirstOrThrow
+   */
+  export type SuperAdminLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * Filter, which SuperAdminLog to fetch.
+     */
+    where?: SuperAdminLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SuperAdminLogs to fetch.
+     */
+    orderBy?: SuperAdminLogOrderByWithRelationInput | SuperAdminLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SuperAdminLogs.
+     */
+    cursor?: SuperAdminLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SuperAdminLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SuperAdminLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SuperAdminLogs.
+     */
+    distinct?: SuperAdminLogScalarFieldEnum | SuperAdminLogScalarFieldEnum[]
+  }
+
+  /**
+   * SuperAdminLog findMany
+   */
+  export type SuperAdminLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * Filter, which SuperAdminLogs to fetch.
+     */
+    where?: SuperAdminLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SuperAdminLogs to fetch.
+     */
+    orderBy?: SuperAdminLogOrderByWithRelationInput | SuperAdminLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SuperAdminLogs.
+     */
+    cursor?: SuperAdminLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SuperAdminLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SuperAdminLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SuperAdminLogs.
+     */
+    distinct?: SuperAdminLogScalarFieldEnum | SuperAdminLogScalarFieldEnum[]
+  }
+
+  /**
+   * SuperAdminLog create
+   */
+  export type SuperAdminLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * The data needed to create a SuperAdminLog.
+     */
+    data: XOR<SuperAdminLogCreateInput, SuperAdminLogUncheckedCreateInput>
+  }
+
+  /**
+   * SuperAdminLog createMany
+   */
+  export type SuperAdminLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SuperAdminLogs.
+     */
+    data: SuperAdminLogCreateManyInput | SuperAdminLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SuperAdminLog createManyAndReturn
+   */
+  export type SuperAdminLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many SuperAdminLogs.
+     */
+    data: SuperAdminLogCreateManyInput | SuperAdminLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SuperAdminLog update
+   */
+  export type SuperAdminLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * The data needed to update a SuperAdminLog.
+     */
+    data: XOR<SuperAdminLogUpdateInput, SuperAdminLogUncheckedUpdateInput>
+    /**
+     * Choose, which SuperAdminLog to update.
+     */
+    where: SuperAdminLogWhereUniqueInput
+  }
+
+  /**
+   * SuperAdminLog updateMany
+   */
+  export type SuperAdminLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SuperAdminLogs.
+     */
+    data: XOR<SuperAdminLogUpdateManyMutationInput, SuperAdminLogUncheckedUpdateManyInput>
+    /**
+     * Filter which SuperAdminLogs to update
+     */
+    where?: SuperAdminLogWhereInput
+    /**
+     * Limit how many SuperAdminLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SuperAdminLog updateManyAndReturn
+   */
+  export type SuperAdminLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * The data used to update SuperAdminLogs.
+     */
+    data: XOR<SuperAdminLogUpdateManyMutationInput, SuperAdminLogUncheckedUpdateManyInput>
+    /**
+     * Filter which SuperAdminLogs to update
+     */
+    where?: SuperAdminLogWhereInput
+    /**
+     * Limit how many SuperAdminLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SuperAdminLog upsert
+   */
+  export type SuperAdminLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * The filter to search for the SuperAdminLog to update in case it exists.
+     */
+    where: SuperAdminLogWhereUniqueInput
+    /**
+     * In case the SuperAdminLog found by the `where` argument doesn't exist, create a new SuperAdminLog with this data.
+     */
+    create: XOR<SuperAdminLogCreateInput, SuperAdminLogUncheckedCreateInput>
+    /**
+     * In case the SuperAdminLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SuperAdminLogUpdateInput, SuperAdminLogUncheckedUpdateInput>
+  }
+
+  /**
+   * SuperAdminLog delete
+   */
+  export type SuperAdminLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+    /**
+     * Filter which SuperAdminLog to delete.
+     */
+    where: SuperAdminLogWhereUniqueInput
+  }
+
+  /**
+   * SuperAdminLog deleteMany
+   */
+  export type SuperAdminLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SuperAdminLogs to delete
+     */
+    where?: SuperAdminLogWhereInput
+    /**
+     * Limit how many SuperAdminLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SuperAdminLog without action
+   */
+  export type SuperAdminLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SuperAdminLog
+     */
+    select?: SuperAdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SuperAdminLog
+     */
+    omit?: SuperAdminLogOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model ApartmentProduct
    */
 
@@ -26719,6 +28203,24 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     slug: 'slug',
+    logoUrl: 'logoUrl',
+    legalName: 'legalName',
+    vatNumber: 'vatNumber',
+    fiscalCode: 'fiscalCode',
+    address: 'address',
+    city: 'city',
+    zip: 'zip',
+    country: 'country',
+    phone: 'phone',
+    email: 'email',
+    pec: 'pec',
+    sdiCode: 'sdiCode',
+    aiMonthlyTokenLimit: 'aiMonthlyTokenLimit',
+    aiTokensUsed: 'aiTokensUsed',
+    aiTokensResetAt: 'aiTokensResetAt',
+    perplexityMonthlyLimit: 'perplexityMonthlyLimit',
+    perplexityRequestsUsed: 'perplexityRequestsUsed',
+    perplexityRequestsResetAt: 'perplexityRequestsResetAt',
     createdAt: 'createdAt'
   };
 
@@ -26732,7 +28234,14 @@ export namespace Prisma {
     role: 'role',
     createdAt: 'createdAt',
     name: 'name',
-    organizationId: 'organizationId'
+    phone: 'phone',
+    address: 'address',
+    isExternal: 'isExternal',
+    companyName: 'companyName',
+    vatNumber: 'vatNumber',
+    iban: 'iban',
+    organizationId: 'organizationId',
+    notificationPrefs: 'notificationPrefs'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -26990,6 +28499,19 @@ export namespace Prisma {
   export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
 
 
+  export const SuperAdminLogScalarFieldEnum: {
+    id: 'id',
+    action: 'action',
+    detail: 'detail',
+    orgId: 'orgId',
+    orgName: 'orgName',
+    ip: 'ip',
+    createdAt: 'createdAt'
+  };
+
+  export type SuperAdminLogScalarFieldEnum = (typeof SuperAdminLogScalarFieldEnum)[keyof typeof SuperAdminLogScalarFieldEnum]
+
+
   export const ApartmentProductScalarFieldEnum: {
     id: 'id',
     apartmentId: 'apartmentId',
@@ -27068,6 +28590,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -27096,30 +28632,9 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Float'
+   * Reference to a field of type 'Boolean'
    */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -27138,9 +28653,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Boolean'
+   * Reference to a field of type 'Float'
    */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 
@@ -27168,6 +28690,24 @@ export namespace Prisma {
     id?: StringFilter<"Organization"> | string
     name?: StringFilter<"Organization"> | string
     slug?: StringFilter<"Organization"> | string
+    logoUrl?: StringNullableFilter<"Organization"> | string | null
+    legalName?: StringNullableFilter<"Organization"> | string | null
+    vatNumber?: StringNullableFilter<"Organization"> | string | null
+    fiscalCode?: StringNullableFilter<"Organization"> | string | null
+    address?: StringNullableFilter<"Organization"> | string | null
+    city?: StringNullableFilter<"Organization"> | string | null
+    zip?: StringNullableFilter<"Organization"> | string | null
+    country?: StringNullableFilter<"Organization"> | string | null
+    phone?: StringNullableFilter<"Organization"> | string | null
+    email?: StringNullableFilter<"Organization"> | string | null
+    pec?: StringNullableFilter<"Organization"> | string | null
+    sdiCode?: StringNullableFilter<"Organization"> | string | null
+    aiMonthlyTokenLimit?: IntFilter<"Organization"> | number
+    aiTokensUsed?: IntFilter<"Organization"> | number
+    aiTokensResetAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    perplexityMonthlyLimit?: IntFilter<"Organization"> | number
+    perplexityRequestsUsed?: IntFilter<"Organization"> | number
+    perplexityRequestsResetAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     createdAt?: DateTimeFilter<"Organization"> | Date | string
     users?: UserListRelationFilter
     apartments?: ApartmentListRelationFilter
@@ -27178,6 +28718,24 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    logoUrl?: SortOrderInput | SortOrder
+    legalName?: SortOrderInput | SortOrder
+    vatNumber?: SortOrderInput | SortOrder
+    fiscalCode?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    zip?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    pec?: SortOrderInput | SortOrder
+    sdiCode?: SortOrderInput | SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrderInput | SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     users?: UserOrderByRelationAggregateInput
     apartments?: ApartmentOrderByRelationAggregateInput
@@ -27191,6 +28749,24 @@ export namespace Prisma {
     OR?: OrganizationWhereInput[]
     NOT?: OrganizationWhereInput | OrganizationWhereInput[]
     name?: StringFilter<"Organization"> | string
+    logoUrl?: StringNullableFilter<"Organization"> | string | null
+    legalName?: StringNullableFilter<"Organization"> | string | null
+    vatNumber?: StringNullableFilter<"Organization"> | string | null
+    fiscalCode?: StringNullableFilter<"Organization"> | string | null
+    address?: StringNullableFilter<"Organization"> | string | null
+    city?: StringNullableFilter<"Organization"> | string | null
+    zip?: StringNullableFilter<"Organization"> | string | null
+    country?: StringNullableFilter<"Organization"> | string | null
+    phone?: StringNullableFilter<"Organization"> | string | null
+    email?: StringNullableFilter<"Organization"> | string | null
+    pec?: StringNullableFilter<"Organization"> | string | null
+    sdiCode?: StringNullableFilter<"Organization"> | string | null
+    aiMonthlyTokenLimit?: IntFilter<"Organization"> | number
+    aiTokensUsed?: IntFilter<"Organization"> | number
+    aiTokensResetAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    perplexityMonthlyLimit?: IntFilter<"Organization"> | number
+    perplexityRequestsUsed?: IntFilter<"Organization"> | number
+    perplexityRequestsResetAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     createdAt?: DateTimeFilter<"Organization"> | Date | string
     users?: UserListRelationFilter
     apartments?: ApartmentListRelationFilter
@@ -27201,10 +28777,30 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    logoUrl?: SortOrderInput | SortOrder
+    legalName?: SortOrderInput | SortOrder
+    vatNumber?: SortOrderInput | SortOrder
+    fiscalCode?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    zip?: SortOrderInput | SortOrder
+    country?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    pec?: SortOrderInput | SortOrder
+    sdiCode?: SortOrderInput | SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrderInput | SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: OrganizationCountOrderByAggregateInput
+    _avg?: OrganizationAvgOrderByAggregateInput
     _max?: OrganizationMaxOrderByAggregateInput
     _min?: OrganizationMinOrderByAggregateInput
+    _sum?: OrganizationSumOrderByAggregateInput
   }
 
   export type OrganizationScalarWhereWithAggregatesInput = {
@@ -27214,6 +28810,24 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Organization"> | string
     name?: StringWithAggregatesFilter<"Organization"> | string
     slug?: StringWithAggregatesFilter<"Organization"> | string
+    logoUrl?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    legalName?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    vatNumber?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    fiscalCode?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    city?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    zip?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    country?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    pec?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    sdiCode?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    aiMonthlyTokenLimit?: IntWithAggregatesFilter<"Organization"> | number
+    aiTokensUsed?: IntWithAggregatesFilter<"Organization"> | number
+    aiTokensResetAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+    perplexityMonthlyLimit?: IntWithAggregatesFilter<"Organization"> | number
+    perplexityRequestsUsed?: IntWithAggregatesFilter<"Organization"> | number
+    perplexityRequestsResetAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Organization"> | Date | string
   }
 
@@ -27227,7 +28841,14 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     createdAt?: DateTimeFilter<"User"> | Date | string
     name?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
+    isExternal?: BoolFilter<"User"> | boolean
+    companyName?: StringNullableFilter<"User"> | string | null
+    vatNumber?: StringNullableFilter<"User"> | string | null
+    iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
+    notificationPrefs?: JsonNullableFilter<"User">
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     cleaningTasks?: CleaningTaskListRelationFilter
     maintenanceTickets?: MaintenanceTicketListRelationFilter
@@ -27244,7 +28865,14 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrderInput | SortOrder
+    vatNumber?: SortOrderInput | SortOrder
+    iban?: SortOrderInput | SortOrder
     organizationId?: SortOrderInput | SortOrder
+    notificationPrefs?: SortOrderInput | SortOrder
     organization?: OrganizationOrderByWithRelationInput
     cleaningTasks?: CleaningTaskOrderByRelationAggregateInput
     maintenanceTickets?: MaintenanceTicketOrderByRelationAggregateInput
@@ -27264,7 +28892,14 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     createdAt?: DateTimeFilter<"User"> | Date | string
     name?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
+    isExternal?: BoolFilter<"User"> | boolean
+    companyName?: StringNullableFilter<"User"> | string | null
+    vatNumber?: StringNullableFilter<"User"> | string | null
+    iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
+    notificationPrefs?: JsonNullableFilter<"User">
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     cleaningTasks?: CleaningTaskListRelationFilter
     maintenanceTickets?: MaintenanceTicketListRelationFilter
@@ -27281,7 +28916,14 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrderInput | SortOrder
+    vatNumber?: SortOrderInput | SortOrder
+    iban?: SortOrderInput | SortOrder
     organizationId?: SortOrderInput | SortOrder
+    notificationPrefs?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -27297,7 +28939,14 @@ export namespace Prisma {
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     name?: StringWithAggregatesFilter<"User"> | string
+    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    address?: StringNullableWithAggregatesFilter<"User"> | string | null
+    isExternal?: BoolWithAggregatesFilter<"User"> | boolean
+    companyName?: StringNullableWithAggregatesFilter<"User"> | string | null
+    vatNumber?: StringNullableWithAggregatesFilter<"User"> | string | null
+    iban?: StringNullableWithAggregatesFilter<"User"> | string | null
     organizationId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    notificationPrefs?: JsonNullableWithAggregatesFilter<"User">
   }
 
   export type ApartmentWhereInput = {
@@ -28675,6 +30324,68 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PushSubscription"> | Date | string
   }
 
+  export type SuperAdminLogWhereInput = {
+    AND?: SuperAdminLogWhereInput | SuperAdminLogWhereInput[]
+    OR?: SuperAdminLogWhereInput[]
+    NOT?: SuperAdminLogWhereInput | SuperAdminLogWhereInput[]
+    id?: StringFilter<"SuperAdminLog"> | string
+    action?: StringFilter<"SuperAdminLog"> | string
+    detail?: StringNullableFilter<"SuperAdminLog"> | string | null
+    orgId?: StringNullableFilter<"SuperAdminLog"> | string | null
+    orgName?: StringNullableFilter<"SuperAdminLog"> | string | null
+    ip?: StringNullableFilter<"SuperAdminLog"> | string | null
+    createdAt?: DateTimeFilter<"SuperAdminLog"> | Date | string
+  }
+
+  export type SuperAdminLogOrderByWithRelationInput = {
+    id?: SortOrder
+    action?: SortOrder
+    detail?: SortOrderInput | SortOrder
+    orgId?: SortOrderInput | SortOrder
+    orgName?: SortOrderInput | SortOrder
+    ip?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SuperAdminLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SuperAdminLogWhereInput | SuperAdminLogWhereInput[]
+    OR?: SuperAdminLogWhereInput[]
+    NOT?: SuperAdminLogWhereInput | SuperAdminLogWhereInput[]
+    action?: StringFilter<"SuperAdminLog"> | string
+    detail?: StringNullableFilter<"SuperAdminLog"> | string | null
+    orgId?: StringNullableFilter<"SuperAdminLog"> | string | null
+    orgName?: StringNullableFilter<"SuperAdminLog"> | string | null
+    ip?: StringNullableFilter<"SuperAdminLog"> | string | null
+    createdAt?: DateTimeFilter<"SuperAdminLog"> | Date | string
+  }, "id">
+
+  export type SuperAdminLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    action?: SortOrder
+    detail?: SortOrderInput | SortOrder
+    orgId?: SortOrderInput | SortOrder
+    orgName?: SortOrderInput | SortOrder
+    ip?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: SuperAdminLogCountOrderByAggregateInput
+    _max?: SuperAdminLogMaxOrderByAggregateInput
+    _min?: SuperAdminLogMinOrderByAggregateInput
+  }
+
+  export type SuperAdminLogScalarWhereWithAggregatesInput = {
+    AND?: SuperAdminLogScalarWhereWithAggregatesInput | SuperAdminLogScalarWhereWithAggregatesInput[]
+    OR?: SuperAdminLogScalarWhereWithAggregatesInput[]
+    NOT?: SuperAdminLogScalarWhereWithAggregatesInput | SuperAdminLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SuperAdminLog"> | string
+    action?: StringWithAggregatesFilter<"SuperAdminLog"> | string
+    detail?: StringNullableWithAggregatesFilter<"SuperAdminLog"> | string | null
+    orgId?: StringNullableWithAggregatesFilter<"SuperAdminLog"> | string | null
+    orgName?: StringNullableWithAggregatesFilter<"SuperAdminLog"> | string | null
+    ip?: StringNullableWithAggregatesFilter<"SuperAdminLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"SuperAdminLog"> | Date | string
+  }
+
   export type ApartmentProductWhereInput = {
     AND?: ApartmentProductWhereInput | ApartmentProductWhereInput[]
     OR?: ApartmentProductWhereInput[]
@@ -28766,6 +30477,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutOrganizationInput
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
@@ -28776,6 +30505,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -28786,6 +30533,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutOrganizationNestedInput
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
@@ -28796,6 +30561,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -28806,6 +30589,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -28813,6 +30614,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -28820,6 +30639,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -28830,6 +30667,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -28846,7 +30690,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -28862,6 +30713,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -28878,7 +30736,14 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -28894,7 +30759,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUpdateManyMutationInput = {
@@ -28904,6 +30776,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -28913,7 +30792,14 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ApartmentCreateInput = {
@@ -30384,6 +32270,76 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SuperAdminLogCreateInput = {
+    id?: string
+    action: string
+    detail?: string | null
+    orgId?: string | null
+    orgName?: string | null
+    ip?: string | null
+    createdAt?: Date | string
+  }
+
+  export type SuperAdminLogUncheckedCreateInput = {
+    id?: string
+    action: string
+    detail?: string | null
+    orgId?: string | null
+    orgName?: string | null
+    ip?: string | null
+    createdAt?: Date | string
+  }
+
+  export type SuperAdminLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableStringFieldUpdateOperationsInput | string | null
+    orgId?: NullableStringFieldUpdateOperationsInput | string | null
+    orgName?: NullableStringFieldUpdateOperationsInput | string | null
+    ip?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SuperAdminLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableStringFieldUpdateOperationsInput | string | null
+    orgId?: NullableStringFieldUpdateOperationsInput | string | null
+    orgName?: NullableStringFieldUpdateOperationsInput | string | null
+    ip?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SuperAdminLogCreateManyInput = {
+    id?: string
+    action: string
+    detail?: string | null
+    orgId?: string | null
+    orgName?: string | null
+    ip?: string | null
+    createdAt?: Date | string
+  }
+
+  export type SuperAdminLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableStringFieldUpdateOperationsInput | string | null
+    orgId?: NullableStringFieldUpdateOperationsInput | string | null
+    orgName?: NullableStringFieldUpdateOperationsInput | string | null
+    ip?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SuperAdminLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    detail?: NullableStringFieldUpdateOperationsInput | string | null
+    orgId?: NullableStringFieldUpdateOperationsInput | string | null
+    orgName?: NullableStringFieldUpdateOperationsInput | string | null
+    ip?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ApartmentProductCreateInput = {
     id?: string
     name: string
@@ -30496,6 +32452,43 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -30525,6 +32518,11 @@ export namespace Prisma {
     none?: ManagerChatSessionWhereInput
   }
 
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
   export type UserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -30541,13 +32539,56 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    logoUrl?: SortOrder
+    legalName?: SortOrder
+    vatNumber?: SortOrder
+    fiscalCode?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    zip?: SortOrder
+    country?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    pec?: SortOrder
+    sdiCode?: SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type OrganizationAvgOrderByAggregateInput = {
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
   }
 
   export type OrganizationMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    logoUrl?: SortOrder
+    legalName?: SortOrder
+    vatNumber?: SortOrder
+    fiscalCode?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    zip?: SortOrder
+    country?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    pec?: SortOrder
+    sdiCode?: SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -30555,7 +32596,32 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     slug?: SortOrder
+    logoUrl?: SortOrder
+    legalName?: SortOrder
+    vatNumber?: SortOrder
+    fiscalCode?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    zip?: SortOrder
+    country?: SortOrder
+    phone?: SortOrder
+    email?: SortOrder
+    pec?: SortOrder
+    sdiCode?: SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type OrganizationSumOrderByAggregateInput = {
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -30574,6 +32640,54 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -30597,19 +32711,32 @@ export namespace Prisma {
     not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type OrganizationNullableScalarRelationFilter = {
@@ -30653,11 +32780,6 @@ export namespace Prisma {
     none?: PushSubscriptionWhereInput
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
-  }
-
   export type CleaningTaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -30689,7 +32811,14 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrder
+    vatNumber?: SortOrder
+    iban?: SortOrder
     organizationId?: SortOrder
+    notificationPrefs?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -30699,6 +32828,12 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrder
+    vatNumber?: SortOrder
+    iban?: SortOrder
     organizationId?: SortOrder
   }
 
@@ -30709,6 +32844,12 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     name?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    isExternal?: SortOrder
+    companyName?: SortOrder
+    vatNumber?: SortOrder
+    iban?: SortOrder
     organizationId?: SortOrder
   }
 
@@ -30722,53 +32863,21 @@ export namespace Prisma {
     _max?: NestedEnumRoleFilter<$PrismaModel>
   }
 
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
-
-  export type FloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-  export type JsonNullableFilter<$PrismaModel = never> =
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
       >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
     equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
     path?: string[]
     mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
@@ -30783,17 +32892,20 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type BookingListRelationFilter = {
@@ -30947,67 +33059,6 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type ApartmentScalarRelationFilter = {
     is?: ApartmentWhereInput
     isNot?: ApartmentWhereInput
@@ -31056,14 +33107,6 @@ export namespace Prisma {
 
   export type ChecklistItemSumOrderByAggregateInput = {
     order?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type ApartmentNullableScalarRelationFilter = {
@@ -31730,6 +33773,36 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type SuperAdminLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    detail?: SortOrder
+    orgId?: SortOrder
+    orgName?: SortOrder
+    ip?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SuperAdminLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    detail?: SortOrder
+    orgId?: SortOrder
+    orgName?: SortOrder
+    ip?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type SuperAdminLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    action?: SortOrder
+    detail?: SortOrder
+    orgId?: SortOrder
+    orgName?: SortOrder
+    ip?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type ApartmentProductCountOrderByAggregateInput = {
     id?: SortOrder
     apartmentId?: SortOrder
@@ -31828,6 +33901,22 @@ export namespace Prisma {
 
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -32012,6 +34101,10 @@ export namespace Prisma {
     set?: $Enums.Role
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type OrganizationUpdateOneWithoutUsersNestedInput = {
     create?: XOR<OrganizationCreateWithoutUsersInput, OrganizationUncheckedCreateWithoutUsersInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutUsersInput
@@ -32104,10 +34197,6 @@ export namespace Prisma {
     update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
@@ -32346,18 +34435,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type OrganizationUpdateOneWithoutApartmentsNestedInput = {
@@ -32654,10 +34731,6 @@ export namespace Prisma {
     create?: XOR<ApartmentCreateWithoutChecklistItemsInput, ApartmentUncheckedCreateWithoutChecklistItemsInput>
     connectOrCreate?: ApartmentCreateOrConnectWithoutChecklistItemsInput
     connect?: ApartmentWhereUniqueInput
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type ApartmentUpdateOneRequiredWithoutChecklistItemsNestedInput = {
@@ -33608,6 +35681,42 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -33634,62 +35743,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedEnumRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedEnumRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumRoleWithAggregatesFilter<$PrismaModel> | $Enums.Role
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumRoleFilter<$PrismaModel>
-    _max?: NestedEnumRoleFilter<$PrismaModel>
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -33720,44 +35773,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
-  }
-
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -33772,6 +35787,75 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedEnumRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleWithAggregatesFilter<$PrismaModel> | $Enums.Role
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRoleFilter<$PrismaModel>
+    _max?: NestedEnumRoleFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -33797,31 +35881,20 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type NestedEnumAIAssistantMessageRoleFilter<$PrismaModel = never> = {
@@ -33875,6 +35948,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -33890,6 +35970,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -34028,7 +36115,14 @@ export namespace Prisma {
     role?: EnumRoleFilter<"User"> | $Enums.Role
     createdAt?: DateTimeFilter<"User"> | Date | string
     name?: StringFilter<"User"> | string
+    phone?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
+    isExternal?: BoolFilter<"User"> | boolean
+    companyName?: StringNullableFilter<"User"> | string | null
+    vatNumber?: StringNullableFilter<"User"> | string | null
+    iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
+    notificationPrefs?: JsonNullableFilter<"User">
   }
 
   export type ApartmentUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -34101,6 +36195,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
@@ -34110,6 +36222,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
@@ -34327,6 +36457,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
@@ -34336,6 +36484,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -34523,6 +36689,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
@@ -34532,6 +36716,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
@@ -34899,6 +37101,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
@@ -34908,6 +37128,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -35774,6 +38012,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -35789,7 +38034,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
@@ -36060,6 +38312,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -36075,7 +38334,14 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
@@ -36250,6 +38516,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -36265,7 +38538,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
@@ -36497,6 +38777,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -36512,7 +38799,14 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
@@ -37694,6 +39988,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -37709,7 +40010,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
@@ -37830,6 +40138,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -37845,7 +40160,14 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
@@ -38027,6 +40349,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -38042,7 +40371,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -38144,6 +40480,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -38159,7 +40502,14 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -38239,6 +40589,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -38254,7 +40611,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -38356,6 +40720,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -38371,7 +40742,14 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -38383,6 +40761,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutOrganizationInput
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
@@ -38392,6 +40788,24 @@ export namespace Prisma {
     id?: string
     name: string
     slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -38441,6 +40855,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutOrganizationNestedInput
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
@@ -38450,6 +40882,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -38533,6 +40983,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -38548,7 +41005,14 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
     organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -38579,6 +41043,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -38594,7 +41065,14 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -38745,6 +41223,13 @@ export namespace Prisma {
     role: $Enums.Role
     createdAt?: Date | string
     name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ApartmentCreateManyOrganizationInput = {
@@ -38780,6 +41265,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -38795,6 +41287,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -38810,6 +41309,13 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ApartmentUpdateWithoutOrganizationInput = {

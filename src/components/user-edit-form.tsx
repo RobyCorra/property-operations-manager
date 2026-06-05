@@ -8,7 +8,18 @@ import { Building2 } from "lucide-react";
 type Apartment = { id: string; name: string };
 
 type Props = {
-  user: { id: string; name: string; email: string; role: string };
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    phone?: string | null;
+    address?: string | null;
+    isExternal?: boolean;
+    companyName?: string | null;
+    vatNumber?: string | null;
+    iban?: string | null;
+  };
   apartments: Apartment[];
   assignedApartmentIds: string[];
 };
@@ -17,6 +28,7 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
   const [state, formAction, isPending] = useActionState(updateUser, null);
   const [selectedRole, setSelectedRole] = useState(user.role);
   const [selectedApts, setSelectedApts] = useState<Set<string>>(new Set(assignedApartmentIds));
+  const [isExternal, setIsExternal] = useState(user.isExternal ?? false);
 
   const needsApartments = selectedRole === "SUPERVISOR" || selectedRole === "OWNER";
 
@@ -27,6 +39,8 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
       return next;
     });
   }
+
+  const inputClass = "w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent";
 
   return (
     <section className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden p-6 md:p-8">
@@ -45,38 +59,76 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nome Completo *</label>
-              <input
-                required
-                type="text"
-                id="name"
-                name="name"
-                defaultValue={user.name}
-                className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              />
+              <input required type="text" id="name" name="name" defaultValue={user.name} className={inputClass} />
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-              <input
-                required
-                type="email"
-                id="email"
-                name="email"
-                defaultValue={user.email}
-                className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              />
+              <input required type="email" id="email" name="email" defaultValue={user.email} className={inputClass} />
             </div>
           </div>
+
+          {/* Contatti */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
+              <input type="tel" id="phone" name="phone" defaultValue={user.phone ?? ""} placeholder="+39 333 1234567" className={inputClass} />
+            </div>
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Indirizzo</label>
+              <input type="text" id="address" name="address" defaultValue={user.address ?? ""} placeholder="Via Roma 1, Milano" className={inputClass} />
+            </div>
+          </div>
+
+          {/* Interno / Esterno */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tipo collaboratore</label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setIsExternal(false)}
+                className={`flex-1 py-2.5 rounded-full text-sm font-medium border transition-all ${!isExternal ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
+              >
+                Interno
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsExternal(true)}
+                className={`flex-1 py-2.5 rounded-full text-sm font-medium border transition-all ${isExternal ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
+              >
+                Esterno / Fornitore
+              </button>
+            </div>
+            <input type="hidden" name="isExternal" value={String(isExternal)} />
+          </div>
+
+          {/* Dati azienda (solo esterno) */}
+          {isExternal && (
+            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Dati azienda / fornitore</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome ditta</label>
+                  <input type="text" name="companyName" defaultValue={user.companyName ?? ""} placeholder="Es. Pulizie Rossi Srl" className={inputClass} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Partita IVA</label>
+                  <input type="text" name="vatNumber" defaultValue={user.vatNumber ?? ""} placeholder="IT12345678901" className={inputClass} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">IBAN</label>
+                  <input type="text" name="iban" defaultValue={user.iban ?? ""} placeholder="IT60 X054 2811 1010 0000 0123 456" className={`${inputClass} font-mono text-sm`} />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">Ruolo Operativo *</label>
               <select
-                required
-                id="role"
-                name="role"
-                value={selectedRole}
+                required id="role" name="role" value={selectedRole}
                 onChange={e => { setSelectedRole(e.target.value); setSelectedApts(new Set()); }}
-                className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                className={`${inputClass} text-gray-700`}
               >
                 <option value="CLEANER">Addetto alle Pulizie (CLEANER)</option>
                 <option value="MAINTENANCE">Manutentore (MAINTENANCE)</option>
@@ -90,13 +142,7 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
                 Nuova Password
                 <span className="ml-1 text-[10px] text-gray-400 font-normal">(lascia vuoto per non cambiare)</span>
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Minimo 8 caratteri"
-                className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              />
+              <input type="password" id="password" name="password" placeholder="Minimo 8 caratteri" className={inputClass} />
             </div>
           </div>
         </div>
@@ -122,11 +168,8 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
                       className={`flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-colors ${checked ? "border-slate-900 bg-slate-50" : "border-gray-200 hover:border-gray-300"}`}
                     >
                       <input
-                        type="checkbox"
-                        name="apartmentIds"
-                        value={apt.id}
-                        checked={checked}
-                        onChange={() => toggleApt(apt.id)}
+                        type="checkbox" name="apartmentIds" value={apt.id}
+                        checked={checked} onChange={() => toggleApt(apt.id)}
                         className="h-4 w-4 rounded border-gray-300 accent-slate-900"
                       />
                       <span className="text-sm font-medium text-gray-800">{apt.name}</span>
@@ -143,8 +186,7 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
             Annulla
           </Link>
           <button
-            type="submit"
-            disabled={isPending}
+            type="submit" disabled={isPending}
             className="rounded-full bg-black px-8 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 focus:outline-none disabled:bg-gray-400"
           >
             {isPending ? "Salvataggio..." : "Salva Modifiche"}

@@ -500,15 +500,13 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
     }).catch(console.error);
   }
 
-  // Push al manager se urgente
-  if (priority === "URGENTE") {
-    await sendPushToRole("MANAGER" as Role, {
-      title: "⚠️ Ticket urgente aperto",
-      body: `"${title}" presso ${apt?.name ?? "un appartamento"} richiede attenzione immediata.`,
-      url: `/dashboard/manager/maintenance/${ticket.id}/edit`,
-      tag: `maintenance-urgent-${ticket.id}`,
-    }).catch(console.error);
-  }
+  // Push al manager per nuovo ticket (urgente = titolo diverso)
+  await sendPushToRole("MANAGER" as Role, {
+    title: priority === "URGENTE" ? "⚠️ Ticket urgente aperto" : "🔧 Nuovo ticket manutenzione",
+    body: `"${title}" presso ${apt?.name ?? "un appartamento"}.`,
+    url: `/dashboard/manager/maintenance/${ticket.id}/edit`,
+    tag: `maintenance-new-${ticket.id}`,
+  }, "maintenanceNew").catch(console.error);
 
   revalidatePath("/dashboard/manager/maintenance");
   revalidatePath("/dashboard/maintenance");
@@ -628,6 +626,30 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     data: updateData,
   });
 
+  // Quando il cleaner avvia la pulizia → notifica manager
+  if (nextStatus === "IN_PROGRESS") {
+    const apartment = await prisma.apartment.findUnique({
+      where: { id: task.apartmentId },
+      select: { name: true },
+    });
+    const cleanerName = task.assignedTo?.name ?? "Il cleaner";
+    const aptName = apartment?.name ?? "un appartamento";
+    await prisma.notification.create({
+      data: {
+        type: "CLEANING",
+        title: "🧹 Pulizia avviata",
+        message: `${cleanerName} ha iniziato la pulizia presso ${aptName}.`,
+        apartmentId: task.apartmentId,
+      },
+    });
+    await sendPushToRole("MANAGER" as Role, {
+      title: "🧹 Pulizia avviata",
+      body: `${cleanerName} ha iniziato la pulizia presso ${aptName}.`,
+      url: `/dashboard/manager/cleanings/${id}/edit`,
+      tag: `cleaning-started-${id}`,
+    }, "cleaningStarted").catch(console.error);
+  }
+
   // Quando il cleaner invia per verifica → notifica manager E supervisor
   if (nextStatus === "AWAITING_REVIEW") {
     const apartment = await prisma.apartment.findUnique({
@@ -661,7 +683,7 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       body: `${cleanerName} ha completato la pulizia presso ${aptName}.`,
       url: `/dashboard/manager/cleanings/${id}/edit`,
       tag: `cleaning-review-${id}`,
-    }).catch(console.error);
+    }, "cleaningCompleted").catch(console.error);
   }
 
   revalidatePath("/dashboard/cleaner");

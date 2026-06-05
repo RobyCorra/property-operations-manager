@@ -15,17 +15,47 @@ export async function loginAction(prevState: any, formData: FormData) {
 
   const user = await prisma.user.findUnique({
     where: { email },
-    include: { organization: { select: { id: true } } },
+    include: { organization: { select: { id: true, name: true } } },
   });
 
   if (!user) {
+    try {
+      await prisma.superAdminLog.create({
+        data: { id: `${Date.now()}-lf`, action: "LOGIN_FALLITO", detail: `Email non trovata: ${email}` },
+      });
+    } catch {}
     return { error: "Credenziali non valide." };
   }
 
   const isValid = await bcrypt.compare(password, user.password);
 
   if (!isValid) {
+    try {
+      await prisma.superAdminLog.create({
+        data: {
+          id: `${Date.now()}-lf`,
+          action: "LOGIN_FALLITO",
+          detail: `Password errata: ${user.name} (${email})`,
+          orgId: user.organization?.id ?? null,
+          orgName: user.organization?.name ?? null,
+        },
+      });
+    } catch {}
     return { error: "Credenziali non valide." };
+  }
+
+  try {
+    await prisma.superAdminLog.create({
+      data: {
+        id: `${Date.now()}-lu`,
+        action: `LOGIN_${user.role}`,
+        detail: `${user.name} (${email})`,
+        orgId: user.organization?.id ?? null,
+        orgName: user.organization?.name ?? null,
+      },
+    });
+  } catch (e) {
+    console.error("[SuperAdminLog] login log error:", e);
   }
 
   // Set cookies
@@ -39,6 +69,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   };
   cookieStore.set("role", user.role, cookieOptions);
   cookieStore.set("userId", user.id, cookieOptions);
+  cookieStore.set("userName", user.name, cookieOptions);
   cookieStore.set("organizationId", user.organization?.id ?? "org_default", cookieOptions);
 
   // Redirect based on role
@@ -61,6 +92,7 @@ export async function logoutAction() {
   const cookieStore = await cookies();
   cookieStore.set("role", "", { path: "/", maxAge: 0 });
   cookieStore.set("userId", "", { path: "/", maxAge: 0 });
+  cookieStore.set("userName", "", { path: "/", maxAge: 0 });
   cookieStore.set("organizationId", "", { path: "/", maxAge: 0 });
   redirect("/login");
 }

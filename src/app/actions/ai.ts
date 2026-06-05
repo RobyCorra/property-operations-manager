@@ -5,6 +5,7 @@ import OpenAI from "openai";
 import { prisma } from "@/src/lib/prisma";
 import { formatDateKey, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import { getCurrentOrg } from "@/src/lib/tenant";
+import { checkTokenLimit, consumeTokens, checkAndConsumePerplexity } from "@/src/lib/ai-limits";
 
 type AIMessage = {
   role: "user" | "assistant";
@@ -617,9 +618,14 @@ function formatLinksAsMarkdown(text: string) {
   });
 }
 
-async function askPerplexitySearch(query: string) {
+async function askPerplexitySearch(query: string, orgId?: string | null) {
   if (!process.env.PERPLEXITY_API_KEY) {
     return null;
+  }
+
+  if (orgId) {
+    const check = await checkAndConsumePerplexity(orgId);
+    if (!check.allowed) return `⚠️ ${check.reason}`;
   }
 
   try {
@@ -2312,6 +2318,18 @@ async function buildGeneralManagerContext(now: Date) {
     `- id:${(ticket as any).id} | ${ticket.apartment.name} | ${formatDate(ticket.createdAt)} | ${ticket.priority} | ${ticket.status} | ${ticket.title} | descrizione: ${truncateText(ticket.description, 220)} | tecnico: ${ticket.assignedTo?.name || "non assegnato"}${(ticket.assignedTo as any)?.id ? ` (assignedToId:${(ticket.assignedTo as any).id})` : ""} | programmato: ${formatDateTime(ticket.scheduledStart)} | messaggi: ${formatManagerMessages(ticket.messages)}`
   ));
 
+  // Raggruppamento ticket per data scheduledStart (o createdAt se non schedulato) — pre-calcolato
+  const ticketsByDate: Record<string, string[]> = {};
+  tickets.forEach((t: MaintenanceTicketWithApartmentForAI) => {
+    const dateKey = t.scheduledStart ? formatDate(t.scheduledStart as Date) : formatDate(t.createdAt as Date);
+    if (!ticketsByDate[dateKey]) ticketsByDate[dateKey] = [];
+    const techTag = t.assignedTo?.name ? `[${t.assignedTo.name}]` : "[DA ASSEGNARE]";
+    ticketsByDate[dateKey].push(`${t.apartment.name} | ${t.title} | ${t.priority} | ${t.status} | ${techTag}`);
+  });
+  const ticketsByDateLines = Object.entries(ticketsByDate)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, items]) => `${date} (${items.length} ticket): ${items.join(" | ")}`);
+
   const recentMessageLines = [
     ...cleanings.flatMap((task: CleaningTaskWithApartmentForAI) => task.messages.map((message: OperationalMessageForAI) => (
       `- Pulizia | ${task.apartment.name} | ${formatDateTime(message.createdAt)} | ${message.senderName} (${message.role}): ${truncateText(message.text, 160) || "n/d"}`
@@ -2334,6 +2352,19 @@ async function buildGeneralManagerContext(now: Date) {
     `- ${t.apartment.name} | ${formatDate(t.date as Date)} | stato: ${t.status}`
   );
 
+  // Raggruppamento pulizie per data (prossimi 60 giorni) — pre-calcolato per evitare errori AI su range di date
+  const cleaningsByDate: Record<string, string[]> = {};
+  cleanings.forEach((t: CleaningTaskWithApartmentForAI) => {
+    const dateKey = formatDate(t.date as Date);
+    if (!cleaningsByDate[dateKey]) cleaningsByDate[dateKey] = [];
+    const assignTag = t.assignedTo?.name ? `[${t.assignedTo.name}]` : "[DA ASSEGNARE]";
+    cleaningsByDate[dateKey].push(`${t.apartment.name} | ${assignTag} | ${t.status}`);
+  });
+  const cleaningsByDateLines = Object.entries(cleaningsByDate)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, items]) => `${date} (${items.length} pulizie): ${items.join(" | ")}`);
+
+
   const contextText = `
 CONTESTO OPERATIVO MANAGER
 REGOLA DATI: I dati operativi provengono ESCLUSIVAMENTE da questo contesto. NON usare la cronologia della chat come fonte di dati — le risposte precedenti possono essere errate.
@@ -2349,7 +2380,11 @@ PULIZIE — RIEPILOGO PER MESE (conteggi certi, calcolati dal sistema)
 ATTENZIONE: PENDING = pianificata non ancora iniziata (NON significa non assegnata). DA ASSEGNARE = cleaner NULL.
 ${cleaningMonthSummaryLines.length > 0 ? cleaningMonthSummaryLines.join("\n") : "- Nessuna pulizia nel periodo."}
 
-PULIZIE OPERATIVE — DETTAGLIO COMPLETO
+PULIZIE — RAGGRUPPATE PER DATA (fonte autoritativa per domande su range di date)
+ISTRUZIONE: Per qualsiasi domanda su "quante pulizie ci sono tra X e Y" o "pulizie di questa settimana", leggere QUESTA sezione e contare SOLO le righe nel range richiesto. Non usare il dettaglio completo sotto per conteggi.
+${cleaningsByDateLines.length > 0 ? cleaningsByDateLines.join("\n") : "- Nessuna pulizia nel periodo."}
+
+PULIZIE OPERATIVE — DETTAGLIO COMPLETO (usare per dettagli specifici, NON per conteggi per data)
 ${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia operativa nel periodo caricato."}
 
 ════ EVENTI OGGI (${todayRomeKey}) ════
@@ -2394,7 +2429,11 @@ ${upcomingCheckouts.length > 0 ? upcomingCheckouts.map(bookingLine).join("\n") :
 ════ STATO APPARTAMENTI ════
 ${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
 
-════ MANUTENZIONI OPERATIVE ════
+════ MANUTENZIONI — RAGGRUPPATE PER DATA (fonte autoritativa per range di date) ════
+ISTRUZIONE: Per domande su "quanti ticket ci sono tra X e Y" o "manutenzioni di questa settimana", leggere QUESTA sezione. La data usata è scheduledStart se presente, altrimenti createdAt.
+${ticketsByDateLines.length > 0 ? ticketsByDateLines.join("\n") : "- Nessun ticket nel periodo."}
+
+════ MANUTENZIONI OPERATIVE — DETTAGLIO COMPLETO (usare per dettagli specifici, NON per conteggi per data) ════
 ${ticketLines.length > 0 ? ticketLines.join("\n") : "- Nessuna manutenzione operativa."}
 
 ════ MESSAGGI OPERATIVI RECENTI ════
@@ -2421,6 +2460,7 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
+    const orgId = await getCurrentOrg();
     const userMessage = messages[messages.length - 1]?.content || "";
 
   // Intent classification — deve stare PRIMA di tutto il resto
@@ -2459,8 +2499,8 @@ export async function askAI(messages: AIMessage[], context: AIContext) {
   });
 
   if (shouldUsePerplexity) {
-    perplexityContext = await askPerplexitySearch(userMessage);
-    usedWeb = Boolean(perplexityContext);
+    perplexityContext = await askPerplexitySearch(userMessage, orgId);
+    usedWeb = Boolean(perplexityContext) && !perplexityContext?.startsWith("⚠️");
   }
 
   console.log("[PERPLEXITY RESULT]", {
@@ -2538,6 +2578,12 @@ RICERCA WEB — REGOLA ASSOLUTA:
     systemPromptLength: systemPrompt.length,
   });
 
+  // Check token limit before calling GPT
+  if (orgId) {
+    const check = await checkTokenLimit(orgId);
+    if (!check.allowed) return check.reason!;
+  }
+
   const response = await openai.chat.completions.create({
     model: "gpt-4.1",
     temperature: 0,   // risposta deterministica: stessa domanda → stesso risultato
@@ -2546,6 +2592,12 @@ RICERCA WEB — REGOLA ASSOLUTA:
       ...messages,
     ],
   });
+
+  // Accumulate actual tokens used
+  const actualTokens = response.usage?.total_tokens ?? 0;
+  if (orgId && actualTokens > 0) {
+    await consumeTokens(orgId, actualTokens).catch(console.error);
+  }
 
   const answer = response.choices[0].message.content || "";
   const finalAnswer = usedWeb

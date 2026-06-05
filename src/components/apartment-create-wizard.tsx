@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useTransition } from "react";
 import type { FormEvent } from "react";
-import { uploadApartmentWizardAttachment } from "@/src/app/actions/upload";
 
 type WizardTechnicalItem = {
   name: string;
@@ -24,15 +23,6 @@ type WizardRecurringIssue = {
   whenToCall: string;
 };
 
-type WizardAttachment = {
-  filename: string;
-  url: string;
-  mimeType: string;
-  size: number;
-  category: string;
-  notes: string;
-  extractedText: string;
-};
 
 type WizardData = {
   name: string;
@@ -59,14 +49,13 @@ type WizardData = {
   addRecurringIssue: boolean;
   recurringIssues: WizardRecurringIssue[];
   aiNotes: string;
-  generalAttachments: WizardAttachment[];
 };
 
 type ApartmentCreateWizardProps = {
   action: (formData: FormData) => Promise<void | { success: boolean; error?: string }>;
 };
 
-const totalSteps = 11;
+const totalSteps = 10;
 
 const inputClass = "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 outline-none transition-all focus:ring-2 focus:ring-violet-600/20";
 const selectClass = inputClass;
@@ -77,14 +66,6 @@ const emptyIssue: WizardRecurringIssue = { title: "", symptoms: "", solution: ""
 const SYSTEM_TYPES = ["Caldaia", "Condizionatore / Split", "Boiler / Scaldabagno", "Impianto elettrico", "Contatore luce", "Contatore gas", "Contatore acqua", "Pannelli solari", "Riscaldamento a pavimento", "Ventilazione", "Altro"];
 const APPLIANCE_TYPES = ["Frigorifero", "Congelatore", "Lavatrice", "Lavastoviglie", "Asciugatrice", "Forno", "Microonde", "Piano cottura", "Cappa", "Televisore", "Ferro da stiro", "Aspirapolvere", "Altro"];
 
-const ATTACHMENT_CATEGORIES: Record<string, string> = {
-  MANUAL: "Manuale",
-  WARRANTY: "Garanzia",
-  PHOTO: "Foto",
-  TECHNICAL_SHEET: "Scheda tecnica",
-  INSTALLER_INSTRUCTIONS: "Istruzioni installatore",
-  OTHER: "Altro",
-};
 
 const ACCESS_TYPES = ["Self check-in", "Con chiavi", "Concierge / persona sul posto", "Da completare dopo"];
 
@@ -113,7 +94,6 @@ const initialData: WizardData = {
   addRecurringIssue: false,
   recurringIssues: [],
   aiNotes: "",
-  generalAttachments: [],
 };
 
 
@@ -121,10 +101,6 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<WizardData>(initialData);
   const [error, setError] = useState("");
-  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
-  const [attachmentCategory, setAttachmentCategory] = useState("OTHER");
-  const [attachmentNotes, setAttachmentNotes] = useState("");
-  const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const [isPending, startTransition] = useTransition();
   const progress = Math.round((step / totalSteps) * 100);
 
@@ -184,10 +160,6 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
     setFormData((c) => ({ ...c, recurringIssues: c.recurringIssues.filter((_, i) => i !== index) }));
   };
 
-  const removeAttachment = (index: number) => {
-    setFormData((c) => ({ ...c, generalAttachments: c.generalAttachments.filter((_, i) => i !== index) }));
-  };
-
   const goToStep = (target: number) => { setError(""); setStep(target); };
   const nextStep = () => {
     if (step === 1 && !formData.name.trim()) { setError("Il nome appartamento è obbligatorio."); return; }
@@ -210,34 +182,6 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
     });
   };
 
-  const appendAttachments = (payload: FormData, prefix: string, attachments: WizardAttachment[]) => {
-    attachments.forEach((att, index) => {
-      payload.set(`${prefix}.${index}.filename`, att.filename);
-      payload.set(`${prefix}.${index}.url`, att.url);
-      payload.set(`${prefix}.${index}.mimeType`, att.mimeType);
-      payload.set(`${prefix}.${index}.size`, String(att.size));
-      payload.set(`${prefix}.${index}.category`, att.category);
-      payload.set(`${prefix}.${index}.notes`, att.notes);
-      payload.set(`${prefix}.${index}.extractedText`, att.extractedText);
-    });
-  };
-
-  const uploadAttachment = async () => {
-    if (!attachmentFile) { setError("Seleziona un file da caricare."); return; }
-    setUploadingAttachment(true);
-    setError("");
-    const payload = new FormData();
-    payload.set("file", attachmentFile);
-    payload.set("category", attachmentCategory);
-    payload.set("notes", attachmentNotes);
-    const result = await uploadApartmentWizardAttachment(payload);
-    setUploadingAttachment(false);
-    if (!result.success || !result.attachment) { setError(result.error || "Errore durante il caricamento allegato."); return; }
-    setFormData((c) => ({ ...c, generalAttachments: [...c.generalAttachments, result.attachment] }));
-    setAttachmentFile(null);
-    setAttachmentCategory("OTHER");
-    setAttachmentNotes("");
-  };
 
   const handleCreate = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -263,8 +207,6 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
     appendTechnicalItems(payload, "technicalProfile.systems", formData.systems);
     appendTechnicalItems(payload, "technicalProfile.appliances", formData.appliances);
     appendTechnicalItems(payload, "technicalProfile.smartHome", formData.smartHomeItems.map((item) => ({ ...item, type: item.category || item.type })));
-    appendAttachments(payload, "technicalProfile.generalAttachments", formData.generalAttachments);
-
     formData.recurringIssues.forEach((issue, index) => {
       payload.set(`technicalProfile.recurringIssues.${index}.title`, issue.title || "Problema ricorrente");
       payload.set(`technicalProfile.recurringIssues.${index}.category`, "OTHER");
@@ -491,23 +433,6 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
         )}
 
         {step === 9 && (
-          <WizardStep title="Vuoi caricare documenti o foto utili?">
-            <AttachmentUploadStep
-              file={attachmentFile}
-              category={attachmentCategory}
-              notes={attachmentNotes}
-              uploading={uploadingAttachment}
-              attachments={formData.generalAttachments}
-              onFileChange={setAttachmentFile}
-              onCategoryChange={setAttachmentCategory}
-              onNotesChange={setAttachmentNotes}
-              onUpload={uploadAttachment}
-              onRemove={removeAttachment}
-            />
-          </WizardStep>
-        )}
-
-        {step === 10 && (
           <WizardStep title="Note per l'assistente AI">
             <p className="text-sm font-medium text-slate-500">
               Informazioni che aiutano l&apos;AI a rispondere meglio sulle domande operative di questo appartamento.
@@ -523,7 +448,7 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
           </WizardStep>
         )}
 
-        {step === 11 && (
+        {step === 10 && (
           <WizardSummary formData={formData} onGoTo={goToStep} />
         )}
       </div>
@@ -671,67 +596,6 @@ function MultiTechnicalItemStep({
   );
 }
 
-function AttachmentUploadStep({ file, category, notes, uploading, attachments, onFileChange, onCategoryChange, onNotesChange, onUpload, onRemove }: {
-  file: File | null; category: string; notes: string; uploading: boolean; attachments: WizardAttachment[];
-  onFileChange: (f: File | null) => void; onCategoryChange: (v: string) => void;
-  onNotesChange: (v: string) => void; onUpload: () => void; onRemove: (i: number) => void;
-}) {
-  return (
-    <div className="space-y-5">
-      <div className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <label className="space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">File</span>
-            <input className={inputClass} type="file" onChange={(e) => onFileChange(e.target.files?.[0] ?? null)} />
-          </label>
-          <label className="space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Categoria</span>
-            <select className={selectClass} value={category} onChange={(e) => onCategoryChange(e.target.value)}>
-              {Object.entries(ATTACHMENT_CATEGORIES).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
-          </label>
-          <label className="space-y-2 sm:col-span-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Note opzionali</span>
-            <textarea className={inputClass} rows={2} value={notes} onChange={(e) => onNotesChange(e.target.value)} placeholder="Es. Manuale climatizzatore soggiorno..." />
-          </label>
-        </div>
-        <div className="mt-4 flex justify-end">
-          <button type="button" onClick={onUpload} disabled={uploading || !file} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-slate-200 disabled:opacity-40">
-            {uploading ? "Caricamento..." : "Carica allegato"}
-          </button>
-        </div>
-      </div>
-      {attachments.length === 0 ? (
-        <p className="rounded-3xl border border-dashed border-slate-200 bg-white p-5 text-sm font-medium text-slate-500">
-          Nessun allegato caricato. Puoi saltare questo step e aggiungerli dopo nella Scheda Tecnica.
-        </p>
-      ) : (
-        <div className="rounded-3xl border border-slate-100 bg-white p-4">
-          <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-400">Allegati caricati</p>
-          <div className="space-y-2">
-            {attachments.map((att, index) => (
-              <div key={`${att.url}-${index}`} className="flex flex-col gap-3 rounded-2xl bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-slate-800">{att.filename}</p>
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                    {ATTACHMENT_CATEGORIES[att.category] ?? att.category} · {att.mimeType} · {Math.round(att.size / 1024)} KB
-                  </p>
-                  {att.notes && <p className="mt-1 text-xs font-medium text-slate-500">{att.notes}</p>}
-                </div>
-                <div className="flex gap-2">
-                  <a href={att.url} target="_blank" rel="noreferrer" className="rounded-full bg-white px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-700 shadow-sm">Apri</a>
-                  <button type="button" onClick={() => onRemove(index)} className="rounded-full bg-white px-3 py-2 text-[10px] font-black uppercase tracking-widest text-rose-500 shadow-sm">Rimuovi</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function WizardSummary({ formData, onGoTo }: { formData: WizardData; onGoTo: (step: number) => void }) {
   const rows: [string, string, number][] = [
@@ -748,8 +612,7 @@ function WizardSummary({ formData, onGoTo }: { formData: WizardData; onGoTo: (st
     ["Elettrodomestici", formData.appliances.length > 0 ? `${formData.appliances.length} aggiunti` : "Nessuno", 6],
     ["Domotica", formData.smartHomeItems.length > 0 ? `${formData.smartHomeItems.length} aggiunti` : "Nessuna", 7],
     ["Problemi ricorrenti", formData.recurringIssues.length > 0 ? `${formData.recurringIssues.length} aggiunti` : "Nessuno", 8],
-    ["Allegati", formData.generalAttachments.length > 0 ? `${formData.generalAttachments.length} caricati` : "Nessuno", 9],
-    ["Note AI", formData.aiNotes || "Nessuna", 10],
+    ["Note AI", formData.aiNotes || "Nessuna", 9],
   ];
 
   return (

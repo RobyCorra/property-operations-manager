@@ -45,7 +45,18 @@ export default async function EditUserPage({ params }: { params: Promise<{ id: s
         </div>
 
         <UserEditForm
-          user={{ id: user.id, name: user.name, email: user.email, role: user.role }}
+          user={{
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+            address: user.address,
+            isExternal: user.isExternal,
+            companyName: user.companyName,
+            vatNumber: user.vatNumber,
+            iban: user.iban,
+          }}
           apartments={apartments}
           assignedApartmentIds={assignedIds}
         />

@@ -1,0 +1,11 @@
+ALTER TABLE "Organization" ADD COLUMN "legalName" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "vatNumber" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "fiscalCode" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "address" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "city" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "zip" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "country" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "phone" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "email" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "pec" TEXT;
+ALTER TABLE "Organization" ADD COLUMN "sdiCode" TEXT;
