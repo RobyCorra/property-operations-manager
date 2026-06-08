@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) { console.error("[SuperAdminLog] impersonate log error:", e); }
 
-  const res = NextResponse.redirect(new URL("/dashboard/manager", req.url));
+  const res = NextResponse.redirect(new URL("/dashboard/manager", req.url), { status: 303 });
   const opts = { path: "/", maxAge: 60 * 60 * 24, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" as const };
   res.cookies.set("role", "MANAGER", opts);
   res.cookies.set("userId", manager.id, opts);

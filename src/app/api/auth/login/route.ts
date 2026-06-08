@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   const password = (formData.get("password") as string) ?? "";
 
   if (!email || !password) {
-    return NextResponse.redirect(new URL("/login?error=required", req.url));
+    return NextResponse.redirect(new URL("/login?error=required", req.url), { status: 303 });
   }
 
   const user = await prisma.user.findUnique({
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         data: { action: "LOGIN_FALLITO", detail: `Email non trovata: ${email}` },
       });
     } catch (e) { console.error("[Log] login_fallito:", e); }
-    return NextResponse.redirect(new URL("/login?error=invalid", req.url));
+    return NextResponse.redirect(new URL("/login?error=invalid", req.url), { status: 303 });
   }
 
   const isValid = await bcrypt.compare(password, user.password);
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
         },
       });
     } catch (e) { console.error("[Log] login_fallito:", e); }
-    return NextResponse.redirect(new URL("/login?error=invalid", req.url));
+    return NextResponse.redirect(new URL("/login?error=invalid", req.url), { status: 303 });
   }
 
   // Log successful login
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
   } catch (e) { console.error("[Log] login_ok:", e); }
 
   const destination = ROLE_REDIRECT[user.role] ?? "/dashboard/manager";
-  const res = NextResponse.redirect(new URL(destination, req.url));
+  const res = NextResponse.redirect(new URL(destination, req.url), { status: 303 });
   const opts = {
     path: "/",
     maxAge: 60 * 60 * 24,
