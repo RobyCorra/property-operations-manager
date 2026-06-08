@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentUserId } from "@/src/lib/tenant";
 import type { Prisma } from "@/src/generated/prisma/client";
 import { evaluateChecklistFormula } from "@/src/lib/formulas";
 import { parseRomeDateTime, preserveRomeTimeOnDate, setRomeTimeOnDate } from "@/src/lib/rome-datetime";
@@ -608,6 +609,14 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     updateData.startedAt = new Date();
   }
 
+  // Auto-assegna al cleaner corrente se la pulizia non era pre-assegnata
+  if (nextStatus === "IN_PROGRESS" && !task.assignedToId) {
+    const currentUserId = await getCurrentUserId();
+    if (currentUserId) {
+      (updateData as any).assignedToId = currentUserId;
+    }
+  }
+
   if (nextStatus === "AWAITING_REVIEW") {
     updateData.completedAt = task.completedAt || new Date();
 
@@ -891,6 +900,11 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   const data: any = { status: nextStatus };
   if (nextStatus === "IN_PROGRESS") {
     data.startedAt = ticket.startedAt || new Date();
+    // Auto-assegna al tecnico corrente se il ticket non era pre-assegnato
+    if (!ticket.assignedToId) {
+      const currentUserId = await getCurrentUserId();
+      if (currentUserId) data.assignedToId = currentUserId;
+    }
   }
   if (nextStatus === "AWAITING_REVIEW") {
     data.resolvedAt = ticket.resolvedAt || new Date();
