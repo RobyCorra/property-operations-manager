@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats, getSuperAdminLogs, getAIUsageAllOrgs } from "@/src/app/actions/superadmin";
+import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats, getBlobStats, getSuperAdminLogs, getAIUsageAllOrgs } from "@/src/app/actions/superadmin";
 import CreateOrgForm from "@/src/components/superadmin/create-org-form";
 import AIUsageTable from "@/src/components/superadmin/ai-usage-table";
 
@@ -33,7 +33,7 @@ export default async function SuperAdminPage() {
   const auth = await isSuperAdminAuthenticated();
   if (!auth) redirect("/superadmin/login");
 
-  const [orgs, dbStats, logs, aiUsage] = await Promise.all([getAllOrgsWithMetrics(), getDbStats(), getSuperAdminLogs(100), getAIUsageAllOrgs()]);
+  const [orgs, dbStats, blobStats, logs, aiUsage] = await Promise.all([getAllOrgsWithMetrics(), getDbStats(), getBlobStats(), getSuperAdminLogs(100), getAIUsageAllOrgs()]);
 
   const now = new Date();
   const monthlyGrowth = Array.from({ length: 6 }, (_, i) => {
@@ -57,6 +57,17 @@ export default async function SuperAdminPage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white font-sans p-6 space-y-8">
+
+      {/* Banner Blob quasi pieno */}
+      {blobStats && blobStats.usedPercent >= 80 && (
+        <div className={`rounded-xl px-4 py-3 flex items-center gap-3 ${blobStats.usedPercent >= 95 ? "bg-red-500/15 border border-red-500/40" : "bg-amber-500/10 border border-amber-500/30"}`}>
+          <span className="text-lg">{blobStats.usedPercent >= 95 ? "🚨" : "⚠️"}</span>
+          <p className="text-sm font-bold text-white">
+            Vercel Blob al <span className={blobStats.usedPercent >= 95 ? "text-red-400" : "text-amber-400"}>{blobStats.usedPercent}%</span> — {blobStats.totalSize} su 1 GB utilizzati.
+            {blobStats.usedPercent >= 95 ? " Richiede intervento immediato." : " Considera di eliminare file vecchi o fare upgrade."}
+          </p>
+        </div>
+      )}
 
       {/* Banner DB quasi pieno */}
       {dbStats.usedPercent >= 80 && (
@@ -140,6 +151,51 @@ export default async function SuperAdminPage() {
           ))}
         </div>
       </div>
+
+      {/* Blob Usage */}
+      {blobStats && (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">🗂 Vercel Blob — Utilizzo storage</h2>
+            <span className="text-xs text-slate-500">Limite piano: 1 GB · {blobStats.totalFiles} file</span>
+          </div>
+
+          {/* Barra principale */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-white">{blobStats.totalSize} usati</span>
+              <span className={`font-bold ${blobStats.usedPercent >= 80 ? "text-red-400" : blobStats.usedPercent >= 60 ? "text-amber-400" : "text-emerald-400"}`}>
+                {blobStats.usedPercent}%
+              </span>
+            </div>
+            <div className="h-3 w-full rounded-full bg-slate-800 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${blobStats.usedPercent >= 80 ? "bg-red-500" : blobStats.usedPercent >= 60 ? "bg-amber-500" : "bg-emerald-500"}`}
+                style={{ width: `${Math.max(blobStats.usedPercent, 1)}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Breakdown per categoria */}
+          <div className="space-y-2 pt-1">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Suddivisione per categoria</p>
+            {blobStats.breakdown.map(cat => (
+              <div key={cat.key} className="flex items-center gap-3">
+                <span className="text-[11px] w-5">{cat.emoji}</span>
+                <span className="text-[10px] text-slate-400 w-40 truncate">{cat.label}</span>
+                <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-sky-500/60"
+                    style={{ width: blobStats.totalBytes > 0 ? `${Math.max(Math.round((cat.bytes / blobStats.totalBytes) * 100), cat.bytes > 0 ? 1 : 0)}%` : "0%" }}
+                  />
+                </div>
+                <span className="text-[10px] text-slate-500 w-16 text-right">{cat.size}</span>
+                <span className="text-[10px] text-slate-600 w-14 text-right">{cat.count} file</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Chart + Alerts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

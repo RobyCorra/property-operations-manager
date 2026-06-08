@@ -290,3 +290,53 @@ export async function updateAILimits(orgId: string, aiMonthlyTokenLimit: number,
   });
   revalidatePath("/superadmin");
 }
+
+export async function getBlobStats() {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) return null;
+
+  try {
+    const res = await fetch("https://blob.vercel-storage.com/?prefix=&limit=1000", {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const blobs: { pathname: string; size: number }[] = data.blobs ?? [];
+
+    const LIMIT_BYTES = 1 * 1024 * 1024 * 1024; // 1 GB piano gratuito
+
+    const categories = [
+      { key: "cleaning",    label: "Foto pulizie",            emoji: "🧹", prefix: "uploads/cleaning/" },
+      { key: "maintenance", label: "Foto manutenzioni",       emoji: "🔧", prefix: "uploads/maintenance/" },
+      { key: "apartment",   label: "Allegati appartamenti",   emoji: "🏠", prefix: "uploads/apartment/" },
+      { key: "org",         label: "Loghi organizzazioni",    emoji: "🏢", prefix: "uploads/org/" },
+    ];
+
+    const breakdown = categories.map(cat => {
+      const files = blobs.filter(b => b.pathname.startsWith(cat.prefix));
+      const bytes = files.reduce((s, b) => s + (b.size ?? 0), 0);
+      return { ...cat, count: files.length, bytes };
+    });
+
+    const totalBytes = blobs.reduce((s, b) => s + (b.size ?? 0), 0);
+    const usedPercent = Math.min(Math.round((totalBytes / LIMIT_BYTES) * 100), 100);
+
+    const fmt = (b: number) => {
+      if (b >= 1024 * 1024 * 1024) return `${(b / 1024 / 1024 / 1024).toFixed(2)} GB`;
+      if (b >= 1024 * 1024) return `${(b / 1024 / 1024).toFixed(1)} MB`;
+      return `${(b / 1024).toFixed(0)} KB`;
+    };
+
+    return {
+      totalBytes,
+      totalSize: fmt(totalBytes),
+      limitBytes: LIMIT_BYTES,
+      usedPercent,
+      totalFiles: blobs.length,
+      breakdown: breakdown.map(c => ({ ...c, size: fmt(c.bytes) })),
+    };
+  } catch {
+    return null;
+  }
+}
