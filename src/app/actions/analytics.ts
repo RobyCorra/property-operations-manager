@@ -105,7 +105,7 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
         date: { gte: sixMonthsAgo },
         status: "PENDING",
       },
-      select: { date: true, apartmentId: true },
+      select: { date: true, apartmentId: true, assignedToId: true },
     }),
     // All tickets in last 6 months
     prisma.maintenanceTicket.findMany({
@@ -169,12 +169,20 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
     }
   }
 
-  // ── Fill pending cleanings ────────────────────────────────────
+  // ── Fill pending cleanings + build associations from pending too ─
   for (const c of pendingCleanings) {
     const mk = monthKey(new Date(c.date));
     if (!months.includes(mk)) continue;
     const apt = aptMap.get(c.apartmentId);
     if (apt) apt.cleanings[mk].pending++;
+
+    // Build apt↔cleaner associations even from pending cleanings
+    if (c.assignedToId) {
+      if (!cleanerAptsMap.has(c.assignedToId)) cleanerAptsMap.set(c.assignedToId, new Set());
+      cleanerAptsMap.get(c.assignedToId)!.add(c.apartmentId);
+      if (!aptCleanersMap.has(c.apartmentId)) aptCleanersMap.set(c.apartmentId, new Set());
+      aptCleanersMap.get(c.apartmentId)!.add(c.assignedToId);
+    }
   }
 
   // ── Fill maintenance stats ────────────────────────────────────
