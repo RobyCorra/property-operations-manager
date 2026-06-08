@@ -1,10 +1,38 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/src/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
+export async function superAdminLogin(secret: string): Promise<{ error?: string }> {
+  const expected = (process.env.SUPERADMIN_SECRET ?? "").trim();
+  if (!expected) return { error: "SUPERADMIN_SECRET non configurata." };
+  if (!secret || secret.trim() !== expected) {
+    try {
+      const hdrs = await headers();
+      const ip = hdrs.get("x-forwarded-for")?.split(",")[0].trim() ?? undefined;
+      await prisma.superAdminLog.create({ data: { id: `${Date.now()}-lf`, action: "LOGIN_FALLITO", detail: "Password errata", ip } });
+    } catch {}
+    return { error: "Password non valida." };
+  }
+  const cookieStore = await cookies();
+  cookieStore.set("superadmin_token", expected, {
+    path: "/",
+    maxAge: 60 * 60 * 8,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+  try {
+    const hdrs = await headers();
+    const ip = hdrs.get("x-forwarded-for")?.split(",")[0].trim() ?? undefined;
+    await prisma.superAdminLog.create({ data: { id: `${Date.now()}-ok`, action: "LOGIN", detail: "Accesso superadmin", ip } });
+  } catch {}
+  return {};
+}
 
 async function logAction(action: string, detail?: string, orgId?: string, orgName?: string) {
   try {

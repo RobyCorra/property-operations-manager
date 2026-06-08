@@ -1,8 +1,8 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats, getBlobStats, getSuperAdminLogs, getAIUsageAllOrgs } from "@/src/app/actions/superadmin";
 import CreateOrgForm from "@/src/components/superadmin/create-org-form";
 import AIUsageTable from "@/src/components/superadmin/ai-usage-table";
+import SuperAdminLoginForm from "@/src/components/superadmin/login-form";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +31,7 @@ function BarChart({ data }: { data: { label: string; value: number }[] }) {
 
 export default async function SuperAdminPage() {
   const auth = await isSuperAdminAuthenticated();
-  if (!auth) redirect("/superadmin/login");
+  if (!auth) return <SuperAdminLoginForm />;
 
   const [orgs, dbStats, blobStats, logs, aiUsage] = await Promise.all([getAllOrgsWithMetrics(), getDbStats(), getBlobStats(), getSuperAdminLogs(100), getAIUsageAllOrgs()]);
 
