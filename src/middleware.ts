@@ -12,16 +12,8 @@ const ROLE_ALLOWED_PREFIXES: Record<string, string[]> = {
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // ── Superadmin routes ──────────────────────────────────────────────────────
-  if (path.startsWith("/superadmin")) {
-    if (path === "/superadmin/login") return NextResponse.next();
-    const token = request.cookies.get("superadmin_token")?.value;
-    const secret = process.env.SUPERADMIN_SECRET;
-    if (!secret || token !== secret) {
-      return NextResponse.redirect(new URL("/superadmin/login", request.url));
-    }
-    return NextResponse.next();
-  }
+  // ── Superadmin: auth gestita inline dalle pagine stesse (nessun redirect) ──
+  if (path.startsWith("/superadmin")) return NextResponse.next();
 
   // ── Dashboard routes ───────────────────────────────────────────────────────
   if (!path.startsWith("/dashboard")) return NextResponse.next();
@@ -43,5 +35,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/superadmin", "/superadmin/:path*"],
+  matcher: ["/dashboard/:path*"],
 };

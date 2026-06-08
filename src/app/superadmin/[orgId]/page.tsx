@@ -1,8 +1,9 @@
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { isSuperAdminAuthenticated, getOrgDetail, deleteTestData } from "@/src/app/actions/superadmin";
 import ResetPasswordForm from "@/src/components/superadmin/reset-password-form";
 import CreateManagerForm from "@/src/components/superadmin/create-manager-form";
+import SuperAdminLoginForm from "@/src/components/superadmin/login-form";
 
 const ROLE_LABELS: Record<string, string> = {
   MANAGER: "Manager", CLEANER: "Pulizie", MAINTENANCE: "Manutenzione",
@@ -21,7 +22,7 @@ function formatDate(d: Date | string | null) {
 export default async function OrgDetailPage({ params }: { params: Promise<{ orgId: string }> }) {
   const { orgId } = await params;
   const auth = await isSuperAdminAuthenticated();
-  if (!auth) redirect("/superadmin/login");
+  if (!auth) return <SuperAdminLoginForm />;
 
   const org = await getOrgDetail(orgId);
   if (!org) notFound();
