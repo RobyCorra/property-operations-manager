@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   try { await prisma.superAdminLog.create({ data: { id: `${Date.now()}-ok`, action: "LOGIN", detail: "Accesso al pannello superadmin", ip } }); } catch {}
 
-  const res = NextResponse.redirect(new URL("/superadmin", req.url));
+  const res = NextResponse.redirect(new URL("/superadmin", req.url), { status: 303 });
   res.cookies.set("superadmin_token", expected, {
     path: "/",
     maxAge: 60 * 60 * 8,
