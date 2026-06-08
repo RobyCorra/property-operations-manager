@@ -16,7 +16,7 @@ export default async function ManagerMessagesPage({
   const sp = await searchParams;
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
-  const userName = cookieStore.get("userName")?.value || "Manager";
+  const userName = (() => { try { return decodeURIComponent(cookieStore.get("userName")?.value || ""); } catch { return cookieStore.get("userName")?.value || ""; } })() || "Manager";
 
   if (role !== "MANAGER") {
     redirect("/login");

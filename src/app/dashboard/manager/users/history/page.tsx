@@ -10,7 +10,7 @@ export default async function TeamHistoryPage() {
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
   const role = cookieStore.get("role")?.value;
-  const userName = cookieStore.get("userName")?.value || "User";
+  const userName = (() => { try { return decodeURIComponent(cookieStore.get("userName")?.value || ""); } catch { return cookieStore.get("userName")?.value || ""; } })() || "User";
 
   if (!userId || !role) {
     redirect("/login");

@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   const opts = { path: "/", maxAge: 60 * 60 * 24, httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" as const };
   res.cookies.set("role", "MANAGER", opts);
   res.cookies.set("userId", manager.id, opts);
-  res.cookies.set("userName", manager.name, opts);
+  res.cookies.set("userName", encodeURIComponent(manager.name), opts);
   res.cookies.set("organizationId", orgId, opts);
   res.cookies.set("impersonating", orgId, opts);
   return res;

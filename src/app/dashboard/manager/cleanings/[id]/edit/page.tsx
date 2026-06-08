@@ -11,7 +11,7 @@ import BackButton from "@/src/components/back-button";
 export default async function EditCleaningPage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
-  const userName = cookieStore.get("userName")?.value || "Manager";
+  const userName = (() => { try { return decodeURIComponent(cookieStore.get("userName")?.value || ""); } catch { return cookieStore.get("userName")?.value || ""; } })() || "Manager";
 
   if (role !== "MANAGER") {
     redirect("/login");

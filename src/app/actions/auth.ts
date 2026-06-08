@@ -69,7 +69,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   };
   cookieStore.set("role", user.role, cookieOptions);
   cookieStore.set("userId", user.id, cookieOptions);
-  cookieStore.set("userName", user.name, cookieOptions);
+  cookieStore.set("userName", encodeURIComponent(user.name), cookieOptions);
   cookieStore.set("organizationId", user.organization?.id ?? "org_default", cookieOptions);
 
   // Redirect based on role

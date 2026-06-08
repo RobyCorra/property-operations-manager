@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   };
   res.cookies.set("role", user.role, opts);
   res.cookies.set("userId", user.id, opts);
-  res.cookies.set("userName", user.name, opts);
+  res.cookies.set("userName", encodeURIComponent(user.name), opts);
   res.cookies.set("organizationId", user.organization?.id ?? "org_default", opts);
   return res;
 }
