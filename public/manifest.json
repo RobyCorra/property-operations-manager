@@ -2,7 +2,7 @@
   "name": "Property Operations Manager",
   "short_name": "PropOps",
   "description": "Gestione operativa appartamenti — pulizie, manutenzioni, prenotazioni",
-  "start_url": "/dashboard/cleaner",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
