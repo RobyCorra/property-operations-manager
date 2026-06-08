@@ -83,12 +83,12 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
-    // Completed/in-progress cleanings for stats and sparkline
+    // Cleanings COMPLETATE: solo quelle consegnate (AWAITING_REVIEW) o approvate (COMPLETED)
     prisma.cleaningTask.findMany({
       where: {
         apartment: { organizationId: orgId },
         date: { gte: sixMonthsAgo },
-        status: { not: "PENDING" },
+        status: { in: ["AWAITING_REVIEW", "COMPLETED"] },
       },
       select: {
         date: true,
@@ -98,20 +98,21 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
         supervisorReviews: { select: { decision: true } },
       },
     }),
-    // Pending cleanings per apartment (separate count, not in sparkline)
+    // Cleanings DA FARE: PENDING + IN_PROGRESS (non ancora consegnate)
     prisma.cleaningTask.findMany({
       where: {
         apartment: { organizationId: orgId },
         date: { gte: sixMonthsAgo },
-        status: "PENDING",
+        status: { in: ["PENDING", "IN_PROGRESS"] },
       },
       select: { date: true, apartmentId: true, assignedToId: true },
     }),
-    // All tickets in last 6 months
+    // Ticket manutenzione COMPLETATI: solo consegnati o approvati
     prisma.maintenanceTicket.findMany({
       where: {
         apartment: { organizationId: orgId },
         createdAt: { gte: sixMonthsAgo },
+        status: { in: ["AWAITING_REVIEW", "COMPLETED"] },
       },
       select: {
         createdAt: true,

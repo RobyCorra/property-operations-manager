@@ -117,7 +117,7 @@ function AptStatBlock({
       <div className="flex items-end justify-between">
         <div>
           <span className="text-[28px] font-[800] leading-none text-[#1c1c1e]">{stats.total}</span>
-          <div className="text-[10px] text-[#8e8e93] mt-0.5">completate</div>
+          <div className="text-[10px] text-[#8e8e93] mt-0.5">{isClean ? "consegnate" : "terminate"}</div>
         </div>
         <Sparkline values={monthValues} warn={warn} width={80} height={28} />
       </div>
