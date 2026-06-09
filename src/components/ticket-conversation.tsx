@@ -119,8 +119,11 @@ export default function TicketConversation({
     formData.append("senderName", currentUserName);
 
     const tempText = formData.get("text") as string;
-    const file = formData.get("files") as File | null;
-    if (!tempText && !file?.size) return;
+    // Controlla entrambi gli input file (generico + foto)
+    const fileGeneric = formData.get("files") as File | null;
+    const fileImage = formData.get("imageFile") as File | null;
+    const file = (fileGeneric && fileGeneric.size > 0) ? fileGeneric : (fileImage && fileImage.size > 0) ? fileImage : null;
+    if (!tempText?.trim() && !file) return;
 
     if (file && file.size > 0) {
       setIsUploading(true);
@@ -131,6 +134,7 @@ export default function TicketConversation({
           { access: "public", handleUploadUrl: "/api/blob-upload" }
         );
         formData.delete("files");
+        formData.delete("imageFile");
         formData.append("blobUrl", blob.url);
         formData.append("blobFilename", file.name);
         formData.append("blobMimeType", file.type || "application/octet-stream");
@@ -476,15 +480,15 @@ export default function TicketConversation({
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                   <circle cx="12" cy="13" r="4"/>
                 </svg>
-                <input ref={imageInputRef} type="file" name="files" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
+                <input ref={imageInputRef} type="file" name="imageFile" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
               </button>
               {/* Text input */}
               <input autoComplete="off" type="text" name="text"
                 placeholder="Scrivi un messaggio..."
                 className="flex-1 min-w-0 bg-gray-50 border-none rounded-2xl px-3 py-2 text-sm focus:ring-2 focus:ring-black transition-all outline-none" />
-              {/* Mic button — nascosto su schermi molto piccoli */}
+              {/* Mic button */}
               <button type="button" onClick={startRecording}
-                className="hidden sm:flex w-10 h-10 items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
                 title="Registra messaggio vocale">
                 <svg width="16" height="16" fill="none" stroke="#475569" stroke-width="1.8" viewBox="0 0 24 24">
                   <rect x="9" y="2" width="6" height="11" rx="3"/>
