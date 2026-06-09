@@ -790,7 +790,7 @@ export async function approveCleaningReview(cleaningTaskId: string, supervisorId
     }),
   ]);
 
-  const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true } });
+  const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true, organizationId: true } });
   await prisma.notification.create({
     data: {
       type: "CLEANING",
@@ -799,6 +799,13 @@ export async function approveCleaningReview(cleaningTaskId: string, supervisorId
       apartmentId: task.apartmentId,
     },
   });
+
+  await sendPushToRole("MANAGER" as Role, {
+    title: "✅ Pulizia approvata dal supervisor",
+    body: `La pulizia presso ${apartment?.name ?? "un appartamento"} è stata approvata.`,
+    url: `/dashboard/manager/cleanings/${cleaningTaskId}/edit`,
+    tag: `cleaning-approved-${cleaningTaskId}`,
+  }, undefined, apartment?.organizationId ?? null).catch(console.error);
 
   revalidatePath("/dashboard/cleaner");
   revalidatePath("/dashboard/supervisor");
@@ -832,7 +839,7 @@ export async function rejectCleaningReview(
     }),
   ]);
 
-  const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true } });
+  const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true, organizationId: true } });
   await prisma.notification.create({
     data: {
       type: "CLEANING",
@@ -841,6 +848,13 @@ export async function rejectCleaningReview(
       apartmentId: task.apartmentId,
     },
   });
+
+  await sendPushToRole("MANAGER" as Role, {
+    title: "⚠️ Pulizia richiede correzioni",
+    body: `Il supervisor ha richiesto correzioni per la pulizia presso ${apartment?.name ?? "un appartamento"}.`,
+    url: `/dashboard/manager/cleanings/${cleaningTaskId}/edit`,
+    tag: `cleaning-rejected-${cleaningTaskId}`,
+  }, undefined, apartment?.organizationId ?? null).catch(console.error);
 
   revalidatePath("/dashboard/cleaner");
   revalidatePath("/dashboard/supervisor");
@@ -912,6 +926,22 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   }
 
   await prisma.maintenanceTicket.update({ where: { id }, data });
+
+  // Quando il tecnico avvia il ticket → notifica manager
+  if (nextStatus === "IN_PROGRESS") {
+    const apartment = await prisma.apartment.findUnique({
+      where: { id: ticket.apartmentId },
+      select: { name: true, organizationId: true },
+    });
+    const techName = ticket.assignedTo?.name ?? "Il tecnico";
+    const aptName = apartment?.name ?? "un appartamento";
+    await sendPushToRole("MANAGER" as Role, {
+      title: "🔧 Intervento avviato",
+      body: `${techName} ha avviato "${ticket.title}" presso ${aptName}.`,
+      url: `/dashboard/manager/maintenance/${id}/edit`,
+      tag: `maintenance-started-${id}`,
+    }, "maintenanceStarted", apartment?.organizationId ?? null).catch(console.error);
+  }
 
   // Quando il tecnico termina → notifica manager E supervisor + messaggio in chat
   if (nextStatus === "AWAITING_REVIEW") {
