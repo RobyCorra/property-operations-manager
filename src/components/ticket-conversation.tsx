@@ -460,19 +460,19 @@ export default function TicketConversation({
                 )}
               </div>
             )}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {/* Attachment generico */}
               <button type="button" onClick={() => fileInputRef.current?.click()}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
+                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
                 title="Allega file">
-                <span className="text-xl">📎</span>
+                <span className="text-lg">📎</span>
                 <input ref={fileInputRef} type="file" name="files" className="hidden" onChange={handleFileChange} />
               </button>
               {/* Foto / fotocamera */}
               <button type="button" onClick={() => imageInputRef.current?.click()}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
+                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
                 title="Invia foto">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                   <circle cx="12" cy="13" r="4"/>
                 </svg>
@@ -481,10 +481,10 @@ export default function TicketConversation({
               {/* Text input */}
               <input autoComplete="off" type="text" name="text"
                 placeholder="Scrivi un messaggio..."
-                className="flex-1 bg-gray-50 border-none rounded-2xl px-4 py-2 text-sm focus:ring-2 focus:ring-black transition-all outline-none" />
-              {/* Mic button */}
+                className="flex-1 min-w-0 bg-gray-50 border-none rounded-2xl px-3 py-2 text-sm focus:ring-2 focus:ring-black transition-all outline-none" />
+              {/* Mic button — nascosto su schermi molto piccoli */}
               <button type="button" onClick={startRecording}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
+                className="hidden sm:flex w-10 h-10 items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
                 title="Registra messaggio vocale">
                 <svg width="16" height="16" fill="none" stroke="#475569" stroke-width="1.8" viewBox="0 0 24 24">
                   <rect x="9" y="2" width="6" height="11" rx="3"/>
