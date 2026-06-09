@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { playPushAlertSound, setupNotificationAudio } from "@/src/lib/notification-sound";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
 
@@ -18,6 +19,19 @@ type State = "idle" | "prompt" | "subscribing" | "subscribed" | "error" | "denie
 export default function PushPermissionRequest() {
   const [state, setState] = useState<State>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Sblocca AudioContext al primo gesto e ascolta messaggi SW per suonare alert
+  useEffect(() => {
+    setupNotificationAudio();
+    if (!("serviceWorker" in navigator)) return;
+    const handler = (event: MessageEvent) => {
+      if (event.data?.type === "PUSH_RECEIVED") {
+        playPushAlertSound();
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", handler);
+    return () => navigator.serviceWorker.removeEventListener("message", handler);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

@@ -63,6 +63,29 @@ function doPing(c: AudioContext, startTime: number, freq: number, vol = 0.18) {
   osc.stop(startTime + 0.5);
 }
 
+/** Suona un triplo ping crescente — usato per le push notification in arrivo. */
+export function playPushAlertSound() {
+  try {
+    const c = getOrCreateCtx();
+    if (!c) return;
+
+    const play = () => {
+      const t = c.currentTime;
+      doPing(c, t,        660, 0.15);
+      doPing(c, t + 0.13, 880, 0.18);
+      doPing(c, t + 0.26, 1100, 0.22);
+    };
+
+    if (c.state === "suspended") {
+      c.resume().then(play).catch(() => {});
+    } else {
+      play();
+    }
+  } catch {
+    // Fail silenzioso
+  }
+}
+
 /** Suona un doppio ping. Funziona dopo il primo gesto utente sulla pagina. */
 export function playNotificationSound() {
   try {

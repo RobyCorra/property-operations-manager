@@ -40,6 +40,10 @@ self.addEventListener("push", (event) => {
       "setAppBadge" in self.navigator
         ? self.navigator.setAppBadge(1).catch(() => {})
         : Promise.resolve(),
+      // Notifica i client aperti per suonare l'alert
+      self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+        clientList.forEach((client) => client.postMessage({ type: "PUSH_RECEIVED" }));
+      }),
     ])
   );
 });
