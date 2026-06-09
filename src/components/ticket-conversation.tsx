@@ -63,8 +63,10 @@ export default function TicketConversation({
   const scrollRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [selectedFilePreview, setSelectedFilePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   // Voice recording
@@ -147,6 +149,7 @@ export default function TicketConversation({
         if (result.success) {
           formRef.current?.reset();
           setSelectedFileName(null);
+          setSelectedFilePreview(null);
           router.refresh();
         } else if (result.error) {
           setError(result.error);
@@ -160,6 +163,12 @@ export default function TicketConversation({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setSelectedFileName(file ? file.name : null);
+    if (file && file.type.startsWith("image/")) {
+      const url = URL.createObjectURL(file);
+      setSelectedFilePreview(url);
+    } else {
+      setSelectedFilePreview(null);
+    }
   };
 
   // ── Voice recording ───────────────────────────────────────────────────────
@@ -434,21 +443,40 @@ export default function TicketConversation({
         {recState === "idle" && (
           <form ref={formRef} onSubmit={handleSubmit}>
             {selectedFileName && (
-              <div className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-[10px] font-bold mb-2 animate-in fade-in ${
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold mb-2 animate-in fade-in ${
                 isUploading ? "bg-blue-100 text-blue-600" : isPending ? "bg-gray-100 text-gray-500" : "bg-blue-50 text-blue-700"
               }`}>
-                <span className="truncate">{isUploading ? "📤 Caricamento: " : isPending ? "📤 Inviando: " : "📎 "}{selectedFileName}</span>
+                {selectedFilePreview ? (
+                  <img src={selectedFilePreview} alt="Preview" className="w-10 h-10 rounded-lg object-cover shrink-0 border border-blue-200" />
+                ) : null}
+                <span className="truncate flex-1">{isUploading ? "📤 Caricamento: " : isPending ? "📤 Inviando: " : selectedFilePreview ? "🖼 " : "📎 "}{selectedFileName}</span>
                 {!isPending && !isUploading && (
-                  <button type="button" onClick={() => { if (fileInputRef.current) fileInputRef.current.value = ""; setSelectedFileName(null); }} className="ml-2 hover:opacity-70">✕</button>
+                  <button type="button" onClick={() => {
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                    if (imageInputRef.current) imageInputRef.current.value = "";
+                    setSelectedFileName(null);
+                    setSelectedFilePreview(null);
+                  }} className="ml-1 hover:opacity-70 shrink-0">✕</button>
                 )}
               </div>
             )}
             <div className="flex items-center gap-2">
-              {/* Attachment */}
+              {/* Attachment generico */}
               <button type="button" onClick={() => fileInputRef.current?.click()}
-                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0">
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
+                title="Allega file">
                 <span className="text-xl">📎</span>
                 <input ref={fileInputRef} type="file" name="files" className="hidden" onChange={handleFileChange} />
+              </button>
+              {/* Foto / fotocamera */}
+              <button type="button" onClick={() => imageInputRef.current?.click()}
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
+                title="Invia foto">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <input ref={imageInputRef} type="file" name="files" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
               </button>
               {/* Text input */}
               <input autoComplete="off" type="text" name="text"
