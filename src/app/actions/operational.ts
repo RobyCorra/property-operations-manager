@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { prisma } from "@/src/lib/prisma";
-import { getCurrentUserId } from "@/src/lib/tenant";
+import { getCurrentUserId, getCurrentOrg } from "@/src/lib/tenant";
 import type { Prisma } from "@/src/generated/prisma/client";
 import { evaluateChecklistFormula } from "@/src/lib/formulas";
 import { parseRomeDateTime, preserveRomeTimeOnDate, setRomeTimeOnDate } from "@/src/lib/rome-datetime";
@@ -489,7 +489,8 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
     return { error: uploadResult.error || "Errore durante il caricamento allegato." };
   }
 
-  const apt = await prisma.apartment.findUnique({ where: { id: apartmentId }, select: { name: true } });
+  const apt = await prisma.apartment.findUnique({ where: { id: apartmentId }, select: { name: true, organizationId: true } });
+  const aptOrgId = apt?.organizationId ?? null;
 
   // Push al tecnico assegnato
   if (assignedToId) {
@@ -507,7 +508,7 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
     body: `"${title}" presso ${apt?.name ?? "un appartamento"}.`,
     url: `/dashboard/manager/maintenance/${ticket.id}/edit`,
     tag: `maintenance-new-${ticket.id}`,
-  }, "maintenanceNew").catch(console.error);
+  }, "maintenanceNew", aptOrgId).catch(console.error);
 
   revalidatePath("/dashboard/manager/maintenance");
   revalidatePath("/dashboard/maintenance");
@@ -639,7 +640,7 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
   if (nextStatus === "IN_PROGRESS") {
     const apartment = await prisma.apartment.findUnique({
       where: { id: task.apartmentId },
-      select: { name: true },
+      select: { name: true, organizationId: true },
     });
     const cleanerName = task.assignedTo?.name ?? "Il cleaner";
     const aptName = apartment?.name ?? "un appartamento";
@@ -656,14 +657,14 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       body: `${cleanerName} ha iniziato la pulizia presso ${aptName}.`,
       url: `/dashboard/manager/cleanings/${id}/edit`,
       tag: `cleaning-started-${id}`,
-    }, "cleaningStarted").catch(console.error);
+    }, "cleaningStarted", apartment?.organizationId ?? null).catch(console.error);
   }
 
   // Quando il cleaner invia per verifica → notifica manager E supervisor
   if (nextStatus === "AWAITING_REVIEW") {
     const apartment = await prisma.apartment.findUnique({
       where: { id: task.apartmentId },
-      select: { name: true },
+      select: { name: true, organizationId: true },
     });
     await prisma.$transaction([
       prisma.notification.create({
@@ -692,7 +693,7 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       body: `${cleanerName} ha completato la pulizia presso ${aptName}.`,
       url: `/dashboard/manager/cleanings/${id}/edit`,
       tag: `cleaning-review-${id}`,
-    }, "cleaningCompleted").catch(console.error);
+    }, "cleaningCompleted", apartment?.organizationId ?? null).catch(console.error);
   }
 
   revalidatePath("/dashboard/cleaner");
@@ -916,7 +917,7 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
   if (nextStatus === "AWAITING_REVIEW") {
     const apartment = await prisma.apartment.findUnique({
       where: { id: ticket.apartmentId },
-      select: { name: true },
+      select: { name: true, organizationId: true },
     });
     await prisma.$transaction([
       prisma.notification.create({
@@ -944,7 +945,7 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
       body: `${techName} ha completato "${ticket.title}" presso ${aptName}.`,
       url: `/dashboard/manager/maintenance/${id}/edit`,
       tag: `maintenance-review-${id}`,
-    }).catch(console.error);
+    }, undefined, apartment?.organizationId ?? null).catch(console.error);
   }
 
   revalidatePath("/dashboard/maintenance");
@@ -1169,8 +1170,9 @@ export async function createTicketMessage(ticketId: string, prevState: any, form
     // Push al destinatario del messaggio
     const ticket = await prisma.maintenanceTicket.findUnique({
       where: { id: ticketId },
-      select: { assignedToId: true, title: true },
+      select: { assignedToId: true, title: true, apartment: { select: { organizationId: true } } },
     });
+    const orgIdMaint = ticket?.apartment?.organizationId ?? null;
     if (role === "MANAGER" && ticket?.assignedToId) {
       // Manager scrive al tecnico
       await sendPushToUser(ticket.assignedToId, {
@@ -1186,7 +1188,7 @@ export async function createTicketMessage(ticketId: string, prevState: any, form
         body: text ? text.slice(0, 80) : "Ha inviato un allegato",
         url: `/dashboard/manager/maintenance/${ticketId}/edit`,
         tag: `chat-maintenance-${ticketId}`,
-      }).catch(console.error);
+      }, undefined, orgIdMaint).catch(console.error);
     }
 
     revalidatePath("/dashboard/maintenance");
@@ -1244,8 +1246,9 @@ export async function createCleaningTaskMessage(taskId: string, prevState: any, 
     // Push al destinatario del messaggio
     const task = await prisma.cleaningTask.findUnique({
       where: { id: taskId },
-      select: { assignedToId: true },
+      select: { assignedToId: true, apartment: { select: { organizationId: true } } },
     });
+    const orgId = task?.apartment?.organizationId ?? null;
     if (role === "MANAGER" && task?.assignedToId) {
       // Manager scrive al cleaner
       await sendPushToUser(task.assignedToId, {
@@ -1261,7 +1264,7 @@ export async function createCleaningTaskMessage(taskId: string, prevState: any, 
         body: text ? text.slice(0, 80) : "Ha inviato un allegato",
         url: `/dashboard/manager/cleanings/${taskId}/edit`,
         tag: `chat-cleaning-${taskId}`,
-      }).catch(console.error);
+      }, undefined, orgId).catch(console.error);
     }
 
     revalidatePath("/dashboard/cleaner");

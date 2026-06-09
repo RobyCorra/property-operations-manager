@@ -32,9 +32,9 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
 
 // ─── Send to all users with a given role ────────────────────────────────────
 
-export async function sendPushToRole(role: Role, payload: PushPayload, prefKey?: string) {
+export async function sendPushToRole(role: Role, payload: PushPayload, prefKey?: string, orgId?: string | null) {
   const users = await prisma.user.findMany({
-    where: { role },
+    where: { role, ...(orgId ? { organizationId: orgId } : {}) },
     select: { id: true, notificationPrefs: true, pushSubscriptions: true },
   });
   const subs = users
@@ -46,9 +46,9 @@ export async function sendPushToRole(role: Role, payload: PushPayload, prefKey?:
 
 // ─── Send to multiple roles ──────────────────────────────────────────────────
 
-export async function sendPushToRoles(roles: Role[], payload: PushPayload, prefKey?: string) {
+export async function sendPushToRoles(roles: Role[], payload: PushPayload, prefKey?: string, orgId?: string | null) {
   const users = await prisma.user.findMany({
-    where: { role: { in: roles } },
+    where: { role: { in: roles }, ...(orgId ? { organizationId: orgId } : {}) },
     select: { id: true, notificationPrefs: true, pushSubscriptions: true },
   });
   const subs = users
