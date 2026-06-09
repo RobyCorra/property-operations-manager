@@ -7,6 +7,8 @@ import { Clock, RotateCcw, Building2, Sparkles, Wrench, BarChart2 } from "lucide
 
 const MONTH_NAMES = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
+function emptyStats(): PeriodStats { return { total: 0, late: 0, reviews: 0, pending: 0 }; }
+
 type Filters = {
   cleaners: { id: string; name: string }[];
   manutentori: { id: string; name: string }[];
@@ -307,10 +309,20 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
                 </div>
               )}
               {apartments.map(apt => {
-                const cStats = apt.cleanings[selectedMonth] ?? { total: 0, late: 0, reviews: 0 };
-                const mStats = apt.maintenance[selectedMonth] ?? { total: 0, late: 0, reviews: 0 };
-                const cVals = data.months.map(m => apt.cleanings[m]?.total ?? 0);
-                const mVals = data.months.map(m => apt.maintenance[m]?.total ?? 0);
+                // Se c'è un filtro cleaner attivo usa il breakdown per cleaner+apt
+                const cStats = filterCleaner
+                  ? (data.cleanerAptStats?.[filterCleaner]?.[apt.id]?.[selectedMonth] ?? emptyStats())
+                  : (apt.cleanings[selectedMonth] ?? emptyStats());
+                // Se c'è un filtro manut attivo usa il breakdown per manut+apt
+                const mStats = filterManut
+                  ? (data.manutAptStats?.[filterManut]?.[apt.id]?.[selectedMonth] ?? emptyStats())
+                  : (apt.maintenance[selectedMonth] ?? emptyStats());
+                const cVals = filterCleaner
+                  ? data.months.map(m => data.cleanerAptStats?.[filterCleaner]?.[apt.id]?.[m]?.total ?? 0)
+                  : data.months.map(m => apt.cleanings[m]?.total ?? 0);
+                const mVals = filterManut
+                  ? data.months.map(m => data.manutAptStats?.[filterManut]?.[apt.id]?.[m]?.total ?? 0)
+                  : data.months.map(m => apt.maintenance[m]?.total ?? 0);
                 const warn = isAptWarn(apt);
                 return (
                   <div key={apt.id} className="bg-white p-[18px] flex flex-col gap-3.5">
@@ -362,12 +374,16 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
               <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">Nessun cleaner con dati negli ultimi 6 mesi</div>
             )}
             {cleaners.map((cleaner, i) => {
-              const warn = isPersonWarn(cleaner);
-              const curStats = cleaner.months[selectedMonth] ?? { total: 0, late: 0, reviews: 0 };
-              const vals = data.months.map(m => cleaner.months[m]?.total ?? 0);
+              // Se filtro appartamento attivo usa stats per cleaner+apt
+              const getMonthStats = (m: MonthKey) => filterAptClean
+                ? (data.cleanerAptStats?.[cleaner.id]?.[filterAptClean]?.[m] ?? emptyStats())
+                : (cleaner.months[m] ?? emptyStats());
+              const warn = data.months.some(m => { const s = getMonthStats(m); return s.late > 0 || s.reviews > 0; });
+              const curStats = getMonthStats(selectedMonth);
+              const vals = data.months.map(m => getMonthStats(m).total);
               const totalAll = vals.reduce((a, b) => a + b, 0);
-              const totalLate = data.months.reduce((s, m) => s + (cleaner.months[m]?.late ?? 0), 0);
-              const totalRev = data.months.reduce((s, m) => s + (cleaner.months[m]?.reviews ?? 0), 0);
+              const totalLate = data.months.reduce((s, m) => s + getMonthStats(m).late, 0);
+              const totalRev = data.months.reduce((s, m) => s + getMonthStats(m).reviews, 0);
               return (
                 <div
                   key={cleaner.id}
@@ -442,12 +458,16 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
               <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">Nessun manutentore con dati negli ultimi 6 mesi</div>
             )}
             {manutentori.map((manut, i) => {
-              const warn = isPersonWarn(manut);
-              const curStats = manut.months[selectedMonth] ?? { total: 0, late: 0, reviews: 0 };
-              const vals = data.months.map(m => manut.months[m]?.total ?? 0);
+              // Se filtro appartamento attivo usa stats per manut+apt
+              const getMonthStatsM = (m: MonthKey) => filterAptManut
+                ? (data.manutAptStats?.[manut.id]?.[filterAptManut]?.[m] ?? emptyStats())
+                : (manut.months[m] ?? emptyStats());
+              const warn = data.months.some(m => { const s = getMonthStatsM(m); return s.late > 0 || s.reviews > 0; });
+              const curStats = getMonthStatsM(selectedMonth);
+              const vals = data.months.map(m => getMonthStatsM(m).total);
               const totalAll = vals.reduce((a, b) => a + b, 0);
-              const totalLate = data.months.reduce((s, m) => s + (manut.months[m]?.late ?? 0), 0);
-              const totalRev = data.months.reduce((s, m) => s + (manut.months[m]?.reviews ?? 0), 0);
+              const totalLate = data.months.reduce((s, m) => s + getMonthStatsM(m).late, 0);
+              const totalRev = data.months.reduce((s, m) => s + getMonthStatsM(m).reviews, 0);
               return (
                 <div
                   key={manut.id}

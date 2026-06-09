@@ -36,6 +36,9 @@ export type AnalyticsData = {
   manutApts: Record<string, string[]>;     // manutId  → aptId[]
   aptCleaners: Record<string, string[]>;   // aptId    → cleanerId[]
   aptManuts: Record<string, string[]>;     // aptId    → manutId[]
+  // per-cleaner-per-apt breakdown (for filtered stats)
+  cleanerAptStats: Record<string, Record<string, Record<MonthKey, PeriodStats>>>;
+  manutAptStats: Record<string, Record<string, Record<MonthKey, PeriodStats>>>;
 };
 
 function monthKey(d: Date): MonthKey {
@@ -144,6 +147,28 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
   const aptCleanersMap = new Map<string, Set<string>>();
   const aptManutsMap = new Map<string, Set<string>>();
 
+  // Per-cleaner-per-apt breakdown: cleanerId → aptId → monthKey → PeriodStats
+  const cleanerAptStatsMap = new Map<string, Map<string, Map<MonthKey, PeriodStats>>>();
+  const manutAptStatsMap = new Map<string, Map<string, Map<MonthKey, PeriodStats>>>();
+
+  function getCleanerAptStats(cleanerId: string, aptId: string, mk: MonthKey): PeriodStats {
+    if (!cleanerAptStatsMap.has(cleanerId)) cleanerAptStatsMap.set(cleanerId, new Map());
+    const byApt = cleanerAptStatsMap.get(cleanerId)!;
+    if (!byApt.has(aptId)) byApt.set(aptId, new Map());
+    const byMonth = byApt.get(aptId)!;
+    if (!byMonth.has(mk)) byMonth.set(mk, emptyStats());
+    return byMonth.get(mk)!;
+  }
+
+  function getManutAptStats(manutId: string, aptId: string, mk: MonthKey): PeriodStats {
+    if (!manutAptStatsMap.has(manutId)) manutAptStatsMap.set(manutId, new Map());
+    const byApt = manutAptStatsMap.get(manutId)!;
+    if (!byApt.has(aptId)) byApt.set(aptId, new Map());
+    const byMonth = byApt.get(aptId)!;
+    if (!byMonth.has(mk)) byMonth.set(mk, emptyStats());
+    return byMonth.get(mk)!;
+  }
+
   // ── Fill cleanings stats ──────────────────────────────────────
   for (const c of rawCleanings) {
     const mk = monthKey(new Date(c.date));
@@ -158,11 +183,19 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
 
     if (c.assignedToId) {
       const cleaner = cleanerMap.get(c.assignedToId);
+      const isLate = !!(c.startedAt && new Date(c.startedAt) > new Date(c.date));
+      const hasReview = c.supervisorReviews.some(r => r.decision !== "APPROVED");
       if (cleaner) {
         cleaner.months[mk].total++;
-        if (c.startedAt && new Date(c.startedAt) > new Date(c.date)) cleaner.months[mk].late++;
-        if (c.supervisorReviews.some(r => r.decision !== "APPROVED")) cleaner.months[mk].reviews++;
+        if (isLate) cleaner.months[mk].late++;
+        if (hasReview) cleaner.months[mk].reviews++;
       }
+      // Breakdown per cleaner+apt
+      const cas = getCleanerAptStats(c.assignedToId, c.apartmentId, mk);
+      cas.total++;
+      if (isLate) cas.late++;
+      if (hasReview) cas.reviews++;
+
       if (!cleanerAptsMap.has(c.assignedToId)) cleanerAptsMap.set(c.assignedToId, new Set());
       cleanerAptsMap.get(c.assignedToId)!.add(c.apartmentId);
       if (!aptCleanersMap.has(c.apartmentId)) aptCleanersMap.set(c.apartmentId, new Set());
@@ -201,12 +234,19 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
 
     if (t.assignedToId) {
       const manut = manutMap.get(t.assignedToId);
+      const isLate = !!(t.startedAt && t.scheduledStart && new Date(t.startedAt) > new Date(t.scheduledStart));
+      const hasReview = t.supervisorReviews.some(r => r.decision !== "APPROVED");
       if (manut) {
         manut.months[mk].total++;
-        if (t.startedAt && t.scheduledStart && new Date(t.startedAt) > new Date(t.scheduledStart))
-          manut.months[mk].late++;
-        if (t.supervisorReviews.some(r => r.decision !== "APPROVED")) manut.months[mk].reviews++;
+        if (isLate) manut.months[mk].late++;
+        if (hasReview) manut.months[mk].reviews++;
       }
+      // Breakdown per manut+apt
+      const mas = getManutAptStats(t.assignedToId, t.apartmentId, mk);
+      mas.total++;
+      if (isLate) mas.late++;
+      if (hasReview) mas.reviews++;
+
       if (!manutAptsMap.has(t.assignedToId)) manutAptsMap.set(t.assignedToId, new Set());
       manutAptsMap.get(t.assignedToId)!.add(t.apartmentId);
       if (!aptManutsMap.has(t.apartmentId)) aptManutsMap.set(t.apartmentId, new Set());
@@ -217,6 +257,29 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
   const toRecord = (m: Map<string, Set<string>>) =>
     Object.fromEntries([...m.entries()].map(([k, v]) => [k, [...v]]));
 
+  // Serialize nested breakdown maps
+  const serializeCleanerAptStats = () => {
+    const out: Record<string, Record<string, Record<MonthKey, PeriodStats>>> = {};
+    for (const [cleanerId, byApt] of cleanerAptStatsMap) {
+      out[cleanerId] = {};
+      for (const [aptId, byMonth] of byApt) {
+        out[cleanerId][aptId] = Object.fromEntries(byMonth.entries());
+      }
+    }
+    return out;
+  };
+
+  const serializeManutAptStats = () => {
+    const out: Record<string, Record<string, Record<MonthKey, PeriodStats>>> = {};
+    for (const [manutId, byApt] of manutAptStatsMap) {
+      out[manutId] = {};
+      for (const [aptId, byMonth] of byApt) {
+        out[manutId][aptId] = Object.fromEntries(byMonth.entries());
+      }
+    }
+    return out;
+  };
+
   return {
     months,
     apartments: [...aptMap.values()],
@@ -226,6 +289,8 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
     manutApts: toRecord(manutAptsMap),
     aptCleaners: toRecord(aptCleanersMap),
     aptManuts: toRecord(aptManutsMap),
+    cleanerAptStats: serializeCleanerAptStats(),
+    manutAptStats: serializeManutAptStats(),
   };
 }
 
