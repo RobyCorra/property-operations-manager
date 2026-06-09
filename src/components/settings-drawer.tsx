@@ -74,7 +74,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
   const [logoResult, setLogoResult] = useState<{ success?: boolean; error?: string } | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
   // notification prefs
-  const [prefs, setPrefs] = useState<NotificationPrefs>({ cleaningStarted: true, cleaningCompleted: true, maintenanceNew: true });
+  const [prefs, setPrefs] = useState<NotificationPrefs>({ cleaningStarted: true, cleaningCompleted: true, maintenanceNew: true, chatCleaner: true, chatMaintenance: true });
   const [prefsSaved, setPrefsSaved] = useState(false);
 
   useEffect(() => {
@@ -348,32 +348,62 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
 
           {/* ── NOTIFICHE ── */}
           {data && section === "notifiche" && (
-            <div className="bg-white rounded-[14px] overflow-hidden" style={{ border: ".5px solid #e5e5ea" }}>
-              {[
-                { key: "cleaningStarted" as const, label: "Pulizia avviata", sub: "Quando un cleaner inizia una pulizia" },
-                { key: "cleaningCompleted" as const, label: "Pulizia completata", sub: "Quando un cleaner termina e invia per verifica" },
-                { key: "maintenanceNew" as const, label: "Nuovo ticket manutenzione", sub: "Quando viene aperto un ticket" },
-              ].map((item, i, arr) => (
-                <div
-                  key={item.key}
-                  className="flex items-center justify-between px-4 py-3.5"
-                  style={{ borderBottom: i < arr.length - 1 ? ".5px solid #e5e5ea" : "none" }}
-                >
-                  <div>
-                    <p className="text-[14px] font-[600] text-[#1c1c1e]">{item.label}</p>
-                    <p className="text-[12px] text-[#8e8e93] mt-0.5">{item.sub}</p>
-                  </div>
-                  <Toggle checked={prefs[item.key]} onChange={v => handlePrefChange(item.key, v)} />
+            <>
+              {/* Gruppo: Attività */}
+              <div>
+                <p className="text-[11px] font-[700] text-[#8e8e93] uppercase tracking-[.06em] px-1 mb-2">Attività</p>
+                <div className="bg-white rounded-[14px] overflow-hidden" style={{ border: ".5px solid #e5e5ea" }}>
+                  {[
+                    { key: "cleaningStarted" as const, label: "Pulizia avviata", sub: "Quando un cleaner inizia una pulizia" },
+                    { key: "cleaningCompleted" as const, label: "Pulizia completata", sub: "Quando il cleaner invia per verifica" },
+                    { key: "maintenanceNew" as const, label: "Nuovo ticket manutenzione", sub: "Quando viene aperto un ticket" },
+                  ].map((item, i, arr) => (
+                    <div
+                      key={item.key}
+                      className="flex items-center justify-between px-4 py-3.5"
+                      style={{ borderBottom: i < arr.length - 1 ? ".5px solid #e5e5ea" : "none" }}
+                    >
+                      <div>
+                        <p className="text-[14px] font-[600] text-[#1c1c1e]">{item.label}</p>
+                        <p className="text-[12px] text-[#8e8e93] mt-0.5">{item.sub}</p>
+                      </div>
+                      <Toggle checked={prefs[item.key]} onChange={v => handlePrefChange(item.key, v)} />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Gruppo: Chat */}
+              <div>
+                <p className="text-[11px] font-[700] text-[#8e8e93] uppercase tracking-[.06em] px-1 mb-2">Chat</p>
+                <div className="bg-white rounded-[14px] overflow-hidden" style={{ border: ".5px solid #e5e5ea" }}>
+                  {[
+                    { key: "chatCleaner" as const, label: "Messaggi dal cleaner", sub: "Notifica quando un cleaner scrive in chat" },
+                    { key: "chatMaintenance" as const, label: "Messaggi dal manutentore", sub: "Notifica quando un tecnico scrive in chat" },
+                  ].map((item, i, arr) => (
+                    <div
+                      key={item.key}
+                      className="flex items-center justify-between px-4 py-3.5"
+                      style={{ borderBottom: i < arr.length - 1 ? ".5px solid #e5e5ea" : "none" }}
+                    >
+                      <div>
+                        <p className="text-[14px] font-[600] text-[#1c1c1e]">{item.label}</p>
+                        <p className="text-[12px] text-[#8e8e93] mt-0.5">{item.sub}</p>
+                      </div>
+                      <Toggle checked={prefs[item.key]} onChange={v => handlePrefChange(item.key, v)} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {prefsSaved && (
-                <div className="px-4 py-2.5 border-t border-[#e5e5ea]" style={{ background: "#f9f9fb" }}>
+                <div className="px-4 py-2.5 rounded-[10px] bg-[#f0fdf4]" style={{ border: ".5px solid #bbf7d0" }}>
                   <p className="flex items-center gap-1.5 text-[12px] text-[#30d158] font-[600]">
                     <Check size={12} strokeWidth={2.5} /> Preferenze salvate
                   </p>
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </div>

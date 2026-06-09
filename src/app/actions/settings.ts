@@ -10,12 +10,16 @@ export type NotificationPrefs = {
   cleaningStarted: boolean;
   cleaningCompleted: boolean;
   maintenanceNew: boolean;
+  chatCleaner: boolean;
+  chatMaintenance: boolean;
 };
 
 const DEFAULT_PREFS: NotificationPrefs = {
   cleaningStarted: true,
   cleaningCompleted: true,
   maintenanceNew: true,
+  chatCleaner: true,
+  chatMaintenance: true,
 };
 
 export async function getSettingsData() {
