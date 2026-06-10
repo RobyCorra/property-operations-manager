@@ -36,15 +36,15 @@ export default function CleaningShareButton({ cleaningId, existingToken }: Clean
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-full overflow-hidden">
       {/* Link generato */}
       {link && (
-        <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-3 py-2">
-          <Link2 className="w-4 h-4 text-indigo-400 flex-shrink-0" />
+        <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-3 py-2 overflow-hidden">
+          <Link2 className="w-4 h-4 text-indigo-400 shrink-0" />
           <span className="text-xs text-indigo-700 font-mono truncate flex-1 min-w-0">{link}</span>
           <button
             onClick={handleCopy}
-            className="flex-shrink-0 flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
+            className="shrink-0 flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors"
           >
             {copied ? <CheckCheck className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
             {copied ? "Copiato!" : "Copia"}
@@ -53,25 +53,23 @@ export default function CleaningShareButton({ cleaningId, existingToken }: Clean
       )}
 
       {/* Bottoni */}
-      <div className="flex gap-2">
-        <button
-          onClick={handleGenerate}
-          disabled={loading}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-white border border-slate-200 hover:border-indigo-300 hover:text-indigo-700 transition-colors disabled:opacity-50"
-        >
-          {loading ? (
-            <RefreshCw className="w-4 h-4 animate-spin" />
-          ) : (
-            <Link2 className="w-4 h-4" />
-          )}
-          {token ? "Rigenera link" : "Genera link cleaner"}
-        </button>
-      </div>
+      <button
+        onClick={handleGenerate}
+        disabled={loading}
+        className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium bg-white border border-slate-200 hover:border-indigo-300 hover:text-indigo-700 transition-colors disabled:opacity-50 w-fit"
+      >
+        {loading ? (
+          <RefreshCw className="w-4 h-4 animate-spin" />
+        ) : (
+          <Link2 className="w-4 h-4" />
+        )}
+        {token ? "Rigenera link" : "Genera link cleaner"}
+      </button>
 
       {token && (
-        <p className="text-xs text-slate-400">
-          Invia questo link al cleaner via WhatsApp — non serve login.{" "}
-          <span className="text-amber-600">Rigenerando il link, il vecchio non funzionerà più.</span>
+        <p className="text-xs text-slate-400 break-words">
+          Invia via WhatsApp — non serve login.{" "}
+          <span className="text-amber-600">Rigenerando, il vecchio link non funzionerà.</span>
         </p>
       )}
     </div>
