@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Card Mockup — Pulizie & Manutenzioni</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  body { background: #e2e8f0; font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif; min-height: 100vh; padding: 24px 12px; }
+
+  .page-title { text-align: center; font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; }
+  .page-subtitle { text-align: center; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 28px; }
+
+  /* ── Simulazione iPhone ── */
+  .phone-row { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; align-items: flex-start; }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .phone-label { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #64748b; }
+  .phone-label.current { color: #94a3b8; }
+  .phone-label.new { color: #7c3aed; background: #ede9fe; padding: 3px 10px; border-radius: 6px; }
+
+  .phone {
+    width: 375px;
+    background: #f8f7ff;
+    border-radius: 44px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,.25), inset 0 0 0 2px rgba(255,255,255,.15);
+    border: 8px solid #1a1a1a;
+    position: relative;
+  }
+  .phone-notch {
+    width: 120px; height: 30px;
+    background: #1a1a1a;
+    border-radius: 0 0 18px 18px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+  }
+  .phone-screen { padding: 0; min-height: 600px; overflow: hidden; }
+
+  /* ── Sheet header ── */
+  .sheet-handle { display: flex; justify-content: center; padding: 10px 0 4px; }
+  .sheet-handle-bar { width: 36px; height: 5px; background: #d1d5db; border-radius: 99px; }
+  .sheet-header {
+    padding: 10px 20px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8f7ff;
+  }
+  .sheet-eyebrow { font-size: 10px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: #8b5cf6; margin-bottom: 2px; }
+  .sheet-title { font-size: 22px; font-weight: 800; color: #0f172a; line-height: 1.1; }
+  .close-btn {
+    width: 44px; height: 44px;
+    background: #f1f5f9; border-radius: 14px;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .sheet-body { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* ══════════════════════════════════════
+     CARD ATTUALE
+  ══════════════════════════════════════ */
+  .card-current {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .card-current-bar { height: 4px; }
+  .card-current-body {
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .card-current-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .card-current-main { flex: 1; min-width: 0; }
+  .card-current-title { font-size: 14px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-current-sub { font-size: 10px; color: #94a3b8; font-weight: 500; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; flex-shrink: 0; }
+
+  /* ══════════════════════════════════════
+     OPZIONE A — Card orizzontale espansa
+  ══════════════════════════════════════ */
+  .card-a {
+    background: white;
+    border-radius: 18px;
+    border: 1.5px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    overflow: hidden;
+    cursor: pointer;
+    active-transform: scale(.98);
+    transition: transform .12s ease;
+  }
+  .card-a:active { transform: scale(.98); }
+  .card-a-left-bar {
+    display: flex; align-items: stretch;
+  }
+  .card-a-accent {
+    width: 5px; flex-shrink: 0; border-radius: 18px 0 0 18px;
+  }
+  .card-a-content {
+    padding: 14px 14px 14px 12px; flex: 1; min-width: 0;
+  }
+  .card-a-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .card-a-icon {
+    width: 46px; height: 46px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .card-a-text { flex: 1; min-width: 0; }
+  .card-a-title { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
+  .card-a-sub { font-size: 12px; color: #64748b; font-weight: 500; }
+  .card-a-badge { font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 8px; flex-shrink: 0; align-self: flex-start; }
+  .card-a-meta {
+    display: flex; align-items: center; gap: 6px;
+    background: #f8fafc; border-radius: 10px;
+    padding: 8px 10px;
+  }
+  .card-a-meta-item { display: flex; align-items: center; gap: 4px; }
+  .card-a-meta-label { font-size: 11px; color: #94a3b8; font-weight: 600; }
+  .card-a-meta-value { font-size: 11px; color: #475569; font-weight: 700; }
+  .meta-dot { width: 3px; height: 3px; background: #cbd5e1; border-radius: 50%; }
+  .card-a-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px 12px 17px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .progress-bar-wrap { flex: 1; display: flex; align-items: center; gap: 8px; }
+  .progress-track { flex: 1; height: 5px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; }
+  .progress-label { font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap; }
+  .chevron { flex-shrink: 0; opacity: .4; }
+
+  /* ══════════════════════════════════════
+     OPZIONE B — Card con foto-thumbnail e layout più verticale
+  ══════════════════════════════════════ */
+  .card-b {
+    background: white;
+    border-radius: 18px;
+    border: 1.5px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    cursor: pointer;
+    transition: transform .12s ease;
+    overflow: hidden;
+  }
+  .card-b:active { transform: scale(.98); }
+  .card-b-top-bar { height: 3px; }
+  .card-b-body { padding: 14px 16px; }
+  .card-b-row1 { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .card-b-title { font-size: 16px; font-weight: 800; color: #0f172a; }
+  .card-b-row2 { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+  .card-b-icon-sm { width: 16px; height: 16px; flex-shrink: 0; opacity: .5; }
+  .card-b-info { font-size: 12px; color: #64748b; font-weight: 500; }
+  .card-b-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    display: flex; align-items: center; gap: 4px;
+    padding: 5px 9px; border-radius: 8px;
+    font-size: 11px; font-weight: 700;
+  }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .card-b-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px 12px;
+    border-top: 1px solid #f8f9fa;
+  }
+  .card-b-progress { display: flex; align-items: center; gap: 8px; flex: 1; }
+
+  /* ── Maintenance card variants ── */
+  .priority-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 6px;
+    font-size: 10px; font-weight: 800; letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 820px) {
+    .phone { width: 340px; }
+    .phone-row { gap: 16px; }
+  }
+  @media (max-width: 720px) {
+    .phone-row { flex-direction: column; align-items: center; }
+    .phone { width: 100%; max-width: 375px; }
+  }
+</style>
+</head>
+<body>
+
+<p class="page-title">PropOps — Card Mockup</p>
+<p class="page-subtitle">Scegli tra le due opzioni per le List Card di Pulizie e Manutenzioni</p>
+
+<div class="phone-row">
+
+  <!-- ══════════ ATTUALE ══════════ -->
+  <div class="phone-wrap">
+    <span class="phone-label current">ATTUALE</span>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+        <div class="sheet-header">
+          <div>
+            <p class="sheet-eyebrow">Pulizie</p>
+            <p class="sheet-title">3 pulizie oggi</p>
+          </div>
+          <button class="close-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="sheet-body">
+
+          <!-- Card 1 -->
+          <div class="card-current">
+            <div class="card-current-bar" style="background:#7c3aed"></div>
+            <div class="card-current-body">
+              <div class="card-current-icon" style="background:#ede9fe">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+              </div>
+              <div class="card-current-main">
+                <p class="card-current-title">Trastevere 68</p>
+                <p class="card-current-sub">Maria Conti</p>
+              </div>
+              <span class="badge" style="background:#ede9fe;color:#6d28d9">IN CORSO</span>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="card-current">
+            <div class="card-current-bar" style="background:#10b981"></div>
+            <div class="card-current-body">
+              <div class="card-current-icon" style="background:#d1fae5">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+              </div>
+              <div class="card-current-main">
+                <p class="card-current-title">Trastevere 156</p>
+                <p class="card-current-sub">Anna Russo</p>
+              </div>
+              <span class="badge" style="background:#d1fae5;color:#065f46">COMPLETATA</span>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="card-current">
+            <div class="card-current-bar" style="background:#f59e0b"></div>
+            <div class="card-current-body">
+              <div class="card-current-icon" style="background:#fef3c7">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+              </div>
+              <div class="card-current-main">
+                <p class="card-current-title">Prati 12</p>
+                <p class="card-current-sub">—</p>
+              </div>
+              <span class="badge" style="background:#fef3c7;color:#92400e">IN RITARDO</span>
+            </div>
+          </div>
+
+          <p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:4px;font-weight:600">Altezza card ~66px · Info: solo nome + cleaner</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ OPZIONE A ══════════ -->
+  <div class="phone-wrap">
+    <span class="phone-label new">OPZIONE A — Info estese</span>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+        <div class="sheet-header">
+          <div>
+            <p class="sheet-eyebrow">Pulizie</p>
+            <p class="sheet-title">3 pulizie oggi</p>
+          </div>
+          <button class="close-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="sheet-body">
+
+          <!-- Card A1 — IN CORSO con progresso -->
+          <div class="card-a">
+            <div class="card-a-left-bar">
+              <div class="card-a-accent" style="background:linear-gradient(180deg,#7c3aed,#6d28d9)"></div>
+              <div class="card-a-content">
+                <div class="card-a-top">
+                  <div class="card-a-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+                  </div>
+                  <div class="card-a-text">
+                    <p class="card-a-title">Trastevere 68</p>
+                    <p class="card-a-sub">Maria Conti</p>
+                  </div>
+                  <span class="card-a-badge" style="background:#ede9fe;color:#6d28d9">IN CORSO</span>
+                </div>
+                <div class="card-a-meta">
+                  <div class="card-a-meta-item">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span class="card-a-meta-label">Orario</span>
+                    <span class="card-a-meta-value">10:00 – 12:00</span>
+                  </div>
+                  <div class="meta-dot"></div>
+                  <div class="card-a-meta-item">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                    <span class="card-a-meta-label">Check-in</span>
+                    <span class="card-a-meta-value">15:00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-a-footer">
+              <div class="progress-bar-wrap">
+                <div class="progress-track"><div class="progress-fill" style="width:60%;background:#7c3aed"></div></div>
+                <span class="progress-label" style="color:#7c3aed">6/10</span>
+              </div>
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <!-- Card A2 — COMPLETATA -->
+          <div class="card-a">
+            <div class="card-a-left-bar">
+              <div class="card-a-accent" style="background:linear-gradient(180deg,#10b981,#059669)"></div>
+              <div class="card-a-content">
+                <div class="card-a-top">
+                  <div class="card-a-icon" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+                  </div>
+                  <div class="card-a-text">
+                    <p class="card-a-title">Trastevere 156</p>
+                    <p class="card-a-sub">Anna Russo</p>
+                  </div>
+                  <span class="card-a-badge" style="background:#d1fae5;color:#065f46">COMPLETATA</span>
+                </div>
+                <div class="card-a-meta">
+                  <div class="card-a-meta-item">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span class="card-a-meta-label">Terminata</span>
+                    <span class="card-a-meta-value">11:45</span>
+                  </div>
+                  <div class="meta-dot"></div>
+                  <div class="card-a-meta-item">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span class="card-a-meta-value" style="color:#10b981">Pronto ✓</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-a-footer">
+              <div class="progress-bar-wrap">
+                <div class="progress-track"><div class="progress-fill" style="width:100%;background:#10b981"></div></div>
+                <span class="progress-label" style="color:#10b981">10/10</span>
+              </div>
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <!-- Card A3 — IN RITARDO senza cleaner -->
+          <div class="card-a">
+            <div class="card-a-left-bar">
+              <div class="card-a-accent" style="background:linear-gradient(180deg,#f59e0b,#d97706)"></div>
+              <div class="card-a-content">
+                <div class="card-a-top">
+                  <div class="card-a-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+                  </div>
+                  <div class="card-a-text">
+                    <p class="card-a-title">Prati 12</p>
+                    <p class="card-a-sub" style="color:#f59e0b;font-weight:700">⚠ Nessun cleaner</p>
+                  </div>
+                  <span class="card-a-badge" style="background:#fef3c7;color:#92400e">IN RITARDO</span>
+                </div>
+                <div class="card-a-meta">
+                  <div class="card-a-meta-item">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span class="card-a-meta-label">Prevista</span>
+                    <span class="card-a-meta-value" style="color:#f59e0b">09:00 — 2h fa</span>
+                  </div>
+                  <div class="meta-dot"></div>
+                  <div class="card-a-meta-item">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                    <span class="card-a-meta-label">Check-in</span>
+                    <span class="card-a-meta-value">14:00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-a-footer" style="background:#fffbeb">
+              <span style="font-size:11px;font-weight:700;color:#f59e0b">Assegna cleaner →</span>
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:4px;font-weight:600">Altezza card ~110px · Info: orario, check-in, progresso checklist</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ OPZIONE B ══════════ -->
+  <div class="phone-wrap">
+    <span class="phone-label new">OPZIONE B — Chip compatti</span>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+        <div class="sheet-header">
+          <div>
+            <p class="sheet-eyebrow">Pulizie</p>
+            <p class="sheet-title">3 pulizie oggi</p>
+          </div>
+          <button class="close-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="sheet-body">
+
+          <!-- Card B1 — IN CORSO -->
+          <div class="card-b">
+            <div class="card-b-top-bar" style="background:linear-gradient(90deg,#7c3aed,#6d28d9)"></div>
+            <div class="card-b-body">
+              <div class="card-b-row1">
+                <p class="card-b-title">Trastevere 68</p>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="card-b-row2">
+                <svg class="card-b-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <p class="card-b-info">Maria Conti</p>
+                <span style="color:#e2e8f0">·</span>
+                <svg class="card-b-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <p class="card-b-info">10:00 – 12:00</p>
+              </div>
+              <div class="card-b-chips">
+                <span class="chip" style="background:#ede9fe;color:#6d28d9"><span class="chip-dot" style="background:#7c3aed"></span>In corso</span>
+                <span class="chip" style="background:#f1f5f9;color:#475569"><span class="chip-dot" style="background:#94a3b8"></span>6/10 checklist</span>
+                <span class="chip" style="background:#dbeafe;color:#1e40af"><span class="chip-dot" style="background:#3b82f6"></span>Check-in 15:00</span>
+              </div>
+            </div>
+            <div class="card-b-footer">
+              <div class="card-b-progress">
+                <div class="progress-track"><div class="progress-fill" style="width:60%;background:#7c3aed"></div></div>
+                <span class="progress-label" style="color:#7c3aed;font-size:10px">60%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card B2 — COMPLETATA -->
+          <div class="card-b">
+            <div class="card-b-top-bar" style="background:linear-gradient(90deg,#10b981,#059669)"></div>
+            <div class="card-b-body">
+              <div class="card-b-row1">
+                <p class="card-b-title">Trastevere 156</p>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="card-b-row2">
+                <svg class="card-b-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <p class="card-b-info">Anna Russo</p>
+                <span style="color:#e2e8f0">·</span>
+                <svg class="card-b-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <p class="card-b-info">Terminata 11:45</p>
+              </div>
+              <div class="card-b-chips">
+                <span class="chip" style="background:#d1fae5;color:#065f46"><span class="chip-dot" style="background:#10b981"></span>Completata</span>
+                <span class="chip" style="background:#d1fae5;color:#065f46">✓ Pronto</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card B3 — IN RITARDO -->
+          <div class="card-b" style="border-color:#fde68a">
+            <div class="card-b-top-bar" style="background:linear-gradient(90deg,#f59e0b,#d97706)"></div>
+            <div class="card-b-body">
+              <div class="card-b-row1">
+                <p class="card-b-title">Prati 12</p>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <div class="card-b-row2">
+                <svg class="card-b-icon-sm" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <p class="card-b-info" style="color:#f59e0b;font-weight:700">Nessun cleaner</p>
+                <span style="color:#e2e8f0">·</span>
+                <svg class="card-b-icon-sm" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <p class="card-b-info" style="color:#f59e0b;font-weight:700">2h fa</p>
+              </div>
+              <div class="card-b-chips">
+                <span class="chip" style="background:#fef3c7;color:#92400e"><span class="chip-dot" style="background:#f59e0b"></span>In ritardo</span>
+                <span class="chip" style="background:#fee2e2;color:#991b1b">⚠ Non assegnata</span>
+                <span class="chip" style="background:#dbeafe;color:#1e40af">Check-in 14:00</span>
+              </div>
+            </div>
+          </div>
+
+          <p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:4px;font-weight:600">Altezza card ~100px · Info: chip tag espandibili</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════ MAINTENANCE PREVIEW ══════════════════════ -->
+<div style="margin-top:36px">
+  <p class="page-title">Manutenzioni — stesso design applicato</p>
+  <p class="page-subtitle">Opzione A applicata ai ticket di manutenzione</p>
+
+  <div class="phone-row">
+
+    <div class="phone-wrap">
+      <span class="phone-label current">ATTUALE</span>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+          <div class="sheet-header">
+            <div>
+              <p class="sheet-eyebrow" style="color:#f97316">Manutenzione</p>
+              <p class="sheet-title">2 ticket oggi</p>
+            </div>
+            <button class="close-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="sheet-body">
+            <div class="card-current">
+              <div class="card-current-bar" style="background:#ef4444"></div>
+              <div class="card-current-body">
+                <div class="card-current-icon" style="background:#fee2e2">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <div class="card-current-main">
+                  <p class="card-current-title">Caldaia rotta</p>
+                  <p class="card-current-sub">Trastevere 68</p>
+                </div>
+                <span class="badge" style="background:#fee2e2;color:#991b1b">NON ASS.</span>
+              </div>
+            </div>
+            <div class="card-current">
+              <div class="card-current-bar" style="background:#7c3aed"></div>
+              <div class="card-current-body">
+                <div class="card-current-icon" style="background:#ede9fe">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
+                <div class="card-current-main">
+                  <p class="card-current-title">Perdita acqua bagno</p>
+                  <p class="card-current-sub">Prati 12</p>
+                </div>
+                <span class="badge" style="background:#ede9fe;color:#6d28d9">IN CORSO</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-wrap">
+      <span class="phone-label new">OPZIONE A — Manutenzioni</span>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+          <div class="sheet-header">
+            <div>
+              <p class="sheet-eyebrow" style="color:#f97316">Manutenzione</p>
+              <p class="sheet-title">2 ticket oggi</p>
+            </div>
+            <button class="close-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="sheet-body">
+
+            <!-- Maintenance card 1 — NON ASSEGNATO urgente -->
+            <div class="card-a" style="border-color:#fecdd3">
+              <div class="card-a-left-bar">
+                <div class="card-a-accent" style="background:linear-gradient(180deg,#ef4444,#dc2626)"></div>
+                <div class="card-a-content">
+                  <div class="card-a-top">
+                    <div class="card-a-icon" style="background:linear-gradient(135deg,#fee2e2,#fecaca)">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <div class="card-a-text">
+                      <p class="card-a-title">Caldaia rotta</p>
+                      <p class="card-a-sub">Trastevere 68</p>
+                    </div>
+                    <span class="card-a-badge" style="background:#fee2e2;color:#991b1b">NON ASS.</span>
+                  </div>
+                  <div class="card-a-meta">
+                    <div class="card-a-meta-item">
+                      <span class="priority-chip" style="background:#fee2e2;color:#ef4444">🔴 URGENTE</span>
+                    </div>
+                    <div class="meta-dot"></div>
+                    <div class="card-a-meta-item">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <span class="card-a-meta-value">Segnalato 08:30</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-a-footer" style="background:#fff5f5">
+                <span style="font-size:11px;font-weight:700;color:#ef4444">⚠ Richiede assegnazione</span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+            <!-- Maintenance card 2 — IN CORSO -->
+            <div class="card-a">
+              <div class="card-a-left-bar">
+                <div class="card-a-accent" style="background:linear-gradient(180deg,#7c3aed,#6d28d9)"></div>
+                <div class="card-a-content">
+                  <div class="card-a-top">
+                    <div class="card-a-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <div class="card-a-text">
+                      <p class="card-a-title">Perdita acqua bagno</p>
+                      <p class="card-a-sub">Prati 12 · Luigi Ferrari</p>
+                    </div>
+                    <span class="card-a-badge" style="background:#ede9fe;color:#6d28d9">IN CORSO</span>
+                  </div>
+                  <div class="card-a-meta">
+                    <div class="card-a-meta-item">
+                      <span class="priority-chip" style="background:#fef3c7;color:#d97706">🟡 MEDIA</span>
+                    </div>
+                    <div class="meta-dot"></div>
+                    <div class="card-a-meta-item">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <span class="card-a-meta-value">Iniziato 09:15</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-a-footer">
+                <span style="font-size:11px;font-weight:600;color:#94a3b8">Apri per aggiornare lo stato</span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── LEGENDA ── -->
+<div style="max-width:760px;margin:36px auto 0;background:white;border-radius:20px;padding:20px 24px;box-shadow:0 4px 20px rgba(0,0,0,.06)">
+  <p style="font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px">Confronto</p>
+  <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <tr style="border-bottom:1px solid #f1f5f9">
+      <th style="text-align:left;padding:8px 0;color:#64748b;font-weight:700">Caratteristica</th>
+      <th style="text-align:center;padding:8px;color:#94a3b8;font-weight:700">ATTUALE</th>
+      <th style="text-align:center;padding:8px;color:#7c3aed;font-weight:700">OPZIONE A</th>
+      <th style="text-align:center;padding:8px;color:#7c3aed;font-weight:700">OPZIONE B</th>
+    </tr>
+    <tr style="border-bottom:1px solid #f8fafc"><td style="padding:8px 0;color:#334155;font-weight:600">Altezza card</td><td style="text-align:center;color:#94a3b8">~66px</td><td style="text-align:center;color:#7c3aed;font-weight:700">~110px</td><td style="text-align:center;color:#7c3aed;font-weight:700">~100px</td></tr>
+    <tr style="border-bottom:1px solid #f8fafc"><td style="padding:8px 0;color:#334155;font-weight:600">Orario pulizia</td><td style="text-align:center">❌</td><td style="text-align:center">✅</td><td style="text-align:center">✅</td></tr>
+    <tr style="border-bottom:1px solid #f8fafc"><td style="padding:8px 0;color:#334155;font-weight:600">Orario check-in ospite</td><td style="text-align:center">❌</td><td style="text-align:center">✅</td><td style="text-align:center">✅ chip</td></tr>
+    <tr style="border-bottom:1px solid #f8fafc"><td style="padding:8px 0;color:#334155;font-weight:600">Progresso checklist</td><td style="text-align:center">❌</td><td style="text-align:center">✅ barra</td><td style="text-align:center">✅ chip</td></tr>
+    <tr style="border-bottom:1px solid #f8fafc"><td style="padding:8px 0;color:#334155;font-weight:600">Alert visivo ritardo</td><td style="text-align:center">solo badge</td><td style="text-align:center">✅ footer colorato</td><td style="text-align:center">✅ border + chip</td></tr>
+    <tr style="border-bottom:1px solid #f8fafc"><td style="padding:8px 0;color:#334155;font-weight:600">Priorità manutenzione</td><td style="text-align:center">❌</td><td style="text-align:center">✅ chip colorato</td><td style="text-align:center">✅ chip</td></tr>
+    <tr><td style="padding:8px 0;color:#334155;font-weight:600">Navigabilità (chevron)</td><td style="text-align:center">❌</td><td style="text-align:center">✅</td><td style="text-align:center">✅</td></tr>
+  </table>
+  <p style="font-size:11px;color:#94a3b8;margin-top:12px;font-weight:600">💡 Dimmi quale preferisci (A o B) oppure un mix, e implemento subito.</p>
+</div>
+
+<div style="height:40px"></div>
+</body>
+</html>
