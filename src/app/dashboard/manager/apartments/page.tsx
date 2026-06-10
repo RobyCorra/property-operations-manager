@@ -22,7 +22,7 @@ export default async function ApartmentsListPage() {
   });
 
   return (
-    <main className="min-h-screen bg-[#faf8ff] p-6 font-sans">
+    <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}

@@ -117,38 +117,40 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
       <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
 
         {/* Header bar */}
-        <div className="flex items-start justify-between gap-4 p-6 border-b border-gray-100">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-violet-600">
-                🧹 Pulizia
-              </span>
-              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${sc.badge}`}>
-                <span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} />
-                {sc.label}
-              </span>
+        <div className="p-4 md:p-6 border-b border-gray-100">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-violet-600">
+                  🧹 Pulizia
+                </span>
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${sc.badge}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} />
+                  {sc.label}
+                </span>
+              </div>
+              <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 uppercase line-clamp-2">{task.apartment.name}</h1>
+              <p className="text-sm text-gray-500 mt-0.5 truncate">{task.apartment.address}</p>
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight text-gray-900 uppercase line-clamp-1">{task.apartment.name}</h1>
-            <p className="text-sm text-gray-500 mt-0.5 truncate">{task.apartment.address}</p>
+            <button
+              type="button"
+              onClick={() => setEditOpen((v) => !v)}
+              className={`shrink-0 flex items-center gap-2 rounded-full border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                editOpen
+                  ? "border-gray-300 bg-gray-100 text-gray-700"
+                  : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              {editOpen ? <><X size={13} /> Chiudi</> : <><Pencil size={13} /> Modifica</>}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setEditOpen((v) => !v)}
-            className={`shrink-0 flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
-              editOpen
-                ? "border-gray-300 bg-gray-100 text-gray-700"
-                : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-            }`}
-          >
-            {editOpen ? <><X size={13} /> Chiudi</> : <><Pencil size={13} /> Modifica</>}
-          </button>
         </div>
 
         {/* Body — 2 columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
 
           {/* Left: informazioni */}
-          <div className="p-6 space-y-5">
+          <div className="p-4 md:p-6 space-y-5">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Informazioni chiave</p>
               <div className="space-y-3">
@@ -284,7 +286,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
           </div>
 
           {/* Right: stato + checklist + foto */}
-          <div className="p-6 space-y-5">
+          <div className="p-4 md:p-6 space-y-5">
 
             {/* Stato attuale */}
             <div>
@@ -399,7 +401,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
         </div>
 
         {/* Footer actions */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-gray-100 bg-gray-50/50 px-4 md:px-6 py-4">
           {status === "PENDING" && (
             <button
               type="button"
@@ -416,10 +418,10 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               type="button"
               onClick={() => handleStatusUpdate("AWAITING_REVIEW")}
               disabled={isPending}
-              className="flex items-center justify-center gap-2 rounded-full bg-amber-500 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-amber-200 transition-all hover:bg-amber-600 active:scale-95 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-amber-200 transition-all hover:bg-amber-600 active:scale-95 disabled:opacity-50"
             >
               {isPending ? <Loader2 size={13} className="animate-spin" /> : "✓"}
-              Completata — Invia per verifica
+              <span className="hidden sm:inline">Completata — </span>Invia per verifica
             </button>
           )}
           {status === "IN_PROGRESS" && hasCorrections && (

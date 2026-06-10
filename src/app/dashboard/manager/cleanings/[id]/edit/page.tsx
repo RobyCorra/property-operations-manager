@@ -48,7 +48,7 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
   const enrichedTask = await enrichCleaningTaskWithNextBooking(task);
 
   return (
-    <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
+    <main className="min-h-screen bg-gray-50/50 p-4 md:p-6 font-sans overflow-x-hidden">
       <div className="max-w-5xl mx-auto space-y-6">
         <BackButton />
 
