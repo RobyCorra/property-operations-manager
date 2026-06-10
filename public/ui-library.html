@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PropOps — UI Library</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+  .section-title { font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: #94a3b8; margin-bottom: 16px; }
+  .component-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; }
+  .col-header { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 8px 14px; background: #f1f5f9; border-radius: 10px; color: #475569; display: inline-block; margin-bottom: 16px; }
+  .divider { height: 1px; background: #e2e8f0; margin: 48px 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  @media(max-width:768px){ .grid-2 { grid-template-columns: 1fr; } }
+  .vs-arrow { display: flex; align-items: center; justify-content: center; font-size: 20px; color: #cbd5e1; padding: 16px 0; }
+  /* shimmer for new badges */
+  @keyframes shimmer { from{background-position:200% center} to{background-position:-200% center} }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 to-blue-500 flex items-center justify-center shadow-md">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <span class="text-sm font-black text-slate-900">PropOps</span>
+    <span class="text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">UI Library v1</span>
+  </div>
+  <div class="flex items-center gap-4 text-xs font-bold text-slate-500">
+    <a href="#colors" class="hover:text-violet-600 transition-colors">Colori</a>
+    <a href="#typography" class="hover:text-violet-600 transition-colors">Tipografia</a>
+    <a href="#badges" class="hover:text-violet-600 transition-colors">Badge</a>
+    <a href="#buttons" class="hover:text-violet-600 transition-colors">Bottoni</a>
+    <a href="#cards" class="hover:text-violet-600 transition-colors">Card</a>
+    <a href="#kpi" class="hover:text-violet-600 transition-colors">KPI</a>
+    <a href="#forms" class="hover:text-violet-600 transition-colors">Form</a>
+    <a href="#mobile" class="hover:text-violet-600 transition-colors">Mobile</a>
+  </div>
+</nav>
+
+<div class="max-w-6xl mx-auto px-6 py-12">
+
+  <!-- HERO -->
+  <div class="mb-12">
+    <p class="text-[11px] font-black uppercase tracking-widest text-violet-500 mb-1">Design System</p>
+    <h1 class="text-4xl font-black text-slate-900 mb-3">UI Component Library</h1>
+    <p class="text-slate-500 text-sm max-w-xl">Catalogo completo degli elementi grafici di PropOps. Per ogni componente viene mostrata la versione attuale (ATTUALE) e la versione migliorata proposta (PROPOSTA).</p>
+    <div class="flex gap-3 mt-4">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-lg text-xs font-bold text-slate-500"><span class="w-2 h-2 rounded-full bg-slate-400"></span>ATTUALE</span>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-lg text-xs font-bold text-violet-600 border border-violet-200"><span class="w-2 h-2 rounded-full bg-violet-500"></span>PROPOSTA</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ COLORI ═══════════════════════ -->
+  <div id="colors" class="mb-16">
+    <p class="section-title">01 — Palette colori</p>
+
+    <div class="grid-2 mb-8">
+      <!-- ATTUALE -->
+      <div>
+        <span class="col-header">ATTUALE</span>
+        <p class="text-xs text-slate-500 mb-4">Palette non sistematizzata — i colori vengono usati in modo inconsistente tra i componenti.</p>
+        <div class="space-y-3">
+          <div class="flex gap-2 flex-wrap">
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-violet-600 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">violet-600</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-violet-500 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">violet-500</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-violet-50 shadow-sm border"></div><p class="text-[9px] font-bold text-slate-500 mt-1">violet-50</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-blue-500 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">blue-500</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-emerald-500 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">emerald-500</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-rose-500 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">rose-500</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-amber-400 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">amber-400</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-orange-400 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">orange-400</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-slate-900 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">slate-900</p></div>
+            <div class="text-center"><div class="w-12 h-12 rounded-xl bg-slate-400 shadow-sm"></div><p class="text-[9px] font-bold text-slate-500 mt-1">slate-400</p></div>
+          </div>
+          <p class="text-[10px] text-rose-500 font-semibold">⚠ amber-400 e orange-400 usati indistintamente per "in ritardo". blue e violet misti per primario.</p>
+        </div>
+      </div>
+
+      <!-- PROPOSTA -->
+      <div>
+        <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+        <p class="text-xs text-slate-500 mb-4">Sistema semantico: ogni colore ha un ruolo preciso e scale coerenti.</p>
+        <div class="space-y-4">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 mb-2">PRIMARIO — Brand</p>
+            <div class="flex gap-2">
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#4c1d95"></div><p class="text-[9px] font-bold text-slate-500 mt-1">900</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#6d28d9"></div><p class="text-[9px] font-bold text-slate-500 mt-1">700</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#7c3aed"></div><p class="text-[9px] font-bold text-slate-500 mt-1">600 ★</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#8b5cf6"></div><p class="text-[9px] font-bold text-slate-500 mt-1">500</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm border" style="background:#ede9fe"></div><p class="text-[9px] font-bold text-slate-500 mt-1">100</p></div>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 mb-2">SEMANTICI — Status</p>
+            <div class="flex gap-2">
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#10b981"></div><p class="text-[9px] font-bold text-slate-500 mt-1">✓ OK</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#f59e0b"></div><p class="text-[9px] font-bold text-slate-500 mt-1">⚡ Warn</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#ef4444"></div><p class="text-[9px] font-bold text-slate-500 mt-1">✕ Error</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#3b82f6"></div><p class="text-[9px] font-bold text-slate-500 mt-1">ℹ Info</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#8b5cf6"></div><p class="text-[9px] font-bold text-slate-500 mt-1">↻ Active</p></div>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 mb-2">NEUTRI</p>
+            <div class="flex gap-2">
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#0f172a"></div><p class="text-[9px] font-bold text-slate-500 mt-1">950</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#334155"></div><p class="text-[9px] font-bold text-slate-500 mt-1">700</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm" style="background:#64748b"></div><p class="text-[9px] font-bold text-slate-500 mt-1">500</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm border" style="background:#f1f5f9"></div><p class="text-[9px] font-bold text-slate-500 mt-1">100</p></div>
+              <div class="text-center"><div class="w-12 h-12 rounded-xl shadow-sm border" style="background:#f8f7ff"></div><p class="text-[9px] font-bold text-slate-500 mt-1">BG</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════ TIPOGRAFIA ═══════════════════════ -->
+  <div id="typography" class="mb-16">
+    <p class="section-title">02 — Tipografia</p>
+    <div class="grid-2">
+      <div>
+        <span class="col-header">ATTUALE</span>
+        <div class="bg-white rounded-2xl border border-slate-100 p-6 space-y-4">
+          <div><p class="text-[10px] font-black uppercase tracking-widest text-violet-500">MERCOLEDÌ 10 GIUGNO</p><p class="text-[9px] text-slate-400">eyebrow — 10px black tracking-widest</p></div>
+          <div><p class="text-3xl font-black text-slate-900">42</p><p class="text-[9px] text-slate-400">KPI number — 3xl black</p></div>
+          <div><p class="text-xl font-bold text-slate-900">Pulizie oggi</p><p class="text-[9px] text-slate-400">Section title — xl bold</p></div>
+          <div><p class="text-sm font-bold text-slate-900">Trastevere 68</p><p class="text-[9px] text-slate-400">Card title — sm bold</p></div>
+          <div><p class="text-[10px] text-slate-400">Ospite: Mario Rossi</p><p class="text-[9px] text-slate-400">Caption — 10px regular</p></div>
+          <div><p class="text-[9px] font-bold px-2.5 py-1 bg-violet-50 text-violet-700 rounded-full inline-block">IN CORSO</p><p class="text-[9px] text-slate-400 mt-1">Badge — 9px bold</p></div>
+        </div>
+        <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Troppi livelli di testo (9px, 10px, sm, base, xl, 3xl) senza una scala coerente.</p>
+      </div>
+      <div>
+        <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+        <div class="bg-white rounded-2xl border border-slate-100 p-6 space-y-4" style="font-family:'Inter',sans-serif">
+          <div>
+            <p style="font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#8b5cf6">MERCOLEDÌ 10 GIUGNO</p>
+            <p class="text-[9px] text-slate-400">T-xs / eyebrow — 10px 900 tracking+</p>
+          </div>
+          <div>
+            <p style="font-size:36px;font-weight:900;color:#0f172a;line-height:1">42</p>
+            <p class="text-[9px] text-slate-400">T-display — 36px 900</p>
+          </div>
+          <div>
+            <p style="font-size:20px;font-weight:800;color:#0f172a">Pulizie oggi</p>
+            <p class="text-[9px] text-slate-400">T-h2 — 20px 800</p>
+          </div>
+          <div>
+            <p style="font-size:15px;font-weight:700;color:#0f172a">Trastevere 68</p>
+            <p class="text-[9px] text-slate-400">T-body-strong — 15px 700</p>
+          </div>
+          <div>
+            <p style="font-size:12px;font-weight:500;color:#64748b">Ospite: Mario Rossi · 3 notti</p>
+            <p class="text-[9px] text-slate-400">T-caption — 12px 500</p>
+          </div>
+          <div>
+            <p style="font-size:10px;font-weight:800;letter-spacing:.04em;padding:3px 10px;background:#ede9fe;color:#6d28d9;border-radius:99px;display:inline-block">IN CORSO</p>
+            <p class="text-[9px] text-slate-400 mt-1">Badge — 10px 800</p>
+          </div>
+        </div>
+        <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Scala a 6 livelli: display / h2 / body-strong / body / caption / eyebrow</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════ BADGE ═══════════════════════ -->
+  <div id="badges" class="mb-16">
+    <p class="section-title">03 — Badge & Status</p>
+    <div class="grid-2">
+      <div>
+        <span class="col-header">ATTUALE</span>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 space-y-3">
+          <p class="component-label">Pulizie</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">DA FARE</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-violet-100 text-violet-700">IN CORSO</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">COMPLETATA</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700">IN RITARDO</span>
+          </div>
+          <p class="component-label mt-2">Manutenzione</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-red-50 text-red-500">NON ASSEGNATO</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-yellow-50 text-yellow-600">ASSEGNATO</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-violet-100 text-violet-700">IN CORSO</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-600">IN REVISIONE</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">APPROVATO</span>
+          </div>
+          <p class="component-label mt-2">Appartamento</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-red-50 text-red-500">Occupato</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">Libero</span>
+            <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">Check-in</span>
+          </div>
+        </div>
+        <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Testo troppo piccolo (9px), bassa leggibilità. Semantica colori incoerente (yellow ≠ amber).</p>
+      </div>
+
+      <div>
+        <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 space-y-3">
+          <p class="component-label">Pulizie</p>
+          <div class="flex flex-wrap gap-2">
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#f1f5f9;color:#475569;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#94a3b8;display:inline-block"></span>DA FARE</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#ede9fe;color:#6d28d9;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#7c3aed;display:inline-block"></span>IN CORSO</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#d1fae5;color:#065f46;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block"></span>COMPLETATA</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#fef3c7;color:#92400e;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;display:inline-block"></span>IN RITARDO</span>
+          </div>
+          <p class="component-label mt-2">Manutenzione</p>
+          <div class="flex flex-wrap gap-2">
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#fee2e2;color:#991b1b;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#ef4444;display:inline-block"></span>NON ASSEGNATO</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#fef9c3;color:#854d0e;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#eab308;display:inline-block"></span>ASSEGNATO</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#ede9fe;color:#6d28d9;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#7c3aed;display:inline-block"></span>IN CORSO</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#fff7ed;color:#9a3412;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#f97316;display:inline-block"></span>IN REVISIONE</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#d1fae5;color:#065f46;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block"></span>APPROVATO</span>
+          </div>
+          <p class="component-label mt-2">Appartamento</p>
+          <div class="flex flex-wrap gap-2">
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#fee2e2;color:#991b1b;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#ef4444;display:inline-block"></span>Occupato</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#d1fae5;color:#065f46;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block"></span>Libero</span>
+            <span style="font-size:10px;font-weight:800;padding:4px 10px;border-radius:8px;background:#dbeafe;color:#1e40af;display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#3b82f6;display:inline-block"></span>Check-in oggi</span>
+          </div>
+        </div>
+        <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Dot colorato + label 10px 800 + border-radius 8px (pill → square-pill, più moderno). Colori semantici coerenti.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════ BOTTONI ═══════════════════════ -->
+  <div id="buttons" class="mb-16">
+    <p class="section-title">04 — Bottoni</p>
+    <div class="grid-2">
+      <div>
+        <span class="col-header">ATTUALE</span>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
+          <div class="space-y-2">
+            <p class="component-label">Primary</p>
+            <button class="px-4 py-2.5 bg-violet-600 text-white text-sm font-bold rounded-xl">Avvia Pulizia</button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Secondary</p>
+            <button class="px-4 py-2.5 bg-white border border-slate-200 text-slate-600 text-sm font-bold rounded-xl">Modifica</button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Destructive</p>
+            <button class="px-4 py-2.5 bg-rose-50 border border-rose-100 text-rose-600 text-sm font-bold rounded-2xl">Elimina</button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Ghost</p>
+            <button class="text-sm font-bold text-violet-600">Vedi tutti →</button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Icon button</p>
+            <button class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Full-width mobile</p>
+            <button class="w-full py-3 bg-violet-600 text-white text-sm font-bold rounded-2xl">Completa Pulizia</button>
+          </div>
+        </div>
+        <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Dimensioni inconsistenti (py-2 vs py-3), border-radius misto (xl vs 2xl), no focus ring visibile.</p>
+      </div>
+
+      <div>
+        <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
+          <div class="space-y-2">
+            <p class="component-label">Primary — 44px touch target</p>
+            <button style="padding:12px 20px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:14px;font-weight:800;border-radius:14px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(124,58,237,.35);letter-spacing:.01em">Avvia Pulizia</button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Secondary</p>
+            <button style="padding:12px 20px;background:white;border:1.5px solid #e2e8f0;color:#334155;font-size:14px;font-weight:700;border-radius:14px;cursor:pointer">Modifica</button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Destructive</p>
+            <button style="padding:12px 20px;background:#fff1f2;border:1.5px solid #fecdd3;color:#be123c;font-size:14px;font-weight:700;border-radius:14px;cursor:pointer">Elimina</button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Ghost + arrow</p>
+            <button style="font-size:13px;font-weight:700;color:#7c3aed;background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px">Vedi tutti <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Icon button — 44×44</p>
+            <button style="width:44px;height:44px;background:#f1f5f9;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="space-y-2">
+            <p class="component-label">Full-width mobile — con icona</p>
+            <button style="width:100%;padding:15px 20px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:15px;font-weight:800;border-radius:16px;border:none;cursor:pointer;box-shadow:0 6px 20px rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:.01em">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Completa Pulizia
+            </button>
+          </div>
+        </div>
+        <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Touch target 44px min (HIG), border-radius 14px unificato, gradient sottile per primary, shadow colorata.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════ CARDS ═══════════════════════ -->
+  <div id="cards" class="mb-16">
+    <p class="section-title">05 — Card</p>
+
+    <!-- List Card -->
+    <div class="mb-8">
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">5a — List Card (pulizie / manutenzioni)</p>
+      <div class="grid-2">
+        <div>
+          <span class="col-header">ATTUALE</span>
+          <div class="space-y-2">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              <div class="h-1 bg-violet-500"></div>
+              <div class="px-4 py-3 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center shrink-0">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-bold text-slate-900 truncate">Trastevere 68</p>
+                  <p class="text-[10px] text-slate-400 truncate">Maria Conti</p>
+                </div>
+                <span class="text-[9px] font-bold px-2.5 py-1 rounded-full bg-violet-100 text-violet-700 shrink-0">IN CORSO</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Color bar top = decorativa ma non porta info aggiuntiva. Badge testo 9px difficile da leggere. Nessuna info secondaria utile (orario, ospite).</p>
+        </div>
+        <div>
+          <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+          <div class="space-y-2">
+            <div style="background:white;border-radius:16px;border:1.5px solid #ede9fe;box-shadow:0 2px 8px rgba(124,58,237,.08);overflow:hidden;cursor:pointer">
+              <div style="display:flex;align-items:stretch">
+                <div style="width:4px;background:linear-gradient(180deg,#7c3aed,#6d28d9);flex-shrink:0;border-radius:16px 0 0 16px"></div>
+                <div style="padding:14px 16px;flex:1;display:flex;align-items:center;gap:12px">
+                  <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+                      <p style="font-size:14px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Trastevere 68</p>
+                      <span style="font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;background:#ede9fe;color:#6d28d9;flex-shrink:0">IN CORSO</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <p style="font-size:12px;color:#64748b;font-weight:500">Maria Conti</p>
+                      <span style="color:#cbd5e1;font-size:10px">·</span>
+                      <p style="font-size:12px;color:#64748b;font-weight:500">10:00 → 12:00</p>
+                    </div>
+                  </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Left border colorato (più sottile, elegante), badge next to title, orario visibile, chevron per navigabilità, shadow tinta viola.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Apartment card -->
+    <div class="mb-8">
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">5b — Apartment Status Card</p>
+      <div class="grid-2">
+        <div>
+          <span class="col-header">ATTUALE</span>
+          <div class="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-2.5 h-2.5 rounded-full shrink-0 bg-red-500"></div>
+              <div>
+                <p class="text-sm font-bold text-slate-900">Trastevere 68</p>
+                <p class="text-[10px] text-slate-400">Occupato</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-[9px] font-bold bg-red-50 text-red-500">Occupato</span>
+          </div>
+          <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Status label duplicato (label + badge identici). Nessuna info su check-in/out o prossima pulizia.</p>
+        </div>
+        <div>
+          <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+          <div style="background:white;border-radius:16px;border:1.5px solid #fee2e2;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 2px 8px rgba(239,68,68,.06)">
+            <div style="width:44px;height:44px;border-radius:12px;background:#fee2e2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                <p style="font-size:15px;font-weight:700;color:#0f172a">Trastevere 68</p>
+                <span style="font-size:10px;font-weight:800;padding:3px 9px;border-radius:6px;background:#fee2e2;color:#991b1b;display:inline-flex;align-items:center;gap:4px"><span style="width:5px;height:5px;border-radius:50%;background:#ef4444;display:inline-block"></span>Occupato</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <p style="font-size:12px;color:#64748b;font-weight:500">Check-out 12 giu</p>
+                <span style="color:#cbd5e1">·</span>
+                <p style="font-size:12px;color:#64748b;font-weight:500">Pulizia 10:00</p>
+              </div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Icona casa colorata per status, info utili (checkout + prossima pulizia), chevron navigazione, border tinta semantica.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail card -->
+    <div>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">5c — Detail Section Card</p>
+      <div class="grid-2">
+        <div>
+          <span class="col-header">ATTUALE</span>
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2">
+            <p class="text-sm font-semibold text-slate-700 flex items-center gap-2">🔗 Link cleaner (accesso senza login)</p>
+            <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-3 py-2">
+              <span class="text-xs text-indigo-700 font-mono truncate">https://propops.app/pulizia/abc123</span>
+              <button class="shrink-0 text-xs font-medium px-2 py-1 rounded-lg bg-indigo-600 text-white">Copia</button>
+            </div>
+          </div>
+          <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Emoji come icona (non scalabile), indigo non è nel sistema colori, sezione non ha gerarchia visiva chiara.</p>
+        </div>
+        <div>
+          <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+          <div style="background:white;border-radius:16px;border:1.5px solid #e2e8f0;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <div style="width:32px;height:32px;border-radius:10px;background:#ede9fe;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              </div>
+              <div>
+                <p style="font-size:13px;font-weight:700;color:#0f172a">Link Cleaner</p>
+                <p style="font-size:11px;color:#94a3b8;font-weight:500">Accesso senza login</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 12px">
+              <p style="font-size:11px;color:#475569;font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">propops.app/pulizia/abc123</p>
+              <button style="padding:6px 12px;background:#7c3aed;color:white;font-size:11px;font-weight:700;border-radius:8px;border:none;cursor:pointer;flex-shrink:0">Copia</button>
+            </div>
+          </div>
+          <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Icona SVG nel sistema colori, header sezione con titolo + sottotitolo, input link più leggibile.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════ KPI CARDS ═══════════════════════ -->
+  <div id="kpi" class="mb-16">
+    <p class="section-title">06 — KPI Cards (Dashboard)</p>
+    <div class="grid-2">
+      <div>
+        <span class="col-header">ATTUALE</span>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">CHECK-IN OGGI</p>
+            <p class="text-3xl font-black text-slate-900">1</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">prenotazioni</p>
+          </div>
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">PULIZIE OGGI</p>
+            <div class="flex items-end gap-2">
+              <p class="text-3xl font-black text-slate-900">1</p>
+              <p class="text-base font-black text-emerald-500 mb-0.5">1 <span class="text-[10px]">eseguite</span></p>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-0.5">pianificate</p>
+          </div>
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">PULIZIE IN RITARDO</p>
+            <p class="text-3xl font-black text-slate-900">0</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">in ritardo</p>
+          </div>
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">TICKET OGGI</p>
+            <p class="text-3xl font-black text-slate-900">0</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">pianificati</p>
+          </div>
+        </div>
+        <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Tutte le card hanno lo stesso stile indipendentemente dal valore. 0 in ritardo ha lo stesso aspetto di 3 in ritardo. Nessun trend/contesto.</p>
+      </div>
+
+      <div>
+        <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Check-in -->
+          <div style="background:white;border-radius:18px;padding:16px;border:1.5px solid #dbeafe;box-shadow:0 2px 8px rgba(59,130,246,.08);cursor:pointer">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+              <div style="width:34px;height:34px;border-radius:10px;background:#dbeafe;display:flex;align-items:center;justify-content:center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+            <p style="font-size:32px;font-weight:900;color:#0f172a;line-height:1;margin-bottom:4px">1</p>
+            <p style="font-size:11px;font-weight:700;color:#3b82f6">CHECK-IN OGGI</p>
+          </div>
+          <!-- Pulizie - stato critico simulato -->
+          <div style="background:white;border-radius:18px;padding:16px;border:1.5px solid #d1fae5;box-shadow:0 2px 8px rgba(16,185,129,.08);cursor:pointer">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+              <div style="width:34px;height:34px;border-radius:10px;background:#d1fae5;display:flex;align-items:center;justify-content:center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+              </div>
+              <span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;background:#d1fae5;color:#065f46">1/1 ✓</span>
+            </div>
+            <p style="font-size:32px;font-weight:900;color:#0f172a;line-height:1;margin-bottom:4px">1</p>
+            <p style="font-size:11px;font-weight:700;color:#10b981">PULIZIE OGGI</p>
+          </div>
+          <!-- In ritardo - stato alert -->
+          <div style="background:white;border-radius:18px;padding:16px;border:1.5px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:pointer;opacity:.7">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+              <div style="width:34px;height:34px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+            </div>
+            <p style="font-size:32px;font-weight:900;color:#94a3b8;line-height:1;margin-bottom:4px">0</p>
+            <p style="font-size:11px;font-weight:700;color:#94a3b8">IN RITARDO</p>
+          </div>
+          <!-- Ticket -->
+          <div style="background:white;border-radius:18px;padding:16px;border:1.5px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:pointer;opacity:.7">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+              <div style="width:34px;height:34px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+            </div>
+            <p style="font-size:32px;font-weight:900;color:#94a3b8;line-height:1;margin-bottom:4px">0</p>
+            <p style="font-size:11px;font-weight:700;color:#94a3b8">TICKET OGGI</p>
+          </div>
+        </div>
+        <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Icona tematica per card, color-coding semantico (verde OK, grigio vuoto), mini-badge progresso, card semi-trasparente quando valore=0.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════ FORM ═══════════════════════ -->
+  <div id="forms" class="mb-16">
+    <p class="section-title">07 — Form Elements</p>
+    <div class="grid-2">
+      <div>
+        <span class="col-header">ATTUALE</span>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Appartamento</label>
+            <select class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white">
+              <option>Trastevere 68</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Data pulizia</label>
+            <input type="date" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700" value="2026-06-10" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Note</label>
+            <textarea class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 resize-none" rows="2" placeholder="Aggiungi note..."></textarea>
+          </div>
+          <div class="flex gap-2">
+            <button class="flex-1 py-2.5 bg-violet-600 text-white text-sm font-bold rounded-xl">Salva</button>
+            <button class="flex-1 py-2.5 bg-slate-100 text-slate-600 text-sm font-bold rounded-xl">Annulla</button>
+          </div>
+        </div>
+        <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Label troppo piccola (xs), input poco definiti, pulsanti non abbastanza grandi per mobile (py-2.5 ≈ 38px).</p>
+      </div>
+
+      <div>
+        <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+        <div style="background:white;border-radius:16px;border:1.5px solid #e2e8f0;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.05)">
+          <div style="margin-bottom:16px">
+            <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:6px;letter-spacing:.01em">Appartamento</label>
+            <select style="width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:14px;color:#0f172a;background:white;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center">
+              <option>Trastevere 68</option>
+            </select>
+          </div>
+          <div style="margin-bottom:16px">
+            <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:6px;letter-spacing:.01em">Data pulizia</label>
+            <input type="date" style="width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:14px;color:#0f172a;box-sizing:border-box" value="2026-06-10" />
+          </div>
+          <div style="margin-bottom:20px">
+            <label style="display:block;font-size:12px;font-weight:700;color:#334155;margin-bottom:6px;letter-spacing:.01em">Note <span style="font-weight:400;color:#94a3b8">(opzionale)</span></label>
+            <textarea style="width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;font-size:14px;color:#0f172a;resize:none;box-sizing:border-box" rows="2" placeholder="Aggiungi note per il cleaner..."></textarea>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button style="width:100%;padding:14px 20px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;font-size:15px;font-weight:800;border-radius:14px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(124,58,237,.3)">Salva modifiche</button>
+            <button style="width:100%;padding:14px 20px;background:#f1f5f9;color:#64748b;font-size:14px;font-weight:700;border-radius:14px;border:none;cursor:pointer">Annulla</button>
+          </div>
+        </div>
+        <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Label 12px 700, input 14px con border 1.5px, touch target primario 44px+, label opzionale in grigio, CTA primario full-width con gradient.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════ MOBILE PATTERNS ═══════════════════════ -->
+  <div id="mobile" class="mb-16">
+    <p class="section-title">08 — Pattern Mobile specifici</p>
+
+    <!-- Sheet header -->
+    <div class="mb-8">
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">8a — Sheet overlay header</p>
+      <div class="grid-2">
+        <div>
+          <span class="col-header">ATTUALE</span>
+          <div class="bg-[#f8f7ff] rounded-2xl overflow-hidden border border-slate-100">
+            <div class="flex justify-center pt-3"><div class="w-10 h-1 bg-slate-200 rounded-full"></div></div>
+            <div class="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+              <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-violet-500">Pulizie</p>
+                <h2 class="text-xl font-bold text-slate-900">3 pulizie oggi</h2>
+              </div>
+              <button class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+          <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Drag handle troppo sottile (h-1), close button 36px sotto il minimo HIG (44px).</p>
+        </div>
+        <div>
+          <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+          <div style="background:#f8f7ff;border-radius:20px;overflow:hidden;border:1.5px solid #e2e8f0">
+            <div style="display:flex;justify-content:center;padding:12px 0 4px">
+              <div style="width:36px;height:5px;background:#d1d5db;border-radius:99px"></div>
+            </div>
+            <div style="padding:12px 20px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0">
+              <div>
+                <p style="font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#8b5cf6;margin-bottom:2px">Pulizie</p>
+                <h2 style="font-size:22px;font-weight:800;color:#0f172a;line-height:1.1">3 pulizie oggi</h2>
+              </div>
+              <button style="width:44px;height:44px;background:#f1f5f9;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+          <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Drag handle 5px (più visibile), close button 44×44 con border-radius quadrato (più iOS-like), titolo 22px 800.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="mb-8">
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">8b — Empty State</p>
+      <div class="grid-2">
+        <div>
+          <span class="col-header">ATTUALE</span>
+          <div class="bg-white rounded-2xl border border-slate-100 p-6">
+            <div class="text-center py-12 text-slate-400 text-sm">✓ Nessun ticket per oggi</div>
+          </div>
+          <p class="text-xs text-rose-500 font-semibold mt-3">⚠ Testo piatto, nessuna gerarchia visiva, emoji di checkmark non coerente con il contesto.</p>
+        </div>
+        <div>
+          <span class="col-header" style="background:#ede9fe;color:#7c3aed">PROPOSTA</span>
+          <div style="background:white;border-radius:16px;border:1.5px solid #e2e8f0;padding:32px 20px;text-align:center">
+            <div style="width:52px;height:52px;border-radius:16px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <p style="font-size:15px;font-weight:700;color:#334155;margin-bottom:4px">Tutto a posto!</p>
+            <p style="font-size:13px;color:#94a3b8;font-weight:500">Nessun ticket aperto per oggi</p>
+          </div>
+          <p class="text-xs text-emerald-600 font-semibold mt-3">✓ Icona tematica in container, titolo positivo, sottotitolo descrittivo. Gerarchia visiva chiara.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation bottom bar -->
+    <div>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">8c — Navigazione (proposta futura)</p>
+      <div style="background:#0f172a;border-radius:20px;padding:20px">
+        <p style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">PROPOSTA — Bottom Tab Bar (opzione alternativa al sidebar hamburger)</p>
+        <div style="background:#1e293b;border-radius:16px;padding:12px 8px;display:flex;justify-content:space-around">
+          <!-- Dashboard active -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 16px;background:#7c3aed;border-radius:12px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <p style="font-size:9px;font-weight:800;color:white;letter-spacing:.04em">HOME</p>
+          </div>
+          <!-- Calendar -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 16px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <p style="font-size:9px;font-weight:700;color:#64748b;letter-spacing:.04em">AGENDA</p>
+          </div>
+          <!-- Cleanings -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 16px;position:relative">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+            <p style="font-size:9px;font-weight:700;color:#64748b;letter-spacing:.04em">PULIZIE</p>
+            <span style="position:absolute;top:4px;right:8px;width:8px;height:8px;background:#ef4444;border-radius:50%;border:2px solid #1e293b"></span>
+          </div>
+          <!-- Maintenance -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 16px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <p style="font-size:9px;font-weight:700;color:#64748b;letter-spacing:.04em">TICKET</p>
+          </div>
+          <!-- More -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 16px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            <p style="font-size:9px;font-weight:700;color:#64748b;letter-spacing:.04em">ALTRO</p>
+          </div>
+        </div>
+        <p style="font-size:11px;color:#475569;font-weight:500;margin-top:10px">Notch rosso su Pulizie = alert visivo immediato senza aprire il drawer. Navigazione diretta senza hamburger menu.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SUMMARY -->
+  <div class="mb-16">
+    <p class="section-title">09 — Riepilogo interventi suggeriti</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <p class="text-sm font-bold text-slate-900 mb-2">Alta priorità</p>
+        <ul class="space-y-1.5 text-xs text-slate-600">
+          <li class="flex gap-2"><span class="text-red-400 font-bold">•</span>Touch target sotto 44px (bottoni, close, tabs)</li>
+          <li class="flex gap-2"><span class="text-red-400 font-bold">•</span>Testi 9px illeggibili su mobile</li>
+          <li class="flex gap-2"><span class="text-red-400 font-bold">•</span>Badge senza distinzione visiva per stato vuoto vs. critico</li>
+          <li class="flex gap-2"><span class="text-red-400 font-bold">•</span>Form input troppo piccoli per touch</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <p class="text-sm font-bold text-slate-900 mb-2">Media priorità</p>
+        <ul class="space-y-1.5 text-xs text-slate-600">
+          <li class="flex gap-2"><span class="text-amber-400 font-bold">•</span>Palette colori non sistematizzata (amber vs orange)</li>
+          <li class="flex gap-2"><span class="text-amber-400 font-bold">•</span>Tipografia senza scala coerente (troppi livelli)</li>
+          <li class="flex gap-2"><span class="text-amber-400 font-bold">•</span>Card list senza info secondarie utili (orario, ospite)</li>
+          <li class="flex gap-2"><span class="text-amber-400 font-bold">•</span>Empty state senza illustrazione/icona</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-100 p-5">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        </div>
+        <p class="text-sm font-bold text-slate-900 mb-2">Miglioramenti futuri</p>
+        <ul class="space-y-1.5 text-xs text-slate-600">
+          <li class="flex gap-2"><span class="text-blue-400 font-bold">•</span>Bottom tab bar al posto di hamburger menu</li>
+          <li class="flex gap-2"><span class="text-blue-400 font-bold">•</span>KPI card con trend (freccia su/giù)</li>
+          <li class="flex gap-2"><span class="text-blue-400 font-bold">•</span>Animazioni micro-interaction (spring, haptic)</li>
+          <li class="flex gap-2"><span class="text-blue-400 font-bold">•</span>Dark mode con palette già definita</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="border-t border-slate-200 px-6 py-8 text-center">
+  <p class="text-xs text-slate-400 font-medium">PropOps UI Library v1 · Generato automaticamente · <a href="/dashboard/manager" class="text-violet-600 hover:underline">Torna alla dashboard</a></p>
+</footer>
+
+</body>
+</html>
