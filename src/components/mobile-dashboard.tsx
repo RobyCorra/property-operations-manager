@@ -659,7 +659,11 @@ export default function MobileDashboard({
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Stato Appartamenti</p>
           <div className="space-y-2">
             {apartments.map((apt) => (
-              <div key={apt.id} className="bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100">
+              <button
+                key={apt.id}
+                onClick={() => { openApartmentCalendar(apt); setActiveTab("calendar"); }}
+                className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100 active:scale-[.98] transition-transform text-left"
+              >
                 <div className="flex items-center gap-3">
                   <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
                   <div>
@@ -667,10 +671,15 @@ export default function MobileDashboard({
                     <p className="text-[10px] text-slate-400">{apt.statusLabel}</p>
                   </div>
                 </div>
-                <span className={`px-2.5 py-1 rounded-full text-[9px] font-bold ${statusBadgeClass(apt.status)}`}>
-                  {apt.statusLabel}
-                </span>
-              </div>
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-1 rounded-full text-[9px] font-bold ${statusBadgeClass(apt.status)}`}>
+                    {apt.statusLabel}
+                  </span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              </button>
             ))}
           </div>
         </div>
