@@ -421,8 +421,18 @@ export default function MobileDashboard({
     </button>
   );
 
+  // Reset sidebar/sheets on mount — prevents Next.js cache from restoring open state
+  useEffect(() => {
+    setSidebarOpen(false);
+    setCheckinsSheetOpen(false);
+    setCleaningsSheetOpen(false);
+    setTicketsSheetOpen(false);
+    setLateCleanSheetOpen(false);
+    setInProgressSheetOpen(false);
+  }, []);
+
   return (
-    <div className="relative bg-[#f8f7ff] min-h-screen flex flex-col overflow-hidden">
+    <div className="relative bg-[#f8f7ff] min-h-screen flex flex-col overflow-hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
 
       {/* ════════════════════════════════════════════════════
           DASHBOARD VIEW
@@ -1349,10 +1359,9 @@ export default function MobileDashboard({
                 </div>
               </button>
 
-              <Link
-                href="/dashboard/manager/messages"
-                onClick={closeSidebar}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              <div
+                onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/messages")); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 relative">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
@@ -1373,7 +1382,7 @@ export default function MobileDashboard({
                     {unreadMessagesCount > 9 ? "9+" : unreadMessagesCount}
                   </span>
                 )}
-              </Link>
+              </div>
 
               <button
                 onClick={openSearch}
@@ -1390,10 +1399,9 @@ export default function MobileDashboard({
                 </div>
               </button>
 
-              <Link
-                href="/dashboard/manager/apartments"
-                onClick={closeSidebar}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              <div
+                onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/apartments")); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
@@ -1405,12 +1413,11 @@ export default function MobileDashboard({
                   <p className="text-sm font-bold text-slate-700">Appartamenti</p>
                   <p className="text-[10px] text-slate-400">Elenco proprietà</p>
                 </div>
-              </Link>
+              </div>
 
-              <Link
-                href="/dashboard/manager/users"
-                onClick={closeSidebar}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              <div
+                onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/users")); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
@@ -1424,16 +1431,15 @@ export default function MobileDashboard({
                   <p className="text-sm font-bold text-slate-700">Team</p>
                   <p className="text-[10px] text-slate-400">Gestione collaboratori</p>
                 </div>
-              </Link>
+              </div>
 
               {/* Divider */}
               <div className="my-3 h-px bg-slate-100 mx-2" />
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">Crea Nuovo</p>
 
-              <Link
-                href="/dashboard/manager/cleanings/new"
-                onClick={closeSidebar}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-violet-50 transition-colors"
+              <div
+                onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/cleanings/new")); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-violet-50 transition-colors cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5">
@@ -1442,12 +1448,11 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <p className="text-sm font-bold text-slate-700">Nuova Pulizia</p>
-              </Link>
+              </div>
 
-              <Link
-                href="/dashboard/manager/maintenance/new"
-                onClick={closeSidebar}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              <div
+                onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/maintenance/new")); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5">
@@ -1455,12 +1460,11 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <p className="text-sm font-bold text-slate-700">Nuovo Ticket</p>
-              </Link>
+              </div>
 
-              <Link
-                href="/dashboard/manager/bookings/new"
-                onClick={closeSidebar}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              <div
+                onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/bookings/new")); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5">
@@ -1468,12 +1472,11 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <p className="text-sm font-bold text-slate-700">Nuova Prenotazione</p>
-              </Link>
+              </div>
 
-              <Link
-                href="/dashboard/manager/apartments/new"
-                onClick={closeSidebar}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors"
+              <div
+                onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/apartments/new")); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5">
@@ -1482,7 +1485,7 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <p className="text-sm font-bold text-slate-700">Nuovo Appartamento</p>
-              </Link>
+              </div>
             </nav>
 
             {/* Chiudi + Logout */}
