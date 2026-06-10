@@ -6,12 +6,18 @@ import { updateTaskChecklist } from "@/src/app/actions/checklist";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
 import { compressImage } from "@/src/lib/compress-image";
 import { hapticLight, hapticSuccess, hapticError } from "@/src/lib/haptics";
+import { useOnlineStatus } from "@/src/lib/use-online-status";
 import {
   saveToQueue,
   getQueueForTask,
   deleteFromQueue,
   clearQueueForTask,
 } from "@/src/lib/photo-queue-db";
+import {
+  saveChecklistProgress,
+  clearChecklistProgress,
+} from "@/src/lib/checklist-queue-db";
+import { Wifi, WifiOff } from "lucide-react";
 import {
   Camera,
   ChevronRight,
@@ -56,6 +62,7 @@ const UPLOAD_INTERVAL_MS = 15_000;
 
 export default function ChecklistInteractive({ taskId, initialItems }: ChecklistInteractiveProps) {
   const { t, lang } = useLang();
+  const isOnline = useOnlineStatus();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
 
   const firstUnprocessed = initialItems.findIndex((i) => !i.completed && !i.skipped);
@@ -157,6 +164,36 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     const interval = setInterval(drain, UPLOAD_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [uploadOne]);
+
+  // ── Auto-sync spunte al ritorno online ────────────────────────────────────
+  const isOnlineRef = useRef(isOnline);
+  isOnlineRef.current = isOnline;
+  const [justReconnected, setJustReconnected] = useState(false);
+
+  useEffect(() => {
+    if (!isOnline) return;
+    setJustReconnected(true);
+    const t = setTimeout(() => setJustReconnected(false), 3000);
+    // Appena torna online, sincronizza le spunte salvate offline
+    import("@/src/lib/checklist-queue-db").then(async ({ getChecklistProgress, clearChecklistProgress: clearProgress }) => {
+      const saved = await getChecklistProgress(taskId);
+      if (!saved) return;
+      try {
+        await updateTaskChecklist(taskId, saved.items as ChecklistItem[]);
+        await clearProgress(taskId);
+        console.log("[offline] Spunte sincronizzate dopo reconnessione");
+      } catch (err) {
+        console.warn("[offline] Sync fallita:", err);
+      }
+    });
+
+    // Riprova anche upload foto in coda
+    for (const itemId of pendingRef.current.keys()) {
+      if (!uploadingIdsRef.current.has(itemId)) uploadOne(itemId);
+    }
+
+    return () => clearTimeout(t);
+  }, [isOnline, taskId, uploadOne]);
 
   // ── Foto helpers ──────────────────────────────────────────────────────────
   const clearPhoto = () => {
@@ -283,10 +320,17 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
     setItems(updatedItems);
 
-    try {
-      await updateTaskChecklist(taskId, updatedItems);
-    } catch {
-      // best-effort
+    if (isOnline) {
+      try {
+        await updateTaskChecklist(taskId, updatedItems);
+        await clearChecklistProgress(taskId); // rimuovi eventuale coda offline
+      } catch {
+        // best-effort: salva offline come fallback
+        await saveChecklistProgress(taskId, updatedItems);
+      }
+    } else {
+      // Offline: salva in IndexedDB, sarà sincronizzato al ritorno
+      await saveChecklistProgress(taskId, updatedItems);
     }
 
     const completedTranslatedLabel =
@@ -519,6 +563,24 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
     return (
       <div className="animate-in fade-in duration-300">
+
+        {/* ── Banner offline ──────────────────────────────────────────── */}
+        {!isOnline && (
+          <div className="mb-4 flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
+            <WifiOff size={16} className="text-amber-500 shrink-0" />
+            <div>
+              <p className="text-sm font-bold text-amber-800">Sei offline</p>
+              <p className="text-xs text-amber-600">Le spunte vengono salvate localmente e sincronizzate appena torni online.</p>
+            </div>
+          </div>
+        )}
+        {justReconnected && (
+          <div className="mb-4 flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-3">
+            <Wifi size={16} className="text-green-500 shrink-0" />
+            <p className="text-xs text-green-700 font-medium">Connesso — spunte sincronizzate ✓</p>
+          </div>
+        )}
+
         <div className="mb-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
