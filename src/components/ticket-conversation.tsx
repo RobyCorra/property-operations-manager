@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import SafeDate from "@/src/components/safe-date";
 import { upload } from "@vercel/blob/client";
 import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notification-sound";
+import { hapticMedium, hapticError } from "@/src/lib/haptics";
 
 interface Message {
   id: string;
@@ -140,6 +141,7 @@ export default function TicketConversation({
         formData.append("blobMimeType", file.type || "application/octet-stream");
         formData.append("blobSize", String(file.size));
       } catch {
+        hapticError();
         setError("Errore durante il caricamento del file. Riprova.");
         setIsUploading(false);
         return;
@@ -151,14 +153,17 @@ export default function TicketConversation({
       try {
         const result = await submitAction(entityId, null, formData);
         if (result.success) {
+          hapticMedium();
           formRef.current?.reset();
           setSelectedFileName(null);
           setSelectedFilePreview(null);
           router.refresh();
         } else if (result.error) {
+          hapticError();
           setError(result.error);
         }
       } catch {
+        hapticError();
         setError("Errore durante l'invio del messaggio.");
       }
     });

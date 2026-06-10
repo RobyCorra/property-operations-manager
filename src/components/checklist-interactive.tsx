@@ -5,6 +5,7 @@ import { upload } from "@vercel/blob/client";
 import { updateTaskChecklist } from "@/src/app/actions/checklist";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
 import { compressImage } from "@/src/lib/compress-image";
+import { hapticLight, hapticSuccess, hapticError } from "@/src/lib/haptics";
 import {
   saveToQueue,
   getQueueForTask,
@@ -237,8 +238,10 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     if (completed && currentItem.photoRequired && !hasPhoto) {
       setPhotoRequiredError(true);
       setTimeout(() => setPhotoRequiredError(false), 2500);
+      hapticError();
       return;
     }
+    hapticLight();
 
     setIsSaving(true);
     setUploadError(null);
@@ -322,7 +325,9 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     try {
       await clearQueueForTask(taskId);
       await updateCleaningStatus(taskId, "AWAITING_REVIEW");
+      hapticSuccess();
     } catch (err: unknown) {
+      hapticError();
       alert((err as Error).message || "Errore durante il completamento.");
       setIsCompletingTask(false);
     }

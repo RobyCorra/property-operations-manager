@@ -8,6 +8,7 @@ import AIAssistant from "@/src/components/ai-assistant";
 import CleaningCorrectionPanel from "@/src/components/cleaning-correction-panel";
 import type { CorrectionItem } from "@/src/components/cleaning-correction-panel";
 import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage } from "@/src/app/actions/operational";
+import { hapticMedium, hapticSuccess } from "@/src/lib/haptics";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { calculateLinen } from "@/src/lib/linen-calculator";
 
@@ -90,6 +91,8 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
     startTransition(async () => {
       await updateCleaningStatus(task.id, nextStatus);
       setStatus(nextStatus);
+      if (nextStatus === "IN_PROGRESS") hapticMedium();
+      else if (nextStatus === "AWAITING_REVIEW" || nextStatus === "APPROVED") hapticSuccess();
     });
   };
 

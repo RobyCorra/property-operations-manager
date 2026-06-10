@@ -6,6 +6,7 @@ import type { MaintenanceTaskItem, MaintenancePublicMessage } from "@/src/app/ac
 import MaintenanceChecklistInteractive from "@/src/components/maintenance-checklist-interactive";
 import MaintenanceNoteForm from "@/src/components/maintenance-note-form";
 import { ChevronDown } from "lucide-react";
+import { hapticMedium, hapticSuccess } from "@/src/lib/haptics";
 
 interface Attachment {
   id: string;
@@ -73,7 +74,7 @@ export default function PublicMaintenanceView({
   async function handleStart() {
     if (actionLoading) return;
     setActionLoading(true);
-    try { await startMaintenancePublic(ticketId); window.location.reload(); }
+    try { hapticMedium(); await startMaintenancePublic(ticketId); window.location.reload(); }
     catch { setActionLoading(false); }
   }
 
