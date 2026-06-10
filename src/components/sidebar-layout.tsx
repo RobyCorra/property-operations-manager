@@ -37,7 +37,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
   const sidebarWidth = mounted && collapsed ? "md:pl-[72px]" : "md:pl-64";
 
   return (
-    <div className="min-h-screen bg-[#faf8ff] flex">
+    <div className="min-h-screen bg-[#faf8ff] flex w-full max-w-[100vw] overflow-x-hidden">
       {/* FloatingManagerChat fuori dall'header per evitare problemi di stacking context
           causati da backdrop-filter: blur sull'header sticky */}
       <FloatingManagerChat externalOpen={aiOpen} onExternalClose={() => setAiOpen(false)} />
@@ -48,7 +48,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
         <ManagerNavbar unreadCount={unreadCount} collapsed={mounted && collapsed} onToggle={toggle} />
       </div>
 
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarWidth}`}>
+      <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${sidebarWidth}`}>
         {/* Top Bar — nascosta su mobile */}
         <header className="hidden md:flex sticky top-0 z-40 w-full h-20 bg-white/60 backdrop-blur-xl border-b border-white/40 items-center justify-between px-10 shadow-sm">
           <div className="flex-1 max-w-xl relative group">
@@ -107,7 +107,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
         </header>
 
         {/* Dashboard Main View */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
+        <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden">{children}</div>
       </div>
     </div>
   );
