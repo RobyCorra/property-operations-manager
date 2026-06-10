@@ -162,7 +162,8 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
         </div>
       </div>
 
-      <section className="bg-white/40 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-2xl shadow-black/5 overflow-hidden transition-all duration-200">
+      {/* Desktop Table */}
+      <section className="hidden md:block bg-white/40 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-2xl shadow-black/5 overflow-hidden transition-all duration-200">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600 border-collapse">
             <thead className="bg-white/20 border-b border-white/40">
@@ -205,11 +206,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                   <td className="px-10 py-6">
                     {task.nextBooking ? (() => {
                       const nb = task.nextBooking;
-                      const linen = calculateLinen(
-                        task.apartment.bedConfig,
-                        nb.totalGuests,
-                        !!(nb.cullaRequested)
-                      );
+                      const linen = calculateLinen(task.apartment.bedConfig, nb.totalGuests, !!(nb.cullaRequested));
                       return (
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2">
@@ -222,7 +219,6 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                               {nb.totalGuests} osp. &middot; <SafeDate date={nb.checkInDate} format={{ day: '2-digit', month: 'short' }} />
                             </span>
                           </div>
-                          {/* Mini linen summary */}
                           <div className="flex flex-wrap gap-1 mt-0.5">
                             <span className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5 text-[9px] font-black text-slate-500 uppercase tracking-wide">
                               🛁 {nb.totalGuests * 2}
@@ -260,7 +256,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                   </td>
                   <td className="px-10 py-6 text-right">
                     <div className="flex items-center justify-end gap-2">
-                        <Link 
+                        <Link
                         href={`/dashboard/manager/cleanings/${task.id}/edit`}
                         className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
                         title="Modifica"
@@ -286,6 +282,80 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
           </table>
         </div>
       </section>
+
+      {/* Mobile Card List */}
+      <div className="md:hidden space-y-3">
+        {filteredCleanings.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+              <Filter size={28} className="text-slate-200" />
+            </div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Nessuna pulizia trovata</p>
+          </div>
+        ) : (
+          filteredCleanings.map((task) => (
+            <div key={task.id} className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-sm overflow-hidden">
+              <div className="p-4 space-y-3">
+                {/* Header: appartamento + stato */}
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center shrink-0">
+                    <Building2 size={16} className="text-violet-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 uppercase tracking-tight truncate">{task.apartment.name}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <CalendarDays size={10} className="text-slate-400 shrink-0" />
+                      <p className="text-[10px] font-semibold text-slate-500">{formatRomeDateDisplay(task.date)}</p>
+                    </div>
+                  </div>
+                  <div className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border flex items-center gap-1 shrink-0 ${statusColors[task.status]}`}>
+                    <div className="w-1.5 h-1.5 rounded-full bg-current" />
+                    {task.status === "PENDING" ? "Da fare" : task.status === "IN_PROGRESS" ? "In corso" : "Fatto"}
+                  </div>
+                </div>
+
+                {/* Assegnato */}
+                <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2">
+                  <div className="w-7 h-7 rounded-full bg-white border border-slate-100 flex items-center justify-center shrink-0">
+                    <User size={12} className="text-slate-400" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-600 uppercase tracking-tight">
+                    {task.assignedTo?.name || "Non assegnato"}
+                  </span>
+                </div>
+
+                {/* Prossimo ospite (se presente) */}
+                {task.nextBooking && (
+                  <div className="flex items-center gap-2 bg-emerald-50 rounded-xl px-3 py-2 border border-emerald-100">
+                    <LogIn size={12} className="text-emerald-500 shrink-0" />
+                    <span className="text-xs font-bold text-emerald-800 truncate">{task.nextBooking.guestName}</span>
+                    <span className="text-[10px] text-emerald-600 ml-auto shrink-0">{task.nextBooking.totalGuests} osp.</span>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                  <Link
+                    href={`/dashboard/manager/cleanings/${task.id}/edit`}
+                    className="flex-1 py-2.5 flex items-center justify-center gap-2 rounded-xl bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-100 active:scale-95 transition-all"
+                  >
+                    <Pencil size={12} />
+                    Modifica
+                  </Link>
+                  <Link
+                    href={`/dashboard/manager/cleanings/${task.id}`}
+                    className="flex-1 py-2.5 flex items-center justify-center gap-2 rounded-xl bg-violet-50 text-violet-600 text-[10px] font-black uppercase tracking-widest border border-violet-100 active:scale-95 transition-all"
+                  >
+                    <ArrowRight size={12} />
+                    Dettagli
+                  </Link>
+                  <DeleteOperationalButton id={task.id} type="CLEANING" />
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }

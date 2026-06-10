@@ -100,7 +100,8 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
         onReset={handleReset}
       />
 
-      <section className="bg-white/40 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-2xl shadow-black/5 overflow-hidden transition-all duration-200">
+      {/* Desktop Table */}
+      <section className="hidden md:block bg-white/40 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-2xl shadow-black/5 overflow-hidden transition-all duration-200">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600 border-collapse">
             <thead className="bg-white/20 border-b border-white/40">
@@ -132,16 +133,14 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
                     </div>
                   </td>
                   <td className="px-10 py-6">
-                    <div className="flex items-center gap-4">
-                        <div className="flex flex-col gap-0.5">
-                            <div className="flex items-center gap-2">
-                                <CalendarDays size={12} className="text-emerald-500" />
-                                <SafeDate date={b.checkInDate} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-xs font-bold text-slate-900" />
-                            </div>
-                            <div className="flex items-center gap-2 opacity-50">
-                                <div className="w-3" />
-                                <SafeDate date={b.checkOutDate} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-[10px] font-medium text-slate-500 uppercase tracking-widest" />
-                            </div>
+                    <div className="flex flex-col gap-0.5">
+                        <div className="flex items-center gap-2">
+                            <CalendarDays size={12} className="text-emerald-500" />
+                            <SafeDate date={b.checkInDate} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-xs font-bold text-slate-900" />
+                        </div>
+                        <div className="flex items-center gap-2 opacity-50">
+                            <div className="w-3" />
+                            <SafeDate date={b.checkOutDate} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-[10px] font-medium text-slate-500 uppercase tracking-widest" />
                         </div>
                     </div>
                   </td>
@@ -153,7 +152,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
                   </td>
                   <td className="px-10 py-6 text-right">
                     <div className="flex items-center justify-end gap-2">
-                        <Link 
+                        <Link
                         href={`/dashboard/manager/bookings/${b.id}/edit`}
                         className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
                         title="Modifica"
@@ -179,6 +178,75 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
           </table>
         </div>
       </section>
+
+      {/* Mobile Card List */}
+      <div className="md:hidden space-y-3">
+        {filteredBookings.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+              <CalendarDays size={28} className="text-slate-200" />
+            </div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Nessuna prenotazione trovata</p>
+          </div>
+        ) : (
+          filteredBookings.map((b) => (
+            <div key={b.id} className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-sm overflow-hidden">
+              <div className="p-4 space-y-3">
+                {/* Header */}
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
+                    <User size={16} className="text-slate-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 uppercase tracking-tight truncate">
+                      {b.guestName || "Prenotazione Manuale"}
+                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <Building2 size={10} className="text-slate-400 shrink-0" />
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide truncate">{b.apartment.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0 bg-slate-100 rounded-full px-2.5 py-1">
+                    <Users size={10} className="text-slate-500" />
+                    <span className="text-[10px] font-black text-slate-600">{b.totalGuests}</span>
+                  </div>
+                </div>
+
+                {/* Date row */}
+                <div className="flex items-center gap-4 bg-slate-50 rounded-xl px-3 py-2.5">
+                  <div>
+                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Check-in</p>
+                    <div className="flex items-center gap-1.5">
+                      <CalendarDays size={11} className="text-emerald-500" />
+                      <SafeDate date={b.checkInDate} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-xs font-bold text-slate-900" />
+                    </div>
+                  </div>
+                  <div className="h-6 w-px bg-slate-200" />
+                  <div>
+                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Check-out</p>
+                    <div className="flex items-center gap-1.5">
+                      <CalendarDays size={11} className="text-slate-400" />
+                      <SafeDate date={b.checkOutDate} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-xs font-semibold text-slate-600" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                  <Link
+                    href={`/dashboard/manager/bookings/${b.id}/edit`}
+                    className="flex-1 py-2.5 flex items-center justify-center gap-2 rounded-xl bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-100 active:scale-95 transition-all"
+                  >
+                    <Pencil size={12} />
+                    Modifica
+                  </Link>
+                  <DeleteBookingButton bookingId={b.id} />
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
