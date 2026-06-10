@@ -437,11 +437,10 @@ export default function MobileDashboard({
       {/* ════════════════════════════════════════════════════
           DASHBOARD VIEW
           ════════════════════════════════════════════════════ */}
-      <div className="flex-1 overflow-y-auto pb-8" style={{ WebkitOverflowScrolling: "touch" }}>
+      <div className="flex-1 overflow-y-auto pb-24" style={{ WebkitOverflowScrolling: "touch" }}>
 
         {/* ── HEADER ──────────────────────────────────────── */}
         <div className="px-4 pt-4 pb-3 flex items-center gap-3">
-          <HamburgerBtn />
           <div className="flex-1">
             <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{dateLabel}</p>
           </div>
@@ -491,89 +490,104 @@ export default function MobileDashboard({
         {/* ── KPI GRID ────────────────────────────────────── */}
         <div className="px-4 grid grid-cols-2 gap-3 mb-3">
           {/* Check-in oggi — cliccabile */}
+          {/* ─ Check-in oggi ─ */}
           <button
             onClick={() => setCheckinsSheetOpen(true)}
-            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-left active:scale-95 transition-transform"
+            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
+              checkinsCount > 0
+                ? "bg-blue-50 border-blue-200 shadow-sm shadow-blue-100"
+                : "bg-white border-slate-100 shadow-sm opacity-70"
+            }`}
           >
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Check-in Oggi</p>
-            <p className="text-3xl font-black text-slate-900">{checkinsCount}</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">prenotazioni</p>
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-2 ${checkinsCount > 0 ? "bg-blue-100" : "bg-slate-100"}`}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={checkinsCount > 0 ? "#3b82f6" : "#94a3b8"} strokeWidth="2.5">
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+              </svg>
+            </div>
+            <p className={`text-3xl font-black leading-none mb-1 ${checkinsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{checkinsCount}</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${checkinsCount > 0 ? "text-blue-500" : "text-slate-400"}`}>Check-in Oggi</p>
           </button>
 
-          {/* Pulizie oggi — cliccabile + count eseguite */}
+          {/* ─ Pulizie oggi ─ */}
           <button
             onClick={() => setCleaningsSheetOpen(true)}
-            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-left active:scale-95 transition-transform"
+            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
+              cleaningsCount > 0
+                ? "bg-white border-slate-100 shadow-sm"
+                : "bg-white border-slate-100 shadow-sm opacity-70"
+            }`}
           >
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Pulizie Oggi</p>
-            <div className="flex items-end gap-3">
-              <div>
-                <p className="text-3xl font-black text-slate-900">{cleaningsCount}</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">pianificate</p>
+            <div className="flex items-center justify-between mb-2">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "bg-emerald-100" : "bg-violet-100"}`}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "#10b981" : "#7c3aed"} strokeWidth="2.5">
+                  <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
+                </svg>
               </div>
               {cleaningsDoneCount > 0 && (
-                <div className="mb-0.5">
-                  <p className="text-xl font-black text-emerald-600 leading-none">{cleaningsDoneCount}</p>
-                  <p className="text-[9px] font-bold text-emerald-500 mt-0.5">eseguite</p>
-                </div>
+                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">{cleaningsDoneCount}/{cleaningsCount} ✓</span>
               )}
             </div>
+            <p className={`text-3xl font-black leading-none mb-1 ${cleaningsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{cleaningsCount}</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${cleaningsCount > 0 ? "text-violet-500" : "text-slate-400"}`}>Pulizie Oggi</p>
           </button>
 
-          {/* Pulizie in ritardo */}
+          {/* ─ Pulizie in ritardo ─ */}
           <button
             onClick={() => setLateCleanSheetOpen(true)}
-            className={`rounded-2xl p-4 shadow-sm border text-left active:scale-95 transition-transform ${
-              lateCleanings.length > 0 ? "bg-orange-50 border-orange-200" : "bg-white border-slate-100"
+            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
+              lateCleanings.length > 0
+                ? "bg-amber-50 border-amber-300 shadow-sm shadow-amber-100"
+                : "bg-white border-slate-100 shadow-sm opacity-70"
             }`}
           >
-            <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${
-              lateCleanings.length > 0 ? "text-orange-500" : "text-slate-400"
-            }`}>Pulizie in ritardo</p>
-            <p className={`text-3xl font-black ${
-              lateCleanings.length > 0 ? "text-orange-600" : "text-slate-900"
-            }`}>{lateCleanings.length}</p>
-            <p className={`text-[10px] mt-0.5 ${
-              lateCleanings.length > 0 ? "text-orange-400" : "text-slate-400"
-            }`}>in ritardo</p>
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-2 ${lateCleanings.length > 0 ? "bg-amber-100" : "bg-slate-100"}`}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={lateCleanings.length > 0 ? "#f59e0b" : "#94a3b8"} strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <p className={`text-3xl font-black leading-none mb-1 ${lateCleanings.length > 0 ? "text-amber-600" : "text-slate-400"}`}>{lateCleanings.length}</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${lateCleanings.length > 0 ? "text-amber-500" : "text-slate-400"}`}>In Ritardo</p>
           </button>
 
-          {/* Pulizie in corso */}
+          {/* ─ Pulizie in corso ─ */}
           <button
             onClick={() => setInProgressSheetOpen(true)}
-            className={`rounded-2xl p-4 shadow-sm border text-left active:scale-95 transition-transform ${
-              cleaningsInProgress.length > 0 ? "bg-violet-50 border-violet-200" : "bg-white border-slate-100"
+            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
+              cleaningsInProgress.length > 0
+                ? "bg-violet-50 border-violet-200 shadow-sm shadow-violet-100"
+                : "bg-white border-slate-100 shadow-sm opacity-70"
             }`}
           >
-            <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${
-              cleaningsInProgress.length > 0 ? "text-violet-500" : "text-slate-400"
-            }`}>Pulizie in corso</p>
-            <p className={`text-3xl font-black ${
-              cleaningsInProgress.length > 0 ? "text-violet-600" : "text-slate-900"
-            }`}>{cleaningsInProgress.length}</p>
-            <p className={`text-[10px] mt-0.5 ${
-              cleaningsInProgress.length > 0 ? "text-violet-400" : "text-slate-400"
-            }`}>in esecuzione</p>
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-2 ${cleaningsInProgress.length > 0 ? "bg-violet-100" : "bg-slate-100"}`}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={cleaningsInProgress.length > 0 ? "#7c3aed" : "#94a3b8"} strokeWidth="2.5">
+                <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
+              </svg>
+            </div>
+            <p className={`text-3xl font-black leading-none mb-1 ${cleaningsInProgress.length > 0 ? "text-violet-700" : "text-slate-400"}`}>{cleaningsInProgress.length}</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${cleaningsInProgress.length > 0 ? "text-violet-500" : "text-slate-400"}`}>In Corso</p>
           </button>
 
-          {/* Ticket Oggi */}
+          {/* ─ Ticket Oggi ─ */}
           <button
             onClick={() => setTicketsSheetOpen(true)}
-            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-left active:scale-95 transition-transform"
+            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
+              ticketsTodayCount > 0
+                ? "bg-orange-50 border-orange-200 shadow-sm shadow-orange-100"
+                : "bg-white border-slate-100 shadow-sm opacity-70"
+            }`}
           >
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Ticket Oggi</p>
-            <div className="flex items-end gap-3">
-              <div>
-                <p className="text-3xl font-black text-slate-900">{ticketsTodayCount}</p>
-                <p className="text-[10px] text-slate-400 mt-0.5">pianificati</p>
+            <div className="flex items-center justify-between mb-2">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${ticketsTodayCount > 0 ? "bg-orange-100" : "bg-slate-100"}`}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={ticketsTodayCount > 0 ? "#f97316" : "#94a3b8"} strokeWidth="2.5">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
               </div>
               {ticketsDoneCount > 0 && (
-                <div className="mb-0.5">
-                  <p className="text-xl font-black text-emerald-600 leading-none">{ticketsDoneCount}</p>
-                  <p className="text-[9px] font-bold text-emerald-500 mt-0.5">eseguiti</p>
-                </div>
+                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">{ticketsDoneCount}/{ticketsTodayCount} ✓</span>
               )}
             </div>
+            <p className={`text-3xl font-black leading-none mb-1 ${ticketsTodayCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{ticketsTodayCount}</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${ticketsTodayCount > 0 ? "text-orange-500" : "text-slate-400"}`}>Ticket Oggi</p>
           </button>
 
           {/* Chiedi a IA */}
@@ -672,7 +686,7 @@ export default function MobileDashboard({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`px-2.5 py-1 rounded-full text-[9px] font-bold ${statusBadgeClass(apt.status)}`}>
+                  <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold ${statusBadgeClass(apt.status)}`}>
                     {apt.statusLabel}
                   </span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5">
@@ -690,26 +704,16 @@ export default function MobileDashboard({
           ════════════════════════════════════════════════════ */}
       {activeTab === "calendar" && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-20 flex flex-col">
-          {/* Header con hamburger + titolo + back */}
-          <div className="px-4 pt-4 pb-3 flex items-center gap-3 border-b border-slate-100">
-            <HamburgerBtn />
+          {/* Header calendario */}
+          <div className="px-4 pt-4 pb-3 flex items-center gap-3 border-b border-slate-100" style={{ paddingTop: "calc(env(safe-area-inset-top) + 16px)" }}>
             <div className="flex-1">
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Scegli appartamento</p>
               <h2 className="text-xl font-bold text-slate-900">Calendario</h2>
             </div>
-            <button
-              onClick={() => setActiveTab("dashboard")}
-              className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 rounded-full text-slate-600 text-[10px] font-bold"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
-              Indietro
-            </button>
           </div>
 
           {/* Apartment list */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 pb-8">
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 pb-24">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
               Seleziona per aprire il calendario
             </p>
@@ -744,7 +748,7 @@ export default function MobileDashboard({
         <div className="fixed inset-0 bg-[#f8f7ff] z-30 flex flex-col">
 
           {/* Header */}
-          <div className="bg-white border-b border-slate-100 px-4 pt-4 pb-0">
+          <div className="bg-white border-b border-slate-100 px-4 pb-0" style={{ paddingTop: "calc(env(safe-area-inset-top) + 16px)" }}>
             {/* Back row */}
             <div className="flex items-center gap-2 mb-2">
               <button
@@ -790,7 +794,7 @@ export default function MobileDashboard({
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto pb-8">
+          <div className="flex-1 overflow-y-auto pb-24">
             {calendarLoading && (
               <div className="flex flex-col items-center justify-center h-40 gap-3">
                 <div className="w-8 h-8 border-2 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
@@ -1532,7 +1536,7 @@ export default function MobileDashboard({
       {checkinsSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
           <div className="flex justify-center pt-3">
-            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+            <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
           </div>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
@@ -1543,14 +1547,14 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setCheckinsSheetOpen(false)}
-              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {checkinsItems.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">Nessun check-in previsto per oggi</div>
             )}
@@ -1587,7 +1591,7 @@ export default function MobileDashboard({
       {cleaningsSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
           <div className="flex justify-center pt-3">
-            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+            <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
           </div>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
@@ -1598,14 +1602,14 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setCleaningsSheetOpen(false)}
-              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {cleaningsTodayItems.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia pianificata per oggi</div>
             )}
@@ -1644,7 +1648,7 @@ export default function MobileDashboard({
                       <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
                       <p className="text-[10px] text-slate-400 truncate">{item.assignedToName}</p>
                     </div>
-                    <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 ${badgeClass}`}>
+                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 ${badgeClass}`}>
                       {itemStatusLabel}
                     </span>
                   </div>
@@ -1661,7 +1665,7 @@ export default function MobileDashboard({
       {ticketsSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
           <div className="flex justify-center pt-3">
-            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+            <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
           </div>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
@@ -1674,14 +1678,14 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setTicketsSheetOpen(false)}
-              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {ticketsTodayItems.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">
                 ✓ Nessun ticket per oggi
@@ -1712,7 +1716,7 @@ export default function MobileDashboard({
                       <p className="text-sm font-bold text-slate-900 truncate">{ticket.title}</p>
                       <p className="text-[10px] text-slate-400 truncate">{ticket.apartmentName}</p>
                     </div>
-                    <span className={`text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 ${badgeClass}`}>
+                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 ${badgeClass}`}>
                       {ticketStatusLabel}
                     </span>
                   </div>
@@ -1729,7 +1733,7 @@ export default function MobileDashboard({
       {lateCleanSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
           <div className="flex justify-center pt-3">
-            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+            <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
           </div>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
@@ -1742,14 +1746,14 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setLateCleanSheetOpen(false)}
-              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {lateCleanings.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">
                 ✓ Nessuna pulizia in ritardo
@@ -1773,7 +1777,7 @@ export default function MobileDashboard({
                     <p className="text-sm font-bold text-slate-900 truncate">{c.apartmentName}</p>
                     <p className="text-[10px] text-slate-400 truncate">{c.assignedToName} · {c.scheduledTime}</p>
                   </div>
-                  <span className="text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 bg-orange-50 text-orange-700">
+                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 bg-orange-50 text-orange-700">
                     In ritardo
                   </span>
                 </div>
@@ -1789,7 +1793,7 @@ export default function MobileDashboard({
       {inProgressSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
           <div className="flex justify-center pt-3">
-            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+            <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
           </div>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
@@ -1802,14 +1806,14 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setInProgressSheetOpen(false)}
-              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {cleaningsInProgress.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">
                 Nessuna pulizia in corso
@@ -1846,7 +1850,7 @@ export default function MobileDashboard({
                       </div>
                     )}
                   </div>
-                  <span className="text-[9px] font-bold px-2.5 py-1 rounded-full shrink-0 bg-violet-50 text-violet-700">
+                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 bg-violet-50 text-violet-700">
                     In corso
                   </span>
                 </div>
@@ -1870,7 +1874,7 @@ export default function MobileDashboard({
       {eventsOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
           <div className="flex justify-center pt-3">
-            <div className="w-10 h-1 bg-slate-200 rounded-full" />
+            <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
           </div>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
@@ -1881,14 +1885,14 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setEventsOpen(false)}
-              className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"
+              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-8">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {todayPendingEvents.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">
                 ✓ Tutti gli eventi di oggi sono stati completati
@@ -2016,6 +2020,98 @@ export default function MobileDashboard({
           </div>
         </div>
       )}
+      {/* ════════════════════════════════════════════════════
+          BOTTOM TAB BAR
+          ════════════════════════════════════════════════════ */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        <div className="flex items-center justify-around px-2 pt-2 pb-1">
+
+          {/* HOME */}
+          <button
+            onClick={() => {
+              setActiveTab("dashboard");
+              setSearchOpen(false);
+            }}
+            className="flex flex-col items-center gap-0.5 min-w-[44px] py-1 px-3"
+          >
+            <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${activeTab === "dashboard" ? "bg-violet-600" : ""}`}>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={activeTab === "dashboard" ? "white" : "#94a3b8"} strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+              </svg>
+            </div>
+            <p className={`text-[9px] font-bold tracking-wide ${activeTab === "dashboard" ? "text-violet-600" : "text-slate-400"}`}>HOME</p>
+          </button>
+
+          {/* AGENDA */}
+          <button
+            onClick={() => setActiveTab("calendar")}
+            className="flex flex-col items-center gap-0.5 min-w-[44px] py-1 px-3"
+          >
+            <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${activeTab === "calendar" ? "bg-violet-600" : ""}`}>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke={activeTab === "calendar" ? "white" : "#94a3b8"} strokeWidth="2">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <p className={`text-[9px] font-bold tracking-wide ${activeTab === "calendar" ? "text-violet-600" : "text-slate-400"}`}>AGENDA</p>
+          </button>
+
+          {/* PULIZIE */}
+          <button
+            onClick={() => setCleaningsSheetOpen(true)}
+            className="flex flex-col items-center gap-0.5 min-w-[44px] py-1 px-3 relative"
+          >
+            <div className="w-11 h-8 rounded-xl flex items-center justify-center">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
+                <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
+              </svg>
+              {lateCleanings.length > 0 && (
+                <span className="absolute top-0.5 right-2 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-white" />
+              )}
+            </div>
+            <p className="text-[9px] font-bold tracking-wide text-slate-400">PULIZIE</p>
+          </button>
+
+          {/* TICKET */}
+          <button
+            onClick={() => setTicketsSheetOpen(true)}
+            className="flex flex-col items-center gap-0.5 min-w-[44px] py-1 px-3 relative"
+          >
+            <div className="w-11 h-8 rounded-xl flex items-center justify-center">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+              {ticketsTodayCount > 0 && (
+                <span className="absolute top-0.5 right-2 w-2.5 h-2.5 bg-orange-400 rounded-full border-2 border-white" />
+              )}
+            </div>
+            <p className="text-[9px] font-bold tracking-wide text-slate-400">TICKET</p>
+          </button>
+
+          {/* ALTRO — apre il drawer */}
+          <button
+            onClick={openSidebar}
+            className="flex flex-col items-center gap-0.5 min-w-[44px] py-1 px-3 relative"
+          >
+            <div className="w-11 h-8 rounded-xl flex items-center justify-center">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+              </svg>
+              {unreadMessagesCount > 0 && (
+                <span className="absolute top-0.5 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white" />
+              )}
+            </div>
+            <p className="text-[9px] font-bold tracking-wide text-slate-400">ALTRO</p>
+          </button>
+
+        </div>
+      </div>
+
     </div>
   );
 }
