@@ -58,6 +58,7 @@ model User {
   ownedApartments      ApartmentOwner[]
   pushSubscriptions    PushSubscription[]
   apnsTokens           ApnsToken[]
+  cleanerLocation      CleanerLocation?
 
   @@index([organizationId])
 }
@@ -364,6 +365,16 @@ model ApnsToken {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model CleanerLocation {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  latitude  Float
+  longitude Float
+  accuracy  Float?
+  updatedAt DateTime @updatedAt
 }
 
 model SuperAdminLog {

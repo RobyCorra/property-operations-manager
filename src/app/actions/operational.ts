@@ -11,6 +11,15 @@ import { parseRomeDateTime, preserveRomeTimeOnDate, setRomeTimeOnDate } from "@/
 import { sendPushToUser, sendPushToRole, sendPushToRoles } from "@/src/lib/push";
 import type { Role } from "@/src/generated/prisma/client";
 
+/** Distanza in metri tra due coordinate (formula Haversine) */
+function getDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
 type ChecklistSnapshotItem = {
   id: string;
   label: string;
@@ -636,14 +645,36 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     data: updateData,
   });
 
-  // Quando il cleaner avvia la pulizia → notifica manager
+  // Quando il cleaner avvia la pulizia → notifica manager + controllo distanza
   if (nextStatus === "IN_PROGRESS") {
     const apartment = await prisma.apartment.findUnique({
       where: { id: task.apartmentId },
-      select: { name: true, organizationId: true },
+      select: { name: true, organizationId: true, latitude: true, longitude: true },
     });
     const cleanerName = task.assignedTo?.name ?? "Il cleaner";
     const aptName = apartment?.name ?? "un appartamento";
+
+    // Controlla se il cleaner è fuori zona (> 300m dall'appartamento)
+    const currentUserId = task.assignedToId ?? await getCurrentUserId();
+    if (currentUserId && apartment?.latitude && apartment?.longitude) {
+      const loc = await prisma.cleanerLocation.findUnique({ where: { userId: currentUserId } });
+      if (loc) {
+        const distanceMeters = getDistanceMeters(
+          loc.latitude, loc.longitude,
+          apartment.latitude, apartment.longitude
+        );
+        if (distanceMeters > 300) {
+          // Alert fuori zona
+          await sendPushToRole("MANAGER" as Role, {
+            title: "⚠️ Pulizia avviata fuori zona",
+            body: `${cleanerName} ha avviato la pulizia presso ${aptName} ma si trova a ${Math.round(distanceMeters)}m dall'appartamento.`,
+            url: `/dashboard/manager/cleanings/${id}/edit`,
+            tag: `cleaning-out-of-zone-${id}`,
+          }, undefined, apartment.organizationId ?? null).catch(console.error);
+        }
+      }
+    }
+
     await prisma.notification.create({
       data: {
         type: "CLEANING",

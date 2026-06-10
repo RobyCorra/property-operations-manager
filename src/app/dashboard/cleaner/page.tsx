@@ -13,6 +13,7 @@ import CleanerStatusBadge from "@/src/components/cleaner-status-badge";
 import CleanerActionBanner from "@/src/components/cleaner-action-banner";
 import { enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
+import LocationTracker from "@/src/components/location-tracker";
 import { calculateLinen } from "@/src/lib/linen-calculator";
 import PushPermissionRequest from "@/src/components/push-permission";
 import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
@@ -143,6 +144,7 @@ export default async function CleanerDashboardPage() {
 
   return (
     <CleanerLangGate>
+    <LocationTracker />
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-5xl mx-auto space-y-12">
 

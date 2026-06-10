@@ -370,6 +370,15 @@ exports.Prisma.ApnsTokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.CleanerLocationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  accuracy: 'accuracy',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SuperAdminLogScalarFieldEnum = {
   id: 'id',
   action: 'action',
@@ -453,6 +462,7 @@ exports.Prisma.ModelName = {
   ManagerChatMessage: 'ManagerChatMessage',
   PushSubscription: 'PushSubscription',
   ApnsToken: 'ApnsToken',
+  CleanerLocation: 'CleanerLocation',
   SuperAdminLog: 'SuperAdminLog',
   ApartmentProduct: 'ApartmentProduct'
 };

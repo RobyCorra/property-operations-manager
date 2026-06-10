@@ -114,6 +114,11 @@ export type PushSubscription = $Result.DefaultSelection<Prisma.$PushSubscription
  */
 export type ApnsToken = $Result.DefaultSelection<Prisma.$ApnsTokenPayload>
 /**
+ * Model CleanerLocation
+ * 
+ */
+export type CleanerLocation = $Result.DefaultSelection<Prisma.$CleanerLocationPayload>
+/**
  * Model SuperAdminLog
  * 
  */
@@ -476,6 +481,16 @@ export class PrismaClient<
     * ```
     */
   get apnsToken(): Prisma.ApnsTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.cleanerLocation`: Exposes CRUD operations for the **CleanerLocation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CleanerLocations
+    * const cleanerLocations = await prisma.cleanerLocation.findMany()
+    * ```
+    */
+  get cleanerLocation(): Prisma.CleanerLocationDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.superAdminLog`: Exposes CRUD operations for the **SuperAdminLog** model.
@@ -950,6 +965,7 @@ export namespace Prisma {
     ManagerChatMessage: 'ManagerChatMessage',
     PushSubscription: 'PushSubscription',
     ApnsToken: 'ApnsToken',
+    CleanerLocation: 'CleanerLocation',
     SuperAdminLog: 'SuperAdminLog',
     ApartmentProduct: 'ApartmentProduct'
   };
@@ -967,7 +983,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "superAdminLog" | "apartmentProduct"
+      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2451,6 +2467,80 @@ export namespace Prisma {
           }
         }
       }
+      CleanerLocation: {
+        payload: Prisma.$CleanerLocationPayload<ExtArgs>
+        fields: Prisma.CleanerLocationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CleanerLocationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CleanerLocationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>
+          }
+          findFirst: {
+            args: Prisma.CleanerLocationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CleanerLocationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>
+          }
+          findMany: {
+            args: Prisma.CleanerLocationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>[]
+          }
+          create: {
+            args: Prisma.CleanerLocationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>
+          }
+          createMany: {
+            args: Prisma.CleanerLocationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CleanerLocationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>[]
+          }
+          delete: {
+            args: Prisma.CleanerLocationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>
+          }
+          update: {
+            args: Prisma.CleanerLocationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>
+          }
+          deleteMany: {
+            args: Prisma.CleanerLocationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CleanerLocationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CleanerLocationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>[]
+          }
+          upsert: {
+            args: Prisma.CleanerLocationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CleanerLocationPayload>
+          }
+          aggregate: {
+            args: Prisma.CleanerLocationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCleanerLocation>
+          }
+          groupBy: {
+            args: Prisma.CleanerLocationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CleanerLocationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CleanerLocationCountArgs<ExtArgs>
+            result: $Utils.Optional<CleanerLocationCountAggregateOutputType> | number
+          }
+        }
+      }
       SuperAdminLog: {
         payload: Prisma.$SuperAdminLogPayload<ExtArgs>
         fields: Prisma.SuperAdminLogFieldRefs
@@ -2727,6 +2817,7 @@ export namespace Prisma {
     managerChatMessage?: ManagerChatMessageOmit
     pushSubscription?: PushSubscriptionOmit
     apnsToken?: ApnsTokenOmit
+    cleanerLocation?: CleanerLocationOmit
     superAdminLog?: SuperAdminLogOmit
     apartmentProduct?: ApartmentProductOmit
   }
@@ -4879,6 +4970,7 @@ export namespace Prisma {
     ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
     pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     apnsTokens?: boolean | User$apnsTokensArgs<ExtArgs>
+    cleanerLocation?: boolean | User$cleanerLocationArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4945,6 +5037,7 @@ export namespace Prisma {
     ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
     pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     apnsTokens?: boolean | User$apnsTokensArgs<ExtArgs>
+    cleanerLocation?: boolean | User$cleanerLocationArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4965,6 +5058,7 @@ export namespace Prisma {
       ownedApartments: Prisma.$ApartmentOwnerPayload<ExtArgs>[]
       pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
       apnsTokens: Prisma.$ApnsTokenPayload<ExtArgs>[]
+      cleanerLocation: Prisma.$CleanerLocationPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5383,6 +5477,7 @@ export namespace Prisma {
     ownedApartments<T extends User$ownedApartmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedApartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     pushSubscriptions<T extends User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     apnsTokens<T extends User$apnsTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$apnsTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    cleanerLocation<T extends User$cleanerLocationArgs<ExtArgs> = {}>(args?: Subset<T, User$cleanerLocationArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6011,6 +6106,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ApnsTokenScalarFieldEnum | ApnsTokenScalarFieldEnum[]
+  }
+
+  /**
+   * User.cleanerLocation
+   */
+  export type User$cleanerLocationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    where?: CleanerLocationWhereInput
   }
 
   /**
@@ -27155,6 +27269,1124 @@ export namespace Prisma {
 
 
   /**
+   * Model CleanerLocation
+   */
+
+  export type AggregateCleanerLocation = {
+    _count: CleanerLocationCountAggregateOutputType | null
+    _avg: CleanerLocationAvgAggregateOutputType | null
+    _sum: CleanerLocationSumAggregateOutputType | null
+    _min: CleanerLocationMinAggregateOutputType | null
+    _max: CleanerLocationMaxAggregateOutputType | null
+  }
+
+  export type CleanerLocationAvgAggregateOutputType = {
+    latitude: number | null
+    longitude: number | null
+    accuracy: number | null
+  }
+
+  export type CleanerLocationSumAggregateOutputType = {
+    latitude: number | null
+    longitude: number | null
+    accuracy: number | null
+  }
+
+  export type CleanerLocationMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    latitude: number | null
+    longitude: number | null
+    accuracy: number | null
+    updatedAt: Date | null
+  }
+
+  export type CleanerLocationMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    latitude: number | null
+    longitude: number | null
+    accuracy: number | null
+    updatedAt: Date | null
+  }
+
+  export type CleanerLocationCountAggregateOutputType = {
+    id: number
+    userId: number
+    latitude: number
+    longitude: number
+    accuracy: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CleanerLocationAvgAggregateInputType = {
+    latitude?: true
+    longitude?: true
+    accuracy?: true
+  }
+
+  export type CleanerLocationSumAggregateInputType = {
+    latitude?: true
+    longitude?: true
+    accuracy?: true
+  }
+
+  export type CleanerLocationMinAggregateInputType = {
+    id?: true
+    userId?: true
+    latitude?: true
+    longitude?: true
+    accuracy?: true
+    updatedAt?: true
+  }
+
+  export type CleanerLocationMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    latitude?: true
+    longitude?: true
+    accuracy?: true
+    updatedAt?: true
+  }
+
+  export type CleanerLocationCountAggregateInputType = {
+    id?: true
+    userId?: true
+    latitude?: true
+    longitude?: true
+    accuracy?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CleanerLocationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CleanerLocation to aggregate.
+     */
+    where?: CleanerLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CleanerLocations to fetch.
+     */
+    orderBy?: CleanerLocationOrderByWithRelationInput | CleanerLocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CleanerLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CleanerLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CleanerLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CleanerLocations
+    **/
+    _count?: true | CleanerLocationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CleanerLocationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CleanerLocationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CleanerLocationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CleanerLocationMaxAggregateInputType
+  }
+
+  export type GetCleanerLocationAggregateType<T extends CleanerLocationAggregateArgs> = {
+        [P in keyof T & keyof AggregateCleanerLocation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCleanerLocation[P]>
+      : GetScalarType<T[P], AggregateCleanerLocation[P]>
+  }
+
+
+
+
+  export type CleanerLocationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CleanerLocationWhereInput
+    orderBy?: CleanerLocationOrderByWithAggregationInput | CleanerLocationOrderByWithAggregationInput[]
+    by: CleanerLocationScalarFieldEnum[] | CleanerLocationScalarFieldEnum
+    having?: CleanerLocationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CleanerLocationCountAggregateInputType | true
+    _avg?: CleanerLocationAvgAggregateInputType
+    _sum?: CleanerLocationSumAggregateInputType
+    _min?: CleanerLocationMinAggregateInputType
+    _max?: CleanerLocationMaxAggregateInputType
+  }
+
+  export type CleanerLocationGroupByOutputType = {
+    id: string
+    userId: string
+    latitude: number
+    longitude: number
+    accuracy: number | null
+    updatedAt: Date
+    _count: CleanerLocationCountAggregateOutputType | null
+    _avg: CleanerLocationAvgAggregateOutputType | null
+    _sum: CleanerLocationSumAggregateOutputType | null
+    _min: CleanerLocationMinAggregateOutputType | null
+    _max: CleanerLocationMaxAggregateOutputType | null
+  }
+
+  type GetCleanerLocationGroupByPayload<T extends CleanerLocationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CleanerLocationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CleanerLocationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CleanerLocationGroupByOutputType[P]>
+            : GetScalarType<T[P], CleanerLocationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CleanerLocationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    accuracy?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["cleanerLocation"]>
+
+  export type CleanerLocationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    accuracy?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["cleanerLocation"]>
+
+  export type CleanerLocationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    accuracy?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["cleanerLocation"]>
+
+  export type CleanerLocationSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    accuracy?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CleanerLocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "latitude" | "longitude" | "accuracy" | "updatedAt", ExtArgs["result"]["cleanerLocation"]>
+  export type CleanerLocationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type CleanerLocationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type CleanerLocationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $CleanerLocationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CleanerLocation"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      latitude: number
+      longitude: number
+      accuracy: number | null
+      updatedAt: Date
+    }, ExtArgs["result"]["cleanerLocation"]>
+    composites: {}
+  }
+
+  type CleanerLocationGetPayload<S extends boolean | null | undefined | CleanerLocationDefaultArgs> = $Result.GetResult<Prisma.$CleanerLocationPayload, S>
+
+  type CleanerLocationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CleanerLocationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CleanerLocationCountAggregateInputType | true
+    }
+
+  export interface CleanerLocationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CleanerLocation'], meta: { name: 'CleanerLocation' } }
+    /**
+     * Find zero or one CleanerLocation that matches the filter.
+     * @param {CleanerLocationFindUniqueArgs} args - Arguments to find a CleanerLocation
+     * @example
+     * // Get one CleanerLocation
+     * const cleanerLocation = await prisma.cleanerLocation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CleanerLocationFindUniqueArgs>(args: SelectSubset<T, CleanerLocationFindUniqueArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CleanerLocation that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CleanerLocationFindUniqueOrThrowArgs} args - Arguments to find a CleanerLocation
+     * @example
+     * // Get one CleanerLocation
+     * const cleanerLocation = await prisma.cleanerLocation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CleanerLocationFindUniqueOrThrowArgs>(args: SelectSubset<T, CleanerLocationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CleanerLocation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CleanerLocationFindFirstArgs} args - Arguments to find a CleanerLocation
+     * @example
+     * // Get one CleanerLocation
+     * const cleanerLocation = await prisma.cleanerLocation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CleanerLocationFindFirstArgs>(args?: SelectSubset<T, CleanerLocationFindFirstArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CleanerLocation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CleanerLocationFindFirstOrThrowArgs} args - Arguments to find a CleanerLocation
+     * @example
+     * // Get one CleanerLocation
+     * const cleanerLocation = await prisma.cleanerLocation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CleanerLocationFindFirstOrThrowArgs>(args?: SelectSubset<T, CleanerLocationFindFirstOrThrowArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CleanerLocations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CleanerLocationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CleanerLocations
+     * const cleanerLocations = await prisma.cleanerLocation.findMany()
+     * 
+     * // Get first 10 CleanerLocations
+     * const cleanerLocations = await prisma.cleanerLocation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const cleanerLocationWithIdOnly = await prisma.cleanerLocation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CleanerLocationFindManyArgs>(args?: SelectSubset<T, CleanerLocationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CleanerLocation.
+     * @param {CleanerLocationCreateArgs} args - Arguments to create a CleanerLocation.
+     * @example
+     * // Create one CleanerLocation
+     * const CleanerLocation = await prisma.cleanerLocation.create({
+     *   data: {
+     *     // ... data to create a CleanerLocation
+     *   }
+     * })
+     * 
+     */
+    create<T extends CleanerLocationCreateArgs>(args: SelectSubset<T, CleanerLocationCreateArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CleanerLocations.
+     * @param {CleanerLocationCreateManyArgs} args - Arguments to create many CleanerLocations.
+     * @example
+     * // Create many CleanerLocations
+     * const cleanerLocation = await prisma.cleanerLocation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CleanerLocationCreateManyArgs>(args?: SelectSubset<T, CleanerLocationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CleanerLocations and returns the data saved in the database.
+     * @param {CleanerLocationCreateManyAndReturnArgs} args - Arguments to create many CleanerLocations.
+     * @example
+     * // Create many CleanerLocations
+     * const cleanerLocation = await prisma.cleanerLocation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CleanerLocations and only return the `id`
+     * const cleanerLocationWithIdOnly = await prisma.cleanerLocation.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CleanerLocationCreateManyAndReturnArgs>(args?: SelectSubset<T, CleanerLocationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CleanerLocation.
+     * @param {CleanerLocationDeleteArgs} args - Arguments to delete one CleanerLocation.
+     * @example
+     * // Delete one CleanerLocation
+     * const CleanerLocation = await prisma.cleanerLocation.delete({
+     *   where: {
+     *     // ... filter to delete one CleanerLocation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CleanerLocationDeleteArgs>(args: SelectSubset<T, CleanerLocationDeleteArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CleanerLocation.
+     * @param {CleanerLocationUpdateArgs} args - Arguments to update one CleanerLocation.
+     * @example
+     * // Update one CleanerLocation
+     * const cleanerLocation = await prisma.cleanerLocation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CleanerLocationUpdateArgs>(args: SelectSubset<T, CleanerLocationUpdateArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CleanerLocations.
+     * @param {CleanerLocationDeleteManyArgs} args - Arguments to filter CleanerLocations to delete.
+     * @example
+     * // Delete a few CleanerLocations
+     * const { count } = await prisma.cleanerLocation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CleanerLocationDeleteManyArgs>(args?: SelectSubset<T, CleanerLocationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CleanerLocations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CleanerLocationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CleanerLocations
+     * const cleanerLocation = await prisma.cleanerLocation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CleanerLocationUpdateManyArgs>(args: SelectSubset<T, CleanerLocationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CleanerLocations and returns the data updated in the database.
+     * @param {CleanerLocationUpdateManyAndReturnArgs} args - Arguments to update many CleanerLocations.
+     * @example
+     * // Update many CleanerLocations
+     * const cleanerLocation = await prisma.cleanerLocation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CleanerLocations and only return the `id`
+     * const cleanerLocationWithIdOnly = await prisma.cleanerLocation.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CleanerLocationUpdateManyAndReturnArgs>(args: SelectSubset<T, CleanerLocationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CleanerLocation.
+     * @param {CleanerLocationUpsertArgs} args - Arguments to update or create a CleanerLocation.
+     * @example
+     * // Update or create a CleanerLocation
+     * const cleanerLocation = await prisma.cleanerLocation.upsert({
+     *   create: {
+     *     // ... data to create a CleanerLocation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CleanerLocation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CleanerLocationUpsertArgs>(args: SelectSubset<T, CleanerLocationUpsertArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CleanerLocations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CleanerLocationCountArgs} args - Arguments to filter CleanerLocations to count.
+     * @example
+     * // Count the number of CleanerLocations
+     * const count = await prisma.cleanerLocation.count({
+     *   where: {
+     *     // ... the filter for the CleanerLocations we want to count
+     *   }
+     * })
+    **/
+    count<T extends CleanerLocationCountArgs>(
+      args?: Subset<T, CleanerLocationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CleanerLocationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CleanerLocation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CleanerLocationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CleanerLocationAggregateArgs>(args: Subset<T, CleanerLocationAggregateArgs>): Prisma.PrismaPromise<GetCleanerLocationAggregateType<T>>
+
+    /**
+     * Group by CleanerLocation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CleanerLocationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CleanerLocationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CleanerLocationGroupByArgs['orderBy'] }
+        : { orderBy?: CleanerLocationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CleanerLocationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCleanerLocationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CleanerLocation model
+   */
+  readonly fields: CleanerLocationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CleanerLocation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CleanerLocationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CleanerLocation model
+   */
+  interface CleanerLocationFieldRefs {
+    readonly id: FieldRef<"CleanerLocation", 'String'>
+    readonly userId: FieldRef<"CleanerLocation", 'String'>
+    readonly latitude: FieldRef<"CleanerLocation", 'Float'>
+    readonly longitude: FieldRef<"CleanerLocation", 'Float'>
+    readonly accuracy: FieldRef<"CleanerLocation", 'Float'>
+    readonly updatedAt: FieldRef<"CleanerLocation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CleanerLocation findUnique
+   */
+  export type CleanerLocationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which CleanerLocation to fetch.
+     */
+    where: CleanerLocationWhereUniqueInput
+  }
+
+  /**
+   * CleanerLocation findUniqueOrThrow
+   */
+  export type CleanerLocationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which CleanerLocation to fetch.
+     */
+    where: CleanerLocationWhereUniqueInput
+  }
+
+  /**
+   * CleanerLocation findFirst
+   */
+  export type CleanerLocationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which CleanerLocation to fetch.
+     */
+    where?: CleanerLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CleanerLocations to fetch.
+     */
+    orderBy?: CleanerLocationOrderByWithRelationInput | CleanerLocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CleanerLocations.
+     */
+    cursor?: CleanerLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CleanerLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CleanerLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CleanerLocations.
+     */
+    distinct?: CleanerLocationScalarFieldEnum | CleanerLocationScalarFieldEnum[]
+  }
+
+  /**
+   * CleanerLocation findFirstOrThrow
+   */
+  export type CleanerLocationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which CleanerLocation to fetch.
+     */
+    where?: CleanerLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CleanerLocations to fetch.
+     */
+    orderBy?: CleanerLocationOrderByWithRelationInput | CleanerLocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CleanerLocations.
+     */
+    cursor?: CleanerLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CleanerLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CleanerLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CleanerLocations.
+     */
+    distinct?: CleanerLocationScalarFieldEnum | CleanerLocationScalarFieldEnum[]
+  }
+
+  /**
+   * CleanerLocation findMany
+   */
+  export type CleanerLocationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * Filter, which CleanerLocations to fetch.
+     */
+    where?: CleanerLocationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CleanerLocations to fetch.
+     */
+    orderBy?: CleanerLocationOrderByWithRelationInput | CleanerLocationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CleanerLocations.
+     */
+    cursor?: CleanerLocationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CleanerLocations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CleanerLocations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CleanerLocations.
+     */
+    distinct?: CleanerLocationScalarFieldEnum | CleanerLocationScalarFieldEnum[]
+  }
+
+  /**
+   * CleanerLocation create
+   */
+  export type CleanerLocationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CleanerLocation.
+     */
+    data: XOR<CleanerLocationCreateInput, CleanerLocationUncheckedCreateInput>
+  }
+
+  /**
+   * CleanerLocation createMany
+   */
+  export type CleanerLocationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CleanerLocations.
+     */
+    data: CleanerLocationCreateManyInput | CleanerLocationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CleanerLocation createManyAndReturn
+   */
+  export type CleanerLocationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * The data used to create many CleanerLocations.
+     */
+    data: CleanerLocationCreateManyInput | CleanerLocationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CleanerLocation update
+   */
+  export type CleanerLocationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CleanerLocation.
+     */
+    data: XOR<CleanerLocationUpdateInput, CleanerLocationUncheckedUpdateInput>
+    /**
+     * Choose, which CleanerLocation to update.
+     */
+    where: CleanerLocationWhereUniqueInput
+  }
+
+  /**
+   * CleanerLocation updateMany
+   */
+  export type CleanerLocationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CleanerLocations.
+     */
+    data: XOR<CleanerLocationUpdateManyMutationInput, CleanerLocationUncheckedUpdateManyInput>
+    /**
+     * Filter which CleanerLocations to update
+     */
+    where?: CleanerLocationWhereInput
+    /**
+     * Limit how many CleanerLocations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CleanerLocation updateManyAndReturn
+   */
+  export type CleanerLocationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * The data used to update CleanerLocations.
+     */
+    data: XOR<CleanerLocationUpdateManyMutationInput, CleanerLocationUncheckedUpdateManyInput>
+    /**
+     * Filter which CleanerLocations to update
+     */
+    where?: CleanerLocationWhereInput
+    /**
+     * Limit how many CleanerLocations to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CleanerLocation upsert
+   */
+  export type CleanerLocationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CleanerLocation to update in case it exists.
+     */
+    where: CleanerLocationWhereUniqueInput
+    /**
+     * In case the CleanerLocation found by the `where` argument doesn't exist, create a new CleanerLocation with this data.
+     */
+    create: XOR<CleanerLocationCreateInput, CleanerLocationUncheckedCreateInput>
+    /**
+     * In case the CleanerLocation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CleanerLocationUpdateInput, CleanerLocationUncheckedUpdateInput>
+  }
+
+  /**
+   * CleanerLocation delete
+   */
+  export type CleanerLocationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+    /**
+     * Filter which CleanerLocation to delete.
+     */
+    where: CleanerLocationWhereUniqueInput
+  }
+
+  /**
+   * CleanerLocation deleteMany
+   */
+  export type CleanerLocationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CleanerLocations to delete
+     */
+    where?: CleanerLocationWhereInput
+    /**
+     * Limit how many CleanerLocations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CleanerLocation without action
+   */
+  export type CleanerLocationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CleanerLocation
+     */
+    select?: CleanerLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CleanerLocation
+     */
+    omit?: CleanerLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CleanerLocationInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model SuperAdminLog
    */
 
@@ -29687,6 +30919,18 @@ export namespace Prisma {
   export type ApnsTokenScalarFieldEnum = (typeof ApnsTokenScalarFieldEnum)[keyof typeof ApnsTokenScalarFieldEnum]
 
 
+  export const CleanerLocationScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    latitude: 'latitude',
+    longitude: 'longitude',
+    accuracy: 'accuracy',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CleanerLocationScalarFieldEnum = (typeof CleanerLocationScalarFieldEnum)[keyof typeof CleanerLocationScalarFieldEnum]
+
+
   export const SuperAdminLogScalarFieldEnum: {
     id: 'id',
     action: 'action',
@@ -30045,6 +31289,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerListRelationFilter
     pushSubscriptions?: PushSubscriptionListRelationFilter
     apnsTokens?: ApnsTokenListRelationFilter
+    cleanerLocation?: XOR<CleanerLocationNullableScalarRelationFilter, CleanerLocationWhereInput> | null
   }
 
   export type UserOrderByWithRelationInput = {
@@ -30070,6 +31315,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerOrderByRelationAggregateInput
     pushSubscriptions?: PushSubscriptionOrderByRelationAggregateInput
     apnsTokens?: ApnsTokenOrderByRelationAggregateInput
+    cleanerLocation?: CleanerLocationOrderByWithRelationInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -30098,6 +31344,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerListRelationFilter
     pushSubscriptions?: PushSubscriptionListRelationFilter
     apnsTokens?: ApnsTokenListRelationFilter
+    cleanerLocation?: XOR<CleanerLocationNullableScalarRelationFilter, CleanerLocationWhereInput> | null
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -31565,6 +32812,68 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"ApnsToken"> | Date | string
   }
 
+  export type CleanerLocationWhereInput = {
+    AND?: CleanerLocationWhereInput | CleanerLocationWhereInput[]
+    OR?: CleanerLocationWhereInput[]
+    NOT?: CleanerLocationWhereInput | CleanerLocationWhereInput[]
+    id?: StringFilter<"CleanerLocation"> | string
+    userId?: StringFilter<"CleanerLocation"> | string
+    latitude?: FloatFilter<"CleanerLocation"> | number
+    longitude?: FloatFilter<"CleanerLocation"> | number
+    accuracy?: FloatNullableFilter<"CleanerLocation"> | number | null
+    updatedAt?: DateTimeFilter<"CleanerLocation"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type CleanerLocationOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    accuracy?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type CleanerLocationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    AND?: CleanerLocationWhereInput | CleanerLocationWhereInput[]
+    OR?: CleanerLocationWhereInput[]
+    NOT?: CleanerLocationWhereInput | CleanerLocationWhereInput[]
+    latitude?: FloatFilter<"CleanerLocation"> | number
+    longitude?: FloatFilter<"CleanerLocation"> | number
+    accuracy?: FloatNullableFilter<"CleanerLocation"> | number | null
+    updatedAt?: DateTimeFilter<"CleanerLocation"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId">
+
+  export type CleanerLocationOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    accuracy?: SortOrderInput | SortOrder
+    updatedAt?: SortOrder
+    _count?: CleanerLocationCountOrderByAggregateInput
+    _avg?: CleanerLocationAvgOrderByAggregateInput
+    _max?: CleanerLocationMaxOrderByAggregateInput
+    _min?: CleanerLocationMinOrderByAggregateInput
+    _sum?: CleanerLocationSumOrderByAggregateInput
+  }
+
+  export type CleanerLocationScalarWhereWithAggregatesInput = {
+    AND?: CleanerLocationScalarWhereWithAggregatesInput | CleanerLocationScalarWhereWithAggregatesInput[]
+    OR?: CleanerLocationScalarWhereWithAggregatesInput[]
+    NOT?: CleanerLocationScalarWhereWithAggregatesInput | CleanerLocationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CleanerLocation"> | string
+    userId?: StringWithAggregatesFilter<"CleanerLocation"> | string
+    latitude?: FloatWithAggregatesFilter<"CleanerLocation"> | number
+    longitude?: FloatWithAggregatesFilter<"CleanerLocation"> | number
+    accuracy?: FloatNullableWithAggregatesFilter<"CleanerLocation"> | number | null
+    updatedAt?: DateTimeWithAggregatesFilter<"CleanerLocation"> | Date | string
+  }
+
   export type SuperAdminLogWhereInput = {
     AND?: SuperAdminLogWhereInput | SuperAdminLogWhereInput[]
     OR?: SuperAdminLogWhereInput[]
@@ -31923,6 +33232,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -31947,6 +33257,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -31971,6 +33282,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -31995,6 +33307,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -33563,6 +34876,68 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CleanerLocationCreateInput = {
+    id?: string
+    latitude: number
+    longitude: number
+    accuracy?: number | null
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutCleanerLocationInput
+  }
+
+  export type CleanerLocationUncheckedCreateInput = {
+    id?: string
+    userId: string
+    latitude: number
+    longitude: number
+    accuracy?: number | null
+    updatedAt?: Date | string
+  }
+
+  export type CleanerLocationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    accuracy?: NullableFloatFieldUpdateOperationsInput | number | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutCleanerLocationNestedInput
+  }
+
+  export type CleanerLocationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    accuracy?: NullableFloatFieldUpdateOperationsInput | number | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CleanerLocationCreateManyInput = {
+    id?: string
+    userId: string
+    latitude: number
+    longitude: number
+    accuracy?: number | null
+    updatedAt?: Date | string
+  }
+
+  export type CleanerLocationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    accuracy?: NullableFloatFieldUpdateOperationsInput | number | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CleanerLocationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    accuracy?: NullableFloatFieldUpdateOperationsInput | number | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SuperAdminLogCreateInput = {
     id?: string
     action: string
@@ -34077,6 +35452,11 @@ export namespace Prisma {
     every?: ApnsTokenWhereInput
     some?: ApnsTokenWhereInput
     none?: ApnsTokenWhereInput
+  }
+
+  export type CleanerLocationNullableScalarRelationFilter = {
+    is?: CleanerLocationWhereInput | null
+    isNot?: CleanerLocationWhereInput | null
   }
 
   export type CleaningTaskOrderByRelationAggregateInput = {
@@ -35097,6 +36477,72 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type CleanerLocationCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    accuracy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CleanerLocationAvgOrderByAggregateInput = {
+    latitude?: SortOrder
+    longitude?: SortOrder
+    accuracy?: SortOrder
+  }
+
+  export type CleanerLocationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    accuracy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CleanerLocationMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    accuracy?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CleanerLocationSumOrderByAggregateInput = {
+    latitude?: SortOrder
+    longitude?: SortOrder
+    accuracy?: SortOrder
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
   export type SuperAdminLogCountOrderByAggregateInput = {
     id?: SortOrder
     action?: SortOrder
@@ -35386,6 +36832,12 @@ export namespace Prisma {
     connect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
   }
 
+  export type CleanerLocationCreateNestedOneWithoutUserInput = {
+    create?: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
+    connectOrCreate?: CleanerLocationCreateOrConnectWithoutUserInput
+    connect?: CleanerLocationWhereUniqueInput
+  }
+
   export type CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -35433,6 +36885,12 @@ export namespace Prisma {
     connectOrCreate?: ApnsTokenCreateOrConnectWithoutUserInput | ApnsTokenCreateOrConnectWithoutUserInput[]
     createMany?: ApnsTokenCreateManyUserInputEnvelope
     connect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+  }
+
+  export type CleanerLocationUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
+    connectOrCreate?: CleanerLocationCreateOrConnectWithoutUserInput
+    connect?: CleanerLocationWhereUniqueInput
   }
 
   export type EnumRoleFieldUpdateOperationsInput = {
@@ -35551,6 +37009,16 @@ export namespace Prisma {
     deleteMany?: ApnsTokenScalarWhereInput | ApnsTokenScalarWhereInput[]
   }
 
+  export type CleanerLocationUpdateOneWithoutUserNestedInput = {
+    create?: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
+    connectOrCreate?: CleanerLocationCreateOrConnectWithoutUserInput
+    upsert?: CleanerLocationUpsertWithoutUserInput
+    disconnect?: CleanerLocationWhereInput | boolean
+    delete?: CleanerLocationWhereInput | boolean
+    connect?: CleanerLocationWhereUniqueInput
+    update?: XOR<XOR<CleanerLocationUpdateToOneWithWhereWithoutUserInput, CleanerLocationUpdateWithoutUserInput>, CleanerLocationUncheckedUpdateWithoutUserInput>
+  }
+
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -35647,6 +37115,16 @@ export namespace Prisma {
     update?: ApnsTokenUpdateWithWhereUniqueWithoutUserInput | ApnsTokenUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ApnsTokenUpdateManyWithWhereWithoutUserInput | ApnsTokenUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ApnsTokenScalarWhereInput | ApnsTokenScalarWhereInput[]
+  }
+
+  export type CleanerLocationUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
+    connectOrCreate?: CleanerLocationCreateOrConnectWithoutUserInput
+    upsert?: CleanerLocationUpsertWithoutUserInput
+    disconnect?: CleanerLocationWhereInput | boolean
+    delete?: CleanerLocationWhereInput | boolean
+    connect?: CleanerLocationWhereUniqueInput
+    update?: XOR<XOR<CleanerLocationUpdateToOneWithWhereWithoutUserInput, CleanerLocationUpdateWithoutUserInput>, CleanerLocationUncheckedUpdateWithoutUserInput>
   }
 
   export type OrganizationCreateNestedOneWithoutApartmentsInput = {
@@ -37033,6 +38511,28 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutApnsTokensInput, UserUpdateWithoutApnsTokensInput>, UserUncheckedUpdateWithoutApnsTokensInput>
   }
 
+  export type UserCreateNestedOneWithoutCleanerLocationInput = {
+    create?: XOR<UserCreateWithoutCleanerLocationInput, UserUncheckedCreateWithoutCleanerLocationInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCleanerLocationInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdateOneRequiredWithoutCleanerLocationNestedInput = {
+    create?: XOR<UserCreateWithoutCleanerLocationInput, UserUncheckedCreateWithoutCleanerLocationInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCleanerLocationInput
+    upsert?: UserUpsertWithoutCleanerLocationInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCleanerLocationInput, UserUpdateWithoutCleanerLocationInput>, UserUncheckedUpdateWithoutCleanerLocationInput>
+  }
+
   export type ApartmentCreateNestedOneWithoutProductsInput = {
     create?: XOR<ApartmentCreateWithoutProductsInput, ApartmentUncheckedCreateWithoutProductsInput>
     connectOrCreate?: ApartmentCreateOrConnectWithoutProductsInput
@@ -37321,6 +38821,22 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
   export type UserCreateWithoutOrganizationInput = {
     id?: string
     email: string
@@ -37342,6 +38858,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -37365,6 +38882,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -37846,6 +39364,27 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CleanerLocationCreateWithoutUserInput = {
+    id?: string
+    latitude: number
+    longitude: number
+    accuracy?: number | null
+    updatedAt?: Date | string
+  }
+
+  export type CleanerLocationUncheckedCreateWithoutUserInput = {
+    id?: string
+    latitude: number
+    longitude: number
+    accuracy?: number | null
+    updatedAt?: Date | string
+  }
+
+  export type CleanerLocationCreateOrConnectWithoutUserInput = {
+    where: CleanerLocationWhereUniqueInput
+    create: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
+  }
+
   export type OrganizationUpsertWithoutUsersInput = {
     update: XOR<OrganizationUpdateWithoutUsersInput, OrganizationUncheckedUpdateWithoutUsersInput>
     create: XOR<OrganizationCreateWithoutUsersInput, OrganizationUncheckedCreateWithoutUsersInput>
@@ -38113,6 +39652,33 @@ export namespace Prisma {
     userId?: StringFilter<"ApnsToken"> | string
     token?: StringFilter<"ApnsToken"> | string
     createdAt?: DateTimeFilter<"ApnsToken"> | Date | string
+  }
+
+  export type CleanerLocationUpsertWithoutUserInput = {
+    update: XOR<CleanerLocationUpdateWithoutUserInput, CleanerLocationUncheckedUpdateWithoutUserInput>
+    create: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
+    where?: CleanerLocationWhereInput
+  }
+
+  export type CleanerLocationUpdateToOneWithWhereWithoutUserInput = {
+    where?: CleanerLocationWhereInput
+    data: XOR<CleanerLocationUpdateWithoutUserInput, CleanerLocationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type CleanerLocationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    accuracy?: NullableFloatFieldUpdateOperationsInput | number | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CleanerLocationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    accuracy?: NullableFloatFieldUpdateOperationsInput | number | null
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrganizationCreateWithoutApartmentsInput = {
@@ -39456,6 +41022,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCleaningTasksInput = {
@@ -39479,6 +41046,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCleaningTasksInput = {
@@ -39758,6 +41326,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleaningTasksInput = {
@@ -39781,6 +41350,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type CleaningTaskMessageUpsertWithWhereUniqueWithoutCleaningTaskInput = {
@@ -39964,6 +41534,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -39987,6 +41558,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -40227,6 +41799,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -40250,6 +41823,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type AttachmentUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
@@ -41440,6 +43014,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupervisorReviewsInput = {
@@ -41463,6 +43038,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupervisorReviewsInput = {
@@ -41592,6 +43168,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisorReviewsInput = {
@@ -41615,6 +43192,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type CleaningTaskUpsertWithoutSupervisorReviewsInput = {
@@ -41805,6 +43383,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupervisedApartmentsInput = {
@@ -41828,6 +43407,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupervisedApartmentsInput = {
@@ -41938,6 +43518,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisedApartmentsInput = {
@@ -41961,6 +43542,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ApartmentCreateWithoutOwnersInput = {
@@ -42049,6 +43631,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedApartmentsInput = {
@@ -42072,6 +43655,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedApartmentsInput = {
@@ -42182,6 +43766,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedApartmentsInput = {
@@ -42205,6 +43790,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type OrganizationCreateWithoutChatSessionsInput = {
@@ -42447,6 +44033,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
@@ -42470,6 +44057,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
@@ -42509,6 +44097,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
@@ -42532,6 +44121,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserCreateWithoutApnsTokensInput = {
@@ -42555,6 +44145,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutApnsTokensInput = {
@@ -42578,6 +44169,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutApnsTokensInput = {
@@ -42617,6 +44209,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApnsTokensInput = {
@@ -42640,6 +44233,119 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutCleanerLocationInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationCreateNestedOneWithoutUsersInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCleanerLocationInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCleanerLocationInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCleanerLocationInput, UserUncheckedCreateWithoutCleanerLocationInput>
+  }
+
+  export type UserUpsertWithoutCleanerLocationInput = {
+    update: XOR<UserUpdateWithoutCleanerLocationInput, UserUncheckedUpdateWithoutCleanerLocationInput>
+    create: XOR<UserCreateWithoutCleanerLocationInput, UserUncheckedCreateWithoutCleanerLocationInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCleanerLocationInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCleanerLocationInput, UserUncheckedUpdateWithoutCleanerLocationInput>
+  }
+
+  export type UserUpdateWithoutCleanerLocationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationUpdateOneWithoutUsersNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCleanerLocationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ApartmentCreateWithoutProductsInput = {
@@ -42841,6 +44547,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -42864,6 +44571,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {

@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { ApartmentStatus, APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
+import type { CleanerMarker } from "./apartment-map-wrapper";
 
 // Fix Leaflet's default icon paths just in case, though we use custom icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -25,7 +26,34 @@ interface ApartmentMapProps {
     openTickets: number;
     nextCheckIn?: { checkInDate: Date | string; guestName: string };
   }>;
+  cleaners?: CleanerMarker[];
 }
+
+const createCleanerIcon = (role: string) => {
+  const color = role === "MAINTENANCE" ? "#F59E0B" : "#6366F1";
+  const emoji = role === "MAINTENANCE" ? "🔧" : "🧹";
+  const html = `
+    <div style="
+      background: ${color};
+      width: 2rem; height: 2rem;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2.5px solid white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      font-size: 14px;
+      position: relative;
+    ">
+      ${emoji}
+      <span style="
+        position: absolute; bottom: -2px; right: -2px;
+        width: 10px; height: 10px;
+        background: #22C55E;
+        border-radius: 50%;
+        border: 1.5px solid white;
+      "></span>
+    </div>`;
+  return L.divIcon({ className: "cleaner-marker", html, iconSize: [32, 32], iconAnchor: [16, 16] });
+};
 
 // Generate colored HTML pin markers
 const createPinIcon = (colorHex: string) => {
@@ -68,7 +96,7 @@ function MapBounds({ apartments }: { apartments: ApartmentMapProps["apartments"]
   return null;
 }
 
-export default function ApartmentMap({ apartments }: ApartmentMapProps) {
+export default function ApartmentMap({ apartments, cleaners = [] }: ApartmentMapProps) {
   // Prevent hydration styling mismatch by returning null until client is mounted
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -94,7 +122,22 @@ export default function ApartmentMap({ apartments }: ApartmentMapProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <MapBounds apartments={apartments} />
-        
+
+        {/* Marker cleaner/manutentori in tempo reale */}
+        {cleaners.map((c) => (
+          <Marker key={c.userId} position={[c.latitude, c.longitude]} icon={createCleanerIcon(c.role)}>
+            <Popup className="rounded-xl overflow-hidden p-0 border-none">
+              <div className="flex flex-col gap-1 w-44 font-sans p-1">
+                <p className="font-semibold text-slate-900 text-sm">{c.name}</p>
+                <p className="text-xs text-slate-500">{c.role === "MAINTENANCE" ? "Manutentore" : "Cleaner"}</p>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Aggiornato: {new Date(c.updatedAt).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
         {apartments.map((apt) => (
           <Marker 
             key={apt.id} 

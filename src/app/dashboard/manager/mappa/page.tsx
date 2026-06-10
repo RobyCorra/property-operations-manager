@@ -279,6 +279,14 @@ export default async function CalendarioOperativoPage() {
                       </div>
                     );
                   })}
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-white/20 whitespace-nowrap">
+                    <span className="text-xs">🧹</span>
+                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tight">Cleaner live</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-white/20 whitespace-nowrap">
+                    <span className="text-xs">🔧</span>
+                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tight">Manutentore live</span>
+                  </div>
                 </div>
               </div>
             </div>
