@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import { ApartmentStatus, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
@@ -313,6 +314,7 @@ export default function MobileDashboard({
   const [sidebarOpen, setSidebarOpen]       = useState(false);
   const [mapOpen, setMapOpen]               = useState(false);
   const [eventsOpen, setEventsOpen]         = useState(false);
+  const router = useRouter();
   const [checkinsSheetOpen, setCheckinsSheetOpen]     = useState(false);
   const [cleaningsSheetOpen, setCleaningsSheetOpen]   = useState(false);
   const [ticketsSheetOpen, setTicketsSheetOpen]       = useState(false);
@@ -1541,11 +1543,10 @@ export default function MobileDashboard({
               <div className="text-center py-12 text-slate-400 text-sm">Nessun check-in previsto per oggi</div>
             )}
             {checkinsItems.map((item) => (
-              <Link
+              <div
                 key={item.id}
-                href={item.href}
-                onClick={() => setCheckinsSheetOpen(false)}
-                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+                onClick={() => { setCheckinsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
+                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
               >
                 <div className="h-1 bg-blue-500" />
                 <div className="px-4 py-3 flex items-center gap-3">
@@ -1562,7 +1563,7 @@ export default function MobileDashboard({
                     Apri
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -1614,11 +1615,10 @@ export default function MobileDashboard({
               const badgeClass = unifiedStatusColor(item.status, item.isAssigned);
               const itemStatusLabel = statusLabel(item.status, item.isAssigned);
               return (
-                <Link
+                <div
                   key={item.id}
-                  href={item.href}
-                  onClick={() => setCleaningsSheetOpen(false)}
-                  className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+                  onClick={() => { setCleaningsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
+                  className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
                 >
                   <div className={`h-1 ${barColor}`} />
                   <div className="px-4 py-3 flex items-center gap-3">
@@ -1636,7 +1636,7 @@ export default function MobileDashboard({
                       {itemStatusLabel}
                     </span>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -1684,11 +1684,10 @@ export default function MobileDashboard({
                 : ticket.isAssigned ? "bg-yellow-400"
                 : "bg-red-400";
               return (
-                <Link
+                <div
                   key={ticket.id}
-                  href={ticket.href}
-                  onClick={() => setTicketsSheetOpen(false)}
-                  className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+                  onClick={() => { setTicketsSheetOpen(false); requestAnimationFrame(() => router.push(ticket.href)); }}
+                  className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
                 >
                   <div className={`h-1 ${barColor}`} />
                   <div className="px-4 py-3 flex items-center gap-3">
@@ -1705,7 +1704,7 @@ export default function MobileDashboard({
                       {ticketStatusLabel}
                     </span>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -1745,11 +1744,10 @@ export default function MobileDashboard({
               </div>
             )}
             {lateCleanings.map((c) => (
-              <Link
+              <div
                 key={c.id}
-                href={c.href}
-                onClick={() => setLateCleanSheetOpen(false)}
-                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+                onClick={() => { setLateCleanSheetOpen(false); requestAnimationFrame(() => router.push(c.href)); }}
+                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
               >
                 <div className="h-1 bg-orange-400" />
                 <div className="px-4 py-3 flex items-center gap-3">
@@ -1767,7 +1765,7 @@ export default function MobileDashboard({
                     In ritardo
                   </span>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -1806,11 +1804,10 @@ export default function MobileDashboard({
               </div>
             )}
             {cleaningsInProgress.map((c) => (
-              <Link
+              <div
                 key={c.id}
-                href={c.href}
-                onClick={() => setInProgressSheetOpen(false)}
-                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
+                onClick={() => { setInProgressSheetOpen(false); requestAnimationFrame(() => router.push(c.href)); }}
+                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
               >
                 <div className="h-1 bg-violet-500" />
                 <div className="px-4 py-3 flex items-center gap-3">
@@ -1841,7 +1838,7 @@ export default function MobileDashboard({
                     In corso
                   </span>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
