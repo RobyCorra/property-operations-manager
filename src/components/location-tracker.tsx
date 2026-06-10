@@ -4,58 +4,96 @@ import { useEffect, useRef } from "react";
 import { Capacitor } from "@capacitor/core";
 import { Geolocation } from "@capacitor/geolocation";
 
-const INTERVAL_MS = 30_000; // 30 secondi
+const INTERVAL_MS = 30_000;
 
-/**
- * Invia la posizione GPS del cleaner/manutentore al server ogni 30s.
- * Funziona sia su app nativa (Capacitor) che su browser (API Web).
- * Va montato nel layout del cleaner/manutentore.
- */
 export default function LocationTracker() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasPermission = useRef(false);
+
+  async function requestPermission(): Promise<boolean> {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const perm = await Geolocation.requestPermissions();
+        return perm.location === "granted" || perm.coarseLocation === "granted";
+      } else {
+        // Browser: prova direttamente, il browser mostra il dialog
+        return new Promise((resolve) => {
+          navigator.geolocation.getCurrentPosition(
+            () => resolve(true),
+            () => resolve(false),
+            { timeout: 5000 }
+          );
+        });
+      }
+    } catch {
+      return false;
+    }
+  }
 
   async function sendLocation() {
     try {
       let lat: number, lng: number, acc: number | undefined;
 
       if (Capacitor.isNativePlatform()) {
-        const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 });
+        const pos = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 10000,
+        });
         lat = pos.coords.latitude;
         lng = pos.coords.longitude;
         acc = pos.coords.accuracy;
       } else {
-        // Fallback browser
         const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
-          navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 })
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false, // false = più veloce su browser
+            timeout: 10000,
+            maximumAge: 60000,
+          })
         );
         lat = pos.coords.latitude;
         lng = pos.coords.longitude;
         acc = pos.coords.accuracy;
       }
 
-      await fetch("/api/location", {
+      const res = await fetch("/api/location", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ latitude: lat, longitude: lng, accuracy: acc }),
       });
+
+      if (!res.ok) {
+        console.warn("[LocationTracker] API error:", res.status);
+      } else {
+        console.log("[LocationTracker] Posizione inviata:", lat, lng);
+      }
     } catch (err) {
-      // GPS non disponibile o permesso negato — ignora silenziosamente
       console.warn("[LocationTracker] GPS non disponibile:", err);
     }
   }
 
   useEffect(() => {
-    // Prima lettura immediata
-    sendLocation();
+    if (!("geolocation" in navigator) && !Capacitor.isNativePlatform()) {
+      console.warn("[LocationTracker] Geolocalizzazione non supportata");
+      return;
+    }
 
-    // Poi ogni 30s
-    intervalRef.current = setInterval(sendLocation, INTERVAL_MS);
+    // Richiedi permesso poi avvia il tracking
+    requestPermission().then((granted) => {
+      if (!granted) {
+        console.warn("[LocationTracker] Permesso GPS negato");
+        return;
+      }
+      hasPermission.current = true;
+      sendLocation(); // Prima lettura immediata
+      intervalRef.current = setInterval(sendLocation, INTERVAL_MS);
+    });
 
-    // Cleanup: rimuovi posizione quando l'utente lascia la pagina
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      // Rimuovi posizione quando il cleaner lascia la dashboard
       fetch("/api/location", { method: "DELETE" }).catch(() => {});
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null;
