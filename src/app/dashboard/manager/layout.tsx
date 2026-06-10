@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import SidebarLayout from "@/src/components/sidebar-layout";
 import AutoRefresh from "@/src/components/auto-refresh";
 import PushPermissionRequest from "@/src/components/push-permission";
+import ApnsRegister from "@/src/components/apns-register";
 import ImpersonateBanner from "@/src/components/superadmin/impersonate-banner";
 import { getUnreadMessagesCount } from "../../actions/messages";
 import { prisma } from "@/src/lib/prisma";
@@ -34,6 +35,7 @@ export default async function ManagerLayout({ children }: { children: React.Reac
       </div>
       <AutoRefresh intervalMs={30_000} />
       <PushPermissionRequest />
+      <ApnsRegister />
     </SidebarLayout>
   );
 }

@@ -1,6 +1,7 @@
 import webpush from "web-push";
 import { prisma } from "./prisma";
 import type { Role } from "@/src/generated/prisma/client";
+import { sendApns } from "./apns";
 
 // Inizializza VAPID solo se le chiavi sono disponibili
 const VAPID_EMAIL    = process.env.VAPID_EMAIL;
@@ -25,9 +26,15 @@ export type PushPayload = {
 // ─── Send to a specific user ────────────────────────────────────────────────
 
 export async function sendPushToUser(userId: string, payload: PushPayload) {
-  const subs = await prisma.pushSubscription.findMany({ where: { userId } });
-  console.log(`[Push] sendPushToUser userId=${userId} — ${subs.length} subscription(s)`);
-  await _sendToSubs(subs, payload);
+  const [subs, apnsTokens] = await Promise.all([
+    prisma.pushSubscription.findMany({ where: { userId } }),
+    prisma.apnsToken.findMany({ where: { userId }, select: { token: true } }),
+  ]);
+  console.log(`[Push] sendPushToUser userId=${userId} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s)`);
+  await Promise.all([
+    _sendToSubs(subs, payload),
+    sendApns(apnsTokens.map(t => t.token), payload).catch(console.error),
+  ]);
 }
 
 // ─── Send to all users with a given role ────────────────────────────────────
@@ -35,13 +42,16 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
 export async function sendPushToRole(role: Role, payload: PushPayload, prefKey?: string, orgId?: string | null) {
   const users = await prisma.user.findMany({
     where: { role, ...(orgId ? { organizationId: orgId } : {}) },
-    select: { id: true, notificationPrefs: true, pushSubscriptions: true },
+    select: { id: true, notificationPrefs: true, pushSubscriptions: true, apnsTokens: true },
   });
-  const subs = users
-    .filter(u => _prefEnabled(u.notificationPrefs, prefKey))
-    .flatMap(u => u.pushSubscriptions);
-  console.log(`[Push] sendPushToRole role=${role} prefKey=${prefKey ?? "—"} — ${subs.length} subscription(s)`);
-  await _sendToSubs(subs, payload);
+  const filtered = users.filter(u => _prefEnabled(u.notificationPrefs, prefKey));
+  const subs = filtered.flatMap(u => u.pushSubscriptions);
+  const apnsTokens = filtered.flatMap(u => u.apnsTokens).map(t => t.token);
+  console.log(`[Push] sendPushToRole role=${role} prefKey=${prefKey ?? "—"} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s)`);
+  await Promise.all([
+    _sendToSubs(subs, payload),
+    sendApns(apnsTokens, payload).catch(console.error),
+  ]);
 }
 
 // ─── Send to multiple roles ──────────────────────────────────────────────────
@@ -49,13 +59,16 @@ export async function sendPushToRole(role: Role, payload: PushPayload, prefKey?:
 export async function sendPushToRoles(roles: Role[], payload: PushPayload, prefKey?: string, orgId?: string | null) {
   const users = await prisma.user.findMany({
     where: { role: { in: roles }, ...(orgId ? { organizationId: orgId } : {}) },
-    select: { id: true, notificationPrefs: true, pushSubscriptions: true },
+    select: { id: true, notificationPrefs: true, pushSubscriptions: true, apnsTokens: true },
   });
-  const subs = users
-    .filter(u => _prefEnabled(u.notificationPrefs, prefKey))
-    .flatMap(u => u.pushSubscriptions);
-  console.log(`[Push] sendPushToRoles roles=${roles.join(",")} prefKey=${prefKey ?? "—"} — ${subs.length} subscription(s)`);
-  await _sendToSubs(subs, payload);
+  const filtered = users.filter(u => _prefEnabled(u.notificationPrefs, prefKey));
+  const subs = filtered.flatMap(u => u.pushSubscriptions);
+  const apnsTokens = filtered.flatMap(u => u.apnsTokens).map(t => t.token);
+  console.log(`[Push] sendPushToRoles roles=${roles.join(",")} prefKey=${prefKey ?? "—"} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s)`);
+  await Promise.all([
+    _sendToSubs(subs, payload),
+    sendApns(apnsTokens, payload).catch(console.error),
+  ]);
 }
 
 // ─── Pref check ───────────────────────────────────────────────────────────────

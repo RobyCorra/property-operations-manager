@@ -363,6 +363,13 @@ exports.Prisma.PushSubscriptionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ApnsTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SuperAdminLogScalarFieldEnum = {
   id: 'id',
   action: 'action',
@@ -445,6 +452,7 @@ exports.Prisma.ModelName = {
   ManagerChatSession: 'ManagerChatSession',
   ManagerChatMessage: 'ManagerChatMessage',
   PushSubscription: 'PushSubscription',
+  ApnsToken: 'ApnsToken',
   SuperAdminLog: 'SuperAdminLog',
   ApartmentProduct: 'ApartmentProduct'
 };

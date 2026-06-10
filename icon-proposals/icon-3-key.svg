@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7C3AED"/>
+      <stop offset="100%" style="stop-color:#EC4899"/>
+    </linearGradient>
+    <linearGradient id="key3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FDE68A"/>
+      <stop offset="100%" style="stop-color:#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="230" fill="url(#bg3)"/>
+  <!-- Key head (circle) -->
+  <circle cx="380" cy="400" r="160" fill="none" stroke="url(#key3)" stroke-width="56"/>
+  <!-- Key hole -->
+  <circle cx="380" cy="400" r="60" fill="url(#key3)"/>
+  <!-- Key shaft -->
+  <rect x="480" y="372" width="300" height="56" rx="28" fill="url(#key3)"/>
+  <!-- Key teeth -->
+  <rect x="680" y="428" width="44" height="70" rx="10" fill="url(#key3)"/>
+  <rect x="600" y="428" width="44" height="50" rx="10" fill="url(#key3)"/>
+  <rect x="740" y="428" width="40" height="55" rx="10" fill="url(#key3)"/>
+  <!-- Small building icon below -->
+  <rect x="362" y="610" width="300" height="220" rx="12" fill="white" opacity="0.2"/>
+  <polygon points="512,560 342,625 682,625" fill="white" opacity="0.3"/>
+  <rect x="442" y="700" width="70" height="130" rx="8" fill="white" opacity="0.5"/>
+  <rect x="390" y="660" width="55" height="55" rx="6" fill="white" opacity="0.5"/>
+  <rect x="557" y="660" width="55" height="55" rx="6" fill="white" opacity="0.5"/>
+</svg>

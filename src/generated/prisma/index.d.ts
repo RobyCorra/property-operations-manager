@@ -109,6 +109,11 @@ export type ManagerChatMessage = $Result.DefaultSelection<Prisma.$ManagerChatMes
  */
 export type PushSubscription = $Result.DefaultSelection<Prisma.$PushSubscriptionPayload>
 /**
+ * Model ApnsToken
+ * 
+ */
+export type ApnsToken = $Result.DefaultSelection<Prisma.$ApnsTokenPayload>
+/**
  * Model SuperAdminLog
  * 
  */
@@ -461,6 +466,16 @@ export class PrismaClient<
     * ```
     */
   get pushSubscription(): Prisma.PushSubscriptionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.apnsToken`: Exposes CRUD operations for the **ApnsToken** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ApnsTokens
+    * const apnsTokens = await prisma.apnsToken.findMany()
+    * ```
+    */
+  get apnsToken(): Prisma.ApnsTokenDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.superAdminLog`: Exposes CRUD operations for the **SuperAdminLog** model.
@@ -934,6 +949,7 @@ export namespace Prisma {
     ManagerChatSession: 'ManagerChatSession',
     ManagerChatMessage: 'ManagerChatMessage',
     PushSubscription: 'PushSubscription',
+    ApnsToken: 'ApnsToken',
     SuperAdminLog: 'SuperAdminLog',
     ApartmentProduct: 'ApartmentProduct'
   };
@@ -951,7 +967,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "superAdminLog" | "apartmentProduct"
+      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "superAdminLog" | "apartmentProduct"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2361,6 +2377,80 @@ export namespace Prisma {
           }
         }
       }
+      ApnsToken: {
+        payload: Prisma.$ApnsTokenPayload<ExtArgs>
+        fields: Prisma.ApnsTokenFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ApnsTokenFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ApnsTokenFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>
+          }
+          findFirst: {
+            args: Prisma.ApnsTokenFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ApnsTokenFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>
+          }
+          findMany: {
+            args: Prisma.ApnsTokenFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>[]
+          }
+          create: {
+            args: Prisma.ApnsTokenCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>
+          }
+          createMany: {
+            args: Prisma.ApnsTokenCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ApnsTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>[]
+          }
+          delete: {
+            args: Prisma.ApnsTokenDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>
+          }
+          update: {
+            args: Prisma.ApnsTokenUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>
+          }
+          deleteMany: {
+            args: Prisma.ApnsTokenDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ApnsTokenUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ApnsTokenUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>[]
+          }
+          upsert: {
+            args: Prisma.ApnsTokenUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApnsTokenPayload>
+          }
+          aggregate: {
+            args: Prisma.ApnsTokenAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateApnsToken>
+          }
+          groupBy: {
+            args: Prisma.ApnsTokenGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ApnsTokenGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ApnsTokenCountArgs<ExtArgs>
+            result: $Utils.Optional<ApnsTokenCountAggregateOutputType> | number
+          }
+        }
+      }
       SuperAdminLog: {
         payload: Prisma.$SuperAdminLogPayload<ExtArgs>
         fields: Prisma.SuperAdminLogFieldRefs
@@ -2636,6 +2726,7 @@ export namespace Prisma {
     managerChatSession?: ManagerChatSessionOmit
     managerChatMessage?: ManagerChatMessageOmit
     pushSubscription?: PushSubscriptionOmit
+    apnsToken?: ApnsTokenOmit
     superAdminLog?: SuperAdminLogOmit
     apartmentProduct?: ApartmentProductOmit
   }
@@ -2773,6 +2864,7 @@ export namespace Prisma {
     supervisedApartments: number
     ownedApartments: number
     pushSubscriptions: number
+    apnsTokens: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2782,6 +2874,7 @@ export namespace Prisma {
     supervisedApartments?: boolean | UserCountOutputTypeCountSupervisedApartmentsArgs
     ownedApartments?: boolean | UserCountOutputTypeCountOwnedApartmentsArgs
     pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
+    apnsTokens?: boolean | UserCountOutputTypeCountApnsTokensArgs
   }
 
   // Custom InputTypes
@@ -2835,6 +2928,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PushSubscriptionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountApnsTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApnsTokenWhereInput
   }
 
 
@@ -4778,6 +4878,7 @@ export namespace Prisma {
     supervisedApartments?: boolean | User$supervisedApartmentsArgs<ExtArgs>
     ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
     pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
+    apnsTokens?: boolean | User$apnsTokensArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4843,6 +4944,7 @@ export namespace Prisma {
     supervisedApartments?: boolean | User$supervisedApartmentsArgs<ExtArgs>
     ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
     pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
+    apnsTokens?: boolean | User$apnsTokensArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4862,6 +4964,7 @@ export namespace Prisma {
       supervisedApartments: Prisma.$ApartmentSupervisorPayload<ExtArgs>[]
       ownedApartments: Prisma.$ApartmentOwnerPayload<ExtArgs>[]
       pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
+      apnsTokens: Prisma.$ApnsTokenPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5279,6 +5382,7 @@ export namespace Prisma {
     supervisedApartments<T extends User$supervisedApartmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$supervisedApartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedApartments<T extends User$ownedApartmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedApartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     pushSubscriptions<T extends User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    apnsTokens<T extends User$apnsTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$apnsTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5883,6 +5987,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PushSubscriptionScalarFieldEnum | PushSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * User.apnsTokens
+   */
+  export type User$apnsTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    where?: ApnsTokenWhereInput
+    orderBy?: ApnsTokenOrderByWithRelationInput | ApnsTokenOrderByWithRelationInput[]
+    cursor?: ApnsTokenWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApnsTokenScalarFieldEnum | ApnsTokenScalarFieldEnum[]
   }
 
   /**
@@ -25977,6 +26105,1056 @@ export namespace Prisma {
 
 
   /**
+   * Model ApnsToken
+   */
+
+  export type AggregateApnsToken = {
+    _count: ApnsTokenCountAggregateOutputType | null
+    _min: ApnsTokenMinAggregateOutputType | null
+    _max: ApnsTokenMaxAggregateOutputType | null
+  }
+
+  export type ApnsTokenMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    createdAt: Date | null
+  }
+
+  export type ApnsTokenMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    createdAt: Date | null
+  }
+
+  export type ApnsTokenCountAggregateOutputType = {
+    id: number
+    userId: number
+    token: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ApnsTokenMinAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    createdAt?: true
+  }
+
+  export type ApnsTokenMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    createdAt?: true
+  }
+
+  export type ApnsTokenCountAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ApnsTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApnsToken to aggregate.
+     */
+    where?: ApnsTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApnsTokens to fetch.
+     */
+    orderBy?: ApnsTokenOrderByWithRelationInput | ApnsTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ApnsTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApnsTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApnsTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ApnsTokens
+    **/
+    _count?: true | ApnsTokenCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ApnsTokenMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ApnsTokenMaxAggregateInputType
+  }
+
+  export type GetApnsTokenAggregateType<T extends ApnsTokenAggregateArgs> = {
+        [P in keyof T & keyof AggregateApnsToken]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateApnsToken[P]>
+      : GetScalarType<T[P], AggregateApnsToken[P]>
+  }
+
+
+
+
+  export type ApnsTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApnsTokenWhereInput
+    orderBy?: ApnsTokenOrderByWithAggregationInput | ApnsTokenOrderByWithAggregationInput[]
+    by: ApnsTokenScalarFieldEnum[] | ApnsTokenScalarFieldEnum
+    having?: ApnsTokenScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ApnsTokenCountAggregateInputType | true
+    _min?: ApnsTokenMinAggregateInputType
+    _max?: ApnsTokenMaxAggregateInputType
+  }
+
+  export type ApnsTokenGroupByOutputType = {
+    id: string
+    userId: string
+    token: string
+    createdAt: Date
+    _count: ApnsTokenCountAggregateOutputType | null
+    _min: ApnsTokenMinAggregateOutputType | null
+    _max: ApnsTokenMaxAggregateOutputType | null
+  }
+
+  type GetApnsTokenGroupByPayload<T extends ApnsTokenGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ApnsTokenGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ApnsTokenGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ApnsTokenGroupByOutputType[P]>
+            : GetScalarType<T[P], ApnsTokenGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ApnsTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apnsToken"]>
+
+  export type ApnsTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apnsToken"]>
+
+  export type ApnsTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["apnsToken"]>
+
+  export type ApnsTokenSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    createdAt?: boolean
+  }
+
+  export type ApnsTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "token" | "createdAt", ExtArgs["result"]["apnsToken"]>
+  export type ApnsTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ApnsTokenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ApnsTokenIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ApnsTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ApnsToken"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      token: string
+      createdAt: Date
+    }, ExtArgs["result"]["apnsToken"]>
+    composites: {}
+  }
+
+  type ApnsTokenGetPayload<S extends boolean | null | undefined | ApnsTokenDefaultArgs> = $Result.GetResult<Prisma.$ApnsTokenPayload, S>
+
+  type ApnsTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ApnsTokenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ApnsTokenCountAggregateInputType | true
+    }
+
+  export interface ApnsTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ApnsToken'], meta: { name: 'ApnsToken' } }
+    /**
+     * Find zero or one ApnsToken that matches the filter.
+     * @param {ApnsTokenFindUniqueArgs} args - Arguments to find a ApnsToken
+     * @example
+     * // Get one ApnsToken
+     * const apnsToken = await prisma.apnsToken.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ApnsTokenFindUniqueArgs>(args: SelectSubset<T, ApnsTokenFindUniqueArgs<ExtArgs>>): Prisma__ApnsTokenClient<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ApnsToken that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ApnsTokenFindUniqueOrThrowArgs} args - Arguments to find a ApnsToken
+     * @example
+     * // Get one ApnsToken
+     * const apnsToken = await prisma.apnsToken.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ApnsTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, ApnsTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ApnsTokenClient<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApnsToken that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApnsTokenFindFirstArgs} args - Arguments to find a ApnsToken
+     * @example
+     * // Get one ApnsToken
+     * const apnsToken = await prisma.apnsToken.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ApnsTokenFindFirstArgs>(args?: SelectSubset<T, ApnsTokenFindFirstArgs<ExtArgs>>): Prisma__ApnsTokenClient<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApnsToken that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApnsTokenFindFirstOrThrowArgs} args - Arguments to find a ApnsToken
+     * @example
+     * // Get one ApnsToken
+     * const apnsToken = await prisma.apnsToken.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ApnsTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, ApnsTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__ApnsTokenClient<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ApnsTokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApnsTokenFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ApnsTokens
+     * const apnsTokens = await prisma.apnsToken.findMany()
+     * 
+     * // Get first 10 ApnsTokens
+     * const apnsTokens = await prisma.apnsToken.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const apnsTokenWithIdOnly = await prisma.apnsToken.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ApnsTokenFindManyArgs>(args?: SelectSubset<T, ApnsTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ApnsToken.
+     * @param {ApnsTokenCreateArgs} args - Arguments to create a ApnsToken.
+     * @example
+     * // Create one ApnsToken
+     * const ApnsToken = await prisma.apnsToken.create({
+     *   data: {
+     *     // ... data to create a ApnsToken
+     *   }
+     * })
+     * 
+     */
+    create<T extends ApnsTokenCreateArgs>(args: SelectSubset<T, ApnsTokenCreateArgs<ExtArgs>>): Prisma__ApnsTokenClient<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ApnsTokens.
+     * @param {ApnsTokenCreateManyArgs} args - Arguments to create many ApnsTokens.
+     * @example
+     * // Create many ApnsTokens
+     * const apnsToken = await prisma.apnsToken.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ApnsTokenCreateManyArgs>(args?: SelectSubset<T, ApnsTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ApnsTokens and returns the data saved in the database.
+     * @param {ApnsTokenCreateManyAndReturnArgs} args - Arguments to create many ApnsTokens.
+     * @example
+     * // Create many ApnsTokens
+     * const apnsToken = await prisma.apnsToken.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ApnsTokens and only return the `id`
+     * const apnsTokenWithIdOnly = await prisma.apnsToken.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ApnsTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, ApnsTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ApnsToken.
+     * @param {ApnsTokenDeleteArgs} args - Arguments to delete one ApnsToken.
+     * @example
+     * // Delete one ApnsToken
+     * const ApnsToken = await prisma.apnsToken.delete({
+     *   where: {
+     *     // ... filter to delete one ApnsToken
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ApnsTokenDeleteArgs>(args: SelectSubset<T, ApnsTokenDeleteArgs<ExtArgs>>): Prisma__ApnsTokenClient<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ApnsToken.
+     * @param {ApnsTokenUpdateArgs} args - Arguments to update one ApnsToken.
+     * @example
+     * // Update one ApnsToken
+     * const apnsToken = await prisma.apnsToken.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ApnsTokenUpdateArgs>(args: SelectSubset<T, ApnsTokenUpdateArgs<ExtArgs>>): Prisma__ApnsTokenClient<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ApnsTokens.
+     * @param {ApnsTokenDeleteManyArgs} args - Arguments to filter ApnsTokens to delete.
+     * @example
+     * // Delete a few ApnsTokens
+     * const { count } = await prisma.apnsToken.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ApnsTokenDeleteManyArgs>(args?: SelectSubset<T, ApnsTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApnsTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApnsTokenUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ApnsTokens
+     * const apnsToken = await prisma.apnsToken.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ApnsTokenUpdateManyArgs>(args: SelectSubset<T, ApnsTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApnsTokens and returns the data updated in the database.
+     * @param {ApnsTokenUpdateManyAndReturnArgs} args - Arguments to update many ApnsTokens.
+     * @example
+     * // Update many ApnsTokens
+     * const apnsToken = await prisma.apnsToken.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ApnsTokens and only return the `id`
+     * const apnsTokenWithIdOnly = await prisma.apnsToken.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ApnsTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, ApnsTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ApnsToken.
+     * @param {ApnsTokenUpsertArgs} args - Arguments to update or create a ApnsToken.
+     * @example
+     * // Update or create a ApnsToken
+     * const apnsToken = await prisma.apnsToken.upsert({
+     *   create: {
+     *     // ... data to create a ApnsToken
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ApnsToken we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ApnsTokenUpsertArgs>(args: SelectSubset<T, ApnsTokenUpsertArgs<ExtArgs>>): Prisma__ApnsTokenClient<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ApnsTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApnsTokenCountArgs} args - Arguments to filter ApnsTokens to count.
+     * @example
+     * // Count the number of ApnsTokens
+     * const count = await prisma.apnsToken.count({
+     *   where: {
+     *     // ... the filter for the ApnsTokens we want to count
+     *   }
+     * })
+    **/
+    count<T extends ApnsTokenCountArgs>(
+      args?: Subset<T, ApnsTokenCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ApnsTokenCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ApnsToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApnsTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ApnsTokenAggregateArgs>(args: Subset<T, ApnsTokenAggregateArgs>): Prisma.PrismaPromise<GetApnsTokenAggregateType<T>>
+
+    /**
+     * Group by ApnsToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApnsTokenGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ApnsTokenGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ApnsTokenGroupByArgs['orderBy'] }
+        : { orderBy?: ApnsTokenGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ApnsTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetApnsTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ApnsToken model
+   */
+  readonly fields: ApnsTokenFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ApnsToken.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ApnsTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ApnsToken model
+   */
+  interface ApnsTokenFieldRefs {
+    readonly id: FieldRef<"ApnsToken", 'String'>
+    readonly userId: FieldRef<"ApnsToken", 'String'>
+    readonly token: FieldRef<"ApnsToken", 'String'>
+    readonly createdAt: FieldRef<"ApnsToken", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ApnsToken findUnique
+   */
+  export type ApnsTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which ApnsToken to fetch.
+     */
+    where: ApnsTokenWhereUniqueInput
+  }
+
+  /**
+   * ApnsToken findUniqueOrThrow
+   */
+  export type ApnsTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which ApnsToken to fetch.
+     */
+    where: ApnsTokenWhereUniqueInput
+  }
+
+  /**
+   * ApnsToken findFirst
+   */
+  export type ApnsTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which ApnsToken to fetch.
+     */
+    where?: ApnsTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApnsTokens to fetch.
+     */
+    orderBy?: ApnsTokenOrderByWithRelationInput | ApnsTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApnsTokens.
+     */
+    cursor?: ApnsTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApnsTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApnsTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApnsTokens.
+     */
+    distinct?: ApnsTokenScalarFieldEnum | ApnsTokenScalarFieldEnum[]
+  }
+
+  /**
+   * ApnsToken findFirstOrThrow
+   */
+  export type ApnsTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which ApnsToken to fetch.
+     */
+    where?: ApnsTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApnsTokens to fetch.
+     */
+    orderBy?: ApnsTokenOrderByWithRelationInput | ApnsTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApnsTokens.
+     */
+    cursor?: ApnsTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApnsTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApnsTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApnsTokens.
+     */
+    distinct?: ApnsTokenScalarFieldEnum | ApnsTokenScalarFieldEnum[]
+  }
+
+  /**
+   * ApnsToken findMany
+   */
+  export type ApnsTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which ApnsTokens to fetch.
+     */
+    where?: ApnsTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApnsTokens to fetch.
+     */
+    orderBy?: ApnsTokenOrderByWithRelationInput | ApnsTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ApnsTokens.
+     */
+    cursor?: ApnsTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApnsTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApnsTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApnsTokens.
+     */
+    distinct?: ApnsTokenScalarFieldEnum | ApnsTokenScalarFieldEnum[]
+  }
+
+  /**
+   * ApnsToken create
+   */
+  export type ApnsTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ApnsToken.
+     */
+    data: XOR<ApnsTokenCreateInput, ApnsTokenUncheckedCreateInput>
+  }
+
+  /**
+   * ApnsToken createMany
+   */
+  export type ApnsTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ApnsTokens.
+     */
+    data: ApnsTokenCreateManyInput | ApnsTokenCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ApnsToken createManyAndReturn
+   */
+  export type ApnsTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * The data used to create many ApnsTokens.
+     */
+    data: ApnsTokenCreateManyInput | ApnsTokenCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApnsToken update
+   */
+  export type ApnsTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ApnsToken.
+     */
+    data: XOR<ApnsTokenUpdateInput, ApnsTokenUncheckedUpdateInput>
+    /**
+     * Choose, which ApnsToken to update.
+     */
+    where: ApnsTokenWhereUniqueInput
+  }
+
+  /**
+   * ApnsToken updateMany
+   */
+  export type ApnsTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ApnsTokens.
+     */
+    data: XOR<ApnsTokenUpdateManyMutationInput, ApnsTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which ApnsTokens to update
+     */
+    where?: ApnsTokenWhereInput
+    /**
+     * Limit how many ApnsTokens to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApnsToken updateManyAndReturn
+   */
+  export type ApnsTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * The data used to update ApnsTokens.
+     */
+    data: XOR<ApnsTokenUpdateManyMutationInput, ApnsTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which ApnsTokens to update
+     */
+    where?: ApnsTokenWhereInput
+    /**
+     * Limit how many ApnsTokens to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApnsToken upsert
+   */
+  export type ApnsTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ApnsToken to update in case it exists.
+     */
+    where: ApnsTokenWhereUniqueInput
+    /**
+     * In case the ApnsToken found by the `where` argument doesn't exist, create a new ApnsToken with this data.
+     */
+    create: XOR<ApnsTokenCreateInput, ApnsTokenUncheckedCreateInput>
+    /**
+     * In case the ApnsToken was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ApnsTokenUpdateInput, ApnsTokenUncheckedUpdateInput>
+  }
+
+  /**
+   * ApnsToken delete
+   */
+  export type ApnsTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+    /**
+     * Filter which ApnsToken to delete.
+     */
+    where: ApnsTokenWhereUniqueInput
+  }
+
+  /**
+   * ApnsToken deleteMany
+   */
+  export type ApnsTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApnsTokens to delete
+     */
+    where?: ApnsTokenWhereInput
+    /**
+     * Limit how many ApnsTokens to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApnsToken without action
+   */
+  export type ApnsTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApnsToken
+     */
+    select?: ApnsTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApnsToken
+     */
+    omit?: ApnsTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApnsTokenInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model SuperAdminLog
    */
 
@@ -28499,6 +29677,16 @@ export namespace Prisma {
   export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
 
 
+  export const ApnsTokenScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    token: 'token',
+    createdAt: 'createdAt'
+  };
+
+  export type ApnsTokenScalarFieldEnum = (typeof ApnsTokenScalarFieldEnum)[keyof typeof ApnsTokenScalarFieldEnum]
+
+
   export const SuperAdminLogScalarFieldEnum: {
     id: 'id',
     action: 'action',
@@ -28856,6 +30044,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorListRelationFilter
     ownedApartments?: ApartmentOwnerListRelationFilter
     pushSubscriptions?: PushSubscriptionListRelationFilter
+    apnsTokens?: ApnsTokenListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -28880,6 +30069,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorOrderByRelationAggregateInput
     ownedApartments?: ApartmentOwnerOrderByRelationAggregateInput
     pushSubscriptions?: PushSubscriptionOrderByRelationAggregateInput
+    apnsTokens?: ApnsTokenOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -28907,6 +30097,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorListRelationFilter
     ownedApartments?: ApartmentOwnerListRelationFilter
     pushSubscriptions?: PushSubscriptionListRelationFilter
+    apnsTokens?: ApnsTokenListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -30324,6 +31515,56 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PushSubscription"> | Date | string
   }
 
+  export type ApnsTokenWhereInput = {
+    AND?: ApnsTokenWhereInput | ApnsTokenWhereInput[]
+    OR?: ApnsTokenWhereInput[]
+    NOT?: ApnsTokenWhereInput | ApnsTokenWhereInput[]
+    id?: StringFilter<"ApnsToken"> | string
+    userId?: StringFilter<"ApnsToken"> | string
+    token?: StringFilter<"ApnsToken"> | string
+    createdAt?: DateTimeFilter<"ApnsToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type ApnsTokenOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ApnsTokenWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    token?: string
+    AND?: ApnsTokenWhereInput | ApnsTokenWhereInput[]
+    OR?: ApnsTokenWhereInput[]
+    NOT?: ApnsTokenWhereInput | ApnsTokenWhereInput[]
+    userId?: StringFilter<"ApnsToken"> | string
+    createdAt?: DateTimeFilter<"ApnsToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "token">
+
+  export type ApnsTokenOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+    _count?: ApnsTokenCountOrderByAggregateInput
+    _max?: ApnsTokenMaxOrderByAggregateInput
+    _min?: ApnsTokenMinOrderByAggregateInput
+  }
+
+  export type ApnsTokenScalarWhereWithAggregatesInput = {
+    AND?: ApnsTokenScalarWhereWithAggregatesInput | ApnsTokenScalarWhereWithAggregatesInput[]
+    OR?: ApnsTokenScalarWhereWithAggregatesInput[]
+    NOT?: ApnsTokenScalarWhereWithAggregatesInput | ApnsTokenScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ApnsToken"> | string
+    userId?: StringWithAggregatesFilter<"ApnsToken"> | string
+    token?: StringWithAggregatesFilter<"ApnsToken"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"ApnsToken"> | Date | string
+  }
+
   export type SuperAdminLogWhereInput = {
     AND?: SuperAdminLogWhereInput | SuperAdminLogWhereInput[]
     OR?: SuperAdminLogWhereInput[]
@@ -30681,6 +31922,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -30704,6 +31946,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -30727,6 +31970,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -30750,6 +31994,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -32270,6 +33515,54 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ApnsTokenCreateInput = {
+    id?: string
+    token: string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutApnsTokensInput
+  }
+
+  export type ApnsTokenUncheckedCreateInput = {
+    id?: string
+    userId: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type ApnsTokenUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutApnsTokensNestedInput
+  }
+
+  export type ApnsTokenUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApnsTokenCreateManyInput = {
+    id?: string
+    userId: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type ApnsTokenUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApnsTokenUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SuperAdminLogCreateInput = {
     id?: string
     action: string
@@ -32780,6 +34073,12 @@ export namespace Prisma {
     none?: PushSubscriptionWhereInput
   }
 
+  export type ApnsTokenListRelationFilter = {
+    every?: ApnsTokenWhereInput
+    some?: ApnsTokenWhereInput
+    none?: ApnsTokenWhereInput
+  }
+
   export type CleaningTaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -32801,6 +34100,10 @@ export namespace Prisma {
   }
 
   export type PushSubscriptionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ApnsTokenOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -33773,6 +35076,27 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type ApnsTokenCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ApnsTokenMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ApnsTokenMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type SuperAdminLogCountOrderByAggregateInput = {
     id?: SortOrder
     action?: SortOrder
@@ -34055,6 +35379,13 @@ export namespace Prisma {
     connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
   }
 
+  export type ApnsTokenCreateNestedManyWithoutUserInput = {
+    create?: XOR<ApnsTokenCreateWithoutUserInput, ApnsTokenUncheckedCreateWithoutUserInput> | ApnsTokenCreateWithoutUserInput[] | ApnsTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApnsTokenCreateOrConnectWithoutUserInput | ApnsTokenCreateOrConnectWithoutUserInput[]
+    createMany?: ApnsTokenCreateManyUserInputEnvelope
+    connect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+  }
+
   export type CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -34095,6 +35426,13 @@ export namespace Prisma {
     connectOrCreate?: PushSubscriptionCreateOrConnectWithoutUserInput | PushSubscriptionCreateOrConnectWithoutUserInput[]
     createMany?: PushSubscriptionCreateManyUserInputEnvelope
     connect?: PushSubscriptionWhereUniqueInput | PushSubscriptionWhereUniqueInput[]
+  }
+
+  export type ApnsTokenUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ApnsTokenCreateWithoutUserInput, ApnsTokenUncheckedCreateWithoutUserInput> | ApnsTokenCreateWithoutUserInput[] | ApnsTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApnsTokenCreateOrConnectWithoutUserInput | ApnsTokenCreateOrConnectWithoutUserInput[]
+    createMany?: ApnsTokenCreateManyUserInputEnvelope
+    connect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
   }
 
   export type EnumRoleFieldUpdateOperationsInput = {
@@ -34199,6 +35537,20 @@ export namespace Prisma {
     deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
   }
 
+  export type ApnsTokenUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ApnsTokenCreateWithoutUserInput, ApnsTokenUncheckedCreateWithoutUserInput> | ApnsTokenCreateWithoutUserInput[] | ApnsTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApnsTokenCreateOrConnectWithoutUserInput | ApnsTokenCreateOrConnectWithoutUserInput[]
+    upsert?: ApnsTokenUpsertWithWhereUniqueWithoutUserInput | ApnsTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ApnsTokenCreateManyUserInputEnvelope
+    set?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+    disconnect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+    delete?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+    connect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+    update?: ApnsTokenUpdateWithWhereUniqueWithoutUserInput | ApnsTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ApnsTokenUpdateManyWithWhereWithoutUserInput | ApnsTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ApnsTokenScalarWhereInput | ApnsTokenScalarWhereInput[]
+  }
+
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -34281,6 +35633,20 @@ export namespace Prisma {
     update?: PushSubscriptionUpdateWithWhereUniqueWithoutUserInput | PushSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: PushSubscriptionUpdateManyWithWhereWithoutUserInput | PushSubscriptionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: PushSubscriptionScalarWhereInput | PushSubscriptionScalarWhereInput[]
+  }
+
+  export type ApnsTokenUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ApnsTokenCreateWithoutUserInput, ApnsTokenUncheckedCreateWithoutUserInput> | ApnsTokenCreateWithoutUserInput[] | ApnsTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ApnsTokenCreateOrConnectWithoutUserInput | ApnsTokenCreateOrConnectWithoutUserInput[]
+    upsert?: ApnsTokenUpsertWithWhereUniqueWithoutUserInput | ApnsTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ApnsTokenCreateManyUserInputEnvelope
+    set?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+    disconnect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+    delete?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+    connect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+    update?: ApnsTokenUpdateWithWhereUniqueWithoutUserInput | ApnsTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ApnsTokenUpdateManyWithWhereWithoutUserInput | ApnsTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ApnsTokenScalarWhereInput | ApnsTokenScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutApartmentsInput = {
@@ -35653,6 +37019,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPushSubscriptionsInput, UserUpdateWithoutPushSubscriptionsInput>, UserUncheckedUpdateWithoutPushSubscriptionsInput>
   }
 
+  export type UserCreateNestedOneWithoutApnsTokensInput = {
+    create?: XOR<UserCreateWithoutApnsTokensInput, UserUncheckedCreateWithoutApnsTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutApnsTokensInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutApnsTokensNestedInput = {
+    create?: XOR<UserCreateWithoutApnsTokensInput, UserUncheckedCreateWithoutApnsTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutApnsTokensInput
+    upsert?: UserUpsertWithoutApnsTokensInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutApnsTokensInput, UserUpdateWithoutApnsTokensInput>, UserUncheckedUpdateWithoutApnsTokensInput>
+  }
+
   export type ApartmentCreateNestedOneWithoutProductsInput = {
     create?: XOR<ApartmentCreateWithoutProductsInput, ApartmentUncheckedCreateWithoutProductsInput>
     connectOrCreate?: ApartmentCreateOrConnectWithoutProductsInput
@@ -35961,6 +37341,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -35983,6 +37364,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -36442,6 +37824,28 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ApnsTokenCreateWithoutUserInput = {
+    id?: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type ApnsTokenUncheckedCreateWithoutUserInput = {
+    id?: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type ApnsTokenCreateOrConnectWithoutUserInput = {
+    where: ApnsTokenWhereUniqueInput
+    create: XOR<ApnsTokenCreateWithoutUserInput, ApnsTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type ApnsTokenCreateManyUserInputEnvelope = {
+    data: ApnsTokenCreateManyUserInput | ApnsTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutUsersInput = {
     update: XOR<OrganizationUpdateWithoutUsersInput, OrganizationUncheckedUpdateWithoutUsersInput>
     create: XOR<OrganizationCreateWithoutUsersInput, OrganizationUncheckedCreateWithoutUsersInput>
@@ -36683,6 +38087,32 @@ export namespace Prisma {
     p256dh?: StringFilter<"PushSubscription"> | string
     auth?: StringFilter<"PushSubscription"> | string
     createdAt?: DateTimeFilter<"PushSubscription"> | Date | string
+  }
+
+  export type ApnsTokenUpsertWithWhereUniqueWithoutUserInput = {
+    where: ApnsTokenWhereUniqueInput
+    update: XOR<ApnsTokenUpdateWithoutUserInput, ApnsTokenUncheckedUpdateWithoutUserInput>
+    create: XOR<ApnsTokenCreateWithoutUserInput, ApnsTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type ApnsTokenUpdateWithWhereUniqueWithoutUserInput = {
+    where: ApnsTokenWhereUniqueInput
+    data: XOR<ApnsTokenUpdateWithoutUserInput, ApnsTokenUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ApnsTokenUpdateManyWithWhereWithoutUserInput = {
+    where: ApnsTokenScalarWhereInput
+    data: XOR<ApnsTokenUpdateManyMutationInput, ApnsTokenUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ApnsTokenScalarWhereInput = {
+    AND?: ApnsTokenScalarWhereInput | ApnsTokenScalarWhereInput[]
+    OR?: ApnsTokenScalarWhereInput[]
+    NOT?: ApnsTokenScalarWhereInput | ApnsTokenScalarWhereInput[]
+    id?: StringFilter<"ApnsToken"> | string
+    userId?: StringFilter<"ApnsToken"> | string
+    token?: StringFilter<"ApnsToken"> | string
+    createdAt?: DateTimeFilter<"ApnsToken"> | Date | string
   }
 
   export type OrganizationCreateWithoutApartmentsInput = {
@@ -38025,6 +39455,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCleaningTasksInput = {
@@ -38047,6 +39478,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCleaningTasksInput = {
@@ -38325,6 +39757,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleaningTasksInput = {
@@ -38347,6 +39780,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CleaningTaskMessageUpsertWithWhereUniqueWithoutCleaningTaskInput = {
@@ -38529,6 +39963,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -38551,6 +39986,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -38790,6 +40226,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -38812,6 +40249,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AttachmentUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
@@ -40001,6 +41439,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupervisorReviewsInput = {
@@ -40023,6 +41462,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupervisorReviewsInput = {
@@ -40151,6 +41591,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisorReviewsInput = {
@@ -40173,6 +41614,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CleaningTaskUpsertWithoutSupervisorReviewsInput = {
@@ -40362,6 +41804,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSupervisedApartmentsInput = {
@@ -40384,6 +41827,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSupervisedApartmentsInput = {
@@ -40493,6 +41937,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisedApartmentsInput = {
@@ -40515,6 +41960,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ApartmentCreateWithoutOwnersInput = {
@@ -40602,6 +42048,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedApartmentsInput = {
@@ -40624,6 +42071,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedApartmentsInput = {
@@ -40733,6 +42181,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedApartmentsInput = {
@@ -40755,6 +42204,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationCreateWithoutChatSessionsInput = {
@@ -40996,6 +42446,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
@@ -41018,6 +42469,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
@@ -41056,6 +42508,7 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
@@ -41078,6 +42531,115 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutApnsTokensInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationCreateNestedOneWithoutUsersInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutApnsTokensInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutApnsTokensInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutApnsTokensInput, UserUncheckedCreateWithoutApnsTokensInput>
+  }
+
+  export type UserUpsertWithoutApnsTokensInput = {
+    update: XOR<UserUpdateWithoutApnsTokensInput, UserUncheckedUpdateWithoutApnsTokensInput>
+    create: XOR<UserCreateWithoutApnsTokensInput, UserUncheckedCreateWithoutApnsTokensInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutApnsTokensInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutApnsTokensInput, UserUncheckedUpdateWithoutApnsTokensInput>
+  }
+
+  export type UserUpdateWithoutApnsTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationUpdateOneWithoutUsersNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutApnsTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ApartmentCreateWithoutProductsInput = {
@@ -41278,6 +42840,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -41300,6 +42863,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -41473,6 +43037,12 @@ export namespace Prisma {
     endpoint: string
     p256dh: string
     auth: string
+    createdAt?: Date | string
+  }
+
+  export type ApnsTokenCreateManyUserInput = {
+    id?: string
+    token: string
     createdAt?: Date | string
   }
 
@@ -41663,6 +43233,24 @@ export namespace Prisma {
     endpoint?: StringFieldUpdateOperationsInput | string
     p256dh?: StringFieldUpdateOperationsInput | string
     auth?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApnsTokenUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApnsTokenUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApnsTokenUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

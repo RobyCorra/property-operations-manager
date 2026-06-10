@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E3A8A"/>
+      <stop offset="100%" style="stop-color:#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="230" fill="url(#bg1)"/>
+  <!-- Building shape -->
+  <rect x="312" y="350" width="400" height="340" rx="16" fill="white" opacity="0.15"/>
+  <rect x="312" y="350" width="400" height="340" rx="16" fill="none" stroke="white" stroke-width="18"/>
+  <!-- Roof / Triangle -->
+  <polygon points="512,180 272,370 752,370" fill="white"/>
+  <!-- Windows -->
+  <rect x="380" y="430" width="80" height="80" rx="10" fill="white"/>
+  <rect x="572" y="430" width="80" height="80" rx="10" fill="white"/>
+  <!-- Door -->
+  <rect x="442" y="530" width="140" height="160" rx="12" fill="white"/>
+  <!-- Checkmark badge -->
+  <circle cx="760" cy="760" r="110" fill="#22C55E"/>
+  <polyline points="710,760 745,795 820,720" fill="none" stroke="white" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
