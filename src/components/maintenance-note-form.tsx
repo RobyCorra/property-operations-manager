@@ -147,6 +147,10 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
   /* ── Registrazione ── */
   async function startRecording() {
     setError(null);
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setError("Registrazione vocale non supportata su questo browser. Usa Safari aggiornato.");
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -173,7 +177,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
       setRecordingSec(0);
       timerRef.current = setInterval(() => setRecordingSec(s => s + 1), 1000);
     } catch {
-      setError("Impossibile accedere al microfono. Controlla i permessi.");
+      setError("Microfono non accessibile. Su iPhone: Impostazioni → Safari → Microfono → Consenti.");
     }
   }
 
@@ -470,7 +474,6 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
               ref={fileRef}
               type="file"
               accept="image/*"
-              capture="environment"
               multiple
               className="hidden"
               onChange={addPhotos}
