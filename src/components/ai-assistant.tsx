@@ -44,6 +44,10 @@ type AIAssistantProps = {
   maintenanceTicketId?: string | null;
   initialMessages?: PersistedAIMessage[];
   compact?: boolean;
+  /** Modalità controllata: se passato, il componente non mostra la card trigger */
+  open?: boolean;
+  onClose?: () => void;
+  contextLabel?: string;
 };
 
 // Estrae il blocco ACTION dal testo dell'AI con brace-matching (robusto a qualsiasi formato)
@@ -170,6 +174,13 @@ function fieldLabel(key: string, value: unknown): string {
   return `${label}: ${display}`;
 }
 
+const SUGGESTIONS = [
+  { emoji: "🧹", label: "Pulizie di oggi", prompt: "Quali pulizie ci sono oggi?" },
+  { emoji: "🔧", label: "Ticket aperti", prompt: "Quali ticket di manutenzione sono aperti?" },
+  { emoji: "📅", label: "Check-in domani", prompt: "Quali check-in ci sono domani?" },
+  { emoji: "➕", label: "Nuova pulizia", prompt: "Crea una nuova pulizia" },
+];
+
 export default function AIAssistant({
   role,
   type,
@@ -177,10 +188,18 @@ export default function AIAssistant({
   cleaningTaskId,
   maintenanceTicketId,
   initialMessages = [],
-  compact = false,
+  compact: _compact = false,
+  open,
+  onClose,
+  contextLabel,
 }: AIAssistantProps) {
   const router = useRouter();
   const [input, setInput] = useState("");
+  const [internalOpen, setInternalOpen] = useState(false);
+  const [webSearch, setWebSearch] = useState(false);
+  const isControlled = open !== undefined;
+  const visible = isControlled ? open : internalOpen;
+  const closeSheet = () => { if (isControlled) onClose?.(); else setInternalOpen(false); };
   const [messages, setMessages] = useState<ChatMessage[]>(
     initialMessages.map((message) => ({
       role: message.role === "USER" ? "user" : "assistant",
@@ -204,8 +223,9 @@ export default function AIAssistant({
 
   const CONFIRM_WORDS = /^(ok|sì|si|yes|confermo|conferma|vai|procedi|fatto|esegui|assegna)$/i;
 
-  async function handleAsk(webSearch = false) {
-    const content = input.trim();
+  async function handleAsk(forceWeb = false, overrideContent?: string) {
+    const useWeb = forceWeb || webSearch;
+    const content = (overrideContent ?? input).trim();
     if (!content || loading) return;
 
     // Se l'utente scrive una parola di conferma e c'è un'azione pending → eseguila
@@ -228,7 +248,7 @@ export default function AIAssistant({
 
     const res = await askAI(
       nextMessages.map((m) => ({ role: m.role, content: m.content })),
-      { role, type, apartmentId, cleaningTaskId, maintenanceTicketId, forceWebSearch: webSearch }
+      { role, type, apartmentId, cleaningTaskId, maintenanceTicketId, forceWebSearch: useWeb }
     );
 
     const { text, action } = parseAction(res || "");
@@ -297,148 +317,238 @@ export default function AIAssistant({
   }
 
   return (
-    <div className={`border border-slate-100 bg-white/70 ${compact ? "rounded-3xl p-4" : "mt-4 rounded-lg p-4"}`}>
-      <h3 className="font-semibold mb-2">{compact ? "🤖 AI Assistente" : "Chiedi aiuto IA"}</h3>
-
-      <input
-        className="w-full border border-slate-200 p-2 rounded-2xl mb-2 text-sm outline-none focus:ring-2 focus:ring-black"
-        placeholder="Descrivi il problema o chiedi una modifica..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleAsk(false);
-          }
-        }}
-      />
-
-      <div className="flex gap-2 flex-wrap">
+    <>
+      {/* ── Card trigger (solo in modalità non controllata) ── */}
+      {!isControlled && (
         <button
-          onClick={() => handleAsk(false)}
-          disabled={loading}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest disabled:opacity-40"
+          type="button"
+          onClick={() => setInternalOpen(true)}
+          className="w-full bg-white rounded-[20px] border border-slate-100 shadow-sm p-3.5 flex items-center gap-3 active:scale-[.98] transition-transform text-left"
         >
-          {loading ? "..." : <><span>🧠</span> AI Interna</>}
-        </button>
-        <button
-          onClick={() => handleAsk(true)}
-          disabled={loading}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40"
-        >
-          <span>🔍</span> Web Search
-        </button>
-        {lastPendingIdx && (
-          <button
-            onClick={() => handleConfirmAction(lastPendingIdx.i)}
-            className="px-4 py-2 bg-amber-500 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-amber-600 transition-colors animate-pulse"
+          <div
+            className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0"
+            style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 12px rgba(124,58,237,.3)" }}
           >
-            ✓ Conferma azione
-          </button>
-        )}
-      </div>
+            🤖
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13.5px] font-extrabold text-slate-900">Assistente AI</p>
+            <p className="text-[11px] text-slate-400">Chiedi aiuto o crea pulizie e ticket</p>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      )}
 
-      {messages.length > 0 && (
-        <div className={`mt-3 overflow-y-auto space-y-2 ${compact ? "max-h-56" : "max-h-80"}`}>
-          {messages.map((message, index) => (
-            <div key={index} className={`flex flex-col ${message.role === "user" ? "items-end" : "items-start"}`}>
-              <div
-                className={`max-w-[85%] p-3 rounded text-sm whitespace-pre-line ${
-                  message.role === "user"
-                    ? "bg-black text-white"
-                    : "bg-gray-100 text-slate-900"
-                }`}
-              >
-                {message.role === "assistant" ? (
-                  <ReactMarkdown
-                    components={{
-                      a: ({ href, children }) => (
-                        <a href={href} target="_blank" rel="noopener noreferrer" className="underline font-medium">
-                          {children}
-                        </a>
-                      ),
-                    }}
-                  >
-                    {message.content}
-                  </ReactMarkdown>
-                ) : (
-                  message.content
+      {/* ── Sheet chat full-screen ── */}
+      {visible && (
+        <div className="fixed inset-0 z-[200] flex flex-col bg-[#f8f7ff] md:left-auto md:w-full md:max-w-xl md:border-l md:border-slate-200 md:shadow-2xl">
+
+          {/* Header */}
+          <div
+            className="flex items-center gap-3 px-4 py-3.5 shrink-0"
+            style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", paddingTop: "max(env(safe-area-inset-top), 14px)" }}
+          >
+            <div className="w-10 h-10 rounded-[14px] flex items-center justify-center text-lg border border-white/35" style={{ background: "rgba(255,255,255,.22)" }}>
+              🤖
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-[15px] font-extrabold text-white tracking-tight">Assistente AI</h2>
+              <p className="text-[11px] text-white/75 flex items-center gap-1.5">
+                <span className="w-[7px] h-[7px] bg-green-400 rounded-full inline-block" />
+                {contextLabel || "Sempre disponibile"}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={closeSheet}
+              aria-label="Chiudi"
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ background: "rgba(255,255,255,.18)" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          {/* Messaggi */}
+          <div className="flex-1 overflow-y-auto px-3.5 py-4 flex flex-col gap-2.5" style={{ WebkitOverflowScrolling: "touch" }}>
+
+            {messages.length === 0 && (
+              <div className="max-w-[82%] self-start bg-white rounded-[18px] rounded-bl-md px-3.5 py-2.5 text-[13.5px] leading-relaxed text-slate-800 shadow-sm">
+                Ciao 👋 Posso creare pulizie, ticket e prenotazioni, o rispondere a domande sugli appartamenti.
+              </div>
+            )}
+
+            {messages.map((message, index) => (
+              <div key={index} className={`flex flex-col ${message.role === "user" ? "items-end" : "items-start"} gap-2`}>
+                <div
+                  className={`max-w-[82%] px-3.5 py-2.5 text-[13.5px] leading-relaxed whitespace-pre-line ${
+                    message.role === "user"
+                      ? "text-white rounded-[18px] rounded-br-md"
+                      : "bg-white text-slate-800 rounded-[18px] rounded-bl-md shadow-sm"
+                  }`}
+                  style={message.role === "user" ? { background: "linear-gradient(135deg,#7c3aed,#9333ea)", boxShadow: "0 2px 8px rgba(124,58,237,.25)" } : undefined}
+                >
+                  {message.role === "assistant" ? (
+                    <ReactMarkdown
+                      components={{
+                        a: ({ href, children }) => (
+                          <a href={href} target="_blank" rel="noopener noreferrer" className="underline font-medium">
+                            {children}
+                          </a>
+                        ),
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  ) : (
+                    message.content
+                  )}
+                </div>
+
+                {/* Card di conferma ACTION */}
+                {message.action && message.actionState === "pending" && (
+                  <div className="max-w-[88%] self-start rounded-[18px] border-[1.5px] border-amber-300 bg-amber-50 p-3.5 space-y-2" style={{ boxShadow: "0 4px 14px rgba(245,158,11,.15)" }}>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-[30px] h-[30px] rounded-[10px] bg-amber-100 flex items-center justify-center text-sm shrink-0">
+                        {message.action.type.includes("CLEANING") ? "🧹" : message.action.type.includes("TICKET") ? "🔧" : message.action.type.includes("BOOKING") ? "📅" : "✏️"}
+                      </div>
+                      <p className="text-[12px] font-extrabold text-amber-800">{actionTypeLabel(message.action.type)}</p>
+                    </div>
+                    <p className="text-[12.5px] font-medium text-amber-900">{message.action.description}</p>
+                    <div className="space-y-1">
+                      {actionSummary(message.action, message.preview ?? null)}
+                    </div>
+                    {message.conflictWarning && (
+                      <div className="rounded-xl bg-orange-50 border border-orange-200 px-3 py-2 space-y-0.5">
+                        <p className="text-xs font-bold text-orange-700">⚠ Appartamento occupato in questa data</p>
+                        <p className="text-xs text-orange-600">
+                          Prenotazione: {message.conflictWarning.guestName || "n/d"} —{" "}
+                          {new Date(message.conflictWarning.checkInDate).toLocaleDateString("it-IT")} →{" "}
+                          {new Date(message.conflictWarning.checkOutDate).toLocaleDateString("it-IT")}
+                        </p>
+                        <p className="text-xs text-orange-600 font-medium">Puoi comunque procedere confermando.</p>
+                      </div>
+                    )}
+                    {message.actionError && (
+                      <p className="text-xs font-bold text-red-600 bg-red-50 rounded-xl px-3 py-2">
+                        ⚠ {message.actionError} — riprova o annulla.
+                      </p>
+                    )}
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => handleConfirmAction(index)}
+                        disabled={message.action?.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER" && (message.preview == null || message.preview.length === 0)}
+                        className="flex-1 h-10 rounded-[13px] flex items-center justify-center gap-1.5 text-white text-[13px] font-extrabold disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-transform"
+                        style={{ background: "linear-gradient(135deg,#059669,#10b981)", boxShadow: "0 4px 12px rgba(5,150,105,.3)" }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        Conferma
+                      </button>
+                      <button
+                        onClick={() => handleDismissAction(index)}
+                        className="w-[84px] h-10 rounded-[13px] bg-white border-[1.5px] border-slate-200 text-slate-500 text-[13px] font-bold active:scale-95 transition-transform"
+                      >
+                        Annulla
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {message.actionState === "done" && (
+                  <div className="max-w-[82%] self-start rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2">
+                    <p className="text-xs font-bold text-emerald-700">
+                      ✓ {message.preview ? `${message.preview.length} pulizie assegnate` : "Modifica applicata"}
+                    </p>
+                  </div>
+                )}
+
+                {message.actionState === "error" && (
+                  <div className="max-w-[82%] self-start rounded-2xl border border-red-200 bg-red-50 px-4 py-2">
+                    <p className="text-xs font-bold text-red-700">⚠ {message.actionError || "Errore durante l'aggiornamento"}</p>
+                  </div>
                 )}
               </div>
+            ))}
 
-              {/* Blocco di conferma ACTION */}
-              {message.action && message.actionState === "pending" && (
-                <div className="max-w-[85%] mt-2 rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 space-y-3 shadow-md shadow-amber-100">
-                  <div className="flex items-center gap-2">
-                    <span className="text-amber-600 text-base">✏️</span>
-                    <p className="text-xs font-black uppercase tracking-widest text-amber-700">
-                      {actionTypeLabel(message.action.type)} — premi Conferma per eseguire
-                    </p>
-                  </div>
-                  <p className="text-sm font-medium text-amber-900">{message.action.description}</p>
-                  <div className="space-y-1">
-                    {actionSummary(message.action, message.preview ?? null)}
-                  </div>
-                  {message.conflictWarning && (
-                    <div className="rounded-xl bg-orange-50 border border-orange-200 px-3 py-2 space-y-0.5">
-                      <p className="text-xs font-bold text-orange-700">⚠ Appartamento occupato in questa data</p>
-                      <p className="text-xs text-orange-600">
-                        Prenotazione: {message.conflictWarning.guestName || "n/d"} —{" "}
-                        {new Date(message.conflictWarning.checkInDate).toLocaleDateString("it-IT")} →{" "}
-                        {new Date(message.conflictWarning.checkOutDate).toLocaleDateString("it-IT")}
-                      </p>
-                      <p className="text-xs text-orange-600 font-medium">Puoi comunque procedere confermando.</p>
-                    </div>
-                  )}
-                  {message.actionError && (
-                    <p className="text-xs font-bold text-red-600 bg-red-50 rounded-xl px-3 py-2">
-                      ⚠ {message.actionError} — riprova o annulla.
-                    </p>
-                  )}
-                  <div className="flex gap-2 pt-1">
-                    <button
-                      onClick={() => handleConfirmAction(index)}
-                      disabled={message.action?.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER" && (message.preview == null || message.preview.length === 0)}
-                      className="flex-1 rounded-full bg-amber-500 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-amber-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      ✓ Conferma
-                    </button>
-                    <button
-                      onClick={() => handleDismissAction(index)}
-                      className="flex-1 rounded-full border border-amber-300 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-amber-700 hover:bg-amber-100 transition-colors"
-                    >
-                      ✕ Annulla
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {message.actionState === "done" && (
-                <div className="max-w-[85%] mt-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2">
-                  <p className="text-xs font-bold text-emerald-700">
-                    ✓ {message.preview ? `${message.preview.length} pulizie assegnate` : "Modifica applicata"}
-                  </p>
-                </div>
-              )}
-
-              {message.actionState === "error" && (
-                <div className="max-w-[85%] mt-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-2">
-                  <p className="text-xs font-bold text-red-700">⚠ {message.actionError || "Errore durante l'aggiornamento"}</p>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {loading && (
-            <div className="flex justify-start">
-              <div className="max-w-[85%] p-3 rounded text-sm bg-gray-100 text-slate-500">
-                Sto scrivendo...
+            {loading && (
+              <div className="self-start bg-white rounded-[18px] rounded-bl-md px-4 py-3.5 flex gap-1.5 shadow-sm">
+                <span className="w-[7px] h-[7px] bg-violet-300 rounded-full animate-bounce" />
+                <span className="w-[7px] h-[7px] bg-violet-300 rounded-full animate-bounce" style={{ animationDelay: ".15s" }} />
+                <span className="w-[7px] h-[7px] bg-violet-300 rounded-full animate-bounce" style={{ animationDelay: ".3s" }} />
               </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+
+          {/* Conferma rapida azione pendente */}
+          {lastPendingIdx && !loading && (
+            <div className="px-3.5 pb-2 shrink-0">
+              <button
+                onClick={() => handleConfirmAction(lastPendingIdx.i)}
+                className="w-full h-10 rounded-[13px] flex items-center justify-center gap-1.5 text-white text-[13px] font-extrabold animate-pulse"
+                style={{ background: "linear-gradient(135deg,#059669,#10b981)", boxShadow: "0 4px 12px rgba(5,150,105,.3)" }}
+              >
+                ✓ Conferma azione in sospeso
+              </button>
             </div>
           )}
-          <div ref={bottomRef} />
+
+          {/* Chip suggerimenti */}
+          {input.length === 0 && !loading && (
+            <div className="flex gap-2 px-3.5 pb-2.5 overflow-x-auto shrink-0" style={{ scrollbarWidth: "none" }}>
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s.label}
+                  onClick={() => handleAsk(false, s.prompt)}
+                  className="shrink-0 bg-white border-[1.5px] border-[#ede9fe] rounded-full px-3.5 py-2 text-[12px] font-semibold text-violet-700 whitespace-nowrap shadow-sm active:scale-95 transition-transform"
+                >
+                  {s.emoji} {s.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Input bar */}
+          <div
+            className="bg-white border-t border-slate-100 px-3 pt-2.5 flex items-end gap-2 shrink-0"
+            style={{ paddingBottom: "max(env(safe-area-inset-bottom), 14px)" }}
+          >
+            <button
+              type="button"
+              onClick={() => setWebSearch((w) => !w)}
+              aria-label="Ricerca web"
+              title="Ricerca web"
+              className={`w-[42px] h-[42px] rounded-full flex items-center justify-center text-base shrink-0 border-[1.5px] transition-colors ${
+                webSearch ? "bg-indigo-600 border-indigo-600" : "bg-[#f4f2fc] border-[#ede9fe]"
+              }`}
+            >
+              🌐
+            </button>
+            <input
+              className="flex-1 bg-[#f4f2fc] rounded-[22px] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300 min-w-0"
+              placeholder={webSearch ? "Cerca sul web…" : "Scrivi un messaggio…"}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAsk(false);
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => handleAsk(false)}
+              disabled={loading || !input.trim()}
+              aria-label="Invia"
+              className="w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 disabled:opacity-40 active:scale-90 transition-transform"
+              style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 12px rgba(124,58,237,.35)" }}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
