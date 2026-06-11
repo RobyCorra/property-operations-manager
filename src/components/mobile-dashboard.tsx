@@ -457,18 +457,25 @@ export default function MobileDashboard({
     else { setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
   }, []);
 
-  // Quando il pathname cambia (navigazione soft) e non c'è nulla in sessionStorage → reset home
+  // Quando il pathname cambia (navigazione soft) → legge sessionStorage e apre lo sheet corretto
   useEffect(() => {
     if (pathname === "/dashboard/manager") {
       const action = sessionStorage.getItem("openOnDashboard") || sessionStorage.getItem("returnToSheet");
-      if (!action) {
+      sessionStorage.removeItem("openOnDashboard");
+      sessionStorage.removeItem("returnToSheet");
+
+      setSidebarOpen(false);
+      setCheckinsSheetOpen(false);
+      setLateCleanSheetOpen(false);
+      setInProgressSheetOpen(false);
+
+      if (action === "cleanings") { setCleaningsSheetOpen(true); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
+      else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
+      else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
+      else {
         // Nessun sheet da aprire: mostra home pulita
-        setSidebarOpen(false);
         setCleaningsSheetOpen(false);
         setTicketsSheetOpen(false);
-        setCheckinsSheetOpen(false);
-        setLateCleanSheetOpen(false);
-        setInProgressSheetOpen(false);
         setActiveTab("dashboard");
       }
     }
