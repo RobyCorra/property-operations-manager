@@ -183,10 +183,6 @@ export default function TicketConversation({
   // ── Voice recording ───────────────────────────────────────────────────────
   const startRecording = async () => {
     setError(null);
-    if (!navigator.mediaDevices?.getUserMedia) {
-      setError("Registrazione vocale non supportata su questo browser. Usa Safari aggiornato.");
-      return;
-    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -219,7 +215,7 @@ export default function TicketConversation({
         setBarHeights(Array.from({ length: 7 }, () => 3 + Math.random() * 17));
       }, 120);
     } catch {
-      setError("Microfono non accessibile. Su iPhone: Impostazioni → Safari → Microfono → Consenti.");
+      setError("Microfono non accessibile. Vai in Impostazioni → PropOps → Microfono e abilita il permesso.");
     }
   };
 
@@ -489,7 +485,7 @@ export default function TicketConversation({
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                   <circle cx="12" cy="13" r="4"/>
                 </svg>
-                <input ref={imageInputRef} type="file" name="imageFile" accept="image/*" className="hidden" onChange={handleFileChange} />
+                <input ref={imageInputRef} type="file" name="imageFile" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
               </button>
               {/* Text input */}
               <input autoComplete="off" type="text" name="text"
