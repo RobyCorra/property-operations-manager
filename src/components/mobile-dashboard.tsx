@@ -449,6 +449,21 @@ export default function MobileDashboard({
     setInProgressSheetOpen(false);
   }, []);
 
+  // Listener eventi dal MobileTabBar (navigazione da altre pagine)
+  useEffect(() => {
+    const onCalendar = () => setActiveTab("calendar");
+    const onCleanings = () => setCleaningsSheetOpen(true);
+    const onTickets = () => setTicketsSheetOpen(true);
+    window.addEventListener("mobile-tab-calendar", onCalendar);
+    window.addEventListener("mobile-tab-cleanings", onCleanings);
+    window.addEventListener("mobile-tab-tickets", onTickets);
+    return () => {
+      window.removeEventListener("mobile-tab-calendar", onCalendar);
+      window.removeEventListener("mobile-tab-cleanings", onCleanings);
+      window.removeEventListener("mobile-tab-tickets", onTickets);
+    };
+  }, []);
+
   return (
     <div className="relative bg-[#f8f7ff] min-h-screen flex flex-col overflow-hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
 
@@ -2038,204 +2053,6 @@ export default function MobileDashboard({
           </div>
         </div>
       )}
-      {/* ════════════════════════════════════════════════════
-          BOTTOM TAB BAR
-          ════════════════════════════════════════════════════ */}
-      {/* ── SCROLL TAB BAR ─────────────────────────────────────────────── */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-slate-200"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
-        <div className="relative">
-          {/* Left gradient hint — visible after scroll */}
-          <div
-            id="tabHintLeft"
-            className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 transition-opacity duration-200 opacity-0"
-            style={{ background: "linear-gradient(to left, transparent, rgba(255,255,255,0.97))" }}
-          />
-          {/* Scrollable tab list */}
-          <div
-            id="tabScrollBar"
-            className="overflow-x-auto overflow-y-hidden"
-            style={{
-              scrollbarWidth: "none",
-              WebkitOverflowScrolling: "touch" as React.CSSProperties["WebkitOverflowScrolling"],
-            } as React.CSSProperties}
-            onScroll={(e) => {
-              const el = e.currentTarget;
-              const max = el.scrollWidth - el.clientWidth;
-              const hintLeft = document.getElementById("tabHintLeft");
-              const hintRight = document.getElementById("tabHintRight");
-              if (hintLeft) hintLeft.style.opacity = el.scrollLeft > 8 ? "1" : "0";
-              if (hintRight) hintRight.style.opacity = el.scrollLeft >= max - 4 ? "0" : "1";
-            }}
-          >
-            <div className="flex items-stretch px-1 pt-1.5 pb-1" style={{ width: "max-content" }}>
-
-              {/* HOME */}
-              {(() => { const active = activeTab === "dashboard"; return (
-              <button
-                onClick={() => { tabTap(); setActiveTab("dashboard"); setSearchOpen(false); }}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
-              >
-                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
-                    <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
-                    <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
-                  </svg>
-                </div>
-                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Home</p>
-              </button>
-              ); })()}
-
-              {/* CALENDARIO */}
-              {(() => { const active = activeTab === "calendar"; return (
-              <button
-                onClick={() => { tabTap(); setActiveTab("calendar"); }}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
-              >
-                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                </div>
-                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Calendario</p>
-              </button>
-              ); })()}
-
-              {/* PULIZIE */}
-              <button
-                onClick={() => { tabTap(); setCleaningsSheetOpen(true); }}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 relative"
-              >
-                <div className="w-11 h-8 rounded-xl flex items-center justify-center relative">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-                    <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
-                    <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
-                  </svg>
-                  {lateCleanings.length > 0 && (
-                    <span className="absolute top-0 right-0.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-white" />
-                  )}
-                </div>
-                <p className="text-[9px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Pulizie</p>
-              </button>
-
-              {/* TICKET */}
-              <button
-                onClick={() => { tabTap(); setTicketsSheetOpen(true); }}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 relative"
-              >
-                <div className="w-11 h-8 rounded-xl flex items-center justify-center relative">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                  </svg>
-                  {ticketsTodayCount > 0 && (
-                    <span className="absolute top-0 right-0.5 w-2.5 h-2.5 bg-orange-400 rounded-full border-2 border-white" />
-                  )}
-                </div>
-                <p className="text-[9px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Ticket</p>
-              </button>
-
-              {/* APPARTAMENTI */}
-              {(() => { const active = pathname?.includes("/apartments"); return (
-              <button
-                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/apartments")); }}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
-              >
-                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9 22 9 12 15 12 15 22"/>
-                  </svg>
-                </div>
-                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Appartamenti</p>
-              </button>
-              ); })()}
-
-              {/* STAFF */}
-              {(() => { const active = pathname?.includes("/users"); return (
-              <button
-                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/users")); }}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
-              >
-                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                </div>
-                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Staff</p>
-              </button>
-              ); })()}
-
-              {/* ANALYTICS */}
-              {(() => { const active = pathname?.includes("/analytics"); return (
-              <button
-                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/analytics")); }}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
-              >
-                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
-                    <line x1="18" y1="20" x2="18" y2="10"/>
-                    <line x1="12" y1="20" x2="12" y2="4"/>
-                    <line x1="6" y1="20" x2="6" y2="14"/>
-                  </svg>
-                </div>
-                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Analytics</p>
-              </button>
-              ); })()}
-
-              {/* MESSAGGI */}
-              {(() => { const active = pathname?.includes("/messages"); return (
-              <button
-                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/messages")); }}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 relative transition-all ${active ? "bg-violet-50" : ""}`}
-              >
-                <div className={`w-11 h-8 rounded-xl flex items-center justify-center relative transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                  </svg>
-                  {unreadMessagesCount > 0 && (
-                    <span className="absolute top-0 right-0.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white" />
-                  )}
-                </div>
-                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Messaggi</p>
-              </button>
-              ); })()}
-
-              {/* IMPOSTAZIONI */}
-              {(() => { const active = pathname?.includes("/settings"); return (
-              <button
-                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/settings")); }}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
-              >
-                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                  </svg>
-                </div>
-                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Impostazioni</p>
-              </button>
-              ); })()}
-
-            </div>
-          </div>
-          {/* Right gradient hint — animated arrow */}
-          <div
-            id="tabHintRight"
-            className="pointer-events-none absolute right-0 top-0 bottom-0 w-9 z-10 flex items-center justify-end pr-1.5 transition-opacity duration-200"
-            style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.97))" }}
-          >
-            <svg width="8" height="12" viewBox="0 0 8 12" fill="none" style={{ animation: "bounceX 1.4s ease-in-out infinite" }}>
-              <polyline points="1 1 7 6 1 11" stroke="#6366f1" strokeWidth="1.8" strokeLinecap="round"/>
-            </svg>
-          </div>
-        </div>
-      </div>
 
     </div>
   );
