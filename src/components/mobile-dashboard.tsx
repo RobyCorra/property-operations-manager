@@ -478,7 +478,17 @@ export default function MobileDashboard({
   useEffect(() => {
     const onAction = (e: Event) => {
       const action = (e as CustomEvent).detail as string;
-      if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
+      if (action === "home") {
+        setActiveTab("dashboard");
+        setSidebarOpen(false);
+        setCleaningsSheetOpen(false);
+        setTicketsSheetOpen(false);
+        setCheckinsSheetOpen(false);
+        setLateCleanSheetOpen(false);
+        setInProgressSheetOpen(false);
+        setSelectedApt(null);
+        setCalendarData(null);
+      } else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
       else if (action === "cleanings") { setCleaningsSheetOpen(true); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
       else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
     };
