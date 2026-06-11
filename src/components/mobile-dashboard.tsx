@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -317,6 +317,7 @@ export default function MobileDashboard({
   const [eventsOpen, setEventsOpen]         = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const isMountedRef = useRef(false); // usato per saltare il pathname effect al primo render
 
   // Haptic + audio tick on tab tap
   const tabTap = () => {
@@ -457,8 +458,13 @@ export default function MobileDashboard({
     else { setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
   }, []);
 
-  // Quando il pathname cambia (navigazione soft) → legge sessionStorage e apre lo sheet corretto
+  // Quando il pathname cambia (navigazione soft) → legge sessionStorage e apre lo sheet corretto.
+  // Skippa il primo render: al mount ci pensa già il useEffect([]) sopra.
   useEffect(() => {
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      return;
+    }
     if (pathname === "/dashboard/manager") {
       const action = sessionStorage.getItem("openOnDashboard") || sessionStorage.getItem("returnToSheet");
       sessionStorage.removeItem("openOnDashboard");
@@ -473,7 +479,6 @@ export default function MobileDashboard({
       else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
       else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
       else {
-        // Nessun sheet da aprire: mostra home pulita
         setCleaningsSheetOpen(false);
         setTicketsSheetOpen(false);
         setActiveTab("dashboard");
