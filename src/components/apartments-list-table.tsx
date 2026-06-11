@@ -167,9 +167,9 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
           </div>
         ) : (
           filteredApartments.map((apt) => (
-            <div key={apt.id} className="bg-white rounded-2xl border border-slate-100 shadow-md overflow-hidden">
+            <div key={apt.id} className="bg-white rounded-2xl border border-slate-100 shadow-md">
               {/* Accent bar */}
-              <div className="h-1 bg-gradient-to-r from-violet-500 to-purple-500" />
+              <div className="h-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-t-2xl" />
 
               <div className="p-4">
                 {/* Header: icon + name + address */}
@@ -242,7 +242,7 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                       <>
                         {/* Backdrop */}
                         <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                        <div className="absolute right-0 bottom-14 z-50 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+                        <div className="absolute right-0 bottom-[52px] z-50 w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
                           <Link
                             href={`/dashboard/manager/apartments/${apt.id}/products`}
                             className="flex items-center gap-3 px-4 py-3.5 text-[13px] font-semibold text-slate-700 hover:bg-violet-50 hover:text-violet-700 transition-colors"
