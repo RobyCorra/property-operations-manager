@@ -9,6 +9,7 @@ import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import { ApartmentStatus, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import { logoutAction } from "@/src/app/actions/auth";
 import FloatingManagerChat from "@/src/components/floating-manager-chat";
+import SettingsDrawer from "@/src/components/settings-drawer";
 
 // ── Types ─────────────────────────────────────────────────────────────
 export type MobileApartmentData = {
@@ -2017,92 +2018,7 @@ export default function MobileDashboard({
       {/* ════════════════════════════════════════════════════
           SETTINGS SHEET
           ════════════════════════════════════════════════════ */}
-      {settingsOpen && (
-        <div className="fixed inset-0 z-[200] flex flex-col bg-[#f8f7ff]">
-          {/* Header */}
-          <div
-            className="flex items-center gap-3 px-4 py-3.5 shrink-0"
-            style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)", paddingTop: "max(env(safe-area-inset-top), 14px)" }}
-          >
-            <h2 className="flex-1 text-[16px] font-black text-white tracking-tight">Impostazioni</h2>
-            <button
-              onClick={() => setSettingsOpen(false)}
-              aria-label="Chiudi"
-              className="w-9 h-9 rounded-full flex items-center justify-center"
-              style={{ background: "rgba(255,255,255,.18)" }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-          </div>
-
-          {/* Body */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3" style={{ paddingBottom: "max(env(safe-area-inset-bottom), 24px)" }}>
-
-            {/* Organizzazione */}
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Organizzazione</p>
-            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-              <Link href="/dashboard/manager/settings/organization" onClick={() => setSettingsOpen(false)} className="flex items-center gap-3 px-4 py-3.5 active:bg-slate-50">
-                <div className="w-10 h-10 rounded-[12px] bg-[#ede9fe] flex items-center justify-center shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-bold text-slate-900">{orgName || "Organizzazione"}</p>
-                  <p className="text-[11px] text-slate-400">{apartments.length} appartamenti</p>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </Link>
-              <div className="h-px bg-slate-50 mx-4" />
-              <Link href="/dashboard/manager/users" onClick={() => setSettingsOpen(false)} className="flex items-center gap-3 px-4 py-3.5 active:bg-slate-50">
-                <div className="w-10 h-10 rounded-[12px] bg-[#dbeafe] flex items-center justify-center shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-bold text-slate-900">Gestione Staff</p>
-                  <p className="text-[11px] text-slate-400">Cleaner, manutentori, supervisori</p>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </Link>
-            </div>
-
-            {/* Account */}
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mt-1">Account</p>
-            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-              <Link href="/dashboard/manager/profile" onClick={() => setSettingsOpen(false)} className="flex items-center gap-3 px-4 py-3.5 active:bg-slate-50">
-                <div className="w-10 h-10 rounded-[12px] bg-[#f0fdf4] flex items-center justify-center shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-bold text-slate-900">Profilo</p>
-                  <p className="text-[11px] text-slate-400">Nome, email, password</p>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </Link>
-              <div className="h-px bg-slate-50 mx-4" />
-              <Link href="/dashboard/manager/apartments" onClick={() => setSettingsOpen(false)} className="flex items-center gap-3 px-4 py-3.5 active:bg-slate-50">
-                <div className="w-10 h-10 rounded-[12px] bg-[#fdf2f8] flex items-center justify-center shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#db2777" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h.01M15 9h.01M9 15h.01M15 15h.01"/></svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-bold text-slate-900">Sincronizzazione iCal</p>
-                  <p className="text-[11px] text-slate-400">Airbnb, Booking, VRBO</p>
-                </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </Link>
-            </div>
-
-            {/* Esci */}
-            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden mt-1">
-              <Link href="/logout" className="flex items-center gap-3 px-4 py-3.5 active:bg-red-50">
-                <div className="w-10 h-10 rounded-[12px] bg-red-50 flex items-center justify-center shrink-0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                </div>
-                <p className="text-[14px] font-bold text-red-600">Esci</p>
-              </Link>
-            </div>
-
-          </div>
-        </div>
-      )}
+      <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       {/* ════════════════════════════════════════════════════
           EVENTS DRAWER — slide up
