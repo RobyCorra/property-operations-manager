@@ -7,11 +7,25 @@ interface MobileTabBarProps {
   unreadCount?: number;
 }
 
+type TabKey = "home" | "calendar" | "cleanings" | "tickets" | "apartments" | "users" | "analytics" | "messages" | "settings";
+
 export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [lateCleansCount, setLateCleansCount] = useState(0);
   const [urgentTicketsCount, setUrgentTicketsCount] = useState(0);
+  // Tab attivo locale — per Calendario/Pulizie/Ticket che non cambiano pathname
+  const [activeTab, setActiveTab] = useState<TabKey>("home");
+
+  // Sincronizza activeTab con il pathname quando cambia pagina
+  useEffect(() => {
+    if (pathname?.includes("/apartments")) setActiveTab("apartments");
+    else if (pathname?.includes("/users")) setActiveTab("users");
+    else if (pathname?.includes("/analytics")) setActiveTab("analytics");
+    else if (pathname?.includes("/messages")) setActiveTab("messages");
+    else if (pathname?.includes("/settings")) setActiveTab("settings");
+    else if (pathname === "/dashboard/manager") setActiveTab("home");
+  }, [pathname]);
 
   // Fetch badge counts on mount and every 60s
   useEffect(() => {
@@ -30,7 +44,8 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
     return () => clearInterval(t);
   }, []);
 
-  const tabTap = () => {
+  const tabTap = (key: TabKey) => {
+    setActiveTab(key);
     try { navigator.vibrate?.(10); } catch {}
     try {
       const ctx = new AudioContext();
@@ -44,23 +59,23 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
     } catch {}
   };
 
-  const go = (href: string) => {
-    tabTap();
+  const go = (key: TabKey, href: string) => {
+    tabTap(key);
     requestAnimationFrame(() => router.push(href));
   };
 
-  const isDashboard = pathname === "/dashboard/manager";
-  const isCalendar = pathname === "/dashboard/manager" && false; // gestito internamente
-  const isApartments = pathname?.includes("/apartments");
-  const isUsers = pathname?.includes("/users");
-  const isAnalytics = pathname?.includes("/analytics");
-  const isMessages = pathname?.includes("/messages");
-  const isSettings = pathname?.includes("/settings");
-  const isMaintenance = pathname?.includes("/maintenance");
+  const isDashboard = activeTab === "home";
+  const isCalendar = activeTab === "calendar";
+  const isCleanings = activeTab === "cleanings";
+  const isTickets = activeTab === "tickets";
+  const isApartments = activeTab === "apartments";
+  const isUsers = activeTab === "users";
+  const isAnalytics = activeTab === "analytics";
+  const isMessages = activeTab === "messages";
+  const isSettings = activeTab === "settings";
 
   // Pulizie/Ticket: tab attivo solo se siamo sulla dashboard (gestione interna)
   // Per tutte le altre pagine navigano alla dashboard
-  const isDashboardPage = pathname === "/dashboard/manager";
 
   return (
     <div
@@ -91,8 +106,8 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
 
             {/* HOME */}
             <TabBtn
-              active={isDashboardPage}
-              onClick={() => go("/dashboard/manager")}
+              active={isDashboard}
+              onClick={() => go("home", "/dashboard/manager")}
               label="Home"
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -104,16 +119,16 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
               }
             />
 
-            {/* CALENDARIO — apre la view calendario nella dashboard */}
+            {/* CALENDARIO */}
             <TabBtn
-              active={false}
+              active={isCalendar}
               onClick={() => {
-                tabTap();
-                // Se siamo già sulla dashboard, dispatch custom event per cambiare tab
-                if (isDashboardPage) {
+                tabTap("calendar");
+                if (pathname === "/dashboard/manager") {
                   window.dispatchEvent(new CustomEvent("mobile-tab-calendar"));
                 } else {
-                  requestAnimationFrame(() => router.push("/dashboard/manager?tab=calendar"));
+                  requestAnimationFrame(() => router.push("/dashboard/manager"));
+                  setTimeout(() => window.dispatchEvent(new CustomEvent("mobile-tab-calendar")), 400);
                 }
               }}
               label="Calendario"
@@ -129,13 +144,14 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
 
             {/* PULIZIE */}
             <TabBtn
-              active={false}
+              active={isCleanings}
               onClick={() => {
-                tabTap();
-                if (isDashboardPage) {
+                tabTap("cleanings");
+                if (pathname === "/dashboard/manager") {
                   window.dispatchEvent(new CustomEvent("mobile-tab-cleanings"));
                 } else {
-                  requestAnimationFrame(() => router.push("/dashboard/manager?tab=cleanings"));
+                  requestAnimationFrame(() => router.push("/dashboard/manager"));
+                  setTimeout(() => window.dispatchEvent(new CustomEvent("mobile-tab-cleanings")), 400);
                 }
               }}
               label="Pulizie"
@@ -150,13 +166,14 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
 
             {/* TICKET */}
             <TabBtn
-              active={isMaintenance}
+              active={isTickets}
               onClick={() => {
-                tabTap();
-                if (isDashboardPage) {
+                tabTap("tickets");
+                if (pathname === "/dashboard/manager") {
                   window.dispatchEvent(new CustomEvent("mobile-tab-tickets"));
                 } else {
-                  requestAnimationFrame(() => router.push("/dashboard/manager?tab=tickets"));
+                  requestAnimationFrame(() => router.push("/dashboard/manager"));
+                  setTimeout(() => window.dispatchEvent(new CustomEvent("mobile-tab-tickets")), 400);
                 }
               }}
               label="Ticket"
@@ -171,7 +188,7 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
             {/* APPARTAMENTI */}
             <TabBtn
               active={isApartments}
-              onClick={() => go("/dashboard/manager/apartments")}
+              onClick={() => go("apartments", "/dashboard/manager/apartments")}
               label="Appartamenti"
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -184,7 +201,7 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
             {/* STAFF */}
             <TabBtn
               active={isUsers}
-              onClick={() => go("/dashboard/manager/users")}
+              onClick={() => go("users", "/dashboard/manager/users")}
               label="Staff"
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -199,7 +216,7 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
             {/* ANALYTICS */}
             <TabBtn
               active={isAnalytics}
-              onClick={() => go("/dashboard/manager/analytics")}
+              onClick={() => go("analytics", "/dashboard/manager/analytics")}
               label="Analytics"
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -213,7 +230,7 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
             {/* MESSAGGI */}
             <TabBtn
               active={isMessages}
-              onClick={() => go("/dashboard/manager/messages")}
+              onClick={() => go("messages", "/dashboard/manager/messages")}
               label="Messaggi"
               dot={unreadCount > 0 ? "rose" : undefined}
               icon={
@@ -226,7 +243,7 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
             {/* IMPOSTAZIONI */}
             <TabBtn
               active={isSettings}
-              onClick={() => go("/dashboard/manager/settings")}
+              onClick={() => go("settings", "/dashboard/manager/settings")}
               label="Impostazioni"
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
