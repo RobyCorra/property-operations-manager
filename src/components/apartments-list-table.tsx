@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-
-
 import Link from "next/link";
 import UnifiedFilters, { FilterField } from "./unified-filters";
 import SyncIcalButton from "./sync-ical-button";
@@ -23,10 +21,8 @@ type Props = {
 };
 
 export default function ApartmentsListTable({ initialApartments }: Props) {
-  const [filters, setFilters] = useState<Record<string, string>>({
-    search: "",
-    status: "",
-  });
+  const [filters, setFilters] = useState<Record<string, string>>({ search: "", status: "" });
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const handleFilterChange = (id: string, value: string) => {
     setFilters((prev) => ({ ...prev, [id]: value }));
@@ -161,7 +157,7 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
       </section>
 
       {/* Mobile Card View */}
-      <div className="md:hidden space-y-2">
+      <div className="md:hidden space-y-3">
         {filteredApartments.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
@@ -171,74 +167,109 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
           </div>
         ) : (
           filteredApartments.map((apt) => (
-            <div key={apt.id} className="bg-white/40 backdrop-blur-xl rounded-xl border border-white/40 shadow-sm overflow-hidden transition-all duration-200 hover:bg-white/60">
-              <div className="p-3 space-y-2">
-                {/* Name and Address */}
-                <div className="flex items-start gap-2">
-                  <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-violet-600 shadow-sm border border-slate-100 shrink-0">
-                    <span className="inline-block w-4 h-4 rounded-full bg-violet-300" />
+            <div key={apt.id} className="bg-white rounded-2xl border border-slate-100 shadow-md overflow-hidden">
+              {/* Accent bar */}
+              <div className="h-1 bg-gradient-to-r from-violet-500 to-purple-500" />
+
+              <div className="p-4">
+                {/* Header: icon + name + address */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center shrink-0">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                      <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-slate-900 tracking-tight uppercase truncate">{apt.name}</p>
-                    <p className="text-[8px] font-medium text-slate-400 mt-0.5 uppercase tracking-wide truncate">{apt.address}</p>
+                    <p className="text-[15px] font-extrabold text-slate-900 leading-tight truncate">{apt.name}</p>
+                    <p className="text-[11px] text-slate-400 font-medium mt-0.5 truncate">{apt.address}</p>
                   </div>
                 </div>
 
-                {/* Details Grid */}
-                <div className="grid grid-cols-2 gap-1.5 text-[8px]">
-                  <div className="flex items-center gap-1.5 font-bold text-slate-700">
-                    <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
-                    <span>{apt.maxGuests} ospiti</span>
+                {/* Chips */}
+                <div className="flex gap-2 flex-wrap mb-4">
+                  <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+                    <span className="text-xs">👥</span>
+                    <span className="text-[11px] font-bold text-slate-700">{apt.maxGuests}</span>
+                    <span className="text-[9px] text-slate-400 font-medium">ospiti</span>
                   </div>
-                  <div className="flex items-center gap-1.5 font-bold text-slate-700">
-                    <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
-                    <span>{apt.squareMeters} m²</span>
+                  <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+                    <span className="text-xs">🛏</span>
+                    <span className="text-[11px] font-bold text-slate-700">{apt.bedrooms}</span>
+                    <span className="text-[9px] text-slate-400 font-medium">letti</span>
                   </div>
-                  <div className="flex items-center gap-1.5 font-bold text-slate-600">
-                    <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
-                    <span>{apt.bedrooms} letti</span>
+                  <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+                    <span className="text-xs">🚿</span>
+                    <span className="text-[11px] font-bold text-slate-700">{apt.bathrooms}</span>
+                    <span className="text-[9px] text-slate-400 font-medium">bagni</span>
                   </div>
-                  <div className="flex items-center gap-1.5 font-bold text-slate-600">
-                    <span className="inline-block w-2 h-2 rounded-full bg-slate-300" />
-                    <span>{apt.bathrooms} bagni</span>
+                  <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+                    <span className="text-xs">📐</span>
+                    <span className="text-[11px] font-bold text-slate-700">{apt.squareMeters}m²</span>
                   </div>
                 </div>
+
+                {/* Divider */}
+                <div className="h-px bg-slate-100 mb-3" />
 
                 {/* Actions */}
-                <div className="flex flex-col gap-1.5 pt-1.5 border-t border-white/20">
-                  <div className="flex items-center gap-1.5">
-                    {apt.icalUrl && (
-                      <div className="flex-1">
-                        <SyncIcalButton
-                          apartmentId={apt.id}
-                          lastSyncAt={apt.lastSyncAt}
-                        />
-                      </div>
+                <div className="flex items-center gap-2">
+                  {/* Modifica — pulsante principale */}
+                  <Link
+                    href={`/dashboard/manager/apartments/${apt.id}/edit`}
+                    className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-violet-500 text-white rounded-xl py-3 text-[13px] font-bold shadow-[0_4px_12px_rgba(99,102,241,.3)] active:scale-95 transition-transform"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Modifica
+                  </Link>
+
+                  {/* Menu ⋮ */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setOpenMenuId(openMenuId === apt.id ? null : apt.id)}
+                      className="w-11 h-11 flex items-center justify-center bg-slate-100 rounded-xl text-slate-500 active:bg-slate-200 transition-colors"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                      </svg>
+                    </button>
+
+                    {/* Dropdown menu */}
+                    {openMenuId === apt.id && (
+                      <>
+                        {/* Backdrop */}
+                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                        <div className="absolute right-0 bottom-14 z-50 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+                          <Link
+                            href={`/dashboard/manager/apartments/${apt.id}/products`}
+                            className="flex items-center gap-3 px-4 py-3.5 text-[13px] font-semibold text-slate-700 hover:bg-violet-50 hover:text-violet-700 transition-colors"
+                            onClick={() => setOpenMenuId(null)}
+                          >
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                            Prodotti
+                          </Link>
+                          <Link
+                            href={`/dashboard/manager/apartments/${apt.id}/checklist`}
+                            className="flex items-center gap-3 px-4 py-3.5 text-[13px] font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors border-t border-slate-50"
+                            onClick={() => setOpenMenuId(null)}
+                          >
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                            Checklist
+                          </Link>
+                          {apt.icalUrl && (
+                            <div className="border-t border-slate-50" onClick={() => setOpenMenuId(null)}>
+                              <SyncIcalButton apartmentId={apt.id} lastSyncAt={apt.lastSyncAt} />
+                            </div>
+                          )}
+                          <div className="border-t border-slate-100">
+                            <DeleteApartmentButton id={apt.id} />
+                          </div>
+                        </div>
+                      </>
                     )}
-                    <Link
-                      href={`/dashboard/manager/apartments/${apt.id}/products`}
-                      className="flex-1 px-2 py-1.5 flex items-center justify-center gap-1 bg-violet-500/5 text-violet-600 text-[7px] font-black uppercase tracking-widest rounded-md hover:bg-violet-500 hover:text-white transition-all border border-violet-500/10"
-                    >
-                      Prodotti
-                    </Link>
-                    <Link
-                      href={`/dashboard/manager/apartments/${apt.id}/checklist`}
-                      className="flex-1 px-2 py-1.5 flex items-center justify-center gap-1 bg-emerald-500/5 text-emerald-600 text-[7px] font-black uppercase tracking-widest rounded-md hover:bg-emerald-500 hover:text-white transition-all border border-emerald-500/10"
-                    >
-                      Checklist
-                    </Link>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Link
-                      href={`/dashboard/manager/apartments/${apt.id}/edit`}
-                      className="flex-1 px-2 py-1.5 flex items-center justify-center gap-1 rounded-md bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100 text-[7px] font-bold uppercase"
-                      title="Modifica"
-                    >
-                      Modifica
-                    </Link>
-                    <div className="flex-1">
-                      <DeleteApartmentButton id={apt.id} />
-                    </div>
                   </div>
                 </div>
               </div>
