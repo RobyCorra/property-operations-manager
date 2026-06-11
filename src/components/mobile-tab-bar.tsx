@@ -64,8 +64,10 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
     } catch {}
   };
 
-  // Naviga a una pagina reale
+  // Naviga a una pagina reale (pulisce sessionStorage per evitare side effects)
   const goTo = (key: TabKey, href: string) => {
+    sessionStorage.removeItem("openOnDashboard");
+    sessionStorage.removeItem("returnToSheet");
     tap(key);
     router.push(href);
   };

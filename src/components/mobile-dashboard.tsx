@@ -457,6 +457,23 @@ export default function MobileDashboard({
     else { setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
   }, []);
 
+  // Quando il pathname cambia (navigazione soft) e non c'è nulla in sessionStorage → reset home
+  useEffect(() => {
+    if (pathname === "/dashboard/manager") {
+      const action = sessionStorage.getItem("openOnDashboard") || sessionStorage.getItem("returnToSheet");
+      if (!action) {
+        // Nessun sheet da aprire: mostra home pulita
+        setSidebarOpen(false);
+        setCleaningsSheetOpen(false);
+        setTicketsSheetOpen(false);
+        setCheckinsSheetOpen(false);
+        setLateCleanSheetOpen(false);
+        setInProgressSheetOpen(false);
+        setActiveTab("dashboard");
+      }
+    }
+  }, [pathname]);
+
   // Listener evento immediato dal MobileTabBar quando siamo già sulla dashboard
   useEffect(() => {
     const onAction = (e: Event) => {
