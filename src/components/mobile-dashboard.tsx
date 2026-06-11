@@ -440,13 +440,24 @@ export default function MobileDashboard({
   );
 
   // Reset sidebar/sheets on mount — prevents Next.js cache from restoring open state
+  // Se si torna da una pagina di dettaglio, riapre il sheet corretto
   useEffect(() => {
     setSidebarOpen(false);
     setCheckinsSheetOpen(false);
-    setCleaningsSheetOpen(false);
-    setTicketsSheetOpen(false);
     setLateCleanSheetOpen(false);
     setInProgressSheetOpen(false);
+
+    const returnTo = sessionStorage.getItem("returnToSheet");
+    if (returnTo) {
+      sessionStorage.removeItem("returnToSheet");
+      if (returnTo === "cleanings") setCleaningsSheetOpen(true);
+      else if (returnTo === "tickets") setTicketsSheetOpen(true);
+      else if (returnTo === "calendar") setActiveTab("calendar");
+      else { setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
+    } else {
+      setCleaningsSheetOpen(false);
+      setTicketsSheetOpen(false);
+    }
   }, []);
 
   // Listener eventi dal MobileTabBar (navigazione da altre pagine)
@@ -743,6 +754,15 @@ export default function MobileDashboard({
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Scegli appartamento</p>
               <h2 className="text-xl font-bold text-slate-900">Calendario</h2>
             </div>
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className="w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
+              aria-label="Chiudi"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
           </div>
 
           {/* Apartment list */}
@@ -785,13 +805,22 @@ export default function MobileDashboard({
             {/* Apartment name + status */}
             <div className="flex items-center gap-2 mb-3">
               <div className={`w-3 h-3 rounded-full shrink-0 ${statusDotClass(selectedApt.status)}`} />
-              <div>
+              <div className="flex-1 min-w-0">
                 <h2 className="text-[19px] font-black text-slate-900 leading-tight">{selectedApt.name}</h2>
                 <p className={`text-[10px] font-bold ${statusTextClass(selectedApt.status)}`}>
                   {selectedApt.statusLabel}
                   {selectedApt.openTickets > 0 && <span className="ml-2 text-rose-600">· {selectedApt.openTickets} ticket aperti</span>}
                 </p>
               </div>
+              <button
+                onClick={() => { setSelectedApt(null); setCalendarData(null); }}
+                className="w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
+                aria-label="Chiudi"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
             </div>
             {/* Tabs */}
             <div className="flex gap-2 pb-0">
@@ -1654,7 +1683,7 @@ export default function MobileDashboard({
               return (
                 <div
                   key={item.id}
-                  onClick={() => { setCleaningsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
+                  onClick={() => { sessionStorage.setItem("returnToSheet", "cleanings"); setCleaningsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
                   className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
                 >
                   <div className={`h-1 ${barColor}`} />
@@ -1723,7 +1752,7 @@ export default function MobileDashboard({
               return (
                 <div
                   key={ticket.id}
-                  onClick={() => { setTicketsSheetOpen(false); requestAnimationFrame(() => router.push(ticket.href)); }}
+                  onClick={() => { sessionStorage.setItem("returnToSheet", "tickets"); setTicketsSheetOpen(false); requestAnimationFrame(() => router.push(ticket.href)); }}
                   className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
                 >
                   <div className={`h-1 ${barColor}`} />
@@ -1783,7 +1812,7 @@ export default function MobileDashboard({
             {lateCleanings.map((c) => (
               <div
                 key={c.id}
-                onClick={() => { setLateCleanSheetOpen(false); requestAnimationFrame(() => router.push(c.href)); }}
+                onClick={() => { sessionStorage.setItem("returnToSheet", "cleanings"); setLateCleanSheetOpen(false); requestAnimationFrame(() => router.push(c.href)); }}
                 className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
               >
                 <div className="h-1 bg-orange-400" />
@@ -1843,7 +1872,7 @@ export default function MobileDashboard({
             {cleaningsInProgress.map((c) => (
               <div
                 key={c.id}
-                onClick={() => { setInProgressSheetOpen(false); requestAnimationFrame(() => router.push(c.href)); }}
+                onClick={() => { sessionStorage.setItem("returnToSheet", "cleanings"); setInProgressSheetOpen(false); requestAnimationFrame(() => router.push(c.href)); }}
                 className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
               >
                 <div className="h-1 bg-violet-500" />
