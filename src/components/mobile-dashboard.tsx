@@ -439,40 +439,34 @@ export default function MobileDashboard({
     </button>
   );
 
-  // Reset sidebar/sheets on mount — prevents Next.js cache from restoring open state
-  // Se si torna da una pagina di dettaglio, riapre il sheet corretto
+  // Al mount: reset stato + legge sessionStorage per sapere cosa aprire
   useEffect(() => {
     setSidebarOpen(false);
     setCheckinsSheetOpen(false);
     setLateCleanSheetOpen(false);
     setInProgressSheetOpen(false);
 
-    const returnTo = sessionStorage.getItem("returnToSheet");
-    if (returnTo) {
-      sessionStorage.removeItem("returnToSheet");
-      if (returnTo === "cleanings") setCleaningsSheetOpen(true);
-      else if (returnTo === "tickets") setTicketsSheetOpen(true);
-      else if (returnTo === "calendar") setActiveTab("calendar");
-      else { setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
-    } else {
-      setCleaningsSheetOpen(false);
-      setTicketsSheetOpen(false);
-    }
+    // Legge sia "openOnDashboard" (dal tab bar) che "returnToSheet" (dal dettaglio)
+    const action = sessionStorage.getItem("openOnDashboard") || sessionStorage.getItem("returnToSheet");
+    sessionStorage.removeItem("openOnDashboard");
+    sessionStorage.removeItem("returnToSheet");
+
+    if (action === "cleanings") { setCleaningsSheetOpen(true); setTicketsSheetOpen(false); }
+    else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); }
+    else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
+    else { setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
   }, []);
 
-  // Listener eventi dal MobileTabBar (navigazione da altre pagine)
+  // Listener evento immediato dal MobileTabBar quando siamo già sulla dashboard
   useEffect(() => {
-    const onCalendar = () => setActiveTab("calendar");
-    const onCleanings = () => setCleaningsSheetOpen(true);
-    const onTickets = () => setTicketsSheetOpen(true);
-    window.addEventListener("mobile-tab-calendar", onCalendar);
-    window.addEventListener("mobile-tab-cleanings", onCleanings);
-    window.addEventListener("mobile-tab-tickets", onTickets);
-    return () => {
-      window.removeEventListener("mobile-tab-calendar", onCalendar);
-      window.removeEventListener("mobile-tab-cleanings", onCleanings);
-      window.removeEventListener("mobile-tab-tickets", onTickets);
+    const onAction = (e: Event) => {
+      const action = (e as CustomEvent).detail as string;
+      if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
+      else if (action === "cleanings") { setCleaningsSheetOpen(true); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
+      else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
     };
+    window.addEventListener("mobile-tab-action", onAction);
+    return () => window.removeEventListener("mobile-tab-action", onAction);
   }, []);
 
   return (

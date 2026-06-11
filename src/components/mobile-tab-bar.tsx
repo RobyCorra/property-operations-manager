@@ -7,35 +7,40 @@ interface MobileTabBarProps {
   unreadCount?: number;
 }
 
-type TabKey = "home" | "calendar" | "cleanings" | "tickets" | "apartments" | "users" | "analytics" | "messages" | "settings";
+type TabKey = "home" | "calendar" | "cleanings" | "tickets" | "apartments" | "users" | "analytics" | "messages";
+
+// Chiave sessionStorage usata anche da mobile-dashboard per sapere cosa aprire al mount
+const OPEN_ON_DASHBOARD_KEY = "openOnDashboard";
 
 export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [lateCleansCount, setLateCleansCount] = useState(0);
   const [urgentTicketsCount, setUrgentTicketsCount] = useState(0);
-  // Tab attivo locale — per Calendario/Pulizie/Ticket che non cambiano pathname
   const [activeTab, setActiveTab] = useState<TabKey>("home");
 
-  // Sincronizza activeTab con il pathname quando cambia pagina
+  // Sincronizza activeTab con pathname (per tab che navigano a pagine reali)
   useEffect(() => {
     if (pathname?.includes("/apartments")) setActiveTab("apartments");
-    else if (pathname?.includes("/users")) setActiveTab("users");
+    else if (pathname?.includes("/users"))  setActiveTab("users");
     else if (pathname?.includes("/analytics")) setActiveTab("analytics");
-    else if (pathname?.includes("/messages")) setActiveTab("messages");
-    else if (pathname?.includes("/settings")) setActiveTab("settings");
-    else if (pathname === "/dashboard/manager") setActiveTab("home");
+    else if (pathname?.includes("/messages"))  setActiveTab("messages");
+    else if (pathname?.includes("/cleanings"))  setActiveTab("cleanings");
+    else if (pathname?.includes("/maintenance")) setActiveTab("tickets");
+    else if (pathname === "/dashboard/manager") {
+      // Lascia l'activeTab locale (può essere calendar/cleanings/tickets se aperto da sheet)
+    }
   }, [pathname]);
 
-  // Fetch badge counts on mount and every 60s
+  // Badge counts
   useEffect(() => {
     const load = async () => {
       try {
         const res = await fetch("/api/mobile-badge-counts", { cache: "no-store" });
         if (res.ok) {
-          const data = await res.json();
-          setLateCleansCount(data.lateCleans ?? 0);
-          setUrgentTicketsCount(data.urgentTickets ?? 0);
+          const d = await res.json();
+          setLateCleansCount(d.lateCleans ?? 0);
+          setUrgentTicketsCount(d.urgentTickets ?? 0);
         }
       } catch {}
     };
@@ -44,7 +49,7 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
     return () => clearInterval(t);
   }, []);
 
-  const tabTap = (key: TabKey) => {
+  const tap = (key: TabKey) => {
     setActiveTab(key);
     try { navigator.vibrate?.(10); } catch {}
     try {
@@ -59,23 +64,26 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
     } catch {}
   };
 
-  const go = (key: TabKey, href: string) => {
-    tabTap(key);
-    requestAnimationFrame(() => router.push(href));
+  // Naviga a una pagina reale
+  const goTo = (key: TabKey, href: string) => {
+    tap(key);
+    router.push(href);
   };
 
-  const isDashboard = activeTab === "home";
-  const isCalendar = activeTab === "calendar";
-  const isCleanings = activeTab === "cleanings";
-  const isTickets = activeTab === "tickets";
-  const isApartments = activeTab === "apartments";
-  const isUsers = activeTab === "users";
-  const isAnalytics = activeTab === "analytics";
-  const isMessages = activeTab === "messages";
-  const isSettings = activeTab === "settings";
+  // Apre uno sheet/view nella dashboard.
+  // Se già sulla dashboard → evento immediato.
+  // Se su un'altra pagina → salva in sessionStorage e naviga alla dashboard.
+  const openInDashboard = (key: TabKey, action: string) => {
+    tap(key);
+    if (pathname === "/dashboard/manager") {
+      window.dispatchEvent(new CustomEvent("mobile-tab-action", { detail: action }));
+    } else {
+      sessionStorage.setItem(OPEN_ON_DASHBOARD_KEY, action);
+      router.push("/dashboard/manager");
+    }
+  };
 
-  // Pulizie/Ticket: tab attivo solo se siamo sulla dashboard (gestione interna)
-  // Per tutte le altre pagine navigano alla dashboard
+  const a = activeTab;
 
   return (
     <div
@@ -83,13 +91,14 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="relative">
-        {/* Left gradient hint */}
+        {/* Left fade hint */}
         <div
           id="mobileTabHintLeft"
           className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 opacity-0 transition-opacity duration-200"
-          style={{ background: "linear-gradient(to left, transparent, rgba(255,255,255,0.97))" }}
+          style={{ background: "linear-gradient(to left, transparent, rgba(255,255,255,.97))" }}
         />
-        {/* Scrollable list */}
+
+        {/* Scrollable tabs */}
         <div
           className="overflow-x-auto overflow-y-hidden"
           style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
@@ -104,162 +113,57 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
         >
           <div className="flex items-stretch px-1 pt-1.5 pb-1" style={{ width: "max-content" }}>
 
-            {/* HOME */}
-            <TabBtn
-              active={isDashboard}
-              onClick={() => go("home", "/dashboard/manager")}
-              label="Home"
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-                  <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-                  <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-                  <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-                </svg>
-              }
+            <T active={a==="home"} label="Home"
+              onClick={() => goTo("home", "/dashboard/manager")}
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>}
             />
 
-            {/* CALENDARIO */}
-            <TabBtn
-              active={isCalendar}
-              onClick={() => {
-                tabTap("calendar");
-                if (pathname === "/dashboard/manager") {
-                  window.dispatchEvent(new CustomEvent("mobile-tab-calendar"));
-                } else {
-                  requestAnimationFrame(() => router.push("/dashboard/manager"));
-                  setTimeout(() => window.dispatchEvent(new CustomEvent("mobile-tab-calendar")), 400);
-                }
-              }}
-              label="Calendario"
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-              }
+            <T active={a==="calendar"} label="Calendario"
+              onClick={() => openInDashboard("calendar", "calendar")}
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>}
             />
 
-            {/* PULIZIE */}
-            <TabBtn
-              active={isCleanings}
-              onClick={() => {
-                tabTap("cleanings");
-                if (pathname === "/dashboard/manager") {
-                  window.dispatchEvent(new CustomEvent("mobile-tab-cleanings"));
-                } else {
-                  requestAnimationFrame(() => router.push("/dashboard/manager"));
-                  setTimeout(() => window.dispatchEvent(new CustomEvent("mobile-tab-cleanings")), 400);
-                }
-              }}
-              label="Pulizie"
+            <T active={a==="cleanings"} label="Pulizie"
               dot={lateCleansCount > 0 ? "amber" : undefined}
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
-                  <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
-                </svg>
-              }
+              onClick={() => openInDashboard("cleanings", "cleanings")}
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>}
             />
 
-            {/* TICKET */}
-            <TabBtn
-              active={isTickets}
-              onClick={() => {
-                tabTap("tickets");
-                if (pathname === "/dashboard/manager") {
-                  window.dispatchEvent(new CustomEvent("mobile-tab-tickets"));
-                } else {
-                  requestAnimationFrame(() => router.push("/dashboard/manager"));
-                  setTimeout(() => window.dispatchEvent(new CustomEvent("mobile-tab-tickets")), 400);
-                }
-              }}
-              label="Ticket"
+            <T active={a==="tickets"} label="Ticket"
               dot={urgentTicketsCount > 0 ? "orange" : undefined}
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-              }
+              onClick={() => openInDashboard("tickets", "tickets")}
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>}
             />
 
-            {/* APPARTAMENTI */}
-            <TabBtn
-              active={isApartments}
-              onClick={() => go("apartments", "/dashboard/manager/apartments")}
-              label="Appartamenti"
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-              }
+            <T active={a==="apartments"} label="Appartamenti"
+              onClick={() => goTo("apartments", "/dashboard/manager/apartments")}
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>}
             />
 
-            {/* STAFF */}
-            <TabBtn
-              active={isUsers}
-              onClick={() => go("users", "/dashboard/manager/users")}
-              label="Staff"
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-              }
+            <T active={a==="users"} label="Staff"
+              onClick={() => goTo("users", "/dashboard/manager/users")}
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
             />
 
-            {/* ANALYTICS */}
-            <TabBtn
-              active={isAnalytics}
-              onClick={() => go("analytics", "/dashboard/manager/analytics")}
-              label="Analytics"
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="20" x2="18" y2="10"/>
-                  <line x1="12" y1="20" x2="12" y2="4"/>
-                  <line x1="6" y1="20" x2="6" y2="14"/>
-                </svg>
-              }
+            <T active={a==="analytics"} label="Analytics"
+              onClick={() => goTo("analytics", "/dashboard/manager/analytics")}
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>}
             />
 
-            {/* MESSAGGI */}
-            <TabBtn
-              active={isMessages}
-              onClick={() => go("messages", "/dashboard/manager/messages")}
-              label="Messaggi"
+            <T active={a==="messages"} label="Messaggi"
               dot={unreadCount > 0 ? "rose" : undefined}
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-              }
-            />
-
-            {/* IMPOSTAZIONI */}
-            <TabBtn
-              active={isSettings}
-              onClick={() => go("settings", "/dashboard/manager/settings")}
-              label="Impostazioni"
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
-              }
+              onClick={() => goTo("messages", "/dashboard/manager/messages")}
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
             />
 
           </div>
         </div>
-        {/* Right gradient + bounce arrow */}
+
+        {/* Right fade hint + arrow */}
         <div
           id="mobileTabHintRight"
-          className="pointer-events-none absolute right-0 top-0 bottom-0 w-9 z-10 flex items-center justify-end pr-1.5 transition-opacity duration-200"
-          style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.97))" }}
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-9 z-10 flex items-center justify-end pr-1.5"
+          style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,.97))" }}
         >
           <svg width="8" height="12" viewBox="0 0 8 12" fill="none" style={{ animation: "bounceX 1.4s ease-in-out infinite" }}>
             <polyline points="1 1 7 6 1 11" stroke="#6366f1" strokeWidth="1.8" strokeLinecap="round"/>
@@ -270,14 +174,8 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
   );
 }
 
-function TabBtn({
-  active,
-  onClick,
-  label,
-  icon,
-  dot,
-}: {
-  active: boolean | null | undefined;
+function T({ active, onClick, label, icon, dot }: {
+  active: boolean;
   onClick: () => void;
   label: string;
   icon: React.ReactNode;
@@ -285,19 +183,14 @@ function TabBtn({
 }) {
   const dotColor = dot === "amber" ? "bg-amber-400" : dot === "orange" ? "bg-orange-400" : "bg-rose-500";
   return (
-    <button
-      onClick={onClick}
+    <button onClick={onClick}
       className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
     >
       <div className={`w-11 h-8 rounded-xl flex items-center justify-center relative transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)] text-white" : "text-slate-400"}`}>
         {icon}
-        {dot && (
-          <span className={`absolute top-0 right-0.5 w-2.5 h-2.5 ${dotColor} rounded-full border-2 border-white`} />
-        )}
+        {dot && <span className={`absolute top-0 right-0.5 w-2.5 h-2.5 ${dotColor} rounded-full border-2 border-white`} />}
       </div>
-      <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>
-        {label}
-      </p>
+      <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>{label}</p>
     </button>
   );
 }
