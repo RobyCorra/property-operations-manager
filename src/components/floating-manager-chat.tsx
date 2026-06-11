@@ -732,20 +732,10 @@ export default function FloatingManagerChat({
               className="bg-white border-t border-slate-100 px-3 pt-2.5 flex items-end gap-2 shrink-0"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 14px)" }}
             >
-              <button
-                type="button"
-                onClick={() => setWebSearch((w) => !w)}
-                aria-label="Ricerca web"
-                className={`w-[42px] h-[42px] rounded-full flex items-center justify-center text-base shrink-0 border-[1.5px] transition-colors ${
-                  webSearch ? "bg-indigo-600 border-indigo-600" : "bg-[#f4f2fc] border-[#ede9fe]"
-                }`}
-              >
-                🌐
-              </button>
               <input
                 ref={inputRef as any}
                 className="flex-1 bg-[#f4f2fc] rounded-[22px] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300 min-w-0"
-                placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : (webSearch ? "Cerca sul web…" : "Scrivi un messaggio…")}
+                placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : "Scrivi un messaggio…"}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -756,17 +746,6 @@ export default function FloatingManagerChat({
                 }}
                 disabled={loading}
               />
-              <button
-                type="button"
-                onClick={toggleMic}
-                disabled={loading}
-                title={listening ? "Interrompi registrazione" : "Parla con l'AI"}
-                className={`w-[42px] h-[42px] rounded-full flex items-center justify-center text-base shrink-0 transition-colors ${
-                  listening ? "bg-red-500 animate-pulse" : "bg-[#f4f2fc]"
-                }`}
-              >
-                🎤
-              </button>
               <button
                 type="button"
                 onClick={() => handleAsk(false)}
