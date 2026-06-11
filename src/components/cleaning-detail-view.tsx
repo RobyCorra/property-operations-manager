@@ -429,8 +429,36 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             </div>
           )}
           {status === "AWAITING_REVIEW" && (
-            <div className="w-full text-center rounded-full bg-yellow-50 border border-yellow-200 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-yellow-700">
-              ⏳ In attesa di revisione
+            <div className="w-full rounded-2xl bg-amber-50 border border-amber-200 p-3.5 flex flex-col gap-2.5">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-lg">⏳</div>
+                <div>
+                  <p className="text-[12px] font-black text-amber-900">In attesa di revisione</p>
+                  {task.assignedTo?.name && (
+                    <p className="text-[11px] text-amber-700 font-medium">{task.assignedTo.name} ha completato la pulizia</p>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleStatusUpdate("APPROVED")}
+                disabled={isPending}
+                className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-[13px] font-bold shadow-[0_4px_14px_rgba(5,150,105,.35)] active:scale-95 transition-transform disabled:opacity-50"
+              >
+                {isPending ? <Loader2 size={13} className="animate-spin" /> : (
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                )}
+                Conferma Pulizia
+              </button>
+              <button
+                type="button"
+                onClick={() => handleStatusUpdate("IN_PROGRESS")}
+                disabled={isPending}
+                className="w-full h-10 flex items-center justify-center gap-2 rounded-xl border border-rose-300 text-rose-600 text-[12px] font-bold active:scale-95 transition-transform disabled:opacity-50"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Richiedi correzioni
+              </button>
             </div>
           )}
           {status === "APPROVED" && (
