@@ -271,15 +271,15 @@ export default function FloatingManagerChat({
   const recognitionRef = useRef<any>(null);
 
   function toggleMic() {
-    const SpeechRecognitionAPI =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognitionAPI) {
-      alert("Il tuo browser non supporta il riconoscimento vocale. Usa Chrome o Edge.");
+    if (listening) {
+      recognitionRef.current?.stop();
       return;
     }
 
-    if (listening) {
-      recognitionRef.current?.stop();
+    const SpeechRecognitionAPI =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
+      setInput((prev) => prev + (prev ? " " : "") + "⚠ Microfono non supportato su questo browser");
       return;
     }
 
@@ -287,19 +287,19 @@ export default function FloatingManagerChat({
     recognition.lang = "it-IT";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+    recognition.continuous = false;
 
     recognition.onstart = () => setListening(true);
-    recognition.onend   = () => setListening(false);
-    recognition.onerror = () => setListening(false);
+    recognition.onend = () => { setListening(false); recognitionRef.current = null; };
+    recognition.onerror = () => { setListening(false); recognitionRef.current = null; };
 
     recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript as string;
+      const transcript = (event.results[0][0].transcript as string).trim();
       setInput((prev) => (prev ? prev + " " + transcript : transcript));
-      setTimeout(() => inputRef.current?.focus(), 50);
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
+    try { recognition.start(); } catch { setListening(false); }
   }
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -308,10 +308,7 @@ export default function FloatingManagerChat({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Focus input when opened
-  useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 100);
-  }, [open]);
+  // Non autofocus: evita apertura tastiera su mobile
 
   // Load today's session + date list on first open
   useEffect(() => {
