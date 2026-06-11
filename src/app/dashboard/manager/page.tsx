@@ -115,7 +115,7 @@ export default async function ManagerDashboardPage() {
 
   // Fetch all necessary data
   const [org, apartments, bookings, cleanings, tickets, initialNotifications, unreadMessagesCount] = await Promise.all([
-    prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } }),
+    orgId ? prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } }) : null,
     prisma.apartment.findMany({ where: { organizationId: orgId } }),
     prisma.booking.findMany({
       where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
@@ -491,7 +491,7 @@ export default async function ManagerDashboardPage() {
         dateLabel={mobileDateLabel}
         calendarDataByApt={mobileCalendarByApt}
         unreadMessagesCount={unreadMessagesCount}
-        orgName={org?.name ?? ""}
+        orgName={org?.name ?? undefined}
       />
     </div>
 
