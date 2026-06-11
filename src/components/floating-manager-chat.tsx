@@ -197,6 +197,7 @@ export default function FloatingManagerChat({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [webSearch, setWebSearch] = useState(false);
   const [sessionDates, setSessionDates] = useState<string[]>([]);
   const [activeDateStr, setActiveDateStr] = useState<string>("");
   const [isPastSession, setIsPastSession] = useState(false);
@@ -392,9 +393,10 @@ export default function FloatingManagerChat({
 
   const CONFIRM_WORDS = /^(ok|sì|si|yes|confermo|conferma|vai|procedi|fatto|esegui|assegna)$/i;
 
-  async function handleAsk(webSearch = false) {
+  async function handleAsk(forceWeb = false, overrideContent?: string) {
     if (isPastSession) return;
-    const content = input.trim();
+    const useWeb = forceWeb || webSearch;
+    const content = (overrideContent ?? input).trim();
     if (!content || loading) return;
 
     // Confirm shortcut
@@ -420,7 +422,7 @@ export default function FloatingManagerChat({
 
     const res = await askAI(
       nextMessages.map((m) => ({ role: m.role, content: m.content })),
-      { role: "MANAGER", type: "MANAGER_DASHBOARD", forceWebSearch: webSearch }
+      { role: "MANAGER", type: "MANAGER_DASHBOARD", forceWebSearch: useWeb }
     );
 
     const { text, action } = parseAction(res || "");
@@ -497,79 +499,94 @@ export default function FloatingManagerChat({
   // Unread badge: count AI messages with pending actions
   const pendingCount = messages.filter((m) => m.actionState === "pending").length;
 
+  const SUGGESTIONS = [
+    { emoji: "🧹", label: "Pulizie di oggi", prompt: "Quali pulizie ci sono oggi?" },
+    { emoji: "🔧", label: "Ticket aperti", prompt: "Quali ticket di manutenzione sono aperti?" },
+    { emoji: "📅", label: "Check-in domani", prompt: "Quali check-in ci sono domani?" },
+    { emoji: "➕", label: "Nuova pulizia", prompt: "Crea una nuova pulizia" },
+  ];
+
   return (
     <>
-      {/* ── Trigger button — nascosto se controllato dall'esterno ── */}
-      {!controlled && <button
-        onClick={() => setOpen((v) => !v)}
-        className={
-          inline
-            ? "relative flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-12 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
-            : "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/40 flex items-center justify-center text-2xl transition-all duration-200 active:scale-95"
-        }
-        title="AI Assistant"
-      >
-        {inline ? (
-          <>
-            🤖 AI Assistant
-            {!open && pendingCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {pendingCount}
-              </span>
-            )}
-          </>
-        ) : (
-          <>
-            {open ? "✕" : "🤖"}
-            {!open && pendingCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {pendingCount}
-              </span>
-            )}
-          </>
-        )}
-      </button>}
-
-      {/* ── Floating window ── */}
-      {open && (
-        <div
-          ref={windowRef}
-          className="z-50 bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
-          style={
-            pos
-              ? { position: "fixed", left: pos.x, top: pos.y, width: size.w, height: size.h }
-              : { position: "fixed", bottom: "96px", right: "24px", width: size.w, height: size.h }
+      {/* ── Trigger button — solo quando non controllato dall'esterno ── */}
+      {!controlled && (
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className={
+            inline
+              ? "relative flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-12 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
+              : "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/40 flex items-center justify-center text-2xl transition-all duration-200 active:scale-95"
           }
+          title="AI Assistant"
         >
-          {/* Header — drag handle */}
+          {inline ? (
+            <>
+              🤖 AI Assistant
+              {!open && pendingCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {pendingCount}
+                </span>
+              )}
+            </>
+          ) : (
+            <>
+              {open ? "✕" : "🤖"}
+              {!open && pendingCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {pendingCount}
+                </span>
+              )}
+            </>
+          )}
+        </button>
+      )}
+
+      {/* ── Sheet full-screen ── */}
+      {open && (
+        <div className="fixed inset-0 z-[200] flex flex-col bg-[#f8f7ff] md:left-auto md:w-full md:max-w-xl md:border-l md:border-slate-200 md:shadow-2xl">
+
+          {/* Header viola */}
           <div
-            onMouseDown={onDragStart}
-            className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-white flex-shrink-0 select-none"
-            style={{ cursor: "grab" }}
+            className="flex items-center gap-3 px-4 py-3.5 shrink-0"
+            style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", paddingTop: "max(env(safe-area-inset-top), 14px)" }}
           >
-            <span className="text-lg">🤖</span>
-            <span className="font-semibold text-sm text-slate-800">AI Assistant</span>
-            <span className="text-xs text-slate-300 ml-1">⠿</span>
-            <span className="ml-auto text-xs text-slate-400">Manager</span>
+            <div className="w-10 h-10 rounded-[14px] flex items-center justify-center text-lg border border-white/35 shrink-0" style={{ background: "rgba(255,255,255,.22)" }}>
+              🤖
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-[15px] font-extrabold text-white tracking-tight">Assistente AI</h2>
+              <p className="text-[11px] text-white/75 flex items-center gap-1.5">
+                <span className="w-[7px] h-[7px] bg-green-400 rounded-full inline-block" />
+                Sempre disponibile
+              </p>
+            </div>
             <button
               onClick={() => setMessages([])}
-              title="Nuova chat (pulisci history)"
-              className="ml-2 text-slate-400 hover:text-red-400 transition-colors text-sm leading-none"
+              title="Nuova chat"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+              style={{ background: "rgba(255,255,255,.18)" }}
             >🗑️</button>
-            <button onClick={() => setOpen(false)} className="ml-1 text-slate-400 hover:text-slate-600 text-lg leading-none">✕</button>
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Chiudi"
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ background: "rgba(255,255,255,.18)" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
 
           {/* Date tabs */}
           {sessionDates.length > 0 && (
-            <div className="flex gap-1.5 px-3 py-2 border-b border-slate-100 overflow-x-auto flex-shrink-0 scrollbar-hide">
+            <div className="flex gap-1.5 px-3.5 py-2 border-b border-slate-100 overflow-x-auto shrink-0" style={{ scrollbarWidth: "none" }}>
               {sessionDates.map((d) => (
                 <button
                   key={d}
                   onClick={() => loadSessionByDate(d)}
-                  className={`text-xs px-3 py-1 rounded-full whitespace-nowrap transition-colors border ${
+                  className={`text-[11px] px-3 py-1 rounded-full whitespace-nowrap transition-colors border font-semibold ${
                     activeDateStr === d
-                      ? "bg-indigo-600 text-white border-indigo-600 font-semibold"
-                      : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
+                      ? "bg-violet-600 text-white border-violet-600"
+                      : "bg-white text-slate-500 border-slate-200"
                   }`}
                 >
                   {formatDateTab(d)}
@@ -580,29 +597,29 @@ export default function FloatingManagerChat({
 
           {/* Past session banner */}
           {isPastSession && (
-            <div className="bg-amber-50 border-b border-amber-100 px-4 py-2 text-xs text-amber-700 font-medium flex-shrink-0">
+            <div className="bg-amber-50 border-b border-amber-100 px-4 py-2 text-xs text-amber-700 font-medium shrink-0">
               📂 Sessione passata — sola lettura
             </div>
           )}
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+          {/* Messaggi */}
+          <div className="flex-1 overflow-y-auto px-3.5 py-4 flex flex-col gap-2.5" style={{ WebkitOverflowScrolling: "touch" }}>
+
             {messages.length === 0 && !loading && (
-              <div className="flex flex-col items-center justify-center h-full text-center gap-3 text-slate-400">
-                <span className="text-4xl">🤖</span>
-                <p className="text-sm font-medium">Come posso aiutarti?</p>
-                <p className="text-xs text-slate-300">Chiedi informazioni, crea prenotazioni,<br/>assegna pulizie e molto altro.</p>
+              <div className="max-w-[82%] self-start bg-white rounded-[18px] rounded-bl-md px-3.5 py-2.5 text-[13.5px] leading-relaxed text-slate-800 shadow-sm">
+                Ciao 👋 Posso creare pulizie, ticket e prenotazioni, o rispondere a domande sugli appartamenti.
               </div>
             )}
 
             {messages.map((msg, index) => (
-              <div key={index} className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}>
+              <div key={index} className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"} gap-2`}>
                 <div
-                  className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm ${
+                  className={`max-w-[82%] px-3.5 py-2.5 text-[13.5px] leading-relaxed whitespace-pre-line ${
                     msg.role === "user"
-                      ? "bg-indigo-600 text-white rounded-br-sm"
-                      : "bg-slate-100 text-slate-800 rounded-bl-sm"
+                      ? "text-white rounded-[18px] rounded-br-md"
+                      : "bg-white text-slate-800 rounded-[18px] rounded-bl-md shadow-sm"
                   }`}
+                  style={msg.role === "user" ? { background: "linear-gradient(135deg,#7c3aed,#9333ea)", boxShadow: "0 2px 8px rgba(124,58,237,.25)" } : undefined}
                 >
                   {msg.role === "assistant" ? (
                     <ReactMarkdown
@@ -622,147 +639,147 @@ export default function FloatingManagerChat({
                   )}
                 </div>
 
-                {/* Action card */}
+                {/* Card azione */}
                 {msg.action && msg.actionState === "pending" && (
-                  <div className="max-w-[90%] mt-2 rounded-2xl border-2 border-amber-400 bg-amber-50 p-3 space-y-2 shadow-sm">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-amber-600 text-sm">✏️</span>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-700">
-                        {actionTypeLabel(msg.action.type)}
-                      </p>
+                  <div className="max-w-[88%] self-start rounded-[18px] border-[1.5px] border-amber-300 bg-amber-50 p-3.5 space-y-2" style={{ boxShadow: "0 4px 14px rgba(245,158,11,.15)" }}>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-[30px] h-[30px] rounded-[10px] bg-amber-100 flex items-center justify-center text-sm shrink-0">
+                        {msg.action.type.includes("CLEANING") ? "🧹" : msg.action.type.includes("TICKET") ? "🔧" : msg.action.type.includes("BOOKING") ? "📅" : "✏️"}
+                      </div>
+                      <p className="text-[12px] font-extrabold text-amber-800">{actionTypeLabel(msg.action.type)}</p>
                     </div>
-                    <p className="text-xs font-medium text-amber-900">{msg.action.description}</p>
-                    <div className="space-y-0.5">
-                      {actionSummary(msg.action, msg.preview ?? null)}
-                    </div>
+                    <p className="text-[12.5px] font-medium text-amber-900">{msg.action.description}</p>
+                    <div className="space-y-1">{actionSummary(msg.action, msg.preview ?? null)}</div>
                     {msg.conflictWarning && (
-                      <div className="rounded-xl bg-orange-50 border border-orange-200 px-2.5 py-1.5 space-y-0.5">
-                        <p className="text-[10px] font-bold text-orange-700">⚠ Appartamento occupato in questa data</p>
-                        <p className="text-[10px] text-orange-600">
-                          {msg.conflictWarning.guestName || "n/d"} —{" "}
-                          {new Date(msg.conflictWarning.checkInDate).toLocaleDateString("it-IT")} →{" "}
-                          {new Date(msg.conflictWarning.checkOutDate).toLocaleDateString("it-IT")}
+                      <div className="rounded-xl bg-orange-50 border border-orange-200 px-3 py-2 space-y-0.5">
+                        <p className="text-xs font-bold text-orange-700">⚠ Appartamento occupato in questa data</p>
+                        <p className="text-xs text-orange-600">
+                          {msg.conflictWarning.guestName || "n/d"} — {new Date(msg.conflictWarning.checkInDate).toLocaleDateString("it-IT")} → {new Date(msg.conflictWarning.checkOutDate).toLocaleDateString("it-IT")}
                         </p>
-                        <p className="text-[10px] text-orange-600 font-medium">Puoi comunque procedere.</p>
+                        <p className="text-xs text-orange-600 font-medium">Puoi comunque procedere confermando.</p>
                       </div>
                     )}
                     {msg.actionError && (
-                      <p className="text-[10px] font-bold text-red-600 bg-red-50 rounded-xl px-2 py-1">
-                        ⚠ {msg.actionError}
-                      </p>
+                      <p className="text-xs font-bold text-red-600 bg-red-50 rounded-xl px-3 py-2">⚠ {msg.actionError} — riprova o annulla.</p>
                     )}
-                    <div className="flex gap-1.5 pt-0.5">
+                    <div className="flex gap-2 pt-1">
                       <button
                         onClick={() => handleConfirmAction(index)}
                         disabled={confirming || (msg.action?.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER" && (msg.preview == null || msg.preview.length === 0))}
-                        className="flex-1 rounded-full bg-amber-500 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-amber-600 transition-colors disabled:opacity-40"
+                        className="flex-1 h-10 rounded-[13px] flex items-center justify-center gap-1.5 text-white text-[13px] font-extrabold disabled:opacity-40 active:scale-95 transition-transform"
+                        style={{ background: "linear-gradient(135deg,#059669,#10b981)", boxShadow: "0 4px 12px rgba(5,150,105,.3)" }}
                       >
-                        {confirming ? "⏳ Esecuzione..." : "✓ Conferma"}
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        {confirming ? "Esecuzione…" : "Conferma"}
                       </button>
                       <button
                         onClick={() => handleDismissAction(index)}
-                        className="flex-1 rounded-full border border-amber-300 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-amber-700 hover:bg-amber-100 transition-colors"
+                        className="w-[84px] h-10 rounded-[13px] bg-white border-[1.5px] border-slate-200 text-slate-500 text-[13px] font-bold active:scale-95 transition-transform"
                       >
-                        ✕ Annulla
+                        Annulla
                       </button>
                     </div>
                   </div>
                 )}
 
-                {/* Done state */}
                 {msg.action && msg.actionState === "done" && (
-                  <div className="mt-1 text-[10px] text-emerald-600 font-semibold px-1">✓ Eseguito</div>
+                  <div className="max-w-[82%] self-start rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2">
+                    <p className="text-xs font-bold text-emerald-700">✓ {msg.preview ? `${msg.preview.length} pulizie assegnate` : "Modifica applicata"}</p>
+                  </div>
                 )}
               </div>
             ))}
 
             {loading && (
-              <div className="flex items-start">
-                <div className="bg-slate-100 rounded-2xl rounded-bl-sm px-3 py-2 text-sm text-slate-400 flex items-center gap-1.5">
-                  <span className="animate-bounce" style={{ animationDelay: "0ms" }}>•</span>
-                  <span className="animate-bounce" style={{ animationDelay: "150ms" }}>•</span>
-                  <span className="animate-bounce" style={{ animationDelay: "300ms" }}>•</span>
-                </div>
+              <div className="self-start bg-white rounded-[18px] rounded-bl-md px-4 py-3.5 flex gap-1.5 shadow-sm">
+                <span className="w-[7px] h-[7px] bg-violet-300 rounded-full animate-bounce" />
+                <span className="w-[7px] h-[7px] bg-violet-300 rounded-full animate-bounce" style={{ animationDelay: ".15s" }} />
+                <span className="w-[7px] h-[7px] bg-violet-300 rounded-full animate-bounce" style={{ animationDelay: ".3s" }} />
               </div>
             )}
             <div ref={bottomRef} />
           </div>
 
+          {/* Conferma rapida azione pendente */}
+          {lastPendingIdx && !loading && (
+            <div className="px-3.5 pb-2 shrink-0">
+              <button
+                onClick={() => handleConfirmAction(lastPendingIdx.i)}
+                disabled={confirming}
+                className="w-full h-10 rounded-[13px] flex items-center justify-center gap-1.5 text-white text-[13px] font-extrabold animate-pulse disabled:animate-none"
+                style={{ background: "linear-gradient(135deg,#059669,#10b981)", boxShadow: "0 4px 12px rgba(5,150,105,.3)" }}
+              >
+                ✓ Conferma azione in sospeso
+              </button>
+            </div>
+          )}
+
+          {/* Chip suggerimenti */}
+          {!isPastSession && input.length === 0 && !loading && (
+            <div className="flex gap-2 px-3.5 pb-2.5 overflow-x-auto shrink-0" style={{ scrollbarWidth: "none" }}>
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s.label}
+                  onClick={() => handleAsk(false, s.prompt)}
+                  className="shrink-0 bg-white border-[1.5px] border-[#ede9fe] rounded-full px-3.5 py-2 text-[12px] font-semibold text-violet-700 whitespace-nowrap shadow-sm active:scale-95 transition-transform"
+                >
+                  {s.emoji} {s.label}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Input bar */}
           {!isPastSession && (
-            <div className="px-3 pt-2 pb-1 border-t border-slate-100 flex flex-col gap-2 flex-shrink-0 bg-white">
-              <div className="flex gap-2 items-end">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  rows={1}
-                  onChange={(e) => {
-                    setInput(e.target.value);
-                    e.target.style.height = "auto";
-                    e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      setTimeout(() => handleAsk(false), 0);
-                    }
-                  }}
-                  placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare..." : "Chiedi all'AI… (Shift+Enter per andare a capo)"}
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 resize-none overflow-hidden leading-snug"
-                  disabled={loading}
-                />
-                {/* Mic button */}
-                <button
-                  type="button"
-                  onClick={toggleMic}
-                  disabled={loading}
-                  title={listening ? "Interrompi registrazione" : "Parla con l'AI"}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors flex-shrink-0 ${
-                    listening
-                      ? "bg-red-500 hover:bg-red-600 text-white animate-pulse"
-                      : "bg-slate-100 hover:bg-slate-200 text-slate-500"
-                  }`}
-                >
-                  🎤
-                </button>
-              </div>
-              {/* Due pulsanti di invio */}
-              <div className="flex gap-2">
-                {lastPendingIdx && (
-                  <button
-                    onClick={() => handleConfirmAction(lastPendingIdx.i)}
-                    disabled={confirming}
-                    className="text-[10px] font-black uppercase tracking-widest text-white bg-amber-500 hover:bg-amber-600 px-3 py-2 rounded-full transition-colors animate-pulse flex-shrink-0 disabled:opacity-50 disabled:animate-none"
-                  >
-                    {confirming ? "⏳..." : "✓ Conferma"}
-                  </button>
-                )}
-                <button
-                  onClick={() => setTimeout(() => handleAsk(false), 0)}
-                  disabled={loading || !input.trim()}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest disabled:opacity-40 transition-colors"
-                >
-                  {loading ? "..." : <><span>🧠</span> AI Interna</>}
-                </button>
-                <button
-                  onClick={() => setTimeout(() => handleAsk(true), 0)}
-                  disabled={loading || !input.trim()}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest disabled:opacity-40 transition-colors"
-                >
-                  <span>🔍</span> Web Search
-                </button>
-              </div>
-              {/* Resize grip */}
-              <div className="flex justify-end">
-                <div
-                  onMouseDown={onResizeStart}
-                  title="Ridimensiona"
-                  className="w-4 h-4 flex items-center justify-center text-slate-300 hover:text-slate-500 cursor-se-resize transition-colors select-none"
-                  style={{ fontSize: 12 }}
-                >
-                  ⇲
-                </div>
-              </div>
+            <div
+              className="bg-white border-t border-slate-100 px-3 pt-2.5 flex items-end gap-2 shrink-0"
+              style={{ paddingBottom: "max(env(safe-area-inset-bottom), 14px)" }}
+            >
+              <button
+                type="button"
+                onClick={() => setWebSearch((w) => !w)}
+                aria-label="Ricerca web"
+                className={`w-[42px] h-[42px] rounded-full flex items-center justify-center text-base shrink-0 border-[1.5px] transition-colors ${
+                  webSearch ? "bg-indigo-600 border-indigo-600" : "bg-[#f4f2fc] border-[#ede9fe]"
+                }`}
+              >
+                🌐
+              </button>
+              <input
+                ref={inputRef as any}
+                className="flex-1 bg-[#f4f2fc] rounded-[22px] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300 min-w-0"
+                placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : (webSearch ? "Cerca sul web…" : "Scrivi un messaggio…")}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAsk(false);
+                  }
+                }}
+                disabled={loading}
+              />
+              <button
+                type="button"
+                onClick={toggleMic}
+                disabled={loading}
+                title={listening ? "Interrompi registrazione" : "Parla con l'AI"}
+                className={`w-[42px] h-[42px] rounded-full flex items-center justify-center text-base shrink-0 transition-colors ${
+                  listening ? "bg-red-500 animate-pulse" : "bg-[#f4f2fc]"
+                }`}
+              >
+                🎤
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAsk(false)}
+                disabled={loading || !input.trim()}
+                aria-label="Invia"
+                className="w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 disabled:opacity-40 active:scale-90 transition-transform"
+                style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 12px rgba(124,58,237,.35)" }}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
             </div>
           )}
         </div>
