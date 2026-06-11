@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NotificationBell from "@/src/components/notification-bell";
@@ -315,6 +316,23 @@ export default function MobileDashboard({
   const [mapOpen, setMapOpen]               = useState(false);
   const [eventsOpen, setEventsOpen]         = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Haptic + audio tick on tab tap
+  const tabTap = () => {
+    try { navigator.vibrate?.(10); } catch {}
+    try {
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.frequency.value = 880;
+      g.gain.setValueAtTime(0.06, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.07);
+      osc.start(); osc.stop(ctx.currentTime + 0.07);
+    } catch {}
+  };
+
   const [checkinsSheetOpen, setCheckinsSheetOpen]     = useState(false);
   const [cleaningsSheetOpen, setCleaningsSheetOpen]   = useState(false);
   const [ticketsSheetOpen, setTicketsSheetOpen]       = useState(false);
@@ -2052,143 +2070,157 @@ export default function MobileDashboard({
               if (hintRight) hintRight.style.opacity = el.scrollLeft >= max - 4 ? "0" : "1";
             }}
           >
-            <div className="flex items-stretch px-1 pt-2 pb-1" style={{ width: "max-content" }}>
+            <div className="flex items-stretch px-1 pt-1.5 pb-1" style={{ width: "max-content" }}>
 
               {/* HOME */}
+              {(() => { const active = activeTab === "dashboard"; return (
               <button
-                onClick={() => { setActiveTab("dashboard"); setSearchOpen(false); }}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5 transition-all ${activeTab === "dashboard" ? "bg-violet-50" : ""}`}
+                onClick={() => { tabTap(); setActiveTab("dashboard"); setSearchOpen(false); }}
+                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
               >
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${activeTab === "dashboard" ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : "bg-slate-100"}`}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={activeTab === "dashboard" ? "white" : "#94a3b8"} strokeWidth="2">
+                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
                     <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
                     <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
                   </svg>
                 </div>
-                <p className={`text-[8.5px] font-bold tracking-wide whitespace-nowrap ${activeTab === "dashboard" ? "text-violet-600" : "text-slate-400"}`}>Home</p>
+                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Home</p>
               </button>
+              ); })()}
 
-              {/* AGENDA */}
+              {/* CALENDARIO */}
+              {(() => { const active = activeTab === "calendar"; return (
               <button
-                onClick={() => setActiveTab("calendar")}
-                className={`flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5 transition-all ${activeTab === "calendar" ? "bg-violet-50" : ""}`}
+                onClick={() => { tabTap(); setActiveTab("calendar"); }}
+                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
               >
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${activeTab === "calendar" ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : "bg-slate-100"}`}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={activeTab === "calendar" ? "white" : "#94a3b8"} strokeWidth="2">
+                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
                     <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
                     <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                   </svg>
                 </div>
-                <p className={`text-[8.5px] font-bold tracking-wide whitespace-nowrap ${activeTab === "calendar" ? "text-violet-600" : "text-slate-400"}`}>Agenda</p>
+                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Calendario</p>
               </button>
+              ); })()}
 
               {/* PULIZIE */}
               <button
-                onClick={() => setCleaningsSheetOpen(true)}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5 relative"
+                onClick={() => { tabTap(); setCleaningsSheetOpen(true); }}
+                className="flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 relative"
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100 relative">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <div className="w-11 h-8 rounded-xl flex items-center justify-center relative">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
                     <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
                     <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
                   </svg>
                   {lateCleanings.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-400 rounded-full border border-white" />
+                    <span className="absolute top-0 right-0.5 w-2.5 h-2.5 bg-amber-400 rounded-full border-2 border-white" />
                   )}
                 </div>
-                <p className="text-[8.5px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Pulizie</p>
+                <p className="text-[9px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Pulizie</p>
               </button>
 
               {/* TICKET */}
               <button
-                onClick={() => setTicketsSheetOpen(true)}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5 relative"
+                onClick={() => { tabTap(); setTicketsSheetOpen(true); }}
+                className="flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 relative"
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100 relative">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <div className="w-11 h-8 rounded-xl flex items-center justify-center relative">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
                     <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                   </svg>
                   {ticketsTodayCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-400 rounded-full border border-white" />
+                    <span className="absolute top-0 right-0.5 w-2.5 h-2.5 bg-orange-400 rounded-full border-2 border-white" />
                   )}
                 </div>
-                <p className="text-[8.5px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Ticket</p>
+                <p className="text-[9px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Ticket</p>
               </button>
 
               {/* APPARTAMENTI */}
+              {(() => { const active = pathname?.includes("/apartments"); return (
               <button
-                onClick={() => { requestAnimationFrame(() => router.push("/apartments")); }}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5"
+                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/apartments")); }}
+                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9 22 9 12 15 12 15 22"/>
                   </svg>
                 </div>
-                <p className="text-[8.5px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Appartamenti</p>
+                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Appartamenti</p>
               </button>
+              ); })()}
 
               {/* STAFF */}
+              {(() => { const active = pathname?.includes("/users"); return (
               <button
-                onClick={() => { requestAnimationFrame(() => router.push("/staff")); }}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5"
+                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/users")); }}
+                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                     <circle cx="9" cy="7" r="4"/>
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                   </svg>
                 </div>
-                <p className="text-[8.5px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Staff</p>
+                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Staff</p>
               </button>
+              ); })()}
 
               {/* ANALYTICS */}
+              {(() => { const active = pathname?.includes("/analytics"); return (
               <button
-                onClick={() => { requestAnimationFrame(() => router.push("/analytics")); }}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5"
+                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/analytics")); }}
+                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
                     <line x1="18" y1="20" x2="18" y2="10"/>
                     <line x1="12" y1="20" x2="12" y2="4"/>
                     <line x1="6" y1="20" x2="6" y2="14"/>
                   </svg>
                 </div>
-                <p className="text-[8.5px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Analytics</p>
+                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Analytics</p>
               </button>
+              ); })()}
 
               {/* MESSAGGI */}
+              {(() => { const active = pathname?.includes("/messages"); return (
               <button
-                onClick={() => { requestAnimationFrame(() => router.push("/messages")); }}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5 relative"
+                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/messages")); }}
+                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 relative transition-all ${active ? "bg-violet-50" : ""}`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100 relative">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <div className={`w-11 h-8 rounded-xl flex items-center justify-center relative transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
                   {unreadMessagesCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full border border-white" />
+                    <span className="absolute top-0 right-0.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white" />
                   )}
                 </div>
-                <p className="text-[8.5px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Messaggi</p>
+                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Messaggi</p>
               </button>
+              ); })()}
 
               {/* IMPOSTAZIONI */}
+              {(() => { const active = pathname?.includes("/settings"); return (
               <button
-                onClick={() => { requestAnimationFrame(() => router.push("/settings")); }}
-                className="flex flex-col items-center justify-center gap-0.5 min-w-[62px] px-1 py-1 rounded-xl mx-0.5"
+                onClick={() => { tabTap(); requestAnimationFrame(() => router.push("/dashboard/manager/settings")); }}
+                className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-100">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2">
+                <div className={`w-11 h-8 rounded-xl flex items-center justify-center transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)]" : ""}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "white" : "#94a3b8"} strokeWidth="2">
                     <circle cx="12" cy="12" r="3"/>
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                   </svg>
                 </div>
-                <p className="text-[8.5px] font-bold tracking-wide text-slate-400 whitespace-nowrap">Impostazioni</p>
+                <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>Impostazioni</p>
               </button>
+              ); })()}
 
             </div>
           </div>
