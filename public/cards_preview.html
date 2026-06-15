@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,sans-serif}
+body{background:#e2e8f0;padding:20px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:8px;width:320px}
+.label{font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:6px;text-align:center;margin-bottom:4px}
+.cur{color:#94a3b8;background:#f1f5f9}
+.new{color:#7c3aed;background:#ede9fe}
+
+/* ATTUALE */
+.card-old{background:white;border-radius:14px;border:1px solid #f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+.bar{height:4px}
+.card-old-body{padding:12px 14px;display:flex;align-items:center;gap:10px}
+.icon-sm{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-old-text{flex:1;min-width:0}
+.card-old-title{font-size:13px;font-weight:700;color:#0f172a}
+.card-old-sub{font-size:10px;color:#94a3b8;margin-top:1px}
+.badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0}
+
+/* NUOVA */
+.card-new{background:white;border-radius:16px;border:1.5px solid #f1f5f9;box-shadow:0 2px 8px rgba(0,0,0,.07);overflow:hidden;cursor:pointer}
+.card-new-inner{display:flex}
+.accent{width:5px;flex-shrink:0;border-radius:16px 0 0 16px}
+.card-new-body{padding:13px 13px 0 11px;flex:1;min-width:0}
+.card-new-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px}
+.icon-lg{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card-new-text{flex:1;min-width:0}
+.card-new-title{font-size:15px;font-weight:800;color:#0f172a;margin-bottom:2px}
+.card-new-sub{font-size:12px;color:#64748b;font-weight:500}
+.badge2{font-size:10px;font-weight:800;padding:4px 9px;border-radius:7px;flex-shrink:0;align-self:flex-start}
+.meta{display:flex;align-items:center;gap:5px;background:#f8fafc;border-radius:9px;padding:7px 9px;margin-bottom:9px;flex-wrap:wrap}
+.meta-item{display:flex;align-items:center;gap:3px}
+.meta-lbl{font-size:10px;color:#94a3b8;font-weight:600}
+.meta-val{font-size:10px;color:#475569;font-weight:700}
+.mdot{width:3px;height:3px;background:#cbd5e1;border-radius:50%}
+.footer{display:flex;align-items:center;justify-content:space-between;padding:8px 13px 11px;border-top:1px solid #f1f5f9}
+.prog-track{flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px}
+.prog-lbl{font-size:10px;font-weight:700;white-space:nowrap;margin-left:7px}
+.footer-alert{font-size:11px;font-weight:700}
+svg{display:block}
+</style>
+</head>
+<body>
+
+<!-- COL 1: ATTUALE -->
+<div class="col">
+  <div class="label cur">ATTUALE</div>
+  
+  <div class="card-old">
+    <div class="bar" style="background:#7c3aed"></div>
+    <div class="card-old-body">
+      <div class="icon-sm" style="background:#ede9fe">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      </div>
+      <div class="card-old-text">
+        <div class="card-old-title">Trastevere 68</div>
+        <div class="card-old-sub">Maria Conti</div>
+      </div>
+      <span class="badge" style="background:#ede9fe;color:#6d28d9">IN CORSO</span>
+    </div>
+  </div>
+
+  <div class="card-old">
+    <div class="bar" style="background:#10b981"></div>
+    <div class="card-old-body">
+      <div class="icon-sm" style="background:#d1fae5">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      </div>
+      <div class="card-old-text">
+        <div class="card-old-title">Trastevere 156</div>
+        <div class="card-old-sub">Anna Russo</div>
+      </div>
+      <span class="badge" style="background:#d1fae5;color:#065f46">COMPLETATA</span>
+    </div>
+  </div>
+
+  <div class="card-old">
+    <div class="bar" style="background:#f59e0b"></div>
+    <div class="card-old-body">
+      <div class="icon-sm" style="background:#fef3c7">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+      </div>
+      <div class="card-old-text">
+        <div class="card-old-title">Prati 12</div>
+        <div class="card-old-sub">— nessun cleaner</div>
+      </div>
+      <span class="badge" style="background:#fef3c7;color:#92400e">IN RITARDO</span>
+    </div>
+  </div>
+
+  <p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:4px;font-weight:600">~66px · solo nome + cleaner</p>
+</div>
+
+<!-- COL 2: NUOVA -->
+<div class="col">
+  <div class="label new">PROPOSTA</div>
+
+  <!-- Card 1 IN CORSO -->
+  <div class="card-new">
+    <div class="card-new-inner">
+      <div class="accent" style="background:linear-gradient(180deg,#7c3aed,#6d28d9)"></div>
+      <div class="card-new-body">
+        <div class="card-new-top">
+          <div class="icon-lg" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+          </div>
+          <div class="card-new-text">
+            <div class="card-new-title">Trastevere 68</div>
+            <div class="card-new-sub">Maria Conti</div>
+          </div>
+          <span class="badge2" style="background:#ede9fe;color:#6d28d9">IN CORSO</span>
+        </div>
+        <div class="meta">
+          <div class="meta-item">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="meta-lbl">Orario</span>
+            <span class="meta-val">10:00 – 12:00</span>
+          </div>
+          <div class="mdot"></div>
+          <div class="meta-item">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+            <span class="meta-lbl">Check-in</span>
+            <span class="meta-val">15:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="prog-track"><div class="prog-fill" style="width:60%;background:#7c3aed"></div></div>
+      <span class="prog-lbl" style="color:#7c3aed">6/10</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" style="margin-left:8px"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>
+
+  <!-- Card 2 COMPLETATA -->
+  <div class="card-new">
+    <div class="card-new-inner">
+      <div class="accent" style="background:linear-gradient(180deg,#10b981,#059669)"></div>
+      <div class="card-new-body">
+        <div class="card-new-top">
+          <div class="icon-lg" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/></svg>
+          </div>
+          <div class="card-new-text">
+            <div class="card-new-title">Trastevere 156</div>
+            <div class="card-new-sub">Anna Russo</div>
+          </div>
+          <span class="badge2" style="background:#d1fae5;color:#065f46">COMPLETATA</span>
+        </div>
+        <div class="meta">
+          <div class="meta-item">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="meta-lbl">Terminata</span>
+            <span class="meta-val">11:45</span>
+          </div>
+          <div class="mdot"></div>
+          <div class="meta-item">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="meta-val" style="color:#10b981">Appartamento pronto ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="prog-track"><div class="prog-fill" style="width:100%;background:#10b981"></div></div>
+      <span class="prog-lbl" style="color:#10b981">10/10</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" style="margin-left:8px"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>
+
+  <!-- Card 3 IN RITARDO -->
+  <div class="card-new" style="border-color:#fde68a">
+    <div class="card-new-inner">
+      <div class="accent" style="background:linear-gradient(180deg,#f59e0b,#d97706)"></div>
+      <div class="card-new-body">
+        <div class="card-new-top">
+          <div class="icon-lg" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="card-new-text">
+            <div class="card-new-title">Prati 12</div>
+            <div class="card-new-sub" style="color:#f59e0b;font-weight:700">⚠ Nessun cleaner assegnato</div>
+          </div>
+          <span class="badge2" style="background:#fef3c7;color:#92400e">IN RITARDO</span>
+        </div>
+        <div class="meta" style="background:#fffbeb">
+          <div class="meta-item">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="meta-lbl">Prevista</span>
+            <span class="meta-val" style="color:#f59e0b">09:00 — 2h fa</span>
+          </div>
+          <div class="mdot"></div>
+          <div class="meta-item">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+            <span class="meta-lbl">Check-in</span>
+            <span class="meta-val">14:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer" style="background:#fffbeb">
+      <span class="footer-alert" style="color:#f59e0b">Assegna cleaner →</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>
+
+  <p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:4px;font-weight:600">~110px · orario + check-in + progresso</p>
+</div>
+
+<!-- COL 3: MANUTENZIONI -->
+<div class="col">
+  <div class="label new">PROPOSTA — Manutenzioni</div>
+
+  <div class="card-new" style="border-color:#fecdd3">
+    <div class="card-new-inner">
+      <div class="accent" style="background:linear-gradient(180deg,#ef4444,#dc2626)"></div>
+      <div class="card-new-body">
+        <div class="card-new-top">
+          <div class="icon-lg" style="background:linear-gradient(135deg,#fee2e2,#fecaca)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="card-new-text">
+            <div class="card-new-title">Caldaia rotta</div>
+            <div class="card-new-sub">Trastevere 68</div>
+          </div>
+          <span class="badge2" style="background:#fee2e2;color:#991b1b">NON ASS.</span>
+        </div>
+        <div class="meta" style="background:#fff5f5">
+          <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#fee2e2;color:#ef4444">🔴 URGENTE</span>
+          <div class="mdot"></div>
+          <div class="meta-item">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="meta-val">Segnalato 08:30</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer" style="background:#fff5f5">
+      <span class="footer-alert" style="color:#ef4444">⚠ Richiede assegnazione</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>
+
+  <div class="card-new">
+    <div class="card-new-inner">
+      <div class="accent" style="background:linear-gradient(180deg,#7c3aed,#6d28d9)"></div>
+      <div class="card-new-body">
+        <div class="card-new-top">
+          <div class="icon-lg" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="card-new-text">
+            <div class="card-new-title">Perdita acqua bagno</div>
+            <div class="card-new-sub">Prati 12 · Luigi Ferrari</div>
+          </div>
+          <span class="badge2" style="background:#ede9fe;color:#6d28d9">IN CORSO</span>
+        </div>
+        <div class="meta">
+          <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#fef3c7;color:#d97706">🟡 MEDIA</span>
+          <div class="mdot"></div>
+          <div class="meta-item">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="meta-val">Iniziato 09:15</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span style="font-size:11px;color:#94a3b8;font-weight:600">Apri per aggiornare →</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>
+
+</div>
+
+</body></html>

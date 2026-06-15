@@ -90,6 +90,7 @@ export function calculateLinen(
   rawBedConfig: unknown,
   totalGuests: number,
   cullaRequested: boolean,
+  sofaBedForced = false,
 ): LinenCalculation {
   const cfg = parseBedConfig(rawBedConfig);
 
@@ -124,9 +125,10 @@ export function calculateLinen(
   ];
 
   for (const o of optional) {
-    if (o.cfg.count === 0 || remaining <= 0) continue;
-    // quanti divani servono per coprire i rimanenti
-    const needed = Math.ceil(remaining / o.capacity);
+    if (o.cfg.count === 0) continue;
+    // Attiva se servono ospiti extra oppure se il manager ha forzato il divano
+    if (remaining <= 0 && !sofaBedForced) continue;
+    const needed = sofaBedForced && remaining <= 0 ? 1 : Math.ceil(remaining / o.capacity);
     const activated = Math.min(needed, o.cfg.count);
     const covered = activated * o.capacity;
     const linen: LinenResult = {

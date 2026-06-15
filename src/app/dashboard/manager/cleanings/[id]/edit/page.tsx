@@ -24,7 +24,7 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
     prisma.cleaningTask.findUnique({
       where: { id },
       include: {
-        apartment: { select: { name: true, address: true, bathrooms: true, bedConfig: true } },
+        apartment: { select: { name: true, address: true, bathrooms: true, bedConfig: true, maxGuests: true } },
         assignedTo: { select: { name: true } },
         booking: true,
         aiAssistantMessages: { orderBy: { createdAt: "asc" } },

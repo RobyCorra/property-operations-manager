@@ -234,7 +234,9 @@ exports.Prisma.CleaningTaskScalarFieldEnum = {
   bookingId: 'bookingId',
   checklistProgress: 'checklistProgress',
   correctionProgress: 'correctionProgress',
-  cleaningAccessToken: 'cleaningAccessToken'
+  cleaningAccessToken: 'cleaningAccessToken',
+  cullaRequested: 'cullaRequested',
+  sofaBedForced: 'sofaBedForced'
 };
 
 exports.Prisma.MaintenanceTicketScalarFieldEnum = {

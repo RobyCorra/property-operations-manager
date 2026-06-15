@@ -20,6 +20,13 @@
       "runtimeArgs": ["serve", "."],
       "port": 4322,
       "autoPort": false
+    },
+    {
+      "name": "card-mockup",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/tmp/serve_mockup.py"],
+      "port": 4399,
+      "autoPort": false
     }
   ]
 }

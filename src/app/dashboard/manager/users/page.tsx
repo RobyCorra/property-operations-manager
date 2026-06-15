@@ -56,7 +56,7 @@ export default async function UsersListPage() {
         <BackButton />
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="sticky top-0 z-30 -mx-6 lg:-mx-10 px-6 lg:px-10 py-4 bg-[#faf8ff] flex flex-row items-center md:items-end justify-between gap-4 md:gap-6">
           <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-slate-900 uppercase">
             Team <span className="text-violet-600">.</span>
           </h1>

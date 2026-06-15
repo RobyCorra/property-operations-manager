@@ -345,6 +345,9 @@ export async function updateCleaningTask(id: string, prevState: any, formData: F
   const timeStr = formData.get("time") as string;
   const notes = formData.get("notes") as string;
   const status = formData.get("status") as string;
+  const cullaRequested = formData.get("cullaRequested") === "true";
+  const sofaBedForced  = formData.get("sofaBedForced") === "true";
+  const redirectTo     = (formData.get("redirectTo") as string) || null;
 
   if (!targetId || !apartmentId || !dateStr || !timeStr) {
     return { error: "ID, Appartamento, data e ora sono obbligatori." };
@@ -365,6 +368,8 @@ export async function updateCleaningTask(id: string, prevState: any, formData: F
       date: taskDate,
       notes: notes || null,
       status: status || "PENDING",
+      cullaRequested,
+      sofaBedForced,
     },
   });
 
@@ -389,7 +394,7 @@ export async function updateCleaningTask(id: string, prevState: any, formData: F
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath("/dashboard/cleaner");
-  redirect("/dashboard/manager/cleanings");
+  redirect(redirectTo ?? "/dashboard/manager/cleanings");
 }
 
 export async function recalculateCleaningChecklist(taskId: string) {

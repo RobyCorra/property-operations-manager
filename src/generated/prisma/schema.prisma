@@ -154,6 +154,8 @@ model CleaningTask {
   checklistProgress   Json?                 @default("[]")
   correctionProgress  Json?
   cleaningAccessToken String?               @unique
+  cullaRequested      Boolean               @default(false)
+  sofaBedForced       Boolean               @default(false)
   apartment           Apartment             @relation(fields: [apartmentId], references: [id])
   assignedTo          User?                 @relation(fields: [assignedToId], references: [id])
   messages            CleaningTaskMessage[]

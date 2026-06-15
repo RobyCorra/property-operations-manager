@@ -11,6 +11,8 @@ import { PushNotifications } from "@capacitor/push-notifications";
 export default function ApnsRegister() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
+    // Firebase non è configurato su Android — le push notification funzionano solo su iOS
+    if (Capacitor.getPlatform() === "android") return;
 
     async function register() {
       // Chiedi permesso

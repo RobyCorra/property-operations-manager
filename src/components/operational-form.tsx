@@ -38,6 +38,8 @@ interface OperationalInitialData {
   scheduledEnd?: Date | null;
   status: string;
   maintenanceTasks?: unknown;
+  cullaRequested?: boolean;
+  sofaBedForced?: boolean;
 }
 
 interface OperationalFormProps {
@@ -46,6 +48,8 @@ interface OperationalFormProps {
   personnel: Option[];
   action: (id: string, prevState: any, formData: FormData) => Promise<any> | ((prevState: any, formData: FormData) => Promise<any>);
   initialData?: OperationalInitialData;
+  hasSofaBed?: boolean;
+  redirectTo?: string;
 }
 
 type ActionState = {
@@ -76,7 +80,7 @@ type TicketJson = {
   [key: string]: unknown;
 };
 
-export default function OperationalForm({ type, apartments, personnel, action, initialData }: OperationalFormProps) {
+export default function OperationalForm({ type, apartments, personnel, action, initialData, hasSofaBed = false, redirectTo }: OperationalFormProps) {
   const isEditing = !!initialData;
   // If editing, we use the action bound with the ID. 
   // If not, we use the provided action directly (which matches the (prevState, formData) signature).
@@ -90,6 +94,8 @@ export default function OperationalForm({ type, apartments, personnel, action, i
   const [localStart, setLocalStart] = useState<string>(initialData?.scheduledStart ? new Date(initialData.scheduledStart).toISOString().slice(0, 16) : "");
   const [localEnd, setLocalEnd] = useState<string>(initialData?.scheduledEnd ? new Date(initialData.scheduledEnd).toISOString().slice(0, 16) : "");
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [cullaRequested, setCullaRequested] = useState(initialData?.cullaRequested ?? false);
+  const [sofaBedForced, setSofaBedForced] = useState(initialData?.sofaBedForced ?? false);
 
   useEffect(() => {
     if (selectedApartment) {
@@ -228,30 +234,6 @@ export default function OperationalForm({ type, apartments, personnel, action, i
             </div>
           </div>
 
-          {/* Contextual Booking Info */}
-          {selectedApartment && (
-            <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100/50">
-              <h4 className="text-xs font-bold text-blue-700 uppercase tracking-wider mb-3">Prenotazioni in programma</h4>
-              {isLoadingBookings ? (
-                <p className="text-sm text-blue-500 animate-pulse">Caricamento prenotazioni...</p>
-              ) : schedule && schedule.bookings.length > 0 ? (
-                <div className="space-y-2">
-                  {schedule.bookings.slice(0, 3).map((b) => (
-                    <div key={b.id} className="flex items-center justify-between text-sm bg-white p-2 rounded-lg shadow-sm">
-                      <span className="font-semibold text-gray-900">{b.guestName}</span>
-                      <span className="text-gray-500">
-                        {new Date(b.checkInDate).toLocaleDateString("it-IT", { day: 'numeric', month: 'short' })} - {new Date(b.checkOutDate).toLocaleDateString("it-IT", { day: 'numeric', month: 'short' })}
-                      </span>
-                    </div>
-                  ))}
-                  {schedule.bookings.length > 3 && <p className="text-[10px] text-blue-400 text-center">+ altre {schedule.bookings.length - 3} prenotazioni</p>}
-                </div>
-              ) : (
-                <p className="text-sm text-blue-500">Nessuna prenotazione futura per questo immobile.</p>
-              )}
-            </div>
-          )}
-
           {type === "CLEANING" ? (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -309,6 +291,58 @@ export default function OperationalForm({ type, apartments, personnel, action, i
               )}
               {isEditing && (
                 <input type="hidden" name="cleaningTaskId" value={initialData.id} />
+              )}
+              {redirectTo && (
+                <input type="hidden" name="redirectTo" value={redirectTo} />
+              )}
+              {isEditing && (
+                <div className="border-t border-gray-100 pt-4 space-y-3">
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Configurazione biancheria</p>
+                  <input type="hidden" name="cullaRequested" value={cullaRequested ? "true" : "false"} />
+                  <input type="hidden" name="sofaBedForced"  value={sofaBedForced  ? "true" : "false"} />
+
+                  {/* Toggle culla */}
+                  <button
+                    type="button"
+                    onClick={() => setCullaRequested((v) => !v)}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${cullaRequested ? "bg-emerald-50 border-emerald-200" : "bg-gray-50 border-gray-200"}`}
+                  >
+                    <div className="flex items-center gap-3 text-left">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${cullaRequested ? "bg-emerald-100" : "bg-gray-100"}`}>
+                        <span className="text-sm">🛏</span>
+                      </div>
+                      <div>
+                        <p className={`text-sm font-semibold ${cullaRequested ? "text-emerald-800" : "text-gray-700"}`}>Richiedi culla</p>
+                        <p className={`text-xs ${cullaRequested ? "text-emerald-600" : "text-gray-400"}`}>Aggiunge biancheria culla al calcolo</p>
+                      </div>
+                    </div>
+                    <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${cullaRequested ? "bg-emerald-500" : "bg-gray-300"}`}>
+                      <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${cullaRequested ? "translate-x-5" : "translate-x-0.5"}`} />
+                    </div>
+                  </button>
+
+                  {/* Toggle divano letto — visibile solo se l'appartamento ha divano */}
+                  {hasSofaBed && (
+                    <button
+                      type="button"
+                      onClick={() => setSofaBedForced((v) => !v)}
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${sofaBedForced ? "bg-violet-50 border-violet-200" : "bg-gray-50 border-gray-200"}`}
+                    >
+                      <div className="flex items-center gap-3 text-left">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${sofaBedForced ? "bg-violet-100" : "bg-gray-100"}`}>
+                          <span className="text-sm">🛋</span>
+                        </div>
+                        <div>
+                          <p className={`text-sm font-semibold ${sofaBedForced ? "text-violet-800" : "text-gray-700"}`}>Attiva divano letto</p>
+                          <p className={`text-xs ${sofaBedForced ? "text-violet-600" : "text-gray-400"}`}>Prepara biancheria anche se non necessario</p>
+                        </div>
+                      </div>
+                      <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${sofaBedForced ? "bg-violet-500" : "bg-gray-300"}`}>
+                        <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${sofaBedForced ? "translate-x-5" : "translate-x-0.5"}`} />
+                      </div>
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           ) : (

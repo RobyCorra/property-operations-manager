@@ -26,7 +26,7 @@ export default async function ApartmentsListPage() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="sticky top-0 z-30 -mx-4 md:-mx-6 px-4 md:px-6 pt-4 md:pt-6 pb-3 -mt-4 md:-mt-6 bg-[#faf8ff] flex items-center gap-3 md:gap-4">
           <BackButton />
           <div className="flex-1 flex items-center justify-between gap-3">
             <h1 className="text-xl md:text-3xl font-semibold tracking-tight text-slate-900 uppercase">Appartamenti</h1>

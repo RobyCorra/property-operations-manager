@@ -41,6 +41,8 @@ interface CleaningTask {
   notes: string | null;
   checklistProgress: unknown;
   correctionProgress: unknown;
+  cullaRequested?: boolean | null;
+  sofaBedForced?: boolean | null;
   nextBooking?: NextBooking | null;
   apartment: { name: string; address: string; bathrooms?: number; bedConfig?: unknown };
   assignedTo?: { name: string } | null;
@@ -72,6 +74,9 @@ const statusConfig: Record<string, { label: string; dot: string; badge: string }
 };
 
 export default function CleaningDetailView({ task, apartments, cleaners, messages, userName }: Props) {
+  const bc = task.apartment.bedConfig as Record<string, { count?: number }> | null;
+  const hasSofaBed = !!(bc && ((bc.divanoMatrimoniale?.count ?? 0) > 0 || (bc.divanoSingolo?.count ?? 0) > 0));
+
   const [editOpen, setEditOpen] = useState(false);
   const [photosOpen, setPhotosOpen] = useState(false);
   const [status, setStatus] = useState(task.status);
@@ -185,7 +190,8 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               const linen = calculateLinen(
                 task.apartment.bedConfig,
                 task.nextBooking.totalGuests,
-                !!(task.nextBooking.cullaRequested)
+                !!(task.cullaRequested ?? task.nextBooking.cullaRequested),
+                !!(task.sofaBedForced),
               );
               return (
                 <div>
@@ -490,6 +496,8 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                 apartments={apartments}
                 personnel={cleaners}
                 action={updateCleaningTask as any}
+                hasSofaBed={hasSofaBed}
+                redirectTo="/dashboard/manager?sheet=cleanings"
                 initialData={{
                   id: task.id,
                   apartmentId: task.apartmentId,
@@ -497,6 +505,8 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                   date: task.date,
                   notes: task.notes,
                   status: task.status,
+                  cullaRequested: task.cullaRequested ?? false,
+                  sofaBedForced: task.sofaBedForced ?? false,
                 }}
               />
             </div>
