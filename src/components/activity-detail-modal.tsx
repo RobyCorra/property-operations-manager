@@ -18,6 +18,7 @@ interface Props {
 export default function ActivityDetailModal({ id, type, currentUserRole, currentUserName, serverDate, onClose }: Props) {
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -211,20 +212,28 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
             </div>
 
             {/* Right Panel: Chat Thread */}
-            <div className="w-full lg:w-[450px] bg-white flex flex-col shrink-0">
-              <div className="px-8 py-5 border-b border-gray-50 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <h3 className="text-xs font-black uppercase tracking-widest text-gray-900">Chat & Storico Messaggi</h3>
-              </div>
-              <div className="flex-1 p-6 flex flex-col overflow-hidden">
-                <TicketConversation 
-                  entityId={data.id}
-                  initialMessages={data.messages}
-                  currentUserRole={currentUserRole}
-                  currentUserName={currentUserName}
-                  submitAction={type === 'CLEANING' ? createCleaningTaskMessage : createTicketMessage}
-                />
-              </div>
+            <div className="w-full lg:w-[450px] bg-white flex flex-col shrink-0 border-t lg:border-t-0 lg:border-l border-gray-100">
+              <button
+                onClick={() => setChatOpen(o => !o)}
+                className="px-8 py-5 flex items-center justify-between gap-2 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-gray-900">Chat & Storico Messaggi</h3>
+                </div>
+                <span className={`text-gray-400 text-sm transition-transform ${chatOpen ? "rotate-180" : ""}`}>▼</span>
+              </button>
+              {chatOpen && (
+                <div className="flex-1 p-6 flex flex-col overflow-hidden">
+                  <TicketConversation
+                    entityId={data.id}
+                    initialMessages={data.messages}
+                    currentUserRole={currentUserRole}
+                    currentUserName={currentUserName}
+                    submitAction={type === 'CLEANING' ? createCleaningTaskMessage : createTicketMessage}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
