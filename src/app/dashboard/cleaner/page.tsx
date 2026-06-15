@@ -16,6 +16,7 @@ import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
 import LocationTracker from "@/src/components/location-tracker";
 import { calculateLinen } from "@/src/lib/linen-calculator";
 import PushPermissionRequest from "@/src/components/push-permission";
+import ApnsRegister from "@/src/components/apns-register";
 import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
 import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
 import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
@@ -345,6 +346,7 @@ export default async function CleanerDashboardPage() {
       </nav>
     </main>
     <PushPermissionRequest />
+    <ApnsRegister />
     <div className="fixed bottom-16 right-3 z-50">
       <a href="/dashboard/cleaner/push-test"
         className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/90 text-white text-[10px] font-bold rounded-full shadow-lg">
