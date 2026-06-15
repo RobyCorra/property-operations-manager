@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { logoutAction } from "@/src/app/actions/auth";
 
 interface MobileTabBarProps {
   unreadCount?: number;
@@ -158,6 +159,14 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
               icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
             />
 
+            <form action={logoutAction} className="flex">
+              <T active={false} label="Esci" variant="danger"
+                onClick={() => {}}
+                icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>}
+                type="submit"
+              />
+            </form>
+
           </div>
         </div>
 
@@ -176,23 +185,28 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
   );
 }
 
-function T({ active, onClick, label, icon, dot }: {
+function T({ active, onClick, label, icon, dot, variant, type }: {
   active: boolean;
   onClick: () => void;
   label: string;
   icon: React.ReactNode;
   dot?: "amber" | "orange" | "rose";
+  variant?: "danger";
+  type?: "submit";
 }) {
   const dotColor = dot === "amber" ? "bg-amber-400" : dot === "orange" ? "bg-orange-400" : "bg-rose-500";
+  const isDanger = variant === "danger";
   return (
-    <button onClick={onClick}
+    <button onClick={onClick} type={type ?? "button"}
       className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-transform ${active ? "bg-violet-50" : ""}`}
     >
-      <div className={`w-11 h-8 rounded-xl flex items-center justify-center relative transition-transform ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)] text-white" : "text-slate-400"}`}>
+      <div className={`w-11 h-8 rounded-xl flex items-center justify-center relative transition-transform ${
+        isDanger ? "text-rose-500" : active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)] text-white" : "text-slate-400"
+      }`}>
         {icon}
         {dot && <span className={`absolute top-0 right-0.5 w-2.5 h-2.5 ${dotColor} rounded-full border-2 border-white`} />}
       </div>
-      <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${active ? "text-violet-600" : "text-slate-400"}`}>{label}</p>
+      <p className={`text-[9px] font-bold tracking-wide whitespace-nowrap ${isDanger ? "text-rose-500" : active ? "text-violet-600" : "text-slate-400"}`}>{label}</p>
     </button>
   );
 }
