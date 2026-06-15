@@ -1,17 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-
-const VAPID_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
-
-function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = atob(base64);
-  const arr = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; i++) arr[i] = rawData.charCodeAt(i);
-  return arr.buffer;
-}
+import { Capacitor } from "@capacitor/core";
+import { PushNotifications } from "@capacitor/push-notifications";
 
 function now() {
   return new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -21,10 +12,8 @@ interface LogEntry { ts: string; level: "info" | "ok" | "warn" | "error"; msg: s
 
 export default function CleanerPushTestPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [swOk, setSwOk] = useState(false);
-  const [permOk, setPermOk] = useState(false);
-  const [subOk, setSubOk] = useState(false);
-  const [dbCount, setDbCount] = useState<number | null>(null);
+  const [isNative, setIsNative] = useState(false);
+  const [apnsTokenInDb, setApnsTokenInDb] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
 
   function log(level: LogEntry["level"], msg: string) {
@@ -34,125 +23,90 @@ export default function CleanerPushTestPage() {
   const checkAll = useCallback(async () => {
     log("info", "── Controllo stato push ──");
 
-    // 1. Service Worker
-    if (!("serviceWorker" in navigator)) {
-      log("error", "Service Worker NON supportato (Capacitor/WKWebView?)");
-    } else {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      if (regs.length === 0) {
-        log("warn", "Nessun Service Worker registrato");
-      } else {
-        const active = regs[0].active;
-        setSwOk(!!active);
-        log(active ? "ok" : "warn", `SW: ${active ? "attivo" : "non attivo"} — scope: ${regs[0].scope}`);
-      }
+    const native = Capacitor.isNativePlatform();
+    const platform = Capacitor.getPlatform();
+    setIsNative(native);
+    log("info", `Piattaforma: ${platform} — nativo: ${native ? "sì" : "no"}`);
+
+    if (!native) {
+      log("warn", "Non sei su app nativa — Web Push non supportato in WKWebView");
+      log("info", "Su app Capacitor le push arrivano solo tramite APNs (iOS nativo)");
+      return;
     }
 
-    // 2. Permessi
-    if (!("Notification" in window)) {
-      log("error", "Notification API non supportata");
-    } else {
-      const perm = Notification.permission;
-      setPermOk(perm === "granted");
-      log(perm === "granted" ? "ok" : perm === "denied" ? "error" : "warn",
-        `Permesso notifiche: ${perm}`);
-    }
-
-    // 3. Subscription browser
-    if ("PushManager" in window && "serviceWorker" in navigator) {
-      try {
-        const reg = await navigator.serviceWorker.ready;
-        const s = await reg.pushManager.getSubscription();
-        setSubOk(!!s);
-        log(s ? "ok" : "warn", s
-          ? `Subscription browser attiva: ...${s.endpoint.slice(-30)}`
-          : "Nessuna subscription nel browser");
-      } catch (e) {
-        log("error", `Errore subscription: ${e}`);
-      }
-    }
-
-    // 4. DB subscriptions
+    // Controlla token APNs nel DB
     try {
-      const res = await fetch("/api/push/debug");
+      const res = await fetch("/api/apns-token/status");
       if (res.ok) {
         const data = await res.json();
-        setDbCount(data.total);
-        log(data.total > 0 ? "ok" : "warn", `DB: ${data.total} subscription registrate`);
-        data.subscriptions?.forEach((s: any) =>
-          log("info", `  → ${s.user} (${s.role}) ...${s.endpointShort}`)
-        );
+        setApnsTokenInDb(data.hasToken);
+        log(data.hasToken ? "ok" : "warn",
+          data.hasToken
+            ? `Token APNs registrato nel DB: ...${data.tokenShort}`
+            : "Nessun token APNs nel DB — notifiche non attive");
+      } else {
+        log("warn", "Impossibile verificare token APNs nel DB");
       }
     } catch (e) {
-      log("error", `Errore lettura DB: ${e}`);
+      log("error", `Errore verifica DB: ${e}`);
     }
   }, []);
 
   useEffect(() => { checkAll(); }, [checkAll]);
 
-  async function handleRegister() {
+  async function handleRegisterApns() {
     setBusy(true);
     try {
-      log("info", "Richiedo permesso notifiche...");
-      const perm = await Notification.requestPermission();
-      log(perm === "granted" ? "ok" : "error", `Permesso: ${perm}`);
-      if (perm !== "granted") { setBusy(false); return; }
+      log("info", "Richiedo permesso notifiche iOS...");
+      const perm = await PushNotifications.requestPermissions();
+      log(perm.receive === "granted" ? "ok" : "error", `Permesso: ${perm.receive}`);
+      if (perm.receive !== "granted") { setBusy(false); return; }
 
-      log("info", "Attendo Service Worker...");
-      const reg = await navigator.serviceWorker.ready;
-      log("ok", "SW ready");
+      log("info", "Registro con APNs...");
+      await PushNotifications.register();
 
-      let sub = await reg.pushManager.getSubscription();
-      if (sub) {
-        log("info", "Subscription già presente, riuso");
-      } else {
-        log("info", "Creo nuova subscription...");
-        sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_KEY),
+      await new Promise<void>((resolve) => {
+        const timeout = setTimeout(() => {
+          log("warn", "Timeout — nessun token ricevuto da APNs in 10s");
+          resolve();
+        }, 10000);
+
+        PushNotifications.addListener("registration", async (token) => {
+          clearTimeout(timeout);
+          log("ok", `Token APNs ricevuto: ...${token.value.slice(-20)}`);
+          try {
+            const res = await fetch("/api/apns-token", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token: token.value }),
+            });
+            if (res.ok) {
+              log("ok", "Token salvato nel DB ✓");
+              setApnsTokenInDb(true);
+            } else {
+              log("error", "Errore salvataggio token nel DB");
+            }
+          } catch (e) {
+            log("error", `Errore salvataggio: ${e}`);
+          }
+          resolve();
         });
-        log("ok", `Subscription creata: ...${sub.endpoint.slice(-30)}`);
-      }
 
-      log("info", "Salvo nel DB...");
-      const res = await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sub.toJSON()),
+        PushNotifications.addListener("registrationError", (err) => {
+          clearTimeout(timeout);
+          log("error", `Registrazione APNs fallita: ${JSON.stringify(err)}`);
+          resolve();
+        });
       });
-      const body = await res.json();
-      if (!res.ok) {
-        log("error", `Salvataggio fallito: ${JSON.stringify(body)}`);
-      } else {
-        log("ok", "Subscription salvata nel DB ✓");
-      }
-      await checkAll();
     } catch (e) {
       log("error", `Errore: ${e}`);
     }
     setBusy(false);
   }
 
-  async function handleLocalTest() {
-    if (Notification.permission !== "granted") {
-      log("warn", "Permesso non concesso"); return;
-    }
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      await reg.showNotification("🔔 Test locale", {
-        body: "Notifica diretta dal Service Worker — nessun server coinvolto",
-        icon: "/icons/icon-192.png",
-        tag: "local-test",
-      });
-      log("ok", "Notifica locale inviata — deve apparire subito");
-    } catch (e) {
-      log("error", `Errore: ${e}`);
-    }
-  }
-
-  async function handleServerTest() {
+  async function handleTestApns() {
     setBusy(true);
-    log("info", "Invio push dal server → me stesso...");
+    log("info", "Invio push APNs di test dal server...");
     try {
       const res = await fetch("/api/push/test", {
         method: "POST",
@@ -163,7 +117,8 @@ export default function CleanerPushTestPage() {
       if (!res.ok) {
         log("error", `Errore server: ${JSON.stringify(body)}`);
       } else {
-        log("ok", "Push server inviata — aspetta 5-10s...");
+        log("ok", "Push APNs inviata dal server — aspetta 5-10s...");
+        log("info", "(metti l'app in background per vedere la notifica)");
       }
     } catch (e) {
       log("error", `Errore: ${e}`);
@@ -182,36 +137,31 @@ export default function CleanerPushTestPage() {
       <div className="max-w-xl mx-auto space-y-5">
 
         <div>
-          <h1 className="text-lg font-bold">🔔 Push Test — Cleaner</h1>
-          <p className="text-slate-500 text-xs mt-1">Diagnostica notifiche push su questo dispositivo</p>
+          <h1 className="text-lg font-bold">🔔 Push Test — APNs</h1>
+          <p className="text-slate-500 text-xs mt-1">Su app Capacitor le notifiche arrivano solo tramite APNs nativo</p>
         </div>
 
         {/* Stato */}
         <div className="bg-slate-900 rounded-xl p-4 space-y-2">
           <p className="text-xs uppercase tracking-widest text-slate-500 font-bold mb-3">Stato</p>
-          <p className="flex items-center"><Dot ok={swOk} />Service Worker attivo</p>
-          <p className="flex items-center"><Dot ok={permOk} />Permesso notifiche granted</p>
-          <p className="flex items-center"><Dot ok={subOk} />Subscription browser attiva</p>
+          <p className="flex items-center"><Dot ok={isNative} />App nativa (Capacitor)</p>
           <p className="flex items-center">
-            <Dot ok={(dbCount ?? 0) > 0} warn={dbCount === null} />
-            DB: {dbCount === null ? "caricamento..." : `${dbCount} subscription registrate`}
+            <Dot ok={apnsTokenInDb === true} warn={apnsTokenInDb === null} />
+            {apnsTokenInDb === null ? "Token APNs: verifica..." :
+             apnsTokenInDb ? "Token APNs registrato nel DB ✓" : "Token APNs NON nel DB"}
           </p>
         </div>
 
         {/* Azioni */}
         <div className="bg-slate-900 rounded-xl p-4 space-y-3">
           <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">Azioni</p>
-          <button onClick={handleRegister} disabled={busy}
+          <button onClick={handleRegisterApns} disabled={busy || !isNative}
             className="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-colors">
-            {busy ? "⏳ Attendi..." : "① Registra questo dispositivo"}
+            {busy ? "⏳ Attendi..." : "① Registra APNs (richiedi permesso)"}
           </button>
-          <button onClick={handleLocalTest} disabled={busy}
-            className="w-full py-3 bg-amber-600 hover:bg-amber-500 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-colors">
-            ② Test locale (senza server)
-          </button>
-          <button onClick={handleServerTest} disabled={busy}
+          <button onClick={handleTestApns} disabled={busy || !apnsTokenInDb}
             className="w-full py-3 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-colors">
-            ③ Test push dal server
+            ② Invia push APNs di test
           </button>
           <button onClick={checkAll} disabled={busy}
             className="w-full py-3 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-colors">
@@ -219,11 +169,11 @@ export default function CleanerPushTestPage() {
           </button>
         </div>
 
-        {/* Istruzioni */}
+        {/* Note */}
         <div className="bg-slate-900 rounded-xl p-4 text-xs text-slate-400 space-y-1.5">
-          <p><span className="text-violet-400">①</span> Registra prima il dispositivo</p>
-          <p><span className="text-amber-400">②</span> Test locale — deve arrivare subito. Se non arriva: problema SW o permessi</p>
-          <p><span className="text-emerald-400">③</span> Test server — passa da Vercel. Se ② funziona ma ③ no: problema VAPID o APNs</p>
+          <p><span className="text-violet-400">①</span> Registra APNs — chiede il permesso iOS e salva il token</p>
+          <p><span className="text-emerald-400">②</span> Invia push — poi metti l'app in background per vederla arrivare</p>
+          <p className="text-slate-600 pt-1">Web Push e Service Worker non funzionano in WKWebView — è normale.</p>
         </div>
 
         {/* Log */}
