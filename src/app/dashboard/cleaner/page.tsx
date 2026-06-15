@@ -347,12 +347,6 @@ export default async function CleanerDashboardPage() {
     </main>
     <PushPermissionRequest />
     <ApnsRegister />
-    <div className="fixed bottom-16 right-3 z-50">
-      <a href="/dashboard/cleaner/push-test"
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/90 text-white text-[10px] font-bold rounded-full shadow-lg">
-        🔔 Push Test
-      </a>
-    </div>
     </CleanerLangGate>
   );
 }
