@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { X, User, Building2, Bell, ChevronRight, ExternalLink, Check, Loader2, LogOut } from "lucide-react";
 import { logoutAction } from "@/src/app/actions/auth";
 import {
@@ -77,6 +78,9 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
   // notification prefs
   const [prefs, setPrefs] = useState<NotificationPrefs>({ cleaningStarted: true, cleaningCompleted: true, maintenanceNew: true, chatCleaner: true, chatMaintenance: true });
   const [prefsSaved, setPrefsSaved] = useState(false);
+  const [portalRoot, setPortalRoot] = useState<Element | null>(null);
+
+  useEffect(() => { setPortalRoot(document.body); }, []);
 
   useEffect(() => {
     if (open && !data) {
@@ -117,7 +121,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!open || !portalRoot) return null;
 
   const sections: { id: Section; label: string; icon: React.ReactNode }[] = [
     { id: "profilo", label: "Profilo", icon: <User size={15} strokeWidth={2} /> },
@@ -125,7 +129,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
     { id: "notifiche", label: "Notifiche", icon: <Bell size={15} strokeWidth={2} /> },
   ];
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px]" onClick={onClose} />
@@ -444,6 +448,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
 
         </div>
       </div>
-    </>
+    </>,
+    portalRoot
   );
 }
