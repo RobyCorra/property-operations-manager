@@ -130,7 +130,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         item.id === itemId ? { ...item, photoUrl: blobUrl } : item
       );
       setItems(updatedItems);
-      await updateTaskChecklist(taskId, updatedItems).catch(() => {});
+      await updateTaskChecklist(taskId, updatedItems); // se fallisce, il catch esterno mantiene la foto in coda
 
       // Rimuovi dalla coda
       setPendingPhotos((prev) => {
@@ -363,6 +363,16 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         setIsCompletingTask(false);
         return;
       }
+    }
+
+    // Verifica che tutte le foto obbligatorie siano salvate nel DB
+    const missingPhotos = itemsRef.current.filter(
+      (i) => i.photoRequired && i.completed && !i.photoUrl && !pendingRef.current.has(i.id)
+    );
+    if (missingPhotos.length > 0) {
+      alert(`Foto obbligatoria mancante per: ${missingPhotos.map((i) => i.label).join(", ")}. Riprova o contatta il supporto.`);
+      setIsCompletingTask(false);
+      return;
     }
 
     setIsCompletingTask(true);

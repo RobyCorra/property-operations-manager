@@ -57,7 +57,9 @@ async function syncPendentCleaningTasks(apartmentId: string) {
       const existingMatch = oldSnapshot.find((oldItem: ChecklistProgressItem) => oldItem.label === newItem.label);
       return {
         ...newItem,
-        completed: existingMatch ? !!existingMatch.completed : false
+        completed: existingMatch ? !!existingMatch.completed : false,
+        skipped: existingMatch ? !!existingMatch.skipped : false,
+        photoUrl: existingMatch?.photoUrl ?? null,
       };
     });
 
