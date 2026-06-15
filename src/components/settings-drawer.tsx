@@ -134,13 +134,12 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
       {/* Backdrop */}
       <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px]" onClick={onClose} />
 
-      {/* Drawer */}
+      {/* Header — fixed indipendente, non partecipa a nessun scroll */}
       <div
-        className="fixed right-0 inset-y-0 z-50 w-[380px] flex flex-col overflow-hidden"
-        style={{ background: "#f2f2f7", fontFamily: "-apple-system, 'SF Pro Text', system-ui, sans-serif", boxShadow: "-8px 0 40px rgba(0,0,0,.15)" }}
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{ fontFamily: "-apple-system, 'SF Pro Text', system-ui, sans-serif", boxShadow: "-8px 0 40px rgba(0,0,0,.15)" }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#e5e5ea]" style={{ background: "rgba(255,255,255,.9)", backdropFilter: "blur(20px)" }}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#e5e5ea]" style={{ background: "rgba(255,255,255,.97)" }}>
           <div className="flex items-center gap-2">
             <span className="text-[20px]">⚙️</span>
             <span className="text-[17px] font-[700] text-[#1c1c1e]">Impostazioni</span>
@@ -149,25 +148,25 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
             <X size={16} strokeWidth={2.5} className="text-[#3c3c43]" />
           </button>
         </div>
-
-        {/* Nav tabs */}
         <div className="flex gap-1 px-4 py-3 border-b border-[#e5e5ea] bg-white">
           {sections.map(s => (
             <button
               key={s.id}
               onClick={() => setSection(s.id)}
               className="flex items-center gap-1.5 px-3 py-[6px] rounded-[8px] text-[13px] font-[600] transition-all"
-              style={section === s.id
-                ? { background: "#1c1c1e", color: "white" }
-                : { background: "transparent", color: "#6e6e73" }}
+              style={section === s.id ? { background: "#1c1c1e", color: "white" } : { background: "transparent", color: "#6e6e73" }}
             >
               {s.icon} {s.label}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-5 pb-24 flex flex-col gap-4">
+      {/* Contenuto scrollabile — fixed indipendente, parte da sotto l'header */}
+      <div
+        className="fixed left-0 right-0 bottom-0 z-[49] overflow-y-auto overscroll-contain px-4 py-5 pb-24 flex flex-col gap-4"
+        style={{ top: "117px", background: "#f2f2f7", fontFamily: "-apple-system, 'SF Pro Text', system-ui, sans-serif" }}
+      >
 
           {!data && (
             <div className="flex items-center justify-center py-16">
@@ -447,7 +446,6 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
           </div>
 
         </div>
-      </div>
     </>,
     portalRoot
   );
