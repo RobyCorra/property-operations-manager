@@ -80,7 +80,12 @@ export async function getTeamActivityHistory(filters: {
   }
 
   if (status) {
-    whereClause.status = status;
+    // COMPLETED raggruppa anche AWAITING_REVIEW e APPROVED (stati "terminati" per le pulizie)
+    if (status === "COMPLETED") {
+      whereClause.status = { in: ["COMPLETED", "AWAITING_REVIEW", "APPROVED"] };
+    } else {
+      whereClause.status = status;
+    }
   }
 
   const dateFilter: any = {};
