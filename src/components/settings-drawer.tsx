@@ -97,6 +97,15 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
     });
   };
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
   if (!open) return null;
 
   const sections: { id: Section; label: string; icon: React.ReactNode }[] = [
