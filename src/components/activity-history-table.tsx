@@ -191,7 +191,7 @@ export default function ActivityHistoryTable({
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {activities.map(activity => (
-                  <tr key={`${activity.type}-${activity.id}`} className="hover:bg-gray-50/30 transition-colors group">
+                  <tr key={`${activity.type}-${activity.id}`} className="hover:bg-gray-50/50 transition-colors cursor-pointer" onClick={() => setSelectedActivity({ id: activity.id, type: activity.type })}>
                     <td className="px-8 py-6">
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
