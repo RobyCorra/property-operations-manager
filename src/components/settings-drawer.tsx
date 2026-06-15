@@ -97,25 +97,8 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
     });
   };
 
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.width = "100%";
-      document.documentElement.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
-      document.documentElement.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
-      document.documentElement.style.overflow = "";
-    };
-  }, [open]);
+  // Nessun body lock: il layout h-screen overflow-hidden contiene già il rubber-band iOS.
+  // Impostare position:fixed sul body sposta il tab bar e ridimensiona il viewport.
 
   if (!open) return null;
 
