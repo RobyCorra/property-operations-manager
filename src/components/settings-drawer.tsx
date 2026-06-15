@@ -147,7 +147,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
 
         {/* Contenuto scrollabile — flex-1, l'unico elemento che scorre */}
         <div
-          className="flex-1 overflow-y-auto overscroll-contain px-4 py-5 pb-24 flex flex-col gap-4"
+          className="flex-1 overflow-y-auto overscroll-contain px-4 py-5 pb-4 flex flex-col gap-4"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
 
@@ -412,22 +412,22 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
               )}
             </>
           )}
-          {/* ── LOGOUT ── */}
-          <div className="pt-2 pb-2">
-            <form action={logoutAction}>
-              <button
-                type="submit"
-                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-[14px] bg-white text-left transition hover:bg-red-50"
-                style={{ border: ".5px solid #e5e5ea" }}
-              >
-                <div className="w-[34px] h-[34px] rounded-[10px] bg-red-50 flex items-center justify-center shrink-0">
-                  <LogOut size={16} strokeWidth={2} className="text-red-600" />
-                </div>
-                <span className="text-[14px] font-[600] text-red-600">Esci</span>
-              </button>
-            </form>
-          </div>
+        </div>
 
+        {/* ── LOGOUT — fisso in fondo, sempre visibile sopra il tab bar ── */}
+        <div className="shrink-0 px-4 py-3 border-t border-[#e5e5ea] bg-[#f2f2f7]" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="w-full flex items-center gap-3 px-4 py-3.5 rounded-[14px] bg-white text-left transition hover:bg-red-50"
+              style={{ border: ".5px solid #e5e5ea" }}
+            >
+              <div className="w-[34px] h-[34px] rounded-[10px] bg-red-50 flex items-center justify-center shrink-0">
+                <LogOut size={16} strokeWidth={2} className="text-red-600" />
+              </div>
+              <span className="text-[14px] font-[600] text-red-600">Esci</span>
+            </button>
+          </form>
         </div>
       </div>
     </>
