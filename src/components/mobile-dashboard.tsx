@@ -553,7 +553,7 @@ export default function MobileDashboard({
   }, []);
 
   return (
-    <div className="relative bg-[#f8f7ff] min-h-screen flex flex-col overflow-hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+    <div className="relative bg-[#f8f7ff] h-screen flex flex-col overflow-hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
 
       {/* ════════════════════════════════════════════════════
           DASHBOARD VIEW
