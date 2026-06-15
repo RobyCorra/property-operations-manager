@@ -186,9 +186,9 @@ function T({ active, onClick, label, icon, dot }: {
   const dotColor = dot === "amber" ? "bg-amber-400" : dot === "orange" ? "bg-orange-400" : "bg-rose-500";
   return (
     <button onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-all ${active ? "bg-violet-50" : ""}`}
+      className={`flex flex-col items-center justify-center gap-0.5 min-w-[60px] px-2 py-1 rounded-2xl mx-0.5 transition-transform ${active ? "bg-violet-50" : ""}`}
     >
-      <div className={`w-11 h-8 rounded-xl flex items-center justify-center relative transition-all ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)] text-white" : "text-slate-400"}`}>
+      <div className={`w-11 h-8 rounded-xl flex items-center justify-center relative transition-transform ${active ? "bg-violet-600 shadow-[0_2px_8px_rgba(99,102,241,.4)] text-white" : "text-slate-400"}`}>
         {icon}
         {dot && <span className={`absolute top-0 right-0.5 w-2.5 h-2.5 ${dotColor} rounded-full border-2 border-white`} />}
       </div>

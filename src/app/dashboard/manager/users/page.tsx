@@ -53,13 +53,14 @@ export default async function UsersListPage() {
   return (
     <main className="min-h-screen bg-[#faf8ff] p-6 lg:p-10 font-sans text-slate-900">
       <div className="max-w-7xl mx-auto space-y-12">
-        <BackButton />
-
         {/* Header */}
-        <div className="sticky top-0 z-30 -mx-6 lg:-mx-10 px-6 lg:px-10 py-4 bg-[#faf8ff] flex flex-row items-center md:items-end justify-between gap-4 md:gap-6">
-          <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-slate-900 uppercase">
-            Team <span className="text-violet-600">.</span>
-          </h1>
+        <div className="sticky top-0 z-30 -mx-6 lg:-mx-10 px-6 lg:px-10 pb-4 -mt-6 lg:-mt-10 bg-[#faf8ff] flex flex-row items-center md:items-end justify-between gap-4 md:gap-6" style={{ paddingTop: "calc(env(safe-area-inset-top) + 16px)" }}>
+          <div className="flex items-center gap-3">
+            <BackButton />
+            <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-slate-900 uppercase">
+              Team <span className="text-violet-600">.</span>
+            </h1>
+          </div>
 
           <div className="flex items-center gap-2 md:gap-4">
             <Link

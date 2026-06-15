@@ -24,7 +24,9 @@ export async function GET(req: NextRequest) {
     apartment: { organizationId: orgId },
     date: { gte: from, lte: to },
     ...(apartmentId ? { apartmentId } : {}),
-    ...(status && status !== "ALL" ? { status } : {}),
+    // Status specifico richiesto → filtra per quello.
+    // "Tutte" (ALL/null) → esclude le pulizie annullate (non c'è pill "Annullate").
+    ...(status && status !== "ALL" ? { status } : { status: { not: "CANCELLED" } }),
   };
 
   const tasks = await prisma.cleaningTask.findMany({

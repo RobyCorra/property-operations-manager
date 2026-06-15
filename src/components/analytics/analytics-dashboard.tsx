@@ -228,7 +228,7 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
 
       {/* ── Topbar ── */}
       <div className="sticky top-0 z-50 border-b border-black/[.08]"
-           style={{ background: "rgba(255,255,255,.88)", backdropFilter: "blur(20px)" }}>
+           style={{ background: "rgba(255,255,255,.88)", backdropFilter: "blur(20px)", paddingTop: "env(safe-area-inset-top)" }}>
         <div className="max-w-[1100px] mx-auto px-5 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="w-[34px] h-[34px] rounded-[10px] bg-[#1c1c1e] flex items-center justify-center">
