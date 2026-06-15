@@ -107,11 +107,12 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
           </div>
         </header>
 
-        {/* Dashboard Main View — padding bottom su mobile per il tab bar */}
-        <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden pb-[72px] md:pb-0">{children}</div>
+        {/* Dashboard Main View */}
+        <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden">{children}</div>
+
+        {/* Mobile Tab Bar — shrink-0 dentro la gabbia h-screen, mai fixed */}
+        <MobileTabBar unreadCount={unreadCount} />
       </div>
-      {/* Mobile Tab Bar — sempre visibile su mobile, nascosto su desktop */}
-      <MobileTabBar unreadCount={unreadCount} />
     </div>
   );
 }
