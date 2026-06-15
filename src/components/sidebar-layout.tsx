@@ -38,7 +38,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
   const sidebarWidth = mounted && collapsed ? "md:pl-[72px]" : "md:pl-64";
 
   return (
-    <div className="min-h-screen bg-[#faf8ff] flex w-full max-w-[100vw] overflow-x-hidden">
+    <div className="h-screen bg-[#faf8ff] flex w-full max-w-[100vw] overflow-hidden">
       {/* FloatingManagerChat fuori dall'header per evitare problemi di stacking context
           causati da backdrop-filter: blur sull'header sticky */}
       <FloatingManagerChat externalOpen={aiOpen} onExternalClose={() => setAiOpen(false)} />
