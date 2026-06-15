@@ -17,21 +17,39 @@ export default function CleanerPushTestPage() {
   const [busy, setBusy] = useState(false);
 
   function log(level: LogEntry["level"], msg: string) {
-    setLogs(prev => [{ ts: now(), level, msg }, ...prev].slice(0, 60));
+    setLogs(prev => [{ ts: now(), level, msg }, ...prev].slice(0, 80));
   }
 
   const checkAll = useCallback(async () => {
-    log("info", "── Controllo stato push ──");
+    log("info", "── Controllo stato ──");
 
     const native = Capacitor.isNativePlatform();
     const platform = Capacitor.getPlatform();
     setIsNative(native);
     log("info", `Piattaforma: ${platform} — nativo: ${native ? "sì" : "no"}`);
 
-    if (!native) {
-      log("warn", "Non sei su app nativa — Web Push non supportato in WKWebView");
-      log("info", "Su app Capacitor le push arrivano solo tramite APNs (iOS nativo)");
-      return;
+    if (native) {
+      // Controlla se il plugin è disponibile
+      const pluginAvailable = Capacitor.isPluginAvailable("PushNotifications");
+      log(pluginAvailable ? "ok" : "error", `Plugin PushNotifications disponibile: ${pluginAvailable ? "SÌ" : "NO"}`);
+
+      // Controlla permessi attuali (senza richiederli)
+      try {
+        const perm = await PushNotifications.checkPermissions();
+        log(perm.receive === "granted" ? "ok" : "warn", `Permesso attuale: ${perm.receive}`);
+      } catch (e) {
+        log("error", `Errore checkPermissions: ${e}`);
+      }
+
+      // Leggi debug da localStorage
+      try {
+        const debug = localStorage.getItem("apns_debug");
+        if (debug) {
+          log("info", `LocalStorage apns_debug: ${debug}`);
+        } else {
+          log("warn", "Nessun log APNs in localStorage (ApnsRegister non ha ancora scritto)");
+        }
+      } catch (e) { /* ignore */ }
     }
 
     // Controlla token APNs nel DB
@@ -42,10 +60,12 @@ export default function CleanerPushTestPage() {
         setApnsTokenInDb(data.hasToken);
         log(data.hasToken ? "ok" : "warn",
           data.hasToken
-            ? `Token APNs registrato nel DB: ...${data.tokenShort}`
-            : "Nessun token APNs nel DB — notifiche non attive");
+            ? `Token APNs nel DB: ...${data.tokenShort}`
+            : "Nessun token APNs nel DB");
+      } else if (res.status === 401) {
+        log("error", "Non autenticato — cookie userId mancante");
       } else {
-        log("warn", "Impossibile verificare token APNs nel DB");
+        log("warn", `Errore API status: ${res.status}`);
       }
     } catch (e) {
       log("error", `Errore verifica DB: ${e}`);
@@ -57,51 +77,85 @@ export default function CleanerPushTestPage() {
   async function handleRegisterApns() {
     setBusy(true);
     try {
-      log("info", "Richiedo permesso notifiche iOS...");
+      log("info", "── Registrazione APNs manuale ──");
+
+      // 1) Attacca listener PRIMA di register()
+      log("info", "Attacco listener registration/registrationError...");
+      let resolved = false;
+
+      const registrationHandle = await PushNotifications.addListener("registration", async (token) => {
+        if (resolved) return;
+        resolved = true;
+        clearTimeout(timer);
+        log("ok", `Token APNs ricevuto: ...${token.value.slice(-20)}`);
+        try {
+          localStorage.setItem("apns_debug", JSON.stringify({ ts: now(), status: "token_received", tokenShort: token.value.slice(-20) }));
+        } catch (e) { /* ignore */ }
+        try {
+          const res = await fetch("/api/apns-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: token.value }),
+          });
+          if (res.ok) {
+            log("ok", "Token salvato nel DB ✓");
+            setApnsTokenInDb(true);
+          } else {
+            const body = await res.text();
+            log("error", `Errore salvataggio token: ${res.status} — ${body}`);
+          }
+        } catch (e) {
+          log("error", `Errore salvataggio: ${e}`);
+        }
+        setBusy(false);
+      });
+
+      const errorHandle = await PushNotifications.addListener("registrationError", (err) => {
+        if (resolved) return;
+        resolved = true;
+        clearTimeout(timer);
+        const msg = JSON.stringify(err);
+        log("error", `Registrazione APNs FALLITA: ${msg}`);
+        try {
+          localStorage.setItem("apns_debug", JSON.stringify({ ts: now(), status: "error", error: msg }));
+        } catch (e) { /* ignore */ }
+        setBusy(false);
+      });
+
+      log("ok", "Listener attaccati");
+
+      // 2) Richiedi permesso
+      log("info", "Richiedo permesso...");
       const perm = await PushNotifications.requestPermissions();
       log(perm.receive === "granted" ? "ok" : "error", `Permesso: ${perm.receive}`);
-      if (perm.receive !== "granted") { setBusy(false); return; }
 
-      log("info", "Registro con APNs...");
+      if (perm.receive !== "granted") {
+        log("warn", "Permesso negato — impossibile registrare");
+        setBusy(false);
+        return;
+      }
+
+      // 3) Chiama register()
+      log("info", "Chiamo PushNotifications.register()...");
       await PushNotifications.register();
+      log("info", "register() inviato — aspetto token (max 15s)...");
 
-      await new Promise<void>((resolve) => {
-        const timeout = setTimeout(() => {
-          log("warn", "Timeout — nessun token ricevuto da APNs in 10s");
-          resolve();
-        }, 10000);
+      // Timeout
+      const timer = setTimeout(() => {
+        if (resolved) return;
+        resolved = true;
+        log("warn", "TIMEOUT 15s — nessun token e nessun errore ricevuto");
+        log("warn", "Il bridge Capacitor non ha risposto a register()");
+        try {
+          localStorage.setItem("apns_debug", JSON.stringify({ ts: now(), status: "timeout" }));
+        } catch (e) { /* ignore */ }
+        setBusy(false);
+      }, 15000);
 
-        PushNotifications.addListener("registration", async (token) => {
-          clearTimeout(timeout);
-          log("ok", `Token APNs ricevuto: ...${token.value.slice(-20)}`);
-          try {
-            const res = await fetch("/api/apns-token", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ token: token.value }),
-            });
-            if (res.ok) {
-              log("ok", "Token salvato nel DB ✓");
-              setApnsTokenInDb(true);
-            } else {
-              log("error", "Errore salvataggio token nel DB");
-            }
-          } catch (e) {
-            log("error", `Errore salvataggio: ${e}`);
-          }
-          resolve();
-        });
-
-        PushNotifications.addListener("registrationError", (err) => {
-          clearTimeout(timeout);
-          log("error", `Registrazione APNs fallita: ${JSON.stringify(err)}`);
-          resolve();
-        });
-      });
     } catch (e) {
-      log("error", `Errore: ${e}`);
+      log("error", `Errore inatteso: ${e}`);
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   async function handleTestApns() {
@@ -117,13 +171,17 @@ export default function CleanerPushTestPage() {
       if (!res.ok) {
         log("error", `Errore server: ${JSON.stringify(body)}`);
       } else {
-        log("ok", "Push APNs inviata dal server — aspetta 5-10s...");
-        log("info", "(metti l'app in background per vedere la notifica)");
+        log("ok", "Push APNs inviata — aspetta 5-10s (app in background)");
       }
     } catch (e) {
       log("error", `Errore: ${e}`);
     }
     setBusy(false);
+  }
+
+  function handleClearStorage() {
+    try { localStorage.removeItem("apns_debug"); } catch (e) { /* ignore */ }
+    log("info", "localStorage apns_debug rimosso");
   }
 
   const Dot = ({ ok, warn }: { ok: boolean; warn?: boolean }) => (
@@ -138,7 +196,7 @@ export default function CleanerPushTestPage() {
 
         <div>
           <h1 className="text-lg font-bold">🔔 Push Test — APNs</h1>
-          <p className="text-slate-500 text-xs mt-1">Su app Capacitor le notifiche arrivano solo tramite APNs nativo</p>
+          <p className="text-slate-500 text-xs mt-1">Diagnostica notifiche Capacitor iOS</p>
         </div>
 
         {/* Stato */}
@@ -148,7 +206,7 @@ export default function CleanerPushTestPage() {
           <p className="flex items-center">
             <Dot ok={apnsTokenInDb === true} warn={apnsTokenInDb === null} />
             {apnsTokenInDb === null ? "Token APNs: verifica..." :
-             apnsTokenInDb ? "Token APNs registrato nel DB ✓" : "Token APNs NON nel DB"}
+             apnsTokenInDb ? "Token APNs nel DB ✓" : "Token APNs NON nel DB ✗"}
           </p>
         </div>
 
@@ -157,23 +215,22 @@ export default function CleanerPushTestPage() {
           <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">Azioni</p>
           <button onClick={handleRegisterApns} disabled={busy || !isNative}
             className="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-colors">
-            {busy ? "⏳ Attendi..." : "① Registra APNs (richiedi permesso)"}
+            {busy ? "⏳ Attendi..." : "① Registra APNs"}
           </button>
           <button onClick={handleTestApns} disabled={busy || !apnsTokenInDb}
             className="w-full py-3 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-colors">
-            ② Invia push APNs di test
+            ② Invia push di test
           </button>
-          <button onClick={checkAll} disabled={busy}
-            className="w-full py-3 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-colors">
-            Aggiorna stato
-          </button>
-        </div>
-
-        {/* Note */}
-        <div className="bg-slate-900 rounded-xl p-4 text-xs text-slate-400 space-y-1.5">
-          <p><span className="text-violet-400">①</span> Registra APNs — chiede il permesso iOS e salva il token</p>
-          <p><span className="text-emerald-400">②</span> Invia push — poi metti l'app in background per vederla arrivare</p>
-          <p className="text-slate-600 pt-1">Web Push e Service Worker non funzionano in WKWebView — è normale.</p>
+          <div className="flex gap-2">
+            <button onClick={checkAll} disabled={busy}
+              className="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-colors">
+              Aggiorna stato
+            </button>
+            <button onClick={handleClearStorage}
+              className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs font-bold rounded-xl transition-colors">
+              Pulisci cache
+            </button>
+          </div>
         </div>
 
         {/* Log */}
@@ -184,7 +241,7 @@ export default function CleanerPushTestPage() {
               <button onClick={() => setLogs([])} className="text-[10px] text-slate-600 hover:text-slate-400">Pulisci</button>
             )}
           </div>
-          <div className="space-y-0.5 max-h-72 overflow-y-auto">
+          <div className="space-y-0.5 max-h-96 overflow-y-auto">
             {logs.length === 0 && <p className="text-slate-600 text-xs">In attesa...</p>}
             {logs.map((e, i) => (
               <p key={i} className={`text-xs ${logColor[e.level]}`}>
@@ -194,6 +251,7 @@ export default function CleanerPushTestPage() {
           </div>
         </div>
 
+        <p className="text-slate-700 text-[10px] text-center">v2 — listeners prima di register()</p>
       </div>
     </div>
   );
