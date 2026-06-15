@@ -80,6 +80,18 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
                 {/* Meta Info */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                   <div>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Appartamento</p>
+                    <span className="text-sm font-bold text-gray-700">{data.apartment?.name || '—'}</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Data</p>
+                    <span className="text-sm font-bold text-gray-700">
+                      {type === 'CLEANING'
+                        ? formatRomeDateTimeDisplay(data.date)
+                        : formatRomeDateTimeDisplay(data.scheduledStart || data.createdAt)}
+                    </span>
+                  </div>
+                  <div>
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Stato</p>
                     <span className="text-sm font-bold text-gray-700">{data.status}</span>
                   </div>
