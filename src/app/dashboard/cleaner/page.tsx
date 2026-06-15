@@ -328,7 +328,7 @@ export default async function CleanerDashboardPage() {
           className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-violet-600"
         >
           <ClipboardList size={20} />
-          <span className="text-[9px] font-black uppercase tracking-widest">Tasks</span>
+          <span className="text-[9px] font-black uppercase tracking-widest">Pulizie</span>
         </Link>
         <Link
           href="/dashboard/history"
