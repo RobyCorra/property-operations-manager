@@ -791,7 +791,7 @@ export default function MessagesDashboard({
             </div>
 
             {/* Contenuto scrollabile */}
-            <div className="overflow-y-auto flex-1">
+            <div className="overflow-y-auto flex-1 pb-24">
               <InfoPanelContent thread={selectedThread} isActing={isActing} onAction={handleAction} />
             </div>
 

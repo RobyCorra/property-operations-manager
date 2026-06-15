@@ -143,7 +143,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-4">
+        <div className="flex-1 overflow-y-auto px-4 py-5 pb-24 flex flex-col gap-4">
 
           {!data && (
             <div className="flex items-center justify-center py-16">
