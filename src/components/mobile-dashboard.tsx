@@ -343,6 +343,23 @@ export default function MobileDashboard({
   const [ticketsSheetOpen, setTicketsSheetOpen]       = useState(false);
   const [lateCleanSheetOpen, setLateCleanSheetOpen]   = useState(false);
   const [inProgressSheetOpen, setInProgressSheetOpen] = useState(false);
+
+  // ── Sheet "Tutte le pulizie" ───────────────────────────────────
+  type AllCleaningItem = {
+    id: string;
+    date: string;
+    status: string;
+    apartmentId: string;
+    apartmentName: string;
+    assignedToName: string | null;
+    href: string;
+  };
+  const nowForSheet = new Date();
+  const [allCleaningsMonth, setAllCleaningsMonth] = useState(`${nowForSheet.getFullYear()}-${String(nowForSheet.getMonth() + 1).padStart(2, "0")}`);
+  const [allCleaningsApt, setAllCleaningsApt]     = useState("ALL");
+  const [allCleaningsStatus, setAllCleaningsStatus] = useState("ALL");
+  const [allCleaningsData, setAllCleaningsData]   = useState<AllCleaningItem[]>([]);
+  const [allCleaningsLoading, setAllCleaningsLoading] = useState(false);
   const [aiChatOpen, setAiChatOpen]         = useState(false);
   const [searchOpen, setSearchOpen]         = useState(false);
   const [searchQuery, setSearchQuery]       = useState("");
@@ -431,6 +448,23 @@ export default function MobileDashboard({
     // Naviga usando Link normalmente, questo sarà gestito dal browser
   }
 
+  // ── Fetch tutte le pulizie ────────────────────────────────────────
+  async function fetchAllCleanings(month: string, aptId: string, status: string) {
+    setAllCleaningsLoading(true);
+    try {
+      const params = new URLSearchParams({ month });
+      if (aptId !== "ALL") params.set("apartmentId", aptId);
+      if (status !== "ALL") params.set("status", status);
+      const res = await fetch(`/api/cleanings-all?${params}`);
+      const data = await res.json();
+      setAllCleaningsData(data);
+    } catch {
+      setAllCleaningsData([]);
+    } finally {
+      setAllCleaningsLoading(false);
+    }
+  }
+
   // ── Hamburger button (reused in multiple headers) ──────────────────
   const HamburgerBtn = () => (
     <button
@@ -451,12 +485,18 @@ export default function MobileDashboard({
     setLateCleanSheetOpen(false);
     setInProgressSheetOpen(false);
 
-    // Legge sia "openOnDashboard" (dal tab bar) che "returnToSheet" (dal dettaglio)
-    const action = sessionStorage.getItem("openOnDashboard") || sessionStorage.getItem("returnToSheet");
+    // Legge query param ?sheet= (redirect da server action) oppure sessionStorage
+    const urlSheet = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("sheet") : null;
+    if (urlSheet) {
+      // Rimuovi il query param dall'URL senza ricaricare la pagina
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, "", cleanUrl);
+    }
+    const action = urlSheet || sessionStorage.getItem("openOnDashboard") || sessionStorage.getItem("returnToSheet");
     sessionStorage.removeItem("openOnDashboard");
     sessionStorage.removeItem("returnToSheet");
 
-    if (action === "cleanings") { setCleaningsSheetOpen(true); setTicketsSheetOpen(false); }
+    if (action === "cleanings") { setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); setTicketsSheetOpen(false); }
     else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); }
     else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
     else { setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
@@ -479,7 +519,7 @@ export default function MobileDashboard({
       setLateCleanSheetOpen(false);
       setInProgressSheetOpen(false);
 
-      if (action === "cleanings") { setCleaningsSheetOpen(true); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
+      if (action === "cleanings") { setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
       else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
       else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
       else {
@@ -505,7 +545,7 @@ export default function MobileDashboard({
         setSelectedApt(null);
         setCalendarData(null);
       } else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
-      else if (action === "cleanings") { setCleaningsSheetOpen(true); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
+      else if (action === "cleanings") { setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
       else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
     };
     window.addEventListener("mobile-tab-action", onAction);
@@ -521,7 +561,7 @@ export default function MobileDashboard({
       <div className="flex-1 overflow-y-auto pb-24" style={{ WebkitOverflowScrolling: "touch" }}>
 
         {/* ── HEADER ──────────────────────────────────────── */}
-        <div className="px-4 pt-4 pb-3 bg-white border-b border-[#ede9fe] flex items-center gap-3">
+        <div className="sticky top-0 z-20 px-4 pt-4 pb-3 bg-white border-b border-[#ede9fe] flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-violet-500 leading-none mb-1">{dateLabel}</p>
             <p className="text-[18px] font-black text-slate-900 leading-tight truncate">{orgName}</p>
@@ -599,7 +639,7 @@ export default function MobileDashboard({
 
           {/* ─ Pulizie oggi ─ */}
           <button
-            onClick={() => setCleaningsSheetOpen(true)}
+            onClick={() => { setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); }}
             className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
               cleaningsCount > 0
                 ? "bg-white border-slate-100 shadow-sm"
@@ -1102,7 +1142,12 @@ export default function MobileDashboard({
                               <div className="flex-1 min-w-0">
                                 <div className="text-[8px] font-black uppercase tracking-wide text-blue-600">Pulizia</div>
                                 <div className="text-[12px] font-bold text-slate-900 truncate">{selectedApt!.name}</div>
-                                <div className="text-[9px] text-slate-500">{c.booking?.totalGuests ? `${c.booking.totalGuests} ospiti` : "—"}{c.assignedTo ? ` · ${c.assignedTo.name}` : ""}</div>
+                                {(() => {
+                                  const cleaningDay = isoToYMD(c.date);
+                                  const checkinBooking = calendarData!.bookings.find((b) => isoToYMD(b.checkInDate) === cleaningDay);
+                                  const guests = checkinBooking?.totalGuests ?? c.booking?.totalGuests;
+                                  return <div className="text-[9px] text-slate-500">{guests ? `${guests} ospiti` : "—"}{c.assignedTo ? ` · ${c.assignedTo.name}` : ""}</div>;
+                                })()}
                               </div>
                               <span className={`text-[7px] font-bold px-2 py-1 rounded-full shrink-0 ${info.badgeClass}`}>{info.label}</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1397,7 +1442,12 @@ export default function MobileDashboard({
                         <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-lg">🧹</div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-bold text-slate-900">{selectedApt!.name}</p>
-                          {c.booking?.totalGuests && <p className="text-[10px] text-slate-500">{c.booking.totalGuests} ospiti</p>}
+                          {(() => {
+                            const cleaningDay = isoToYMD(c.date);
+                            const checkinBooking = calendarData!.bookings.find((b) => isoToYMD(b.checkInDate) === cleaningDay);
+                            const guests = checkinBooking?.totalGuests ?? c.booking?.totalGuests;
+                            return guests ? <p className="text-[10px] text-slate-500">{guests} ospiti</p> : null;
+                          })()}
                           {c.assignedTo && <p className="text-[10px] text-slate-400">{c.assignedTo.name}</p>}
                         </div>
                         <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${cleaningStatusColor(c.status)}`}>{statusLabel(c.status)}</span>
@@ -1733,78 +1783,185 @@ export default function MobileDashboard({
       )}
 
       {/* ════════════════════════════════════════════════════
-          PULIZIE OGGI SHEET
+          TUTTE LE PULIZIE SHEET
           ════════════════════════════════════════════════════ */}
-      {cleaningsSheetOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
-          <div className="flex justify-center pt-3">
-            <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
-          </div>
-          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Oggi</p>
-              <h2 className="text-xl font-bold text-slate-900">
-                {cleaningsCount > 0 ? `${cleaningsCount} pulizie` : "Nessuna pulizia oggi"}
-              </h2>
+      {cleaningsSheetOpen && (() => {
+        // Raggruppa per data (giorno)
+        const grouped: Record<string, AllCleaningItem[]> = {};
+        allCleaningsData.forEach((item) => {
+          const d = new Date(item.date);
+          const key = d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push(item);
+        });
+        const groupKeys = Object.keys(grouped);
+
+        // Mesi disponibili: mese corrente + 11 mesi futuri
+        const monthOptions: { value: string; label: string }[] = [];
+        const base = new Date();
+        base.setDate(1);
+        for (let i = -3; i <= 8; i++) {
+          const d = new Date(base.getFullYear(), base.getMonth() + i, 1);
+          const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+          const label = d.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+          monthOptions.push({ value: val, label: label.charAt(0).toUpperCase() + label.slice(1) });
+        }
+
+        const statusOptions = [
+          { value: "ALL", label: "Tutte" },
+          { value: "PENDING", label: "In attesa" },
+          { value: "IN_PROGRESS", label: "In corso" },
+          { value: "AWAITING_REVIEW", label: "Revisione" },
+          { value: "COMPLETED", label: "Completate" },
+          { value: "APPROVED", label: "Approvate" },
+        ];
+
+        function barColor(status: string, assigned: boolean) {
+          if (status === "APPROVED") return "bg-emerald-500";
+          if (status === "AWAITING_REVIEW") return "bg-amber-400";
+          if (status === "COMPLETED") return "bg-sky-400";
+          if (status === "IN_PROGRESS") return "bg-violet-500";
+          if (assigned) return "bg-yellow-400";
+          return "bg-red-400";
+        }
+
+        return (
+          <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
+            {/* Handle */}
+            <div className="flex justify-center pt-3 shrink-0">
+              <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
             </div>
-            <button
-              onClick={() => setCleaningsSheetOpen(false)}
-              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
-            {cleaningsTodayItems.length === 0 && (
-              <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia pianificata per oggi</div>
-            )}
-            {cleaningsTodayItems.map((item) => {
-              const dotHex = unifiedDotHex(item.status, item.isAssigned);
-              const barColor = item.status === "APPROVED" ? "bg-emerald-500"
-                : item.status === "AWAITING_REVIEW" ? "bg-amber-400"
-                : item.status === "COMPLETED" ? "bg-sky-400"
-                : item.status === "IN_PROGRESS" ? "bg-violet-500"
-                : item.isAssigned ? "bg-yellow-400"
-                : "bg-red-400";
-              const iconColor = dotHex;
-              const iconBg = item.status === "APPROVED" ? "bg-emerald-50"
-                : item.status === "AWAITING_REVIEW" ? "bg-amber-50"
-                : item.status === "COMPLETED" ? "bg-sky-50"
-                : item.status === "IN_PROGRESS" ? "bg-violet-100"
-                : item.isAssigned ? "bg-yellow-50"
-                : "bg-red-50";
-              const badgeClass = unifiedStatusColor(item.status, item.isAssigned);
-              const itemStatusLabel = statusLabel(item.status, item.isAssigned);
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => { sessionStorage.setItem("returnToSheet", "cleanings"); setCleaningsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
-                  className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
+
+            {/* Header */}
+            <div className="px-5 pt-3 pb-3 flex items-center justify-between border-b border-[#ede9fe] shrink-0">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Pulizie programmate</p>
+                <h2 className="text-xl font-bold text-slate-900">
+                  {allCleaningsLoading ? "Caricamento…" : `${allCleaningsData.length} pulizie`}
+                </h2>
+              </div>
+              <button
+                onClick={() => setCleaningsSheetOpen(false)}
+                className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Filtri riga 1: appartamento + mese */}
+            <div className="px-4 py-2 flex gap-2 border-b border-[#ede9fe] shrink-0">
+              <select
+                value={allCleaningsApt}
+                onChange={(e) => { setAllCleaningsApt(e.target.value); fetchAllCleanings(allCleaningsMonth, e.target.value, allCleaningsStatus); }}
+                className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#ede9fe] bg-white text-violet-700 min-w-0 appearance-none"
+              >
+                <option value="ALL">Tutti gli appartamenti</option>
+                {apartments.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
+              <select
+                value={allCleaningsMonth}
+                onChange={(e) => { setAllCleaningsMonth(e.target.value); fetchAllCleanings(e.target.value, allCleaningsApt, allCleaningsStatus); }}
+                className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#ede9fe] bg-white text-violet-700 min-w-0 appearance-none"
+              >
+                {monthOptions.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+              </select>
+            </div>
+
+            {/* Filtri riga 2: stato pills */}
+            <div className="px-4 py-2 flex gap-2 overflow-x-auto border-b border-[#ede9fe] shrink-0 scrollbar-hide">
+              {statusOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => { setAllCleaningsStatus(opt.value); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, opt.value); }}
+                  className={`text-[11px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap border transition-all ${
+                    allCleaningsStatus === opt.value
+                      ? "bg-violet-600 text-white border-violet-600"
+                      : "bg-white text-slate-500 border-[#ede9fe]"
+                  }`}
                 >
-                  <div className={`h-1 ${barColor}`} />
-                  <div className="px-4 py-3 flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
-                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2.5">
-                        <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
-                        <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
-                      </svg>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Lista */}
+            <div className="flex-1 overflow-y-auto pb-24">
+              {allCleaningsLoading ? (
+                <div className="px-5 py-4 space-y-3">
+                  {[1,2,3,4].map((i) => (
+                    <div key={i} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+                      <div className="h-1 bg-slate-100 animate-pulse" />
+                      <div className="px-4 py-3 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 animate-pulse shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 bg-slate-100 animate-pulse rounded w-3/4" />
+                          <div className="h-2 bg-slate-100 animate-pulse rounded w-1/2" />
+                        </div>
+                        <div className="w-16 h-6 bg-slate-100 animate-pulse rounded-lg" />
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
-                      <p className="text-[10px] text-slate-400 truncate">{item.assignedToName}</p>
-                    </div>
-                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 ${badgeClass}`}>
-                      {itemStatusLabel}
-                    </span>
-                  </div>
+                  ))}
                 </div>
-              );
-            })}
+              ) : groupKeys.length === 0 ? (
+                <div className="text-center py-16 text-slate-400 text-sm">Nessuna pulizia trovata</div>
+              ) : (
+                <div className="px-5 py-4 space-y-5">
+                  {groupKeys.map((dayLabel) => (
+                    <div key={dayLabel}>
+                      <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2 capitalize">{dayLabel}</p>
+                      <div className="space-y-2">
+                        {grouped[dayLabel].map((item) => {
+                          const assigned = !!item.assignedToName;
+                          const bc = barColor(item.status, assigned);
+                          const badgeClass = unifiedStatusColor(item.status, assigned);
+                          const lbl = statusLabel(item.status, assigned);
+                          const timeStr = new Date(item.date).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+                          const iconBg = item.status === "APPROVED" ? "bg-emerald-50"
+                            : item.status === "AWAITING_REVIEW" ? "bg-amber-50"
+                            : item.status === "COMPLETED" ? "bg-sky-50"
+                            : item.status === "IN_PROGRESS" ? "bg-violet-100"
+                            : assigned ? "bg-yellow-50"
+                            : "bg-red-50";
+                          const iconStroke = item.status === "APPROVED" ? "#10b981"
+                            : item.status === "AWAITING_REVIEW" ? "#f59e0b"
+                            : item.status === "COMPLETED" ? "#38bdf8"
+                            : item.status === "IN_PROGRESS" ? "#7c3aed"
+                            : assigned ? "#eab308"
+                            : "#ef4444";
+                          return (
+                            <div
+                              key={item.id}
+                              onClick={() => { sessionStorage.setItem("returnToSheet", "cleanings"); setCleaningsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
+                              className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
+                            >
+                              <div className={`h-1 ${bc}`} />
+                              <div className="px-4 py-3 flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
+                                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={iconStroke} strokeWidth="2.5">
+                                    <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                                    <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
+                                  <p className="text-[10px] text-slate-400 truncate">{item.assignedToName ?? "Non assegnata"} · {timeStr}</p>
+                                </div>
+                                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 ${badgeClass}`}>{lbl}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ════════════════════════════════════════════════════
           TICKET OGGI SHEET
