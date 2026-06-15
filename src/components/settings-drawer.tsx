@@ -132,7 +132,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
 
       {/* Drawer */}
       <div
-        className="fixed right-0 top-0 z-50 h-full w-[380px] flex flex-col"
+        className="fixed right-0 inset-y-0 z-50 w-[380px] flex flex-col overflow-hidden"
         style={{ background: "#f2f2f7", fontFamily: "-apple-system, 'SF Pro Text', system-ui, sans-serif", boxShadow: "-8px 0 40px rgba(0,0,0,.15)" }}
       >
         {/* Header */}
