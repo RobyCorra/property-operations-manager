@@ -1803,23 +1803,13 @@ export default function MobileDashboard({
         }
 
         return (
-          <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col">
-            {/* Handle */}
-            <div className="flex justify-center pt-3 shrink-0">
-              <div className="w-10 h-[5px] bg-slate-300 rounded-full" />
-            </div>
-
+          <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col" style={{ paddingTop: "calc(env(safe-area-inset-top) + 58px)" }}>
             {/* Header */}
             <div className="px-5 pt-3 pb-3 flex items-center justify-between border-b border-[#ede9fe] shrink-0">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Pulizie programmate</p>
-                <h2 className="text-xl font-bold text-slate-900">
-                  {allCleaningsLoading ? "Caricamento…" : `${allCleaningsData.length} pulizie`}
-                </h2>
-              </div>
+              <span className="text-lg font-bold text-slate-900">Pulizie</span>
               <button
                 onClick={() => setCleaningsSheetOpen(false)}
-                className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
+                className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
