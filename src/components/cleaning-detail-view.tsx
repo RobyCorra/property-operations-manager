@@ -7,7 +7,7 @@ import TicketConversation from "@/src/components/ticket-conversation";
 import AIAssistant from "@/src/components/ai-assistant";
 import CleaningCorrectionPanel from "@/src/components/cleaning-correction-panel";
 import type { CorrectionItem } from "@/src/components/cleaning-correction-panel";
-import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage } from "@/src/app/actions/operational";
+import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage, approveCleaningDirectly } from "@/src/app/actions/operational";
 import { hapticMedium, hapticSuccess } from "@/src/lib/haptics";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { calculateLinen } from "@/src/lib/linen-calculator";
@@ -96,7 +96,15 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
       await updateCleaningStatus(task.id, nextStatus);
       setStatus(nextStatus);
       if (nextStatus === "IN_PROGRESS") hapticMedium();
-      else if (nextStatus === "AWAITING_REVIEW" || nextStatus === "APPROVED") hapticSuccess();
+      else if (nextStatus === "AWAITING_REVIEW") hapticSuccess();
+    });
+  };
+
+  const handleApprove = () => {
+    startTransition(async () => {
+      await approveCleaningDirectly(task.id);
+      setStatus("APPROVED");
+      hapticSuccess();
     });
   };
 
@@ -447,7 +455,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               </div>
               <button
                 type="button"
-                onClick={() => handleStatusUpdate("APPROVED")}
+                onClick={handleApprove}
                 disabled={isPending}
                 className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white text-[13px] font-bold shadow-[0_4px_14px_rgba(5,150,105,.35)] active:scale-95 transition-transform disabled:opacity-50"
               >
