@@ -29,21 +29,30 @@ export default function UnifiedFilters({
   className = "",
 }: UnifiedFiltersProps) {
   return (
-    <div className={`bg-white/40 backdrop-blur-xl p-8 rounded-2xl border border-white/20 shadow-2xl shadow-black/5 space-y-6 ${className}`}>
-      <div className="flex items-center justify-between mb-4">
+    <div className={`bg-white/40 backdrop-blur-xl p-3 md:p-8 rounded-2xl border border-white/20 shadow-2xl shadow-black/5 space-y-2 md:space-y-6 ${className}`}>
+      <div className="hidden md:flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-slate-900 tracking-tight uppercase">{title}</h3>
-        <button 
+        <button
           onClick={onReset}
           className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-2"
         >
           <span>↺</span> Reset Filtri
         </button>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+      <div className="md:hidden flex justify-end">
+        <button
+          onClick={onReset}
+          aria-label="Reset filtri"
+          className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1"
+        >
+          <span>↺</span> Reset
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 md:gap-6">
         {fields.map((field) => (
           <div key={field.id} className="flex flex-col">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+            <label className="hidden md:block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
               {field.label}
             </label>
             

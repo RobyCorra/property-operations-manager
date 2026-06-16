@@ -169,24 +169,14 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
           filteredApartments.map((apt) => (
             <div key={apt.id} className="bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,.08),0_0_0_1px_rgba(0,0,0,.04)]">
 
-              {/* Hero gradient area */}
-              <div className="h-[88px] bg-gradient-to-br from-violet-600 via-violet-500 to-purple-400 rounded-t-3xl relative">
-                {/* Status badge */}
-                <div className="absolute top-3 right-3 bg-white/25 backdrop-blur-sm border border-white/40 rounded-full px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest">
-                  Attivo
-                </div>
-                {/* Glassmorphism icon — overlaps hero/body */}
-                <div className="absolute -bottom-7 left-4 w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md border border-white/35 shadow-[0_4px_16px_rgba(0,0,0,.15)] flex items-center justify-center">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                    <polyline points="9 22 9 12 15 12 15 22"/>
-                  </svg>
-                </div>
-              </div>
-
               {/* Body */}
-              <div className="px-4 pt-10 pb-4">
-                <p className="text-[17px] font-extrabold text-slate-900 tracking-tight leading-tight truncate">{apt.name}</p>
+              <div className="px-4 pt-4 pb-4">
+                <div className="flex items-start justify-between gap-2 mb-0.5">
+                  <p className="text-[17px] font-extrabold text-slate-900 tracking-tight leading-tight truncate">{apt.name}</p>
+                  <div className="shrink-0 bg-[#f0eeff] border border-[#ede9fe] rounded-full px-3 py-1 text-[10px] font-bold text-violet-700 uppercase tracking-widest">
+                    Attivo
+                  </div>
+                </div>
                 <p className="text-[12px] text-slate-400 font-medium mt-0.5 mb-4 truncate">{apt.address}</p>
 
                 {/* Chips */}
