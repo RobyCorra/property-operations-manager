@@ -91,7 +91,7 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
   return (
     <div
       className="shrink-0 z-[100] bg-red-500 border-t border-red-600 md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      style={{ paddingBottom: "4px" }}
     >
       <div className="relative">
         {/* Left fade hint */}
