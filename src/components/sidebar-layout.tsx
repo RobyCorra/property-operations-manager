@@ -108,7 +108,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
         </header>
 
         {/* Mobile Header — shrink-0 dentro la gabbia h-screen, sostituisce il vecchio menu basso */}
-        <MobileHeader unreadCount={unreadCount} onOpenSettings={() => setSettingsOpen(true)} orgName={orgName} />
+        <MobileHeader unreadCount={unreadCount} onOpenSettings={() => setSettingsOpen(true)} onCloseSettings={() => setSettingsOpen(false)} orgName={orgName} />
 
         {/* Dashboard Main View */}
         <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden">{children}</div>

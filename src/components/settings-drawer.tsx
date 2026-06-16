@@ -121,7 +121,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
       >
         {/* Header — figlio flex, shrink-0: non scorre mai */}
         <div className="shrink-0">
-          <div className="flex items-center justify-between px-5 border-b border-[#e5e5ea]" style={{ background: "rgba(255,255,255,.97)", paddingTop: "calc(env(safe-area-inset-top) + 16px)", paddingBottom: "16px" }}>
+          <div className="flex items-center justify-between px-5 border-b border-[#e5e5ea]" style={{ background: "rgba(255,255,255,.97)", paddingTop: "calc(env(safe-area-inset-top) + 58px + 16px)", paddingBottom: "16px" }}>
             <div className="flex items-center gap-2">
               <span className="text-[20px]">⚙️</span>
               <span className="text-[17px] font-[700] text-[#1c1c1e]">Impostazioni</span>

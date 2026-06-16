@@ -8,13 +8,14 @@ import { logoutAction } from "@/src/app/actions/auth";
 interface MobileHeaderProps {
   unreadCount?: number;
   onOpenSettings: () => void;
+  onCloseSettings?: () => void;
   orgName?: string;
 }
 
 // Azioni gestite dalla dashboard manager (sheet interni, niente navigazione vera).
 const DASHBOARD_ACTIONS = new Set(["home", "calendar", "cleanings", "tickets", "map"]);
 
-export default function MobileHeader({ unreadCount = 0, onOpenSettings, orgName }: MobileHeaderProps) {
+export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseSettings, orgName }: MobileHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, orgName 
 
   const go = (action: string, href?: string) => {
     setMenuOpen(false);
+    onCloseSettings?.();
     if (DASHBOARD_ACTIONS.has(action)) {
       if (pathname === "/dashboard/manager") {
         window.dispatchEvent(new CustomEvent("mobile-tab-action", { detail: action }));
