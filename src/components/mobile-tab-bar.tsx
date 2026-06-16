@@ -90,7 +90,7 @@ export default function MobileTabBar({ unreadCount = 0 }: MobileTabBarProps) {
 
   return (
     <div
-      className="shrink-0 z-[100] bg-white/95 backdrop-blur-xl border-t border-slate-200 md:hidden"
+      className="shrink-0 z-[100] bg-red-500 border-t border-red-600 md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="relative">
