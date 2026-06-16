@@ -8,12 +8,13 @@ import { logoutAction } from "@/src/app/actions/auth";
 interface MobileHeaderProps {
   unreadCount?: number;
   onOpenSettings: () => void;
+  orgName?: string;
 }
 
 // Azioni gestite dalla dashboard manager (sheet interni, niente navigazione vera).
 const DASHBOARD_ACTIONS = new Set(["home", "calendar", "cleanings", "tickets", "map"]);
 
-export default function MobileHeader({ unreadCount = 0, onOpenSettings }: MobileHeaderProps) {
+export default function MobileHeader({ unreadCount = 0, onOpenSettings, orgName }: MobileHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -49,29 +50,31 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings }: Mobile
 
   return (
     <>
-      <div className="relative shrink-0 z-[100] px-3 pb-2 bg-white border-b border-[#ede9fe] flex items-center gap-2 md:hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-        <div className="flex flex-col items-center justify-center w-[42px] h-[42px] rounded-xl bg-[#f0eeff] border border-[#ede9fe] shrink-0">
-          <span className="text-[8px] font-bold uppercase text-violet-500 leading-none">{nowDate.toLocaleDateString("it-IT", { month: "short" }).replace(".", "")}</span>
-          <span className="text-[16px] font-black text-violet-700 leading-tight">{nowDate.getDate()}</span>
-        </div>
-        <div className="flex-1 min-w-0" />
-        <div className="flex items-center gap-2 shrink-0">
+      <div className="relative shrink-0 z-[100] px-3 pb-2 bg-white border-b border-[#ede9fe] md:hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        {orgName && (
+          <p className="text-[13px] font-bold text-slate-900 text-center pt-1.5 pb-1.5 truncate">{orgName}</p>
+        )}
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col items-center justify-center w-[42px] h-[42px] rounded-xl bg-[#f0eeff] border border-[#ede9fe] shrink-0">
+            <span className="text-[8px] font-bold uppercase text-violet-500 leading-none">{nowDate.toLocaleDateString("it-IT", { month: "short" }).replace(".", "")}</span>
+            <span className="text-[16px] font-black text-violet-700 leading-tight">{nowDate.getDate()}</span>
+          </div>
           <button
             onClick={onOpenSettings}
             aria-label="Impostazioni"
-            className="w-[48px] h-[48px] flex items-center justify-center rounded-full bg-[#f8f7ff] border border-[#ede9fe] text-violet-700"
+            className="w-[42px] h-[42px] flex items-center justify-center rounded-full bg-[#f8f7ff] border border-[#ede9fe] text-violet-700 shrink-0"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
-          <div className="scale-[1.15] origin-right">
+          <div className="w-[42px] h-[42px] flex items-center justify-center shrink-0">
             <NotificationBell initialNotifications={[]} serverDate={nowDate.toISOString()} unreadMessagesCount={unreadCount} />
           </div>
           <button
             onClick={() => setMenuOpen(true)}
             aria-label="Menu"
-            className="w-[48px] h-[48px] flex items-center justify-center rounded-full bg-[#f0eeff] border border-[#ddd6fe] text-violet-700"
+            className="w-[42px] h-[42px] flex items-center justify-center rounded-full bg-[#f0eeff] border border-[#ddd6fe] text-violet-700 shrink-0"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
           </button>
         </div>
       </div>
