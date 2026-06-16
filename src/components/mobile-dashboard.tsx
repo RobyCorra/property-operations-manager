@@ -561,17 +561,17 @@ export default function MobileDashboard({
       <div className="flex-1 overflow-y-auto pb-24" style={{ WebkitOverflowScrolling: "touch" }}>
 
         {/* ── HEADER ──────────────────────────────────────── */}
-        <div className="sticky top-0 z-20 px-3 pb-0.5 bg-red-500 border-b border-red-600 flex items-center gap-2" style={{ paddingTop: "calc(env(safe-area-inset-top) + 2px)" }}>
+        <div className="sticky top-0 z-20 px-3 pb-2 bg-red-500 border-b border-red-600 flex items-center gap-2" style={{ paddingTop: "8px" }}>
           <div className="flex-1 min-w-0 flex flex-col justify-center">
-            <p className="text-[7px] font-black uppercase tracking-widest text-violet-100 leading-none">{dateLabel}</p>
-            <p className="text-[12px] font-black text-white leading-none truncate">{orgName}</p>
+            <p className="text-[12px] font-black uppercase tracking-widest text-violet-100 leading-none">{dateLabel}</p>
+            <p className="text-[22px] font-black text-white leading-none truncate mt-1">{orgName}</p>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setMapOpen(true)}
-              className="flex items-center gap-1 px-2 h-[26px] bg-white/15 rounded-full text-white text-[8px] font-bold"
+              className="flex items-center gap-1.5 px-4 h-[48px] bg-white/15 rounded-full text-white text-[14px] font-bold"
             >
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
               </svg>
               Mappa
@@ -579,11 +579,11 @@ export default function MobileDashboard({
             <button
               onClick={() => setSettingsOpen(true)}
               aria-label="Impostazioni"
-              className="w-[26px] h-[26px] flex items-center justify-center rounded-full bg-white/15 text-white"
+              className="w-[48px] h-[48px] flex items-center justify-center rounded-full bg-white/15 text-white"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
-            <div className="scale-[0.7] origin-right">
+            <div className="scale-[1.15] origin-right">
               <NotificationBell initialNotifications={initialNotifications} serverDate={serverDate} unreadMessagesCount={unreadMessagesCount} />
             </div>
           </div>
