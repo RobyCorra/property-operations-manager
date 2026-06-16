@@ -805,6 +805,15 @@ export async function approveCleaningDirectly(cleaningTaskId: string) {
     },
   });
 
+  if (task.assignedToId) {
+    await sendPushToUser(task.assignedToId, {
+      title: "✅ Pulizia approvata",
+      body: `La tua pulizia presso ${apartment?.name ?? "un appartamento"} è stata approvata dal manager.`,
+      url: `/dashboard/cleaner/task/${cleaningTaskId}`,
+      tag: `cleaning-approved-${cleaningTaskId}`,
+    }).catch(console.error);
+  }
+
   revalidatePath("/dashboard/cleaner");
   revalidatePath("/dashboard/supervisor");
   revalidatePath("/dashboard/manager");
@@ -842,6 +851,15 @@ export async function approveCleaningReview(cleaningTaskId: string, supervisorId
     url: `/dashboard/manager/cleanings/${cleaningTaskId}/edit`,
     tag: `cleaning-approved-${cleaningTaskId}`,
   }, undefined, apartment?.organizationId ?? null).catch(console.error);
+
+  if (task.assignedToId) {
+    await sendPushToUser(task.assignedToId, {
+      title: "✅ Pulizia approvata",
+      body: `La tua pulizia presso ${apartment?.name ?? "un appartamento"} è stata approvata dal supervisor.`,
+      url: `/dashboard/cleaner/task/${cleaningTaskId}`,
+      tag: `cleaning-approved-${cleaningTaskId}`,
+    }).catch(console.error);
+  }
 
   revalidatePath("/dashboard/cleaner");
   revalidatePath("/dashboard/supervisor");
@@ -891,6 +909,15 @@ export async function rejectCleaningReview(
     url: `/dashboard/manager/cleanings/${cleaningTaskId}/edit`,
     tag: `cleaning-rejected-${cleaningTaskId}`,
   }, undefined, apartment?.organizationId ?? null).catch(console.error);
+
+  if (task.assignedToId) {
+    await sendPushToUser(task.assignedToId, {
+      title: "⚠️ Correzioni richieste",
+      body: `La tua pulizia presso ${apartment?.name ?? "un appartamento"} richiede delle correzioni.`,
+      url: `/dashboard/cleaner/task/${cleaningTaskId}`,
+      tag: `cleaning-rejected-${cleaningTaskId}`,
+    }).catch(console.error);
+  }
 
   revalidatePath("/dashboard/cleaner");
   revalidatePath("/dashboard/supervisor");
