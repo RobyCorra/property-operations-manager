@@ -561,7 +561,7 @@ export default function MobileDashboard({
       <div className="flex-1 overflow-y-auto pb-24" style={{ WebkitOverflowScrolling: "touch" }}>
 
         {/* ── HEADER ──────────────────────────────────────── */}
-        <div className="sticky top-0 z-20 px-4 pb-3 bg-white border-b border-[#ede9fe] flex items-center gap-3" style={{ paddingTop: "calc(env(safe-area-inset-top) + 16px)" }}>
+        <div className="sticky top-0 z-20 px-4 pb-2.5 bg-white border-b border-[#ede9fe] flex items-center gap-3" style={{ paddingTop: "calc(env(safe-area-inset-top) + 16px)" }}>
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest text-violet-500 leading-none mb-1">{dateLabel}</p>
             <p className="text-[18px] font-black text-slate-900 leading-tight truncate">{orgName}</p>
