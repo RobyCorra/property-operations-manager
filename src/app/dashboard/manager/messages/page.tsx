@@ -87,7 +87,7 @@ export default async function ManagerMessagesPage({
 
   return (
     <main className="min-h-screen bg-gray-50/20">
-      <div className="p-4">
+      <div className="hidden md:block p-4">
         <BackButton />
       </div>
       {selectedThread && (

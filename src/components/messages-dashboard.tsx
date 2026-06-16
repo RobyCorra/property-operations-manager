@@ -446,14 +446,6 @@ export default function MessagesDashboard({
         <div className="px-4 pt-5 pb-3 border-b border-slate-100">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              {/* Torna alla dashboard — solo mobile */}
-              <Link
-                href="/dashboard/manager"
-                className="md:hidden flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
-                aria-label="Torna alla dashboard"
-              >
-                <ChevronLeft size={18} className="text-slate-600" />
-              </Link>
               <span className="text-base font-black text-slate-900 tracking-tight">Messaggi</span>
             </div>
             {unreadCount > 0 && (
