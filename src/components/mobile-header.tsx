@@ -49,7 +49,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings }: Mobile
 
   return (
     <>
-      <div className="shrink-0 z-20 px-3 pb-2 bg-white border-b border-[#ede9fe] flex items-center gap-2 md:hidden" style={{ paddingTop: "calc(env(safe-area-inset-top) + 2px)" }}>
+      <div className="relative shrink-0 z-[100] px-3 pb-2 bg-white border-b border-[#ede9fe] flex items-center gap-2 md:hidden" style={{ paddingTop: "calc(env(safe-area-inset-top) + 2px)" }}>
         <div className="flex flex-col items-center justify-center w-[42px] h-[42px] rounded-xl bg-[#f0eeff] border border-[#ede9fe] shrink-0">
           <span className="text-[8px] font-bold uppercase text-violet-500 leading-none">{nowDate.toLocaleDateString("it-IT", { month: "short" }).replace(".", "")}</span>
           <span className="text-[16px] font-black text-violet-700 leading-tight">{nowDate.getDate()}</span>
