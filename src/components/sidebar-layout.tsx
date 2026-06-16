@@ -5,7 +5,7 @@ import ManagerNavbar from "./manager-navbar";
 import { logoutAction } from "@/src/app/actions/auth";
 import FloatingManagerChat from "./floating-manager-chat";
 import SettingsDrawer from "./settings-drawer";
-import MobileTabBar from "./mobile-tab-bar";
+import MobileHeader from "./mobile-header";
 
 interface SidebarLayoutProps {
   children: React.ReactNode;
@@ -107,11 +107,11 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
           </div>
         </header>
 
+        {/* Mobile Header — shrink-0 dentro la gabbia h-screen, sostituisce il vecchio menu basso */}
+        <MobileHeader unreadCount={unreadCount} onOpenSettings={() => setSettingsOpen(true)} />
+
         {/* Dashboard Main View */}
         <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden">{children}</div>
-
-        {/* Mobile Tab Bar — shrink-0 dentro la gabbia h-screen, mai fixed */}
-        <MobileTabBar unreadCount={unreadCount} />
       </div>
     </div>
   );
