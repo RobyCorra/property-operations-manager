@@ -92,6 +92,7 @@ function actionTypeLabel(type: string) {
     UPDATE_CLEANING: "Modifica pulizia",
     UPDATE_TICKET: "Modifica ticket manutenzione",
     BULK_ASSIGN_CLEANINGS_BY_FILTER: "Assegnazione pulizie",
+    BULK_UPDATE_BOOKINGS: "Modifica prenotazioni",
     PURGE_CANCELLED: "Elimina record cancellati",
   };
   return map[type] ?? "Modifica";
@@ -149,6 +150,15 @@ function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | nul
       </div>
     );
   }
+  if (action.type === "BULK_UPDATE_BOOKINGS") return (
+    <div className="space-y-0.5">
+      {action.updates.map((u, i) => (
+        <p key={i} className="text-xs text-amber-700">
+          • {u.apartmentName} — check-in {new Date(u.checkInDate).toLocaleDateString("it-IT")}: {Object.entries(u.fields).map(([k, v]) => fieldLabel(k, v)).join(", ")}
+        </p>
+      ))}
+    </div>
+  );
   if (action.type === "PURGE_CANCELLED") return (
     <p className="text-xs text-amber-700">Elimina definitivamente tutte le prenotazioni e pulizie con stato CANCELLED.</p>
   );
@@ -729,33 +739,56 @@ export default function FloatingManagerChat({
           {/* Input bar */}
           {!isPastSession && (
             <div
-              className="bg-white border-t border-slate-100 px-3 pt-2.5 flex items-end gap-2 shrink-0"
+              className="bg-white border-t border-slate-100 px-3 pt-2 shrink-0"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 14px)" }}
             >
-              <input
-                ref={inputRef as any}
-                className="flex-1 bg-[#f4f2fc] rounded-[22px] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300 min-w-0"
-                placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : "Scrivi un messaggio…"}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAsk(false);
-                  }
-                }}
-                disabled={loading}
-              />
-              <button
-                type="button"
-                onClick={() => handleAsk(false)}
-                disabled={loading || !input.trim()}
-                aria-label="Invia"
-                className="w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 disabled:opacity-40 active:scale-90 transition-transform"
-                style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 12px rgba(124,58,237,.35)" }}
-              >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              </button>
+              {/* Toggle ricerca web */}
+              <div className="flex gap-2 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setWebSearch((v) => !v)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-bold border transition-all active:scale-95 ${
+                    webSearch
+                      ? "bg-blue-500 border-blue-500 text-white shadow-[0_2px_8px_rgba(59,130,246,.35)]"
+                      : "bg-white border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600"
+                  }`}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                  Ricerca web
+                  {webSearch && (
+                    <span className="ml-0.5 opacity-80">✓</span>
+                  )}
+                </button>
+              </div>
+              <div className="flex items-end gap-2">
+                <input
+                  ref={inputRef as any}
+                  className="flex-1 bg-[#f4f2fc] rounded-[22px] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300 min-w-0"
+                  placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : "Scrivi un messaggio…"}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAsk(false);
+                    }
+                  }}
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAsk(false)}
+                  disabled={loading || !input.trim()}
+                  aria-label="Invia"
+                  className="w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 disabled:opacity-40 active:scale-90 transition-transform"
+                  style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 12px rgba(124,58,237,.35)" }}
+                >
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              </div>
             </div>
           )}
         </div>

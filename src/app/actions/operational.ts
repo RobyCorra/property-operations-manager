@@ -1414,6 +1414,7 @@ export type AIActionPayload =
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToName: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string; status: string; assignedToName: string }>; description: string }
   | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToName: string; unassignedOnly?: boolean; description: string }
+  | { type: "BULK_UPDATE_BOOKINGS"; updates: Array<{ apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }> }>; description: string }
   | { type: "PURGE_CANCELLED"; description: string };
 
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
@@ -1523,10 +1524,10 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
         select: { id: true },
       });
       if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
-      // Cerca la prenotazione per apartmentId + giorno del check-in (indipendente dall'ora)
-      const checkIn = new Date(checkInDate);
-      const dayStart = new Date(Date.UTC(checkIn.getUTCFullYear(), checkIn.getUTCMonth(), checkIn.getUTCDate(), 0, 0, 0));
-      const dayEnd = new Date(Date.UTC(checkIn.getUTCFullYear(), checkIn.getUTCMonth(), checkIn.getUTCDate(), 23, 59, 59));
+      // Estrai anno/mese/giorno dalla stringa ISO direttamente (evita shift timezone UTC)
+      const [cyear, cmonth, cday] = checkInDate.slice(0, 10).split("-").map(Number);
+      const dayStart = new Date(Date.UTC(cyear, cmonth - 1, cday, 0, 0, 0));
+      const dayEnd = new Date(Date.UTC(cyear, cmonth - 1, cday, 23, 59, 59));
       const booking = await prisma.booking.findFirst({
         where: { apartmentId: apartment.id, checkInDate: { gte: dayStart, lte: dayEnd } },
       });
@@ -1548,6 +1549,37 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       });
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/bookings");
+    } else if (payload.type === "BULK_UPDATE_BOOKINGS") {
+      const errors: string[] = [];
+      for (const upd of payload.updates) {
+        const apartment = await prisma.apartment.findFirst({
+          where: { name: { equals: upd.apartmentName, mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (!apartment) { errors.push(`Appartamento non trovato: "${upd.apartmentName}".`); continue; }
+        const [byear, bmonth, bday] = upd.checkInDate.slice(0, 10).split("-").map(Number);
+        const dayStart = new Date(Date.UTC(byear, bmonth - 1, bday, 0, 0, 0));
+        const dayEnd   = new Date(Date.UTC(byear, bmonth - 1, bday, 23, 59, 59));
+        const booking = await prisma.booking.findFirst({
+          where: { apartmentId: apartment.id, checkInDate: { gte: dayStart, lte: dayEnd } },
+        });
+        if (!booking) { errors.push(`Prenotazione non trovata in "${upd.apartmentName}" il ${dayStart.toISOString().slice(0, 10)}.`); continue; }
+        const isReal = (v: unknown) => v !== undefined && v !== "..." && v !== "";
+        const isManual = booking.source === "MANUAL";
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: {
+            ...(upd.fields.totalGuests !== undefined && { totalGuests: Number(upd.fields.totalGuests) }),
+            ...(isReal(upd.fields.notes) && { notes: upd.fields.notes }),
+            ...(isManual && isReal(upd.fields.guestName) && { guestName: upd.fields.guestName }),
+            ...(isManual && isReal(upd.fields.checkInDate) && { checkInDate: new Date(upd.fields.checkInDate!) }),
+            ...(isManual && isReal(upd.fields.checkOutDate) && { checkOutDate: new Date(upd.fields.checkOutDate!) }),
+          },
+        });
+      }
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/bookings");
+      if (errors.length > 0) return { success: false, error: errors.join(" | ") };
     } else if (payload.type === "UPDATE_CLEANING") {
       const { id, fields } = payload;
       const task = await prisma.cleaningTask.findUnique({ where: { id } });

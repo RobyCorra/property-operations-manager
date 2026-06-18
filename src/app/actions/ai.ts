@@ -86,6 +86,8 @@ type CleaningTaskForAI = {
   date: Date;
   status: string;
   createdAt: Date;
+  startedAt?: Date | null;
+  completedAt?: Date | null;
   assignedTo: AssignedUserForAI;
   booking: {
     guestName: string | null;
@@ -378,6 +380,10 @@ ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":[],"dateFrom":"
 
 - BULK_ASSIGN_CLEANINGS_BY_FILTER: usa assignedToName (nome esatto dalla sezione PERSONALE DISPONIBILE, NON l'id). Se l'utente non specifica appartamenti, usa apartmentIds: [] (= tutti). Se dice "non ancora assegnate" / "senza cleaner", aggiungi unassignedOnly: true.
 
+ACTION: {"type":"BULK_UPDATE_BOOKINGS","updates":[{"apartmentName":"Trastevere 68","checkInDate":"2026-07-16T00:00:00+02:00","fields":{"totalGuests":7}},{"apartmentName":"Trastevere 68","checkInDate":"2026-07-20T00:00:00+02:00","fields":{"totalGuests":5}},{"apartmentName":"Trastevere 68","checkInDate":"2026-07-25T00:00:00+02:00","fields":{"totalGuests":4}}],"description":"Aggiorno il numero di ospiti per 3 prenotazioni di Trastevere 68"}
+
+- BULK_UPDATE_BOOKINGS: usa SEMPRE questo tipo quando devi aggiornare più prenotazioni in una sola richiesta (es. "aggiorna ospiti per queste date: ..."). Non generare più UPDATE_BOOKING separati. checkInDate deve essere il GIORNO ESATTO di check-in indicato dall'utente (es. "16–19 lug" → checkInDate = 16 luglio).
+
 ACTION: {"type":"PURGE_CANCELLED","description":"Elimino dal database tutte le prenotazioni e pulizie con stato CANCELLED"}
 
 ════ REGOLE OBBLIGATORIE ════
@@ -386,8 +392,8 @@ ID:
 - Se non trovi l'id nel contesto, chiedi all'utente di specificarlo.
 
 DATE E ORARI:
-- Usa il formato ISO 8601 CON offset fuso orario di Roma: estate (marzo–ottobre) +02:00, inverno (novembre–febbraio) +01:00.
-- Esempio corretto: "2026-05-19T09:30:00+02:00" = ore 9:30 ora di Roma in estate. NON usare il suffisso Z (UTC) per orari locali.
+- Per orari specifici (ticket scheduledStart, pulizie): usa ISO 8601 CON offset fuso orario di Roma: estate (marzo–ottobre) +02:00, inverno (novembre–febbraio) +01:00. Esempio: "2026-05-19T09:30:00+02:00".
+- Per date di prenotazione (checkInDate, checkOutDate in CREATE_BOOKING, UPDATE_BOOKING, BULK_UPDATE_BOOKINGS): usa SEMPRE midnight UTC con suffisso Z. Esempio: "2026-07-16T00:00:00.000Z". MAI usare offset +02:00 per le date delle prenotazioni.
 - "domani" = data di oggi + 1 giorno. Usa la data indicata nel contesto ("Oggi:" o "Data corrente:").
 - Non esistono restrizioni sulle date. Non inventare limiti tipo "deve essere futura" o "minimo 24 ore".
 
@@ -395,7 +401,7 @@ CAMPI:
 - Nei fields di UPDATE_* includi SOLO i campi che l'utente vuole cambiare. Ometti tutto il resto.
 - NON cambiare mai il campo "status" di un ticket o pulizia a meno che l'utente non lo chieda esplicitamente con parole come "cancella", "riapri", "chiudi", "cambia stato".
 - UPDATE_TICKET supporta: title, description, priority, scheduledStart, notes, status (solo se richiesto), assignedToName (nome del tecnico dalla sezione PERSONALE DISPONIBILE).
-- UPDATE_CLEANING supporta: date, notes, assignedToName.
+- UPDATE_CLEANING supporta: date (include sempre sia la data che l'ora, es: "2026-05-20T10:00:00+02:00"), notes, assignedToName. Per cambiare solo l'orario di una pulizia mantieni la stessa data e cambia solo l'ora nel campo date.
 - Per cancellare un ticket usa UPDATE_TICKET con fields: {"status": "CANCELLED"}.
 - Per prenotazioni iCal/Airbnb (source != "MANUAL") puoi modificare SOLO totalGuests e notes.
 
@@ -404,9 +410,12 @@ NOMI:
 - assignedToName: nome dalla sezione PERSONALE DISPONIBILE, non l'id.
 
 COMPORTAMENTO:
-- NON scrivere "ho creato/modificato/cancellato" — l'ACTION è una PROPOSTA che richiede conferma. Usa "Propongo di...".
+- NON scrivere "ho creato/modificato/cancellato/aggiornato" e NON scrivere "✓ Modifica applicata" — l'ACTION è una PROPOSTA che richiede conferma esplicita dall'utente. Usa "Propongo di...".
 - Non aggiungere ACTION se l'utente chiede solo informazioni.
 - Il blocco ACTION deve stare su UNA RIGA SOLA alla fine della risposta.
+- Se devi aggiornare più prenotazioni in una sola risposta, usa SEMPRE BULK_UPDATE_BOOKINGS con l'array "updates", NON generare più ACTION separate.
+- Non dire mai che una modifica è stata applicata prima che l'utente abbia confermato la card ACTION. La conferma avviene solo quando l'utente preme "Conferma" nell'interfaccia.
+- Se l'utente dice "ok" o "confermo" dopo che hai proposto un'action, NON riproporre l'action — l'utente sta confermando la card già mostrata nell'interfaccia.
 
 ACCESSO APPARTAMENTO — REGOLA ASSOLUTA:
 - I dati di accesso (password Wi-Fi, codice porta, codice cassetta chiavi, codice portone/citofono, piano, orari check-in/out, parcheggio) si trovano in DUE formati nel contesto:
@@ -1552,7 +1561,8 @@ async function buildCleaningContext(apartmentId: string) {
     const msgs = task.messages.map((m) =>
       `${formatDateTime(m.createdAt)} ${m.senderName} (${m.role}): ${truncateText(m.text, 200) || "n/d"}`
     );
-    return `- id:${task.id} | ${formatDate(task.date)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} (${task.assignedTo?.role || "n/d"}) | booking: ${task.booking?.guestName || "n/d"} ${task.booking ? `${formatDate(task.booking.checkInDate)} → ${formatDate(task.booking.checkOutDate)}` : ""} | note: ${truncateText(task.notes, 300) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 800)} | allegati: ${formatOperationalAttachmentLines(task.attachments)} | messaggi: ${msgs.length > 0 ? msgs.join(" || ") : "nessuno"}`;
+    const cleaningTimeStr = (task.date as Date).toLocaleTimeString("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hour12: false });
+    return `- id:${task.id} | ${formatDate(task.date)} ore ${cleaningTimeStr} | iniziata: ${formatDateTime(task.startedAt)} | completata: ${formatDateTime(task.completedAt)} | stato: ${task.status} | assegnato: ${task.assignedTo?.name || "non assegnato"} (${task.assignedTo?.role || "n/d"}) | booking: ${task.booking?.guestName || "n/d"} ${task.booking ? `${formatDate(task.booking.checkInDate)} → ${formatDate(task.booking.checkOutDate)}` : ""} | note: ${truncateText(task.notes, 300) || "n/d"} | checklist: ${compactJsonText(task.checklistProgress, 800)} | allegati: ${formatOperationalAttachmentLines(task.attachments)} | messaggi: ${msgs.length > 0 ? msgs.join(" || ") : "nessuno"}`;
   });
 
   return limitText(`CONTESTO PULIZIE — ${apartment.name} (${apartment.address})
@@ -2128,7 +2138,11 @@ async function buildGeneralManagerContext(now: Date) {
   const recent14Days = addDays(todayStart, -14);
   const orgId = await getCurrentOrg();
 
-  const [apartments, bookings, cleanings, tickets, personnel] = await Promise.all([
+  const [org, apartments, bookings, cleanings, tickets, personnel] = await Promise.all([
+    prisma.organization.findUnique({
+      where: { id: orgId! },
+      select: { conflictMaxCleaningsPerDay: true, conflictUrgentHours: true, conflictStaleTicketDays: true, conflictOverlapMinutes: true },
+    }),
     prisma.apartment.findMany({
       where: { organizationId: orgId },
       take: 50,
@@ -2296,7 +2310,8 @@ async function buildGeneralManagerContext(now: Date) {
     const assignTag = task.assignedTo?.name
       ? `[ASSEGNATA a ${task.assignedTo.name}]`
       : `[DA ASSEGNARE]`;
-    return `- id:${(task as any).id} | ${task.apartment.name} | ${formatDate(task.date)} | ${assignTag} | stato: ${task.status} | note: ${truncateText(task.notes, 160) || "n/d"} | booking: ${task.booking?.guestName || "n/d"} (${task.booking?.totalGuests ?? "n/d"} ospiti) | messaggi: ${formatManagerMessages(task.messages)}`;
+    const tStr = (task.date as Date).toLocaleTimeString("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hour12: false });
+    return `- id:${(task as any).id} | ${task.apartment.name} | ${formatDate(task.date)} ore ${tStr} | iniziata: ${formatDateTime((task as any).startedAt)} | completata: ${formatDateTime((task as any).completedAt)} | ${assignTag} | stato: ${task.status} | note: ${truncateText(task.notes, 160) || "n/d"} | booking: ${task.booking?.guestName || "n/d"} (${task.booking?.totalGuests ?? "n/d"} ospiti) | messaggi: ${formatManagerMessages(task.messages)}`;
   });
 
   // Riepilogo numerico pre-calcolato per mese — l'AI legge direttamente i conteggi senza ragionare sui campi
@@ -2358,7 +2373,8 @@ async function buildGeneralManagerContext(now: Date) {
     const dateKey = formatDate(t.date as Date);
     if (!cleaningsByDate[dateKey]) cleaningsByDate[dateKey] = [];
     const assignTag = t.assignedTo?.name ? `[${t.assignedTo.name}]` : "[DA ASSEGNARE]";
-    cleaningsByDate[dateKey].push(`${t.apartment.name} | ${assignTag} | ${t.status}`);
+    const timeStr = (t.date as Date).toLocaleTimeString("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hour12: false });
+    cleaningsByDate[dateKey].push(`${t.apartment.name} | ${assignTag} | ${t.status} | orario: ${timeStr}`);
   });
   const cleaningsByDateLines = Object.entries(cleaningsByDate)
     .sort(([a], [b]) => a.localeCompare(b))
@@ -2441,9 +2457,121 @@ ${recentMessageLines.length > 0 ? recentMessageLines.join("\n") : "- Nessun mess
 
 ════ PERSONALE DISPONIBILE ════
 ${personnel.map((u: { id: string; name: string; role: string }) => `- id:${u.id} | ${u.name} | ruolo: ${u.role}`).join("\n") || "- Nessun personale trovato."}
+
+${buildConflictSection(cleanings, tickets, now, {
+    maxCleaningsPerDay: org?.conflictMaxCleaningsPerDay ?? 3,
+    urgentHours: org?.conflictUrgentHours ?? 48,
+    staleTicketDays: org?.conflictStaleTicketDays ?? 7,
+    overlapMinutes: org?.conflictOverlapMinutes ?? 90,
+  })}
 `.trim();
 
   return limitText(contextText, MAX_MANAGER_CONTEXT_TEXT_LENGTH);
+}
+
+function buildConflictSection(
+  cleanings: CleaningTaskWithApartmentForAI[],
+  tickets: MaintenanceTicketWithApartmentForAI[],
+  now: Date,
+  params: { maxCleaningsPerDay: number; urgentHours: number; staleTicketDays: number; overlapMinutes: number } = { maxCleaningsPerDay: 3, urgentHours: 48, staleTicketDays: 7, overlapMinutes: 90 }
+): string {
+  const conflicts: string[] = [];
+
+  // 1. Doppio booking cleaner: stesso cleaner, stessa fascia oraria
+  const futurePending = cleanings.filter((c) => {
+    const s = c.status;
+    return (s === "PENDING" || s === "IN_PROGRESS") && (c.date as Date) >= now;
+  });
+  const byCleanerDate: Record<string, CleaningTaskWithApartmentForAI[]> = {};
+  for (const c of futurePending) {
+    if (!c.assignedTo?.name) continue;
+    const key = c.assignedTo.name;
+    if (!byCleanerDate[key]) byCleanerDate[key] = [];
+    byCleanerDate[key].push(c);
+  }
+  for (const [cleaner, tasks] of Object.entries(byCleanerDate)) {
+    for (let i = 0; i < tasks.length; i++) {
+      for (let j = i + 1; j < tasks.length; j++) {
+        const a = tasks[i].date as Date;
+        const b = tasks[j].date as Date;
+        const diffMin = Math.abs(a.getTime() - b.getTime()) / 60000;
+        if (diffMin < params.overlapMinutes) {
+          const fmtA = formatDateTime(a);
+          const fmtB = formatDateTime(b);
+          conflicts.push(
+            `⚠ DOPPIO BOOKING CLEANER: ${cleaner} ha 2 pulizie sovrapposte — ${tasks[i].apartment.name} (${fmtA}) e ${tasks[j].apartment.name} (${fmtB})`
+          );
+        }
+      }
+    }
+  }
+
+  // 2. Carico eccessivo: cleaner con >3 pulizie nello stesso giorno
+  const byCleanerDay: Record<string, { day: string; tasks: CleaningTaskWithApartmentForAI[] }[]> = {};
+  for (const c of futurePending) {
+    if (!c.assignedTo?.name) continue;
+    const dayKey = formatDate(c.date as Date);
+    if (!byCleanerDay[c.assignedTo.name]) byCleanerDay[c.assignedTo.name] = [];
+    const existing = byCleanerDay[c.assignedTo.name].find((x) => x.day === dayKey);
+    if (existing) existing.tasks.push(c);
+    else byCleanerDay[c.assignedTo.name].push({ day: dayKey, tasks: [c] });
+  }
+  for (const [cleaner, days] of Object.entries(byCleanerDay)) {
+    for (const { day, tasks } of days) {
+      if (tasks.length > params.maxCleaningsPerDay) {
+        conflicts.push(
+          `⚠ CARICO ECCESSIVO: ${cleaner} ha ${tasks.length} pulizie il ${day} — ${tasks.map((t) => t.apartment.name).join(", ")}`
+        );
+      }
+    }
+  }
+
+  // 3. Pulizia senza cleaner con check-in entro 48h
+  const in48h = new Date(now.getTime() + params.urgentHours * 60 * 60 * 1000);
+  const unassignedUrgent = cleanings.filter((c) => {
+    if (c.assignedTo?.name) return false;
+    if (c.status === "COMPLETED" || c.status === "APPROVED" || c.status === "CANCELLED") return false;
+    const d = c.date as Date;
+    return d >= now && d <= in48h;
+  });
+  for (const c of unassignedUrgent) {
+    const hoursLeft = Math.round(((c.date as Date).getTime() - now.getTime()) / 3600000);
+    conflicts.push(
+      `⚠ PULIZIA SENZA CLEANER URGENTE: ${c.apartment.name} — ${formatDateTime(c.date as Date)} (tra ${hoursLeft}h) non ancora assegnata`
+    );
+  }
+
+  // 4. Pulizia programmata dopo il check-in della stessa prenotazione
+  for (const c of futurePending) {
+    if (!c.booking) continue;
+    const checkIn = new Date(c.booking.checkInDate);
+    const cleaningTime = c.date as Date;
+    if (cleaningTime > checkIn) {
+      conflicts.push(
+        `⚠ PULIZIA DOPO CHECK-IN: ${c.apartment.name} — pulizia ${formatDateTime(cleaningTime)} è DOPO il check-in ${formatDateTime(checkIn)} (ospite: ${c.booking.guestName || "n/d"})`
+      );
+    }
+  }
+
+  // 5. Ticket HIGH/URGENT aperti da più di 7 giorni senza risoluzione
+  const staleTickets = tickets.filter((t) => {
+    if (t.status === "RESOLVED" || t.status === "CANCELLED") return false;
+    if (t.priority !== "HIGH" && t.priority !== "URGENT") return false;
+    const daysSince = (now.getTime() - new Date(t.createdAt).getTime()) / 86400000;
+    return daysSince > params.staleTicketDays;
+  });
+  for (const t of staleTickets) {
+    const days = Math.round((now.getTime() - new Date(t.createdAt).getTime()) / 86400000);
+    conflicts.push(
+      `⚠ TICKET BLOCCANTE: "${t.title}" — ${t.apartment.name} | ${t.priority} | ${t.status} | aperto da ${days} giorni | tecnico: ${t.assignedTo?.name || "non assegnato"}`
+    );
+  }
+
+  if (conflicts.length === 0) return `════ ANALISI CONFLITTI ════\n✅ Nessun conflitto rilevato.`;
+
+  return `════ ANALISI CONFLITTI (${conflicts.length} problemi rilevati — analizzare e segnalare all'utente) ════
+ISTRUZIONE: Quando l'utente chiede "cosa devo risolvere", "ci sono problemi" o simili, elenca questi conflitti ordinati per urgenza e proponi azioni correttive.
+${conflicts.join("\n")}`;
 }
 
 async function buildManagerOperationalContext(context: AIContext, now: Date) {
