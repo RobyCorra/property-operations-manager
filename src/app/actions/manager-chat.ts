@@ -55,6 +55,16 @@ export async function getSessionMessages(sessionId: string) {
   });
 }
 
+export async function clearSessionMessages(sessionId: string): Promise<void> {
+  const orgId = await getCurrentOrg();
+  // Verifica che la sessione appartenga all'org corrente prima di cancellare
+  const session = await prisma.managerChatSession.findFirst({
+    where: { id: sessionId, organizationId: orgId },
+  });
+  if (!session) return;
+  await prisma.managerChatMessage.deleteMany({ where: { sessionId } });
+}
+
 export async function getSessionDates(): Promise<string[]> {
   const orgId = await getCurrentOrg();
 

@@ -253,6 +253,7 @@ export default function FloatingManagerChat({
   const [activeDateStr, setActiveDateStr] = useState<string>("");
   const [isPastSession, setIsPastSession] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const clearedAtRef = useRef<number>(0); // timestamp ms — messaggi DB prima di questo vengono ignorati
 
   // ── Drag state ────────────────────────────────────────────────────────────
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
@@ -397,9 +398,14 @@ export default function FloatingManagerChat({
       if (!sid || loading || confirming) return;
       try {
         const dbMessages = await getSessionMessages(sid);
+        const cutoff = clearedAtRef.current;
         setMessages((prev) => {
+          // Ignora messaggi salvati prima dell'ultimo clear
+          const eligible = dbMessages.filter(
+            (m) => cutoff === 0 || new Date(m.createdAt).getTime() > cutoff
+          );
           // Only add messages that aren't already in local state (match by content+role)
-          const newFromDB = dbMessages.filter(
+          const newFromDB = eligible.filter(
             (dbMsg) => !prev.some(
               (localMsg) => localMsg.role === dbMsg.role && localMsg.content === dbMsg.content
             )
@@ -611,7 +617,10 @@ export default function FloatingManagerChat({
               </p>
             </div>
             <button
-              onClick={() => setMessages([])}
+              onClick={() => {
+                clearedAtRef.current = Date.now();
+                setMessages([]);
+              }}
               title="Nuova chat"
               className="w-8 h-8 rounded-full flex items-center justify-center text-sm"
               style={{ background: "rgba(255,255,255,.18)" }}
