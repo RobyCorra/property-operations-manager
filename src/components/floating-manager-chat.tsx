@@ -500,7 +500,7 @@ export default function FloatingManagerChat({
     try {
       const result = await executeAIAction(msg.action);
       if (result.success) {
-        setMessages((prev) => prev.map((m, i) => i === msgIndex ? { ...m, actionState: "done" as const } : m));
+        setMessages((prev) => prev.map((m, i) => i === msgIndex ? { ...m, actionState: "done" as const, actionError: result.error } : m));
         router.refresh();
       } else {
         setMessages((prev) => prev.map((m, i) =>
@@ -711,8 +711,11 @@ export default function FloatingManagerChat({
                 )}
 
                 {msg.action && msg.actionState === "done" && (
-                  <div className="max-w-[82%] self-start rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2">
+                  <div className="max-w-[82%] self-start rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 space-y-1">
                     <p className="text-xs font-bold text-emerald-700">✓ {msg.preview ? `${msg.preview.length} pulizie assegnate` : "Modifica applicata"}</p>
+                    {msg.actionError && (
+                      <p className="text-xs text-amber-700">⚠ {msg.actionError}</p>
+                    )}
                   </div>
                 )}
               </div>
