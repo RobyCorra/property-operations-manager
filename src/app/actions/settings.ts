@@ -187,15 +187,19 @@ export async function updateConflictSettings(formData: FormData) {
     return isNaN(v) ? def : Math.min(Math.max(v, min), max);
   };
 
-  await prisma.organization.update({
-    where: { id: full.organizationId },
-    data: {
-      conflictMaxCleaningsPerDay: parse("conflictMaxCleaningsPerDay", 1, 20, 3),
-      conflictUrgentHours:        parse("conflictUrgentHours", 1, 168, 48),
-      conflictStaleTicketDays:    parse("conflictStaleTicketDays", 1, 90, 7),
-      conflictOverlapMinutes:     parse("conflictOverlapMinutes", 15, 480, 90),
-    },
-  });
+  try {
+    await prisma.organization.update({
+      where: { id: full.organizationId },
+      data: {
+        conflictMaxCleaningsPerDay: parse("conflictMaxCleaningsPerDay", 1, 20, 3),
+        conflictUrgentHours:        parse("conflictUrgentHours", 1, 168, 48),
+        conflictStaleTicketDays:    parse("conflictStaleTicketDays", 1, 90, 7),
+        conflictOverlapMinutes:     parse("conflictOverlapMinutes", 15, 480, 90),
+      },
+    });
+  } catch (e) {
+    return { error: `Errore DB: ${e instanceof Error ? e.message : String(e)}` };
+  }
   revalidatePath("/dashboard/manager");
   return { success: true };
 }
