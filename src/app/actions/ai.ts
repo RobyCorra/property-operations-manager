@@ -410,7 +410,8 @@ NOMI:
 - assignedToName: nome dalla sezione PERSONALE DISPONIBILE, non l'id.
 
 COMPORTAMENTO:
-- NON scrivere "ho creato/modificato/cancellato/aggiornato" e NON scrivere "✓ Modifica applicata" — l'ACTION è una PROPOSTA che richiede conferma esplicita dall'utente. Usa "Propongo di...".
+- MAI scrivere "ho creato", "ho modificato", "ho cancellato", "ho aggiornato", "✓ Modifica applicata", "✓ Fatto", "✓ Creato", "Modifica eseguita" o qualsiasi altra frase che implichi che l'azione è già avvenuta. L'ACTION è SOLO UNA PROPOSTA. Scrivi SEMPRE "Propongo di..." e basta.
+- Se l'utente dice "ok", "sì", "confermo", "vai", "procedi" dopo una tua proposta: NON generare un'altra ACTION, NON scrivere conferme — l'utente sta confermando la card già mostrata nell'interfaccia. Rispondi solo con "Perfetto, attendi la conferma nell'interfaccia." o simile.
 - Non aggiungere ACTION se l'utente chiede solo informazioni.
 - Il blocco ACTION deve stare su UNA RIGA SOLA alla fine della risposta.
 - Se devi aggiornare più prenotazioni in una sola risposta, usa SEMPRE BULK_UPDATE_BOOKINGS con l'array "updates", NON generare più ACTION separate.
@@ -2541,14 +2542,16 @@ function buildConflictSection(
     );
   }
 
-  // 4. Pulizia programmata dopo il check-in della stessa prenotazione
+  // 4. Pulizia programmata PRIMA del check-out (anomalia: la pulizia va fatta al checkout, non durante il soggiorno)
   for (const c of futurePending) {
     if (!c.booking) continue;
-    const checkIn = new Date(c.booking.checkInDate);
+    const checkOut = new Date(c.booking.checkOutDate);
     const cleaningTime = c.date as Date;
-    if (cleaningTime > checkIn) {
+    const cleanDay = new Date(cleaningTime); cleanDay.setUTCHours(0,0,0,0);
+    const outDay = new Date(checkOut); outDay.setUTCHours(0,0,0,0);
+    if (cleanDay < outDay) {
       conflicts.push(
-        `⚠ PULIZIA DOPO CHECK-IN: ${c.apartment.name} — pulizia ${formatDateTime(cleaningTime)} è DOPO il check-in ${formatDateTime(checkIn)} (ospite: ${c.booking.guestName || "n/d"})`
+        `⚠ PULIZIA DURANTE SOGGIORNO: ${c.apartment.name} — pulizia ${formatDateTime(cleaningTime)} è PRIMA del check-out ${formatDateTime(checkOut)} (ospite: ${c.booking.guestName || "n/d"}) — appartamento occupato`
       );
     }
   }

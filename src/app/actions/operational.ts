@@ -1476,10 +1476,17 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
         if (!user) return { success: false, error: `Cleaner non trovato: "${assignedToName}".` };
         assignedToId = user.id;
       }
+      const cleaningDate = new Date(date);
+      const dayStart = new Date(cleaningDate); dayStart.setUTCHours(0,0,0,0);
+      const dayEnd = new Date(cleaningDate); dayEnd.setUTCHours(23,59,59,999);
+      const existing = await prisma.cleaningTask.findFirst({
+        where: { apartmentId: apartment.id, date: { gte: dayStart, lte: dayEnd } },
+      });
+      if (existing) return { success: false, error: `Esiste già una pulizia per "${apartmentName}" in questa data.` };
       await prisma.cleaningTask.create({
         data: {
           apartmentId: apartment.id,
-          date: new Date(date),
+          date: cleaningDate,
           status: "PENDING",
           ...(assignedToId && { assignedToId }),
           ...(notes && { notes }),
