@@ -80,7 +80,15 @@ function parseAction(content: string): { text: string; action?: AIActionPayload 
     } catch { /* not valid JSON */ }
   }
 
-  return { text: content };
+  return { text: sanitizeAIText(content) };
+}
+
+function sanitizeAIText(text: string): string {
+  return text
+    .replace(/✓\s*(Modifica applicata|Fatto|Creato|Aggiornato|Cancellato|Eseguito)[^\n]*/gi, "")
+    .replace(/Ho (creato|modificato|cancellato|aggiornato|assegnato|rimosso|spostato)[^\n]*/gi, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 function actionTypeLabel(type: string) {
