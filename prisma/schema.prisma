@@ -26,10 +26,14 @@ model Organization {
   aiMonthlyTokenLimit       Int          @default(1800000)
   aiTokensUsed              Int          @default(0)
   aiTokensResetAt           DateTime?
-  perplexityMonthlyLimit    Int          @default(600)
-  perplexityRequestsUsed    Int          @default(0)
-  perplexityRequestsResetAt DateTime?
-  createdAt                 DateTime     @default(now())
+  perplexityMonthlyLimit      Int        @default(600)
+  perplexityRequestsUsed      Int        @default(0)
+  perplexityRequestsResetAt   DateTime?
+  conflictMaxCleaningsPerDay  Int        @default(3)
+  conflictUrgentHours         Int        @default(48)
+  conflictStaleTicketDays     Int        @default(7)
+  conflictOverlapMinutes      Int        @default(90)
+  createdAt                   DateTime   @default(now())
   users        User[]
   apartments   Apartment[]
   chatSessions ManagerChatSession[]
