@@ -380,6 +380,10 @@ ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":[],"dateFrom":"
 
 - BULK_ASSIGN_CLEANINGS_BY_FILTER: usa assignedToName (nome esatto dalla sezione PERSONALE DISPONIBILE, NON l'id). Se l'utente non specifica appartamenti, usa apartmentIds: [] (= tutti). Se dice "non ancora assegnate" / "senza cleaner", aggiungi unassignedOnly: true.
 
+ACTION: {"type":"BULK_CREATE_CLEANINGS","cleanings":[{"apartmentName":"Corso Buenos Aires","date":"2026-07-01T00:00:00.000Z","assignedToName":"Amina Ouali"},{"apartmentName":"Navigli Loft","date":"2026-07-05T00:00:00.000Z","assignedToName":"Giulia Moretti"},{"apartmentName":"Brera Studio","date":"2026-07-02T00:00:00.000Z","assignedToName":"Marco Ferretti"}],"description":"Creo 3 pulizie distribuite tra i cleaner"}
+
+- BULK_CREATE_CLEANINGS: usa SEMPRE questo tipo quando devi creare più pulizie in una sola richiesta. Metti tutte le pulizie nell'array "cleanings". NON generare più ACTION CREATE_CLEANING separate.
+
 ACTION: {"type":"BULK_UPDATE_BOOKINGS","updates":[{"apartmentName":"Trastevere 68","checkInDate":"2026-07-16T00:00:00+02:00","fields":{"totalGuests":7}},{"apartmentName":"Trastevere 68","checkInDate":"2026-07-20T00:00:00+02:00","fields":{"totalGuests":5}},{"apartmentName":"Trastevere 68","checkInDate":"2026-07-25T00:00:00+02:00","fields":{"totalGuests":4}}],"description":"Aggiorno il numero di ospiti per 3 prenotazioni di Trastevere 68"}
 
 - BULK_UPDATE_BOOKINGS: usa SEMPRE questo tipo quando devi aggiornare più prenotazioni in una sola richiesta (es. "aggiorna ospiti per queste date: ..."). Non generare più UPDATE_BOOKING separati. checkInDate deve essere il GIORNO ESATTO di check-in indicato dall'utente (es. "16–19 lug" → checkInDate = 16 luglio).

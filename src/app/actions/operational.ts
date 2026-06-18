@@ -1415,6 +1415,7 @@ export type AIActionPayload =
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string; status: string; assignedToName: string }>; description: string }
   | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToName: string; unassignedOnly?: boolean; description: string }
   | { type: "BULK_UPDATE_BOOKINGS"; updates: Array<{ apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }> }>; description: string }
+  | { type: "BULK_CREATE_CLEANINGS"; cleanings: Array<{ apartmentName: string; date: string; assignedToName?: string; notes?: string }>; description: string }
   | { type: "PURGE_CANCELLED"; description: string };
 
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
@@ -1658,6 +1659,47 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       if (result.count === 0) return { success: false, error: "Nessuna pulizia trovata con i filtri specificati." };
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/cleanings");
+    } else if (payload.type === "BULK_CREATE_CLEANINGS") {
+      const errors: string[] = [];
+      let created = 0;
+      for (const item of payload.cleanings) {
+        const apartment = await prisma.apartment.findFirst({
+          where: { name: { equals: item.apartmentName, mode: "insensitive" } },
+          select: { id: true },
+        });
+        if (!apartment) { errors.push(`Appartamento non trovato: "${item.apartmentName}"`); continue; }
+        let assignedToId: string | undefined;
+        if (item.assignedToName) {
+          const user = await prisma.user.findFirst({
+            where: { name: { contains: item.assignedToName, mode: "insensitive" } },
+            select: { id: true },
+          });
+          if (!user) { errors.push(`Cleaner non trovato: "${item.assignedToName}"`); continue; }
+          assignedToId = user.id;
+        }
+        const cleaningDate = new Date(item.date);
+        const dayStart = new Date(cleaningDate); dayStart.setUTCHours(0,0,0,0);
+        const dayEnd = new Date(cleaningDate); dayEnd.setUTCHours(23,59,59,999);
+        const existing = await prisma.cleaningTask.findFirst({
+          where: { apartmentId: apartment.id, date: { gte: dayStart, lte: dayEnd } },
+        });
+        if (existing) { errors.push(`Pulizia già esistente per "${item.apartmentName}" in questa data`); continue; }
+        await prisma.cleaningTask.create({
+          data: {
+            apartmentId: apartment.id,
+            date: cleaningDate,
+            status: "PENDING",
+            ...(assignedToId && { assignedToId }),
+            ...(item.notes && { notes: item.notes }),
+          },
+        });
+        created++;
+      }
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/manager/cleanings");
+      if (errors.length > 0) {
+        return { success: created > 0, error: `${created} pulizie create. Errori: ${errors.join("; ")}` };
+      }
     } else if (payload.type === "PURGE_CANCELLED") {
       // Delete cancelled cleaning tasks first (FK dependency)
       const deletedCleanings = await prisma.cleaningTask.deleteMany({

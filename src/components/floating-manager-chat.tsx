@@ -101,6 +101,7 @@ function actionTypeLabel(type: string) {
     UPDATE_TICKET: "Modifica ticket manutenzione",
     BULK_ASSIGN_CLEANINGS_BY_FILTER: "Assegnazione pulizie",
     BULK_UPDATE_BOOKINGS: "Modifica prenotazioni",
+    BULK_CREATE_CLEANINGS: "Crea pulizie",
     PURGE_CANCELLED: "Elimina record cancellati",
   };
   return map[type] ?? "Modifica";
@@ -158,6 +159,16 @@ function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | nul
       </div>
     );
   }
+  if (action.type === "BULK_CREATE_CLEANINGS") return (
+    <div className="space-y-0.5">
+      <p className="text-xs font-bold text-amber-800">{action.cleanings.length} pulizie da creare:</p>
+      {action.cleanings.map((c, i) => (
+        <p key={i} className="text-xs text-amber-700">
+          • {c.apartmentName} — {new Date(c.date).toLocaleDateString("it-IT", { day: "numeric", month: "short" })}{c.assignedToName ? ` → ${c.assignedToName}` : ""}
+        </p>
+      ))}
+    </div>
+  );
   if (action.type === "BULK_UPDATE_BOOKINGS") return (
     <div className="space-y-0.5">
       {action.updates.map((u, i) => (
