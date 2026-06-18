@@ -33,7 +33,19 @@ export default async function SuperAdminPage() {
   const auth = await isSuperAdminAuthenticated();
   if (!auth) return <SuperAdminLoginForm />;
 
-  const [orgs, dbStats, blobStats, logs, aiUsage] = await Promise.all([getAllOrgsWithMetrics(), getDbStats(), getBlobStats(), getSuperAdminLogs(100), getAIUsageAllOrgs()]);
+  const [orgsResult, dbStatsResult, blobStats, logs, aiUsage] = await Promise.allSettled([getAllOrgsWithMetrics(), getDbStats(), getBlobStats(), getSuperAdminLogs(100), getAIUsageAllOrgs()]);
+
+  const orgsError = orgsResult.status === "rejected" ? String((orgsResult as PromiseRejectedResult).reason) : null;
+  if (orgsError) console.error("[SuperAdmin] getAllOrgsWithMetrics error:", orgsError);
+  if (dbStatsResult.status === "rejected") { console.error("[SuperAdmin] getDbStats error:", dbStatsResult.reason); }
+  if (logs.status === "rejected") { console.error("[SuperAdmin] getSuperAdminLogs error:", (logs as any).reason); }
+  if (aiUsage.status === "rejected") { console.error("[SuperAdmin] getAIUsageAllOrgs error:", (aiUsage as any).reason); }
+
+  const orgs = orgsResult.status === "fulfilled" ? orgsResult.value : [];
+  const dbStats = dbStatsResult.status === "fulfilled" ? dbStatsResult.value : { totalSize: "—", totalBytes: 0, usedPercent: 0, limitBytes: 10737418240, tables: [] };
+  const blobStatsData = blobStats.status === "fulfilled" ? blobStats.value : null;
+  const logsData = logs.status === "fulfilled" ? (logs as any).value : [];
+  const aiUsageData = aiUsage.status === "fulfilled" ? (aiUsage as any).value : [];
 
   const now = new Date();
   const monthlyGrowth = Array.from({ length: 6 }, (_, i) => {
@@ -58,13 +70,21 @@ export default async function SuperAdminPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-white font-sans p-6 space-y-8">
 
+      {/* Banner errore getAllOrgsWithMetrics */}
+      {orgsError && (
+        <div className="rounded-xl px-4 py-3 bg-red-500/15 border border-red-500/40">
+          <p className="text-sm font-bold text-red-400">Errore caricamento organizzazioni:</p>
+          <p className="text-xs text-red-300 font-mono mt-1 break-all">{orgsError}</p>
+        </div>
+      )}
+
       {/* Banner Blob quasi pieno */}
-      {blobStats && blobStats.usedPercent >= 80 && (
-        <div className={`rounded-xl px-4 py-3 flex items-center gap-3 ${blobStats.usedPercent >= 95 ? "bg-red-500/15 border border-red-500/40" : "bg-amber-500/10 border border-amber-500/30"}`}>
-          <span className="text-lg">{blobStats.usedPercent >= 95 ? "🚨" : "⚠️"}</span>
+      {blobStatsData && blobStatsData.usedPercent >= 80 && (
+        <div className={`rounded-xl px-4 py-3 flex items-center gap-3 ${blobStatsData.usedPercent >= 95 ? "bg-red-500/15 border border-red-500/40" : "bg-amber-500/10 border border-amber-500/30"}`}>
+          <span className="text-lg">{blobStatsData.usedPercent >= 95 ? "🚨" : "⚠️"}</span>
           <p className="text-sm font-bold text-white">
-            Vercel Blob al <span className={blobStats.usedPercent >= 95 ? "text-red-400" : "text-amber-400"}>{blobStats.usedPercent}%</span> — {blobStats.totalSize} su 1 GB utilizzati.
-            {blobStats.usedPercent >= 95 ? " Richiede intervento immediato." : " Considera di eliminare file vecchi o fare upgrade."}
+            Vercel Blob al <span className={blobStatsData.usedPercent >= 95 ? "text-red-400" : "text-amber-400"}>{blobStatsData.usedPercent}%</span> — {blobStatsData.totalSize} su 1 GB utilizzati.
+            {blobStatsData.usedPercent >= 95 ? " Richiede intervento immediato." : " Considera di eliminare file vecchi o fare upgrade."}
           </p>
         </div>
       )}
@@ -153,25 +173,25 @@ export default async function SuperAdminPage() {
       </div>
 
       {/* Blob Usage */}
-      {blobStats && (
+      {blobStatsData && (
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">🗂 Vercel Blob — Utilizzo storage</h2>
-            <span className="text-xs text-slate-500">Limite piano: 1 GB · {blobStats.totalFiles} file</span>
+            <span className="text-xs text-slate-500">Limite piano: 1 GB · {blobStatsData.totalFiles} file</span>
           </div>
 
           {/* Barra principale */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-white">{blobStats.totalSize} usati</span>
-              <span className={`font-bold ${blobStats.usedPercent >= 80 ? "text-red-400" : blobStats.usedPercent >= 60 ? "text-amber-400" : "text-emerald-400"}`}>
-                {blobStats.usedPercent}%
+              <span className="font-bold text-white">{blobStatsData.totalSize} usati</span>
+              <span className={`font-bold ${blobStatsData.usedPercent >= 80 ? "text-red-400" : blobStatsData.usedPercent >= 60 ? "text-amber-400" : "text-emerald-400"}`}>
+                {blobStatsData.usedPercent}%
               </span>
             </div>
             <div className="h-3 w-full rounded-full bg-slate-800 overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${blobStats.usedPercent >= 80 ? "bg-red-500" : blobStats.usedPercent >= 60 ? "bg-amber-500" : "bg-emerald-500"}`}
-                style={{ width: `${Math.max(blobStats.usedPercent, 1)}%` }}
+                className={`h-full rounded-full transition-all ${blobStatsData.usedPercent >= 80 ? "bg-red-500" : blobStatsData.usedPercent >= 60 ? "bg-amber-500" : "bg-emerald-500"}`}
+                style={{ width: `${Math.max(blobStatsData.usedPercent, 1)}%` }}
               />
             </div>
           </div>
@@ -179,14 +199,14 @@ export default async function SuperAdminPage() {
           {/* Breakdown per categoria */}
           <div className="space-y-2 pt-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Suddivisione per categoria</p>
-            {blobStats.breakdown.map(cat => (
+            {blobStatsData.breakdown.map(cat => (
               <div key={cat.key} className="flex items-center gap-3">
                 <span className="text-[11px] w-5">{cat.emoji}</span>
                 <span className="text-[10px] text-slate-400 w-40 truncate">{cat.label}</span>
                 <div className="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-sky-500/60"
-                    style={{ width: blobStats.totalBytes > 0 ? `${Math.max(Math.round((cat.bytes / blobStats.totalBytes) * 100), cat.bytes > 0 ? 1 : 0)}%` : "0%" }}
+                    style={{ width: blobStatsData.totalBytes > 0 ? `${Math.max(Math.round((cat.bytes / blobStatsData.totalBytes) * 100), cat.bytes > 0 ? 1 : 0)}%` : "0%" }}
                   />
                 </div>
                 <span className="text-[10px] text-slate-500 w-16 text-right">{cat.size}</span>
@@ -298,7 +318,7 @@ export default async function SuperAdminPage() {
           <span className="text-xs text-slate-500">reset il 1° del mese</span>
         </div>
         <div className="p-4">
-          <AIUsageTable orgs={aiUsage} />
+          <AIUsageTable orgs={aiUsageData} />
         </div>
       </div>
 
@@ -306,9 +326,9 @@ export default async function SuperAdminPage() {
       <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">📋 Log attività admin</h2>
-          <span className="text-xs text-slate-500">{logs.length} eventi recenti</span>
+          <span className="text-xs text-slate-500">{logsData.length} eventi recenti</span>
         </div>
-        {logs.length === 0 ? (
+        {logsData.length === 0 ? (
           <p className="px-6 py-4 text-sm text-slate-500">Nessun evento registrato.</p>
         ) : (
           <div className="overflow-x-auto max-h-96 overflow-y-auto">
@@ -321,7 +341,7 @@ export default async function SuperAdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {logs.map(log => {
+                {logsData.map((log: any) => {
                   const actionColor: Record<string, string> = {
                     LOGIN: "text-emerald-400",
                     LOGIN_FALLITO: "text-red-400",

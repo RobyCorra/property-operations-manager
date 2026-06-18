@@ -24,7 +24,7 @@ const DEFAULT_PREFS: NotificationPrefs = {
 
 export async function getSettingsData() {
   const userId = await getCurrentUserId();
-  if (!userId) throw new Error("Non autenticato");
+  if (!userId) throw new Error("Non autenticato"); // lasciato throw: viene chiamato solo all'apertura drawer
   const user = { id: userId };
   const full = await prisma.user.findUnique({
     where: { id: user.id },
@@ -39,6 +39,8 @@ export async function getSettingsData() {
           legalName: true, vatNumber: true, fiscalCode: true,
           address: true, city: true, zip: true, country: true,
           phone: true, email: true, pec: true, sdiCode: true,
+          conflictMaxCleaningsPerDay: true, conflictUrgentHours: true,
+          conflictStaleTicketDays: true, conflictOverlapMinutes: true,
         },
       },
     },
@@ -55,7 +57,7 @@ export async function getSettingsData() {
 
 export async function updateProfile(formData: FormData) {
   const userId = await getCurrentUserId();
-  if (!userId) throw new Error("Non autenticato");
+  if (!userId) return { error: "Non autenticato." };
   const user = { id: userId };
   const name = (formData.get("name") as string)?.trim();
   const email = (formData.get("email") as string)?.trim().toLowerCase();
@@ -72,7 +74,7 @@ export async function updateProfile(formData: FormData) {
 
 export async function updatePassword(formData: FormData) {
   const userId = await getCurrentUserId();
-  if (!userId) throw new Error("Non autenticato");
+  if (!userId) return { error: "Non autenticato." };
   const user = { id: userId };
   const current = formData.get("current") as string;
   const next = formData.get("next") as string;
@@ -95,7 +97,7 @@ export async function updatePassword(formData: FormData) {
 
 export async function uploadOrgLogo(formData: FormData) {
   const userId = await getCurrentUserId();
-  if (!userId) throw new Error("Non autenticato");
+  if (!userId) return { error: "Non autenticato." };
   const user = { id: userId };
 
   const file = formData.get("logo") as File | null;
@@ -117,7 +119,7 @@ export async function uploadOrgLogo(formData: FormData) {
 
 export async function updateOrgName(formData: FormData) {
   const userId = await getCurrentUserId();
-  if (!userId) throw new Error("Non autenticato");
+  if (!userId) return { error: "Non autenticato." };
   const user = { id: userId };
   const name = (formData.get("name") as string)?.trim();
   if (!name) return { error: "Il nome non può essere vuoto." };
@@ -135,7 +137,7 @@ export async function updateOrgName(formData: FormData) {
 
 export async function updateNotificationPrefs(prefs: NotificationPrefs) {
   const userId = await getCurrentUserId();
-  if (!userId) throw new Error("Non autenticato");
+  if (!userId) return { error: "Non autenticato." };
   const user = { id: userId };
   await prisma.user.update({
     where: { id: user.id },
@@ -146,7 +148,7 @@ export async function updateNotificationPrefs(prefs: NotificationPrefs) {
 
 export async function updateOrgFiscal(formData: FormData) {
   const userId = await getCurrentUserId();
-  if (!userId) throw new Error("Non autenticato");
+  if (!userId) return { error: "Non autenticato." };
 
   const full = await prisma.user.findUnique({
     where: { id: userId },
@@ -168,6 +170,30 @@ export async function updateOrgFiscal(formData: FormData) {
       email:       (formData.get("email")        as string)?.trim() || null,
       pec:         (formData.get("pec")          as string)?.trim() || null,
       sdiCode:     (formData.get("sdiCode")      as string)?.trim() || null,
+    },
+  });
+  revalidatePath("/dashboard/manager");
+  return { success: true };
+}
+
+export async function updateConflictSettings(formData: FormData) {
+  const userId = await getCurrentUserId();
+  if (!userId) return { error: "Non autenticato." };
+  const full = await prisma.user.findUnique({ where: { id: userId }, select: { organizationId: true } });
+  if (!full?.organizationId) return { error: "Organizzazione non trovata." };
+
+  const parse = (key: string, min: number, max: number, def: number) => {
+    const v = parseInt(formData.get(key) as string);
+    return isNaN(v) ? def : Math.min(Math.max(v, min), max);
+  };
+
+  await prisma.organization.update({
+    where: { id: full.organizationId },
+    data: {
+      conflictMaxCleaningsPerDay: parse("conflictMaxCleaningsPerDay", 1, 20, 3),
+      conflictUrgentHours:        parse("conflictUrgentHours", 1, 168, 48),
+      conflictStaleTicketDays:    parse("conflictStaleTicketDays", 1, 90, 7),
+      conflictOverlapMinutes:     parse("conflictOverlapMinutes", 15, 480, 90),
     },
   });
   revalidatePath("/dashboard/manager");

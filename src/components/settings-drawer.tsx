@@ -10,6 +10,7 @@ import {
   updateNotificationPrefs,
   uploadOrgLogo,
   updateOrgFiscal,
+  updateConflictSettings,
   type NotificationPrefs,
 } from "@/src/app/actions/settings";
 
@@ -71,6 +72,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
   // org form
   const [orgResult, setOrgResult] = useState<{ success?: boolean; error?: string } | null>(null);
   const [fiscalResult, setFiscalResult] = useState<{ success?: boolean; error?: string } | null>(null);
+  const [conflictResult, setConflictResult] = useState<{ success?: boolean; error?: string } | null>(null);
   const [logoResult, setLogoResult] = useState<{ success?: boolean; error?: string } | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
   // notification prefs
@@ -79,10 +81,16 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
 
   useEffect(() => {
     if (open && !data) {
-      getSettingsData().then(d => {
-        setData(d);
-        setPrefs(d.notificationPrefs);
-      });
+      getSettingsData()
+        .then(d => {
+          setData(d);
+          setPrefs(d.notificationPrefs);
+        })
+        .catch(err => {
+          console.error("[SettingsDrawer] getSettingsData error:", err);
+          // Imposta un oggetto vuoto per uscire dal loop di loading
+          setData({ id: "", name: "", email: "", notificationPrefs: { cleaningStarted: true, cleaningCompleted: true, maintenanceNew: true, chatCleaner: true, chatMaintenance: true }, organization: null } as any);
+        });
     }
   }, [open, data]);
 
@@ -162,12 +170,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
               <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
                 <p className="text-[13px] font-[700] text-[#1c1c1e]">Dati personali</p>
                 <form
-                  action={async (fd) => {
-                    setProfileResult(null);
-                    const res = await updateProfile(fd);
-                    setProfileResult(res ?? { success: true });
-                    if (res?.success) setData(d => d ? { ...d, name: fd.get("name") as string, email: fd.get("email") as string } : d);
-                  }}
+                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setProfileResult(null); const res = await updateProfile(fd); setProfileResult(res ?? { success: true }); if (res?.success) setData(d => d ? { ...d, name: fd.get("name") as string, email: fd.get("email") as string } : d); } catch { setProfileResult({ error: "Errore durante il salvataggio." }); } }); }}
                   className="flex flex-col gap-3"
                 >
                   <Field label="Nome">
@@ -186,11 +189,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
               <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
                 <p className="text-[13px] font-[700] text-[#1c1c1e]">Cambia password</p>
                 <form
-                  action={async (fd) => {
-                    setPwResult(null);
-                    const res = await updatePassword(fd);
-                    setPwResult(res ?? { success: true });
-                  }}
+                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setPwResult(null); const res = await updatePassword(fd); setPwResult(res ?? { success: true }); } catch { setPwResult({ error: "Errore durante il salvataggio." }); } }); }}
                   className="flex flex-col gap-3"
                 >
                   <Field label="Password attuale">
@@ -217,12 +216,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
               <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
                 <p className="text-[13px] font-[700] text-[#1c1c1e]">Nome organizzazione</p>
                 <form
-                  action={async (fd) => {
-                    setOrgResult(null);
-                    const res = await updateOrgName(fd);
-                    setOrgResult(res ?? { success: true });
-                    if (res?.success) setData(d => d ? { ...d, organization: d.organization ? { ...d.organization, name: fd.get("name") as string } : null } : d);
-                  }}
+                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setOrgResult(null); const res = await updateOrgName(fd); setOrgResult(res ?? { success: true }); if (res?.success) setData(d => d ? { ...d, organization: d.organization ? { ...d.organization, name: fd.get("name") as string } : null } : d); } catch { setOrgResult({ error: "Errore durante il salvataggio." }); } }); }}
                   className="flex flex-col gap-3"
                 >
                   <Field label="Nome">
@@ -239,11 +233,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
               <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
                 <p className="text-[13px] font-[700] text-[#1c1c1e]">Dati fiscali</p>
                 <form
-                  action={async (fd) => {
-                    setFiscalResult(null);
-                    const res = await updateOrgFiscal(fd);
-                    setFiscalResult(res ?? { success: true });
-                  }}
+                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setFiscalResult(null); const res = await updateOrgFiscal(fd); setFiscalResult(res ?? { success: true }); } catch { setFiscalResult({ error: "Errore durante il salvataggio." }); } }); }}
                   className="flex flex-col gap-3"
                 >
                   <Field label="Ragione sociale">
@@ -308,16 +298,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
                     </div>
                   )}
                   <form
-                    action={async (fd) => {
-                      setLogoResult(null);
-                      setLogoUploading(true);
-                      const res = await uploadOrgLogo(fd);
-                      setLogoUploading(false);
-                      setLogoResult(res);
-                      if (res?.success && res.url) {
-                        setData(d => d ? { ...d, organization: d.organization ? { ...d.organization, logoUrl: res.url! } : null } : d);
-                      }
-                    }}
+                    onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setLogoResult(null); setLogoUploading(true); const res = await uploadOrgLogo(fd); setLogoUploading(false); setLogoResult(res); if (res?.success && res.url) { setData(d => d ? { ...d, organization: d.organization ? { ...d.organization, logoUrl: res.url! } : null } : d); } } catch { setLogoUploading(false); setLogoResult({ error: "Errore durante il caricamento." }); } }); }}
                     className="flex flex-col gap-2 flex-1"
                   >
                     <input name="logo" type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="text-[13px] text-[#3c3c43] file:mr-3 file:rounded-[8px] file:border-0 file:bg-[#f2f2f7] file:px-3 file:py-1.5 file:text-[12px] file:font-[600] file:text-[#1c1c1e]" />
@@ -331,6 +312,53 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
                     <p className="text-[11px] text-[#8e8e93]">JPG, PNG, WEBP o SVG — max 2MB</p>
                   </form>
                 </div>
+              </div>
+
+              {/* Regole AI */}
+              <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
+                <p className="text-[13px] font-[700] text-[#1c1c1e]">🤖 Regole analisi conflitti AI</p>
+                <p className="text-[11px] text-[#8e8e93]">Soglie usate dall'assistente AI per rilevare problemi operativi</p>
+                <form
+                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setConflictResult(null); const res = await updateConflictSettings(fd); setConflictResult(res ?? { success: true }); } catch { setConflictResult({ error: "Errore durante il salvataggio." }); } }); }}
+                  className="flex flex-col gap-3"
+                >
+                  <Field label="Max pulizie per cleaner al giorno">
+                    <input
+                      name="conflictMaxCleaningsPerDay"
+                      type="number" min={1} max={20}
+                      defaultValue={data.organization?.conflictMaxCleaningsPerDay ?? 3}
+                      className={inputCls}
+                    />
+                  </Field>
+                  <Field label="Ore preavviso pulizia senza cleaner">
+                    <input
+                      name="conflictUrgentHours"
+                      type="number" min={1} max={168}
+                      defaultValue={data.organization?.conflictUrgentHours ?? 48}
+                      className={inputCls}
+                    />
+                  </Field>
+                  <Field label="Giorni prima che un ticket diventi bloccante">
+                    <input
+                      name="conflictStaleTicketDays"
+                      type="number" min={1} max={90}
+                      defaultValue={data.organization?.conflictStaleTicketDays ?? 7}
+                      className={inputCls}
+                    />
+                  </Field>
+                  <Field label="Minuti sovrapposizione per doppio booking cleaner">
+                    <input
+                      name="conflictOverlapMinutes"
+                      type="number" min={15} max={480}
+                      defaultValue={data.organization?.conflictOverlapMinutes ?? 90}
+                      className={inputCls}
+                    />
+                  </Field>
+                  <div className="flex items-center justify-between pt-1">
+                    <StatusMsg result={conflictResult} />
+                    <button type="submit" className={btnCls}>Salva</button>
+                  </div>
+                </form>
               </div>
 
               <a
