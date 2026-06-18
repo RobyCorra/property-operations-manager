@@ -479,9 +479,7 @@ export default function FloatingManagerChat({
       { role: "MANAGER", type: "MANAGER_DASHBOARD", forceWebSearch: useWeb }
     );
 
-    console.log("[AI RAW RESPONSE]", res);
     const { text, action } = parseAction(res || "");
-    console.log("[AI PARSED]", { text, action });
 
     // Preview for bulk assign
     let preview: PreviewCleaning[] | null = null;
