@@ -384,6 +384,14 @@ ACTION: {"type":"BULK_CREATE_CLEANINGS","cleanings":[{"apartmentName":"Corso Bue
 
 - BULK_CREATE_CLEANINGS: usa SEMPRE questo tipo quando devi creare più pulizie in una sola richiesta. Metti tutte le pulizie nell'array "cleanings". NON generare più ACTION CREATE_CLEANING separate.
 
+ACTION: {"type":"BULK_CREATE_BOOKINGS","bookings":[{"apartmentName":"Corso Buenos Aires","checkInDate":"2026-07-01T00:00:00.000Z","checkOutDate":"2026-07-05T00:00:00.000Z","totalGuests":2,"guestName":"Mario Rossi"},{"apartmentName":"Navigli Loft","checkInDate":"2026-07-10T00:00:00.000Z","checkOutDate":"2026-07-14T00:00:00.000Z","totalGuests":4,"guestName":"Anna Bianchi"}],"description":"Creo 2 prenotazioni"}
+
+- BULK_CREATE_BOOKINGS: usa SEMPRE questo tipo quando devi creare più prenotazioni in una sola richiesta. NON generare più ACTION CREATE_BOOKING separate. Crea automaticamente anche la pulizia al check-out per ogni prenotazione.
+
+ACTION: {"type":"BULK_CREATE_TICKETS","tickets":[{"apartmentName":"Corso Buenos Aires","title":"Perdita rubinetto","ticketDescription":"Il rubinetto del bagno perde acqua","priority":"HIGH"},{"apartmentName":"Navigli Loft","title":"Lampadina fulminata","ticketDescription":"Lampadina soggiorno da sostituire","priority":"LOW"}],"description":"Creo 2 ticket manutenzione"}
+
+- BULK_CREATE_TICKETS: usa SEMPRE questo tipo quando devi creare più ticket in una sola richiesta. NON generare più ACTION CREATE_TICKET separate.
+
 ACTION: {"type":"BULK_UPDATE_BOOKINGS","updates":[{"apartmentName":"Trastevere 68","checkInDate":"2026-07-16T00:00:00+02:00","fields":{"totalGuests":7}},{"apartmentName":"Trastevere 68","checkInDate":"2026-07-20T00:00:00+02:00","fields":{"totalGuests":5}},{"apartmentName":"Trastevere 68","checkInDate":"2026-07-25T00:00:00+02:00","fields":{"totalGuests":4}}],"description":"Aggiorno il numero di ospiti per 3 prenotazioni di Trastevere 68"}
 
 - BULK_UPDATE_BOOKINGS: usa SEMPRE questo tipo quando devi aggiornare più prenotazioni in una sola richiesta (es. "aggiorna ospiti per queste date: ..."). Non generare più UPDATE_BOOKING separati. checkInDate deve essere il GIORNO ESATTO di check-in indicato dall'utente (es. "16–19 lug" → checkInDate = 16 luglio).

@@ -102,6 +102,8 @@ function actionTypeLabel(type: string) {
     BULK_ASSIGN_CLEANINGS_BY_FILTER: "Assegnazione pulizie",
     BULK_UPDATE_BOOKINGS: "Modifica prenotazioni",
     BULK_CREATE_CLEANINGS: "Crea pulizie",
+    BULK_CREATE_BOOKINGS: "Crea prenotazioni",
+    BULK_CREATE_TICKETS: "Crea ticket manutenzione",
     PURGE_CANCELLED: "Elimina record cancellati",
   };
   return map[type] ?? "Modifica";
@@ -165,6 +167,26 @@ function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | nul
       {action.cleanings.map((c, i) => (
         <p key={i} className="text-xs text-amber-700">
           • {c.apartmentName} — {new Date(c.date).toLocaleDateString("it-IT", { day: "numeric", month: "short" })}{c.assignedToName ? ` → ${c.assignedToName}` : ""}
+        </p>
+      ))}
+    </div>
+  );
+  if (action.type === "BULK_CREATE_BOOKINGS") return (
+    <div className="space-y-0.5">
+      <p className="text-xs font-bold text-amber-800">{action.bookings.length} prenotazioni da creare:</p>
+      {action.bookings.map((b, i) => (
+        <p key={i} className="text-xs text-amber-700">
+          • {b.apartmentName} — {new Date(b.checkInDate).toLocaleDateString("it-IT", { day: "numeric", month: "short" })} → {new Date(b.checkOutDate).toLocaleDateString("it-IT", { day: "numeric", month: "short" })}{b.guestName ? ` (${b.guestName})` : ""} · {b.totalGuests} osp.
+        </p>
+      ))}
+    </div>
+  );
+  if (action.type === "BULK_CREATE_TICKETS") return (
+    <div className="space-y-0.5">
+      <p className="text-xs font-bold text-amber-800">{action.tickets.length} ticket da creare:</p>
+      {action.tickets.map((t, i) => (
+        <p key={i} className="text-xs text-amber-700">
+          • {t.apartmentName} — {t.title} [{t.priority}]
         </p>
       ))}
     </div>
