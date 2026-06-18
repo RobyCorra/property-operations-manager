@@ -142,6 +142,10 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   perplexityMonthlyLimit: 'perplexityMonthlyLimit',
   perplexityRequestsUsed: 'perplexityRequestsUsed',
   perplexityRequestsResetAt: 'perplexityRequestsResetAt',
+  conflictMaxCleaningsPerDay: 'conflictMaxCleaningsPerDay',
+  conflictUrgentHours: 'conflictUrgentHours',
+  conflictStaleTicketDays: 'conflictStaleTicketDays',
+  conflictOverlapMinutes: 'conflictOverlapMinutes',
   createdAt: 'createdAt'
 };
 

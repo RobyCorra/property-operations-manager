@@ -3349,6 +3349,10 @@ export namespace Prisma {
     aiTokensUsed: number | null
     perplexityMonthlyLimit: number | null
     perplexityRequestsUsed: number | null
+    conflictMaxCleaningsPerDay: number | null
+    conflictUrgentHours: number | null
+    conflictStaleTicketDays: number | null
+    conflictOverlapMinutes: number | null
   }
 
   export type OrganizationSumAggregateOutputType = {
@@ -3356,6 +3360,10 @@ export namespace Prisma {
     aiTokensUsed: number | null
     perplexityMonthlyLimit: number | null
     perplexityRequestsUsed: number | null
+    conflictMaxCleaningsPerDay: number | null
+    conflictUrgentHours: number | null
+    conflictStaleTicketDays: number | null
+    conflictOverlapMinutes: number | null
   }
 
   export type OrganizationMinAggregateOutputType = {
@@ -3380,6 +3388,10 @@ export namespace Prisma {
     perplexityMonthlyLimit: number | null
     perplexityRequestsUsed: number | null
     perplexityRequestsResetAt: Date | null
+    conflictMaxCleaningsPerDay: number | null
+    conflictUrgentHours: number | null
+    conflictStaleTicketDays: number | null
+    conflictOverlapMinutes: number | null
     createdAt: Date | null
   }
 
@@ -3405,6 +3417,10 @@ export namespace Prisma {
     perplexityMonthlyLimit: number | null
     perplexityRequestsUsed: number | null
     perplexityRequestsResetAt: Date | null
+    conflictMaxCleaningsPerDay: number | null
+    conflictUrgentHours: number | null
+    conflictStaleTicketDays: number | null
+    conflictOverlapMinutes: number | null
     createdAt: Date | null
   }
 
@@ -3430,6 +3446,10 @@ export namespace Prisma {
     perplexityMonthlyLimit: number
     perplexityRequestsUsed: number
     perplexityRequestsResetAt: number
+    conflictMaxCleaningsPerDay: number
+    conflictUrgentHours: number
+    conflictStaleTicketDays: number
+    conflictOverlapMinutes: number
     createdAt: number
     _all: number
   }
@@ -3440,6 +3460,10 @@ export namespace Prisma {
     aiTokensUsed?: true
     perplexityMonthlyLimit?: true
     perplexityRequestsUsed?: true
+    conflictMaxCleaningsPerDay?: true
+    conflictUrgentHours?: true
+    conflictStaleTicketDays?: true
+    conflictOverlapMinutes?: true
   }
 
   export type OrganizationSumAggregateInputType = {
@@ -3447,6 +3471,10 @@ export namespace Prisma {
     aiTokensUsed?: true
     perplexityMonthlyLimit?: true
     perplexityRequestsUsed?: true
+    conflictMaxCleaningsPerDay?: true
+    conflictUrgentHours?: true
+    conflictStaleTicketDays?: true
+    conflictOverlapMinutes?: true
   }
 
   export type OrganizationMinAggregateInputType = {
@@ -3471,6 +3499,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: true
     perplexityRequestsUsed?: true
     perplexityRequestsResetAt?: true
+    conflictMaxCleaningsPerDay?: true
+    conflictUrgentHours?: true
+    conflictStaleTicketDays?: true
+    conflictOverlapMinutes?: true
     createdAt?: true
   }
 
@@ -3496,6 +3528,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: true
     perplexityRequestsUsed?: true
     perplexityRequestsResetAt?: true
+    conflictMaxCleaningsPerDay?: true
+    conflictUrgentHours?: true
+    conflictStaleTicketDays?: true
+    conflictOverlapMinutes?: true
     createdAt?: true
   }
 
@@ -3521,6 +3557,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: true
     perplexityRequestsUsed?: true
     perplexityRequestsResetAt?: true
+    conflictMaxCleaningsPerDay?: true
+    conflictUrgentHours?: true
+    conflictStaleTicketDays?: true
+    conflictOverlapMinutes?: true
     createdAt?: true
     _all?: true
   }
@@ -3633,6 +3673,10 @@ export namespace Prisma {
     perplexityMonthlyLimit: number
     perplexityRequestsUsed: number
     perplexityRequestsResetAt: Date | null
+    conflictMaxCleaningsPerDay: number
+    conflictUrgentHours: number
+    conflictStaleTicketDays: number
+    conflictOverlapMinutes: number
     createdAt: Date
     _count: OrganizationCountAggregateOutputType | null
     _avg: OrganizationAvgAggregateOutputType | null
@@ -3677,6 +3721,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: boolean
     perplexityRequestsUsed?: boolean
     perplexityRequestsResetAt?: boolean
+    conflictMaxCleaningsPerDay?: boolean
+    conflictUrgentHours?: boolean
+    conflictStaleTicketDays?: boolean
+    conflictOverlapMinutes?: boolean
     createdAt?: boolean
     users?: boolean | Organization$usersArgs<ExtArgs>
     apartments?: boolean | Organization$apartmentsArgs<ExtArgs>
@@ -3706,6 +3754,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: boolean
     perplexityRequestsUsed?: boolean
     perplexityRequestsResetAt?: boolean
+    conflictMaxCleaningsPerDay?: boolean
+    conflictUrgentHours?: boolean
+    conflictStaleTicketDays?: boolean
+    conflictOverlapMinutes?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["organization"]>
 
@@ -3731,6 +3783,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: boolean
     perplexityRequestsUsed?: boolean
     perplexityRequestsResetAt?: boolean
+    conflictMaxCleaningsPerDay?: boolean
+    conflictUrgentHours?: boolean
+    conflictStaleTicketDays?: boolean
+    conflictOverlapMinutes?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["organization"]>
 
@@ -3756,10 +3812,14 @@ export namespace Prisma {
     perplexityMonthlyLimit?: boolean
     perplexityRequestsUsed?: boolean
     perplexityRequestsResetAt?: boolean
+    conflictMaxCleaningsPerDay?: boolean
+    conflictUrgentHours?: boolean
+    conflictStaleTicketDays?: boolean
+    conflictOverlapMinutes?: boolean
     createdAt?: boolean
   }
 
-  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "logoUrl" | "legalName" | "vatNumber" | "fiscalCode" | "address" | "city" | "zip" | "country" | "phone" | "email" | "pec" | "sdiCode" | "aiMonthlyTokenLimit" | "aiTokensUsed" | "aiTokensResetAt" | "perplexityMonthlyLimit" | "perplexityRequestsUsed" | "perplexityRequestsResetAt" | "createdAt", ExtArgs["result"]["organization"]>
+  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "logoUrl" | "legalName" | "vatNumber" | "fiscalCode" | "address" | "city" | "zip" | "country" | "phone" | "email" | "pec" | "sdiCode" | "aiMonthlyTokenLimit" | "aiTokensUsed" | "aiTokensResetAt" | "perplexityMonthlyLimit" | "perplexityRequestsUsed" | "perplexityRequestsResetAt" | "conflictMaxCleaningsPerDay" | "conflictUrgentHours" | "conflictStaleTicketDays" | "conflictOverlapMinutes" | "createdAt", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Organization$usersArgs<ExtArgs>
     apartments?: boolean | Organization$apartmentsArgs<ExtArgs>
@@ -3798,6 +3858,10 @@ export namespace Prisma {
       perplexityMonthlyLimit: number
       perplexityRequestsUsed: number
       perplexityRequestsResetAt: Date | null
+      conflictMaxCleaningsPerDay: number
+      conflictUrgentHours: number
+      conflictStaleTicketDays: number
+      conflictOverlapMinutes: number
       createdAt: Date
     }, ExtArgs["result"]["organization"]>
     composites: {}
@@ -4246,6 +4310,10 @@ export namespace Prisma {
     readonly perplexityMonthlyLimit: FieldRef<"Organization", 'Int'>
     readonly perplexityRequestsUsed: FieldRef<"Organization", 'Int'>
     readonly perplexityRequestsResetAt: FieldRef<"Organization", 'DateTime'>
+    readonly conflictMaxCleaningsPerDay: FieldRef<"Organization", 'Int'>
+    readonly conflictUrgentHours: FieldRef<"Organization", 'Int'>
+    readonly conflictStaleTicketDays: FieldRef<"Organization", 'Int'>
+    readonly conflictOverlapMinutes: FieldRef<"Organization", 'Int'>
     readonly createdAt: FieldRef<"Organization", 'DateTime'>
   }
     
@@ -30657,6 +30725,10 @@ export namespace Prisma {
     perplexityMonthlyLimit: 'perplexityMonthlyLimit',
     perplexityRequestsUsed: 'perplexityRequestsUsed',
     perplexityRequestsResetAt: 'perplexityRequestsResetAt',
+    conflictMaxCleaningsPerDay: 'conflictMaxCleaningsPerDay',
+    conflictUrgentHours: 'conflictUrgentHours',
+    conflictStaleTicketDays: 'conflictStaleTicketDays',
+    conflictOverlapMinutes: 'conflictOverlapMinutes',
     createdAt: 'createdAt'
   };
 
@@ -31168,6 +31240,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFilter<"Organization"> | number
     perplexityRequestsUsed?: IntFilter<"Organization"> | number
     perplexityRequestsResetAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFilter<"Organization"> | number
+    conflictUrgentHours?: IntFilter<"Organization"> | number
+    conflictStaleTicketDays?: IntFilter<"Organization"> | number
+    conflictOverlapMinutes?: IntFilter<"Organization"> | number
     createdAt?: DateTimeFilter<"Organization"> | Date | string
     users?: UserListRelationFilter
     apartments?: ApartmentListRelationFilter
@@ -31196,6 +31272,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: SortOrder
     perplexityRequestsUsed?: SortOrder
     perplexityRequestsResetAt?: SortOrderInput | SortOrder
+    conflictMaxCleaningsPerDay?: SortOrder
+    conflictUrgentHours?: SortOrder
+    conflictStaleTicketDays?: SortOrder
+    conflictOverlapMinutes?: SortOrder
     createdAt?: SortOrder
     users?: UserOrderByRelationAggregateInput
     apartments?: ApartmentOrderByRelationAggregateInput
@@ -31227,6 +31307,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFilter<"Organization"> | number
     perplexityRequestsUsed?: IntFilter<"Organization"> | number
     perplexityRequestsResetAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFilter<"Organization"> | number
+    conflictUrgentHours?: IntFilter<"Organization"> | number
+    conflictStaleTicketDays?: IntFilter<"Organization"> | number
+    conflictOverlapMinutes?: IntFilter<"Organization"> | number
     createdAt?: DateTimeFilter<"Organization"> | Date | string
     users?: UserListRelationFilter
     apartments?: ApartmentListRelationFilter
@@ -31255,6 +31339,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: SortOrder
     perplexityRequestsUsed?: SortOrder
     perplexityRequestsResetAt?: SortOrderInput | SortOrder
+    conflictMaxCleaningsPerDay?: SortOrder
+    conflictUrgentHours?: SortOrder
+    conflictStaleTicketDays?: SortOrder
+    conflictOverlapMinutes?: SortOrder
     createdAt?: SortOrder
     _count?: OrganizationCountOrderByAggregateInput
     _avg?: OrganizationAvgOrderByAggregateInput
@@ -31288,6 +31376,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntWithAggregatesFilter<"Organization"> | number
     perplexityRequestsUsed?: IntWithAggregatesFilter<"Organization"> | number
     perplexityRequestsResetAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+    conflictMaxCleaningsPerDay?: IntWithAggregatesFilter<"Organization"> | number
+    conflictUrgentHours?: IntWithAggregatesFilter<"Organization"> | number
+    conflictStaleTicketDays?: IntWithAggregatesFilter<"Organization"> | number
+    conflictOverlapMinutes?: IntWithAggregatesFilter<"Organization"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Organization"> | Date | string
   }
 
@@ -33083,6 +33175,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutOrganizationInput
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
@@ -33111,6 +33207,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -33139,6 +33239,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutOrganizationNestedInput
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
@@ -33167,6 +33271,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -33195,6 +33303,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
   }
 
@@ -33220,6 +33332,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -33245,6 +33361,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -35277,6 +35397,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: SortOrder
     perplexityRequestsUsed?: SortOrder
     perplexityRequestsResetAt?: SortOrder
+    conflictMaxCleaningsPerDay?: SortOrder
+    conflictUrgentHours?: SortOrder
+    conflictStaleTicketDays?: SortOrder
+    conflictOverlapMinutes?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -35285,6 +35409,10 @@ export namespace Prisma {
     aiTokensUsed?: SortOrder
     perplexityMonthlyLimit?: SortOrder
     perplexityRequestsUsed?: SortOrder
+    conflictMaxCleaningsPerDay?: SortOrder
+    conflictUrgentHours?: SortOrder
+    conflictStaleTicketDays?: SortOrder
+    conflictOverlapMinutes?: SortOrder
   }
 
   export type OrganizationMaxOrderByAggregateInput = {
@@ -35309,6 +35437,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: SortOrder
     perplexityRequestsUsed?: SortOrder
     perplexityRequestsResetAt?: SortOrder
+    conflictMaxCleaningsPerDay?: SortOrder
+    conflictUrgentHours?: SortOrder
+    conflictStaleTicketDays?: SortOrder
+    conflictOverlapMinutes?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -35334,6 +35466,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: SortOrder
     perplexityRequestsUsed?: SortOrder
     perplexityRequestsResetAt?: SortOrder
+    conflictMaxCleaningsPerDay?: SortOrder
+    conflictUrgentHours?: SortOrder
+    conflictStaleTicketDays?: SortOrder
+    conflictOverlapMinutes?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -35342,6 +35478,10 @@ export namespace Prisma {
     aiTokensUsed?: SortOrder
     perplexityMonthlyLimit?: SortOrder
     perplexityRequestsUsed?: SortOrder
+    conflictMaxCleaningsPerDay?: SortOrder
+    conflictUrgentHours?: SortOrder
+    conflictStaleTicketDays?: SortOrder
+    conflictOverlapMinutes?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -39171,6 +39311,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
@@ -39198,6 +39342,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
@@ -39480,6 +39628,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
@@ -39507,6 +39659,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -39767,6 +39923,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
@@ -39794,6 +39954,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
@@ -40183,6 +40347,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
@@ -40210,6 +40378,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -43923,6 +44095,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutOrganizationInput
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
@@ -43950,6 +44126,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: number
     perplexityRequestsUsed?: number
     perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -44017,6 +44197,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutOrganizationNestedInput
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
@@ -44044,6 +44228,10 @@ export namespace Prisma {
     perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
     perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
     perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
