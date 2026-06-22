@@ -66,6 +66,19 @@ interface CleaningTask {
   apartment?: { name: string; address: string };
 }
 
+type PrismaBooking = {
+  id: string;
+  createdAt: Date;
+  apartmentId: string;
+  status: string | null;
+  guestName: string | null;
+  totalGuests: number;
+  checkInDate: Date;
+  checkOutDate: Date;
+  externalId: string | null;
+  source: string | null;
+};
+
 type PrismaCleaningTask = {
   id: string;
   apartmentId: string;
@@ -246,6 +259,69 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
     ]
       .sort((a, b) => a.start.getTime() - b.start.getTime())
   ), [bookingEvents, cleaningEvents, maintenanceEvents]);
+
+  // Dati operativi pre-raggruppati per appartamento — calcolati UNA volta sola
+  // invece di rifiltrare/rimappare l'intero dataset dentro il loop di render per
+  // ogni singolo evento (era O(appartamenti × eventi × record) ad ogni re-render).
+  const opDataByApartment = useMemo(() => {
+    const map = new Map<string, {
+      bookings: PrismaBooking[];
+      cleanings: PrismaCleaningTask[];
+      tickets: PrismaMaintenanceTicket[];
+    }>();
+    const get = (id: string) => {
+      let entry = map.get(id);
+      if (!entry) { entry = { bookings: [], cleanings: [], tickets: [] }; map.set(id, entry); }
+      return entry;
+    };
+    for (const item of bookings) {
+      if (item.status === "CANCELLED") continue;
+      get(item.apartmentId).bookings.push({
+        id: item.id,
+        createdAt: new Date(),
+        apartmentId: item.apartmentId,
+        status: item.status ?? null,
+        guestName: item.guestName ?? null,
+        totalGuests: item.totalGuests ?? 0,
+        checkInDate: new Date(item.checkInDate),
+        checkOutDate: new Date(item.checkOutDate),
+        externalId: item.externalId ?? null,
+        source: item.source ?? null,
+      } as PrismaBooking);
+    }
+    for (const item of cleaningTasks) {
+      if (item.status === "CANCELLED") continue;
+      get(item.apartmentId).cleanings.push({
+        id: item.id,
+        createdAt: new Date(),
+        apartmentId: item.apartmentId,
+        date: new Date(item.date),
+        status: item.status,
+        assignedToId: item.assignedTo?.id ?? null,
+        notes: item.notes ?? null,
+        bookingId: null,
+        checklistProgress: item.checklistProgress ?? null,
+      } as PrismaCleaningTask);
+    }
+    for (const item of maintenanceTickets) {
+      if (item.status === "CANCELLED") continue;
+      get(item.apartmentId).tickets.push({
+        id: item.id,
+        apartmentId: item.apartmentId,
+        title: item.title,
+        description: item.description ?? "",
+        status: item.status,
+        priority: item.priority,
+        createdAt: new Date(item.createdAt),
+        assignedToId: item.assignedTo?.id ?? null,
+        scheduledStart: item.scheduledStart ? new Date(item.scheduledStart) : null,
+        scheduledEnd: item.scheduledEnd ? new Date(item.scheduledEnd) : null,
+        startedAt: null,
+        resolvedAt: null,
+      } as PrismaMaintenanceTicket);
+    }
+    return map;
+  }, [bookings, cleaningTasks, maintenanceTickets]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -603,49 +679,10 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     const statusTargetDate = todayKey >= checkInKey && todayKey < checkOutKey
                       ? currentClientTime
                       : booking.checkInDate;
-                    const apartmentBookings = bookings
-                      .filter((item) => item.status !== "CANCELLED" && item.apartmentId === apt.id)
-                      .map((item) => ({
-                        id: item.id,
-                        createdAt: new Date(),
-                        apartmentId: item.apartmentId,
-                        status: item.status ?? null,
-                        guestName: item.guestName ?? null,
-                        totalGuests: item.totalGuests ?? 0,
-                        checkInDate: new Date(item.checkInDate),
-                        checkOutDate: new Date(item.checkOutDate),
-                        externalId: item.externalId ?? null,
-                        source: item.source ?? null,
-                      }));
-                    const apartmentCleanings: PrismaCleaningTask[] = cleaningTasks
-                      .filter((item) => item.status !== "CANCELLED" && item.apartmentId === apt.id)
-                      .map((item) => ({
-                        id: item.id,
-                        createdAt: new Date(),
-                        apartmentId: item.apartmentId,
-                        date: new Date(item.date),
-                        status: item.status,
-                        assignedToId: item.assignedTo?.id ?? null,
-                        notes: item.notes ?? null,
-                        bookingId: null,
-                        checklistProgress: item.checklistProgress ?? null,
-                      }));
-                    const apartmentTickets: PrismaMaintenanceTicket[] = maintenanceTickets
-                      .filter((item) => item.status !== "CANCELLED" && item.apartmentId === apt.id)
-                      .map((item) => ({
-                        id: item.id,
-                        apartmentId: item.apartmentId,
-                        title: item.title,
-                        description: item.description ?? "",
-                        status: item.status,
-                        priority: item.priority,
-                        createdAt: new Date(item.createdAt),
-                        assignedToId: item.assignedTo?.id ?? null,
-                        scheduledStart: item.scheduledStart ? new Date(item.scheduledStart) : null,
-                        scheduledEnd: item.scheduledEnd ? new Date(item.scheduledEnd) : null,
-                        startedAt: null,
-                        resolvedAt: null,
-                      }));
+                    const opData = opDataByApartment.get(apt.id);
+                    const apartmentBookings = opData?.bookings ?? [];
+                    const apartmentCleanings = opData?.cleanings ?? [];
+                    const apartmentTickets = opData?.tickets ?? [];
 
                     const bookingStatus = getApartmentOperationalStatus(
                       statusTargetDate,
