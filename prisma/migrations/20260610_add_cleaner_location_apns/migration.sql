@@ -12,9 +12,12 @@ CREATE TABLE IF NOT EXISTS "CleanerLocation" (
 -- CreateUniqueIndex
 CREATE UNIQUE INDEX IF NOT EXISTS "CleanerLocation_userId_key" ON "CleanerLocation"("userId");
 
--- AddForeignKey
-ALTER TABLE "CleanerLocation" ADD CONSTRAINT "CleanerLocation_userId_fkey" 
-  FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey (idempotente)
+DO $$ BEGIN
+  ALTER TABLE "CleanerLocation" ADD CONSTRAINT "CleanerLocation_userId_fkey"
+    FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateTable ApnsToken
 CREATE TABLE IF NOT EXISTS "ApnsToken" (
@@ -31,6 +34,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS "ApnsToken_token_key" ON "ApnsToken"("token");
 -- CreateIndex
 CREATE INDEX IF NOT EXISTS "ApnsToken_userId_idx" ON "ApnsToken"("userId");
 
--- AddForeignKey
-ALTER TABLE "ApnsToken" ADD CONSTRAINT "ApnsToken_userId_fkey" 
-  FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey (idempotente)
+DO $$ BEGIN
+  ALTER TABLE "ApnsToken" ADD CONSTRAINT "ApnsToken_userId_fkey"
+    FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
