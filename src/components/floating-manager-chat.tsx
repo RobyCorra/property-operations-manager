@@ -322,7 +322,7 @@ export default function FloatingManagerChat({
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
-  function toggleMic() {
+  async function toggleMic() {
     if (listening) {
       recognitionRef.current?.stop();
       return;
@@ -335,6 +335,18 @@ export default function FloatingManagerChat({
       return;
     }
 
+    // Su Android Chrome la Web Speech API non innesca in modo affidabile il prompt
+    // del microfono: richiediamo prima esplicitamente l'accesso con getUserMedia,
+    // così il permesso viene chiesto/confermato correttamente prima di avviare.
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Chiudiamo subito lo stream: serviva solo a sbloccare/confermare il permesso.
+      stream.getTracks().forEach((t) => t.stop());
+    } catch {
+      setInput((prev) => prev + (prev ? " " : "") + "⚠ Permesso microfono negato. Abilitalo per questo sito nelle impostazioni del browser (icona lucchetto accanto all'indirizzo).");
+      return;
+    }
+
     const recognition = new SpeechRecognitionAPI();
     recognition.lang = "it-IT";
     recognition.interimResults = false;
@@ -343,7 +355,18 @@ export default function FloatingManagerChat({
 
     recognition.onstart = () => setListening(true);
     recognition.onend = () => { setListening(false); recognitionRef.current = null; };
-    recognition.onerror = () => { setListening(false); recognitionRef.current = null; };
+    recognition.onerror = (event: any) => {
+      setListening(false);
+      recognitionRef.current = null;
+      const err = event?.error;
+      if (err === "not-allowed" || err === "service-not-allowed") {
+        setInput((prev) => prev + (prev ? " " : "") + "⚠ Accesso al microfono bloccato. Tocca l'icona del lucchetto accanto all'indirizzo e consenti il microfono, poi riprova.");
+      } else if (err === "no-speech") {
+        setInput((prev) => prev + (prev ? " " : "") + "⚠ Nessuna voce rilevata, riprova.");
+      } else if (err === "network") {
+        setInput((prev) => prev + (prev ? " " : "") + "⚠ Riconoscimento vocale non disponibile offline.");
+      }
+    };
 
     recognition.onresult = (event: any) => {
       const transcript = (event.results[0][0].transcript as string).trim();
