@@ -16,7 +16,9 @@ Questi file contengono logica core del sistema:
 - src/lib/apartment-status.ts
 - src/app/actions/operational.ts
 - src/app/actions/ai.ts
+- src/app/actions/superadmin.ts
 - src/components/timeline-calendar.tsx
+- src/lib/perplexity.ts
 
 Regola:
 Non modificare questi file a meno che non sia esplicitamente richiesto nel prompt.
@@ -25,8 +27,14 @@ Non modificare questi file a meno che non sia esplicitamente richiesto nel promp
 
 - src/app/actions/booking.ts
 - src/app/actions/apartment.ts
+- src/app/actions/analytics.ts
+- src/app/actions/register.ts
 - src/app/dashboard/*
+- src/app/superadmin/*
+- src/app/api/auth/*
+- src/app/api/superadmin/*
 - src/components/manager-ai-chat.tsx
+- src/components/superadmin/*
 
 Regole:
 - non cambiare la logica esistente
@@ -104,6 +112,30 @@ Non modificare senza richiesta esplicita:
 - priorità ticket
 - status engine appartamento
 - calendario operativo
+
+## REGOLE PER SUPERADMIN
+
+Il modulo superadmin gestisce dati sensibili di tutta la piattaforma.
+
+Non modificare senza richiesta esplicita:
+
+- autenticazione superadmin (`SUPERADMIN_SECRET`)
+- logica impersonazione organizzazione
+- log attività (`SuperAdminLog`)
+- cookie di sessione superadmin
+
+Qualsiasi azione con redirect + side effect DB deve usare API route, non server action.
+
+## REGOLE PER RUOLI
+
+I ruoli disponibili sono: `MANAGER`, `SUPERVISOR`, `OWNER`, `CLEANER`, `MAINTENANCE`.
+
+Non modificare senza richiesta esplicita:
+
+- controlli ruolo nelle dashboard
+- redirect in caso di ruolo non corrispondente
+- cookie `role`, `userId`, `organizationId`
+- logica di isolamento per organizzazione
 
 ## REGOLE PER STATUS ENGINE
 

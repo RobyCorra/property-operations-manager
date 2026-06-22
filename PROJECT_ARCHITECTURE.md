@@ -22,52 +22,63 @@ L'app usa Next.js App Router. Le pagine leggono i dati dal database tramite Pris
 - React 19: componenti UI.
 - TypeScript: tipizzazione del codice.
 - Prisma 7: accesso al database PostgreSQL.
-- PostgreSQL: database applicativo.
+- PostgreSQL: database applicativo (Prisma Postgres "orange" in produzione).
 - Tailwind CSS 4: stile e layout.
 - Server actions: funzioni server per creare, aggiornare e cancellare dati.
+- Capacitor: wrapper nativo iOS e Android.
 - OpenAI: assistente AI.
+- Perplexity: ricerche esterne dall'assistente AI.
+- Vercel Blob: storage allegati e file caricati dagli utenti.
 - node-ical: sincronizzazione calendario iCal/Airbnb.
 - lucide-react: icone UI.
 
 ## 3. Struttura cartelle
 
 ```text
-app/
-├── prisma/
-│   ├── schema.prisma
-│   ├── migrations/
-│   ├── seed.ts
-│   └── seed.js
-├── public/
-│   ├── uploads/
-│   └── icone statiche
-├── scratch/
-│   └── script di supporto/debug
-├── src/
-│   ├── app/
-│   │   ├── actions/
-│   │   ├── api/
-│   │   ├── dashboard/
-│   │   ├── login/
-│   │   ├── globals.css
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   ├── error.tsx
-│   │   └── global-error.tsx
-│   ├── components/
-│   ├── lib/
-│   │   └── server/
-│   └── scripts/
-├── package.json
-├── next.config.ts
-├── tsconfig.json
-├── eslint.config.mjs
-├── postcss.config.mjs
-├── prisma.config.ts
-├── docker-compose.yml
-├── README.md
-├── AGENTS.md
-└── CLAUDE.md
+property-operations-manager/
+├── android/                  ← progetto Android generato da Capacitor
+├── ios/                      ← progetto iOS generato da Capacitor
+└── app/                      ← codice Next.js
+    ├── prisma/
+    │   ├── schema.prisma
+    │   ├── migrations/
+    │   ├── seed.ts
+    │   └── seed.js
+    ├── public/
+    │   ├── uploads/
+    │   └── icone statiche
+    ├── scratch/
+    │   └── script di supporto/debug
+    ├── docs/
+    │   └── SUPERVISOR_OWNER_SPEC.md   ← specifiche ruoli Supervisor e Owner
+    ├── src/
+    │   ├── app/
+    │   │   ├── actions/
+    │   │   ├── api/
+    │   │   ├── dashboard/
+    │   │   ├── login/
+    │   │   ├── register/
+    │   │   ├── superadmin/
+    │   │   ├── globals.css
+    │   │   ├── layout.tsx
+    │   │   ├── page.tsx
+    │   │   ├── error.tsx
+    │   │   └── global-error.tsx
+    │   ├── components/
+    │   │   └── superadmin/
+    │   ├── lib/
+    │   │   └── server/
+    │   └── scripts/
+    ├── package.json
+    ├── next.config.ts
+    ├── tsconfig.json
+    ├── eslint.config.mjs
+    ├── postcss.config.mjs
+    ├── prisma.config.ts
+    ├── docker-compose.yml
+    ├── README.md
+    ├── AGENTS.md
+    └── CLAUDE.md
 ```
 
 ## 4. File principali e ruolo
@@ -111,7 +122,7 @@ Nel file `prisma/schema.prisma` sono definiti i dati centrali:
 
 | Modello | Significato operativo |
 | --- | --- |
-| `User` | Utenti dell'app con ruolo `MANAGER`, `CLEANER` o `MAINTENANCE`. |
+| `User` | Utenti dell'app con ruolo `MANAGER`, `CLEANER`, `MAINTENANCE`, `SUPERVISOR` o `OWNER`. Campi aggiuntivi: `phone`, `address`, `isExternal`, `companyName`, `vatNumber`, `iban`. |
 | `Apartment` | Appartamenti, indirizzi, coordinate, capienza, camere, bagni, istruzioni accesso, iCal e scheda tecnica. |
 | `Booking` | Prenotazioni collegate a un appartamento. Possono arrivare da inserimento manuale o da fonte esterna. |
 | `CleaningTask` | Interventi di pulizia, con stato, assegnatario, eventuale booking collegato e checklist progressiva. |
@@ -123,6 +134,7 @@ Nel file `prisma/schema.prisma` sono definiti i dati centrali:
 | `Attachment` | Allegati collegati a manutenzioni, pulizie o messaggi. |
 | `ApartmentAttachment` | Allegati/documenti specifici dell'appartamento, utili anche per il contesto AI. |
 | `AIAssistantMessage` | Storico messaggi con assistente AI collegato ad appartamento, pulizia o ticket. |
+| `SuperAdminLog` | Log attività superadmin: azioni tracciate come LOGIN, IMPERSONA, CREA_ORG, CREA_MANAGER, RESET_PASSWORD, ELIMINA_DATI_TEST. Campi: `id`, `action`, `detail`, `orgId`, `orgName`, `ip`, `createdAt`. |
 
 ## 6. Architettura generale dell'app
 
@@ -645,17 +657,24 @@ Il contenuto e' salvato dentro `Apartment.technicalProfile` come JSON. Questo da
 File coinvolti:
 
 - `src/app/login/page.tsx`
-- `src/app/actions/auth.ts`
+- `src/app/api/auth/login/route.ts` — gestisce il login via API route (non server action)
+- `src/app/actions/auth.ts` — solo `logoutAction`
 - `src/middleware.ts`
 - pagine dashboard con controllo cookie `role` e `userId`
 
+Nota importante: il login e' gestito da API route e non da server action. Il motivo e' che `redirect()` in una server action puo' terminare il processo serverless prima che il log Prisma completi. Le API route garantiscono l'esecuzione completa prima del redirect.
+
 Ruoli disponibili:
 
-- `MANAGER`: vede dashboard manager e gestione completa;
+- `MANAGER`: gestione completa — appartamenti, prenotazioni, pulizie, manutenzioni, utenti, analytics;
+- `SUPERVISOR`: supervisione operativa e revisione lavori;
+- `OWNER`: visibilita' sugli appartamenti di propria pertinenza;
 - `CLEANER`: vede pulizie assegnate;
 - `MAINTENANCE`: vede ticket manutenzione assegnati.
 
 Le dashboard fanno redirect a `/login` se il ruolo non corrisponde.
+
+Per le specifiche dettagliate dei ruoli Supervisor e Owner vedere `docs/SUPERVISOR_OWNER_SPEC.md`.
 
 ## 19. Upload, allegati e messaggi
 
@@ -715,7 +734,91 @@ Per modifiche a pulizie e booking:
 - non usare booking importati in modo distruttivo;
 - non cancellare spunte checklist gia' fatte.
 
-## 22. Comandi utili
+## 22. Registrazione pubblica
+
+File principali:
+
+- `src/app/register/page.tsx`
+- `src/app/actions/register.ts`
+
+Flusso:
+
+```text
+Utente compila form registrazione
+  ↓
+registerAction crea Organization + MANAGER in $transaction
+  ↓
+Setta cookie sessione
+  ↓
+Redirect a /dashboard/manager
+```
+
+Ogni organizzazione e' isolata: i dati di un'org non sono visibili ad altre org.
+
+## 23. Modulo Superadmin
+
+File principali:
+
+- `src/app/superadmin/page.tsx` — dashboard principale (force-dynamic)
+- `src/app/superadmin/[orgId]/page.tsx` — dettaglio organizzazione
+- `src/app/superadmin/login/page.tsx`
+- `src/app/api/superadmin/login/route.ts`
+- `src/app/api/superadmin/logout/route.ts`
+- `src/app/api/superadmin/impersonate/route.ts`
+- `src/app/api/superadmin/stop-impersonate/route.ts`
+- `src/app/actions/superadmin.ts`
+- `src/components/superadmin/`
+
+Funzionalita':
+
+- KPI piattaforma e statistiche DB
+- Lista organizzazioni con metriche
+- Dettaglio org: utenti, appartamenti, fix rapidi
+- Crea organizzazione con primo manager
+- Reset password utenti
+- Log attivita' (`SuperAdminLog`)
+- Impersonazione organizzazione
+
+Autenticazione superadmin:
+
+- Cookie `superadmin_token` confrontato con env `SUPERADMIN_SECRET`
+- Middleware protegge `/superadmin/*` (eccetto `/superadmin/login`)
+- Tutte le azioni con redirect + side effect DB usano API route
+
+Impersonazione:
+
+```text
+Superadmin clicca "Impersona org"
+  ↓
+POST /api/superadmin/impersonate setta cookie: role, userId, userName, organizationId, impersonating
+  ↓
+Layout manager legge cookie impersonating e mostra ImpersonateBanner
+  ↓
+POST /api/superadmin/stop-impersonate cancella tutti i cookie, redirect a /superadmin
+```
+
+## 24. Modulo Analytics
+
+File principali:
+
+- `src/app/dashboard/manager/analytics/page.tsx`
+- `src/components/analytics/analytics-dashboard.tsx`
+- `src/app/actions/analytics.ts`
+
+Funzionalita':
+
+- Statistiche pulizie e manutenzioni per appartamento e per persona
+- Sparkline SVG per trend visivo
+- Filtro per mese
+- Dati pre-popolati per tutti gli appartamenti e operatori dell'org (le liste non sono mai vuote)
+
+Note tecniche:
+
+- `getAnalyticsData()` pre-popola mappe da TUTTI gli apt/cleaners/manutentori dell'org
+- Nessun filtro status: conta tutte le pulizie/ticket nel periodo
+- Visibile nella navbar manager con icona BarChart2
+
+## 25. Comandi utili
 
 ```bash
 npm run dev
@@ -725,7 +828,7 @@ npm run build
 
 Nota: `npm run build` puo' richiedere accesso rete se Next.js deve scaricare font remoti. Se fallisce per download font o rete, non e' necessariamente un errore del codice applicativo.
 
-## 23. Sintesi finale
+## 26. Sintesi finale
 
 Il progetto e' strutturato in modo abbastanza chiaro:
 
