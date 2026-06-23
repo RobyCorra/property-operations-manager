@@ -76,10 +76,10 @@ export default function ApnsRegister() {
       if (isAndroid) {
         try {
           await PushNotifications.createChannel({
-            id: "default",
+            id: "propops_v2",
             name: "Notifiche",
             description: "Avvisi messaggi e attività",
-            importance: 5, // HIGH — banner + suono
+            importance: 5,
             visibility: 1,
             sound: "default",
           });

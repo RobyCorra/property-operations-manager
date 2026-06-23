@@ -50,7 +50,7 @@ export async function sendFcm(tokens: string[], payload: FcmPayload): Promise<Fc
     data: { url: payload.url ?? "/", tag: payload.tag ?? "" },
     android: {
       priority: "high",
-      notification: { sound: "default", channelId: "default" },
+      notification: { sound: "default", channelId: "propops_v2" },
     },
   });
 
