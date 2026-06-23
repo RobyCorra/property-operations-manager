@@ -140,7 +140,7 @@ export default function TicketConversation({
   // Polling automatico: aggiorna i messaggi ogni 5 secondi quando la chat è aperta.
   // Necessario su iOS dove la notifica push non triggera un refresh automatico.
   useEffect(() => {
-    const id = setInterval(() => { router.refresh(); }, 5000);
+    const id = setInterval(() => { router.refresh(); }, 15000);
     const onVisible = () => { if (document.visibilityState === "visible") router.refresh(); };
     document.addEventListener("visibilitychange", onVisible);
     return () => { clearInterval(id); document.removeEventListener("visibilitychange", onVisible); };

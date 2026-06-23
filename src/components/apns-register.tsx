@@ -62,7 +62,12 @@ export default function ApnsRegister() {
       });
 
       PushNotifications.addListener("pushNotificationReceived", (notification) => {
-        console.log(`${logTag} Notifica ricevuta:`, notification);
+        console.log(`${logTag} Notifica ricevuta in foreground:`, notification.title);
+        // Su Android la notifica appare come banner anche in foreground — la rimuoviamo
+        // subito così non disturba l'utente che è già dentro l'app.
+        if (isAndroid) {
+          PushNotifications.removeAllDeliveredNotifications().catch(() => {});
+        }
       });
 
       PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
