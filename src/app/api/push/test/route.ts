@@ -12,13 +12,15 @@ export async function POST(req: NextRequest) {
 
     const { target } = await req.json(); // "self" | "MANAGER" | "CLEANER" | ...
 
+    let fcmResult = null;
     if (target === "self") {
-      await sendPushToUser(userId, {
+      const result = await sendPushToUser(userId, {
         title: "🔔 Test notifica",
         body: "Le notifiche push funzionano correttamente!",
         tag: "push-test",
         url: "/dashboard/manager",
       });
+      fcmResult = result.fcm;
     } else {
       await sendPushToRole(target as Role, {
         title: "🔔 Test notifica",
@@ -28,7 +30,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, fcm: fcmResult });
   } catch (error) {
     console.error("push test error:", error);
     return NextResponse.json({ error: String(error) }, { status: 500 });

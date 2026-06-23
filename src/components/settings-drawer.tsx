@@ -90,7 +90,18 @@ function PushDiagnostics() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ target: "self" }),
       });
-      setTestMsg(r.ok ? "✅ Inviata. Controlla la notifica (anche con app in background)." : "❌ Errore invio.");
+      const d = await r.json();
+      if (!r.ok) { setTestMsg("❌ Errore invio."); return; }
+      const fcm = d.fcm as { success: number; failure: number; errors: string[] } | null;
+      if (fcm) {
+        if (fcm.failure === 0) {
+          setTestMsg(`✅ Firebase ha accettato il messaggio (${fcm.success}/${fcm.success + fcm.failure}). Controlla la notifica.`);
+        } else {
+          setTestMsg(`⚠️ Firebase: ${fcm.success} ok, ${fcm.failure} falliti. Errori: ${fcm.errors.join(", ")}`);
+        }
+      } else {
+        setTestMsg("✅ Inviata. Controlla la notifica (anche con app in background).");
+      }
     } catch {
       setTestMsg("❌ Errore invio.");
     }

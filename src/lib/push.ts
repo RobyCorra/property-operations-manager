@@ -2,7 +2,7 @@ import webpush from "web-push";
 import { prisma } from "./prisma";
 import type { Role } from "@/src/generated/prisma/client";
 import { sendApns } from "./apns";
-import { sendFcm } from "./fcm";
+import { sendFcm, type FcmResult } from "./fcm";
 
 // Inizializza VAPID solo se le chiavi sono disponibili
 const VAPID_EMAIL    = process.env.VAPID_EMAIL;
@@ -26,18 +26,22 @@ export type PushPayload = {
 
 // ─── Send to a specific user ────────────────────────────────────────────────
 
-export async function sendPushToUser(userId: string, payload: PushPayload) {
+export async function sendPushToUser(
+  userId: string,
+  payload: PushPayload
+): Promise<{ fcm: FcmResult | null }> {
   const [subs, apnsTokens, fcmTokens] = await Promise.all([
     prisma.pushSubscription.findMany({ where: { userId } }),
     prisma.apnsToken.findMany({ where: { userId }, select: { token: true } }),
     prisma.fcmToken.findMany({ where: { userId }, select: { token: true } }),
   ]);
   console.log(`[Push] sendPushToUser userId=${userId} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s), ${fcmTokens.length} FCM token(s)`);
-  await Promise.all([
+  const [, , fcmResult] = await Promise.all([
     _sendToSubs(subs, payload),
     sendApns(apnsTokens.map(t => t.token), payload).catch(console.error),
-    sendFcm(fcmTokens.map(t => t.token), payload).catch(console.error),
+    fcmTokens.length ? sendFcm(fcmTokens.map(t => t.token), payload) : Promise.resolve(null),
   ]);
+  return { fcm: fcmResult ?? null };
 }
 
 // ─── Send to all users with a given role ────────────────────────────────────

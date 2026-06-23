@@ -33,10 +33,16 @@ export interface FcmPayload {
   tag?: string;
 }
 
-export async function sendFcm(tokens: string[], payload: FcmPayload): Promise<void> {
-  if (!tokens.length) return;
+export interface FcmResult {
+  success: number;
+  failure: number;
+  errors: string[]; // "token_short: error_code" per ogni fallimento
+}
+
+export async function sendFcm(tokens: string[], payload: FcmPayload): Promise<FcmResult> {
+  if (!tokens.length) return { success: 0, failure: 0, errors: [] };
   const a = getAppInstance();
-  if (!a) return;
+  if (!a) return { success: 0, failure: 0, errors: ["FIREBASE_SERVICE_ACCOUNT non impostata"] };
 
   const res = await getMessaging(a).sendEachForMulticast({
     tokens,
@@ -50,12 +56,14 @@ export async function sendFcm(tokens: string[], payload: FcmPayload): Promise<vo
 
   console.log(`[FCM] inviati ${res.successCount}/${tokens.length}, falliti ${res.failureCount}`);
 
-  // Rimuovi i token non più validi
   const invalid: string[] = [];
+  const errors: string[] = [];
   res.responses.forEach((r, i) => {
     if (!r.success) {
-      const code = r.error?.code;
-      console.error(`[FCM] errore token ${tokens[i].slice(-12)}: ${code}`);
+      const code = r.error?.code ?? "unknown";
+      const short = tokens[i].slice(-12);
+      console.error(`[FCM] errore token ...${short}: ${code}`);
+      errors.push(`...${short}: ${code}`);
       if (
         code === "messaging/registration-token-not-registered" ||
         code === "messaging/invalid-argument" ||
@@ -69,4 +77,6 @@ export async function sendFcm(tokens: string[], payload: FcmPayload): Promise<vo
     await prisma.fcmToken.deleteMany({ where: { token: { in: invalid } } });
     console.log(`[FCM] rimossi ${invalid.length} token scaduti`);
   }
+
+  return { success: res.successCount, failure: res.failureCount, errors };
 }
