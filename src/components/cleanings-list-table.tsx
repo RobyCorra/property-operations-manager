@@ -5,7 +5,7 @@ import Link from "next/link";
 import UnifiedFilters, { FilterField } from "./unified-filters";
 import DeleteOperationalButton from "./delete-operational-button";
 import SafeDate from "./safe-date";
-import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
+import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import {
   CalendarDays,
   Building2,
@@ -183,7 +183,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     <div className="flex items-center gap-3">
                         <CalendarDays size={14} className="text-slate-300" />
                         <span className="text-sm font-semibold text-slate-900 tracking-tight">
-                          {formatRomeDateDisplay(task.date)}
+                          {formatRomeDateTimeDisplay(task.date)}
                         </span>
                     </div>
                   </td>
@@ -305,7 +305,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     <p className="text-sm font-bold text-slate-900 uppercase tracking-tight truncate">{task.apartment.name}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <CalendarDays size={10} className="text-slate-400 shrink-0" />
-                      <p className="text-[10px] font-semibold text-slate-500">{formatRomeDateDisplay(task.date)}</p>
+                      <p className="text-[10px] font-semibold text-slate-500">{formatRomeDateTimeDisplay(task.date)}</p>
                     </div>
                   </div>
                   <div className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border flex items-center gap-1 shrink-0 ${statusColors[task.status]}`}>

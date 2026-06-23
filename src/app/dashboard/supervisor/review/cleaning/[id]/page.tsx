@@ -77,7 +77,7 @@ export default async function CleaningReviewPage({ params }: { params: Promise<{
           </Link>
           <div>
             <h1 className="text-2xl font-semibold uppercase tracking-tight text-slate-900">Revisione Pulizia</h1>
-            <p className="text-xs font-medium text-slate-500 mt-0.5">{task.apartment.name} · {formatRomeDateDisplay(task.date)}</p>
+            <p className="text-xs font-medium text-slate-500 mt-0.5">{task.apartment.name} · {formatRomeDateTimeDisplay(task.date)}</p>
           </div>
         </div>
 
@@ -97,7 +97,7 @@ export default async function CleaningReviewPage({ params }: { params: Promise<{
               <CalendarDays size={14} className="text-slate-400 shrink-0" />
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Data</p>
-                <p className="text-sm font-semibold text-slate-900">{formatRomeDateDisplay(task.date)}</p>
+                <p className="text-sm font-semibold text-slate-900">{formatRomeDateTimeDisplay(task.date)}</p>
                 {task.startedAt && <p className="text-xs text-slate-500">Inizio: {formatRomeDateTimeDisplay(task.startedAt)}</p>}
               </div>
             </div>

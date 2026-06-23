@@ -109,7 +109,7 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
                 <CalendarDays size={14} className="text-slate-400 shrink-0" />
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Programmato</p>
-                  <p className="text-sm font-semibold text-slate-900">{formatRomeDateDisplay(ticket.scheduledStart)}</p>
+                  <p className="text-sm font-semibold text-slate-900">{formatRomeDateTimeDisplay(ticket.scheduledStart)}</p>
                 </div>
               </div>
             )}

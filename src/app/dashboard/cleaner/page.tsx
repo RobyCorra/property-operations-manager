@@ -12,7 +12,7 @@ import { CleanerGreeting, CleanerSectionTitle } from "@/src/components/cleaner-d
 import CleanerStatusBadge from "@/src/components/cleaner-status-badge";
 import CleanerActionBanner from "@/src/components/cleaner-action-banner";
 import { enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
-import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
+import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import LocationTracker from "@/src/components/location-tracker";
 import { calculateLinen } from "@/src/lib/linen-calculator";
 import PushPermissionRequest from "@/src/components/push-permission";
@@ -232,7 +232,7 @@ export default async function CleanerDashboardPage() {
                       {/* Data */}
                       <div className="mt-2 flex items-center gap-2">
                         <CalendarDays size={12} className="text-slate-400" />
-                        <span className="text-xs font-bold text-slate-600">{formatRomeDateDisplay(task.date)}</span>
+                        <span className="text-xs font-bold text-slate-600">{formatRomeDateTimeDisplay(task.date)}</span>
                       </div>
                     </div>
                   )}
