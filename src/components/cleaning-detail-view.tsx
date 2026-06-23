@@ -528,6 +528,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               currentUserRole="MANAGER"
               currentUserName={userName}
               submitAction={createCleaningTaskMessage}
+              conversationType="CLEANING"
             />
           </div>
 

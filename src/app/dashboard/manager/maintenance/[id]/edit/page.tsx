@@ -231,12 +231,13 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
               <span>💬</span> Conversazione Live
             </h2>
-            <TicketConversation 
+            <TicketConversation
               entityId={ticket.id}
               initialMessages={ticket.messages}
               currentUserRole="MANAGER"
               currentUserName={manager?.name || "Manager"}
               submitAction={createTicketMessage}
+              conversationType="MAINTENANCE"
             />
             <AIAssistant
               role="MANAGER"

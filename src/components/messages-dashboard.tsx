@@ -642,6 +642,7 @@ export default function MessagesDashboard({
                 currentUserName={userName}
                 submitAction={submitAction}
                 heightClass="flex-1 min-h-0"
+                conversationType={selectedThread.type}
               />
             </div>
 

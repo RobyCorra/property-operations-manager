@@ -231,6 +231,7 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
                     currentUserRole={currentUserRole}
                     currentUserName={currentUserName}
                     submitAction={type === 'CLEANING' ? createCleaningTaskMessage : createTicketMessage}
+                    conversationType={type === 'CLEANING' ? 'CLEANING' : 'MAINTENANCE'}
                   />
                 </div>
               )}

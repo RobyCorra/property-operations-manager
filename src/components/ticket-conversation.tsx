@@ -7,6 +7,7 @@ import { upload } from "@vercel/blob/client";
 import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notification-sound";
 import { hapticMedium, hapticError } from "@/src/lib/haptics";
 import { startVoiceRecording, MicPermissionError, type VoiceRecorderHandle } from "@/src/lib/voice-recorder";
+import { markConversationAsRead } from "@/src/app/actions/messages";
 
 interface Message {
   id: string;
@@ -29,6 +30,7 @@ interface Props {
   currentUserName: string;
   submitAction: (id: string, prevState: any, formData: FormData) => Promise<any>;
   heightClass?: string;
+  conversationType?: "MAINTENANCE" | "CLEANING";
 }
 
 type RecordingState = "idle" | "recording" | "preview";
@@ -59,6 +61,7 @@ export default function TicketConversation({
   currentUserName,
   submitAction,
   heightClass = "h-[500px]",
+  conversationType,
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -137,7 +140,7 @@ export default function TicketConversation({
     prevMsgCount.current = initialMessages.length;
   }, [initialMessages, currentUserRole]);
 
-  // Polling automatico: aggiorna i messaggi ogni 5 secondi quando la chat è aperta.
+  // Polling automatico: aggiorna i messaggi ogni 15 secondi quando la chat è aperta.
   // Necessario su iOS dove la notifica push non triggera un refresh automatico.
   useEffect(() => {
     const id = setInterval(() => { router.refresh(); }, 15000);
@@ -145,6 +148,13 @@ export default function TicketConversation({
     document.addEventListener("visibilitychange", onVisible);
     return () => { clearInterval(id); document.removeEventListener("visibilitychange", onVisible); };
   }, [router]);
+
+  // Marca come letti i messaggi non appena il manager li vede nella chat.
+  useEffect(() => {
+    if (conversationType && currentUserRole === "MANAGER") {
+      markConversationAsRead(entityId, conversationType).catch(() => {});
+    }
+  }, [initialMessages, entityId, conversationType, currentUserRole]);
 
   useEffect(() => {
     return () => {
