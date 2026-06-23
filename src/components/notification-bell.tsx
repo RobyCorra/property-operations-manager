@@ -95,7 +95,7 @@ export default function NotificationBell({ initialNotifications, serverDate, unr
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-[100] transform origin-top-right transition-all">
+        <div className="absolute right-0 mt-3 w-[calc(100vw-2rem)] max-w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-[100] transform origin-top-right transition-all">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50 mb-2">
             <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500/80">Notifiche</h4>
             {unreadNotifCount > 0 && (
