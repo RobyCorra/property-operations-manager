@@ -159,7 +159,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
       if (e instanceof MicPermissionError) {
         setError("Permesso microfono negato. Abilitalo nelle impostazioni del dispositivo per PropOps.");
       } else {
-        setError("Microfono non accessibile. Verifica il permesso del microfono.");
+        setError(e instanceof Error ? e.message : "Microfono non accessibile. Verifica il permesso del microfono.");
       }
     }
   }

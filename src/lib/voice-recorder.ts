@@ -54,11 +54,22 @@ export function isNativeApp(): boolean {
 export async function startVoiceRecording(): Promise<VoiceRecorderHandle> {
   // ── Android nativo: plugin AAC ──────────────────────────────────────────────
   if (Capacitor.getPlatform() === "android") {
-    const has = await VoiceRecorder.hasAudioRecordingPermission().catch(() => ({ value: false }));
-    if (!has.value) {
-      const req = await VoiceRecorder.requestAudioRecordingPermission().catch(() => ({ value: false }));
-      if (!req.value) throw new MicPermissionError();
+    // Verifica/Richiesta permesso. Non inghiottiamo le eccezioni: se il plugin
+    // non è presente nella build nativa, l'errore è diverso da "permesso negato"
+    // e va mostrato così com'è (altrimenti sembra un falso "permesso negato").
+    let granted = false;
+    try {
+      const has = await VoiceRecorder.hasAudioRecordingPermission();
+      granted = has.value;
+      if (!granted) {
+        const req = await VoiceRecorder.requestAudioRecordingPermission();
+        granted = req.value;
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new Error(`Registratore vocale nativo non disponibile (${msg}). Ricompila l'app Android.`);
     }
+    if (!granted) throw new MicPermissionError();
     await VoiceRecorder.startRecording();
     return {
       stop: async () => {
