@@ -75,9 +75,9 @@ export async function startVoiceRecording(): Promise<VoiceRecorderHandle> {
       stop: async () => {
         const res = await VoiceRecorder.stopRecording();
         const { recordDataBase64, msDuration, mimeType } = res.value;
-        // Normalizziamo il mimeType: il plugin restituisce "audio/aac" che mettiamo
-        // in container m4a per la massima compatibilità di riproduzione.
-        const type = mimeType && mimeType.length > 0 ? mimeType : "audio/aac";
+        // Il plugin è patchato (patches/) per registrare in contenitore MP4/M4A
+        // (audio/mp4) invece di AAC grezzo (ADTS), così iOS può riprodurlo.
+        const type = mimeType && mimeType.length > 0 ? mimeType : "audio/mp4";
         const blob = base64ToBlob(recordDataBase64 ?? "", type);
         return {
           blob,

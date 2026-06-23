@@ -1,0 +1,354 @@
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/results.bin b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.dex
+new file mode 100644
+index 0000000..63fa535
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.dex
+new file mode 100644
+index 0000000..f413645
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/Messages.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/Messages.dex
+new file mode 100644
+index 0000000..b22ca0c
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/Messages.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.dex
+new file mode 100644
+index 0000000..3dd8889
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/RecordData.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/RecordData.dex
+new file mode 100644
+index 0000000..199a5d3
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/RecordData.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/RecordOptions.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/RecordOptions.dex
+new file mode 100644
+index 0000000..307c4f2
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/RecordOptions.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.dex
+new file mode 100644
+index 0000000..04a0913
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.dex
+new file mode 100644
+index 0000000..95b6424
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..601f245
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/18d8ebde8fae18b6f846719cabd0f41f/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/b00ab68fd51b3332eabce1b30c748858/results.bin b/node_modules/capacitor-voice-recorder/android/build/.transforms/b00ab68fd51b3332eabce1b30c748858/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/.transforms/b00ab68fd51b3332eabce1b30c748858/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/capacitor-voice-recorder/android/build/.transforms/b00ab68fd51b3332eabce1b30c748858/transformed/classes/classes_dex/classes.dex b/node_modules/capacitor-voice-recorder/android/build/.transforms/b00ab68fd51b3332eabce1b30c748858/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..66fc354
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/.transforms/b00ab68fd51b3332eabce1b30c748858/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/capacitor-voice-recorder/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..dc5262e
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.tchvu3.capacitorvoicerecorder" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/capacitor-voice-recorder/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..2245f32
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.tchvu3.capacitorvoicerecorder",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/capacitor-voice-recorder/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/capacitor-voice-recorder/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/capacitor-voice-recorder/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..cb8c027
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/capacitor-voice-recorder/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..3aaeccd
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/capacitor-voice-recorder/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..5bf4eaa
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Tue Jun 23 09:11:34 CEST 2026
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..d29307c
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!&lt;dir>navigation"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!&lt;dir>navigation"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~:!&lt;dir>navigation"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/build/generated/res/resValues/debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugAssets/merger.xml b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+new file mode 100644
+index 0000000..6c74894
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/debug/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..f01eb5f
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..9347bc8
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.class
+new file mode 100644
+index 0000000..da64661
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.class
+new file mode 100644
+index 0000000..97c39ec
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/Messages.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/Messages.class
+new file mode 100644
+index 0000000..8b995cf
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/Messages.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.class
+new file mode 100644
+index 0000000..ce2f2e4
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/RecordData.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/RecordData.class
+new file mode 100644
+index 0000000..5393a24
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/RecordData.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/RecordOptions.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/RecordOptions.class
+new file mode 100644
+index 0000000..049eb8c
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/RecordOptions.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.class
+new file mode 100644
+index 0000000..4501a15
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.class
+new file mode 100644
+index 0000000..baaefcf
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/capacitor-voice-recorder/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/capacitor-voice-recorder/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..6f4926c
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,7 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.tchvu3.capacitorvoicerecorder" >
++4
++5    <uses-sdk android:minSdkVersion="24" />
++6
++7</manifest>
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/capacitor-voice-recorder/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..dc5262e
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.tchvu3.capacitorvoicerecorder" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/capacitor-voice-recorder/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/capacitor-voice-recorder/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.class
+new file mode 100644
+index 0000000..da64661
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/CurrentRecordingStatus.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.class
+new file mode 100644
+index 0000000..97c39ec
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/Messages.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/Messages.class
+new file mode 100644
+index 0000000..8b995cf
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/Messages.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.class
+new file mode 100644
+index 0000000..ce2f2e4
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/NotSupportedOsVersion.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/RecordData.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/RecordData.class
+new file mode 100644
+index 0000000..5393a24
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/RecordData.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/RecordOptions.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/RecordOptions.class
+new file mode 100644
+index 0000000..049eb8c
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/RecordOptions.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.class
+new file mode 100644
+index 0000000..4501a15
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/ResponseGenerator.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.class b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.class
+new file mode 100644
+index 0000000..baaefcf
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.class differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..7a7db49
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/capacitor-voice-recorder/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/capacitor-voice-recorder/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..3d1e18b
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++com.tchvu3.capacitorvoicerecorder
+diff --git a/node_modules/capacitor-voice-recorder/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/capacitor-voice-recorder/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..5a82d26
+--- /dev/null
++++ b/node_modules/capacitor-voice-recorder/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,16 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml:1:1-2:12
++INJECTED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml:1:1-2:12
++	package
++		INJECTED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml:1:11-69
++uses-sdk
++INJECTED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml
++INJECTED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/robertocorradino/property-operations-manager/app/node_modules/capacitor-voice-recorder/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/capacitor-voice-recorder/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/capacitor-voice-recorder/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..7fbdd7b
+Binary files /dev/null and b/node_modules/capacitor-voice-recorder/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/capacitor-voice-recorder/android/src/main/java/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.java b/node_modules/capacitor-voice-recorder/android/src/main/java/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.java
+index a62dcee..b145ddf 100644
+--- a/node_modules/capacitor-voice-recorder/android/src/main/java/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.java
++++ b/node_modules/capacitor-voice-recorder/android/src/main/java/com/tchvu3/capacitorvoicerecorder/CustomMediaRecorder.java
+@@ -26,7 +26,7 @@ public class CustomMediaRecorder {
+     private void generateMediaRecorder() throws IOException {
+         mediaRecorder = new MediaRecorder();
+         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
++        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+         mediaRecorder.setAudioEncodingBitRate(96000);
+         mediaRecorder.setAudioSamplingRate(44100);
+@@ -54,7 +54,7 @@ public class CustomMediaRecorder {
+             }
+         }
+ 
+-        outputFile = File.createTempFile(String.format("recording-%d", System.currentTimeMillis()), ".aac", outputDir);
++        outputFile = File.createTempFile(String.format("recording-%d", System.currentTimeMillis()), ".m4a", outputDir);
+ 
+         if (directory == null) {
+             outputFile.deleteOnExit();
+diff --git a/node_modules/capacitor-voice-recorder/android/src/main/java/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.java b/node_modules/capacitor-voice-recorder/android/src/main/java/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.java
+index 2ee3681..e76f95b 100644
+--- a/node_modules/capacitor-voice-recorder/android/src/main/java/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.java
++++ b/node_modules/capacitor-voice-recorder/android/src/main/java/com/tchvu3/capacitorvoicerecorder/VoiceRecorder.java
+@@ -116,7 +116,7 @@ public class VoiceRecorder extends Plugin {
+             RecordData recordData = new RecordData(
+                 recordDataBase64,
+                 getMsDurationOfAudioFile(recordedFile.getAbsolutePath()),
+-                "audio/aac",
++                "audio/mp4",
+                 path
+             );
+             if ((recordDataBase64 == null && path == null) || recordData.getMsDuration() < 0) {
