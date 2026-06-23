@@ -86,6 +86,41 @@ export default function TicketConversation({
 
   const prevMsgCount = useRef(initialMessages.length);
 
+  // ── Riproduzione vocali ─────────────────────────────────────────────────────
+  // Usiamo un oggetto Audio in JS invece di un <audio display:none>: su iOS WebKit
+  // gli elementi media nascosti (display:none) non si riproducono. new Audio().play()
+  // dentro il gesto del click funziona in modo affidabile su iOS e Android.
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const playerRef = useRef<HTMLAudioElement | null>(null);
+
+  const togglePlay = (id: string, url: string) => {
+    const current = playerRef.current;
+    // Stesso audio già in riproduzione → ferma
+    if (current && playingId === id) {
+      current.pause();
+      current.currentTime = 0;
+      setPlayingId(null);
+      return;
+    }
+    // Ferma eventuale audio precedente
+    if (current) { current.pause(); }
+    const audio = new Audio(url);
+    playerRef.current = audio;
+    audio.onended = () => setPlayingId(null);
+    audio.onerror = () => {
+      setPlayingId(null);
+      setError("Impossibile riprodurre questo messaggio vocale su questo dispositivo.");
+    };
+    setPlayingId(id);
+    audio.play().catch(() => {
+      setPlayingId(null);
+      setError("Riproduzione audio bloccata. Riprova toccando di nuovo play.");
+    });
+  };
+
+  // Cleanup del player allo smontaggio
+  useEffect(() => () => { playerRef.current?.pause(); }, []);
+
   // Sblocca AudioContext al primo gesto utente sulla pagina
   useEffect(() => { setupNotificationAudio(); }, []);
 
@@ -321,16 +356,16 @@ export default function TicketConversation({
                 {/* Audio message */}
                 {isAudio ? (
                   <div className={`flex items-center gap-3 px-3 py-2.5 min-w-[200px] ${isMe ? "bg-black rounded-2xl rounded-tr-none" : "bg-white rounded-2xl rounded-tl-none border border-gray-100"}`}>
-                    <audio src={msg.attachment.url} className="hidden" id={`audio-${msg.id}`} />
                     <button
                       type="button"
-                      onClick={() => {
-                        const el = document.getElementById(`audio-${msg.id}`) as HTMLAudioElement;
-                        if (el.paused) el.play(); else el.pause();
-                      }}
+                      onClick={() => togglePlay(`audio-${msg.id}`, msg.attachment.url)}
                       className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isMe ? "bg-white/20 hover:bg-white/30" : "bg-violet-100 hover:bg-violet-200"} transition-colors`}
                     >
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill={isMe ? "#fff" : "#7c3aed"}><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                      {playingId === `audio-${msg.id}` ? (
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill={isMe ? "#fff" : "#7c3aed"}><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+                      ) : (
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill={isMe ? "#fff" : "#7c3aed"}><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                      )}
                     </button>
                     <WaveformBars
                       seed={msg.id}
@@ -423,13 +458,14 @@ export default function TicketConversation({
               </svg>
             </button>
             {/* Play preview */}
-            {audioUrl && (
-              <audio src={audioUrl} className="hidden" id="preview-audio" />
-            )}
             <button type="button"
-              onClick={() => { const el = document.getElementById("preview-audio") as HTMLAudioElement; if (el) { if (el.paused) el.play(); else { el.pause(); el.currentTime = 0; } } }}
+              onClick={() => { if (audioUrl) togglePlay("preview-audio", audioUrl); }}
               className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center shrink-0 hover:bg-violet-700 transition-colors shadow-md shadow-violet-200">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              {playingId === "preview-audio" ? (
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+              ) : (
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              )}
             </button>
             {/* Static waveform */}
             <WaveformBars seed={`preview-${savedDuration}`} color="#7c3aed" dimColor="#c4b5fd" />
