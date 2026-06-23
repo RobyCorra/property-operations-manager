@@ -54,7 +54,6 @@ export async function sendFcm(tokens: string[], payload: FcmPayload): Promise<Fc
       notification: {
         sound: "default",
         channelId: "propops_v2",
-        notificationCount: payload.badge ?? 1,
       },
     },
   });

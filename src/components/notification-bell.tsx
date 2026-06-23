@@ -47,7 +47,12 @@ export default function NotificationBell({ initialNotifications, serverDate, unr
 
   useEffect(() => {
     setMounted(true);
-    setNotifications(initialNotifications);
+    // Merge: preserva isRead=true già impostato lato client (ottimistico),
+    // aggiunge nuove notifiche dal server senza resettare quelle già lette.
+    setNotifications(prev => {
+      const readIds = new Set(prev.filter(n => n.isRead).map(n => n.id));
+      return initialNotifications.map(n => readIds.has(n.id) ? { ...n, isRead: true } : n);
+    });
   }, [initialNotifications]);
 
   useEffect(() => {
