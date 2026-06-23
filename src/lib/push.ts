@@ -19,7 +19,7 @@ export type PushPayload = {
   title: string;
   body: string;
   icon?: string;
-  badge?: string;
+  badge?: number;
   tag?: string;
   url?: string;
 };
@@ -36,10 +36,15 @@ export async function sendPushToUser(
     prisma.fcmToken.findMany({ where: { userId }, select: { token: true } }),
   ]);
   console.log(`[Push] sendPushToUser userId=${userId} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s), ${fcmTokens.length} FCM token(s)`);
+  // Badge = notifiche non lette + 1 (per il push appena inviato)
+  const unreadNotif = await prisma.notification.count({ where: { userId, isRead: false } }).catch(() => 0);
+  const badge = unreadNotif + 1;
+  const payloadWithBadge = { ...payload, badge };
+
   const [, , fcmResult] = await Promise.all([
     _sendToSubs(subs, payload),
-    sendApns(apnsTokens.map(t => t.token), payload).catch(console.error),
-    fcmTokens.length ? sendFcm(fcmTokens.map(t => t.token), payload) : Promise.resolve(null),
+    sendApns(apnsTokens.map(t => t.token), payloadWithBadge).catch(console.error),
+    fcmTokens.length ? sendFcm(fcmTokens.map(t => t.token), payloadWithBadge) : Promise.resolve(null),
   ]);
   return { fcm: fcmResult ?? null };
 }

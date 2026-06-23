@@ -71,16 +71,19 @@ export default function NotificationBell({ initialNotifications, serverDate, unr
     router.refresh();
   };
 
+  const clearBadge = () => fetch("/api/push/clear-badge", { method: "POST" }).catch(() => {});
+
   const handleMarkAllAsRead = async () => {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     await markAllAsRead();
+    clearBadge();
     router.refresh();
   };
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => { setIsOpen(!isOpen); if (!isOpen) clearBadge(); }}
         className="relative p-2.5 rounded-full hover:bg-gray-100 transition-all text-gray-500 hover:text-violet-600 focus:outline-none"
       >
         <Bell size={20} />

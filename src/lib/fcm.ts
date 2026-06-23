@@ -31,6 +31,7 @@ export interface FcmPayload {
   body: string;
   url?: string;
   tag?: string;
+  badge?: number;
 }
 
 export interface FcmResult {
@@ -50,7 +51,11 @@ export async function sendFcm(tokens: string[], payload: FcmPayload): Promise<Fc
     data: { url: payload.url ?? "/", tag: payload.tag ?? "" },
     android: {
       priority: "high",
-      notification: { sound: "default", channelId: "propops_v2" },
+      notification: {
+        sound: "default",
+        channelId: "propops_v2",
+        notificationCount: payload.badge ?? 1,
+      },
     },
   });
 

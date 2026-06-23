@@ -24,6 +24,7 @@ export interface ApnsPayload {
   body: string;
   url?: string;
   tag?: string;
+  badge?: number;
 }
 
 export async function sendApns(tokens: string[], payload: ApnsPayload): Promise<void> {
@@ -33,7 +34,7 @@ export async function sendApns(tokens: string[], payload: ApnsPayload): Promise<
   const note = new apn.Notification();
 
   note.expiry = Math.floor(Date.now() / 1000) + 3600; // 1 ora
-  note.badge = 1;
+  note.badge = payload.badge ?? 1;
   note.sound = "default";
   note.alert = { title: payload.title, body: payload.body };
   note.topic = process.env.APNS_BUNDLE_ID!;
