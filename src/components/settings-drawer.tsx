@@ -94,10 +94,14 @@ function PushDiagnostics() {
       if (!r.ok) { setTestMsg("❌ Errore invio."); return; }
       const fcm = d.fcm as { success: number; failure: number; errors: string[] } | null;
       if (fcm) {
-        if (fcm.failure === 0) {
+        if (fcm.errors.length > 0 && fcm.success === 0) {
+          setTestMsg(`❌ Firebase errore: ${fcm.errors.join(", ")}`);
+        } else if (fcm.failure === 0 && fcm.success > 0) {
           setTestMsg(`✅ Firebase ha accettato il messaggio (${fcm.success}/${fcm.success + fcm.failure}). Controlla la notifica.`);
-        } else {
+        } else if (fcm.failure > 0) {
           setTestMsg(`⚠️ Firebase: ${fcm.success} ok, ${fcm.failure} falliti. Errori: ${fcm.errors.join(", ")}`);
+        } else {
+          setTestMsg(`⚠️ Firebase: nessun token trovato per questo utente (FCM=0).`);
         }
       } else {
         setTestMsg("✅ Inviata. Controlla la notifica (anche con app in background).");
