@@ -6,6 +6,7 @@ import { sendMaintenancePublicNote, fetchMaintenanceMessages } from "@/src/app/a
 import type { MaintenancePublicMessage } from "@/src/app/actions/maintenance-token";
 import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notification-sound";
 import { compressImage } from "@/src/lib/compress-image";
+import { startVoiceRecording, MicPermissionError, type VoiceRecorderHandle } from "@/src/lib/voice-recorder";
 import { Camera, Send, X, Loader2, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
 
 interface Props {
@@ -58,10 +59,9 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
   const [sendingVoice, setSendingVoice]     = useState(false);
 
   const fileRef          = useRef<HTMLInputElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef   = useRef<BlobPart[]>([]);
+  const recHandleRef     = useRef<VoiceRecorderHandle | null>(null);
+  const recExtRef        = useRef<string>("m4a");
   const timerRef         = useRef<ReturnType<typeof setInterval> | null>(null);
-  const streamRef        = useRef<MediaStream | null>(null);
   const pollRef          = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastMessageAt    = useRef<Date>(
     initialMessages.length > 0
@@ -123,7 +123,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+      recHandleRef.current?.cancel();
       if (audioPreviewUrl) URL.revokeObjectURL(audioPreviewUrl);
     };
   }, [audioPreviewUrl]);
@@ -145,42 +145,39 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
   }
 
   /* ── Registrazione ── */
+  // Registrazione: su app nativa usa il plugin AAC (cross-platform), nel browser
+  // desktop usa MediaRecorder. Vedi src/lib/voice-recorder.ts.
   async function startRecording() {
     setError(null);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      audioChunksRef.current = [];
-
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "audio/mp4";
-      const recorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = recorder;
-
-      recorder.ondataavailable = e => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
-      };
-
-      recorder.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: mimeType });
-        const url  = URL.createObjectURL(blob);
-        setAudioBlob(blob);
-        setAudioPreview(url);
-        stream.getTracks().forEach(t => t.stop());
-      };
-
-      recorder.start(200);
+      const handle = await startVoiceRecording();
+      recHandleRef.current = handle;
       setIsRecording(true);
       setRecordingSec(0);
       timerRef.current = setInterval(() => setRecordingSec(s => s + 1), 1000);
-    } catch {
-      setError("Microfono non accessibile. Vai in Impostazioni → PropOps → Microfono e abilita il permesso.");
+    } catch (e) {
+      if (e instanceof MicPermissionError) {
+        setError("Permesso microfono negato. Abilitalo nelle impostazioni del dispositivo per PropOps.");
+      } else {
+        setError("Microfono non accessibile. Verifica il permesso del microfono.");
+      }
     }
   }
 
-  function stopRecording() {
+  async function stopRecording() {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-    mediaRecorderRef.current?.stop();
     setIsRecording(false);
+    const handle = recHandleRef.current;
+    if (!handle) return;
+    recHandleRef.current = null;
+    try {
+      const rec = await handle.stop();
+      recExtRef.current = rec.ext;
+      setAudioBlob(rec.blob);
+      setAudioPreview(rec.url);
+    } catch {
+      setError("Errore durante la registrazione. Riprova.");
+    }
   }
 
   function discardAudio() {
@@ -195,7 +192,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
     setSendingVoice(true);
     setError(null);
     try {
-      const ext      = audioBlob.type.includes("mp4") ? "m4a" : "webm";
+      const ext      = recExtRef.current || "m4a";
       const fileName = `vocale-${Date.now()}.${ext}`;
       const file     = new File([audioBlob], fileName, { type: audioBlob.type });
       const blob     = await upload(

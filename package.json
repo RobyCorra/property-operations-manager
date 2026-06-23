@@ -25,6 +25,7 @@
     "@vercel/blob": "^2.3.3",
     "apn": "^2.2.0",
     "bcryptjs": "^3.0.3",
+    "capacitor-voice-recorder": "^7.0.6",
     "dotenv": "^17.4.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.11.0",

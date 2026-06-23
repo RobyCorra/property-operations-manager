@@ -6,6 +6,7 @@ import SafeDate from "@/src/components/safe-date";
 import { upload } from "@vercel/blob/client";
 import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notification-sound";
 import { hapticMedium, hapticError } from "@/src/lib/haptics";
+import { startVoiceRecording, MicPermissionError, type VoiceRecorderHandle } from "@/src/lib/voice-recorder";
 
 interface Message {
   id: string;
@@ -76,10 +77,9 @@ export default function TicketConversation({
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [recSecs, setRecSecs] = useState(0);
   const [savedDuration, setSavedDuration] = useState(0);
-  const mediaRecRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const recHandleRef = useRef<VoiceRecorderHandle | null>(null);
+  const recExtRef = useRef<string>("m4a");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
   // bar animation for recording
   const [barHeights, setBarHeights] = useState<number[]>(Array(7).fill(4));
   const barTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -141,7 +141,7 @@ export default function TicketConversation({
     return () => {
       timerRef.current && clearInterval(timerRef.current);
       barTimerRef.current && clearInterval(barTimerRef.current);
-      streamRef.current?.getTracks().forEach((t) => t.stop());
+      recHandleRef.current?.cancel();
       audioUrl && URL.revokeObjectURL(audioUrl);
     };
   }, []);
@@ -216,56 +216,52 @@ export default function TicketConversation({
   };
 
   // ── Voice recording ───────────────────────────────────────────────────────
+  // Su app nativa usa il plugin AAC (cross-platform iOS/Android), nel browser
+  // desktop usa MediaRecorder. Vedi src/lib/voice-recorder.ts.
   const startRecording = async () => {
     setError(null);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-        ? "audio/webm;codecs=opus"
-        : MediaRecorder.isTypeSupported("audio/mp4")
-        ? "audio/mp4"
-        : "";
-
-      const mr = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-      mediaRecRef.current = mr;
-      chunksRef.current = [];
-
-      mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mr.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: mr.mimeType || "audio/webm" });
-        const url = URL.createObjectURL(blob);
-        setAudioBlob(blob);
-        setAudioUrl(url);
-        setSavedDuration(recSecs);
-        setRecState("preview");
-      };
-
-      mr.start(100);
+      const handle = await startVoiceRecording();
+      recHandleRef.current = handle;
       setRecState("recording");
       setRecSecs(0);
       timerRef.current = setInterval(() => setRecSecs((s) => s + 1), 1000);
       barTimerRef.current = setInterval(() => {
         setBarHeights(Array.from({ length: 7 }, () => 3 + Math.random() * 17));
       }, 120);
-    } catch {
-      setError("Microfono non accessibile. Vai in Impostazioni → PropOps → Microfono e abilita il permesso.");
+    } catch (e) {
+      if (e instanceof MicPermissionError) {
+        setError("Permesso microfono negato. Abilitalo nelle impostazioni del dispositivo per PropOps.");
+      } else {
+        setError("Microfono non accessibile. Verifica il permesso del microfono.");
+      }
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = async () => {
     timerRef.current && clearInterval(timerRef.current);
     barTimerRef.current && clearInterval(barTimerRef.current);
-    mediaRecRef.current?.stop();
-    streamRef.current?.getTracks().forEach((t) => t.stop());
+    const handle = recHandleRef.current;
+    if (!handle) return;
+    recHandleRef.current = null;
+    try {
+      const rec = await handle.stop();
+      recExtRef.current = rec.ext;
+      setAudioBlob(rec.blob);
+      setAudioUrl(rec.url);
+      setSavedDuration(Math.round(rec.durationMs / 1000) || recSecs);
+      setRecState("preview");
+    } catch {
+      setError("Errore durante la registrazione. Riprova.");
+      setRecState("idle");
+    }
   };
 
   const cancelRecording = () => {
     timerRef.current && clearInterval(timerRef.current);
     barTimerRef.current && clearInterval(barTimerRef.current);
-    mediaRecRef.current?.stop();
-    streamRef.current?.getTracks().forEach((t) => t.stop());
+    recHandleRef.current?.cancel();
+    recHandleRef.current = null;
     setRecState("idle");
     setAudioBlob(null);
     setAudioUrl(null);
@@ -285,7 +281,7 @@ export default function TicketConversation({
     setIsUploading(true);
     setError(null);
     try {
-      const ext = audioBlob.type.includes("mp4") ? "mp4" : "webm";
+      const ext = recExtRef.current || "m4a";
       const filename = `voice-${Date.now()}.${ext}`;
       const blob = await upload(
         `uploads/voice/${entityId}/${filename}`,
@@ -299,7 +295,7 @@ export default function TicketConversation({
       formData.append("senderName", currentUserName);
       formData.append("blobUrl", blob.url);
       formData.append("blobFilename", filename);
-      formData.append("blobMimeType", audioBlob.type || "audio/webm");
+      formData.append("blobMimeType", audioBlob.type || "audio/aac");
       formData.append("blobSize", String(audioBlob.size));
 
       startTransition(async () => {
