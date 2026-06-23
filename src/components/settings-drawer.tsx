@@ -59,6 +59,74 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 const inputCls = "w-full rounded-[10px] border border-[#d1d1d6] bg-white px-3 py-[9px] text-[14px] text-[#1c1c1e] outline-none focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 transition-all";
 const btnCls = "inline-flex items-center justify-center gap-2 rounded-[10px] bg-[#1c1c1e] text-white text-[13px] font-[600] px-4 py-[9px] transition hover:bg-[#3a3a3c] disabled:opacity-50";
 
+// Pannello diagnostico push: mostra se il dispositivo ha registrato un token
+// (web/APNs/FCM) e permette di inviarsi una notifica di prova.
+function PushDiagnostics() {
+  const [info, setInfo] = useState<{ web: number; apns: number; fcm: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [testMsg, setTestMsg] = useState<string | null>(null);
+
+  const refresh = async () => {
+    setLoading(true);
+    setTestMsg(null);
+    try {
+      const r = await fetch("/api/push/debug");
+      const d = await r.json();
+      setInfo({ web: d.me?.webSubscriptions ?? 0, apns: d.me?.apnsTokens ?? 0, fcm: d.me?.fcmTokens ?? 0 });
+    } catch {
+      setInfo(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { refresh(); }, []);
+
+  const sendTest = async () => {
+    setTestMsg("Invio in corso…");
+    try {
+      const r = await fetch("/api/push/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target: "self" }),
+      });
+      setTestMsg(r.ok ? "✅ Inviata. Controlla la notifica (anche con app in background)." : "❌ Errore invio.");
+    } catch {
+      setTestMsg("❌ Errore invio.");
+    }
+  };
+
+  const totalTokens = (info?.web ?? 0) + (info?.apns ?? 0) + (info?.fcm ?? 0);
+
+  return (
+    <div>
+      <p className="text-[11px] font-[700] text-[#8e8e93] uppercase tracking-[.06em] px-1 mb-2">Diagnostica push</p>
+      <div className="bg-white rounded-[14px] p-4 space-y-3" style={{ border: ".5px solid #e5e5ea" }}>
+        {info && (
+          <div className="text-[13px] text-[#1c1c1e] space-y-1">
+            <p>Questo dispositivo è registrato per le notifiche:</p>
+            <p className={totalTokens > 0 ? "text-[#30d158] font-[700]" : "text-[#ff3b30] font-[700]"}>
+              {totalTokens > 0 ? "✅ Sì" : "❌ No — nessun token registrato"}
+            </p>
+            <p className="text-[12px] text-[#8e8e93]">
+              Web: {info.web} · iOS (APNs): {info.apns} · Android (FCM): {info.fcm}
+            </p>
+          </div>
+        )}
+        <div className="flex gap-2">
+          <button onClick={refresh} disabled={loading} className={btnCls} style={{ background: "#e5e5ea", color: "#1c1c1e" }}>
+            {loading ? "…" : "Aggiorna"}
+          </button>
+          <button onClick={sendTest} disabled={totalTokens === 0} className={btnCls}>
+            Inviami una prova
+          </button>
+        </div>
+        {testMsg && <p className="text-[12px] text-[#1c1c1e]">{testMsg}</p>}
+      </div>
+    </div>
+  );
+}
+
 // ── Main drawer ───────────────────────────────────────────────────────────────
 export default function SettingsDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [data, setData] = useState<SettingsData | null>(null);
@@ -437,6 +505,8 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
                   </p>
                 </div>
               )}
+
+              <PushDiagnostics />
             </>
           )}
         </div>
