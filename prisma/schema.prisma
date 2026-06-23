@@ -62,6 +62,7 @@ model User {
   ownedApartments      ApartmentOwner[]
   pushSubscriptions    PushSubscription[]
   apnsTokens           ApnsToken[]
+  fcmTokens            FcmToken[]
   cleanerLocation      CleanerLocation?
 
   @@index([organizationId])
@@ -364,6 +365,16 @@ model PushSubscription {
 }
 
 model ApnsToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model FcmToken {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

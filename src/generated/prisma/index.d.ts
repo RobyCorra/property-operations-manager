@@ -114,6 +114,11 @@ export type PushSubscription = $Result.DefaultSelection<Prisma.$PushSubscription
  */
 export type ApnsToken = $Result.DefaultSelection<Prisma.$ApnsTokenPayload>
 /**
+ * Model FcmToken
+ * 
+ */
+export type FcmToken = $Result.DefaultSelection<Prisma.$FcmTokenPayload>
+/**
  * Model CleanerLocation
  * 
  */
@@ -481,6 +486,16 @@ export class PrismaClient<
     * ```
     */
   get apnsToken(): Prisma.ApnsTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.fcmToken`: Exposes CRUD operations for the **FcmToken** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FcmTokens
+    * const fcmTokens = await prisma.fcmToken.findMany()
+    * ```
+    */
+  get fcmToken(): Prisma.FcmTokenDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.cleanerLocation`: Exposes CRUD operations for the **CleanerLocation** model.
@@ -965,6 +980,7 @@ export namespace Prisma {
     ManagerChatMessage: 'ManagerChatMessage',
     PushSubscription: 'PushSubscription',
     ApnsToken: 'ApnsToken',
+    FcmToken: 'FcmToken',
     CleanerLocation: 'CleanerLocation',
     SuperAdminLog: 'SuperAdminLog',
     ApartmentProduct: 'ApartmentProduct'
@@ -983,7 +999,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct"
+      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2467,6 +2483,80 @@ export namespace Prisma {
           }
         }
       }
+      FcmToken: {
+        payload: Prisma.$FcmTokenPayload<ExtArgs>
+        fields: Prisma.FcmTokenFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FcmTokenFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FcmTokenFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>
+          }
+          findFirst: {
+            args: Prisma.FcmTokenFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FcmTokenFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>
+          }
+          findMany: {
+            args: Prisma.FcmTokenFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>[]
+          }
+          create: {
+            args: Prisma.FcmTokenCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>
+          }
+          createMany: {
+            args: Prisma.FcmTokenCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FcmTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>[]
+          }
+          delete: {
+            args: Prisma.FcmTokenDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>
+          }
+          update: {
+            args: Prisma.FcmTokenUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>
+          }
+          deleteMany: {
+            args: Prisma.FcmTokenDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FcmTokenUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FcmTokenUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>[]
+          }
+          upsert: {
+            args: Prisma.FcmTokenUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FcmTokenPayload>
+          }
+          aggregate: {
+            args: Prisma.FcmTokenAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFcmToken>
+          }
+          groupBy: {
+            args: Prisma.FcmTokenGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FcmTokenGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FcmTokenCountArgs<ExtArgs>
+            result: $Utils.Optional<FcmTokenCountAggregateOutputType> | number
+          }
+        }
+      }
       CleanerLocation: {
         payload: Prisma.$CleanerLocationPayload<ExtArgs>
         fields: Prisma.CleanerLocationFieldRefs
@@ -2817,6 +2907,7 @@ export namespace Prisma {
     managerChatMessage?: ManagerChatMessageOmit
     pushSubscription?: PushSubscriptionOmit
     apnsToken?: ApnsTokenOmit
+    fcmToken?: FcmTokenOmit
     cleanerLocation?: CleanerLocationOmit
     superAdminLog?: SuperAdminLogOmit
     apartmentProduct?: ApartmentProductOmit
@@ -2956,6 +3047,7 @@ export namespace Prisma {
     ownedApartments: number
     pushSubscriptions: number
     apnsTokens: number
+    fcmTokens: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2966,6 +3058,7 @@ export namespace Prisma {
     ownedApartments?: boolean | UserCountOutputTypeCountOwnedApartmentsArgs
     pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
     apnsTokens?: boolean | UserCountOutputTypeCountApnsTokensArgs
+    fcmTokens?: boolean | UserCountOutputTypeCountFcmTokensArgs
   }
 
   // Custom InputTypes
@@ -3026,6 +3119,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountApnsTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApnsTokenWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountFcmTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FcmTokenWhereInput
   }
 
 
@@ -5038,6 +5138,7 @@ export namespace Prisma {
     ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
     pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     apnsTokens?: boolean | User$apnsTokensArgs<ExtArgs>
+    fcmTokens?: boolean | User$fcmTokensArgs<ExtArgs>
     cleanerLocation?: boolean | User$cleanerLocationArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -5105,6 +5206,7 @@ export namespace Prisma {
     ownedApartments?: boolean | User$ownedApartmentsArgs<ExtArgs>
     pushSubscriptions?: boolean | User$pushSubscriptionsArgs<ExtArgs>
     apnsTokens?: boolean | User$apnsTokensArgs<ExtArgs>
+    fcmTokens?: boolean | User$fcmTokensArgs<ExtArgs>
     cleanerLocation?: boolean | User$cleanerLocationArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -5126,6 +5228,7 @@ export namespace Prisma {
       ownedApartments: Prisma.$ApartmentOwnerPayload<ExtArgs>[]
       pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
       apnsTokens: Prisma.$ApnsTokenPayload<ExtArgs>[]
+      fcmTokens: Prisma.$FcmTokenPayload<ExtArgs>[]
       cleanerLocation: Prisma.$CleanerLocationPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5545,6 +5648,7 @@ export namespace Prisma {
     ownedApartments<T extends User$ownedApartmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedApartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     pushSubscriptions<T extends User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     apnsTokens<T extends User$apnsTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$apnsTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    fcmTokens<T extends User$fcmTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$fcmTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     cleanerLocation<T extends User$cleanerLocationArgs<ExtArgs> = {}>(args?: Subset<T, User$cleanerLocationArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6174,6 +6278,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ApnsTokenScalarFieldEnum | ApnsTokenScalarFieldEnum[]
+  }
+
+  /**
+   * User.fcmTokens
+   */
+  export type User$fcmTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    where?: FcmTokenWhereInput
+    orderBy?: FcmTokenOrderByWithRelationInput | FcmTokenOrderByWithRelationInput[]
+    cursor?: FcmTokenWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FcmTokenScalarFieldEnum | FcmTokenScalarFieldEnum[]
   }
 
   /**
@@ -27363,6 +27491,1056 @@ export namespace Prisma {
 
 
   /**
+   * Model FcmToken
+   */
+
+  export type AggregateFcmToken = {
+    _count: FcmTokenCountAggregateOutputType | null
+    _min: FcmTokenMinAggregateOutputType | null
+    _max: FcmTokenMaxAggregateOutputType | null
+  }
+
+  export type FcmTokenMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    createdAt: Date | null
+  }
+
+  export type FcmTokenMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    createdAt: Date | null
+  }
+
+  export type FcmTokenCountAggregateOutputType = {
+    id: number
+    userId: number
+    token: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type FcmTokenMinAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    createdAt?: true
+  }
+
+  export type FcmTokenMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    createdAt?: true
+  }
+
+  export type FcmTokenCountAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type FcmTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FcmToken to aggregate.
+     */
+    where?: FcmTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FcmTokens to fetch.
+     */
+    orderBy?: FcmTokenOrderByWithRelationInput | FcmTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FcmTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FcmTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FcmTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FcmTokens
+    **/
+    _count?: true | FcmTokenCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FcmTokenMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FcmTokenMaxAggregateInputType
+  }
+
+  export type GetFcmTokenAggregateType<T extends FcmTokenAggregateArgs> = {
+        [P in keyof T & keyof AggregateFcmToken]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFcmToken[P]>
+      : GetScalarType<T[P], AggregateFcmToken[P]>
+  }
+
+
+
+
+  export type FcmTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FcmTokenWhereInput
+    orderBy?: FcmTokenOrderByWithAggregationInput | FcmTokenOrderByWithAggregationInput[]
+    by: FcmTokenScalarFieldEnum[] | FcmTokenScalarFieldEnum
+    having?: FcmTokenScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FcmTokenCountAggregateInputType | true
+    _min?: FcmTokenMinAggregateInputType
+    _max?: FcmTokenMaxAggregateInputType
+  }
+
+  export type FcmTokenGroupByOutputType = {
+    id: string
+    userId: string
+    token: string
+    createdAt: Date
+    _count: FcmTokenCountAggregateOutputType | null
+    _min: FcmTokenMinAggregateOutputType | null
+    _max: FcmTokenMaxAggregateOutputType | null
+  }
+
+  type GetFcmTokenGroupByPayload<T extends FcmTokenGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FcmTokenGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FcmTokenGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FcmTokenGroupByOutputType[P]>
+            : GetScalarType<T[P], FcmTokenGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FcmTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["fcmToken"]>
+
+  export type FcmTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["fcmToken"]>
+
+  export type FcmTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["fcmToken"]>
+
+  export type FcmTokenSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    createdAt?: boolean
+  }
+
+  export type FcmTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "token" | "createdAt", ExtArgs["result"]["fcmToken"]>
+  export type FcmTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FcmTokenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FcmTokenIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $FcmTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FcmToken"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      token: string
+      createdAt: Date
+    }, ExtArgs["result"]["fcmToken"]>
+    composites: {}
+  }
+
+  type FcmTokenGetPayload<S extends boolean | null | undefined | FcmTokenDefaultArgs> = $Result.GetResult<Prisma.$FcmTokenPayload, S>
+
+  type FcmTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FcmTokenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FcmTokenCountAggregateInputType | true
+    }
+
+  export interface FcmTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FcmToken'], meta: { name: 'FcmToken' } }
+    /**
+     * Find zero or one FcmToken that matches the filter.
+     * @param {FcmTokenFindUniqueArgs} args - Arguments to find a FcmToken
+     * @example
+     * // Get one FcmToken
+     * const fcmToken = await prisma.fcmToken.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FcmTokenFindUniqueArgs>(args: SelectSubset<T, FcmTokenFindUniqueArgs<ExtArgs>>): Prisma__FcmTokenClient<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FcmToken that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FcmTokenFindUniqueOrThrowArgs} args - Arguments to find a FcmToken
+     * @example
+     * // Get one FcmToken
+     * const fcmToken = await prisma.fcmToken.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FcmTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, FcmTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FcmTokenClient<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FcmToken that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FcmTokenFindFirstArgs} args - Arguments to find a FcmToken
+     * @example
+     * // Get one FcmToken
+     * const fcmToken = await prisma.fcmToken.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FcmTokenFindFirstArgs>(args?: SelectSubset<T, FcmTokenFindFirstArgs<ExtArgs>>): Prisma__FcmTokenClient<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FcmToken that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FcmTokenFindFirstOrThrowArgs} args - Arguments to find a FcmToken
+     * @example
+     * // Get one FcmToken
+     * const fcmToken = await prisma.fcmToken.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FcmTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, FcmTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__FcmTokenClient<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FcmTokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FcmTokenFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FcmTokens
+     * const fcmTokens = await prisma.fcmToken.findMany()
+     * 
+     * // Get first 10 FcmTokens
+     * const fcmTokens = await prisma.fcmToken.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const fcmTokenWithIdOnly = await prisma.fcmToken.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FcmTokenFindManyArgs>(args?: SelectSubset<T, FcmTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FcmToken.
+     * @param {FcmTokenCreateArgs} args - Arguments to create a FcmToken.
+     * @example
+     * // Create one FcmToken
+     * const FcmToken = await prisma.fcmToken.create({
+     *   data: {
+     *     // ... data to create a FcmToken
+     *   }
+     * })
+     * 
+     */
+    create<T extends FcmTokenCreateArgs>(args: SelectSubset<T, FcmTokenCreateArgs<ExtArgs>>): Prisma__FcmTokenClient<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FcmTokens.
+     * @param {FcmTokenCreateManyArgs} args - Arguments to create many FcmTokens.
+     * @example
+     * // Create many FcmTokens
+     * const fcmToken = await prisma.fcmToken.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FcmTokenCreateManyArgs>(args?: SelectSubset<T, FcmTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FcmTokens and returns the data saved in the database.
+     * @param {FcmTokenCreateManyAndReturnArgs} args - Arguments to create many FcmTokens.
+     * @example
+     * // Create many FcmTokens
+     * const fcmToken = await prisma.fcmToken.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FcmTokens and only return the `id`
+     * const fcmTokenWithIdOnly = await prisma.fcmToken.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FcmTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, FcmTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FcmToken.
+     * @param {FcmTokenDeleteArgs} args - Arguments to delete one FcmToken.
+     * @example
+     * // Delete one FcmToken
+     * const FcmToken = await prisma.fcmToken.delete({
+     *   where: {
+     *     // ... filter to delete one FcmToken
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FcmTokenDeleteArgs>(args: SelectSubset<T, FcmTokenDeleteArgs<ExtArgs>>): Prisma__FcmTokenClient<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FcmToken.
+     * @param {FcmTokenUpdateArgs} args - Arguments to update one FcmToken.
+     * @example
+     * // Update one FcmToken
+     * const fcmToken = await prisma.fcmToken.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FcmTokenUpdateArgs>(args: SelectSubset<T, FcmTokenUpdateArgs<ExtArgs>>): Prisma__FcmTokenClient<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FcmTokens.
+     * @param {FcmTokenDeleteManyArgs} args - Arguments to filter FcmTokens to delete.
+     * @example
+     * // Delete a few FcmTokens
+     * const { count } = await prisma.fcmToken.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FcmTokenDeleteManyArgs>(args?: SelectSubset<T, FcmTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FcmTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FcmTokenUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FcmTokens
+     * const fcmToken = await prisma.fcmToken.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FcmTokenUpdateManyArgs>(args: SelectSubset<T, FcmTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FcmTokens and returns the data updated in the database.
+     * @param {FcmTokenUpdateManyAndReturnArgs} args - Arguments to update many FcmTokens.
+     * @example
+     * // Update many FcmTokens
+     * const fcmToken = await prisma.fcmToken.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FcmTokens and only return the `id`
+     * const fcmTokenWithIdOnly = await prisma.fcmToken.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FcmTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, FcmTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FcmToken.
+     * @param {FcmTokenUpsertArgs} args - Arguments to update or create a FcmToken.
+     * @example
+     * // Update or create a FcmToken
+     * const fcmToken = await prisma.fcmToken.upsert({
+     *   create: {
+     *     // ... data to create a FcmToken
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FcmToken we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FcmTokenUpsertArgs>(args: SelectSubset<T, FcmTokenUpsertArgs<ExtArgs>>): Prisma__FcmTokenClient<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FcmTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FcmTokenCountArgs} args - Arguments to filter FcmTokens to count.
+     * @example
+     * // Count the number of FcmTokens
+     * const count = await prisma.fcmToken.count({
+     *   where: {
+     *     // ... the filter for the FcmTokens we want to count
+     *   }
+     * })
+    **/
+    count<T extends FcmTokenCountArgs>(
+      args?: Subset<T, FcmTokenCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FcmTokenCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FcmToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FcmTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FcmTokenAggregateArgs>(args: Subset<T, FcmTokenAggregateArgs>): Prisma.PrismaPromise<GetFcmTokenAggregateType<T>>
+
+    /**
+     * Group by FcmToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FcmTokenGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FcmTokenGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FcmTokenGroupByArgs['orderBy'] }
+        : { orderBy?: FcmTokenGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FcmTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFcmTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FcmToken model
+   */
+  readonly fields: FcmTokenFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FcmToken.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FcmTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FcmToken model
+   */
+  interface FcmTokenFieldRefs {
+    readonly id: FieldRef<"FcmToken", 'String'>
+    readonly userId: FieldRef<"FcmToken", 'String'>
+    readonly token: FieldRef<"FcmToken", 'String'>
+    readonly createdAt: FieldRef<"FcmToken", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FcmToken findUnique
+   */
+  export type FcmTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which FcmToken to fetch.
+     */
+    where: FcmTokenWhereUniqueInput
+  }
+
+  /**
+   * FcmToken findUniqueOrThrow
+   */
+  export type FcmTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which FcmToken to fetch.
+     */
+    where: FcmTokenWhereUniqueInput
+  }
+
+  /**
+   * FcmToken findFirst
+   */
+  export type FcmTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which FcmToken to fetch.
+     */
+    where?: FcmTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FcmTokens to fetch.
+     */
+    orderBy?: FcmTokenOrderByWithRelationInput | FcmTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FcmTokens.
+     */
+    cursor?: FcmTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FcmTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FcmTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FcmTokens.
+     */
+    distinct?: FcmTokenScalarFieldEnum | FcmTokenScalarFieldEnum[]
+  }
+
+  /**
+   * FcmToken findFirstOrThrow
+   */
+  export type FcmTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which FcmToken to fetch.
+     */
+    where?: FcmTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FcmTokens to fetch.
+     */
+    orderBy?: FcmTokenOrderByWithRelationInput | FcmTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FcmTokens.
+     */
+    cursor?: FcmTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FcmTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FcmTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FcmTokens.
+     */
+    distinct?: FcmTokenScalarFieldEnum | FcmTokenScalarFieldEnum[]
+  }
+
+  /**
+   * FcmToken findMany
+   */
+  export type FcmTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which FcmTokens to fetch.
+     */
+    where?: FcmTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FcmTokens to fetch.
+     */
+    orderBy?: FcmTokenOrderByWithRelationInput | FcmTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FcmTokens.
+     */
+    cursor?: FcmTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FcmTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FcmTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FcmTokens.
+     */
+    distinct?: FcmTokenScalarFieldEnum | FcmTokenScalarFieldEnum[]
+  }
+
+  /**
+   * FcmToken create
+   */
+  export type FcmTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FcmToken.
+     */
+    data: XOR<FcmTokenCreateInput, FcmTokenUncheckedCreateInput>
+  }
+
+  /**
+   * FcmToken createMany
+   */
+  export type FcmTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FcmTokens.
+     */
+    data: FcmTokenCreateManyInput | FcmTokenCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FcmToken createManyAndReturn
+   */
+  export type FcmTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * The data used to create many FcmTokens.
+     */
+    data: FcmTokenCreateManyInput | FcmTokenCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FcmToken update
+   */
+  export type FcmTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FcmToken.
+     */
+    data: XOR<FcmTokenUpdateInput, FcmTokenUncheckedUpdateInput>
+    /**
+     * Choose, which FcmToken to update.
+     */
+    where: FcmTokenWhereUniqueInput
+  }
+
+  /**
+   * FcmToken updateMany
+   */
+  export type FcmTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FcmTokens.
+     */
+    data: XOR<FcmTokenUpdateManyMutationInput, FcmTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which FcmTokens to update
+     */
+    where?: FcmTokenWhereInput
+    /**
+     * Limit how many FcmTokens to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FcmToken updateManyAndReturn
+   */
+  export type FcmTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * The data used to update FcmTokens.
+     */
+    data: XOR<FcmTokenUpdateManyMutationInput, FcmTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which FcmTokens to update
+     */
+    where?: FcmTokenWhereInput
+    /**
+     * Limit how many FcmTokens to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FcmToken upsert
+   */
+  export type FcmTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FcmToken to update in case it exists.
+     */
+    where: FcmTokenWhereUniqueInput
+    /**
+     * In case the FcmToken found by the `where` argument doesn't exist, create a new FcmToken with this data.
+     */
+    create: XOR<FcmTokenCreateInput, FcmTokenUncheckedCreateInput>
+    /**
+     * In case the FcmToken was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FcmTokenUpdateInput, FcmTokenUncheckedUpdateInput>
+  }
+
+  /**
+   * FcmToken delete
+   */
+  export type FcmTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+    /**
+     * Filter which FcmToken to delete.
+     */
+    where: FcmTokenWhereUniqueInput
+  }
+
+  /**
+   * FcmToken deleteMany
+   */
+  export type FcmTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FcmTokens to delete
+     */
+    where?: FcmTokenWhereInput
+    /**
+     * Limit how many FcmTokens to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FcmToken without action
+   */
+  export type FcmTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FcmToken
+     */
+    select?: FcmTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FcmToken
+     */
+    omit?: FcmTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FcmTokenInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model CleanerLocation
    */
 
@@ -31019,6 +32197,16 @@ export namespace Prisma {
   export type ApnsTokenScalarFieldEnum = (typeof ApnsTokenScalarFieldEnum)[keyof typeof ApnsTokenScalarFieldEnum]
 
 
+  export const FcmTokenScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    token: 'token',
+    createdAt: 'createdAt'
+  };
+
+  export type FcmTokenScalarFieldEnum = (typeof FcmTokenScalarFieldEnum)[keyof typeof FcmTokenScalarFieldEnum]
+
+
   export const CleanerLocationScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -31409,6 +32597,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerListRelationFilter
     pushSubscriptions?: PushSubscriptionListRelationFilter
     apnsTokens?: ApnsTokenListRelationFilter
+    fcmTokens?: FcmTokenListRelationFilter
     cleanerLocation?: XOR<CleanerLocationNullableScalarRelationFilter, CleanerLocationWhereInput> | null
   }
 
@@ -31435,6 +32624,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerOrderByRelationAggregateInput
     pushSubscriptions?: PushSubscriptionOrderByRelationAggregateInput
     apnsTokens?: ApnsTokenOrderByRelationAggregateInput
+    fcmTokens?: FcmTokenOrderByRelationAggregateInput
     cleanerLocation?: CleanerLocationOrderByWithRelationInput
   }
 
@@ -31464,6 +32654,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerListRelationFilter
     pushSubscriptions?: PushSubscriptionListRelationFilter
     apnsTokens?: ApnsTokenListRelationFilter
+    fcmTokens?: FcmTokenListRelationFilter
     cleanerLocation?: XOR<CleanerLocationNullableScalarRelationFilter, CleanerLocationWhereInput> | null
   }, "id" | "email">
 
@@ -32942,6 +34133,56 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"ApnsToken"> | Date | string
   }
 
+  export type FcmTokenWhereInput = {
+    AND?: FcmTokenWhereInput | FcmTokenWhereInput[]
+    OR?: FcmTokenWhereInput[]
+    NOT?: FcmTokenWhereInput | FcmTokenWhereInput[]
+    id?: StringFilter<"FcmToken"> | string
+    userId?: StringFilter<"FcmToken"> | string
+    token?: StringFilter<"FcmToken"> | string
+    createdAt?: DateTimeFilter<"FcmToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type FcmTokenOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type FcmTokenWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    token?: string
+    AND?: FcmTokenWhereInput | FcmTokenWhereInput[]
+    OR?: FcmTokenWhereInput[]
+    NOT?: FcmTokenWhereInput | FcmTokenWhereInput[]
+    userId?: StringFilter<"FcmToken"> | string
+    createdAt?: DateTimeFilter<"FcmToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "token">
+
+  export type FcmTokenOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+    _count?: FcmTokenCountOrderByAggregateInput
+    _max?: FcmTokenMaxOrderByAggregateInput
+    _min?: FcmTokenMinOrderByAggregateInput
+  }
+
+  export type FcmTokenScalarWhereWithAggregatesInput = {
+    AND?: FcmTokenScalarWhereWithAggregatesInput | FcmTokenScalarWhereWithAggregatesInput[]
+    OR?: FcmTokenScalarWhereWithAggregatesInput[]
+    NOT?: FcmTokenScalarWhereWithAggregatesInput | FcmTokenScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FcmToken"> | string
+    userId?: StringWithAggregatesFilter<"FcmToken"> | string
+    token?: StringWithAggregatesFilter<"FcmToken"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"FcmToken"> | Date | string
+  }
+
   export type CleanerLocationWhereInput = {
     AND?: CleanerLocationWhereInput | CleanerLocationWhereInput[]
     OR?: CleanerLocationWhereInput[]
@@ -33390,6 +34631,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -33415,6 +34657,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -33440,6 +34683,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -33465,6 +34709,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -35048,6 +36293,54 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type FcmTokenCreateInput = {
+    id?: string
+    token: string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutFcmTokensInput
+  }
+
+  export type FcmTokenUncheckedCreateInput = {
+    id?: string
+    userId: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type FcmTokenUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutFcmTokensNestedInput
+  }
+
+  export type FcmTokenUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FcmTokenCreateManyInput = {
+    id?: string
+    userId: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type FcmTokenUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FcmTokenUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CleanerLocationCreateInput = {
     id?: string
     latitude: number
@@ -35646,6 +36939,12 @@ export namespace Prisma {
     none?: ApnsTokenWhereInput
   }
 
+  export type FcmTokenListRelationFilter = {
+    every?: FcmTokenWhereInput
+    some?: FcmTokenWhereInput
+    none?: FcmTokenWhereInput
+  }
+
   export type CleanerLocationNullableScalarRelationFilter = {
     is?: CleanerLocationWhereInput | null
     isNot?: CleanerLocationWhereInput | null
@@ -35676,6 +36975,10 @@ export namespace Prisma {
   }
 
   export type ApnsTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FcmTokenOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -36675,6 +37978,27 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type FcmTokenCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FcmTokenMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FcmTokenMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -37030,6 +38354,13 @@ export namespace Prisma {
     connect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
   }
 
+  export type FcmTokenCreateNestedManyWithoutUserInput = {
+    create?: XOR<FcmTokenCreateWithoutUserInput, FcmTokenUncheckedCreateWithoutUserInput> | FcmTokenCreateWithoutUserInput[] | FcmTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FcmTokenCreateOrConnectWithoutUserInput | FcmTokenCreateOrConnectWithoutUserInput[]
+    createMany?: FcmTokenCreateManyUserInputEnvelope
+    connect?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+  }
+
   export type CleanerLocationCreateNestedOneWithoutUserInput = {
     create?: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
     connectOrCreate?: CleanerLocationCreateOrConnectWithoutUserInput
@@ -37083,6 +38414,13 @@ export namespace Prisma {
     connectOrCreate?: ApnsTokenCreateOrConnectWithoutUserInput | ApnsTokenCreateOrConnectWithoutUserInput[]
     createMany?: ApnsTokenCreateManyUserInputEnvelope
     connect?: ApnsTokenWhereUniqueInput | ApnsTokenWhereUniqueInput[]
+  }
+
+  export type FcmTokenUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<FcmTokenCreateWithoutUserInput, FcmTokenUncheckedCreateWithoutUserInput> | FcmTokenCreateWithoutUserInput[] | FcmTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FcmTokenCreateOrConnectWithoutUserInput | FcmTokenCreateOrConnectWithoutUserInput[]
+    createMany?: FcmTokenCreateManyUserInputEnvelope
+    connect?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
   }
 
   export type CleanerLocationUncheckedCreateNestedOneWithoutUserInput = {
@@ -37207,6 +38545,20 @@ export namespace Prisma {
     deleteMany?: ApnsTokenScalarWhereInput | ApnsTokenScalarWhereInput[]
   }
 
+  export type FcmTokenUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FcmTokenCreateWithoutUserInput, FcmTokenUncheckedCreateWithoutUserInput> | FcmTokenCreateWithoutUserInput[] | FcmTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FcmTokenCreateOrConnectWithoutUserInput | FcmTokenCreateOrConnectWithoutUserInput[]
+    upsert?: FcmTokenUpsertWithWhereUniqueWithoutUserInput | FcmTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FcmTokenCreateManyUserInputEnvelope
+    set?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+    disconnect?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+    delete?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+    connect?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+    update?: FcmTokenUpdateWithWhereUniqueWithoutUserInput | FcmTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FcmTokenUpdateManyWithWhereWithoutUserInput | FcmTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FcmTokenScalarWhereInput | FcmTokenScalarWhereInput[]
+  }
+
   export type CleanerLocationUpdateOneWithoutUserNestedInput = {
     create?: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
     connectOrCreate?: CleanerLocationCreateOrConnectWithoutUserInput
@@ -37313,6 +38665,20 @@ export namespace Prisma {
     update?: ApnsTokenUpdateWithWhereUniqueWithoutUserInput | ApnsTokenUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ApnsTokenUpdateManyWithWhereWithoutUserInput | ApnsTokenUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ApnsTokenScalarWhereInput | ApnsTokenScalarWhereInput[]
+  }
+
+  export type FcmTokenUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FcmTokenCreateWithoutUserInput, FcmTokenUncheckedCreateWithoutUserInput> | FcmTokenCreateWithoutUserInput[] | FcmTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FcmTokenCreateOrConnectWithoutUserInput | FcmTokenCreateOrConnectWithoutUserInput[]
+    upsert?: FcmTokenUpsertWithWhereUniqueWithoutUserInput | FcmTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FcmTokenCreateManyUserInputEnvelope
+    set?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+    disconnect?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+    delete?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+    connect?: FcmTokenWhereUniqueInput | FcmTokenWhereUniqueInput[]
+    update?: FcmTokenUpdateWithWhereUniqueWithoutUserInput | FcmTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FcmTokenUpdateManyWithWhereWithoutUserInput | FcmTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FcmTokenScalarWhereInput | FcmTokenScalarWhereInput[]
   }
 
   export type CleanerLocationUncheckedUpdateOneWithoutUserNestedInput = {
@@ -38709,6 +40075,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutApnsTokensInput, UserUpdateWithoutApnsTokensInput>, UserUncheckedUpdateWithoutApnsTokensInput>
   }
 
+  export type UserCreateNestedOneWithoutFcmTokensInput = {
+    create?: XOR<UserCreateWithoutFcmTokensInput, UserUncheckedCreateWithoutFcmTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFcmTokensInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutFcmTokensNestedInput = {
+    create?: XOR<UserCreateWithoutFcmTokensInput, UserUncheckedCreateWithoutFcmTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFcmTokensInput
+    upsert?: UserUpsertWithoutFcmTokensInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFcmTokensInput, UserUpdateWithoutFcmTokensInput>, UserUncheckedUpdateWithoutFcmTokensInput>
+  }
+
   export type UserCreateNestedOneWithoutCleanerLocationInput = {
     create?: XOR<UserCreateWithoutCleanerLocationInput, UserUncheckedCreateWithoutCleanerLocationInput>
     connectOrCreate?: UserCreateOrConnectWithoutCleanerLocationInput
@@ -39056,6 +40436,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -39080,6 +40461,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -39574,6 +40956,28 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FcmTokenCreateWithoutUserInput = {
+    id?: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type FcmTokenUncheckedCreateWithoutUserInput = {
+    id?: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type FcmTokenCreateOrConnectWithoutUserInput = {
+    where: FcmTokenWhereUniqueInput
+    create: XOR<FcmTokenCreateWithoutUserInput, FcmTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type FcmTokenCreateManyUserInputEnvelope = {
+    data: FcmTokenCreateManyUserInput | FcmTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CleanerLocationCreateWithoutUserInput = {
     id?: string
     latitude: number
@@ -39872,6 +41276,32 @@ export namespace Prisma {
     userId?: StringFilter<"ApnsToken"> | string
     token?: StringFilter<"ApnsToken"> | string
     createdAt?: DateTimeFilter<"ApnsToken"> | Date | string
+  }
+
+  export type FcmTokenUpsertWithWhereUniqueWithoutUserInput = {
+    where: FcmTokenWhereUniqueInput
+    update: XOR<FcmTokenUpdateWithoutUserInput, FcmTokenUncheckedUpdateWithoutUserInput>
+    create: XOR<FcmTokenCreateWithoutUserInput, FcmTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type FcmTokenUpdateWithWhereUniqueWithoutUserInput = {
+    where: FcmTokenWhereUniqueInput
+    data: XOR<FcmTokenUpdateWithoutUserInput, FcmTokenUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FcmTokenUpdateManyWithWhereWithoutUserInput = {
+    where: FcmTokenScalarWhereInput
+    data: XOR<FcmTokenUpdateManyMutationInput, FcmTokenUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type FcmTokenScalarWhereInput = {
+    AND?: FcmTokenScalarWhereInput | FcmTokenScalarWhereInput[]
+    OR?: FcmTokenScalarWhereInput[]
+    NOT?: FcmTokenScalarWhereInput | FcmTokenScalarWhereInput[]
+    id?: StringFilter<"FcmToken"> | string
+    userId?: StringFilter<"FcmToken"> | string
+    token?: StringFilter<"FcmToken"> | string
+    createdAt?: DateTimeFilter<"FcmToken"> | Date | string
   }
 
   export type CleanerLocationUpsertWithoutUserInput = {
@@ -41270,6 +42700,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -41294,6 +42725,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -41574,6 +43006,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -41598,6 +43031,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -41782,6 +43216,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -41806,6 +43241,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -42047,6 +43483,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -42071,6 +43508,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -43286,6 +44724,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -43310,6 +44749,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -43444,6 +44884,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -43468,6 +44909,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -43663,6 +45105,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -43687,6 +45130,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -43798,6 +45242,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -43822,6 +45267,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -43911,6 +45357,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -43935,6 +45382,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -44046,6 +45494,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -44070,6 +45519,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -44329,6 +45779,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -44353,6 +45804,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -44393,6 +45845,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -44417,6 +45870,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -44441,6 +45895,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
   }
 
@@ -44465,6 +45920,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
   }
 
@@ -44505,6 +45961,7 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -44529,6 +45986,123 @@ export namespace Prisma {
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutFcmTokensInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationCreateNestedOneWithoutUsersInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutFcmTokensInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutFcmTokensInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFcmTokensInput, UserUncheckedCreateWithoutFcmTokensInput>
+  }
+
+  export type UserUpsertWithoutFcmTokensInput = {
+    update: XOR<UserUpdateWithoutFcmTokensInput, UserUncheckedUpdateWithoutFcmTokensInput>
+    create: XOR<UserCreateWithoutFcmTokensInput, UserUncheckedCreateWithoutFcmTokensInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutFcmTokensInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutFcmTokensInput, UserUncheckedUpdateWithoutFcmTokensInput>
+  }
+
+  export type UserUpdateWithoutFcmTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationUpdateOneWithoutUsersNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFcmTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -44554,6 +46128,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCleanerLocationInput = {
@@ -44578,6 +46153,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCleanerLocationInput = {
@@ -44618,6 +46194,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleanerLocationInput = {
@@ -44642,6 +46219,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ApartmentCreateWithoutProductsInput = {
@@ -44843,6 +46421,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
   }
 
@@ -44867,6 +46446,7 @@ export namespace Prisma {
     ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -45047,6 +46627,12 @@ export namespace Prisma {
   }
 
   export type ApnsTokenCreateManyUserInput = {
+    id?: string
+    token: string
+    createdAt?: Date | string
+  }
+
+  export type FcmTokenCreateManyUserInput = {
     id?: string
     token: string
     createdAt?: Date | string
@@ -45261,6 +46847,24 @@ export namespace Prisma {
   }
 
   export type ApnsTokenUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FcmTokenUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FcmTokenUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FcmTokenUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

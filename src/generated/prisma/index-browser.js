@@ -376,6 +376,13 @@ exports.Prisma.ApnsTokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.FcmTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.CleanerLocationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -468,6 +475,7 @@ exports.Prisma.ModelName = {
   ManagerChatMessage: 'ManagerChatMessage',
   PushSubscription: 'PushSubscription',
   ApnsToken: 'ApnsToken',
+  FcmToken: 'FcmToken',
   CleanerLocation: 'CleanerLocation',
   SuperAdminLog: 'SuperAdminLog',
   ApartmentProduct: 'ApartmentProduct'

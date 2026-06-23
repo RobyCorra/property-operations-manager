@@ -2,6 +2,7 @@ import webpush from "web-push";
 import { prisma } from "./prisma";
 import type { Role } from "@/src/generated/prisma/client";
 import { sendApns } from "./apns";
+import { sendFcm } from "./fcm";
 
 // Inizializza VAPID solo se le chiavi sono disponibili
 const VAPID_EMAIL    = process.env.VAPID_EMAIL;
@@ -26,14 +27,16 @@ export type PushPayload = {
 // ─── Send to a specific user ────────────────────────────────────────────────
 
 export async function sendPushToUser(userId: string, payload: PushPayload) {
-  const [subs, apnsTokens] = await Promise.all([
+  const [subs, apnsTokens, fcmTokens] = await Promise.all([
     prisma.pushSubscription.findMany({ where: { userId } }),
     prisma.apnsToken.findMany({ where: { userId }, select: { token: true } }),
+    prisma.fcmToken.findMany({ where: { userId }, select: { token: true } }),
   ]);
-  console.log(`[Push] sendPushToUser userId=${userId} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s)`);
+  console.log(`[Push] sendPushToUser userId=${userId} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s), ${fcmTokens.length} FCM token(s)`);
   await Promise.all([
     _sendToSubs(subs, payload),
     sendApns(apnsTokens.map(t => t.token), payload).catch(console.error),
+    sendFcm(fcmTokens.map(t => t.token), payload).catch(console.error),
   ]);
 }
 
@@ -42,15 +45,17 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
 export async function sendPushToRole(role: Role, payload: PushPayload, prefKey?: string, orgId?: string | null) {
   const users = await prisma.user.findMany({
     where: { role, ...(orgId ? { organizationId: orgId } : {}) },
-    select: { id: true, notificationPrefs: true, pushSubscriptions: true, apnsTokens: true },
+    select: { id: true, notificationPrefs: true, pushSubscriptions: true, apnsTokens: true, fcmTokens: true },
   });
   const filtered = users.filter(u => _prefEnabled(u.notificationPrefs, prefKey));
   const subs = filtered.flatMap(u => u.pushSubscriptions);
   const apnsTokens = filtered.flatMap(u => u.apnsTokens).map(t => t.token);
-  console.log(`[Push] sendPushToRole role=${role} prefKey=${prefKey ?? "—"} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s)`);
+  const fcmTokens = filtered.flatMap(u => u.fcmTokens).map(t => t.token);
+  console.log(`[Push] sendPushToRole role=${role} prefKey=${prefKey ?? "—"} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s), ${fcmTokens.length} FCM token(s)`);
   await Promise.all([
     _sendToSubs(subs, payload),
     sendApns(apnsTokens, payload).catch(console.error),
+    sendFcm(fcmTokens, payload).catch(console.error),
   ]);
 }
 
@@ -59,15 +64,17 @@ export async function sendPushToRole(role: Role, payload: PushPayload, prefKey?:
 export async function sendPushToRoles(roles: Role[], payload: PushPayload, prefKey?: string, orgId?: string | null) {
   const users = await prisma.user.findMany({
     where: { role: { in: roles }, ...(orgId ? { organizationId: orgId } : {}) },
-    select: { id: true, notificationPrefs: true, pushSubscriptions: true, apnsTokens: true },
+    select: { id: true, notificationPrefs: true, pushSubscriptions: true, apnsTokens: true, fcmTokens: true },
   });
   const filtered = users.filter(u => _prefEnabled(u.notificationPrefs, prefKey));
   const subs = filtered.flatMap(u => u.pushSubscriptions);
   const apnsTokens = filtered.flatMap(u => u.apnsTokens).map(t => t.token);
-  console.log(`[Push] sendPushToRoles roles=${roles.join(",")} prefKey=${prefKey ?? "—"} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s)`);
+  const fcmTokens = filtered.flatMap(u => u.fcmTokens).map(t => t.token);
+  console.log(`[Push] sendPushToRoles roles=${roles.join(",")} prefKey=${prefKey ?? "—"} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s), ${fcmTokens.length} FCM token(s)`);
   await Promise.all([
     _sendToSubs(subs, payload),
     sendApns(apnsTokens, payload).catch(console.error),
+    sendFcm(fcmTokens, payload).catch(console.error),
   ]);
 }
 
