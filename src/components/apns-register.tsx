@@ -67,8 +67,18 @@ export default function ApnsRegister() {
 
       PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
         const url = action.notification.data?.url;
+        PushNotifications.removeAllDeliveredNotifications().catch(() => {});
         if (url) window.location.href = url;
       });
+
+      // Azzera badge e notifiche nel cassetto quando l'utente torna in app
+      const onVisible = () => {
+        if (document.visibilityState === "visible") {
+          PushNotifications.removeAllDeliveredNotifications().catch(() => {});
+          fetch("/api/push/clear-badge", { method: "POST" }).catch(() => {});
+        }
+      };
+      document.addEventListener("visibilitychange", onVisible);
 
       // Android: crea il canale "default" — senza un canale esistente Android 8+
       // scarta le notifiche (in background non appaiono). Deve combaciare con il
