@@ -36,9 +36,8 @@ export async function sendPushToUser(
     prisma.fcmToken.findMany({ where: { userId }, select: { token: true } }),
   ]);
   console.log(`[Push] sendPushToUser userId=${userId} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s), ${fcmTokens.length} FCM token(s)`);
-  // Badge = notifiche non lette + 1 (per il push appena inviato)
-  const unreadNotif = await prisma.notification.count({ where: { userId, isRead: false } }).catch(() => 0);
-  const badge = unreadNotif + 1;
+  // Badge = notifiche non lette (la nuova è già salvata nel DB prima di questo punto)
+  const badge = await prisma.notification.count({ where: { userId, isRead: false } }).catch(() => 1);
   const payloadWithBadge = { ...payload, badge };
 
   const [, , fcmResult] = await Promise.all([
