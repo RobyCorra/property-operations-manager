@@ -12,6 +12,15 @@ const ALLOWED_CONTENT_TYPES = [
   "video/mp4",
   "video/quicktime",
   "video/webm",
+  // Audio (messaggi vocali) — AAC/m4a da Android, mp4 da iOS, webm/ogg da desktop
+  "audio/aac",
+  "audio/mp4",
+  "audio/m4a",
+  "audio/x-m4a",
+  "audio/mpeg",
+  "audio/webm",
+  "audio/ogg",
+  "audio/wav",
 ];
 
 export async function POST(request: Request): Promise<NextResponse> {
