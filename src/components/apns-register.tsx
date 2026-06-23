@@ -23,9 +23,16 @@ export default function ApnsRegister() {
       try { localStorage.setItem("apns_debug", JSON.stringify(data)); } catch (e) { /* ignore */ }
     }
 
+    // Retry per l'errore FCM transitorio SERVICE_NOT_AVAILABLE (tipico subito dopo
+    // l'installazione su Android): riproviamo con backoff crescente.
+    let attempt = 0;
+    const RETRY_DELAYS = [5000, 15000, 30000, 60000];
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
     async function register() {
       // Listener PRIMA di register() — senza await per evitare ritardi nella registrazione
       PushNotifications.addListener("registration", async (token) => {
+        attempt = 0; // successo: azzera i retry
         console.log(`${logTag} Token ricevuto:`, token.value.slice(-20));
         saveDebug({ ts: new Date().toISOString(), status: "token_received", tokenShort: token.value.slice(-20) });
         try {
@@ -44,7 +51,14 @@ export default function ApnsRegister() {
 
       PushNotifications.addListener("registrationError", (err) => {
         console.error(`${logTag} Registrazione fallita:`, JSON.stringify(err));
-        saveDebug({ ts: new Date().toISOString(), status: "registration_error", error: JSON.stringify(err) });
+        saveDebug({ ts: new Date().toISOString(), status: "registration_error", error: JSON.stringify(err), attempt });
+        // Riprova: SERVICE_NOT_AVAILABLE è quasi sempre transitorio
+        if (attempt < RETRY_DELAYS.length) {
+          const delay = RETRY_DELAYS[attempt];
+          attempt++;
+          console.log(`${logTag} Riprovo la registrazione tra ${delay / 1000}s (tentativo ${attempt})`);
+          retryTimer = setTimeout(() => { PushNotifications.register().catch(console.error); }, delay);
+        }
       });
 
       PushNotifications.addListener("pushNotificationReceived", (notification) => {
@@ -56,18 +70,38 @@ export default function ApnsRegister() {
         if (url) window.location.href = url;
       });
 
+      // Android: crea il canale "default" — senza un canale esistente Android 8+
+      // scarta le notifiche (in background non appaiono). Deve combaciare con il
+      // channelId usato nel payload FCM lato server (src/lib/fcm.ts).
+      if (isAndroid) {
+        try {
+          await PushNotifications.createChannel({
+            id: "default",
+            name: "Notifiche",
+            description: "Avvisi messaggi e attività",
+            importance: 5, // HIGH — banner + suono
+            visibility: 1,
+            sound: "default",
+          });
+        } catch (e) {
+          console.warn(`${logTag} createChannel fallito:`, e);
+        }
+      }
+
       // Chiedi permesso
       const permission = await PushNotifications.requestPermissions();
-      console.log("[APNs] Permesso:", permission.receive);
+      console.log(`${logTag} Permesso:`, permission.receive);
       saveDebug({ ts: new Date().toISOString(), status: "permission_result", receive: permission.receive });
       if (permission.receive !== "granted") return;
 
-      // Registra con APNs — il token arriverà nel listener sopra
+      // Registra — il token arriverà nel listener sopra
       await PushNotifications.register();
-      console.log("[APNs] register() chiamato");
+      console.log(`${logTag} register() chiamato`);
     }
 
     register().catch(console.error);
+
+    return () => { if (retryTimer) clearTimeout(retryTimer); };
   }, []);
 
   return null;
