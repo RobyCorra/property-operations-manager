@@ -95,80 +95,97 @@ export default function NotificationBell({ initialNotifications, serverDate, unr
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-[calc(100vw-2rem)] max-w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-[100] transform origin-top-right transition-all">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50 mb-2">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500/80">Notifiche</h4>
-            {unreadNotifCount > 0 && (
-              <button
-                onClick={handleMarkAllAsRead}
-                className="text-[10px] font-bold text-violet-600 hover:text-violet-700 uppercase tracking-wider"
-              >
-                Segna tutte come lette
-              </button>
-            )}
-          </div>
+        <>
+          {/* Overlay — chiude cliccando fuori (mobile) */}
+          <div className="fixed inset-0 z-[99] sm:hidden" onClick={() => setIsOpen(false)} />
 
-          {/* Banner messaggi non letti */}
-          {unreadMessagesCount > 0 && (
-            <div className="px-2 mb-2">
-              <Link
-                href="/dashboard/manager/messages"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 bg-violet-50 hover:bg-violet-100 rounded-xl transition-colors"
-              >
-                <div className="w-8 h-8 rounded-xl bg-violet-500 flex items-center justify-center flex-shrink-0">
-                  <MessageSquare size={14} className="text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-violet-900">
-                    {unreadMessagesCount === 1 ? "1 messaggio non letto" : `${unreadMessagesCount} messaggi non letti`}
-                  </p>
-                  <p className="text-[10px] text-violet-500">Vai alla chat →</p>
-                </div>
-                <span className="min-w-[20px] h-[20px] px-1 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
-                  {unreadMessagesCount > 9 ? "9+" : unreadMessagesCount}
-                </span>
-              </Link>
+          {/* Pannello: bottom sheet su mobile, dropdown su desktop */}
+          <div className={[
+            "bg-white border border-gray-100 shadow-2xl py-2 z-[100]",
+            // mobile: sheet fisso dal basso, larghezza piena
+            "fixed bottom-0 left-0 right-0 rounded-t-2xl sm:rounded-2xl",
+            // desktop: dropdown classico
+            "sm:absolute sm:bottom-auto sm:left-auto sm:right-0 sm:mt-3 sm:w-80",
+          ].join(" ")}>
+            {/* Handle visivo su mobile */}
+            <div className="sm:hidden flex justify-center pt-1 pb-3">
+              <div className="w-10 h-1 rounded-full bg-gray-300" />
             </div>
-          )}
 
-          <div className="max-h-[360px] overflow-y-auto px-1 custom-scrollbar">
-            {notifications.length > 0 ? (
-              notifications.map((n) => (
-                <div
-                  key={n.id}
-                  onClick={() => !n.isRead && handleMarkAsRead(n.id)}
-                  className={`p-3 rounded-xl mb-1 transition-all cursor-pointer flex gap-3 ${n.isRead ? 'opacity-60 bg-white' : 'bg-gray-50/80 hover:bg-gray-100/80'}`}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50 mb-2">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500/80">Notifiche</h4>
+              {unreadNotifCount > 0 && (
+                <button
+                  onClick={handleMarkAllAsRead}
+                  className="text-[10px] font-bold text-violet-600 hover:text-violet-700 uppercase tracking-wider"
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${n.type === 'CLEANING' ? 'bg-violet-100 text-violet-600' : 'bg-rose-100 text-rose-600'}`}>
-                    {n.type === 'CLEANING' ? <Brush size={16} /> : <Wrench size={16} />}
+                  Segna tutte come lette
+                </button>
+              )}
+            </div>
+
+            {/* Banner messaggi non letti */}
+            {unreadMessagesCount > 0 && (
+              <div className="px-2 mb-2">
+                <Link
+                  href="/dashboard/manager/messages"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2.5 bg-violet-50 hover:bg-violet-100 rounded-xl transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-violet-500 flex items-center justify-center flex-shrink-0">
+                    <MessageSquare size={14} className="text-white" />
                   </div>
-                  <div className="flex-1 space-y-0.5">
-                    <p className={`text-xs font-bold ${n.isRead ? 'text-slate-700' : 'text-slate-900'}`}>{n.title}</p>
-                    <p className="text-[11px] text-slate-500 leading-relaxed truncate">{n.message}</p>
-                    <SafeDate
-                      date={n.createdAt}
-                      showTimeAgo={true}
-                      serverDate={serverDate}
-                      className="text-[9px] text-slate-400 font-medium"
-                    />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-violet-900">
+                      {unreadMessagesCount === 1 ? "1 messaggio non letto" : `${unreadMessagesCount} messaggi non letti`}
+                    </p>
+                    <p className="text-[10px] text-violet-500">Vai alla chat →</p>
                   </div>
-                  {!n.isRead && (
-                    <div className="w-2 h-2 rounded-full bg-violet-500 mt-2 flex-shrink-0"></div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="py-10 text-center text-slate-400">
-                <CircleCheck size={32} className="mx-auto mb-3 opacity-20" />
-                <p className="text-sm font-medium">Nessuna notifica</p>
-                <p className="text-[10px] mt-1 uppercase tracking-widest">Tutto sotto controllo</p>
+                  <span className="min-w-[20px] h-[20px] px-1 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                    {unreadMessagesCount > 9 ? "9+" : unreadMessagesCount}
+                  </span>
+                </Link>
               </div>
             )}
-          </div>
 
-          <PushTestFooter />
-        </div>
+            <div className="max-h-[60vh] sm:max-h-[360px] overflow-y-auto px-1 custom-scrollbar">
+              {notifications.length > 0 ? (
+                notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => !n.isRead && handleMarkAsRead(n.id)}
+                    className={`p-3 rounded-xl mb-1 transition-all cursor-pointer flex gap-3 ${n.isRead ? 'opacity-60 bg-white' : 'bg-gray-50/80 hover:bg-gray-100/80'}`}
+                  >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${n.type === 'CLEANING' ? 'bg-violet-100 text-violet-600' : 'bg-rose-100 text-rose-600'}`}>
+                      {n.type === 'CLEANING' ? <Brush size={16} /> : <Wrench size={16} />}
+                    </div>
+                    <div className="flex-1 space-y-0.5">
+                      <p className={`text-xs font-bold ${n.isRead ? 'text-slate-700' : 'text-slate-900'}`}>{n.title}</p>
+                      <p className="text-[11px] text-slate-500 leading-relaxed truncate">{n.message}</p>
+                      <SafeDate
+                        date={n.createdAt}
+                        showTimeAgo={true}
+                        serverDate={serverDate}
+                        className="text-[9px] text-slate-400 font-medium"
+                      />
+                    </div>
+                    {!n.isRead && (
+                      <div className="w-2 h-2 rounded-full bg-violet-500 mt-2 flex-shrink-0"></div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="py-10 text-center text-slate-400">
+                  <CircleCheck size={32} className="mx-auto mb-3 opacity-20" />
+                  <p className="text-sm font-medium">Nessuna notifica</p>
+                  <p className="text-[10px] mt-1 uppercase tracking-widest">Tutto sotto controllo</p>
+                </div>
+              )}
+            </div>
+
+            <PushTestFooter />
+          </div>
+        </>
       )}
     </div>
   );
