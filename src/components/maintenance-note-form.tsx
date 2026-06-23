@@ -91,7 +91,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
       }
     }
 
-    const INTERVAL = 8000;
+    const INTERVAL = 5000;
 
     function startPoll() {
       poll(); // fetch immediato al ritorno in foreground

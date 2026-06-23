@@ -33,7 +33,7 @@ export default async function ManagerLayout({ children }: { children: React.Reac
       <div className={impersonatingOrgName ? "pt-9" : ""}>
         {children}
       </div>
-      <AutoRefresh intervalMs={30_000} />
+      <AutoRefresh intervalMs={15_000} />
       <PushPermissionRequest />
       <ApnsRegister />
     </SidebarLayout>
