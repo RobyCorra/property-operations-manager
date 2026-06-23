@@ -23,9 +23,19 @@
   }
 }
 
+/* Safe area per Android (barra navigazione) e iOS (home indicator).
+   env(safe-area-inset-bottom) vale 0 su desktop, ~48px su Android con nav bar,
+   ~34px su iPhone con home indicator. */
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top:    env(safe-area-inset-top, 0px);
+}
+
 html, body {
   overflow-x: hidden;
   max-width: 100vw;
+  /* Evita che il contenuto finisca sotto la nav bar Android */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 body {
@@ -60,4 +70,15 @@ button:active, a:active, [role="button"]:active {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
+}
+
+/* Tutti gli elementi fissi/sticky ancorati in basso devono avere questo padding
+   aggiuntivo altrimenti la nav bar di Android li copre parzialmente o totalmente. */
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+}
+
+/* Nav bar fissa in basso (cleaner/maintenance/owner/supervisor) */
+nav.fixed.bottom-0 {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }

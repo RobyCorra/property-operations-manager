@@ -217,7 +217,7 @@ export default function PublicMaintenanceView({
 
       {/* Pulsante fisso — solo prima dell'avvio */}
       {canStart && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-20">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-20 safe-bottom">
           <div className="max-w-lg mx-auto">
             <button onClick={handleStart} disabled={actionLoading}
               className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-2xl text-lg shadow-lg shadow-orange-200 transition-colors disabled:opacity-70">

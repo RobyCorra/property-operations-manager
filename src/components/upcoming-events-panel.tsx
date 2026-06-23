@@ -112,7 +112,7 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
       {/* Panel / Bottom Sheet */}
       {isOpen && (
         <div className={`
-          fixed inset-x-0 bottom-0 z-[100] bg-white rounded-t-[2.5rem] shadow-2xl border-t border-gray-100 flex flex-col max-h-[85vh]
+          fixed inset-x-0 bottom-0 z-[100] bg-white rounded-t-[2.5rem] shadow-2xl border-t border-gray-100 flex flex-col max-h-[85vh] safe-bottom
           lg:absolute lg:top-full lg:bottom-auto lg:left-auto lg:right-0 lg:mt-3 lg:w-[420px] lg:rounded-3xl lg:border lg:max-h-[500px]
           animate-in fade-in slide-in-from-bottom-8 lg:slide-in-from-top-4 duration-200
         `}>

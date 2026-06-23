@@ -242,7 +242,7 @@ function CleaningContent({
 
       {/* Pulsante fisso — solo PENDING */}
       {canStart && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-20">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-20 safe-bottom">
           <div className="max-w-lg mx-auto">
             <PublicStatusButton
               id={taskId}

@@ -100,7 +100,7 @@ export default async function OwnerDashboardPage() {
       )}
 
       {/* Bottom nav — mobile only */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-stretch border-t border-slate-200 bg-white/95 backdrop-blur-md md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-stretch border-t border-slate-200 bg-white/95 backdrop-blur-md md:hidden safe-bottom">
         <div className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-emerald-600">
           <Home size={20} />
           <span className="text-[9px] font-black uppercase tracking-widest">Calendario</span>

@@ -111,7 +111,7 @@ export default function NotificationBell({ initialNotifications, serverDate, unr
           <div className={[
             "bg-white border border-gray-100 shadow-2xl py-2 z-[100]",
             // mobile: sheet fisso dal basso, larghezza piena
-            "fixed bottom-0 left-0 right-0 rounded-t-2xl sm:rounded-2xl",
+            "fixed bottom-0 left-0 right-0 rounded-t-2xl sm:rounded-2xl safe-bottom",
             // desktop: dropdown classico
             "sm:absolute sm:bottom-auto sm:left-auto sm:right-0 sm:mt-3 sm:w-80",
           ].join(" ")}>

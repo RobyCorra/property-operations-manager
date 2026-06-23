@@ -769,7 +769,7 @@ export default function MessagesDashboard({
             onClick={() => setShowInfoSheet(false)}
           />
           {/* Pannello slide-up */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col max-h-[88vh]">
+          <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 shadow-2xl flex flex-col max-h-[88vh] safe-bottom">
 
             {/* Handle + ✕ */}
             <div className="relative flex items-center justify-center px-5 pt-3 pb-2 shrink-0">
