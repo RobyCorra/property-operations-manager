@@ -52,6 +52,7 @@ type CleanerDashboardTask = {
   bookingId: string | null;
   checklistProgress: unknown;
   correctionProgress: unknown;
+  totalGuests: number | null;
   nextBooking: CleanerTaskNextBooking | null;
   apartment: {
     name: string;
@@ -263,7 +264,7 @@ export default async function CleanerDashboardPage() {
                       {/* Biancheria & asciugamani (tradotti via LinenSection) */}
                       {(() => {
                         const cullaRequested = !!(task.nextBooking?.cullaRequested);
-                        const totalGuests = task.nextBooking?.totalGuests ?? 0;
+                        const totalGuests = task.nextBooking?.totalGuests ?? task.totalGuests ?? 0;
                         const linen = totalGuests > 0
                           ? calculateLinen(task.apartment.bedConfig, totalGuests, cullaRequested)
                           : null;

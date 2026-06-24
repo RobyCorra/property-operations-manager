@@ -298,6 +298,8 @@ export async function createCleaningTask(prevState: any, formData: FormData) {
   const dateStr = formData.get("date") as string;
   const timeStr = formData.get("time") as string;
   const notes = formData.get("notes") as string;
+  const totalGuestsRaw = formData.get("totalGuests") as string;
+  const totalGuests = totalGuestsRaw ? parseInt(totalGuestsRaw, 10) : null;
 
   const effectiveTimeStr = timeStr || DEFAULT_CLEANING_TIME;
 
@@ -316,6 +318,7 @@ export async function createCleaningTask(prevState: any, formData: FormData) {
       notes: notes || null,
       status: "PENDING",
       checklistProgress,
+      totalGuests: totalGuests && !isNaN(totalGuests) ? totalGuests : null,
     },
   });
 

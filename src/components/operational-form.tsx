@@ -295,6 +295,19 @@ export default function OperationalForm({ type, apartments, personnel, action, i
               {redirectTo && (
                 <input type="hidden" name="redirectTo" value={redirectTo} />
               )}
+              {!isEditing && (
+                <div className="border-t border-gray-100 pt-4">
+                  <label htmlFor="totalGuests" className="block text-sm font-medium text-gray-700 mb-1">Numero ospiti (per calcolo biancheria)</label>
+                  <input
+                    type="number"
+                    id="totalGuests"
+                    name="totalGuests"
+                    min={0}
+                    placeholder="Es. 2"
+                    className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  />
+                </div>
+              )}
               {isEditing && (
                 <div className="border-t border-gray-100 pt-4 space-y-3">
                   <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Configurazione biancheria</p>
