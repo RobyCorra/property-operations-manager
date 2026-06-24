@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { syncCleaningTaskFromBooking } from "./operational";
+import { consumeProductsOnCheckin } from "./product";
 
 type PrismaTx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
@@ -287,6 +288,9 @@ export async function confirmCheckIn(bookingId: string) {
     where: { id: bookingId },
     data: { status: "CHECKED_IN" },
   });
+
+  // Sottrai i prodotti consumati per questo check-in
+  await consumeProductsOnCheckin(booking.apartmentId, booking.totalGuests ?? 1);
 
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/mappa");
