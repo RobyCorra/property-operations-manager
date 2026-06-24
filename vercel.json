@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/checkin-consume",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/low-stock-check",
+      "schedule": "0 9 * * *"
     }
   ]
 }
