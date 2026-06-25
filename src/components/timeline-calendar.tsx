@@ -64,6 +64,9 @@ interface CleaningTask {
   assignedTo?: { id: string; name: string } | null;
   checklistProgress?: unknown;
   apartment?: { name: string; address: string };
+  cullaRequested?: boolean | null;
+  sofaBedForced?: boolean | null;
+  totalGuests?: number | null;
 }
 
 type PrismaBooking = {
@@ -1016,7 +1019,12 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         .sort((a, b) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
                                     const apt = apartments.find(a => a.id === selectedEvent.data.apartmentId);
                                     const linen = nextB
-                                        ? calculateLinen(apt?.bedConfig, nextB.totalGuests ?? 0, !!(nextB.cullaRequested))
+                                        ? calculateLinen(
+                                            apt?.bedConfig,
+                                            nextB.totalGuests ?? 0,
+                                            !!(selectedEvent.data.cullaRequested ?? nextB.cullaRequested),
+                                            !!(selectedEvent.data.sofaBedForced),
+                                          )
                                         : null;
 
                                     return (
