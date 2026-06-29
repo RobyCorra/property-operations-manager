@@ -1425,10 +1425,14 @@ export type AIActionPayload =
 
 export async function executeAIAction(payload: AIActionPayload): Promise<{ success: boolean; error?: string }> {
   try {
+    // ISOLAMENTO MULTI-TENANT: ogni lookup deve restare confinato all'organizzazione corrente.
+    const orgId = await getCurrentOrg();
+    if (!orgId) return { success: false, error: "Organizzazione non identificata." };
+
     if (payload.type === "CREATE_BOOKING") {
       const { apartmentName, checkInDate, checkOutDate, totalGuests, guestName } = payload;
       const apartment = await prisma.apartment.findFirst({
-        where: { name: { equals: apartmentName, mode: "insensitive" } },
+        where: { name: { equals: apartmentName, mode: "insensitive" }, organizationId: orgId },
         select: { id: true },
       });
       if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
@@ -1469,14 +1473,14 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
     } else if (payload.type === "CREATE_CLEANING") {
       const { apartmentName, date, assignedToName, notes } = payload;
       const apartment = await prisma.apartment.findFirst({
-        where: { name: { equals: apartmentName, mode: "insensitive" } },
+        where: { name: { equals: apartmentName, mode: "insensitive" }, organizationId: orgId },
         select: { id: true },
       });
       if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
       let assignedToId: string | undefined;
       if (assignedToName) {
         const user = await prisma.user.findFirst({
-          where: { name: { contains: assignedToName, mode: "insensitive" } },
+          where: { name: { contains: assignedToName, mode: "insensitive" }, organizationId: orgId },
           select: { id: true },
         });
         if (!user) return { success: false, error: `Cleaner non trovato: "${assignedToName}".` };
@@ -1503,14 +1507,14 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
     } else if (payload.type === "CREATE_TICKET") {
       const { apartmentName, title, ticketDescription, priority, scheduledStart, assignedToName } = payload;
       const apartment = await prisma.apartment.findFirst({
-        where: { name: { equals: apartmentName, mode: "insensitive" } },
+        where: { name: { equals: apartmentName, mode: "insensitive" }, organizationId: orgId },
         select: { id: true },
       });
       if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
       let assignedToId: string | undefined;
       if (assignedToName) {
         const user = await prisma.user.findFirst({
-          where: { name: { contains: assignedToName, mode: "insensitive" } },
+          where: { name: { contains: assignedToName, mode: "insensitive" }, organizationId: orgId },
           select: { id: true },
         });
         if (!user) return { success: false, error: `Tecnico non trovato: "${assignedToName}".` };
@@ -1533,7 +1537,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       const { apartmentName, checkInDate, fields } = payload;
       // Cerca appartamento per nome (case-insensitive) — evita UUID che l'AI storpia
       const apartment = await prisma.apartment.findFirst({
-        where: { name: { equals: apartmentName, mode: "insensitive" } },
+        where: { name: { equals: apartmentName, mode: "insensitive" }, organizationId: orgId },
         select: { id: true },
       });
       if (!apartment) return { success: false, error: `Appartamento non trovato: "${apartmentName}".` };
@@ -1566,7 +1570,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       const errors: string[] = [];
       for (const upd of payload.updates) {
         const apartment = await prisma.apartment.findFirst({
-          where: { name: { equals: upd.apartmentName, mode: "insensitive" } },
+          where: { name: { equals: upd.apartmentName, mode: "insensitive" }, organizationId: orgId },
           select: { id: true },
         });
         if (!apartment) { errors.push(`Appartamento non trovato: "${upd.apartmentName}".`); continue; }
@@ -1595,12 +1599,12 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       if (errors.length > 0) return { success: false, error: errors.join(" | ") };
     } else if (payload.type === "UPDATE_CLEANING") {
       const { id, fields } = payload;
-      const task = await prisma.cleaningTask.findUnique({ where: { id } });
+      const task = await prisma.cleaningTask.findFirst({ where: { id, apartment: { organizationId: orgId } } });
       if (!task) return { success: false, error: "Pulizia non trovata." };
       let resolvedAssignedToId: string | undefined;
       if (fields.assignedToName) {
         const user = await prisma.user.findFirst({
-          where: { name: { contains: fields.assignedToName, mode: "insensitive" } },
+          where: { name: { contains: fields.assignedToName, mode: "insensitive" }, organizationId: orgId },
           select: { id: true },
         });
         if (!user) return { success: false, error: `Cleaner non trovato: "${fields.assignedToName}".` };
@@ -1618,12 +1622,12 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       revalidatePath("/dashboard/manager/cleanings");
     } else if (payload.type === "UPDATE_TICKET") {
       const { id, fields } = payload;
-      const ticket = await prisma.maintenanceTicket.findUnique({ where: { id } });
+      const ticket = await prisma.maintenanceTicket.findFirst({ where: { id, apartment: { organizationId: orgId } } });
       if (!ticket) return { success: false, error: "Ticket non trovato." };
       let assignedToId: string | undefined;
       if (fields.assignedToName) {
         const user = await prisma.user.findFirst({
-          where: { name: { contains: fields.assignedToName, mode: "insensitive" } },
+          where: { name: { contains: fields.assignedToName, mode: "insensitive" }, organizationId: orgId },
           select: { id: true },
         });
         if (!user) return { success: false, error: `Tecnico non trovato: "${fields.assignedToName}".` };
@@ -1646,7 +1650,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
     } else if (payload.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") {
       const { apartmentIds, dateFrom, dateTo, assignedToName, unassignedOnly } = payload;
       const user = await prisma.user.findFirst({
-        where: { name: { contains: assignedToName, mode: "insensitive" } },
+        where: { name: { contains: assignedToName, mode: "insensitive" }, organizationId: orgId },
       });
       if (!user) return { success: false, error: `Cleaner non trovato: "${assignedToName}".` };
       const from = new Date(dateFrom);
@@ -1654,6 +1658,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       to.setHours(23, 59, 59, 999);
       const result = await prisma.cleaningTask.updateMany({
         where: {
+          apartment: { organizationId: orgId },
           ...(apartmentIds.length > 0 ? { apartmentId: { in: apartmentIds } } : {}),
           date: { gte: from, lte: to },
           status: { notIn: ["CANCELLED", "APPROVED"] },
@@ -1669,14 +1674,14 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       let created = 0;
       for (const item of payload.cleanings) {
         const apartment = await prisma.apartment.findFirst({
-          where: { name: { equals: item.apartmentName, mode: "insensitive" } },
+          where: { name: { equals: item.apartmentName, mode: "insensitive" }, organizationId: orgId },
           select: { id: true },
         });
         if (!apartment) { errors.push(`Appartamento non trovato: "${item.apartmentName}"`); continue; }
         let assignedToId: string | undefined;
         if (item.assignedToName) {
           const user = await prisma.user.findFirst({
-            where: { name: { contains: item.assignedToName, mode: "insensitive" } },
+            where: { name: { contains: item.assignedToName, mode: "insensitive" }, organizationId: orgId },
             select: { id: true },
           });
           if (!user) { errors.push(`Cleaner non trovato: "${item.assignedToName}"`); continue; }
@@ -1710,7 +1715,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       let created = 0;
       for (const item of payload.bookings) {
         const apartment = await prisma.apartment.findFirst({
-          where: { name: { equals: item.apartmentName, mode: "insensitive" } },
+          where: { name: { equals: item.apartmentName, mode: "insensitive" }, organizationId: orgId },
           select: { id: true },
         });
         if (!apartment) { errors.push(`Appartamento non trovato: "${item.apartmentName}"`); continue; }
@@ -1741,14 +1746,14 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       let created = 0;
       for (const item of payload.tickets) {
         const apartment = await prisma.apartment.findFirst({
-          where: { name: { equals: item.apartmentName, mode: "insensitive" } },
+          where: { name: { equals: item.apartmentName, mode: "insensitive" }, organizationId: orgId },
           select: { id: true },
         });
         if (!apartment) { errors.push(`Appartamento non trovato: "${item.apartmentName}"`); continue; }
         let assignedToId: string | undefined;
         if (item.assignedToName) {
           const user = await prisma.user.findFirst({
-            where: { name: { contains: item.assignedToName, mode: "insensitive" } },
+            where: { name: { contains: item.assignedToName, mode: "insensitive" }, organizationId: orgId },
             select: { id: true },
           });
           if (!user) { errors.push(`Tecnico non trovato: "${item.assignedToName}"`); continue; }
@@ -1775,11 +1780,11 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
     } else if (payload.type === "PURGE_CANCELLED") {
       // Delete cancelled cleaning tasks first (FK dependency)
       const deletedCleanings = await prisma.cleaningTask.deleteMany({
-        where: { status: "CANCELLED" },
+        where: { status: "CANCELLED", apartment: { organizationId: orgId } },
       });
       // Delete cancelled bookings
       const deletedBookings = await prisma.booking.deleteMany({
-        where: { status: "CANCELLED" },
+        where: { status: "CANCELLED", apartment: { organizationId: orgId } },
       });
       // Revalida tutto prima di restituire il messaggio di riepilogo
       revalidatePath("/", "layout");
