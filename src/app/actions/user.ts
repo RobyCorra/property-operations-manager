@@ -10,7 +10,7 @@ type Role = "MANAGER" | "CLEANER" | "MAINTENANCE" | "SUPERVISOR" | "OWNER";
 
 export async function createUser(prevState: any, formData: FormData) {
   const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
+  const email = ((formData.get("email") as string) || "").trim().toLowerCase();
   const password = formData.get("password") as string;
   const role = formData.get("role") as Role;
   const apartmentIds = formData.getAll("apartmentIds") as string[];
@@ -25,7 +25,7 @@ export async function createUser(prevState: any, formData: FormData) {
     return { error: "Tutti i campi sono obbligatori." };
   }
 
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  const existingUser = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
   if (existingUser) {
     return { error: "L'email è già in uso." };
   }
@@ -58,7 +58,7 @@ export async function createUser(prevState: any, formData: FormData) {
 export async function updateUser(prevState: any, formData: FormData) {
   const id = formData.get("id") as string;
   const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
+  const email = ((formData.get("email") as string) || "").trim().toLowerCase();
   const password = formData.get("password") as string;
   const role = formData.get("role") as Role;
   const apartmentIds = formData.getAll("apartmentIds") as string[];
@@ -73,7 +73,7 @@ export async function updateUser(prevState: any, formData: FormData) {
     return { error: "Tutti i campi obbligatori mancanti." };
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
   if (existing && existing.id !== id) {
     return { error: "L'email è già in uso da un altro utente." };
   }

@@ -6,15 +6,17 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/src/lib/prisma";
 
 export async function loginAction(prevState: any, formData: FormData) {
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
 
   if (!email || !password) {
     return { error: "Email e password richiesti." };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
+  // Ricerca case-insensitive + trim: evita "Email non trovata" per differenze
+  // di maiuscole/minuscole o spazi tra come è stata salvata e come viene digitata.
+  const user = await prisma.user.findFirst({
+    where: { email: { equals: email, mode: "insensitive" } },
     include: { organization: { select: { id: true, name: true } } },
   });
 
