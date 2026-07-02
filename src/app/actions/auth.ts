@@ -85,6 +85,8 @@ export async function loginAction(prevState: any, formData: FormData) {
     redirect("/dashboard/supervisor");
   } else if (user.role === "OWNER") {
     redirect("/dashboard/owner");
+  } else if (user.role === "CHECKIN") {
+    redirect("/dashboard/checkin");
   }
 
   redirect("/dashboard/manager");
