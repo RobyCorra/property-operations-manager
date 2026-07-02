@@ -64,40 +64,43 @@ model User {
   apnsTokens           ApnsToken[]
   fcmTokens            FcmToken[]
   cleanerLocation      CleanerLocation?
+  checkinTasks         CheckinTask[]
 
   @@index([organizationId])
 }
 
 model Apartment {
-  id                   String                @id @default(uuid())
-  name                 String
-  apartmentCode        String?               @unique
-  organizationId       String?
-  organization         Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  address              String
-  latitude             Float
-  longitude            Float
-  squareMeters         Int
-  bedrooms             Int
-  bathrooms            Int
-  maxGuests            Int
-  accessInstructions   String?
-  accessInfo           Json?
-  bedConfig            Json?
-  icalUrl              String?
-  lastSyncAt           DateTime?
-  technicalProfile     Json?
-  createdAt            DateTime              @default(now())
-  bookings             Booking[]
-  checklistItems       ChecklistItem[]
-  cleaningTasks        CleaningTask[]
-  maintenanceTickets   MaintenanceTicket[]
-  notifications        Notification[]
-  aiAssistantMessages  AIAssistantMessage[]
-  apartmentAttachments ApartmentAttachment[]
-  supervisors          ApartmentSupervisor[]
-  owners               ApartmentOwner[]
-  products             ApartmentProduct[]
+  id                    String                 @id @default(uuid())
+  name                  String
+  apartmentCode         String?                @unique
+  organizationId        String?
+  organization          Organization?          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  address               String
+  latitude              Float
+  longitude             Float
+  squareMeters          Int
+  bedrooms              Int
+  bathrooms             Int
+  maxGuests             Int
+  accessInstructions    String?
+  accessInfo            Json?
+  bedConfig             Json?
+  icalUrl               String?
+  lastSyncAt            DateTime?
+  technicalProfile      Json?
+  createdAt             DateTime               @default(now())
+  bookings              Booking[]
+  checklistItems        ChecklistItem[]
+  cleaningTasks         CleaningTask[]
+  maintenanceTickets    MaintenanceTicket[]
+  notifications         Notification[]
+  aiAssistantMessages   AIAssistantMessage[]
+  apartmentAttachments  ApartmentAttachment[]
+  supervisors           ApartmentSupervisor[]
+  owners                ApartmentOwner[]
+  products              ApartmentProduct[]
+  checkinChecklistItems CheckinChecklistItem[]
+  checkinTasks          CheckinTask[]
 
   @@index([organizationId])
 }
@@ -142,6 +145,7 @@ model Booking {
   createdAt      DateTime      @default(now())
   apartment      Apartment     @relation(fields: [apartmentId], references: [id])
   cleaningTask   CleaningTask?
+  checkinTask    CheckinTask?
 }
 
 model CleaningTask {
@@ -161,12 +165,48 @@ model CleaningTask {
   cleaningAccessToken String?               @unique
   cullaRequested      Boolean               @default(false)
   sofaBedForced       Boolean               @default(false)
+  totalGuests         Int?
   apartment           Apartment             @relation(fields: [apartmentId], references: [id])
   assignedTo          User?                 @relation(fields: [assignedToId], references: [id])
   messages            CleaningTaskMessage[]
   attachments         Attachment[]
   aiAssistantMessages AIAssistantMessage[]
   supervisorReviews   SupervisorReview[]
+}
+
+// Voce della checklist di CHECK-IN, per-appartamento. Modello separato dalle
+// pulizie (ChecklistItem) per isolamento totale tra le due liste.
+model CheckinChecklistItem {
+  id                String    @id @default(uuid())
+  apartmentId       String
+  label             String
+  labelTranslations Json?
+  required          Boolean   @default(true)
+  photoRequired     Boolean   @default(false)
+  order             Int       @default(0)
+  createdAt         DateTime  @default(now())
+  type              String    @default("static")
+  apartment         Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+}
+
+// Task operativa di CHECK-IN, gemella di CleaningTask ma agganciata alla data
+// di check-in della prenotazione. Auto-creata da ogni prenotazione.
+model CheckinTask {
+  id                 String    @id @default(uuid())
+  apartmentId        String
+  date               DateTime
+  status             String
+  createdAt          DateTime  @default(now())
+  startedAt          DateTime?
+  completedAt        DateTime?
+  assignedToId       String?
+  notes              String?
+  bookingId          String?   @unique
+  booking            Booking?  @relation(fields: [bookingId], references: [id])
+  checklistProgress  Json?     @default("[]")
+  checkinAccessToken String?   @unique
+  apartment          Apartment @relation(fields: [apartmentId], references: [id])
+  assignedTo         User?     @relation(fields: [assignedToId], references: [id])
 }
 
 model MaintenanceTicket {
@@ -345,6 +385,7 @@ enum Role {
   MAINTENANCE
   SUPERVISOR
   OWNER
+  CHECKIN
 }
 
 enum AIAssistantMessageRole {

@@ -49,6 +49,16 @@ export type Booking = $Result.DefaultSelection<Prisma.$BookingPayload>
  */
 export type CleaningTask = $Result.DefaultSelection<Prisma.$CleaningTaskPayload>
 /**
+ * Model CheckinChecklistItem
+ * 
+ */
+export type CheckinChecklistItem = $Result.DefaultSelection<Prisma.$CheckinChecklistItemPayload>
+/**
+ * Model CheckinTask
+ * 
+ */
+export type CheckinTask = $Result.DefaultSelection<Prisma.$CheckinTaskPayload>
+/**
  * Model MaintenanceTicket
  * 
  */
@@ -143,7 +153,8 @@ export namespace $Enums {
   CLEANER: 'CLEANER',
   MAINTENANCE: 'MAINTENANCE',
   SUPERVISOR: 'SUPERVISOR',
-  OWNER: 'OWNER'
+  OWNER: 'OWNER',
+  CHECKIN: 'CHECKIN'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -356,6 +367,26 @@ export class PrismaClient<
     * ```
     */
   get cleaningTask(): Prisma.CleaningTaskDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.checkinChecklistItem`: Exposes CRUD operations for the **CheckinChecklistItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CheckinChecklistItems
+    * const checkinChecklistItems = await prisma.checkinChecklistItem.findMany()
+    * ```
+    */
+  get checkinChecklistItem(): Prisma.CheckinChecklistItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.checkinTask`: Exposes CRUD operations for the **CheckinTask** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CheckinTasks
+    * const checkinTasks = await prisma.checkinTask.findMany()
+    * ```
+    */
+  get checkinTask(): Prisma.CheckinTaskDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.maintenanceTicket`: Exposes CRUD operations for the **MaintenanceTicket** model.
@@ -967,6 +998,8 @@ export namespace Prisma {
     Notification: 'Notification',
     Booking: 'Booking',
     CleaningTask: 'CleaningTask',
+    CheckinChecklistItem: 'CheckinChecklistItem',
+    CheckinTask: 'CheckinTask',
     MaintenanceTicket: 'MaintenanceTicket',
     AIAssistantMessage: 'AIAssistantMessage',
     Attachment: 'Attachment',
@@ -999,7 +1032,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct"
+      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1518,6 +1551,154 @@ export namespace Prisma {
           count: {
             args: Prisma.CleaningTaskCountArgs<ExtArgs>
             result: $Utils.Optional<CleaningTaskCountAggregateOutputType> | number
+          }
+        }
+      }
+      CheckinChecklistItem: {
+        payload: Prisma.$CheckinChecklistItemPayload<ExtArgs>
+        fields: Prisma.CheckinChecklistItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CheckinChecklistItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CheckinChecklistItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>
+          }
+          findFirst: {
+            args: Prisma.CheckinChecklistItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CheckinChecklistItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>
+          }
+          findMany: {
+            args: Prisma.CheckinChecklistItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>[]
+          }
+          create: {
+            args: Prisma.CheckinChecklistItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>
+          }
+          createMany: {
+            args: Prisma.CheckinChecklistItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CheckinChecklistItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>[]
+          }
+          delete: {
+            args: Prisma.CheckinChecklistItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>
+          }
+          update: {
+            args: Prisma.CheckinChecklistItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.CheckinChecklistItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CheckinChecklistItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CheckinChecklistItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.CheckinChecklistItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinChecklistItemPayload>
+          }
+          aggregate: {
+            args: Prisma.CheckinChecklistItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCheckinChecklistItem>
+          }
+          groupBy: {
+            args: Prisma.CheckinChecklistItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CheckinChecklistItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CheckinChecklistItemCountArgs<ExtArgs>
+            result: $Utils.Optional<CheckinChecklistItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      CheckinTask: {
+        payload: Prisma.$CheckinTaskPayload<ExtArgs>
+        fields: Prisma.CheckinTaskFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CheckinTaskFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CheckinTaskFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>
+          }
+          findFirst: {
+            args: Prisma.CheckinTaskFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CheckinTaskFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>
+          }
+          findMany: {
+            args: Prisma.CheckinTaskFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>[]
+          }
+          create: {
+            args: Prisma.CheckinTaskCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>
+          }
+          createMany: {
+            args: Prisma.CheckinTaskCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CheckinTaskCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>[]
+          }
+          delete: {
+            args: Prisma.CheckinTaskDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>
+          }
+          update: {
+            args: Prisma.CheckinTaskUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>
+          }
+          deleteMany: {
+            args: Prisma.CheckinTaskDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CheckinTaskUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CheckinTaskUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>[]
+          }
+          upsert: {
+            args: Prisma.CheckinTaskUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskPayload>
+          }
+          aggregate: {
+            args: Prisma.CheckinTaskAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCheckinTask>
+          }
+          groupBy: {
+            args: Prisma.CheckinTaskGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CheckinTaskGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CheckinTaskCountArgs<ExtArgs>
+            result: $Utils.Optional<CheckinTaskCountAggregateOutputType> | number
           }
         }
       }
@@ -2894,6 +3075,8 @@ export namespace Prisma {
     notification?: NotificationOmit
     booking?: BookingOmit
     cleaningTask?: CleaningTaskOmit
+    checkinChecklistItem?: CheckinChecklistItemOmit
+    checkinTask?: CheckinTaskOmit
     maintenanceTicket?: MaintenanceTicketOmit
     aIAssistantMessage?: AIAssistantMessageOmit
     attachment?: AttachmentOmit
@@ -3048,6 +3231,7 @@ export namespace Prisma {
     pushSubscriptions: number
     apnsTokens: number
     fcmTokens: number
+    checkinTasks: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3059,6 +3243,7 @@ export namespace Prisma {
     pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
     apnsTokens?: boolean | UserCountOutputTypeCountApnsTokensArgs
     fcmTokens?: boolean | UserCountOutputTypeCountFcmTokensArgs
+    checkinTasks?: boolean | UserCountOutputTypeCountCheckinTasksArgs
   }
 
   // Custom InputTypes
@@ -3128,6 +3313,13 @@ export namespace Prisma {
     where?: FcmTokenWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCheckinTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckinTaskWhereInput
+  }
+
 
   /**
    * Count Type ApartmentCountOutputType
@@ -3144,6 +3336,8 @@ export namespace Prisma {
     supervisors: number
     owners: number
     products: number
+    checkinChecklistItems: number
+    checkinTasks: number
   }
 
   export type ApartmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3157,6 +3351,8 @@ export namespace Prisma {
     supervisors?: boolean | ApartmentCountOutputTypeCountSupervisorsArgs
     owners?: boolean | ApartmentCountOutputTypeCountOwnersArgs
     products?: boolean | ApartmentCountOutputTypeCountProductsArgs
+    checkinChecklistItems?: boolean | ApartmentCountOutputTypeCountCheckinChecklistItemsArgs
+    checkinTasks?: boolean | ApartmentCountOutputTypeCountCheckinTasksArgs
   }
 
   // Custom InputTypes
@@ -3238,6 +3434,20 @@ export namespace Prisma {
    */
   export type ApartmentCountOutputTypeCountProductsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApartmentProductWhereInput
+  }
+
+  /**
+   * ApartmentCountOutputType without action
+   */
+  export type ApartmentCountOutputTypeCountCheckinChecklistItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckinChecklistItemWhereInput
+  }
+
+  /**
+   * ApartmentCountOutputType without action
+   */
+  export type ApartmentCountOutputTypeCountCheckinTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckinTaskWhereInput
   }
 
 
@@ -5140,6 +5350,7 @@ export namespace Prisma {
     apnsTokens?: boolean | User$apnsTokensArgs<ExtArgs>
     fcmTokens?: boolean | User$fcmTokensArgs<ExtArgs>
     cleanerLocation?: boolean | User$cleanerLocationArgs<ExtArgs>
+    checkinTasks?: boolean | User$checkinTasksArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5208,6 +5419,7 @@ export namespace Prisma {
     apnsTokens?: boolean | User$apnsTokensArgs<ExtArgs>
     fcmTokens?: boolean | User$fcmTokensArgs<ExtArgs>
     cleanerLocation?: boolean | User$cleanerLocationArgs<ExtArgs>
+    checkinTasks?: boolean | User$checkinTasksArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5230,6 +5442,7 @@ export namespace Prisma {
       apnsTokens: Prisma.$ApnsTokenPayload<ExtArgs>[]
       fcmTokens: Prisma.$FcmTokenPayload<ExtArgs>[]
       cleanerLocation: Prisma.$CleanerLocationPayload<ExtArgs> | null
+      checkinTasks: Prisma.$CheckinTaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5650,6 +5863,7 @@ export namespace Prisma {
     apnsTokens<T extends User$apnsTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$apnsTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApnsTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     fcmTokens<T extends User$fcmTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$fcmTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     cleanerLocation<T extends User$cleanerLocationArgs<ExtArgs> = {}>(args?: Subset<T, User$cleanerLocationArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    checkinTasks<T extends User$checkinTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$checkinTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6324,6 +6538,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.checkinTasks
+   */
+  export type User$checkinTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    where?: CheckinTaskWhereInput
+    orderBy?: CheckinTaskOrderByWithRelationInput | CheckinTaskOrderByWithRelationInput[]
+    cursor?: CheckinTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CheckinTaskScalarFieldEnum | CheckinTaskScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6663,6 +6901,8 @@ export namespace Prisma {
     supervisors?: boolean | Apartment$supervisorsArgs<ExtArgs>
     owners?: boolean | Apartment$ownersArgs<ExtArgs>
     products?: boolean | Apartment$productsArgs<ExtArgs>
+    checkinChecklistItems?: boolean | Apartment$checkinChecklistItemsArgs<ExtArgs>
+    checkinTasks?: boolean | Apartment$checkinTasksArgs<ExtArgs>
     _count?: boolean | ApartmentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["apartment"]>
 
@@ -6744,6 +6984,8 @@ export namespace Prisma {
     supervisors?: boolean | Apartment$supervisorsArgs<ExtArgs>
     owners?: boolean | Apartment$ownersArgs<ExtArgs>
     products?: boolean | Apartment$productsArgs<ExtArgs>
+    checkinChecklistItems?: boolean | Apartment$checkinChecklistItemsArgs<ExtArgs>
+    checkinTasks?: boolean | Apartment$checkinTasksArgs<ExtArgs>
     _count?: boolean | ApartmentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApartmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6767,6 +7009,8 @@ export namespace Prisma {
       supervisors: Prisma.$ApartmentSupervisorPayload<ExtArgs>[]
       owners: Prisma.$ApartmentOwnerPayload<ExtArgs>[]
       products: Prisma.$ApartmentProductPayload<ExtArgs>[]
+      checkinChecklistItems: Prisma.$CheckinChecklistItemPayload<ExtArgs>[]
+      checkinTasks: Prisma.$CheckinTaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7192,6 +7436,8 @@ export namespace Prisma {
     supervisors<T extends Apartment$supervisorsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$supervisorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentSupervisorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     owners<T extends Apartment$ownersArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$ownersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentOwnerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     products<T extends Apartment$productsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    checkinChecklistItems<T extends Apartment$checkinChecklistItemsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$checkinChecklistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    checkinTasks<T extends Apartment$checkinTasksArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$checkinTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7896,6 +8142,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ApartmentProductScalarFieldEnum | ApartmentProductScalarFieldEnum[]
+  }
+
+  /**
+   * Apartment.checkinChecklistItems
+   */
+  export type Apartment$checkinChecklistItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    where?: CheckinChecklistItemWhereInput
+    orderBy?: CheckinChecklistItemOrderByWithRelationInput | CheckinChecklistItemOrderByWithRelationInput[]
+    cursor?: CheckinChecklistItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CheckinChecklistItemScalarFieldEnum | CheckinChecklistItemScalarFieldEnum[]
+  }
+
+  /**
+   * Apartment.checkinTasks
+   */
+  export type Apartment$checkinTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    where?: CheckinTaskWhereInput
+    orderBy?: CheckinTaskOrderByWithRelationInput | CheckinTaskOrderByWithRelationInput[]
+    cursor?: CheckinTaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CheckinTaskScalarFieldEnum | CheckinTaskScalarFieldEnum[]
   }
 
   /**
@@ -10444,6 +10738,7 @@ export namespace Prisma {
     createdAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     cleaningTask?: boolean | Booking$cleaningTaskArgs<ExtArgs>
+    checkinTask?: boolean | Booking$checkinTaskArgs<ExtArgs>
   }, ExtArgs["result"]["booking"]>
 
   export type BookingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10494,6 +10789,7 @@ export namespace Prisma {
   export type BookingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     cleaningTask?: boolean | Booking$cleaningTaskArgs<ExtArgs>
+    checkinTask?: boolean | Booking$checkinTaskArgs<ExtArgs>
   }
   export type BookingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -10507,6 +10803,7 @@ export namespace Prisma {
     objects: {
       apartment: Prisma.$ApartmentPayload<ExtArgs>
       cleaningTask: Prisma.$CleaningTaskPayload<ExtArgs> | null
+      checkinTask: Prisma.$CheckinTaskPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10916,6 +11213,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     apartment<T extends ApartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApartmentDefaultArgs<ExtArgs>>): Prisma__ApartmentClient<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     cleaningTask<T extends Booking$cleaningTaskArgs<ExtArgs> = {}>(args?: Subset<T, Booking$cleaningTaskArgs<ExtArgs>>): Prisma__CleaningTaskClient<$Result.GetResult<Prisma.$CleaningTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    checkinTask<T extends Booking$checkinTaskArgs<ExtArgs> = {}>(args?: Subset<T, Booking$checkinTaskArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11376,6 +11674,25 @@ export namespace Prisma {
   }
 
   /**
+   * Booking.checkinTask
+   */
+  export type Booking$checkinTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    where?: CheckinTaskWhereInput
+  }
+
+  /**
    * Booking without action
    */
   export type BookingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11400,8 +11717,18 @@ export namespace Prisma {
 
   export type AggregateCleaningTask = {
     _count: CleaningTaskCountAggregateOutputType | null
+    _avg: CleaningTaskAvgAggregateOutputType | null
+    _sum: CleaningTaskSumAggregateOutputType | null
     _min: CleaningTaskMinAggregateOutputType | null
     _max: CleaningTaskMaxAggregateOutputType | null
+  }
+
+  export type CleaningTaskAvgAggregateOutputType = {
+    totalGuests: number | null
+  }
+
+  export type CleaningTaskSumAggregateOutputType = {
+    totalGuests: number | null
   }
 
   export type CleaningTaskMinAggregateOutputType = {
@@ -11418,6 +11745,7 @@ export namespace Prisma {
     cleaningAccessToken: string | null
     cullaRequested: boolean | null
     sofaBedForced: boolean | null
+    totalGuests: number | null
   }
 
   export type CleaningTaskMaxAggregateOutputType = {
@@ -11434,6 +11762,7 @@ export namespace Prisma {
     cleaningAccessToken: string | null
     cullaRequested: boolean | null
     sofaBedForced: boolean | null
+    totalGuests: number | null
   }
 
   export type CleaningTaskCountAggregateOutputType = {
@@ -11452,9 +11781,18 @@ export namespace Prisma {
     cleaningAccessToken: number
     cullaRequested: number
     sofaBedForced: number
+    totalGuests: number
     _all: number
   }
 
+
+  export type CleaningTaskAvgAggregateInputType = {
+    totalGuests?: true
+  }
+
+  export type CleaningTaskSumAggregateInputType = {
+    totalGuests?: true
+  }
 
   export type CleaningTaskMinAggregateInputType = {
     id?: true
@@ -11470,6 +11808,7 @@ export namespace Prisma {
     cleaningAccessToken?: true
     cullaRequested?: true
     sofaBedForced?: true
+    totalGuests?: true
   }
 
   export type CleaningTaskMaxAggregateInputType = {
@@ -11486,6 +11825,7 @@ export namespace Prisma {
     cleaningAccessToken?: true
     cullaRequested?: true
     sofaBedForced?: true
+    totalGuests?: true
   }
 
   export type CleaningTaskCountAggregateInputType = {
@@ -11504,6 +11844,7 @@ export namespace Prisma {
     cleaningAccessToken?: true
     cullaRequested?: true
     sofaBedForced?: true
+    totalGuests?: true
     _all?: true
   }
 
@@ -11545,6 +11886,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: CleaningTaskAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CleaningTaskSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: CleaningTaskMinAggregateInputType
@@ -11575,6 +11928,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: CleaningTaskCountAggregateInputType | true
+    _avg?: CleaningTaskAvgAggregateInputType
+    _sum?: CleaningTaskSumAggregateInputType
     _min?: CleaningTaskMinAggregateInputType
     _max?: CleaningTaskMaxAggregateInputType
   }
@@ -11595,7 +11950,10 @@ export namespace Prisma {
     cleaningAccessToken: string | null
     cullaRequested: boolean
     sofaBedForced: boolean
+    totalGuests: number | null
     _count: CleaningTaskCountAggregateOutputType | null
+    _avg: CleaningTaskAvgAggregateOutputType | null
+    _sum: CleaningTaskSumAggregateOutputType | null
     _min: CleaningTaskMinAggregateOutputType | null
     _max: CleaningTaskMaxAggregateOutputType | null
   }
@@ -11630,6 +11988,7 @@ export namespace Prisma {
     cleaningAccessToken?: boolean
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -11656,6 +12015,7 @@ export namespace Prisma {
     cleaningAccessToken?: boolean
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -11677,6 +12037,7 @@ export namespace Prisma {
     cleaningAccessToken?: boolean
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -11698,9 +12059,10 @@ export namespace Prisma {
     cleaningAccessToken?: boolean
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: boolean
   }
 
-  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken" | "cullaRequested" | "sofaBedForced", ExtArgs["result"]["cleaningTask"]>
+  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken" | "cullaRequested" | "sofaBedForced" | "totalGuests", ExtArgs["result"]["cleaningTask"]>
   export type CleaningTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -11749,6 +12111,7 @@ export namespace Prisma {
       cleaningAccessToken: string | null
       cullaRequested: boolean
       sofaBedForced: boolean
+      totalGuests: number | null
     }, ExtArgs["result"]["cleaningTask"]>
     composites: {}
   }
@@ -12194,6 +12557,7 @@ export namespace Prisma {
     readonly cleaningAccessToken: FieldRef<"CleaningTask", 'String'>
     readonly cullaRequested: FieldRef<"CleaningTask", 'Boolean'>
     readonly sofaBedForced: FieldRef<"CleaningTask", 'Boolean'>
+    readonly totalGuests: FieldRef<"CleaningTask", 'Int'>
   }
     
 
@@ -12744,6 +13108,2355 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CleaningTaskInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CheckinChecklistItem
+   */
+
+  export type AggregateCheckinChecklistItem = {
+    _count: CheckinChecklistItemCountAggregateOutputType | null
+    _avg: CheckinChecklistItemAvgAggregateOutputType | null
+    _sum: CheckinChecklistItemSumAggregateOutputType | null
+    _min: CheckinChecklistItemMinAggregateOutputType | null
+    _max: CheckinChecklistItemMaxAggregateOutputType | null
+  }
+
+  export type CheckinChecklistItemAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type CheckinChecklistItemSumAggregateOutputType = {
+    order: number | null
+  }
+
+  export type CheckinChecklistItemMinAggregateOutputType = {
+    id: string | null
+    apartmentId: string | null
+    label: string | null
+    required: boolean | null
+    photoRequired: boolean | null
+    order: number | null
+    createdAt: Date | null
+    type: string | null
+  }
+
+  export type CheckinChecklistItemMaxAggregateOutputType = {
+    id: string | null
+    apartmentId: string | null
+    label: string | null
+    required: boolean | null
+    photoRequired: boolean | null
+    order: number | null
+    createdAt: Date | null
+    type: string | null
+  }
+
+  export type CheckinChecklistItemCountAggregateOutputType = {
+    id: number
+    apartmentId: number
+    label: number
+    labelTranslations: number
+    required: number
+    photoRequired: number
+    order: number
+    createdAt: number
+    type: number
+    _all: number
+  }
+
+
+  export type CheckinChecklistItemAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type CheckinChecklistItemSumAggregateInputType = {
+    order?: true
+  }
+
+  export type CheckinChecklistItemMinAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    label?: true
+    required?: true
+    photoRequired?: true
+    order?: true
+    createdAt?: true
+    type?: true
+  }
+
+  export type CheckinChecklistItemMaxAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    label?: true
+    required?: true
+    photoRequired?: true
+    order?: true
+    createdAt?: true
+    type?: true
+  }
+
+  export type CheckinChecklistItemCountAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    label?: true
+    labelTranslations?: true
+    required?: true
+    photoRequired?: true
+    order?: true
+    createdAt?: true
+    type?: true
+    _all?: true
+  }
+
+  export type CheckinChecklistItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CheckinChecklistItem to aggregate.
+     */
+    where?: CheckinChecklistItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinChecklistItems to fetch.
+     */
+    orderBy?: CheckinChecklistItemOrderByWithRelationInput | CheckinChecklistItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CheckinChecklistItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinChecklistItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinChecklistItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CheckinChecklistItems
+    **/
+    _count?: true | CheckinChecklistItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CheckinChecklistItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CheckinChecklistItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CheckinChecklistItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CheckinChecklistItemMaxAggregateInputType
+  }
+
+  export type GetCheckinChecklistItemAggregateType<T extends CheckinChecklistItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateCheckinChecklistItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCheckinChecklistItem[P]>
+      : GetScalarType<T[P], AggregateCheckinChecklistItem[P]>
+  }
+
+
+
+
+  export type CheckinChecklistItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckinChecklistItemWhereInput
+    orderBy?: CheckinChecklistItemOrderByWithAggregationInput | CheckinChecklistItemOrderByWithAggregationInput[]
+    by: CheckinChecklistItemScalarFieldEnum[] | CheckinChecklistItemScalarFieldEnum
+    having?: CheckinChecklistItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CheckinChecklistItemCountAggregateInputType | true
+    _avg?: CheckinChecklistItemAvgAggregateInputType
+    _sum?: CheckinChecklistItemSumAggregateInputType
+    _min?: CheckinChecklistItemMinAggregateInputType
+    _max?: CheckinChecklistItemMaxAggregateInputType
+  }
+
+  export type CheckinChecklistItemGroupByOutputType = {
+    id: string
+    apartmentId: string
+    label: string
+    labelTranslations: JsonValue | null
+    required: boolean
+    photoRequired: boolean
+    order: number
+    createdAt: Date
+    type: string
+    _count: CheckinChecklistItemCountAggregateOutputType | null
+    _avg: CheckinChecklistItemAvgAggregateOutputType | null
+    _sum: CheckinChecklistItemSumAggregateOutputType | null
+    _min: CheckinChecklistItemMinAggregateOutputType | null
+    _max: CheckinChecklistItemMaxAggregateOutputType | null
+  }
+
+  type GetCheckinChecklistItemGroupByPayload<T extends CheckinChecklistItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CheckinChecklistItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CheckinChecklistItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CheckinChecklistItemGroupByOutputType[P]>
+            : GetScalarType<T[P], CheckinChecklistItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CheckinChecklistItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    label?: boolean
+    labelTranslations?: boolean
+    required?: boolean
+    photoRequired?: boolean
+    order?: boolean
+    createdAt?: boolean
+    type?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinChecklistItem"]>
+
+  export type CheckinChecklistItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    label?: boolean
+    labelTranslations?: boolean
+    required?: boolean
+    photoRequired?: boolean
+    order?: boolean
+    createdAt?: boolean
+    type?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinChecklistItem"]>
+
+  export type CheckinChecklistItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    label?: boolean
+    labelTranslations?: boolean
+    required?: boolean
+    photoRequired?: boolean
+    order?: boolean
+    createdAt?: boolean
+    type?: boolean
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinChecklistItem"]>
+
+  export type CheckinChecklistItemSelectScalar = {
+    id?: boolean
+    apartmentId?: boolean
+    label?: boolean
+    labelTranslations?: boolean
+    required?: boolean
+    photoRequired?: boolean
+    order?: boolean
+    createdAt?: boolean
+    type?: boolean
+  }
+
+  export type CheckinChecklistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "label" | "labelTranslations" | "required" | "photoRequired" | "order" | "createdAt" | "type", ExtArgs["result"]["checkinChecklistItem"]>
+  export type CheckinChecklistItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+  export type CheckinChecklistItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+  export type CheckinChecklistItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+
+  export type $CheckinChecklistItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CheckinChecklistItem"
+    objects: {
+      apartment: Prisma.$ApartmentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      apartmentId: string
+      label: string
+      labelTranslations: Prisma.JsonValue | null
+      required: boolean
+      photoRequired: boolean
+      order: number
+      createdAt: Date
+      type: string
+    }, ExtArgs["result"]["checkinChecklistItem"]>
+    composites: {}
+  }
+
+  type CheckinChecklistItemGetPayload<S extends boolean | null | undefined | CheckinChecklistItemDefaultArgs> = $Result.GetResult<Prisma.$CheckinChecklistItemPayload, S>
+
+  type CheckinChecklistItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CheckinChecklistItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CheckinChecklistItemCountAggregateInputType | true
+    }
+
+  export interface CheckinChecklistItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CheckinChecklistItem'], meta: { name: 'CheckinChecklistItem' } }
+    /**
+     * Find zero or one CheckinChecklistItem that matches the filter.
+     * @param {CheckinChecklistItemFindUniqueArgs} args - Arguments to find a CheckinChecklistItem
+     * @example
+     * // Get one CheckinChecklistItem
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CheckinChecklistItemFindUniqueArgs>(args: SelectSubset<T, CheckinChecklistItemFindUniqueArgs<ExtArgs>>): Prisma__CheckinChecklistItemClient<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CheckinChecklistItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CheckinChecklistItemFindUniqueOrThrowArgs} args - Arguments to find a CheckinChecklistItem
+     * @example
+     * // Get one CheckinChecklistItem
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CheckinChecklistItemFindUniqueOrThrowArgs>(args: SelectSubset<T, CheckinChecklistItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CheckinChecklistItemClient<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CheckinChecklistItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinChecklistItemFindFirstArgs} args - Arguments to find a CheckinChecklistItem
+     * @example
+     * // Get one CheckinChecklistItem
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CheckinChecklistItemFindFirstArgs>(args?: SelectSubset<T, CheckinChecklistItemFindFirstArgs<ExtArgs>>): Prisma__CheckinChecklistItemClient<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CheckinChecklistItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinChecklistItemFindFirstOrThrowArgs} args - Arguments to find a CheckinChecklistItem
+     * @example
+     * // Get one CheckinChecklistItem
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CheckinChecklistItemFindFirstOrThrowArgs>(args?: SelectSubset<T, CheckinChecklistItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__CheckinChecklistItemClient<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CheckinChecklistItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinChecklistItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CheckinChecklistItems
+     * const checkinChecklistItems = await prisma.checkinChecklistItem.findMany()
+     * 
+     * // Get first 10 CheckinChecklistItems
+     * const checkinChecklistItems = await prisma.checkinChecklistItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const checkinChecklistItemWithIdOnly = await prisma.checkinChecklistItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CheckinChecklistItemFindManyArgs>(args?: SelectSubset<T, CheckinChecklistItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CheckinChecklistItem.
+     * @param {CheckinChecklistItemCreateArgs} args - Arguments to create a CheckinChecklistItem.
+     * @example
+     * // Create one CheckinChecklistItem
+     * const CheckinChecklistItem = await prisma.checkinChecklistItem.create({
+     *   data: {
+     *     // ... data to create a CheckinChecklistItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends CheckinChecklistItemCreateArgs>(args: SelectSubset<T, CheckinChecklistItemCreateArgs<ExtArgs>>): Prisma__CheckinChecklistItemClient<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CheckinChecklistItems.
+     * @param {CheckinChecklistItemCreateManyArgs} args - Arguments to create many CheckinChecklistItems.
+     * @example
+     * // Create many CheckinChecklistItems
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CheckinChecklistItemCreateManyArgs>(args?: SelectSubset<T, CheckinChecklistItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CheckinChecklistItems and returns the data saved in the database.
+     * @param {CheckinChecklistItemCreateManyAndReturnArgs} args - Arguments to create many CheckinChecklistItems.
+     * @example
+     * // Create many CheckinChecklistItems
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CheckinChecklistItems and only return the `id`
+     * const checkinChecklistItemWithIdOnly = await prisma.checkinChecklistItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CheckinChecklistItemCreateManyAndReturnArgs>(args?: SelectSubset<T, CheckinChecklistItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CheckinChecklistItem.
+     * @param {CheckinChecklistItemDeleteArgs} args - Arguments to delete one CheckinChecklistItem.
+     * @example
+     * // Delete one CheckinChecklistItem
+     * const CheckinChecklistItem = await prisma.checkinChecklistItem.delete({
+     *   where: {
+     *     // ... filter to delete one CheckinChecklistItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CheckinChecklistItemDeleteArgs>(args: SelectSubset<T, CheckinChecklistItemDeleteArgs<ExtArgs>>): Prisma__CheckinChecklistItemClient<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CheckinChecklistItem.
+     * @param {CheckinChecklistItemUpdateArgs} args - Arguments to update one CheckinChecklistItem.
+     * @example
+     * // Update one CheckinChecklistItem
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CheckinChecklistItemUpdateArgs>(args: SelectSubset<T, CheckinChecklistItemUpdateArgs<ExtArgs>>): Prisma__CheckinChecklistItemClient<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CheckinChecklistItems.
+     * @param {CheckinChecklistItemDeleteManyArgs} args - Arguments to filter CheckinChecklistItems to delete.
+     * @example
+     * // Delete a few CheckinChecklistItems
+     * const { count } = await prisma.checkinChecklistItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CheckinChecklistItemDeleteManyArgs>(args?: SelectSubset<T, CheckinChecklistItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CheckinChecklistItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinChecklistItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CheckinChecklistItems
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CheckinChecklistItemUpdateManyArgs>(args: SelectSubset<T, CheckinChecklistItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CheckinChecklistItems and returns the data updated in the database.
+     * @param {CheckinChecklistItemUpdateManyAndReturnArgs} args - Arguments to update many CheckinChecklistItems.
+     * @example
+     * // Update many CheckinChecklistItems
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CheckinChecklistItems and only return the `id`
+     * const checkinChecklistItemWithIdOnly = await prisma.checkinChecklistItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CheckinChecklistItemUpdateManyAndReturnArgs>(args: SelectSubset<T, CheckinChecklistItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CheckinChecklistItem.
+     * @param {CheckinChecklistItemUpsertArgs} args - Arguments to update or create a CheckinChecklistItem.
+     * @example
+     * // Update or create a CheckinChecklistItem
+     * const checkinChecklistItem = await prisma.checkinChecklistItem.upsert({
+     *   create: {
+     *     // ... data to create a CheckinChecklistItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CheckinChecklistItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CheckinChecklistItemUpsertArgs>(args: SelectSubset<T, CheckinChecklistItemUpsertArgs<ExtArgs>>): Prisma__CheckinChecklistItemClient<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CheckinChecklistItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinChecklistItemCountArgs} args - Arguments to filter CheckinChecklistItems to count.
+     * @example
+     * // Count the number of CheckinChecklistItems
+     * const count = await prisma.checkinChecklistItem.count({
+     *   where: {
+     *     // ... the filter for the CheckinChecklistItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends CheckinChecklistItemCountArgs>(
+      args?: Subset<T, CheckinChecklistItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CheckinChecklistItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CheckinChecklistItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinChecklistItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CheckinChecklistItemAggregateArgs>(args: Subset<T, CheckinChecklistItemAggregateArgs>): Prisma.PrismaPromise<GetCheckinChecklistItemAggregateType<T>>
+
+    /**
+     * Group by CheckinChecklistItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinChecklistItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CheckinChecklistItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CheckinChecklistItemGroupByArgs['orderBy'] }
+        : { orderBy?: CheckinChecklistItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CheckinChecklistItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCheckinChecklistItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CheckinChecklistItem model
+   */
+  readonly fields: CheckinChecklistItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CheckinChecklistItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CheckinChecklistItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    apartment<T extends ApartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApartmentDefaultArgs<ExtArgs>>): Prisma__ApartmentClient<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CheckinChecklistItem model
+   */
+  interface CheckinChecklistItemFieldRefs {
+    readonly id: FieldRef<"CheckinChecklistItem", 'String'>
+    readonly apartmentId: FieldRef<"CheckinChecklistItem", 'String'>
+    readonly label: FieldRef<"CheckinChecklistItem", 'String'>
+    readonly labelTranslations: FieldRef<"CheckinChecklistItem", 'Json'>
+    readonly required: FieldRef<"CheckinChecklistItem", 'Boolean'>
+    readonly photoRequired: FieldRef<"CheckinChecklistItem", 'Boolean'>
+    readonly order: FieldRef<"CheckinChecklistItem", 'Int'>
+    readonly createdAt: FieldRef<"CheckinChecklistItem", 'DateTime'>
+    readonly type: FieldRef<"CheckinChecklistItem", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CheckinChecklistItem findUnique
+   */
+  export type CheckinChecklistItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinChecklistItem to fetch.
+     */
+    where: CheckinChecklistItemWhereUniqueInput
+  }
+
+  /**
+   * CheckinChecklistItem findUniqueOrThrow
+   */
+  export type CheckinChecklistItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinChecklistItem to fetch.
+     */
+    where: CheckinChecklistItemWhereUniqueInput
+  }
+
+  /**
+   * CheckinChecklistItem findFirst
+   */
+  export type CheckinChecklistItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinChecklistItem to fetch.
+     */
+    where?: CheckinChecklistItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinChecklistItems to fetch.
+     */
+    orderBy?: CheckinChecklistItemOrderByWithRelationInput | CheckinChecklistItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CheckinChecklistItems.
+     */
+    cursor?: CheckinChecklistItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinChecklistItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinChecklistItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinChecklistItems.
+     */
+    distinct?: CheckinChecklistItemScalarFieldEnum | CheckinChecklistItemScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinChecklistItem findFirstOrThrow
+   */
+  export type CheckinChecklistItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinChecklistItem to fetch.
+     */
+    where?: CheckinChecklistItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinChecklistItems to fetch.
+     */
+    orderBy?: CheckinChecklistItemOrderByWithRelationInput | CheckinChecklistItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CheckinChecklistItems.
+     */
+    cursor?: CheckinChecklistItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinChecklistItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinChecklistItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinChecklistItems.
+     */
+    distinct?: CheckinChecklistItemScalarFieldEnum | CheckinChecklistItemScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinChecklistItem findMany
+   */
+  export type CheckinChecklistItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinChecklistItems to fetch.
+     */
+    where?: CheckinChecklistItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinChecklistItems to fetch.
+     */
+    orderBy?: CheckinChecklistItemOrderByWithRelationInput | CheckinChecklistItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CheckinChecklistItems.
+     */
+    cursor?: CheckinChecklistItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinChecklistItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinChecklistItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinChecklistItems.
+     */
+    distinct?: CheckinChecklistItemScalarFieldEnum | CheckinChecklistItemScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinChecklistItem create
+   */
+  export type CheckinChecklistItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CheckinChecklistItem.
+     */
+    data: XOR<CheckinChecklistItemCreateInput, CheckinChecklistItemUncheckedCreateInput>
+  }
+
+  /**
+   * CheckinChecklistItem createMany
+   */
+  export type CheckinChecklistItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CheckinChecklistItems.
+     */
+    data: CheckinChecklistItemCreateManyInput | CheckinChecklistItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CheckinChecklistItem createManyAndReturn
+   */
+  export type CheckinChecklistItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many CheckinChecklistItems.
+     */
+    data: CheckinChecklistItemCreateManyInput | CheckinChecklistItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CheckinChecklistItem update
+   */
+  export type CheckinChecklistItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CheckinChecklistItem.
+     */
+    data: XOR<CheckinChecklistItemUpdateInput, CheckinChecklistItemUncheckedUpdateInput>
+    /**
+     * Choose, which CheckinChecklistItem to update.
+     */
+    where: CheckinChecklistItemWhereUniqueInput
+  }
+
+  /**
+   * CheckinChecklistItem updateMany
+   */
+  export type CheckinChecklistItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CheckinChecklistItems.
+     */
+    data: XOR<CheckinChecklistItemUpdateManyMutationInput, CheckinChecklistItemUncheckedUpdateManyInput>
+    /**
+     * Filter which CheckinChecklistItems to update
+     */
+    where?: CheckinChecklistItemWhereInput
+    /**
+     * Limit how many CheckinChecklistItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CheckinChecklistItem updateManyAndReturn
+   */
+  export type CheckinChecklistItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * The data used to update CheckinChecklistItems.
+     */
+    data: XOR<CheckinChecklistItemUpdateManyMutationInput, CheckinChecklistItemUncheckedUpdateManyInput>
+    /**
+     * Filter which CheckinChecklistItems to update
+     */
+    where?: CheckinChecklistItemWhereInput
+    /**
+     * Limit how many CheckinChecklistItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CheckinChecklistItem upsert
+   */
+  export type CheckinChecklistItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CheckinChecklistItem to update in case it exists.
+     */
+    where: CheckinChecklistItemWhereUniqueInput
+    /**
+     * In case the CheckinChecklistItem found by the `where` argument doesn't exist, create a new CheckinChecklistItem with this data.
+     */
+    create: XOR<CheckinChecklistItemCreateInput, CheckinChecklistItemUncheckedCreateInput>
+    /**
+     * In case the CheckinChecklistItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CheckinChecklistItemUpdateInput, CheckinChecklistItemUncheckedUpdateInput>
+  }
+
+  /**
+   * CheckinChecklistItem delete
+   */
+  export type CheckinChecklistItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+    /**
+     * Filter which CheckinChecklistItem to delete.
+     */
+    where: CheckinChecklistItemWhereUniqueInput
+  }
+
+  /**
+   * CheckinChecklistItem deleteMany
+   */
+  export type CheckinChecklistItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CheckinChecklistItems to delete
+     */
+    where?: CheckinChecklistItemWhereInput
+    /**
+     * Limit how many CheckinChecklistItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CheckinChecklistItem without action
+   */
+  export type CheckinChecklistItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinChecklistItem
+     */
+    select?: CheckinChecklistItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinChecklistItem
+     */
+    omit?: CheckinChecklistItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinChecklistItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CheckinTask
+   */
+
+  export type AggregateCheckinTask = {
+    _count: CheckinTaskCountAggregateOutputType | null
+    _min: CheckinTaskMinAggregateOutputType | null
+    _max: CheckinTaskMaxAggregateOutputType | null
+  }
+
+  export type CheckinTaskMinAggregateOutputType = {
+    id: string | null
+    apartmentId: string | null
+    date: Date | null
+    status: string | null
+    createdAt: Date | null
+    startedAt: Date | null
+    completedAt: Date | null
+    assignedToId: string | null
+    notes: string | null
+    bookingId: string | null
+    checkinAccessToken: string | null
+  }
+
+  export type CheckinTaskMaxAggregateOutputType = {
+    id: string | null
+    apartmentId: string | null
+    date: Date | null
+    status: string | null
+    createdAt: Date | null
+    startedAt: Date | null
+    completedAt: Date | null
+    assignedToId: string | null
+    notes: string | null
+    bookingId: string | null
+    checkinAccessToken: string | null
+  }
+
+  export type CheckinTaskCountAggregateOutputType = {
+    id: number
+    apartmentId: number
+    date: number
+    status: number
+    createdAt: number
+    startedAt: number
+    completedAt: number
+    assignedToId: number
+    notes: number
+    bookingId: number
+    checklistProgress: number
+    checkinAccessToken: number
+    _all: number
+  }
+
+
+  export type CheckinTaskMinAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    date?: true
+    status?: true
+    createdAt?: true
+    startedAt?: true
+    completedAt?: true
+    assignedToId?: true
+    notes?: true
+    bookingId?: true
+    checkinAccessToken?: true
+  }
+
+  export type CheckinTaskMaxAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    date?: true
+    status?: true
+    createdAt?: true
+    startedAt?: true
+    completedAt?: true
+    assignedToId?: true
+    notes?: true
+    bookingId?: true
+    checkinAccessToken?: true
+  }
+
+  export type CheckinTaskCountAggregateInputType = {
+    id?: true
+    apartmentId?: true
+    date?: true
+    status?: true
+    createdAt?: true
+    startedAt?: true
+    completedAt?: true
+    assignedToId?: true
+    notes?: true
+    bookingId?: true
+    checklistProgress?: true
+    checkinAccessToken?: true
+    _all?: true
+  }
+
+  export type CheckinTaskAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CheckinTask to aggregate.
+     */
+    where?: CheckinTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinTasks to fetch.
+     */
+    orderBy?: CheckinTaskOrderByWithRelationInput | CheckinTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CheckinTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CheckinTasks
+    **/
+    _count?: true | CheckinTaskCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CheckinTaskMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CheckinTaskMaxAggregateInputType
+  }
+
+  export type GetCheckinTaskAggregateType<T extends CheckinTaskAggregateArgs> = {
+        [P in keyof T & keyof AggregateCheckinTask]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCheckinTask[P]>
+      : GetScalarType<T[P], AggregateCheckinTask[P]>
+  }
+
+
+
+
+  export type CheckinTaskGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckinTaskWhereInput
+    orderBy?: CheckinTaskOrderByWithAggregationInput | CheckinTaskOrderByWithAggregationInput[]
+    by: CheckinTaskScalarFieldEnum[] | CheckinTaskScalarFieldEnum
+    having?: CheckinTaskScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CheckinTaskCountAggregateInputType | true
+    _min?: CheckinTaskMinAggregateInputType
+    _max?: CheckinTaskMaxAggregateInputType
+  }
+
+  export type CheckinTaskGroupByOutputType = {
+    id: string
+    apartmentId: string
+    date: Date
+    status: string
+    createdAt: Date
+    startedAt: Date | null
+    completedAt: Date | null
+    assignedToId: string | null
+    notes: string | null
+    bookingId: string | null
+    checklistProgress: JsonValue | null
+    checkinAccessToken: string | null
+    _count: CheckinTaskCountAggregateOutputType | null
+    _min: CheckinTaskMinAggregateOutputType | null
+    _max: CheckinTaskMaxAggregateOutputType | null
+  }
+
+  type GetCheckinTaskGroupByPayload<T extends CheckinTaskGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CheckinTaskGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CheckinTaskGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CheckinTaskGroupByOutputType[P]>
+            : GetScalarType<T[P], CheckinTaskGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CheckinTaskSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    date?: boolean
+    status?: boolean
+    createdAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    assignedToId?: boolean
+    notes?: boolean
+    bookingId?: boolean
+    checklistProgress?: boolean
+    checkinAccessToken?: boolean
+    booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinTask"]>
+
+  export type CheckinTaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    date?: boolean
+    status?: boolean
+    createdAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    assignedToId?: boolean
+    notes?: boolean
+    bookingId?: boolean
+    checklistProgress?: boolean
+    checkinAccessToken?: boolean
+    booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinTask"]>
+
+  export type CheckinTaskSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    apartmentId?: boolean
+    date?: boolean
+    status?: boolean
+    createdAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    assignedToId?: boolean
+    notes?: boolean
+    bookingId?: boolean
+    checklistProgress?: boolean
+    checkinAccessToken?: boolean
+    booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinTask"]>
+
+  export type CheckinTaskSelectScalar = {
+    id?: boolean
+    apartmentId?: boolean
+    date?: boolean
+    status?: boolean
+    createdAt?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    assignedToId?: boolean
+    notes?: boolean
+    bookingId?: boolean
+    checklistProgress?: boolean
+    checkinAccessToken?: boolean
+  }
+
+  export type CheckinTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "checkinAccessToken", ExtArgs["result"]["checkinTask"]>
+  export type CheckinTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
+  }
+  export type CheckinTaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
+  }
+  export type CheckinTaskIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+    assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
+  }
+
+  export type $CheckinTaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CheckinTask"
+    objects: {
+      booking: Prisma.$BookingPayload<ExtArgs> | null
+      apartment: Prisma.$ApartmentPayload<ExtArgs>
+      assignedTo: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      apartmentId: string
+      date: Date
+      status: string
+      createdAt: Date
+      startedAt: Date | null
+      completedAt: Date | null
+      assignedToId: string | null
+      notes: string | null
+      bookingId: string | null
+      checklistProgress: Prisma.JsonValue | null
+      checkinAccessToken: string | null
+    }, ExtArgs["result"]["checkinTask"]>
+    composites: {}
+  }
+
+  type CheckinTaskGetPayload<S extends boolean | null | undefined | CheckinTaskDefaultArgs> = $Result.GetResult<Prisma.$CheckinTaskPayload, S>
+
+  type CheckinTaskCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CheckinTaskFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CheckinTaskCountAggregateInputType | true
+    }
+
+  export interface CheckinTaskDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CheckinTask'], meta: { name: 'CheckinTask' } }
+    /**
+     * Find zero or one CheckinTask that matches the filter.
+     * @param {CheckinTaskFindUniqueArgs} args - Arguments to find a CheckinTask
+     * @example
+     * // Get one CheckinTask
+     * const checkinTask = await prisma.checkinTask.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CheckinTaskFindUniqueArgs>(args: SelectSubset<T, CheckinTaskFindUniqueArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CheckinTask that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CheckinTaskFindUniqueOrThrowArgs} args - Arguments to find a CheckinTask
+     * @example
+     * // Get one CheckinTask
+     * const checkinTask = await prisma.checkinTask.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CheckinTaskFindUniqueOrThrowArgs>(args: SelectSubset<T, CheckinTaskFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CheckinTask that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskFindFirstArgs} args - Arguments to find a CheckinTask
+     * @example
+     * // Get one CheckinTask
+     * const checkinTask = await prisma.checkinTask.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CheckinTaskFindFirstArgs>(args?: SelectSubset<T, CheckinTaskFindFirstArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CheckinTask that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskFindFirstOrThrowArgs} args - Arguments to find a CheckinTask
+     * @example
+     * // Get one CheckinTask
+     * const checkinTask = await prisma.checkinTask.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CheckinTaskFindFirstOrThrowArgs>(args?: SelectSubset<T, CheckinTaskFindFirstOrThrowArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CheckinTasks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CheckinTasks
+     * const checkinTasks = await prisma.checkinTask.findMany()
+     * 
+     * // Get first 10 CheckinTasks
+     * const checkinTasks = await prisma.checkinTask.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const checkinTaskWithIdOnly = await prisma.checkinTask.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CheckinTaskFindManyArgs>(args?: SelectSubset<T, CheckinTaskFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CheckinTask.
+     * @param {CheckinTaskCreateArgs} args - Arguments to create a CheckinTask.
+     * @example
+     * // Create one CheckinTask
+     * const CheckinTask = await prisma.checkinTask.create({
+     *   data: {
+     *     // ... data to create a CheckinTask
+     *   }
+     * })
+     * 
+     */
+    create<T extends CheckinTaskCreateArgs>(args: SelectSubset<T, CheckinTaskCreateArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CheckinTasks.
+     * @param {CheckinTaskCreateManyArgs} args - Arguments to create many CheckinTasks.
+     * @example
+     * // Create many CheckinTasks
+     * const checkinTask = await prisma.checkinTask.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CheckinTaskCreateManyArgs>(args?: SelectSubset<T, CheckinTaskCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CheckinTasks and returns the data saved in the database.
+     * @param {CheckinTaskCreateManyAndReturnArgs} args - Arguments to create many CheckinTasks.
+     * @example
+     * // Create many CheckinTasks
+     * const checkinTask = await prisma.checkinTask.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CheckinTasks and only return the `id`
+     * const checkinTaskWithIdOnly = await prisma.checkinTask.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CheckinTaskCreateManyAndReturnArgs>(args?: SelectSubset<T, CheckinTaskCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CheckinTask.
+     * @param {CheckinTaskDeleteArgs} args - Arguments to delete one CheckinTask.
+     * @example
+     * // Delete one CheckinTask
+     * const CheckinTask = await prisma.checkinTask.delete({
+     *   where: {
+     *     // ... filter to delete one CheckinTask
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CheckinTaskDeleteArgs>(args: SelectSubset<T, CheckinTaskDeleteArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CheckinTask.
+     * @param {CheckinTaskUpdateArgs} args - Arguments to update one CheckinTask.
+     * @example
+     * // Update one CheckinTask
+     * const checkinTask = await prisma.checkinTask.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CheckinTaskUpdateArgs>(args: SelectSubset<T, CheckinTaskUpdateArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CheckinTasks.
+     * @param {CheckinTaskDeleteManyArgs} args - Arguments to filter CheckinTasks to delete.
+     * @example
+     * // Delete a few CheckinTasks
+     * const { count } = await prisma.checkinTask.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CheckinTaskDeleteManyArgs>(args?: SelectSubset<T, CheckinTaskDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CheckinTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CheckinTasks
+     * const checkinTask = await prisma.checkinTask.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CheckinTaskUpdateManyArgs>(args: SelectSubset<T, CheckinTaskUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CheckinTasks and returns the data updated in the database.
+     * @param {CheckinTaskUpdateManyAndReturnArgs} args - Arguments to update many CheckinTasks.
+     * @example
+     * // Update many CheckinTasks
+     * const checkinTask = await prisma.checkinTask.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CheckinTasks and only return the `id`
+     * const checkinTaskWithIdOnly = await prisma.checkinTask.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CheckinTaskUpdateManyAndReturnArgs>(args: SelectSubset<T, CheckinTaskUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CheckinTask.
+     * @param {CheckinTaskUpsertArgs} args - Arguments to update or create a CheckinTask.
+     * @example
+     * // Update or create a CheckinTask
+     * const checkinTask = await prisma.checkinTask.upsert({
+     *   create: {
+     *     // ... data to create a CheckinTask
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CheckinTask we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CheckinTaskUpsertArgs>(args: SelectSubset<T, CheckinTaskUpsertArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CheckinTasks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskCountArgs} args - Arguments to filter CheckinTasks to count.
+     * @example
+     * // Count the number of CheckinTasks
+     * const count = await prisma.checkinTask.count({
+     *   where: {
+     *     // ... the filter for the CheckinTasks we want to count
+     *   }
+     * })
+    **/
+    count<T extends CheckinTaskCountArgs>(
+      args?: Subset<T, CheckinTaskCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CheckinTaskCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CheckinTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CheckinTaskAggregateArgs>(args: Subset<T, CheckinTaskAggregateArgs>): Prisma.PrismaPromise<GetCheckinTaskAggregateType<T>>
+
+    /**
+     * Group by CheckinTask.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CheckinTaskGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CheckinTaskGroupByArgs['orderBy'] }
+        : { orderBy?: CheckinTaskGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CheckinTaskGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCheckinTaskGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CheckinTask model
+   */
+  readonly fields: CheckinTaskFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CheckinTask.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CheckinTaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    booking<T extends CheckinTask$bookingArgs<ExtArgs> = {}>(args?: Subset<T, CheckinTask$bookingArgs<ExtArgs>>): Prisma__BookingClient<$Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    apartment<T extends ApartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApartmentDefaultArgs<ExtArgs>>): Prisma__ApartmentClient<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    assignedTo<T extends CheckinTask$assignedToArgs<ExtArgs> = {}>(args?: Subset<T, CheckinTask$assignedToArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CheckinTask model
+   */
+  interface CheckinTaskFieldRefs {
+    readonly id: FieldRef<"CheckinTask", 'String'>
+    readonly apartmentId: FieldRef<"CheckinTask", 'String'>
+    readonly date: FieldRef<"CheckinTask", 'DateTime'>
+    readonly status: FieldRef<"CheckinTask", 'String'>
+    readonly createdAt: FieldRef<"CheckinTask", 'DateTime'>
+    readonly startedAt: FieldRef<"CheckinTask", 'DateTime'>
+    readonly completedAt: FieldRef<"CheckinTask", 'DateTime'>
+    readonly assignedToId: FieldRef<"CheckinTask", 'String'>
+    readonly notes: FieldRef<"CheckinTask", 'String'>
+    readonly bookingId: FieldRef<"CheckinTask", 'String'>
+    readonly checklistProgress: FieldRef<"CheckinTask", 'Json'>
+    readonly checkinAccessToken: FieldRef<"CheckinTask", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CheckinTask findUnique
+   */
+  export type CheckinTaskFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTask to fetch.
+     */
+    where: CheckinTaskWhereUniqueInput
+  }
+
+  /**
+   * CheckinTask findUniqueOrThrow
+   */
+  export type CheckinTaskFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTask to fetch.
+     */
+    where: CheckinTaskWhereUniqueInput
+  }
+
+  /**
+   * CheckinTask findFirst
+   */
+  export type CheckinTaskFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTask to fetch.
+     */
+    where?: CheckinTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinTasks to fetch.
+     */
+    orderBy?: CheckinTaskOrderByWithRelationInput | CheckinTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CheckinTasks.
+     */
+    cursor?: CheckinTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinTasks.
+     */
+    distinct?: CheckinTaskScalarFieldEnum | CheckinTaskScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinTask findFirstOrThrow
+   */
+  export type CheckinTaskFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTask to fetch.
+     */
+    where?: CheckinTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinTasks to fetch.
+     */
+    orderBy?: CheckinTaskOrderByWithRelationInput | CheckinTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CheckinTasks.
+     */
+    cursor?: CheckinTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinTasks.
+     */
+    distinct?: CheckinTaskScalarFieldEnum | CheckinTaskScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinTask findMany
+   */
+  export type CheckinTaskFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTasks to fetch.
+     */
+    where?: CheckinTaskWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinTasks to fetch.
+     */
+    orderBy?: CheckinTaskOrderByWithRelationInput | CheckinTaskOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CheckinTasks.
+     */
+    cursor?: CheckinTaskWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinTasks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinTasks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinTasks.
+     */
+    distinct?: CheckinTaskScalarFieldEnum | CheckinTaskScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinTask create
+   */
+  export type CheckinTaskCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CheckinTask.
+     */
+    data: XOR<CheckinTaskCreateInput, CheckinTaskUncheckedCreateInput>
+  }
+
+  /**
+   * CheckinTask createMany
+   */
+  export type CheckinTaskCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CheckinTasks.
+     */
+    data: CheckinTaskCreateManyInput | CheckinTaskCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CheckinTask createManyAndReturn
+   */
+  export type CheckinTaskCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * The data used to create many CheckinTasks.
+     */
+    data: CheckinTaskCreateManyInput | CheckinTaskCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CheckinTask update
+   */
+  export type CheckinTaskUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CheckinTask.
+     */
+    data: XOR<CheckinTaskUpdateInput, CheckinTaskUncheckedUpdateInput>
+    /**
+     * Choose, which CheckinTask to update.
+     */
+    where: CheckinTaskWhereUniqueInput
+  }
+
+  /**
+   * CheckinTask updateMany
+   */
+  export type CheckinTaskUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CheckinTasks.
+     */
+    data: XOR<CheckinTaskUpdateManyMutationInput, CheckinTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which CheckinTasks to update
+     */
+    where?: CheckinTaskWhereInput
+    /**
+     * Limit how many CheckinTasks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CheckinTask updateManyAndReturn
+   */
+  export type CheckinTaskUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * The data used to update CheckinTasks.
+     */
+    data: XOR<CheckinTaskUpdateManyMutationInput, CheckinTaskUncheckedUpdateManyInput>
+    /**
+     * Filter which CheckinTasks to update
+     */
+    where?: CheckinTaskWhereInput
+    /**
+     * Limit how many CheckinTasks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CheckinTask upsert
+   */
+  export type CheckinTaskUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CheckinTask to update in case it exists.
+     */
+    where: CheckinTaskWhereUniqueInput
+    /**
+     * In case the CheckinTask found by the `where` argument doesn't exist, create a new CheckinTask with this data.
+     */
+    create: XOR<CheckinTaskCreateInput, CheckinTaskUncheckedCreateInput>
+    /**
+     * In case the CheckinTask was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CheckinTaskUpdateInput, CheckinTaskUncheckedUpdateInput>
+  }
+
+  /**
+   * CheckinTask delete
+   */
+  export type CheckinTaskDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    /**
+     * Filter which CheckinTask to delete.
+     */
+    where: CheckinTaskWhereUniqueInput
+  }
+
+  /**
+   * CheckinTask deleteMany
+   */
+  export type CheckinTaskDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CheckinTasks to delete
+     */
+    where?: CheckinTaskWhereInput
+    /**
+     * Limit how many CheckinTasks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CheckinTask.booking
+   */
+  export type CheckinTask$bookingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Booking
+     */
+    select?: BookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Booking
+     */
+    omit?: BookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookingInclude<ExtArgs> | null
+    where?: BookingWhereInput
+  }
+
+  /**
+   * CheckinTask.assignedTo
+   */
+  export type CheckinTask$assignedToArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * CheckinTask without action
+   */
+  export type CheckinTaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
   }
 
 
@@ -32019,10 +34732,44 @@ export namespace Prisma {
     correctionProgress: 'correctionProgress',
     cleaningAccessToken: 'cleaningAccessToken',
     cullaRequested: 'cullaRequested',
-    sofaBedForced: 'sofaBedForced'
+    sofaBedForced: 'sofaBedForced',
+    totalGuests: 'totalGuests'
   };
 
   export type CleaningTaskScalarFieldEnum = (typeof CleaningTaskScalarFieldEnum)[keyof typeof CleaningTaskScalarFieldEnum]
+
+
+  export const CheckinChecklistItemScalarFieldEnum: {
+    id: 'id',
+    apartmentId: 'apartmentId',
+    label: 'label',
+    labelTranslations: 'labelTranslations',
+    required: 'required',
+    photoRequired: 'photoRequired',
+    order: 'order',
+    createdAt: 'createdAt',
+    type: 'type'
+  };
+
+  export type CheckinChecklistItemScalarFieldEnum = (typeof CheckinChecklistItemScalarFieldEnum)[keyof typeof CheckinChecklistItemScalarFieldEnum]
+
+
+  export const CheckinTaskScalarFieldEnum: {
+    id: 'id',
+    apartmentId: 'apartmentId',
+    date: 'date',
+    status: 'status',
+    createdAt: 'createdAt',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
+    assignedToId: 'assignedToId',
+    notes: 'notes',
+    bookingId: 'bookingId',
+    checklistProgress: 'checklistProgress',
+    checkinAccessToken: 'checkinAccessToken'
+  };
+
+  export type CheckinTaskScalarFieldEnum = (typeof CheckinTaskScalarFieldEnum)[keyof typeof CheckinTaskScalarFieldEnum]
 
 
   export const MaintenanceTicketScalarFieldEnum: {
@@ -32599,6 +35346,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenListRelationFilter
     fcmTokens?: FcmTokenListRelationFilter
     cleanerLocation?: XOR<CleanerLocationNullableScalarRelationFilter, CleanerLocationWhereInput> | null
+    checkinTasks?: CheckinTaskListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -32626,6 +35374,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenOrderByRelationAggregateInput
     fcmTokens?: FcmTokenOrderByRelationAggregateInput
     cleanerLocation?: CleanerLocationOrderByWithRelationInput
+    checkinTasks?: CheckinTaskOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -32656,6 +35405,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenListRelationFilter
     fcmTokens?: FcmTokenListRelationFilter
     cleanerLocation?: XOR<CleanerLocationNullableScalarRelationFilter, CleanerLocationWhereInput> | null
+    checkinTasks?: CheckinTaskListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -32731,6 +35481,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorListRelationFilter
     owners?: ApartmentOwnerListRelationFilter
     products?: ApartmentProductListRelationFilter
+    checkinChecklistItems?: CheckinChecklistItemListRelationFilter
+    checkinTasks?: CheckinTaskListRelationFilter
   }
 
   export type ApartmentOrderByWithRelationInput = {
@@ -32763,6 +35515,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorOrderByRelationAggregateInput
     owners?: ApartmentOwnerOrderByRelationAggregateInput
     products?: ApartmentProductOrderByRelationAggregateInput
+    checkinChecklistItems?: CheckinChecklistItemOrderByRelationAggregateInput
+    checkinTasks?: CheckinTaskOrderByRelationAggregateInput
   }
 
   export type ApartmentWhereUniqueInput = Prisma.AtLeast<{
@@ -32798,6 +35552,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorListRelationFilter
     owners?: ApartmentOwnerListRelationFilter
     products?: ApartmentProductListRelationFilter
+    checkinChecklistItems?: CheckinChecklistItemListRelationFilter
+    checkinTasks?: CheckinTaskListRelationFilter
   }, "id" | "apartmentCode">
 
   export type ApartmentOrderByWithAggregationInput = {
@@ -33019,6 +35775,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     cleaningTask?: XOR<CleaningTaskNullableScalarRelationFilter, CleaningTaskWhereInput> | null
+    checkinTask?: XOR<CheckinTaskNullableScalarRelationFilter, CheckinTaskWhereInput> | null
   }
 
   export type BookingOrderByWithRelationInput = {
@@ -33035,6 +35792,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     apartment?: ApartmentOrderByWithRelationInput
     cleaningTask?: CleaningTaskOrderByWithRelationInput
+    checkinTask?: CheckinTaskOrderByWithRelationInput
   }
 
   export type BookingWhereUniqueInput = Prisma.AtLeast<{
@@ -33054,6 +35812,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     cleaningTask?: XOR<CleaningTaskNullableScalarRelationFilter, CleaningTaskWhereInput> | null
+    checkinTask?: XOR<CheckinTaskNullableScalarRelationFilter, CheckinTaskWhereInput> | null
   }, "id" | "externalId">
 
   export type BookingOrderByWithAggregationInput = {
@@ -33111,6 +35870,7 @@ export namespace Prisma {
     cleaningAccessToken?: StringNullableFilter<"CleaningTask"> | string | null
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
+    totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -33136,6 +35896,7 @@ export namespace Prisma {
     cleaningAccessToken?: SortOrderInput | SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
+    totalGuests?: SortOrderInput | SortOrder
     booking?: BookingOrderByWithRelationInput
     apartment?: ApartmentOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
@@ -33164,6 +35925,7 @@ export namespace Prisma {
     correctionProgress?: JsonNullableFilter<"CleaningTask">
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
+    totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -33189,9 +35951,12 @@ export namespace Prisma {
     cleaningAccessToken?: SortOrderInput | SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
+    totalGuests?: SortOrderInput | SortOrder
     _count?: CleaningTaskCountOrderByAggregateInput
+    _avg?: CleaningTaskAvgOrderByAggregateInput
     _max?: CleaningTaskMaxOrderByAggregateInput
     _min?: CleaningTaskMinOrderByAggregateInput
+    _sum?: CleaningTaskSumOrderByAggregateInput
   }
 
   export type CleaningTaskScalarWhereWithAggregatesInput = {
@@ -33213,6 +35978,180 @@ export namespace Prisma {
     cleaningAccessToken?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
     cullaRequested?: BoolWithAggregatesFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolWithAggregatesFilter<"CleaningTask"> | boolean
+    totalGuests?: IntNullableWithAggregatesFilter<"CleaningTask"> | number | null
+  }
+
+  export type CheckinChecklistItemWhereInput = {
+    AND?: CheckinChecklistItemWhereInput | CheckinChecklistItemWhereInput[]
+    OR?: CheckinChecklistItemWhereInput[]
+    NOT?: CheckinChecklistItemWhereInput | CheckinChecklistItemWhereInput[]
+    id?: StringFilter<"CheckinChecklistItem"> | string
+    apartmentId?: StringFilter<"CheckinChecklistItem"> | string
+    label?: StringFilter<"CheckinChecklistItem"> | string
+    labelTranslations?: JsonNullableFilter<"CheckinChecklistItem">
+    required?: BoolFilter<"CheckinChecklistItem"> | boolean
+    photoRequired?: BoolFilter<"CheckinChecklistItem"> | boolean
+    order?: IntFilter<"CheckinChecklistItem"> | number
+    createdAt?: DateTimeFilter<"CheckinChecklistItem"> | Date | string
+    type?: StringFilter<"CheckinChecklistItem"> | string
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+  }
+
+  export type CheckinChecklistItemOrderByWithRelationInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    label?: SortOrder
+    labelTranslations?: SortOrderInput | SortOrder
+    required?: SortOrder
+    photoRequired?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    type?: SortOrder
+    apartment?: ApartmentOrderByWithRelationInput
+  }
+
+  export type CheckinChecklistItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CheckinChecklistItemWhereInput | CheckinChecklistItemWhereInput[]
+    OR?: CheckinChecklistItemWhereInput[]
+    NOT?: CheckinChecklistItemWhereInput | CheckinChecklistItemWhereInput[]
+    apartmentId?: StringFilter<"CheckinChecklistItem"> | string
+    label?: StringFilter<"CheckinChecklistItem"> | string
+    labelTranslations?: JsonNullableFilter<"CheckinChecklistItem">
+    required?: BoolFilter<"CheckinChecklistItem"> | boolean
+    photoRequired?: BoolFilter<"CheckinChecklistItem"> | boolean
+    order?: IntFilter<"CheckinChecklistItem"> | number
+    createdAt?: DateTimeFilter<"CheckinChecklistItem"> | Date | string
+    type?: StringFilter<"CheckinChecklistItem"> | string
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+  }, "id">
+
+  export type CheckinChecklistItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    label?: SortOrder
+    labelTranslations?: SortOrderInput | SortOrder
+    required?: SortOrder
+    photoRequired?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    type?: SortOrder
+    _count?: CheckinChecklistItemCountOrderByAggregateInput
+    _avg?: CheckinChecklistItemAvgOrderByAggregateInput
+    _max?: CheckinChecklistItemMaxOrderByAggregateInput
+    _min?: CheckinChecklistItemMinOrderByAggregateInput
+    _sum?: CheckinChecklistItemSumOrderByAggregateInput
+  }
+
+  export type CheckinChecklistItemScalarWhereWithAggregatesInput = {
+    AND?: CheckinChecklistItemScalarWhereWithAggregatesInput | CheckinChecklistItemScalarWhereWithAggregatesInput[]
+    OR?: CheckinChecklistItemScalarWhereWithAggregatesInput[]
+    NOT?: CheckinChecklistItemScalarWhereWithAggregatesInput | CheckinChecklistItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CheckinChecklistItem"> | string
+    apartmentId?: StringWithAggregatesFilter<"CheckinChecklistItem"> | string
+    label?: StringWithAggregatesFilter<"CheckinChecklistItem"> | string
+    labelTranslations?: JsonNullableWithAggregatesFilter<"CheckinChecklistItem">
+    required?: BoolWithAggregatesFilter<"CheckinChecklistItem"> | boolean
+    photoRequired?: BoolWithAggregatesFilter<"CheckinChecklistItem"> | boolean
+    order?: IntWithAggregatesFilter<"CheckinChecklistItem"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"CheckinChecklistItem"> | Date | string
+    type?: StringWithAggregatesFilter<"CheckinChecklistItem"> | string
+  }
+
+  export type CheckinTaskWhereInput = {
+    AND?: CheckinTaskWhereInput | CheckinTaskWhereInput[]
+    OR?: CheckinTaskWhereInput[]
+    NOT?: CheckinTaskWhereInput | CheckinTaskWhereInput[]
+    id?: StringFilter<"CheckinTask"> | string
+    apartmentId?: StringFilter<"CheckinTask"> | string
+    date?: DateTimeFilter<"CheckinTask"> | Date | string
+    status?: StringFilter<"CheckinTask"> | string
+    createdAt?: DateTimeFilter<"CheckinTask"> | Date | string
+    startedAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
+    assignedToId?: StringNullableFilter<"CheckinTask"> | string | null
+    notes?: StringNullableFilter<"CheckinTask"> | string | null
+    bookingId?: StringNullableFilter<"CheckinTask"> | string | null
+    checklistProgress?: JsonNullableFilter<"CheckinTask">
+    checkinAccessToken?: StringNullableFilter<"CheckinTask"> | string | null
+    booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+    assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type CheckinTaskOrderByWithRelationInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    assignedToId?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    bookingId?: SortOrderInput | SortOrder
+    checklistProgress?: SortOrderInput | SortOrder
+    checkinAccessToken?: SortOrderInput | SortOrder
+    booking?: BookingOrderByWithRelationInput
+    apartment?: ApartmentOrderByWithRelationInput
+    assignedTo?: UserOrderByWithRelationInput
+  }
+
+  export type CheckinTaskWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    bookingId?: string
+    checkinAccessToken?: string
+    AND?: CheckinTaskWhereInput | CheckinTaskWhereInput[]
+    OR?: CheckinTaskWhereInput[]
+    NOT?: CheckinTaskWhereInput | CheckinTaskWhereInput[]
+    apartmentId?: StringFilter<"CheckinTask"> | string
+    date?: DateTimeFilter<"CheckinTask"> | Date | string
+    status?: StringFilter<"CheckinTask"> | string
+    createdAt?: DateTimeFilter<"CheckinTask"> | Date | string
+    startedAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
+    assignedToId?: StringNullableFilter<"CheckinTask"> | string | null
+    notes?: StringNullableFilter<"CheckinTask"> | string | null
+    checklistProgress?: JsonNullableFilter<"CheckinTask">
+    booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+    assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id" | "bookingId" | "checkinAccessToken">
+
+  export type CheckinTaskOrderByWithAggregationInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    assignedToId?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    bookingId?: SortOrderInput | SortOrder
+    checklistProgress?: SortOrderInput | SortOrder
+    checkinAccessToken?: SortOrderInput | SortOrder
+    _count?: CheckinTaskCountOrderByAggregateInput
+    _max?: CheckinTaskMaxOrderByAggregateInput
+    _min?: CheckinTaskMinOrderByAggregateInput
+  }
+
+  export type CheckinTaskScalarWhereWithAggregatesInput = {
+    AND?: CheckinTaskScalarWhereWithAggregatesInput | CheckinTaskScalarWhereWithAggregatesInput[]
+    OR?: CheckinTaskScalarWhereWithAggregatesInput[]
+    NOT?: CheckinTaskScalarWhereWithAggregatesInput | CheckinTaskScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CheckinTask"> | string
+    apartmentId?: StringWithAggregatesFilter<"CheckinTask"> | string
+    date?: DateTimeWithAggregatesFilter<"CheckinTask"> | Date | string
+    status?: StringWithAggregatesFilter<"CheckinTask"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CheckinTask"> | Date | string
+    startedAt?: DateTimeNullableWithAggregatesFilter<"CheckinTask"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"CheckinTask"> | Date | string | null
+    assignedToId?: StringNullableWithAggregatesFilter<"CheckinTask"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"CheckinTask"> | string | null
+    bookingId?: StringNullableWithAggregatesFilter<"CheckinTask"> | string | null
+    checklistProgress?: JsonNullableWithAggregatesFilter<"CheckinTask">
+    checkinAccessToken?: StringNullableWithAggregatesFilter<"CheckinTask"> | string | null
   }
 
   export type MaintenanceTicketWhereInput = {
@@ -34633,6 +37572,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -34659,6 +37599,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUpdateInput = {
@@ -34685,6 +37626,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -34711,6 +37653,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -34792,6 +37735,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateInput = {
@@ -34823,6 +37768,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUpdateInput = {
@@ -34854,6 +37801,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateInput = {
@@ -34885,6 +37834,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateManyInput = {
@@ -35128,6 +38079,7 @@ export namespace Prisma {
     createdAt?: Date | string
     apartment: ApartmentCreateNestedOneWithoutBookingsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutBookingInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutBookingInput
   }
 
   export type BookingUncheckedCreateInput = {
@@ -35143,6 +38095,7 @@ export namespace Prisma {
     cullaRequested?: boolean
     createdAt?: Date | string
     cleaningTask?: CleaningTaskUncheckedCreateNestedOneWithoutBookingInput
+    checkinTask?: CheckinTaskUncheckedCreateNestedOneWithoutBookingInput
   }
 
   export type BookingUpdateInput = {
@@ -35158,6 +38111,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartment?: ApartmentUpdateOneRequiredWithoutBookingsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutBookingNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateInput = {
@@ -35173,6 +38127,7 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUncheckedUpdateOneWithoutBookingNestedInput
+    checkinTask?: CheckinTaskUncheckedUpdateOneWithoutBookingNestedInput
   }
 
   export type BookingCreateManyInput = {
@@ -35229,6 +38184,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -35254,6 +38210,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -35273,6 +38230,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -35298,6 +38256,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -35320,6 +38279,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
   }
 
   export type CleaningTaskUpdateManyMutationInput = {
@@ -35335,6 +38295,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type CleaningTaskUncheckedUpdateManyInput = {
@@ -35353,6 +38314,192 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type CheckinChecklistItemCreateInput = {
+    id?: string
+    label: string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: boolean
+    photoRequired?: boolean
+    order?: number
+    createdAt?: Date | string
+    type?: string
+    apartment: ApartmentCreateNestedOneWithoutCheckinChecklistItemsInput
+  }
+
+  export type CheckinChecklistItemUncheckedCreateInput = {
+    id?: string
+    apartmentId: string
+    label: string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: boolean
+    photoRequired?: boolean
+    order?: number
+    createdAt?: Date | string
+    type?: string
+  }
+
+  export type CheckinChecklistItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: BoolFieldUpdateOperationsInput | boolean
+    photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: StringFieldUpdateOperationsInput | string
+    apartment?: ApartmentUpdateOneRequiredWithoutCheckinChecklistItemsNestedInput
+  }
+
+  export type CheckinChecklistItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: BoolFieldUpdateOperationsInput | boolean
+    photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CheckinChecklistItemCreateManyInput = {
+    id?: string
+    apartmentId: string
+    label: string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: boolean
+    photoRequired?: boolean
+    order?: number
+    createdAt?: Date | string
+    type?: string
+  }
+
+  export type CheckinChecklistItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: BoolFieldUpdateOperationsInput | boolean
+    photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CheckinChecklistItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: BoolFieldUpdateOperationsInput | boolean
+    photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CheckinTaskCreateInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+    booking?: BookingCreateNestedOneWithoutCheckinTaskInput
+    apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
+    assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
+  }
+
+  export type CheckinTaskUncheckedCreateInput = {
+    id?: string
+    apartmentId: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    assignedToId?: string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+  }
+
+  export type CheckinTaskUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
+    apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
+    assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
+  }
+
+  export type CheckinTaskUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CheckinTaskCreateManyInput = {
+    id?: string
+    apartmentId: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    assignedToId?: string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+  }
+
+  export type CheckinTaskUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CheckinTaskUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MaintenanceTicketCreateInput = {
@@ -36950,6 +40097,12 @@ export namespace Prisma {
     isNot?: CleanerLocationWhereInput | null
   }
 
+  export type CheckinTaskListRelationFilter = {
+    every?: CheckinTaskWhereInput
+    some?: CheckinTaskWhereInput
+    none?: CheckinTaskWhereInput
+  }
+
   export type CleaningTaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -36979,6 +40132,10 @@ export namespace Prisma {
   }
 
   export type FcmTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CheckinTaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -37122,6 +40279,12 @@ export namespace Prisma {
     none?: ApartmentProductWhereInput
   }
 
+  export type CheckinChecklistItemListRelationFilter = {
+    every?: CheckinChecklistItemWhereInput
+    some?: CheckinChecklistItemWhereInput
+    none?: CheckinChecklistItemWhereInput
+  }
+
   export type BookingOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -37143,6 +40306,10 @@ export namespace Prisma {
   }
 
   export type ApartmentProductOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CheckinChecklistItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -37330,6 +40497,11 @@ export namespace Prisma {
     isNot?: CleaningTaskWhereInput | null
   }
 
+  export type CheckinTaskNullableScalarRelationFilter = {
+    is?: CheckinTaskWhereInput | null
+    isNot?: CheckinTaskWhereInput | null
+  }
+
   export type BookingCountOrderByAggregateInput = {
     id?: SortOrder
     apartmentId?: SortOrder
@@ -37380,6 +40552,17 @@ export namespace Prisma {
     totalGuests?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type BookingNullableScalarRelationFilter = {
     is?: BookingWhereInput | null
     isNot?: BookingWhereInput | null
@@ -37426,6 +40609,11 @@ export namespace Prisma {
     cleaningAccessToken?: SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
+    totalGuests?: SortOrder
+  }
+
+  export type CleaningTaskAvgOrderByAggregateInput = {
+    totalGuests?: SortOrder
   }
 
   export type CleaningTaskMaxOrderByAggregateInput = {
@@ -37442,6 +40630,7 @@ export namespace Prisma {
     cleaningAccessToken?: SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
+    totalGuests?: SortOrder
   }
 
   export type CleaningTaskMinOrderByAggregateInput = {
@@ -37458,6 +40647,112 @@ export namespace Prisma {
     cleaningAccessToken?: SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
+    totalGuests?: SortOrder
+  }
+
+  export type CleaningTaskSumOrderByAggregateInput = {
+    totalGuests?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type CheckinChecklistItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    label?: SortOrder
+    labelTranslations?: SortOrder
+    required?: SortOrder
+    photoRequired?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    type?: SortOrder
+  }
+
+  export type CheckinChecklistItemAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type CheckinChecklistItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    label?: SortOrder
+    required?: SortOrder
+    photoRequired?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    type?: SortOrder
+  }
+
+  export type CheckinChecklistItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    label?: SortOrder
+    required?: SortOrder
+    photoRequired?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    type?: SortOrder
+  }
+
+  export type CheckinChecklistItemSumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type CheckinTaskCountOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    assignedToId?: SortOrder
+    notes?: SortOrder
+    bookingId?: SortOrder
+    checklistProgress?: SortOrder
+    checkinAccessToken?: SortOrder
+  }
+
+  export type CheckinTaskMaxOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    assignedToId?: SortOrder
+    notes?: SortOrder
+    bookingId?: SortOrder
+    checkinAccessToken?: SortOrder
+  }
+
+  export type CheckinTaskMinOrderByAggregateInput = {
+    id?: SortOrder
+    apartmentId?: SortOrder
+    date?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    assignedToId?: SortOrder
+    notes?: SortOrder
+    bookingId?: SortOrder
+    checkinAccessToken?: SortOrder
   }
 
   export type MessageListRelationFilter = {
@@ -37575,17 +40870,6 @@ export namespace Prisma {
     _max?: NestedEnumAIAssistantMessageRoleFilter<$PrismaModel>
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type AttachmentCountOrderByAggregateInput = {
     id?: SortOrder
     url?: SortOrder
@@ -37631,22 +40915,6 @@ export namespace Prisma {
 
   export type AttachmentSumOrderByAggregateInput = {
     size?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type ApartmentAttachmentCountOrderByAggregateInput = {
@@ -38367,6 +41635,13 @@ export namespace Prisma {
     connect?: CleanerLocationWhereUniqueInput
   }
 
+  export type CheckinTaskCreateNestedManyWithoutAssignedToInput = {
+    create?: XOR<CheckinTaskCreateWithoutAssignedToInput, CheckinTaskUncheckedCreateWithoutAssignedToInput> | CheckinTaskCreateWithoutAssignedToInput[] | CheckinTaskUncheckedCreateWithoutAssignedToInput[]
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutAssignedToInput | CheckinTaskCreateOrConnectWithoutAssignedToInput[]
+    createMany?: CheckinTaskCreateManyAssignedToInputEnvelope
+    connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+  }
+
   export type CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -38427,6 +41702,13 @@ export namespace Prisma {
     create?: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
     connectOrCreate?: CleanerLocationCreateOrConnectWithoutUserInput
     connect?: CleanerLocationWhereUniqueInput
+  }
+
+  export type CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput = {
+    create?: XOR<CheckinTaskCreateWithoutAssignedToInput, CheckinTaskUncheckedCreateWithoutAssignedToInput> | CheckinTaskCreateWithoutAssignedToInput[] | CheckinTaskUncheckedCreateWithoutAssignedToInput[]
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutAssignedToInput | CheckinTaskCreateOrConnectWithoutAssignedToInput[]
+    createMany?: CheckinTaskCreateManyAssignedToInputEnvelope
+    connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
   }
 
   export type EnumRoleFieldUpdateOperationsInput = {
@@ -38569,6 +41851,20 @@ export namespace Prisma {
     update?: XOR<XOR<CleanerLocationUpdateToOneWithWhereWithoutUserInput, CleanerLocationUpdateWithoutUserInput>, CleanerLocationUncheckedUpdateWithoutUserInput>
   }
 
+  export type CheckinTaskUpdateManyWithoutAssignedToNestedInput = {
+    create?: XOR<CheckinTaskCreateWithoutAssignedToInput, CheckinTaskUncheckedCreateWithoutAssignedToInput> | CheckinTaskCreateWithoutAssignedToInput[] | CheckinTaskUncheckedCreateWithoutAssignedToInput[]
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutAssignedToInput | CheckinTaskCreateOrConnectWithoutAssignedToInput[]
+    upsert?: CheckinTaskUpsertWithWhereUniqueWithoutAssignedToInput | CheckinTaskUpsertWithWhereUniqueWithoutAssignedToInput[]
+    createMany?: CheckinTaskCreateManyAssignedToInputEnvelope
+    set?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    disconnect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    delete?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    update?: CheckinTaskUpdateWithWhereUniqueWithoutAssignedToInput | CheckinTaskUpdateWithWhereUniqueWithoutAssignedToInput[]
+    updateMany?: CheckinTaskUpdateManyWithWhereWithoutAssignedToInput | CheckinTaskUpdateManyWithWhereWithoutAssignedToInput[]
+    deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
+  }
+
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -38691,6 +41987,20 @@ export namespace Prisma {
     update?: XOR<XOR<CleanerLocationUpdateToOneWithWhereWithoutUserInput, CleanerLocationUpdateWithoutUserInput>, CleanerLocationUncheckedUpdateWithoutUserInput>
   }
 
+  export type CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
+    create?: XOR<CheckinTaskCreateWithoutAssignedToInput, CheckinTaskUncheckedCreateWithoutAssignedToInput> | CheckinTaskCreateWithoutAssignedToInput[] | CheckinTaskUncheckedCreateWithoutAssignedToInput[]
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutAssignedToInput | CheckinTaskCreateOrConnectWithoutAssignedToInput[]
+    upsert?: CheckinTaskUpsertWithWhereUniqueWithoutAssignedToInput | CheckinTaskUpsertWithWhereUniqueWithoutAssignedToInput[]
+    createMany?: CheckinTaskCreateManyAssignedToInputEnvelope
+    set?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    disconnect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    delete?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    update?: CheckinTaskUpdateWithWhereUniqueWithoutAssignedToInput | CheckinTaskUpdateWithWhereUniqueWithoutAssignedToInput[]
+    updateMany?: CheckinTaskUpdateManyWithWhereWithoutAssignedToInput | CheckinTaskUpdateManyWithWhereWithoutAssignedToInput[]
+    deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
+  }
+
   export type OrganizationCreateNestedOneWithoutApartmentsInput = {
     create?: XOR<OrganizationCreateWithoutApartmentsInput, OrganizationUncheckedCreateWithoutApartmentsInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutApartmentsInput
@@ -38767,6 +42077,20 @@ export namespace Prisma {
     connect?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
   }
 
+  export type CheckinChecklistItemCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<CheckinChecklistItemCreateWithoutApartmentInput, CheckinChecklistItemUncheckedCreateWithoutApartmentInput> | CheckinChecklistItemCreateWithoutApartmentInput[] | CheckinChecklistItemUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: CheckinChecklistItemCreateOrConnectWithoutApartmentInput | CheckinChecklistItemCreateOrConnectWithoutApartmentInput[]
+    createMany?: CheckinChecklistItemCreateManyApartmentInputEnvelope
+    connect?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+  }
+
+  export type CheckinTaskCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<CheckinTaskCreateWithoutApartmentInput, CheckinTaskUncheckedCreateWithoutApartmentInput> | CheckinTaskCreateWithoutApartmentInput[] | CheckinTaskUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutApartmentInput | CheckinTaskCreateOrConnectWithoutApartmentInput[]
+    createMany?: CheckinTaskCreateManyApartmentInputEnvelope
+    connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+  }
+
   export type BookingUncheckedCreateNestedManyWithoutApartmentInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -38835,6 +42159,20 @@ export namespace Prisma {
     connectOrCreate?: ApartmentProductCreateOrConnectWithoutApartmentInput | ApartmentProductCreateOrConnectWithoutApartmentInput[]
     createMany?: ApartmentProductCreateManyApartmentInputEnvelope
     connect?: ApartmentProductWhereUniqueInput | ApartmentProductWhereUniqueInput[]
+  }
+
+  export type CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<CheckinChecklistItemCreateWithoutApartmentInput, CheckinChecklistItemUncheckedCreateWithoutApartmentInput> | CheckinChecklistItemCreateWithoutApartmentInput[] | CheckinChecklistItemUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: CheckinChecklistItemCreateOrConnectWithoutApartmentInput | CheckinChecklistItemCreateOrConnectWithoutApartmentInput[]
+    createMany?: CheckinChecklistItemCreateManyApartmentInputEnvelope
+    connect?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+  }
+
+  export type CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<CheckinTaskCreateWithoutApartmentInput, CheckinTaskUncheckedCreateWithoutApartmentInput> | CheckinTaskCreateWithoutApartmentInput[] | CheckinTaskUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutApartmentInput | CheckinTaskCreateOrConnectWithoutApartmentInput[]
+    createMany?: CheckinTaskCreateManyApartmentInputEnvelope
+    connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -38995,6 +42333,34 @@ export namespace Prisma {
     deleteMany?: ApartmentProductScalarWhereInput | ApartmentProductScalarWhereInput[]
   }
 
+  export type CheckinChecklistItemUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<CheckinChecklistItemCreateWithoutApartmentInput, CheckinChecklistItemUncheckedCreateWithoutApartmentInput> | CheckinChecklistItemCreateWithoutApartmentInput[] | CheckinChecklistItemUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: CheckinChecklistItemCreateOrConnectWithoutApartmentInput | CheckinChecklistItemCreateOrConnectWithoutApartmentInput[]
+    upsert?: CheckinChecklistItemUpsertWithWhereUniqueWithoutApartmentInput | CheckinChecklistItemUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: CheckinChecklistItemCreateManyApartmentInputEnvelope
+    set?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+    disconnect?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+    delete?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+    connect?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+    update?: CheckinChecklistItemUpdateWithWhereUniqueWithoutApartmentInput | CheckinChecklistItemUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: CheckinChecklistItemUpdateManyWithWhereWithoutApartmentInput | CheckinChecklistItemUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: CheckinChecklistItemScalarWhereInput | CheckinChecklistItemScalarWhereInput[]
+  }
+
+  export type CheckinTaskUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<CheckinTaskCreateWithoutApartmentInput, CheckinTaskUncheckedCreateWithoutApartmentInput> | CheckinTaskCreateWithoutApartmentInput[] | CheckinTaskUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutApartmentInput | CheckinTaskCreateOrConnectWithoutApartmentInput[]
+    upsert?: CheckinTaskUpsertWithWhereUniqueWithoutApartmentInput | CheckinTaskUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: CheckinTaskCreateManyApartmentInputEnvelope
+    set?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    disconnect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    delete?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    update?: CheckinTaskUpdateWithWhereUniqueWithoutApartmentInput | CheckinTaskUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: CheckinTaskUpdateManyWithWhereWithoutApartmentInput | CheckinTaskUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
+  }
+
   export type BookingUncheckedUpdateManyWithoutApartmentNestedInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -39135,6 +42501,34 @@ export namespace Prisma {
     deleteMany?: ApartmentProductScalarWhereInput | ApartmentProductScalarWhereInput[]
   }
 
+  export type CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<CheckinChecklistItemCreateWithoutApartmentInput, CheckinChecklistItemUncheckedCreateWithoutApartmentInput> | CheckinChecklistItemCreateWithoutApartmentInput[] | CheckinChecklistItemUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: CheckinChecklistItemCreateOrConnectWithoutApartmentInput | CheckinChecklistItemCreateOrConnectWithoutApartmentInput[]
+    upsert?: CheckinChecklistItemUpsertWithWhereUniqueWithoutApartmentInput | CheckinChecklistItemUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: CheckinChecklistItemCreateManyApartmentInputEnvelope
+    set?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+    disconnect?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+    delete?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+    connect?: CheckinChecklistItemWhereUniqueInput | CheckinChecklistItemWhereUniqueInput[]
+    update?: CheckinChecklistItemUpdateWithWhereUniqueWithoutApartmentInput | CheckinChecklistItemUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: CheckinChecklistItemUpdateManyWithWhereWithoutApartmentInput | CheckinChecklistItemUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: CheckinChecklistItemScalarWhereInput | CheckinChecklistItemScalarWhereInput[]
+  }
+
+  export type CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<CheckinTaskCreateWithoutApartmentInput, CheckinTaskUncheckedCreateWithoutApartmentInput> | CheckinTaskCreateWithoutApartmentInput[] | CheckinTaskUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutApartmentInput | CheckinTaskCreateOrConnectWithoutApartmentInput[]
+    upsert?: CheckinTaskUpsertWithWhereUniqueWithoutApartmentInput | CheckinTaskUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: CheckinTaskCreateManyApartmentInputEnvelope
+    set?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    disconnect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    delete?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+    update?: CheckinTaskUpdateWithWhereUniqueWithoutApartmentInput | CheckinTaskUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: CheckinTaskUpdateManyWithWhereWithoutApartmentInput | CheckinTaskUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
+  }
+
   export type ApartmentCreateNestedOneWithoutChecklistItemsInput = {
     create?: XOR<ApartmentCreateWithoutChecklistItemsInput, ApartmentUncheckedCreateWithoutChecklistItemsInput>
     connectOrCreate?: ApartmentCreateOrConnectWithoutChecklistItemsInput
@@ -39177,10 +42571,22 @@ export namespace Prisma {
     connect?: CleaningTaskWhereUniqueInput
   }
 
+  export type CheckinTaskCreateNestedOneWithoutBookingInput = {
+    create?: XOR<CheckinTaskCreateWithoutBookingInput, CheckinTaskUncheckedCreateWithoutBookingInput>
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutBookingInput
+    connect?: CheckinTaskWhereUniqueInput
+  }
+
   export type CleaningTaskUncheckedCreateNestedOneWithoutBookingInput = {
     create?: XOR<CleaningTaskCreateWithoutBookingInput, CleaningTaskUncheckedCreateWithoutBookingInput>
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutBookingInput
     connect?: CleaningTaskWhereUniqueInput
+  }
+
+  export type CheckinTaskUncheckedCreateNestedOneWithoutBookingInput = {
+    create?: XOR<CheckinTaskCreateWithoutBookingInput, CheckinTaskUncheckedCreateWithoutBookingInput>
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutBookingInput
+    connect?: CheckinTaskWhereUniqueInput
   }
 
   export type ApartmentUpdateOneRequiredWithoutBookingsNestedInput = {
@@ -39201,6 +42607,16 @@ export namespace Prisma {
     update?: XOR<XOR<CleaningTaskUpdateToOneWithWhereWithoutBookingInput, CleaningTaskUpdateWithoutBookingInput>, CleaningTaskUncheckedUpdateWithoutBookingInput>
   }
 
+  export type CheckinTaskUpdateOneWithoutBookingNestedInput = {
+    create?: XOR<CheckinTaskCreateWithoutBookingInput, CheckinTaskUncheckedCreateWithoutBookingInput>
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutBookingInput
+    upsert?: CheckinTaskUpsertWithoutBookingInput
+    disconnect?: CheckinTaskWhereInput | boolean
+    delete?: CheckinTaskWhereInput | boolean
+    connect?: CheckinTaskWhereUniqueInput
+    update?: XOR<XOR<CheckinTaskUpdateToOneWithWhereWithoutBookingInput, CheckinTaskUpdateWithoutBookingInput>, CheckinTaskUncheckedUpdateWithoutBookingInput>
+  }
+
   export type CleaningTaskUncheckedUpdateOneWithoutBookingNestedInput = {
     create?: XOR<CleaningTaskCreateWithoutBookingInput, CleaningTaskUncheckedCreateWithoutBookingInput>
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutBookingInput
@@ -39209,6 +42625,16 @@ export namespace Prisma {
     delete?: CleaningTaskWhereInput | boolean
     connect?: CleaningTaskWhereUniqueInput
     update?: XOR<XOR<CleaningTaskUpdateToOneWithWhereWithoutBookingInput, CleaningTaskUpdateWithoutBookingInput>, CleaningTaskUncheckedUpdateWithoutBookingInput>
+  }
+
+  export type CheckinTaskUncheckedUpdateOneWithoutBookingNestedInput = {
+    create?: XOR<CheckinTaskCreateWithoutBookingInput, CheckinTaskUncheckedCreateWithoutBookingInput>
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutBookingInput
+    upsert?: CheckinTaskUpsertWithoutBookingInput
+    disconnect?: CheckinTaskWhereInput | boolean
+    delete?: CheckinTaskWhereInput | boolean
+    connect?: CheckinTaskWhereUniqueInput
+    update?: XOR<XOR<CheckinTaskUpdateToOneWithWhereWithoutBookingInput, CheckinTaskUpdateWithoutBookingInput>, CheckinTaskUncheckedUpdateWithoutBookingInput>
   }
 
   export type BookingCreateNestedOneWithoutCleaningTaskInput = {
@@ -39283,6 +42709,14 @@ export namespace Prisma {
     connectOrCreate?: SupervisorReviewCreateOrConnectWithoutCleaningTaskInput | SupervisorReviewCreateOrConnectWithoutCleaningTaskInput[]
     createMany?: SupervisorReviewCreateManyCleaningTaskInputEnvelope
     connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type BookingUpdateOneWithoutCleaningTaskNestedInput = {
@@ -39423,6 +42857,66 @@ export namespace Prisma {
     update?: SupervisorReviewUpdateWithWhereUniqueWithoutCleaningTaskInput | SupervisorReviewUpdateWithWhereUniqueWithoutCleaningTaskInput[]
     updateMany?: SupervisorReviewUpdateManyWithWhereWithoutCleaningTaskInput | SupervisorReviewUpdateManyWithWhereWithoutCleaningTaskInput[]
     deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+  }
+
+  export type ApartmentCreateNestedOneWithoutCheckinChecklistItemsInput = {
+    create?: XOR<ApartmentCreateWithoutCheckinChecklistItemsInput, ApartmentUncheckedCreateWithoutCheckinChecklistItemsInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutCheckinChecklistItemsInput
+    connect?: ApartmentWhereUniqueInput
+  }
+
+  export type ApartmentUpdateOneRequiredWithoutCheckinChecklistItemsNestedInput = {
+    create?: XOR<ApartmentCreateWithoutCheckinChecklistItemsInput, ApartmentUncheckedCreateWithoutCheckinChecklistItemsInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutCheckinChecklistItemsInput
+    upsert?: ApartmentUpsertWithoutCheckinChecklistItemsInput
+    connect?: ApartmentWhereUniqueInput
+    update?: XOR<XOR<ApartmentUpdateToOneWithWhereWithoutCheckinChecklistItemsInput, ApartmentUpdateWithoutCheckinChecklistItemsInput>, ApartmentUncheckedUpdateWithoutCheckinChecklistItemsInput>
+  }
+
+  export type BookingCreateNestedOneWithoutCheckinTaskInput = {
+    create?: XOR<BookingCreateWithoutCheckinTaskInput, BookingUncheckedCreateWithoutCheckinTaskInput>
+    connectOrCreate?: BookingCreateOrConnectWithoutCheckinTaskInput
+    connect?: BookingWhereUniqueInput
+  }
+
+  export type ApartmentCreateNestedOneWithoutCheckinTasksInput = {
+    create?: XOR<ApartmentCreateWithoutCheckinTasksInput, ApartmentUncheckedCreateWithoutCheckinTasksInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutCheckinTasksInput
+    connect?: ApartmentWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutCheckinTasksInput = {
+    create?: XOR<UserCreateWithoutCheckinTasksInput, UserUncheckedCreateWithoutCheckinTasksInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCheckinTasksInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BookingUpdateOneWithoutCheckinTaskNestedInput = {
+    create?: XOR<BookingCreateWithoutCheckinTaskInput, BookingUncheckedCreateWithoutCheckinTaskInput>
+    connectOrCreate?: BookingCreateOrConnectWithoutCheckinTaskInput
+    upsert?: BookingUpsertWithoutCheckinTaskInput
+    disconnect?: BookingWhereInput | boolean
+    delete?: BookingWhereInput | boolean
+    connect?: BookingWhereUniqueInput
+    update?: XOR<XOR<BookingUpdateToOneWithWhereWithoutCheckinTaskInput, BookingUpdateWithoutCheckinTaskInput>, BookingUncheckedUpdateWithoutCheckinTaskInput>
+  }
+
+  export type ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput = {
+    create?: XOR<ApartmentCreateWithoutCheckinTasksInput, ApartmentUncheckedCreateWithoutCheckinTasksInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutCheckinTasksInput
+    upsert?: ApartmentUpsertWithoutCheckinTasksInput
+    connect?: ApartmentWhereUniqueInput
+    update?: XOR<XOR<ApartmentUpdateToOneWithWhereWithoutCheckinTasksInput, ApartmentUpdateWithoutCheckinTasksInput>, ApartmentUncheckedUpdateWithoutCheckinTasksInput>
+  }
+
+  export type UserUpdateOneWithoutCheckinTasksNestedInput = {
+    create?: XOR<UserCreateWithoutCheckinTasksInput, UserUncheckedCreateWithoutCheckinTasksInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCheckinTasksInput
+    upsert?: UserUpsertWithoutCheckinTasksInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCheckinTasksInput, UserUpdateWithoutCheckinTasksInput>, UserUncheckedUpdateWithoutCheckinTasksInput>
   }
 
   export type ApartmentCreateNestedOneWithoutMaintenanceTicketsInput = {
@@ -39713,14 +43207,6 @@ export namespace Prisma {
     connectOrCreate?: CleaningTaskMessageCreateOrConnectWithoutAttachmentInput | CleaningTaskMessageCreateOrConnectWithoutAttachmentInput[]
     createMany?: CleaningTaskMessageCreateManyAttachmentInputEnvelope
     connect?: CleaningTaskMessageWhereUniqueInput | CleaningTaskMessageWhereUniqueInput[]
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput = {
@@ -40355,23 +43841,6 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
-  export type NestedEnumAIAssistantMessageRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.AIAssistantMessageRole | EnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumAIAssistantMessageRoleFilter<$PrismaModel> | $Enums.AIAssistantMessageRole
-  }
-
-  export type NestedEnumAIAssistantMessageRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.AIAssistantMessageRole | EnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumAIAssistantMessageRoleWithAggregatesFilter<$PrismaModel> | $Enums.AIAssistantMessageRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumAIAssistantMessageRoleFilter<$PrismaModel>
-    _max?: NestedEnumAIAssistantMessageRoleFilter<$PrismaModel>
-  }
-
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -40397,6 +43866,23 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumAIAssistantMessageRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.AIAssistantMessageRole | EnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumAIAssistantMessageRoleFilter<$PrismaModel> | $Enums.AIAssistantMessageRole
+  }
+
+  export type NestedEnumAIAssistantMessageRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AIAssistantMessageRole | EnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AIAssistantMessageRole[] | ListEnumAIAssistantMessageRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumAIAssistantMessageRoleWithAggregatesFilter<$PrismaModel> | $Enums.AIAssistantMessageRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAIAssistantMessageRoleFilter<$PrismaModel>
+    _max?: NestedEnumAIAssistantMessageRoleFilter<$PrismaModel>
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -40438,6 +43924,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -40463,6 +43950,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -40503,6 +43991,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutOrganizationInput = {
@@ -40533,6 +44023,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutOrganizationInput = {
@@ -40751,6 +44243,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -40774,6 +44267,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -40999,6 +44493,44 @@ export namespace Prisma {
     create: XOR<CleanerLocationCreateWithoutUserInput, CleanerLocationUncheckedCreateWithoutUserInput>
   }
 
+  export type CheckinTaskCreateWithoutAssignedToInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+    booking?: BookingCreateNestedOneWithoutCheckinTaskInput
+    apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
+  }
+
+  export type CheckinTaskUncheckedCreateWithoutAssignedToInput = {
+    id?: string
+    apartmentId: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+  }
+
+  export type CheckinTaskCreateOrConnectWithoutAssignedToInput = {
+    where: CheckinTaskWhereUniqueInput
+    create: XOR<CheckinTaskCreateWithoutAssignedToInput, CheckinTaskUncheckedCreateWithoutAssignedToInput>
+  }
+
+  export type CheckinTaskCreateManyAssignedToInputEnvelope = {
+    data: CheckinTaskCreateManyAssignedToInput | CheckinTaskCreateManyAssignedToInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutUsersInput = {
     update: XOR<OrganizationUpdateWithoutUsersInput, OrganizationUncheckedUpdateWithoutUsersInput>
     create: XOR<OrganizationCreateWithoutUsersInput, OrganizationUncheckedCreateWithoutUsersInput>
@@ -41107,6 +44639,7 @@ export namespace Prisma {
     cleaningAccessToken?: StringNullableFilter<"CleaningTask"> | string | null
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
+    totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
   }
 
   export type MaintenanceTicketUpsertWithWhereUniqueWithoutAssignedToInput = {
@@ -41331,6 +44864,40 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CheckinTaskUpsertWithWhereUniqueWithoutAssignedToInput = {
+    where: CheckinTaskWhereUniqueInput
+    update: XOR<CheckinTaskUpdateWithoutAssignedToInput, CheckinTaskUncheckedUpdateWithoutAssignedToInput>
+    create: XOR<CheckinTaskCreateWithoutAssignedToInput, CheckinTaskUncheckedCreateWithoutAssignedToInput>
+  }
+
+  export type CheckinTaskUpdateWithWhereUniqueWithoutAssignedToInput = {
+    where: CheckinTaskWhereUniqueInput
+    data: XOR<CheckinTaskUpdateWithoutAssignedToInput, CheckinTaskUncheckedUpdateWithoutAssignedToInput>
+  }
+
+  export type CheckinTaskUpdateManyWithWhereWithoutAssignedToInput = {
+    where: CheckinTaskScalarWhereInput
+    data: XOR<CheckinTaskUpdateManyMutationInput, CheckinTaskUncheckedUpdateManyWithoutAssignedToInput>
+  }
+
+  export type CheckinTaskScalarWhereInput = {
+    AND?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
+    OR?: CheckinTaskScalarWhereInput[]
+    NOT?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
+    id?: StringFilter<"CheckinTask"> | string
+    apartmentId?: StringFilter<"CheckinTask"> | string
+    date?: DateTimeFilter<"CheckinTask"> | Date | string
+    status?: StringFilter<"CheckinTask"> | string
+    createdAt?: DateTimeFilter<"CheckinTask"> | Date | string
+    startedAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
+    assignedToId?: StringNullableFilter<"CheckinTask"> | string | null
+    notes?: StringNullableFilter<"CheckinTask"> | string | null
+    bookingId?: StringNullableFilter<"CheckinTask"> | string | null
+    checklistProgress?: JsonNullableFilter<"CheckinTask">
+    checkinAccessToken?: StringNullableFilter<"CheckinTask"> | string | null
+  }
+
   export type OrganizationCreateWithoutApartmentsInput = {
     id?: string
     name: string
@@ -41410,6 +44977,7 @@ export namespace Prisma {
     cullaRequested?: boolean
     createdAt?: Date | string
     cleaningTask?: CleaningTaskCreateNestedOneWithoutBookingInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutApartmentInput = {
@@ -41424,6 +44992,7 @@ export namespace Prisma {
     cullaRequested?: boolean
     createdAt?: Date | string
     cleaningTask?: CleaningTaskUncheckedCreateNestedOneWithoutBookingInput
+    checkinTask?: CheckinTaskUncheckedCreateNestedOneWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutApartmentInput = {
@@ -41483,6 +45052,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -41506,6 +45076,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -41741,6 +45312,76 @@ export namespace Prisma {
 
   export type ApartmentProductCreateManyApartmentInputEnvelope = {
     data: ApartmentProductCreateManyApartmentInput | ApartmentProductCreateManyApartmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CheckinChecklistItemCreateWithoutApartmentInput = {
+    id?: string
+    label: string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: boolean
+    photoRequired?: boolean
+    order?: number
+    createdAt?: Date | string
+    type?: string
+  }
+
+  export type CheckinChecklistItemUncheckedCreateWithoutApartmentInput = {
+    id?: string
+    label: string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: boolean
+    photoRequired?: boolean
+    order?: number
+    createdAt?: Date | string
+    type?: string
+  }
+
+  export type CheckinChecklistItemCreateOrConnectWithoutApartmentInput = {
+    where: CheckinChecklistItemWhereUniqueInput
+    create: XOR<CheckinChecklistItemCreateWithoutApartmentInput, CheckinChecklistItemUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type CheckinChecklistItemCreateManyApartmentInputEnvelope = {
+    data: CheckinChecklistItemCreateManyApartmentInput | CheckinChecklistItemCreateManyApartmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CheckinTaskCreateWithoutApartmentInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+    booking?: BookingCreateNestedOneWithoutCheckinTaskInput
+    assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
+  }
+
+  export type CheckinTaskUncheckedCreateWithoutApartmentInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    assignedToId?: string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+  }
+
+  export type CheckinTaskCreateOrConnectWithoutApartmentInput = {
+    where: CheckinTaskWhereUniqueInput
+    create: XOR<CheckinTaskCreateWithoutApartmentInput, CheckinTaskUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type CheckinTaskCreateManyApartmentInputEnvelope = {
+    data: CheckinTaskCreateManyApartmentInput | CheckinTaskCreateManyApartmentInput[]
     skipDuplicates?: boolean
   }
 
@@ -42073,6 +45714,53 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
   }
 
+  export type CheckinChecklistItemUpsertWithWhereUniqueWithoutApartmentInput = {
+    where: CheckinChecklistItemWhereUniqueInput
+    update: XOR<CheckinChecklistItemUpdateWithoutApartmentInput, CheckinChecklistItemUncheckedUpdateWithoutApartmentInput>
+    create: XOR<CheckinChecklistItemCreateWithoutApartmentInput, CheckinChecklistItemUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type CheckinChecklistItemUpdateWithWhereUniqueWithoutApartmentInput = {
+    where: CheckinChecklistItemWhereUniqueInput
+    data: XOR<CheckinChecklistItemUpdateWithoutApartmentInput, CheckinChecklistItemUncheckedUpdateWithoutApartmentInput>
+  }
+
+  export type CheckinChecklistItemUpdateManyWithWhereWithoutApartmentInput = {
+    where: CheckinChecklistItemScalarWhereInput
+    data: XOR<CheckinChecklistItemUpdateManyMutationInput, CheckinChecklistItemUncheckedUpdateManyWithoutApartmentInput>
+  }
+
+  export type CheckinChecklistItemScalarWhereInput = {
+    AND?: CheckinChecklistItemScalarWhereInput | CheckinChecklistItemScalarWhereInput[]
+    OR?: CheckinChecklistItemScalarWhereInput[]
+    NOT?: CheckinChecklistItemScalarWhereInput | CheckinChecklistItemScalarWhereInput[]
+    id?: StringFilter<"CheckinChecklistItem"> | string
+    apartmentId?: StringFilter<"CheckinChecklistItem"> | string
+    label?: StringFilter<"CheckinChecklistItem"> | string
+    labelTranslations?: JsonNullableFilter<"CheckinChecklistItem">
+    required?: BoolFilter<"CheckinChecklistItem"> | boolean
+    photoRequired?: BoolFilter<"CheckinChecklistItem"> | boolean
+    order?: IntFilter<"CheckinChecklistItem"> | number
+    createdAt?: DateTimeFilter<"CheckinChecklistItem"> | Date | string
+    type?: StringFilter<"CheckinChecklistItem"> | string
+  }
+
+  export type CheckinTaskUpsertWithWhereUniqueWithoutApartmentInput = {
+    where: CheckinTaskWhereUniqueInput
+    update: XOR<CheckinTaskUpdateWithoutApartmentInput, CheckinTaskUncheckedUpdateWithoutApartmentInput>
+    create: XOR<CheckinTaskCreateWithoutApartmentInput, CheckinTaskUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type CheckinTaskUpdateWithWhereUniqueWithoutApartmentInput = {
+    where: CheckinTaskWhereUniqueInput
+    data: XOR<CheckinTaskUpdateWithoutApartmentInput, CheckinTaskUncheckedUpdateWithoutApartmentInput>
+  }
+
+  export type CheckinTaskUpdateManyWithWhereWithoutApartmentInput = {
+    where: CheckinTaskScalarWhereInput
+    data: XOR<CheckinTaskUpdateManyMutationInput, CheckinTaskUncheckedUpdateManyWithoutApartmentInput>
+  }
+
   export type ApartmentCreateWithoutChecklistItemsInput = {
     id?: string
     name: string
@@ -42101,6 +45789,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutChecklistItemsInput = {
@@ -42131,6 +45821,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutChecklistItemsInput = {
@@ -42177,6 +45869,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutChecklistItemsInput = {
@@ -42207,6 +45901,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateWithoutNotificationsInput = {
@@ -42237,6 +45933,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutNotificationsInput = {
@@ -42267,6 +45965,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutNotificationsInput = {
@@ -42313,6 +46013,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutNotificationsInput = {
@@ -42343,6 +46045,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateWithoutBookingsInput = {
@@ -42373,6 +46077,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutBookingsInput = {
@@ -42403,6 +46109,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutBookingsInput = {
@@ -42423,6 +46131,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -42446,6 +46155,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -42455,6 +46165,39 @@ export namespace Prisma {
   export type CleaningTaskCreateOrConnectWithoutBookingInput = {
     where: CleaningTaskWhereUniqueInput
     create: XOR<CleaningTaskCreateWithoutBookingInput, CleaningTaskUncheckedCreateWithoutBookingInput>
+  }
+
+  export type CheckinTaskCreateWithoutBookingInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+    apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
+    assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
+  }
+
+  export type CheckinTaskUncheckedCreateWithoutBookingInput = {
+    id?: string
+    apartmentId: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    assignedToId?: string | null
+    notes?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+  }
+
+  export type CheckinTaskCreateOrConnectWithoutBookingInput = {
+    where: CheckinTaskWhereUniqueInput
+    create: XOR<CheckinTaskCreateWithoutBookingInput, CheckinTaskUncheckedCreateWithoutBookingInput>
   }
 
   export type ApartmentUpsertWithoutBookingsInput = {
@@ -42496,6 +46239,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutBookingsInput = {
@@ -42526,6 +46271,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type CleaningTaskUpsertWithoutBookingInput = {
@@ -42552,6 +46299,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -42575,10 +46323,50 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
+  }
+
+  export type CheckinTaskUpsertWithoutBookingInput = {
+    update: XOR<CheckinTaskUpdateWithoutBookingInput, CheckinTaskUncheckedUpdateWithoutBookingInput>
+    create: XOR<CheckinTaskCreateWithoutBookingInput, CheckinTaskUncheckedCreateWithoutBookingInput>
+    where?: CheckinTaskWhereInput
+  }
+
+  export type CheckinTaskUpdateToOneWithWhereWithoutBookingInput = {
+    where?: CheckinTaskWhereInput
+    data: XOR<CheckinTaskUpdateWithoutBookingInput, CheckinTaskUncheckedUpdateWithoutBookingInput>
+  }
+
+  export type CheckinTaskUpdateWithoutBookingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
+    assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
+  }
+
+  export type CheckinTaskUncheckedUpdateWithoutBookingInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BookingCreateWithoutCleaningTaskInput = {
@@ -42593,6 +46381,7 @@ export namespace Prisma {
     cullaRequested?: boolean
     createdAt?: Date | string
     apartment: ApartmentCreateNestedOneWithoutBookingsInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutCleaningTaskInput = {
@@ -42607,6 +46396,7 @@ export namespace Prisma {
     source?: string | null
     cullaRequested?: boolean
     createdAt?: Date | string
+    checkinTask?: CheckinTaskUncheckedCreateNestedOneWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutCleaningTaskInput = {
@@ -42642,6 +46432,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutCleaningTasksInput = {
@@ -42672,6 +46464,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutCleaningTasksInput = {
@@ -42702,6 +46496,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutCleaningTasksInput = {
@@ -42727,6 +46522,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutCleaningTasksInput = {
@@ -42887,6 +46683,7 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartment?: ApartmentUpdateOneRequiredWithoutBookingsNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutCleaningTaskInput = {
@@ -42901,6 +46698,7 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkinTask?: CheckinTaskUncheckedUpdateOneWithoutBookingNestedInput
   }
 
   export type ApartmentUpsertWithoutCleaningTasksInput = {
@@ -42942,6 +46740,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutCleaningTasksInput = {
@@ -42972,6 +46772,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutCleaningTasksInput = {
@@ -43008,6 +46810,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleaningTasksInput = {
@@ -43033,6 +46836,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type CleaningTaskMessageUpsertWithWhereUniqueWithoutCleaningTaskInput = {
@@ -43130,6 +46934,490 @@ export namespace Prisma {
     data: XOR<SupervisorReviewUpdateManyMutationInput, SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskInput>
   }
 
+  export type ApartmentCreateWithoutCheckinChecklistItemsInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    organization?: OrganizationCreateNestedOneWithoutApartmentsInput
+    bookings?: BookingCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentUncheckedCreateWithoutCheckinChecklistItemsInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    organizationId?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentCreateOrConnectWithoutCheckinChecklistItemsInput = {
+    where: ApartmentWhereUniqueInput
+    create: XOR<ApartmentCreateWithoutCheckinChecklistItemsInput, ApartmentUncheckedCreateWithoutCheckinChecklistItemsInput>
+  }
+
+  export type ApartmentUpsertWithoutCheckinChecklistItemsInput = {
+    update: XOR<ApartmentUpdateWithoutCheckinChecklistItemsInput, ApartmentUncheckedUpdateWithoutCheckinChecklistItemsInput>
+    create: XOR<ApartmentCreateWithoutCheckinChecklistItemsInput, ApartmentUncheckedCreateWithoutCheckinChecklistItemsInput>
+    where?: ApartmentWhereInput
+  }
+
+  export type ApartmentUpdateToOneWithWhereWithoutCheckinChecklistItemsInput = {
+    where?: ApartmentWhereInput
+    data: XOR<ApartmentUpdateWithoutCheckinChecklistItemsInput, ApartmentUncheckedUpdateWithoutCheckinChecklistItemsInput>
+  }
+
+  export type ApartmentUpdateWithoutCheckinChecklistItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
+    bookings?: BookingUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type ApartmentUncheckedUpdateWithoutCheckinChecklistItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type BookingCreateWithoutCheckinTaskInput = {
+    id?: string
+    guestName?: string | null
+    totalGuests: number
+    checkInDate: Date | string
+    checkOutDate: Date | string
+    status?: string | null
+    externalId?: string | null
+    source?: string | null
+    cullaRequested?: boolean
+    createdAt?: Date | string
+    apartment: ApartmentCreateNestedOneWithoutBookingsInput
+    cleaningTask?: CleaningTaskCreateNestedOneWithoutBookingInput
+  }
+
+  export type BookingUncheckedCreateWithoutCheckinTaskInput = {
+    id?: string
+    apartmentId: string
+    guestName?: string | null
+    totalGuests: number
+    checkInDate: Date | string
+    checkOutDate: Date | string
+    status?: string | null
+    externalId?: string | null
+    source?: string | null
+    cullaRequested?: boolean
+    createdAt?: Date | string
+    cleaningTask?: CleaningTaskUncheckedCreateNestedOneWithoutBookingInput
+  }
+
+  export type BookingCreateOrConnectWithoutCheckinTaskInput = {
+    where: BookingWhereUniqueInput
+    create: XOR<BookingCreateWithoutCheckinTaskInput, BookingUncheckedCreateWithoutCheckinTaskInput>
+  }
+
+  export type ApartmentCreateWithoutCheckinTasksInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    organization?: OrganizationCreateNestedOneWithoutApartmentsInput
+    bookings?: BookingCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentUncheckedCreateWithoutCheckinTasksInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    organizationId?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentCreateOrConnectWithoutCheckinTasksInput = {
+    where: ApartmentWhereUniqueInput
+    create: XOR<ApartmentCreateWithoutCheckinTasksInput, ApartmentUncheckedCreateWithoutCheckinTasksInput>
+  }
+
+  export type UserCreateWithoutCheckinTasksInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationCreateNestedOneWithoutUsersInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCheckinTasksInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCheckinTasksInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCheckinTasksInput, UserUncheckedCreateWithoutCheckinTasksInput>
+  }
+
+  export type BookingUpsertWithoutCheckinTaskInput = {
+    update: XOR<BookingUpdateWithoutCheckinTaskInput, BookingUncheckedUpdateWithoutCheckinTaskInput>
+    create: XOR<BookingCreateWithoutCheckinTaskInput, BookingUncheckedCreateWithoutCheckinTaskInput>
+    where?: BookingWhereInput
+  }
+
+  export type BookingUpdateToOneWithWhereWithoutCheckinTaskInput = {
+    where?: BookingWhereInput
+    data: XOR<BookingUpdateWithoutCheckinTaskInput, BookingUncheckedUpdateWithoutCheckinTaskInput>
+  }
+
+  export type BookingUpdateWithoutCheckinTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    totalGuests?: IntFieldUpdateOperationsInput | number
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOutDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    apartment?: ApartmentUpdateOneRequiredWithoutBookingsNestedInput
+    cleaningTask?: CleaningTaskUpdateOneWithoutBookingNestedInput
+  }
+
+  export type BookingUncheckedUpdateWithoutCheckinTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    guestName?: NullableStringFieldUpdateOperationsInput | string | null
+    totalGuests?: IntFieldUpdateOperationsInput | number
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkOutDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    cleaningTask?: CleaningTaskUncheckedUpdateOneWithoutBookingNestedInput
+  }
+
+  export type ApartmentUpsertWithoutCheckinTasksInput = {
+    update: XOR<ApartmentUpdateWithoutCheckinTasksInput, ApartmentUncheckedUpdateWithoutCheckinTasksInput>
+    create: XOR<ApartmentCreateWithoutCheckinTasksInput, ApartmentUncheckedCreateWithoutCheckinTasksInput>
+    where?: ApartmentWhereInput
+  }
+
+  export type ApartmentUpdateToOneWithWhereWithoutCheckinTasksInput = {
+    where?: ApartmentWhereInput
+    data: XOR<ApartmentUpdateWithoutCheckinTasksInput, ApartmentUncheckedUpdateWithoutCheckinTasksInput>
+  }
+
+  export type ApartmentUpdateWithoutCheckinTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
+    bookings?: BookingUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type ApartmentUncheckedUpdateWithoutCheckinTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type UserUpsertWithoutCheckinTasksInput = {
+    update: XOR<UserUpdateWithoutCheckinTasksInput, UserUncheckedUpdateWithoutCheckinTasksInput>
+    create: XOR<UserCreateWithoutCheckinTasksInput, UserUncheckedCreateWithoutCheckinTasksInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCheckinTasksInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCheckinTasksInput, UserUncheckedUpdateWithoutCheckinTasksInput>
+  }
+
+  export type UserUpdateWithoutCheckinTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    organization?: OrganizationUpdateOneWithoutUsersNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCheckinTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+  }
+
   export type ApartmentCreateWithoutMaintenanceTicketsInput = {
     id?: string
     name: string
@@ -43158,6 +47446,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -43188,6 +47478,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -43218,6 +47510,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -43243,6 +47536,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -43419,6 +47713,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -43449,6 +47745,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutMaintenanceTicketsInput = {
@@ -43485,6 +47783,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -43510,6 +47809,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type AttachmentUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
@@ -43619,6 +47919,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutAiAssistantMessagesInput = {
@@ -43649,6 +47951,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutAiAssistantMessagesInput = {
@@ -43669,6 +47973,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -43693,6 +47998,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -43789,6 +48095,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutAiAssistantMessagesInput = {
@@ -43819,6 +48127,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type CleaningTaskUpsertWithoutAiAssistantMessagesInput = {
@@ -43845,6 +48155,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -43869,6 +48180,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -43987,6 +48299,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -44011,6 +48324,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -44162,6 +48476,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -44186,6 +48501,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -44251,6 +48567,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutApartmentAttachmentsInput = {
@@ -44281,6 +48599,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutApartmentAttachmentsInput = {
@@ -44327,6 +48647,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutApartmentAttachmentsInput = {
@@ -44357,6 +48679,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type MaintenanceTicketCreateWithoutMessagesInput = {
@@ -44544,6 +48868,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -44568,6 +48893,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -44635,6 +48961,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -44659,6 +48986,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -44726,6 +49054,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutSupervisorReviewsInput = {
@@ -44751,6 +49080,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutSupervisorReviewsInput = {
@@ -44771,6 +49101,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -44795,6 +49126,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -44886,6 +49218,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisorReviewsInput = {
@@ -44911,6 +49244,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type CleaningTaskUpsertWithoutSupervisorReviewsInput = {
@@ -44937,6 +49271,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -44961,6 +49296,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -45047,6 +49383,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutSupervisorsInput = {
@@ -45077,6 +49415,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutSupervisorsInput = {
@@ -45107,6 +49447,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutSupervisedApartmentsInput = {
@@ -45132,6 +49473,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutSupervisedApartmentsInput = {
@@ -45178,6 +49520,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutSupervisorsInput = {
@@ -45208,6 +49552,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutSupervisedApartmentsInput = {
@@ -45244,6 +49590,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisedApartmentsInput = {
@@ -45269,6 +49616,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type ApartmentCreateWithoutOwnersInput = {
@@ -45299,6 +49647,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutOwnersInput = {
@@ -45329,6 +49679,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutOwnersInput = {
@@ -45359,6 +49711,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutOwnedApartmentsInput = {
@@ -45384,6 +49737,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutOwnedApartmentsInput = {
@@ -45430,6 +49784,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutOwnersInput = {
@@ -45460,6 +49816,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutOwnedApartmentsInput = {
@@ -45496,6 +49854,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedApartmentsInput = {
@@ -45521,6 +49880,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type OrganizationCreateWithoutChatSessionsInput = {
@@ -45781,6 +50141,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
@@ -45806,6 +50167,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
@@ -45847,6 +50209,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
@@ -45872,6 +50235,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserCreateWithoutApnsTokensInput = {
@@ -45897,6 +50261,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutApnsTokensInput = {
@@ -45922,6 +50287,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutApnsTokensInput = {
@@ -45963,6 +50329,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApnsTokensInput = {
@@ -45988,6 +50355,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserCreateWithoutFcmTokensInput = {
@@ -46013,6 +50381,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutFcmTokensInput = {
@@ -46038,6 +50407,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutFcmTokensInput = {
@@ -46079,6 +50449,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFcmTokensInput = {
@@ -46104,6 +50475,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserCreateWithoutCleanerLocationInput = {
@@ -46129,6 +50501,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserUncheckedCreateWithoutCleanerLocationInput = {
@@ -46154,6 +50527,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
   }
 
   export type UserCreateOrConnectWithoutCleanerLocationInput = {
@@ -46195,6 +50569,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleanerLocationInput = {
@@ -46220,6 +50595,7 @@ export namespace Prisma {
     pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type ApartmentCreateWithoutProductsInput = {
@@ -46250,6 +50626,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutProductsInput = {
@@ -46280,6 +50658,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
     supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutProductsInput = {
@@ -46326,6 +50706,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutProductsInput = {
@@ -46356,6 +50738,8 @@ export namespace Prisma {
     apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserCreateManyOrganizationInput = {
@@ -46423,6 +50807,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -46448,6 +50833,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -46494,6 +50880,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutOrganizationInput = {
@@ -46524,6 +50912,8 @@ export namespace Prisma {
     supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateManyWithoutOrganizationInput = {
@@ -46581,6 +50971,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
   }
 
   export type MaintenanceTicketCreateManyAssignedToInput = {
@@ -46638,6 +51029,20 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type CheckinTaskCreateManyAssignedToInput = {
+    id?: string
+    apartmentId: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+  }
+
   export type CleaningTaskUpdateWithoutAssignedToInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46651,6 +51056,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -46674,6 +51080,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -46695,6 +51102,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MaintenanceTicketUpdateWithoutAssignedToInput = {
@@ -46870,6 +51278,48 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CheckinTaskUpdateWithoutAssignedToInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
+    apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
+  }
+
+  export type CheckinTaskUncheckedUpdateWithoutAssignedToInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CheckinTaskUncheckedUpdateManyWithoutAssignedToInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type BookingCreateManyApartmentInput = {
     id?: string
     guestName?: string | null
@@ -46910,6 +51360,7 @@ export namespace Prisma {
     cleaningAccessToken?: string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
+    totalGuests?: number | null
   }
 
   export type MaintenanceTicketCreateManyApartmentInput = {
@@ -46984,6 +51435,31 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type CheckinChecklistItemCreateManyApartmentInput = {
+    id?: string
+    label: string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: boolean
+    photoRequired?: boolean
+    order?: number
+    createdAt?: Date | string
+    type?: string
+  }
+
+  export type CheckinTaskCreateManyApartmentInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    assignedToId?: string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+  }
+
   export type BookingUpdateWithoutApartmentInput = {
     id?: StringFieldUpdateOperationsInput | string
     guestName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46996,6 +51472,7 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUpdateOneWithoutBookingNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutApartmentInput = {
@@ -47010,6 +51487,7 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUncheckedUpdateOneWithoutBookingNestedInput
+    checkinTask?: CheckinTaskUncheckedUpdateOneWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateManyWithoutApartmentInput = {
@@ -47074,6 +51552,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -47097,6 +51576,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -47118,6 +51598,7 @@ export namespace Prisma {
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
+    totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type MaintenanceTicketUpdateWithoutApartmentInput = {
@@ -47342,6 +51823,81 @@ export namespace Prisma {
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CheckinChecklistItemUpdateWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: BoolFieldUpdateOperationsInput | boolean
+    photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CheckinChecklistItemUncheckedUpdateWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: BoolFieldUpdateOperationsInput | boolean
+    photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CheckinChecklistItemUncheckedUpdateManyWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    labelTranslations?: NullableJsonNullValueInput | InputJsonValue
+    required?: BoolFieldUpdateOperationsInput | boolean
+    photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    type?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CheckinTaskUpdateWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
+    assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
+  }
+
+  export type CheckinTaskUncheckedUpdateWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CheckinTaskUncheckedUpdateManyWithoutApartmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CleaningTaskMessageCreateManyCleaningTaskInput = {

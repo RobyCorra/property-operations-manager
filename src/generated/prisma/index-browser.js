@@ -240,7 +240,35 @@ exports.Prisma.CleaningTaskScalarFieldEnum = {
   correctionProgress: 'correctionProgress',
   cleaningAccessToken: 'cleaningAccessToken',
   cullaRequested: 'cullaRequested',
-  sofaBedForced: 'sofaBedForced'
+  sofaBedForced: 'sofaBedForced',
+  totalGuests: 'totalGuests'
+};
+
+exports.Prisma.CheckinChecklistItemScalarFieldEnum = {
+  id: 'id',
+  apartmentId: 'apartmentId',
+  label: 'label',
+  labelTranslations: 'labelTranslations',
+  required: 'required',
+  photoRequired: 'photoRequired',
+  order: 'order',
+  createdAt: 'createdAt',
+  type: 'type'
+};
+
+exports.Prisma.CheckinTaskScalarFieldEnum = {
+  id: 'id',
+  apartmentId: 'apartmentId',
+  date: 'date',
+  status: 'status',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  assignedToId: 'assignedToId',
+  notes: 'notes',
+  bookingId: 'bookingId',
+  checklistProgress: 'checklistProgress',
+  checkinAccessToken: 'checkinAccessToken'
 };
 
 exports.Prisma.MaintenanceTicketScalarFieldEnum = {
@@ -446,7 +474,8 @@ exports.Role = exports.$Enums.Role = {
   CLEANER: 'CLEANER',
   MAINTENANCE: 'MAINTENANCE',
   SUPERVISOR: 'SUPERVISOR',
-  OWNER: 'OWNER'
+  OWNER: 'OWNER',
+  CHECKIN: 'CHECKIN'
 };
 
 exports.AIAssistantMessageRole = exports.$Enums.AIAssistantMessageRole = {
@@ -462,6 +491,8 @@ exports.Prisma.ModelName = {
   Notification: 'Notification',
   Booking: 'Booking',
   CleaningTask: 'CleaningTask',
+  CheckinChecklistItem: 'CheckinChecklistItem',
+  CheckinTask: 'CheckinTask',
   MaintenanceTicket: 'MaintenanceTicket',
   AIAssistantMessage: 'AIAssistantMessage',
   Attachment: 'Attachment',
