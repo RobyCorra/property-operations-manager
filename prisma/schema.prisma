@@ -207,6 +207,22 @@ model CheckinTask {
   checkinAccessToken String?   @unique
   apartment          Apartment @relation(fields: [apartmentId], references: [id])
   assignedTo         User?     @relation(fields: [assignedToId], references: [id])
+  messages           CheckinTaskMessage[]
+  attachments        Attachment[]
+}
+
+model CheckinTaskMessage {
+  id              String      @id @default(uuid())
+  text            String?
+  role            String
+  senderName      String
+  createdAt       DateTime    @default(now())
+  checkinTaskId   String
+  checkinTask     CheckinTask @relation(fields: [checkinTaskId], references: [id], onDelete: Cascade)
+  attachmentId    String?
+  attachment      Attachment? @relation(fields: [attachmentId], references: [id])
+  readByManagerAt DateTime?
+  readByWorkerAt  DateTime?
 }
 
 model MaintenanceTicket {
@@ -265,11 +281,15 @@ model Attachment {
   maintenanceTicket   MaintenanceTicket?    @relation(fields: [maintenanceTicketId], references: [id], onDelete: Cascade)
   cleaningTaskId      String?
   cleaningTask        CleaningTask?         @relation(fields: [cleaningTaskId], references: [id], onDelete: Cascade)
+  checkinTaskId       String?
+  checkinTask         CheckinTask?          @relation(fields: [checkinTaskId], references: [id], onDelete: Cascade)
   messages            Message[]
   cleaningMessages    CleaningTaskMessage[]
+  checkinMessages     CheckinTaskMessage[]
 
   @@index([maintenanceTicketId])
   @@index([cleaningTaskId])
+  @@index([checkinTaskId])
   @@index([category])
 }
 
