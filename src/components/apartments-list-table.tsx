@@ -130,6 +130,13 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                         Checklist
                         </Link>
                         <Link
+                        href={`/dashboard/manager/apartments/${apt.id}/checkin-checklist`}
+                        className="h-10 px-5 flex items-center gap-2 bg-blue-500/5 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-blue-500 hover:text-white transition-all border border-blue-500/10"
+                        >
+                        <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
+                        Check-in
+                        </Link>
+                        <Link
                         href={`/dashboard/manager/apartments/${apt.id}/edit`}
                         className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
                         title="Modifica"
@@ -258,6 +265,20 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                             <div>
                               <p className="text-[13px] font-semibold text-slate-800">Checklist</p>
                               <p className="text-[11px] text-slate-400">Pulizia e controllo</p>
+                            </div>
+                          </Link>
+
+                          <Link
+                            href={`/dashboard/manager/apartments/${apt.id}/checkin-checklist`}
+                            className="flex items-center gap-3 px-4 py-3.5 hover:bg-blue-50 transition-colors border-t border-slate-50"
+                            onClick={() => setOpenMenuId(null)}
+                          >
+                            <div className="w-[34px] h-[34px] rounded-xl bg-[#eff6ff] flex items-center justify-center shrink-0 text-blue-600">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10V7a2 2 0 00-2-2h-3"/><path d="M3 10V7a2 2 0 012-2h3"/><path d="M3 14v3a2 2 0 002 2h3"/><path d="M21 14v3a2 2 0 01-2 2h-3"/><circle cx="12" cy="12" r="2"/></svg>
+                            </div>
+                            <div>
+                              <p className="text-[13px] font-semibold text-slate-800">Check-in</p>
+                              <p className="text-[11px] text-slate-400">Checklist di arrivo</p>
                             </div>
                           </Link>
 
