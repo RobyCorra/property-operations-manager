@@ -1,5 +1,6 @@
 import { prisma } from "../prisma";
 import { syncCleaningTaskFromBooking } from "@/src/app/actions/operational";
+import { syncCheckinTaskFromBooking } from "@/src/app/actions/checkin";
 
 // ── Minimal iCal parser (no external deps) ────────────────────────────────────
 type ICalEvent = {
@@ -109,8 +110,9 @@ export async function performApartmentIcalSync(apartmentId: string) {
       },
     });
 
-    // 4. Sync cleaning task
+    // 4. Sync cleaning task + check-in task
     await syncCleaningTaskFromBooking(booking.id);
+    await syncCheckinTaskFromBooking(booking.id);
   }
 
   // 5. Cancel removed bookings
@@ -126,6 +128,7 @@ export async function performApartmentIcalSync(apartmentId: string) {
   for (const b of missingBookings) {
     await prisma.booking.update({ where: { id: b.id }, data: { status: "CANCELLED" } });
     await syncCleaningTaskFromBooking(b.id);
+    await syncCheckinTaskFromBooking(b.id);
   }
 
   // 6. Update lastSyncAt

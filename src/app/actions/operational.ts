@@ -9,6 +9,7 @@ import type { Prisma } from "@/src/generated/prisma/client";
 import { evaluateChecklistFormula } from "@/src/lib/formulas";
 import { parseRomeDateTime, preserveRomeTimeOnDate, setRomeTimeOnDate } from "@/src/lib/rome-datetime";
 import { sendPushToUser, sendPushToRole, sendPushToRoles } from "@/src/lib/push";
+import { syncCheckinTaskFromBooking } from "./checkin";
 import type { Role } from "@/src/generated/prisma/client";
 
 /** Distanza in metri tra due coordinate (formula Haversine) */
@@ -1468,6 +1469,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
           status: "PENDING",
         },
       });
+      await syncCheckinTaskFromBooking(newBooking.id);
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/bookings");
     } else if (payload.type === "CREATE_CLEANING") {
@@ -1734,6 +1736,7 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
         await prisma.cleaningTask.create({
           data: { apartmentId: apartment.id, bookingId: newBooking.id, date: checkOut, status: "PENDING" },
         });
+        await syncCheckinTaskFromBooking(newBooking.id);
         created++;
       }
       revalidatePath("/dashboard/manager");
