@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { upload } from "@vercel/blob/client";
 import { updateCheckinChecklist, updateCheckinStatus } from "@/src/app/actions/checkin";
 
 interface ChecklistItem {
@@ -36,17 +37,49 @@ export default function CheckinTaskView({
 }: Props) {
   const router = useRouter();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
 
-  const toggle = (id: string) => {
-    if (readOnly) return;
-    const next = items.map((i) => (i.id === id ? { ...i, completed: !i.completed } : i));
-    setItems(next);
-    const changed = next.find((i) => i.id === id)!;
-    updateCheckinChecklist(taskId, [{ id, completed: changed.completed }]).catch(() => {});
+  const persist = (id: string, patch: Partial<ChecklistItem>) => {
+    updateCheckinChecklist(taskId, [{ id, completed: patch.completed, photoUrl: patch.photoUrl }]).catch(() => {});
   };
 
-  const requiredDone = items.filter((i) => i.required).every((i) => i.completed);
+  const toggle = (item: ChecklistItem) => {
+    if (readOnly) return;
+    // Le voci con foto obbligatoria si completano scattando la foto, non con la spunta.
+    if (item.photoRequired && !item.photoUrl) {
+      fileInputs.current[item.id]?.click();
+      return;
+    }
+    const completed = !item.completed;
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, completed } : i)));
+    persist(item.id, { completed });
+  };
+
+  const onPhoto = async (item: ChecklistItem, file: File | undefined) => {
+    if (!file || readOnly) return;
+    setUploadingId(item.id);
+    try {
+      const result = await upload(
+        `uploads/checkin/${taskId}/${item.id}/${Date.now()}-${file.name}`,
+        file,
+        { access: "public", handleUploadUrl: "/api/blob-upload" }
+      );
+      const photoUrl = result.url;
+      setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, photoUrl, completed: true } : i)));
+      persist(item.id, { photoUrl, completed: true });
+    } catch (err: unknown) {
+      alert((err as Error).message || "Errore durante il caricamento della foto.");
+    } finally {
+      setUploadingId(null);
+    }
+  };
+
+  const blocking = items.filter(
+    (i) => (i.required && !i.completed) || (i.photoRequired && !i.photoUrl)
+  );
+  const canComplete = blocking.length === 0;
 
   const complete = () => {
     startTransition(async () => {
@@ -86,33 +119,67 @@ export default function CheckinTaskView({
             <p className="text-sm text-slate-400 py-4">Nessuna voce configurata per questo appartamento.</p>
           )}
           {items.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => toggle(item.id)}
-              disabled={readOnly}
-              className="w-full flex items-center gap-3 py-2.5 text-left disabled:opacity-70"
-            >
-              <span
-                className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 ${
-                  item.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300"
-                }`}
-              >
-                {item.completed && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                )}
-              </span>
-              <span className={`text-sm ${item.completed ? "text-slate-400 line-through" : "text-slate-800"}`}>
-                {item.label}
-              </span>
-              {item.required && (
-                <span className="ml-auto text-[9px] font-black uppercase tracking-wider text-amber-600">
-                  obblig.
-                </span>
+            <div key={item.id} className="py-2.5 border-b border-slate-50 last:border-0">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => toggle(item)}
+                  disabled={readOnly}
+                  className="flex items-center gap-3 text-left flex-1 min-w-0 disabled:opacity-70"
+                >
+                  <span
+                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center shrink-0 ${
+                      item.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300"
+                    }`}
+                  >
+                    {item.completed && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className={`text-sm ${item.completed ? "text-slate-400 line-through" : "text-slate-800"}`}>
+                    {item.label}
+                  </span>
+                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  {item.required && (
+                    <span className="text-[9px] font-black uppercase tracking-wider text-amber-600">obblig.</span>
+                  )}
+                  {item.photoRequired && !readOnly && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputs.current[item.id]?.click()}
+                      className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded ${
+                        item.photoUrl
+                          ? "bg-emerald-50 text-emerald-600"
+                          : "bg-blue-50 text-blue-600 border border-blue-200"
+                      }`}
+                    >
+                      {uploadingId === item.id ? "..." : item.photoUrl ? "📷 ok" : "📷 foto"}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {item.photoRequired && (
+                <input
+                  ref={(el) => { fileInputs.current[item.id] = el; }}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={(e) => onPhoto(item, e.target.files?.[0])}
+                />
               )}
-            </button>
+              {item.photoUrl && (
+                <img
+                  src={item.photoUrl}
+                  alt="foto check-in"
+                  className="mt-2 ml-9 w-24 h-24 object-cover rounded-lg border border-slate-200"
+                />
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -122,10 +189,14 @@ export default function CheckinTaskView({
         <button
           type="button"
           onClick={complete}
-          disabled={isPending || !requiredDone}
+          disabled={isPending || !canComplete}
           className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-xs font-black uppercase tracking-widest shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {isPending ? "..." : requiredDone ? "Completa check-in" : "Completa le voci obbligatorie"}
+          {isPending
+            ? "..."
+            : canComplete
+            ? "Completa check-in"
+            : "Completa voci e foto obbligatorie"}
         </button>
       )}
       {readOnly && (
