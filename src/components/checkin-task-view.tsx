@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useTransition } from "react";
+import { useState, useRef, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
-import { updateCheckinChecklist, updateCheckinStatus } from "@/src/app/actions/checkin";
+import { updateCheckinChecklist, updateCheckinStatus, createCheckinTaskMessage } from "@/src/app/actions/checkin";
+import TicketConversation from "@/src/components/ticket-conversation";
 
 interface ChecklistItem {
   id: string;
@@ -23,6 +24,8 @@ interface Props {
   guestName: string | null;
   initialItems: ChecklistItem[];
   readOnly: boolean;
+  initialMessages: any[];
+  currentUserName: string;
 }
 
 export default function CheckinTaskView({
@@ -34,12 +37,22 @@ export default function CheckinTaskView({
   guestName,
   initialItems,
   readOnly,
+  initialMessages,
+  currentUserName,
 }: Props) {
   const router = useRouter();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  // Polling messaggi chat (ogni 5s) + al ritorno in foreground.
+  useEffect(() => {
+    const iv = setInterval(() => router.refresh(), 5000);
+    const onVis = () => { if (document.visibilityState === "visible") router.refresh(); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { clearInterval(iv); document.removeEventListener("visibilitychange", onVis); };
+  }, [router]);
 
   const persist = (id: string, patch: Partial<ChecklistItem>) => {
     updateCheckinChecklist(taskId, [{ id, completed: patch.completed, photoUrl: patch.photoUrl }]).catch(() => {});
@@ -204,6 +217,22 @@ export default function CheckinTaskView({
           Check-in completato
         </p>
       )}
+
+      {/* Chat con il Manager */}
+      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+        <div className="px-4 py-3 border-b border-slate-100">
+          <p className="font-semibold text-slate-800 text-sm">💬 Chat con il Manager</p>
+        </div>
+        <div className="p-3">
+          <TicketConversation
+            entityId={taskId}
+            initialMessages={initialMessages}
+            currentUserRole="CHECKIN"
+            currentUserName={currentUserName}
+            submitAction={createCheckinTaskMessage}
+          />
+        </div>
+      </div>
     </div>
   );
 }

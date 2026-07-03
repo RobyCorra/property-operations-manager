@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import CheckinTaskView from "@/src/components/checkin-task-view";
 import { ChevronLeft } from "lucide-react";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import { getCheckinTaskMessages, markCheckinMessagesReadByWorker } from "@/src/app/actions/checkin";
 
 export default async function CheckinTaskPage({ params }: { params: Promise<{ taskId: string }> }) {
   const cookieStore = await cookies();
@@ -15,15 +16,21 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
 
   const { taskId } = await params;
 
-  const task = await prisma.checkinTask.findFirst({
-    where: { id: taskId, assignedToId: userId },
-    include: {
-      apartment: { select: { name: true, address: true } },
-      booking: { select: { guestName: true } },
-    },
-  });
+  const [task, userRecord, messages] = await Promise.all([
+    prisma.checkinTask.findFirst({
+      where: { id: taskId, assignedToId: userId },
+      include: {
+        apartment: { select: { name: true, address: true } },
+        booking: { select: { guestName: true } },
+      },
+    }),
+    prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
+    getCheckinTaskMessages(taskId),
+  ]);
 
   if (!task) notFound();
+
+  await markCheckinMessagesReadByWorker(taskId);
 
   const progress = Array.isArray(task.checklistProgress) ? (task.checklistProgress as any[]) : [];
   const items = progress.map((i) => ({
@@ -58,6 +65,8 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
         guestName={task.booking?.guestName ?? null}
         initialItems={items}
         readOnly={task.status === "COMPLETED"}
+        initialMessages={messages}
+        currentUserName={userRecord?.name ?? "Assistente"}
       />
     </div>
   );

@@ -271,6 +271,18 @@ exports.Prisma.CheckinTaskScalarFieldEnum = {
   checkinAccessToken: 'checkinAccessToken'
 };
 
+exports.Prisma.CheckinTaskMessageScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  role: 'role',
+  senderName: 'senderName',
+  createdAt: 'createdAt',
+  checkinTaskId: 'checkinTaskId',
+  attachmentId: 'attachmentId',
+  readByManagerAt: 'readByManagerAt',
+  readByWorkerAt: 'readByWorkerAt'
+};
+
 exports.Prisma.MaintenanceTicketScalarFieldEnum = {
   id: 'id',
   apartmentId: 'apartmentId',
@@ -310,7 +322,8 @@ exports.Prisma.AttachmentScalarFieldEnum = {
   extractedText: 'extractedText',
   createdAt: 'createdAt',
   maintenanceTicketId: 'maintenanceTicketId',
-  cleaningTaskId: 'cleaningTaskId'
+  cleaningTaskId: 'cleaningTaskId',
+  checkinTaskId: 'checkinTaskId'
 };
 
 exports.Prisma.ApartmentAttachmentScalarFieldEnum = {
@@ -493,6 +506,7 @@ exports.Prisma.ModelName = {
   CleaningTask: 'CleaningTask',
   CheckinChecklistItem: 'CheckinChecklistItem',
   CheckinTask: 'CheckinTask',
+  CheckinTaskMessage: 'CheckinTaskMessage',
   MaintenanceTicket: 'MaintenanceTicket',
   AIAssistantMessage: 'AIAssistantMessage',
   Attachment: 'Attachment',

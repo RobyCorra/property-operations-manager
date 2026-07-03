@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { setRomeTimeOnDate, preserveRomeTimeOnDate } from "@/src/lib/rome-datetime";
 import { getCurrentUserId } from "@/src/lib/tenant";
-import { sendPushToRole } from "@/src/lib/push";
+import { sendPushToRole, sendPushToUser } from "@/src/lib/push";
 import type { Role } from "@/src/generated/prisma/client";
 
 // Orario di check-in di default (ora di Roma) se non diversamente specificato.
@@ -179,4 +179,96 @@ export async function updateCheckinChecklist(
     data: { checklistProgress: merged as any },
   });
   revalidatePath("/dashboard/checkin");
+}
+
+// ── Chat del check-in ────────────────────────────────────────────────────────
+export async function getCheckinTaskMessages(taskId: string) {
+  return await prisma.checkinTaskMessage.findMany({
+    where: { checkinTaskId: taskId },
+    orderBy: { createdAt: "asc" },
+    include: { attachment: true },
+  });
+}
+
+export async function createCheckinTaskMessage(taskId: string, prevState: any, formData: FormData) {
+  const text = formData.get("text") as string;
+  const role = formData.get("role") as string; // MANAGER o CHECKIN
+  const senderName = formData.get("senderName") as string;
+  const blobUrl = formData.get("blobUrl") as string | null;
+
+  if (!taskId || !role || !senderName) {
+    return { error: "Dati mancanti per il messaggio." };
+  }
+  if (!text && !blobUrl) {
+    return { error: "Il messaggio non può essere vuoto." };
+  }
+
+  try {
+    const message = await prisma.checkinTaskMessage.create({
+      data: {
+        text: text || "",
+        role,
+        senderName,
+        checkinTaskId: taskId,
+        readByManagerAt: role === "MANAGER" ? new Date() : null,
+        readByWorkerAt: role !== "MANAGER" ? new Date() : null,
+      },
+    });
+
+    if (blobUrl) {
+      const filename = (formData.get("blobFilename") as string) ?? "allegato";
+      const mimeType = (formData.get("blobMimeType") as string) ?? "application/octet-stream";
+      const size = parseInt((formData.get("blobSize") as string) ?? "0", 10);
+      const attachment = await prisma.attachment.create({
+        data: { url: blobUrl, fileName: filename, fileType: mimeType, size, category: "OTHER", checkinTaskId: taskId },
+      });
+      await prisma.checkinTaskMessage.update({ where: { id: message.id }, data: { attachmentId: attachment.id } });
+    }
+
+    const task = await prisma.checkinTask.findUnique({
+      where: { id: taskId },
+      select: { assignedToId: true, apartment: { select: { organizationId: true } } },
+    });
+    const orgId = task?.apartment?.organizationId ?? null;
+
+    if (role === "MANAGER" && task?.assignedToId) {
+      await sendPushToUser(task.assignedToId, {
+        title: "💬 Messaggio dal Manager",
+        body: text ? `${senderName}: ${text.slice(0, 80)}` : `${senderName} ha inviato un allegato`,
+        url: `/dashboard/checkin/task/${taskId}`,
+        tag: `chat-checkin-${taskId}`,
+      }).catch(console.error);
+    } else if (role !== "MANAGER") {
+      await sendPushToRole(
+        "MANAGER" as Role,
+        {
+          title: `💬 Check-in — ${senderName}`,
+          body: text ? text.slice(0, 80) : "Ha inviato un allegato",
+          url: "/dashboard/manager",
+          tag: `chat-checkin-${taskId}`,
+        },
+        "chatCheckin",
+        orgId
+      ).catch(console.error);
+    }
+
+    revalidatePath("/dashboard/checkin");
+    revalidatePath(`/dashboard/checkin/task/${taskId}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Error creating check-in message:", error);
+    return { error: "Impossibile inviare il messaggio." };
+  }
+}
+
+// Marca come letti dall'assistente i messaggi del manager.
+export async function markCheckinMessagesReadByWorker(taskId: string) {
+  try {
+    await prisma.checkinTaskMessage.updateMany({
+      where: { checkinTaskId: taskId, role: "MANAGER", readByWorkerAt: null },
+      data: { readByWorkerAt: new Date() },
+    });
+  } catch (e) {
+    console.error("markCheckinMessagesReadByWorker", e);
+  }
 }

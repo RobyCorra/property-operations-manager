@@ -59,6 +59,11 @@ export type CheckinChecklistItem = $Result.DefaultSelection<Prisma.$CheckinCheck
  */
 export type CheckinTask = $Result.DefaultSelection<Prisma.$CheckinTaskPayload>
 /**
+ * Model CheckinTaskMessage
+ * 
+ */
+export type CheckinTaskMessage = $Result.DefaultSelection<Prisma.$CheckinTaskMessagePayload>
+/**
  * Model MaintenanceTicket
  * 
  */
@@ -387,6 +392,16 @@ export class PrismaClient<
     * ```
     */
   get checkinTask(): Prisma.CheckinTaskDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.checkinTaskMessage`: Exposes CRUD operations for the **CheckinTaskMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CheckinTaskMessages
+    * const checkinTaskMessages = await prisma.checkinTaskMessage.findMany()
+    * ```
+    */
+  get checkinTaskMessage(): Prisma.CheckinTaskMessageDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.maintenanceTicket`: Exposes CRUD operations for the **MaintenanceTicket** model.
@@ -1000,6 +1015,7 @@ export namespace Prisma {
     CleaningTask: 'CleaningTask',
     CheckinChecklistItem: 'CheckinChecklistItem',
     CheckinTask: 'CheckinTask',
+    CheckinTaskMessage: 'CheckinTaskMessage',
     MaintenanceTicket: 'MaintenanceTicket',
     AIAssistantMessage: 'AIAssistantMessage',
     Attachment: 'Attachment',
@@ -1032,7 +1048,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct"
+      modelProps: "organization" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1699,6 +1715,80 @@ export namespace Prisma {
           count: {
             args: Prisma.CheckinTaskCountArgs<ExtArgs>
             result: $Utils.Optional<CheckinTaskCountAggregateOutputType> | number
+          }
+        }
+      }
+      CheckinTaskMessage: {
+        payload: Prisma.$CheckinTaskMessagePayload<ExtArgs>
+        fields: Prisma.CheckinTaskMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CheckinTaskMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CheckinTaskMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.CheckinTaskMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CheckinTaskMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>
+          }
+          findMany: {
+            args: Prisma.CheckinTaskMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>[]
+          }
+          create: {
+            args: Prisma.CheckinTaskMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>
+          }
+          createMany: {
+            args: Prisma.CheckinTaskMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CheckinTaskMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.CheckinTaskMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>
+          }
+          update: {
+            args: Prisma.CheckinTaskMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.CheckinTaskMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CheckinTaskMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CheckinTaskMessageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>[]
+          }
+          upsert: {
+            args: Prisma.CheckinTaskMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckinTaskMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.CheckinTaskMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCheckinTaskMessage>
+          }
+          groupBy: {
+            args: Prisma.CheckinTaskMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CheckinTaskMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CheckinTaskMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<CheckinTaskMessageCountAggregateOutputType> | number
           }
         }
       }
@@ -3077,6 +3167,7 @@ export namespace Prisma {
     cleaningTask?: CleaningTaskOmit
     checkinChecklistItem?: CheckinChecklistItemOmit
     checkinTask?: CheckinTaskOmit
+    checkinTaskMessage?: CheckinTaskMessageOmit
     maintenanceTicket?: MaintenanceTicketOmit
     aIAssistantMessage?: AIAssistantMessageOmit
     attachment?: AttachmentOmit
@@ -3510,6 +3601,46 @@ export namespace Prisma {
 
 
   /**
+   * Count Type CheckinTaskCountOutputType
+   */
+
+  export type CheckinTaskCountOutputType = {
+    messages: number
+    attachments: number
+  }
+
+  export type CheckinTaskCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    messages?: boolean | CheckinTaskCountOutputTypeCountMessagesArgs
+    attachments?: boolean | CheckinTaskCountOutputTypeCountAttachmentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CheckinTaskCountOutputType without action
+   */
+  export type CheckinTaskCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskCountOutputType
+     */
+    select?: CheckinTaskCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CheckinTaskCountOutputType without action
+   */
+  export type CheckinTaskCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckinTaskMessageWhereInput
+  }
+
+  /**
+   * CheckinTaskCountOutputType without action
+   */
+  export type CheckinTaskCountOutputTypeCountAttachmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AttachmentWhereInput
+  }
+
+
+  /**
    * Count Type MaintenanceTicketCountOutputType
    */
 
@@ -3574,11 +3705,13 @@ export namespace Prisma {
   export type AttachmentCountOutputType = {
     messages: number
     cleaningMessages: number
+    checkinMessages: number
   }
 
   export type AttachmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     messages?: boolean | AttachmentCountOutputTypeCountMessagesArgs
     cleaningMessages?: boolean | AttachmentCountOutputTypeCountCleaningMessagesArgs
+    checkinMessages?: boolean | AttachmentCountOutputTypeCountCheckinMessagesArgs
   }
 
   // Custom InputTypes
@@ -3604,6 +3737,13 @@ export namespace Prisma {
    */
   export type AttachmentCountOutputTypeCountCleaningMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CleaningTaskMessageWhereInput
+  }
+
+  /**
+   * AttachmentCountOutputType without action
+   */
+  export type AttachmentCountOutputTypeCountCheckinMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckinTaskMessageWhereInput
   }
 
 
@@ -14475,6 +14615,9 @@ export namespace Prisma {
     booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
+    messages?: boolean | CheckinTask$messagesArgs<ExtArgs>
+    attachments?: boolean | CheckinTask$attachmentsArgs<ExtArgs>
+    _count?: boolean | CheckinTaskCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["checkinTask"]>
 
   export type CheckinTaskSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -14533,6 +14676,9 @@ export namespace Prisma {
     booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
+    messages?: boolean | CheckinTask$messagesArgs<ExtArgs>
+    attachments?: boolean | CheckinTask$attachmentsArgs<ExtArgs>
+    _count?: boolean | CheckinTaskCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CheckinTaskIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
@@ -14551,6 +14697,8 @@ export namespace Prisma {
       booking: Prisma.$BookingPayload<ExtArgs> | null
       apartment: Prisma.$ApartmentPayload<ExtArgs>
       assignedTo: Prisma.$UserPayload<ExtArgs> | null
+      messages: Prisma.$CheckinTaskMessagePayload<ExtArgs>[]
+      attachments: Prisma.$AttachmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -14962,6 +15110,8 @@ export namespace Prisma {
     booking<T extends CheckinTask$bookingArgs<ExtArgs> = {}>(args?: Subset<T, CheckinTask$bookingArgs<ExtArgs>>): Prisma__BookingClient<$Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     apartment<T extends ApartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApartmentDefaultArgs<ExtArgs>>): Prisma__ApartmentClient<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     assignedTo<T extends CheckinTask$assignedToArgs<ExtArgs> = {}>(args?: Subset<T, CheckinTask$assignedToArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    messages<T extends CheckinTask$messagesArgs<ExtArgs> = {}>(args?: Subset<T, CheckinTask$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    attachments<T extends CheckinTask$attachmentsArgs<ExtArgs> = {}>(args?: Subset<T, CheckinTask$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15442,6 +15592,54 @@ export namespace Prisma {
   }
 
   /**
+   * CheckinTask.messages
+   */
+  export type CheckinTask$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    where?: CheckinTaskMessageWhereInput
+    orderBy?: CheckinTaskMessageOrderByWithRelationInput | CheckinTaskMessageOrderByWithRelationInput[]
+    cursor?: CheckinTaskMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CheckinTaskMessageScalarFieldEnum | CheckinTaskMessageScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinTask.attachments
+   */
+  export type CheckinTask$attachmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Attachment
+     */
+    select?: AttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Attachment
+     */
+    omit?: AttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AttachmentInclude<ExtArgs> | null
+    where?: AttachmentWhereInput
+    orderBy?: AttachmentOrderByWithRelationInput | AttachmentOrderByWithRelationInput[]
+    cursor?: AttachmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AttachmentScalarFieldEnum | AttachmentScalarFieldEnum[]
+  }
+
+  /**
    * CheckinTask without action
    */
   export type CheckinTaskDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15457,6 +15655,1148 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CheckinTaskInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CheckinTaskMessage
+   */
+
+  export type AggregateCheckinTaskMessage = {
+    _count: CheckinTaskMessageCountAggregateOutputType | null
+    _min: CheckinTaskMessageMinAggregateOutputType | null
+    _max: CheckinTaskMessageMaxAggregateOutputType | null
+  }
+
+  export type CheckinTaskMessageMinAggregateOutputType = {
+    id: string | null
+    text: string | null
+    role: string | null
+    senderName: string | null
+    createdAt: Date | null
+    checkinTaskId: string | null
+    attachmentId: string | null
+    readByManagerAt: Date | null
+    readByWorkerAt: Date | null
+  }
+
+  export type CheckinTaskMessageMaxAggregateOutputType = {
+    id: string | null
+    text: string | null
+    role: string | null
+    senderName: string | null
+    createdAt: Date | null
+    checkinTaskId: string | null
+    attachmentId: string | null
+    readByManagerAt: Date | null
+    readByWorkerAt: Date | null
+  }
+
+  export type CheckinTaskMessageCountAggregateOutputType = {
+    id: number
+    text: number
+    role: number
+    senderName: number
+    createdAt: number
+    checkinTaskId: number
+    attachmentId: number
+    readByManagerAt: number
+    readByWorkerAt: number
+    _all: number
+  }
+
+
+  export type CheckinTaskMessageMinAggregateInputType = {
+    id?: true
+    text?: true
+    role?: true
+    senderName?: true
+    createdAt?: true
+    checkinTaskId?: true
+    attachmentId?: true
+    readByManagerAt?: true
+    readByWorkerAt?: true
+  }
+
+  export type CheckinTaskMessageMaxAggregateInputType = {
+    id?: true
+    text?: true
+    role?: true
+    senderName?: true
+    createdAt?: true
+    checkinTaskId?: true
+    attachmentId?: true
+    readByManagerAt?: true
+    readByWorkerAt?: true
+  }
+
+  export type CheckinTaskMessageCountAggregateInputType = {
+    id?: true
+    text?: true
+    role?: true
+    senderName?: true
+    createdAt?: true
+    checkinTaskId?: true
+    attachmentId?: true
+    readByManagerAt?: true
+    readByWorkerAt?: true
+    _all?: true
+  }
+
+  export type CheckinTaskMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CheckinTaskMessage to aggregate.
+     */
+    where?: CheckinTaskMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinTaskMessages to fetch.
+     */
+    orderBy?: CheckinTaskMessageOrderByWithRelationInput | CheckinTaskMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CheckinTaskMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinTaskMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinTaskMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CheckinTaskMessages
+    **/
+    _count?: true | CheckinTaskMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CheckinTaskMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CheckinTaskMessageMaxAggregateInputType
+  }
+
+  export type GetCheckinTaskMessageAggregateType<T extends CheckinTaskMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateCheckinTaskMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCheckinTaskMessage[P]>
+      : GetScalarType<T[P], AggregateCheckinTaskMessage[P]>
+  }
+
+
+
+
+  export type CheckinTaskMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckinTaskMessageWhereInput
+    orderBy?: CheckinTaskMessageOrderByWithAggregationInput | CheckinTaskMessageOrderByWithAggregationInput[]
+    by: CheckinTaskMessageScalarFieldEnum[] | CheckinTaskMessageScalarFieldEnum
+    having?: CheckinTaskMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CheckinTaskMessageCountAggregateInputType | true
+    _min?: CheckinTaskMessageMinAggregateInputType
+    _max?: CheckinTaskMessageMaxAggregateInputType
+  }
+
+  export type CheckinTaskMessageGroupByOutputType = {
+    id: string
+    text: string | null
+    role: string
+    senderName: string
+    createdAt: Date
+    checkinTaskId: string
+    attachmentId: string | null
+    readByManagerAt: Date | null
+    readByWorkerAt: Date | null
+    _count: CheckinTaskMessageCountAggregateOutputType | null
+    _min: CheckinTaskMessageMinAggregateOutputType | null
+    _max: CheckinTaskMessageMaxAggregateOutputType | null
+  }
+
+  type GetCheckinTaskMessageGroupByPayload<T extends CheckinTaskMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CheckinTaskMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CheckinTaskMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CheckinTaskMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], CheckinTaskMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CheckinTaskMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    text?: boolean
+    role?: boolean
+    senderName?: boolean
+    createdAt?: boolean
+    checkinTaskId?: boolean
+    attachmentId?: boolean
+    readByManagerAt?: boolean
+    readByWorkerAt?: boolean
+    checkinTask?: boolean | CheckinTaskDefaultArgs<ExtArgs>
+    attachment?: boolean | CheckinTaskMessage$attachmentArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinTaskMessage"]>
+
+  export type CheckinTaskMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    text?: boolean
+    role?: boolean
+    senderName?: boolean
+    createdAt?: boolean
+    checkinTaskId?: boolean
+    attachmentId?: boolean
+    readByManagerAt?: boolean
+    readByWorkerAt?: boolean
+    checkinTask?: boolean | CheckinTaskDefaultArgs<ExtArgs>
+    attachment?: boolean | CheckinTaskMessage$attachmentArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinTaskMessage"]>
+
+  export type CheckinTaskMessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    text?: boolean
+    role?: boolean
+    senderName?: boolean
+    createdAt?: boolean
+    checkinTaskId?: boolean
+    attachmentId?: boolean
+    readByManagerAt?: boolean
+    readByWorkerAt?: boolean
+    checkinTask?: boolean | CheckinTaskDefaultArgs<ExtArgs>
+    attachment?: boolean | CheckinTaskMessage$attachmentArgs<ExtArgs>
+  }, ExtArgs["result"]["checkinTaskMessage"]>
+
+  export type CheckinTaskMessageSelectScalar = {
+    id?: boolean
+    text?: boolean
+    role?: boolean
+    senderName?: boolean
+    createdAt?: boolean
+    checkinTaskId?: boolean
+    attachmentId?: boolean
+    readByManagerAt?: boolean
+    readByWorkerAt?: boolean
+  }
+
+  export type CheckinTaskMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "text" | "role" | "senderName" | "createdAt" | "checkinTaskId" | "attachmentId" | "readByManagerAt" | "readByWorkerAt", ExtArgs["result"]["checkinTaskMessage"]>
+  export type CheckinTaskMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    checkinTask?: boolean | CheckinTaskDefaultArgs<ExtArgs>
+    attachment?: boolean | CheckinTaskMessage$attachmentArgs<ExtArgs>
+  }
+  export type CheckinTaskMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    checkinTask?: boolean | CheckinTaskDefaultArgs<ExtArgs>
+    attachment?: boolean | CheckinTaskMessage$attachmentArgs<ExtArgs>
+  }
+  export type CheckinTaskMessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    checkinTask?: boolean | CheckinTaskDefaultArgs<ExtArgs>
+    attachment?: boolean | CheckinTaskMessage$attachmentArgs<ExtArgs>
+  }
+
+  export type $CheckinTaskMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CheckinTaskMessage"
+    objects: {
+      checkinTask: Prisma.$CheckinTaskPayload<ExtArgs>
+      attachment: Prisma.$AttachmentPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      text: string | null
+      role: string
+      senderName: string
+      createdAt: Date
+      checkinTaskId: string
+      attachmentId: string | null
+      readByManagerAt: Date | null
+      readByWorkerAt: Date | null
+    }, ExtArgs["result"]["checkinTaskMessage"]>
+    composites: {}
+  }
+
+  type CheckinTaskMessageGetPayload<S extends boolean | null | undefined | CheckinTaskMessageDefaultArgs> = $Result.GetResult<Prisma.$CheckinTaskMessagePayload, S>
+
+  type CheckinTaskMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CheckinTaskMessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CheckinTaskMessageCountAggregateInputType | true
+    }
+
+  export interface CheckinTaskMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CheckinTaskMessage'], meta: { name: 'CheckinTaskMessage' } }
+    /**
+     * Find zero or one CheckinTaskMessage that matches the filter.
+     * @param {CheckinTaskMessageFindUniqueArgs} args - Arguments to find a CheckinTaskMessage
+     * @example
+     * // Get one CheckinTaskMessage
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CheckinTaskMessageFindUniqueArgs>(args: SelectSubset<T, CheckinTaskMessageFindUniqueArgs<ExtArgs>>): Prisma__CheckinTaskMessageClient<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CheckinTaskMessage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CheckinTaskMessageFindUniqueOrThrowArgs} args - Arguments to find a CheckinTaskMessage
+     * @example
+     * // Get one CheckinTaskMessage
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CheckinTaskMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, CheckinTaskMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CheckinTaskMessageClient<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CheckinTaskMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskMessageFindFirstArgs} args - Arguments to find a CheckinTaskMessage
+     * @example
+     * // Get one CheckinTaskMessage
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CheckinTaskMessageFindFirstArgs>(args?: SelectSubset<T, CheckinTaskMessageFindFirstArgs<ExtArgs>>): Prisma__CheckinTaskMessageClient<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CheckinTaskMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskMessageFindFirstOrThrowArgs} args - Arguments to find a CheckinTaskMessage
+     * @example
+     * // Get one CheckinTaskMessage
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CheckinTaskMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, CheckinTaskMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__CheckinTaskMessageClient<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CheckinTaskMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CheckinTaskMessages
+     * const checkinTaskMessages = await prisma.checkinTaskMessage.findMany()
+     * 
+     * // Get first 10 CheckinTaskMessages
+     * const checkinTaskMessages = await prisma.checkinTaskMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const checkinTaskMessageWithIdOnly = await prisma.checkinTaskMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CheckinTaskMessageFindManyArgs>(args?: SelectSubset<T, CheckinTaskMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CheckinTaskMessage.
+     * @param {CheckinTaskMessageCreateArgs} args - Arguments to create a CheckinTaskMessage.
+     * @example
+     * // Create one CheckinTaskMessage
+     * const CheckinTaskMessage = await prisma.checkinTaskMessage.create({
+     *   data: {
+     *     // ... data to create a CheckinTaskMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends CheckinTaskMessageCreateArgs>(args: SelectSubset<T, CheckinTaskMessageCreateArgs<ExtArgs>>): Prisma__CheckinTaskMessageClient<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CheckinTaskMessages.
+     * @param {CheckinTaskMessageCreateManyArgs} args - Arguments to create many CheckinTaskMessages.
+     * @example
+     * // Create many CheckinTaskMessages
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CheckinTaskMessageCreateManyArgs>(args?: SelectSubset<T, CheckinTaskMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CheckinTaskMessages and returns the data saved in the database.
+     * @param {CheckinTaskMessageCreateManyAndReturnArgs} args - Arguments to create many CheckinTaskMessages.
+     * @example
+     * // Create many CheckinTaskMessages
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CheckinTaskMessages and only return the `id`
+     * const checkinTaskMessageWithIdOnly = await prisma.checkinTaskMessage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CheckinTaskMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, CheckinTaskMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CheckinTaskMessage.
+     * @param {CheckinTaskMessageDeleteArgs} args - Arguments to delete one CheckinTaskMessage.
+     * @example
+     * // Delete one CheckinTaskMessage
+     * const CheckinTaskMessage = await prisma.checkinTaskMessage.delete({
+     *   where: {
+     *     // ... filter to delete one CheckinTaskMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CheckinTaskMessageDeleteArgs>(args: SelectSubset<T, CheckinTaskMessageDeleteArgs<ExtArgs>>): Prisma__CheckinTaskMessageClient<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CheckinTaskMessage.
+     * @param {CheckinTaskMessageUpdateArgs} args - Arguments to update one CheckinTaskMessage.
+     * @example
+     * // Update one CheckinTaskMessage
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CheckinTaskMessageUpdateArgs>(args: SelectSubset<T, CheckinTaskMessageUpdateArgs<ExtArgs>>): Prisma__CheckinTaskMessageClient<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CheckinTaskMessages.
+     * @param {CheckinTaskMessageDeleteManyArgs} args - Arguments to filter CheckinTaskMessages to delete.
+     * @example
+     * // Delete a few CheckinTaskMessages
+     * const { count } = await prisma.checkinTaskMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CheckinTaskMessageDeleteManyArgs>(args?: SelectSubset<T, CheckinTaskMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CheckinTaskMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CheckinTaskMessages
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CheckinTaskMessageUpdateManyArgs>(args: SelectSubset<T, CheckinTaskMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CheckinTaskMessages and returns the data updated in the database.
+     * @param {CheckinTaskMessageUpdateManyAndReturnArgs} args - Arguments to update many CheckinTaskMessages.
+     * @example
+     * // Update many CheckinTaskMessages
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CheckinTaskMessages and only return the `id`
+     * const checkinTaskMessageWithIdOnly = await prisma.checkinTaskMessage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CheckinTaskMessageUpdateManyAndReturnArgs>(args: SelectSubset<T, CheckinTaskMessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CheckinTaskMessage.
+     * @param {CheckinTaskMessageUpsertArgs} args - Arguments to update or create a CheckinTaskMessage.
+     * @example
+     * // Update or create a CheckinTaskMessage
+     * const checkinTaskMessage = await prisma.checkinTaskMessage.upsert({
+     *   create: {
+     *     // ... data to create a CheckinTaskMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CheckinTaskMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CheckinTaskMessageUpsertArgs>(args: SelectSubset<T, CheckinTaskMessageUpsertArgs<ExtArgs>>): Prisma__CheckinTaskMessageClient<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CheckinTaskMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskMessageCountArgs} args - Arguments to filter CheckinTaskMessages to count.
+     * @example
+     * // Count the number of CheckinTaskMessages
+     * const count = await prisma.checkinTaskMessage.count({
+     *   where: {
+     *     // ... the filter for the CheckinTaskMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends CheckinTaskMessageCountArgs>(
+      args?: Subset<T, CheckinTaskMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CheckinTaskMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CheckinTaskMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CheckinTaskMessageAggregateArgs>(args: Subset<T, CheckinTaskMessageAggregateArgs>): Prisma.PrismaPromise<GetCheckinTaskMessageAggregateType<T>>
+
+    /**
+     * Group by CheckinTaskMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckinTaskMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CheckinTaskMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CheckinTaskMessageGroupByArgs['orderBy'] }
+        : { orderBy?: CheckinTaskMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CheckinTaskMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCheckinTaskMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CheckinTaskMessage model
+   */
+  readonly fields: CheckinTaskMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CheckinTaskMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CheckinTaskMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    checkinTask<T extends CheckinTaskDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CheckinTaskDefaultArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    attachment<T extends CheckinTaskMessage$attachmentArgs<ExtArgs> = {}>(args?: Subset<T, CheckinTaskMessage$attachmentArgs<ExtArgs>>): Prisma__AttachmentClient<$Result.GetResult<Prisma.$AttachmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CheckinTaskMessage model
+   */
+  interface CheckinTaskMessageFieldRefs {
+    readonly id: FieldRef<"CheckinTaskMessage", 'String'>
+    readonly text: FieldRef<"CheckinTaskMessage", 'String'>
+    readonly role: FieldRef<"CheckinTaskMessage", 'String'>
+    readonly senderName: FieldRef<"CheckinTaskMessage", 'String'>
+    readonly createdAt: FieldRef<"CheckinTaskMessage", 'DateTime'>
+    readonly checkinTaskId: FieldRef<"CheckinTaskMessage", 'String'>
+    readonly attachmentId: FieldRef<"CheckinTaskMessage", 'String'>
+    readonly readByManagerAt: FieldRef<"CheckinTaskMessage", 'DateTime'>
+    readonly readByWorkerAt: FieldRef<"CheckinTaskMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CheckinTaskMessage findUnique
+   */
+  export type CheckinTaskMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTaskMessage to fetch.
+     */
+    where: CheckinTaskMessageWhereUniqueInput
+  }
+
+  /**
+   * CheckinTaskMessage findUniqueOrThrow
+   */
+  export type CheckinTaskMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTaskMessage to fetch.
+     */
+    where: CheckinTaskMessageWhereUniqueInput
+  }
+
+  /**
+   * CheckinTaskMessage findFirst
+   */
+  export type CheckinTaskMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTaskMessage to fetch.
+     */
+    where?: CheckinTaskMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinTaskMessages to fetch.
+     */
+    orderBy?: CheckinTaskMessageOrderByWithRelationInput | CheckinTaskMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CheckinTaskMessages.
+     */
+    cursor?: CheckinTaskMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinTaskMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinTaskMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinTaskMessages.
+     */
+    distinct?: CheckinTaskMessageScalarFieldEnum | CheckinTaskMessageScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinTaskMessage findFirstOrThrow
+   */
+  export type CheckinTaskMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTaskMessage to fetch.
+     */
+    where?: CheckinTaskMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinTaskMessages to fetch.
+     */
+    orderBy?: CheckinTaskMessageOrderByWithRelationInput | CheckinTaskMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CheckinTaskMessages.
+     */
+    cursor?: CheckinTaskMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinTaskMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinTaskMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinTaskMessages.
+     */
+    distinct?: CheckinTaskMessageScalarFieldEnum | CheckinTaskMessageScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinTaskMessage findMany
+   */
+  export type CheckinTaskMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckinTaskMessages to fetch.
+     */
+    where?: CheckinTaskMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckinTaskMessages to fetch.
+     */
+    orderBy?: CheckinTaskMessageOrderByWithRelationInput | CheckinTaskMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CheckinTaskMessages.
+     */
+    cursor?: CheckinTaskMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckinTaskMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckinTaskMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckinTaskMessages.
+     */
+    distinct?: CheckinTaskMessageScalarFieldEnum | CheckinTaskMessageScalarFieldEnum[]
+  }
+
+  /**
+   * CheckinTaskMessage create
+   */
+  export type CheckinTaskMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CheckinTaskMessage.
+     */
+    data: XOR<CheckinTaskMessageCreateInput, CheckinTaskMessageUncheckedCreateInput>
+  }
+
+  /**
+   * CheckinTaskMessage createMany
+   */
+  export type CheckinTaskMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CheckinTaskMessages.
+     */
+    data: CheckinTaskMessageCreateManyInput | CheckinTaskMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CheckinTaskMessage createManyAndReturn
+   */
+  export type CheckinTaskMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * The data used to create many CheckinTaskMessages.
+     */
+    data: CheckinTaskMessageCreateManyInput | CheckinTaskMessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CheckinTaskMessage update
+   */
+  export type CheckinTaskMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CheckinTaskMessage.
+     */
+    data: XOR<CheckinTaskMessageUpdateInput, CheckinTaskMessageUncheckedUpdateInput>
+    /**
+     * Choose, which CheckinTaskMessage to update.
+     */
+    where: CheckinTaskMessageWhereUniqueInput
+  }
+
+  /**
+   * CheckinTaskMessage updateMany
+   */
+  export type CheckinTaskMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CheckinTaskMessages.
+     */
+    data: XOR<CheckinTaskMessageUpdateManyMutationInput, CheckinTaskMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which CheckinTaskMessages to update
+     */
+    where?: CheckinTaskMessageWhereInput
+    /**
+     * Limit how many CheckinTaskMessages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CheckinTaskMessage updateManyAndReturn
+   */
+  export type CheckinTaskMessageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * The data used to update CheckinTaskMessages.
+     */
+    data: XOR<CheckinTaskMessageUpdateManyMutationInput, CheckinTaskMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which CheckinTaskMessages to update
+     */
+    where?: CheckinTaskMessageWhereInput
+    /**
+     * Limit how many CheckinTaskMessages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CheckinTaskMessage upsert
+   */
+  export type CheckinTaskMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CheckinTaskMessage to update in case it exists.
+     */
+    where: CheckinTaskMessageWhereUniqueInput
+    /**
+     * In case the CheckinTaskMessage found by the `where` argument doesn't exist, create a new CheckinTaskMessage with this data.
+     */
+    create: XOR<CheckinTaskMessageCreateInput, CheckinTaskMessageUncheckedCreateInput>
+    /**
+     * In case the CheckinTaskMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CheckinTaskMessageUpdateInput, CheckinTaskMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * CheckinTaskMessage delete
+   */
+  export type CheckinTaskMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    /**
+     * Filter which CheckinTaskMessage to delete.
+     */
+    where: CheckinTaskMessageWhereUniqueInput
+  }
+
+  /**
+   * CheckinTaskMessage deleteMany
+   */
+  export type CheckinTaskMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CheckinTaskMessages to delete
+     */
+    where?: CheckinTaskMessageWhereInput
+    /**
+     * Limit how many CheckinTaskMessages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CheckinTaskMessage.attachment
+   */
+  export type CheckinTaskMessage$attachmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Attachment
+     */
+    select?: AttachmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Attachment
+     */
+    omit?: AttachmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AttachmentInclude<ExtArgs> | null
+    where?: AttachmentWhereInput
+  }
+
+  /**
+   * CheckinTaskMessage without action
+   */
+  export type CheckinTaskMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
   }
 
 
@@ -17992,6 +19332,7 @@ export namespace Prisma {
     createdAt: Date | null
     maintenanceTicketId: string | null
     cleaningTaskId: string | null
+    checkinTaskId: string | null
   }
 
   export type AttachmentMaxAggregateOutputType = {
@@ -18005,6 +19346,7 @@ export namespace Prisma {
     createdAt: Date | null
     maintenanceTicketId: string | null
     cleaningTaskId: string | null
+    checkinTaskId: string | null
   }
 
   export type AttachmentCountAggregateOutputType = {
@@ -18018,6 +19360,7 @@ export namespace Prisma {
     createdAt: number
     maintenanceTicketId: number
     cleaningTaskId: number
+    checkinTaskId: number
     _all: number
   }
 
@@ -18041,6 +19384,7 @@ export namespace Prisma {
     createdAt?: true
     maintenanceTicketId?: true
     cleaningTaskId?: true
+    checkinTaskId?: true
   }
 
   export type AttachmentMaxAggregateInputType = {
@@ -18054,6 +19398,7 @@ export namespace Prisma {
     createdAt?: true
     maintenanceTicketId?: true
     cleaningTaskId?: true
+    checkinTaskId?: true
   }
 
   export type AttachmentCountAggregateInputType = {
@@ -18067,6 +19412,7 @@ export namespace Prisma {
     createdAt?: true
     maintenanceTicketId?: true
     cleaningTaskId?: true
+    checkinTaskId?: true
     _all?: true
   }
 
@@ -18167,6 +19513,7 @@ export namespace Prisma {
     createdAt: Date
     maintenanceTicketId: string | null
     cleaningTaskId: string | null
+    checkinTaskId: string | null
     _count: AttachmentCountAggregateOutputType | null
     _avg: AttachmentAvgAggregateOutputType | null
     _sum: AttachmentSumAggregateOutputType | null
@@ -18199,10 +19546,13 @@ export namespace Prisma {
     createdAt?: boolean
     maintenanceTicketId?: boolean
     cleaningTaskId?: boolean
+    checkinTaskId?: boolean
     maintenanceTicket?: boolean | Attachment$maintenanceTicketArgs<ExtArgs>
     cleaningTask?: boolean | Attachment$cleaningTaskArgs<ExtArgs>
+    checkinTask?: boolean | Attachment$checkinTaskArgs<ExtArgs>
     messages?: boolean | Attachment$messagesArgs<ExtArgs>
     cleaningMessages?: boolean | Attachment$cleaningMessagesArgs<ExtArgs>
+    checkinMessages?: boolean | Attachment$checkinMessagesArgs<ExtArgs>
     _count?: boolean | AttachmentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["attachment"]>
 
@@ -18217,8 +19567,10 @@ export namespace Prisma {
     createdAt?: boolean
     maintenanceTicketId?: boolean
     cleaningTaskId?: boolean
+    checkinTaskId?: boolean
     maintenanceTicket?: boolean | Attachment$maintenanceTicketArgs<ExtArgs>
     cleaningTask?: boolean | Attachment$cleaningTaskArgs<ExtArgs>
+    checkinTask?: boolean | Attachment$checkinTaskArgs<ExtArgs>
   }, ExtArgs["result"]["attachment"]>
 
   export type AttachmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -18232,8 +19584,10 @@ export namespace Prisma {
     createdAt?: boolean
     maintenanceTicketId?: boolean
     cleaningTaskId?: boolean
+    checkinTaskId?: boolean
     maintenanceTicket?: boolean | Attachment$maintenanceTicketArgs<ExtArgs>
     cleaningTask?: boolean | Attachment$cleaningTaskArgs<ExtArgs>
+    checkinTask?: boolean | Attachment$checkinTaskArgs<ExtArgs>
   }, ExtArgs["result"]["attachment"]>
 
   export type AttachmentSelectScalar = {
@@ -18247,23 +19601,28 @@ export namespace Prisma {
     createdAt?: boolean
     maintenanceTicketId?: boolean
     cleaningTaskId?: boolean
+    checkinTaskId?: boolean
   }
 
-  export type AttachmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "url" | "fileName" | "fileType" | "size" | "category" | "extractedText" | "createdAt" | "maintenanceTicketId" | "cleaningTaskId", ExtArgs["result"]["attachment"]>
+  export type AttachmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "url" | "fileName" | "fileType" | "size" | "category" | "extractedText" | "createdAt" | "maintenanceTicketId" | "cleaningTaskId" | "checkinTaskId", ExtArgs["result"]["attachment"]>
   export type AttachmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     maintenanceTicket?: boolean | Attachment$maintenanceTicketArgs<ExtArgs>
     cleaningTask?: boolean | Attachment$cleaningTaskArgs<ExtArgs>
+    checkinTask?: boolean | Attachment$checkinTaskArgs<ExtArgs>
     messages?: boolean | Attachment$messagesArgs<ExtArgs>
     cleaningMessages?: boolean | Attachment$cleaningMessagesArgs<ExtArgs>
+    checkinMessages?: boolean | Attachment$checkinMessagesArgs<ExtArgs>
     _count?: boolean | AttachmentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AttachmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     maintenanceTicket?: boolean | Attachment$maintenanceTicketArgs<ExtArgs>
     cleaningTask?: boolean | Attachment$cleaningTaskArgs<ExtArgs>
+    checkinTask?: boolean | Attachment$checkinTaskArgs<ExtArgs>
   }
   export type AttachmentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     maintenanceTicket?: boolean | Attachment$maintenanceTicketArgs<ExtArgs>
     cleaningTask?: boolean | Attachment$cleaningTaskArgs<ExtArgs>
+    checkinTask?: boolean | Attachment$checkinTaskArgs<ExtArgs>
   }
 
   export type $AttachmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18271,8 +19630,10 @@ export namespace Prisma {
     objects: {
       maintenanceTicket: Prisma.$MaintenanceTicketPayload<ExtArgs> | null
       cleaningTask: Prisma.$CleaningTaskPayload<ExtArgs> | null
+      checkinTask: Prisma.$CheckinTaskPayload<ExtArgs> | null
       messages: Prisma.$MessagePayload<ExtArgs>[]
       cleaningMessages: Prisma.$CleaningTaskMessagePayload<ExtArgs>[]
+      checkinMessages: Prisma.$CheckinTaskMessagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -18285,6 +19646,7 @@ export namespace Prisma {
       createdAt: Date
       maintenanceTicketId: string | null
       cleaningTaskId: string | null
+      checkinTaskId: string | null
     }, ExtArgs["result"]["attachment"]>
     composites: {}
   }
@@ -18681,8 +20043,10 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     maintenanceTicket<T extends Attachment$maintenanceTicketArgs<ExtArgs> = {}>(args?: Subset<T, Attachment$maintenanceTicketArgs<ExtArgs>>): Prisma__MaintenanceTicketClient<$Result.GetResult<Prisma.$MaintenanceTicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     cleaningTask<T extends Attachment$cleaningTaskArgs<ExtArgs> = {}>(args?: Subset<T, Attachment$cleaningTaskArgs<ExtArgs>>): Prisma__CleaningTaskClient<$Result.GetResult<Prisma.$CleaningTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    checkinTask<T extends Attachment$checkinTaskArgs<ExtArgs> = {}>(args?: Subset<T, Attachment$checkinTaskArgs<ExtArgs>>): Prisma__CheckinTaskClient<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     messages<T extends Attachment$messagesArgs<ExtArgs> = {}>(args?: Subset<T, Attachment$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     cleaningMessages<T extends Attachment$cleaningMessagesArgs<ExtArgs> = {}>(args?: Subset<T, Attachment$cleaningMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CleaningTaskMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    checkinMessages<T extends Attachment$checkinMessagesArgs<ExtArgs> = {}>(args?: Subset<T, Attachment$checkinMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -18722,6 +20086,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Attachment", 'DateTime'>
     readonly maintenanceTicketId: FieldRef<"Attachment", 'String'>
     readonly cleaningTaskId: FieldRef<"Attachment", 'String'>
+    readonly checkinTaskId: FieldRef<"Attachment", 'String'>
   }
     
 
@@ -19161,6 +20526,25 @@ export namespace Prisma {
   }
 
   /**
+   * Attachment.checkinTask
+   */
+  export type Attachment$checkinTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTask
+     */
+    select?: CheckinTaskSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTask
+     */
+    omit?: CheckinTaskOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskInclude<ExtArgs> | null
+    where?: CheckinTaskWhereInput
+  }
+
+  /**
    * Attachment.messages
    */
   export type Attachment$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -19206,6 +20590,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CleaningTaskMessageScalarFieldEnum | CleaningTaskMessageScalarFieldEnum[]
+  }
+
+  /**
+   * Attachment.checkinMessages
+   */
+  export type Attachment$checkinMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckinTaskMessage
+     */
+    select?: CheckinTaskMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckinTaskMessage
+     */
+    omit?: CheckinTaskMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckinTaskMessageInclude<ExtArgs> | null
+    where?: CheckinTaskMessageWhereInput
+    orderBy?: CheckinTaskMessageOrderByWithRelationInput | CheckinTaskMessageOrderByWithRelationInput[]
+    cursor?: CheckinTaskMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CheckinTaskMessageScalarFieldEnum | CheckinTaskMessageScalarFieldEnum[]
   }
 
   /**
@@ -34772,6 +36180,21 @@ export namespace Prisma {
   export type CheckinTaskScalarFieldEnum = (typeof CheckinTaskScalarFieldEnum)[keyof typeof CheckinTaskScalarFieldEnum]
 
 
+  export const CheckinTaskMessageScalarFieldEnum: {
+    id: 'id',
+    text: 'text',
+    role: 'role',
+    senderName: 'senderName',
+    createdAt: 'createdAt',
+    checkinTaskId: 'checkinTaskId',
+    attachmentId: 'attachmentId',
+    readByManagerAt: 'readByManagerAt',
+    readByWorkerAt: 'readByWorkerAt'
+  };
+
+  export type CheckinTaskMessageScalarFieldEnum = (typeof CheckinTaskMessageScalarFieldEnum)[keyof typeof CheckinTaskMessageScalarFieldEnum]
+
+
   export const MaintenanceTicketScalarFieldEnum: {
     id: 'id',
     apartmentId: 'apartmentId',
@@ -34817,7 +36240,8 @@ export namespace Prisma {
     extractedText: 'extractedText',
     createdAt: 'createdAt',
     maintenanceTicketId: 'maintenanceTicketId',
-    cleaningTaskId: 'cleaningTaskId'
+    cleaningTaskId: 'cleaningTaskId',
+    checkinTaskId: 'checkinTaskId'
   };
 
   export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
@@ -36077,6 +37501,8 @@ export namespace Prisma {
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    messages?: CheckinTaskMessageListRelationFilter
+    attachments?: AttachmentListRelationFilter
   }
 
   export type CheckinTaskOrderByWithRelationInput = {
@@ -36095,6 +37521,8 @@ export namespace Prisma {
     booking?: BookingOrderByWithRelationInput
     apartment?: ApartmentOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
+    messages?: CheckinTaskMessageOrderByRelationAggregateInput
+    attachments?: AttachmentOrderByRelationAggregateInput
   }
 
   export type CheckinTaskWhereUniqueInput = Prisma.AtLeast<{
@@ -36116,6 +37544,8 @@ export namespace Prisma {
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    messages?: CheckinTaskMessageListRelationFilter
+    attachments?: AttachmentListRelationFilter
   }, "id" | "bookingId" | "checkinAccessToken">
 
   export type CheckinTaskOrderByWithAggregationInput = {
@@ -36152,6 +37582,84 @@ export namespace Prisma {
     bookingId?: StringNullableWithAggregatesFilter<"CheckinTask"> | string | null
     checklistProgress?: JsonNullableWithAggregatesFilter<"CheckinTask">
     checkinAccessToken?: StringNullableWithAggregatesFilter<"CheckinTask"> | string | null
+  }
+
+  export type CheckinTaskMessageWhereInput = {
+    AND?: CheckinTaskMessageWhereInput | CheckinTaskMessageWhereInput[]
+    OR?: CheckinTaskMessageWhereInput[]
+    NOT?: CheckinTaskMessageWhereInput | CheckinTaskMessageWhereInput[]
+    id?: StringFilter<"CheckinTaskMessage"> | string
+    text?: StringNullableFilter<"CheckinTaskMessage"> | string | null
+    role?: StringFilter<"CheckinTaskMessage"> | string
+    senderName?: StringFilter<"CheckinTaskMessage"> | string
+    createdAt?: DateTimeFilter<"CheckinTaskMessage"> | Date | string
+    checkinTaskId?: StringFilter<"CheckinTaskMessage"> | string
+    attachmentId?: StringNullableFilter<"CheckinTaskMessage"> | string | null
+    readByManagerAt?: DateTimeNullableFilter<"CheckinTaskMessage"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"CheckinTaskMessage"> | Date | string | null
+    checkinTask?: XOR<CheckinTaskScalarRelationFilter, CheckinTaskWhereInput>
+    attachment?: XOR<AttachmentNullableScalarRelationFilter, AttachmentWhereInput> | null
+  }
+
+  export type CheckinTaskMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    text?: SortOrderInput | SortOrder
+    role?: SortOrder
+    senderName?: SortOrder
+    createdAt?: SortOrder
+    checkinTaskId?: SortOrder
+    attachmentId?: SortOrderInput | SortOrder
+    readByManagerAt?: SortOrderInput | SortOrder
+    readByWorkerAt?: SortOrderInput | SortOrder
+    checkinTask?: CheckinTaskOrderByWithRelationInput
+    attachment?: AttachmentOrderByWithRelationInput
+  }
+
+  export type CheckinTaskMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CheckinTaskMessageWhereInput | CheckinTaskMessageWhereInput[]
+    OR?: CheckinTaskMessageWhereInput[]
+    NOT?: CheckinTaskMessageWhereInput | CheckinTaskMessageWhereInput[]
+    text?: StringNullableFilter<"CheckinTaskMessage"> | string | null
+    role?: StringFilter<"CheckinTaskMessage"> | string
+    senderName?: StringFilter<"CheckinTaskMessage"> | string
+    createdAt?: DateTimeFilter<"CheckinTaskMessage"> | Date | string
+    checkinTaskId?: StringFilter<"CheckinTaskMessage"> | string
+    attachmentId?: StringNullableFilter<"CheckinTaskMessage"> | string | null
+    readByManagerAt?: DateTimeNullableFilter<"CheckinTaskMessage"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"CheckinTaskMessage"> | Date | string | null
+    checkinTask?: XOR<CheckinTaskScalarRelationFilter, CheckinTaskWhereInput>
+    attachment?: XOR<AttachmentNullableScalarRelationFilter, AttachmentWhereInput> | null
+  }, "id">
+
+  export type CheckinTaskMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    text?: SortOrderInput | SortOrder
+    role?: SortOrder
+    senderName?: SortOrder
+    createdAt?: SortOrder
+    checkinTaskId?: SortOrder
+    attachmentId?: SortOrderInput | SortOrder
+    readByManagerAt?: SortOrderInput | SortOrder
+    readByWorkerAt?: SortOrderInput | SortOrder
+    _count?: CheckinTaskMessageCountOrderByAggregateInput
+    _max?: CheckinTaskMessageMaxOrderByAggregateInput
+    _min?: CheckinTaskMessageMinOrderByAggregateInput
+  }
+
+  export type CheckinTaskMessageScalarWhereWithAggregatesInput = {
+    AND?: CheckinTaskMessageScalarWhereWithAggregatesInput | CheckinTaskMessageScalarWhereWithAggregatesInput[]
+    OR?: CheckinTaskMessageScalarWhereWithAggregatesInput[]
+    NOT?: CheckinTaskMessageScalarWhereWithAggregatesInput | CheckinTaskMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CheckinTaskMessage"> | string
+    text?: StringNullableWithAggregatesFilter<"CheckinTaskMessage"> | string | null
+    role?: StringWithAggregatesFilter<"CheckinTaskMessage"> | string
+    senderName?: StringWithAggregatesFilter<"CheckinTaskMessage"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CheckinTaskMessage"> | Date | string
+    checkinTaskId?: StringWithAggregatesFilter<"CheckinTaskMessage"> | string
+    attachmentId?: StringNullableWithAggregatesFilter<"CheckinTaskMessage"> | string | null
+    readByManagerAt?: DateTimeNullableWithAggregatesFilter<"CheckinTaskMessage"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableWithAggregatesFilter<"CheckinTaskMessage"> | Date | string | null
   }
 
   export type MaintenanceTicketWhereInput = {
@@ -36364,10 +37872,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Attachment"> | Date | string
     maintenanceTicketId?: StringNullableFilter<"Attachment"> | string | null
     cleaningTaskId?: StringNullableFilter<"Attachment"> | string | null
+    checkinTaskId?: StringNullableFilter<"Attachment"> | string | null
     maintenanceTicket?: XOR<MaintenanceTicketNullableScalarRelationFilter, MaintenanceTicketWhereInput> | null
     cleaningTask?: XOR<CleaningTaskNullableScalarRelationFilter, CleaningTaskWhereInput> | null
+    checkinTask?: XOR<CheckinTaskNullableScalarRelationFilter, CheckinTaskWhereInput> | null
     messages?: MessageListRelationFilter
     cleaningMessages?: CleaningTaskMessageListRelationFilter
+    checkinMessages?: CheckinTaskMessageListRelationFilter
   }
 
   export type AttachmentOrderByWithRelationInput = {
@@ -36381,10 +37892,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrderInput | SortOrder
     cleaningTaskId?: SortOrderInput | SortOrder
+    checkinTaskId?: SortOrderInput | SortOrder
     maintenanceTicket?: MaintenanceTicketOrderByWithRelationInput
     cleaningTask?: CleaningTaskOrderByWithRelationInput
+    checkinTask?: CheckinTaskOrderByWithRelationInput
     messages?: MessageOrderByRelationAggregateInput
     cleaningMessages?: CleaningTaskMessageOrderByRelationAggregateInput
+    checkinMessages?: CheckinTaskMessageOrderByRelationAggregateInput
   }
 
   export type AttachmentWhereUniqueInput = Prisma.AtLeast<{
@@ -36401,10 +37915,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Attachment"> | Date | string
     maintenanceTicketId?: StringNullableFilter<"Attachment"> | string | null
     cleaningTaskId?: StringNullableFilter<"Attachment"> | string | null
+    checkinTaskId?: StringNullableFilter<"Attachment"> | string | null
     maintenanceTicket?: XOR<MaintenanceTicketNullableScalarRelationFilter, MaintenanceTicketWhereInput> | null
     cleaningTask?: XOR<CleaningTaskNullableScalarRelationFilter, CleaningTaskWhereInput> | null
+    checkinTask?: XOR<CheckinTaskNullableScalarRelationFilter, CheckinTaskWhereInput> | null
     messages?: MessageListRelationFilter
     cleaningMessages?: CleaningTaskMessageListRelationFilter
+    checkinMessages?: CheckinTaskMessageListRelationFilter
   }, "id">
 
   export type AttachmentOrderByWithAggregationInput = {
@@ -36418,6 +37935,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrderInput | SortOrder
     cleaningTaskId?: SortOrderInput | SortOrder
+    checkinTaskId?: SortOrderInput | SortOrder
     _count?: AttachmentCountOrderByAggregateInput
     _avg?: AttachmentAvgOrderByAggregateInput
     _max?: AttachmentMaxOrderByAggregateInput
@@ -36439,6 +37957,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Attachment"> | Date | string
     maintenanceTicketId?: StringNullableWithAggregatesFilter<"Attachment"> | string | null
     cleaningTaskId?: StringNullableWithAggregatesFilter<"Attachment"> | string | null
+    checkinTaskId?: StringNullableWithAggregatesFilter<"Attachment"> | string | null
   }
 
   export type ApartmentAttachmentWhereInput = {
@@ -38413,6 +39932,8 @@ export namespace Prisma {
     booking?: BookingCreateNestedOneWithoutCheckinTaskInput
     apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
     assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
+    messages?: CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput
+    attachments?: AttachmentCreateNestedManyWithoutCheckinTaskInput
   }
 
   export type CheckinTaskUncheckedCreateInput = {
@@ -38428,6 +39949,8 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
 
   export type CheckinTaskUpdateInput = {
@@ -38443,6 +39966,8 @@ export namespace Prisma {
     booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
+    messages?: CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput
+    attachments?: AttachmentUpdateManyWithoutCheckinTaskNestedInput
   }
 
   export type CheckinTaskUncheckedUpdateInput = {
@@ -38458,6 +39983,8 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
+    attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
 
   export type CheckinTaskCreateManyInput = {
@@ -38500,6 +40027,88 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CheckinTaskMessageCreateInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+    checkinTask: CheckinTaskCreateNestedOneWithoutMessagesInput
+    attachment?: AttachmentCreateNestedOneWithoutCheckinMessagesInput
+  }
+
+  export type CheckinTaskMessageUncheckedCreateInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    checkinTaskId: string
+    attachmentId?: string | null
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+  }
+
+  export type CheckinTaskMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    checkinTask?: CheckinTaskUpdateOneRequiredWithoutMessagesNestedInput
+    attachment?: AttachmentUpdateOneWithoutCheckinMessagesNestedInput
+  }
+
+  export type CheckinTaskMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkinTaskId?: StringFieldUpdateOperationsInput | string
+    attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CheckinTaskMessageCreateManyInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    checkinTaskId: string
+    attachmentId?: string | null
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+  }
+
+  export type CheckinTaskMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CheckinTaskMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkinTaskId?: StringFieldUpdateOperationsInput | string
+    attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type MaintenanceTicketCreateInput = {
@@ -38727,8 +40336,10 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutAttachmentsInput
     messages?: MessageCreateNestedManyWithoutAttachmentInput
     cleaningMessages?: CleaningTaskMessageCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentUncheckedCreateInput = {
@@ -38742,8 +40353,10 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     cleaningTaskId?: string | null
+    checkinTaskId?: string | null
     messages?: MessageUncheckedCreateNestedManyWithoutAttachmentInput
     cleaningMessages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentUpdateInput = {
@@ -38757,8 +40370,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutAttachmentsNestedInput
     messages?: MessageUpdateManyWithoutAttachmentNestedInput
     cleaningMessages?: CleaningTaskMessageUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUpdateManyWithoutAttachmentNestedInput
   }
 
   export type AttachmentUncheckedUpdateInput = {
@@ -38772,8 +40387,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
     cleaningMessages?: CleaningTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
   }
 
   export type AttachmentCreateManyInput = {
@@ -38787,6 +40404,7 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     cleaningTaskId?: string | null
+    checkinTaskId?: string | null
   }
 
   export type AttachmentUpdateManyMutationInput = {
@@ -38811,6 +40429,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ApartmentAttachmentCreateInput = {
@@ -40712,6 +42331,16 @@ export namespace Prisma {
     order?: SortOrder
   }
 
+  export type CheckinTaskMessageListRelationFilter = {
+    every?: CheckinTaskMessageWhereInput
+    some?: CheckinTaskMessageWhereInput
+    none?: CheckinTaskMessageWhereInput
+  }
+
+  export type CheckinTaskMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type CheckinTaskCountOrderByAggregateInput = {
     id?: SortOrder
     apartmentId?: SortOrder
@@ -40753,6 +42382,52 @@ export namespace Prisma {
     notes?: SortOrder
     bookingId?: SortOrder
     checkinAccessToken?: SortOrder
+  }
+
+  export type CheckinTaskScalarRelationFilter = {
+    is?: CheckinTaskWhereInput
+    isNot?: CheckinTaskWhereInput
+  }
+
+  export type AttachmentNullableScalarRelationFilter = {
+    is?: AttachmentWhereInput | null
+    isNot?: AttachmentWhereInput | null
+  }
+
+  export type CheckinTaskMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    text?: SortOrder
+    role?: SortOrder
+    senderName?: SortOrder
+    createdAt?: SortOrder
+    checkinTaskId?: SortOrder
+    attachmentId?: SortOrder
+    readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
+  }
+
+  export type CheckinTaskMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    text?: SortOrder
+    role?: SortOrder
+    senderName?: SortOrder
+    createdAt?: SortOrder
+    checkinTaskId?: SortOrder
+    attachmentId?: SortOrder
+    readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
+  }
+
+  export type CheckinTaskMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    text?: SortOrder
+    role?: SortOrder
+    senderName?: SortOrder
+    createdAt?: SortOrder
+    checkinTaskId?: SortOrder
+    attachmentId?: SortOrder
+    readByManagerAt?: SortOrder
+    readByWorkerAt?: SortOrder
   }
 
   export type MessageListRelationFilter = {
@@ -40881,6 +42556,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrder
     cleaningTaskId?: SortOrder
+    checkinTaskId?: SortOrder
   }
 
   export type AttachmentAvgOrderByAggregateInput = {
@@ -40898,6 +42574,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrder
     cleaningTaskId?: SortOrder
+    checkinTaskId?: SortOrder
   }
 
   export type AttachmentMinOrderByAggregateInput = {
@@ -40911,6 +42588,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     maintenanceTicketId?: SortOrder
     cleaningTaskId?: SortOrder
+    checkinTaskId?: SortOrder
   }
 
   export type AttachmentSumOrderByAggregateInput = {
@@ -40973,11 +42651,6 @@ export namespace Prisma {
   export type MaintenanceTicketScalarRelationFilter = {
     is?: MaintenanceTicketWhereInput
     isNot?: MaintenanceTicketWhereInput
-  }
-
-  export type AttachmentNullableScalarRelationFilter = {
-    is?: AttachmentWhereInput | null
-    isNot?: AttachmentWhereInput | null
   }
 
   export type MessageCountOrderByAggregateInput = {
@@ -42891,6 +44564,34 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput = {
+    create?: XOR<CheckinTaskMessageCreateWithoutCheckinTaskInput, CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput> | CheckinTaskMessageCreateWithoutCheckinTaskInput[] | CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput[]
+    connectOrCreate?: CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput | CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput[]
+    createMany?: CheckinTaskMessageCreateManyCheckinTaskInputEnvelope
+    connect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+  }
+
+  export type AttachmentCreateNestedManyWithoutCheckinTaskInput = {
+    create?: XOR<AttachmentCreateWithoutCheckinTaskInput, AttachmentUncheckedCreateWithoutCheckinTaskInput> | AttachmentCreateWithoutCheckinTaskInput[] | AttachmentUncheckedCreateWithoutCheckinTaskInput[]
+    connectOrCreate?: AttachmentCreateOrConnectWithoutCheckinTaskInput | AttachmentCreateOrConnectWithoutCheckinTaskInput[]
+    createMany?: AttachmentCreateManyCheckinTaskInputEnvelope
+    connect?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+  }
+
+  export type CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput = {
+    create?: XOR<CheckinTaskMessageCreateWithoutCheckinTaskInput, CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput> | CheckinTaskMessageCreateWithoutCheckinTaskInput[] | CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput[]
+    connectOrCreate?: CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput | CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput[]
+    createMany?: CheckinTaskMessageCreateManyCheckinTaskInputEnvelope
+    connect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+  }
+
+  export type AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput = {
+    create?: XOR<AttachmentCreateWithoutCheckinTaskInput, AttachmentUncheckedCreateWithoutCheckinTaskInput> | AttachmentCreateWithoutCheckinTaskInput[] | AttachmentUncheckedCreateWithoutCheckinTaskInput[]
+    connectOrCreate?: AttachmentCreateOrConnectWithoutCheckinTaskInput | AttachmentCreateOrConnectWithoutCheckinTaskInput[]
+    createMany?: AttachmentCreateManyCheckinTaskInputEnvelope
+    connect?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+  }
+
   export type BookingUpdateOneWithoutCheckinTaskNestedInput = {
     create?: XOR<BookingCreateWithoutCheckinTaskInput, BookingUncheckedCreateWithoutCheckinTaskInput>
     connectOrCreate?: BookingCreateOrConnectWithoutCheckinTaskInput
@@ -42917,6 +44618,92 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCheckinTasksInput, UserUpdateWithoutCheckinTasksInput>, UserUncheckedUpdateWithoutCheckinTasksInput>
+  }
+
+  export type CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput = {
+    create?: XOR<CheckinTaskMessageCreateWithoutCheckinTaskInput, CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput> | CheckinTaskMessageCreateWithoutCheckinTaskInput[] | CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput[]
+    connectOrCreate?: CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput | CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput[]
+    upsert?: CheckinTaskMessageUpsertWithWhereUniqueWithoutCheckinTaskInput | CheckinTaskMessageUpsertWithWhereUniqueWithoutCheckinTaskInput[]
+    createMany?: CheckinTaskMessageCreateManyCheckinTaskInputEnvelope
+    set?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    disconnect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    delete?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    connect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    update?: CheckinTaskMessageUpdateWithWhereUniqueWithoutCheckinTaskInput | CheckinTaskMessageUpdateWithWhereUniqueWithoutCheckinTaskInput[]
+    updateMany?: CheckinTaskMessageUpdateManyWithWhereWithoutCheckinTaskInput | CheckinTaskMessageUpdateManyWithWhereWithoutCheckinTaskInput[]
+    deleteMany?: CheckinTaskMessageScalarWhereInput | CheckinTaskMessageScalarWhereInput[]
+  }
+
+  export type AttachmentUpdateManyWithoutCheckinTaskNestedInput = {
+    create?: XOR<AttachmentCreateWithoutCheckinTaskInput, AttachmentUncheckedCreateWithoutCheckinTaskInput> | AttachmentCreateWithoutCheckinTaskInput[] | AttachmentUncheckedCreateWithoutCheckinTaskInput[]
+    connectOrCreate?: AttachmentCreateOrConnectWithoutCheckinTaskInput | AttachmentCreateOrConnectWithoutCheckinTaskInput[]
+    upsert?: AttachmentUpsertWithWhereUniqueWithoutCheckinTaskInput | AttachmentUpsertWithWhereUniqueWithoutCheckinTaskInput[]
+    createMany?: AttachmentCreateManyCheckinTaskInputEnvelope
+    set?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+    disconnect?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+    delete?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+    connect?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+    update?: AttachmentUpdateWithWhereUniqueWithoutCheckinTaskInput | AttachmentUpdateWithWhereUniqueWithoutCheckinTaskInput[]
+    updateMany?: AttachmentUpdateManyWithWhereWithoutCheckinTaskInput | AttachmentUpdateManyWithWhereWithoutCheckinTaskInput[]
+    deleteMany?: AttachmentScalarWhereInput | AttachmentScalarWhereInput[]
+  }
+
+  export type CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput = {
+    create?: XOR<CheckinTaskMessageCreateWithoutCheckinTaskInput, CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput> | CheckinTaskMessageCreateWithoutCheckinTaskInput[] | CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput[]
+    connectOrCreate?: CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput | CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput[]
+    upsert?: CheckinTaskMessageUpsertWithWhereUniqueWithoutCheckinTaskInput | CheckinTaskMessageUpsertWithWhereUniqueWithoutCheckinTaskInput[]
+    createMany?: CheckinTaskMessageCreateManyCheckinTaskInputEnvelope
+    set?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    disconnect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    delete?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    connect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    update?: CheckinTaskMessageUpdateWithWhereUniqueWithoutCheckinTaskInput | CheckinTaskMessageUpdateWithWhereUniqueWithoutCheckinTaskInput[]
+    updateMany?: CheckinTaskMessageUpdateManyWithWhereWithoutCheckinTaskInput | CheckinTaskMessageUpdateManyWithWhereWithoutCheckinTaskInput[]
+    deleteMany?: CheckinTaskMessageScalarWhereInput | CheckinTaskMessageScalarWhereInput[]
+  }
+
+  export type AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput = {
+    create?: XOR<AttachmentCreateWithoutCheckinTaskInput, AttachmentUncheckedCreateWithoutCheckinTaskInput> | AttachmentCreateWithoutCheckinTaskInput[] | AttachmentUncheckedCreateWithoutCheckinTaskInput[]
+    connectOrCreate?: AttachmentCreateOrConnectWithoutCheckinTaskInput | AttachmentCreateOrConnectWithoutCheckinTaskInput[]
+    upsert?: AttachmentUpsertWithWhereUniqueWithoutCheckinTaskInput | AttachmentUpsertWithWhereUniqueWithoutCheckinTaskInput[]
+    createMany?: AttachmentCreateManyCheckinTaskInputEnvelope
+    set?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+    disconnect?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+    delete?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+    connect?: AttachmentWhereUniqueInput | AttachmentWhereUniqueInput[]
+    update?: AttachmentUpdateWithWhereUniqueWithoutCheckinTaskInput | AttachmentUpdateWithWhereUniqueWithoutCheckinTaskInput[]
+    updateMany?: AttachmentUpdateManyWithWhereWithoutCheckinTaskInput | AttachmentUpdateManyWithWhereWithoutCheckinTaskInput[]
+    deleteMany?: AttachmentScalarWhereInput | AttachmentScalarWhereInput[]
+  }
+
+  export type CheckinTaskCreateNestedOneWithoutMessagesInput = {
+    create?: XOR<CheckinTaskCreateWithoutMessagesInput, CheckinTaskUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutMessagesInput
+    connect?: CheckinTaskWhereUniqueInput
+  }
+
+  export type AttachmentCreateNestedOneWithoutCheckinMessagesInput = {
+    create?: XOR<AttachmentCreateWithoutCheckinMessagesInput, AttachmentUncheckedCreateWithoutCheckinMessagesInput>
+    connectOrCreate?: AttachmentCreateOrConnectWithoutCheckinMessagesInput
+    connect?: AttachmentWhereUniqueInput
+  }
+
+  export type CheckinTaskUpdateOneRequiredWithoutMessagesNestedInput = {
+    create?: XOR<CheckinTaskCreateWithoutMessagesInput, CheckinTaskUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutMessagesInput
+    upsert?: CheckinTaskUpsertWithoutMessagesInput
+    connect?: CheckinTaskWhereUniqueInput
+    update?: XOR<XOR<CheckinTaskUpdateToOneWithWhereWithoutMessagesInput, CheckinTaskUpdateWithoutMessagesInput>, CheckinTaskUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type AttachmentUpdateOneWithoutCheckinMessagesNestedInput = {
+    create?: XOR<AttachmentCreateWithoutCheckinMessagesInput, AttachmentUncheckedCreateWithoutCheckinMessagesInput>
+    connectOrCreate?: AttachmentCreateOrConnectWithoutCheckinMessagesInput
+    upsert?: AttachmentUpsertWithoutCheckinMessagesInput
+    disconnect?: AttachmentWhereInput | boolean
+    delete?: AttachmentWhereInput | boolean
+    connect?: AttachmentWhereUniqueInput
+    update?: XOR<XOR<AttachmentUpdateToOneWithWhereWithoutCheckinMessagesInput, AttachmentUpdateWithoutCheckinMessagesInput>, AttachmentUncheckedUpdateWithoutCheckinMessagesInput>
   }
 
   export type ApartmentCreateNestedOneWithoutMaintenanceTicketsInput = {
@@ -43181,6 +44968,12 @@ export namespace Prisma {
     connect?: CleaningTaskWhereUniqueInput
   }
 
+  export type CheckinTaskCreateNestedOneWithoutAttachmentsInput = {
+    create?: XOR<CheckinTaskCreateWithoutAttachmentsInput, CheckinTaskUncheckedCreateWithoutAttachmentsInput>
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutAttachmentsInput
+    connect?: CheckinTaskWhereUniqueInput
+  }
+
   export type MessageCreateNestedManyWithoutAttachmentInput = {
     create?: XOR<MessageCreateWithoutAttachmentInput, MessageUncheckedCreateWithoutAttachmentInput> | MessageCreateWithoutAttachmentInput[] | MessageUncheckedCreateWithoutAttachmentInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutAttachmentInput | MessageCreateOrConnectWithoutAttachmentInput[]
@@ -43195,6 +44988,13 @@ export namespace Prisma {
     connect?: CleaningTaskMessageWhereUniqueInput | CleaningTaskMessageWhereUniqueInput[]
   }
 
+  export type CheckinTaskMessageCreateNestedManyWithoutAttachmentInput = {
+    create?: XOR<CheckinTaskMessageCreateWithoutAttachmentInput, CheckinTaskMessageUncheckedCreateWithoutAttachmentInput> | CheckinTaskMessageCreateWithoutAttachmentInput[] | CheckinTaskMessageUncheckedCreateWithoutAttachmentInput[]
+    connectOrCreate?: CheckinTaskMessageCreateOrConnectWithoutAttachmentInput | CheckinTaskMessageCreateOrConnectWithoutAttachmentInput[]
+    createMany?: CheckinTaskMessageCreateManyAttachmentInputEnvelope
+    connect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+  }
+
   export type MessageUncheckedCreateNestedManyWithoutAttachmentInput = {
     create?: XOR<MessageCreateWithoutAttachmentInput, MessageUncheckedCreateWithoutAttachmentInput> | MessageCreateWithoutAttachmentInput[] | MessageUncheckedCreateWithoutAttachmentInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutAttachmentInput | MessageCreateOrConnectWithoutAttachmentInput[]
@@ -43207,6 +45007,13 @@ export namespace Prisma {
     connectOrCreate?: CleaningTaskMessageCreateOrConnectWithoutAttachmentInput | CleaningTaskMessageCreateOrConnectWithoutAttachmentInput[]
     createMany?: CleaningTaskMessageCreateManyAttachmentInputEnvelope
     connect?: CleaningTaskMessageWhereUniqueInput | CleaningTaskMessageWhereUniqueInput[]
+  }
+
+  export type CheckinTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput = {
+    create?: XOR<CheckinTaskMessageCreateWithoutAttachmentInput, CheckinTaskMessageUncheckedCreateWithoutAttachmentInput> | CheckinTaskMessageCreateWithoutAttachmentInput[] | CheckinTaskMessageUncheckedCreateWithoutAttachmentInput[]
+    connectOrCreate?: CheckinTaskMessageCreateOrConnectWithoutAttachmentInput | CheckinTaskMessageCreateOrConnectWithoutAttachmentInput[]
+    createMany?: CheckinTaskMessageCreateManyAttachmentInputEnvelope
+    connect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
   }
 
   export type MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput = {
@@ -43227,6 +45034,16 @@ export namespace Prisma {
     delete?: CleaningTaskWhereInput | boolean
     connect?: CleaningTaskWhereUniqueInput
     update?: XOR<XOR<CleaningTaskUpdateToOneWithWhereWithoutAttachmentsInput, CleaningTaskUpdateWithoutAttachmentsInput>, CleaningTaskUncheckedUpdateWithoutAttachmentsInput>
+  }
+
+  export type CheckinTaskUpdateOneWithoutAttachmentsNestedInput = {
+    create?: XOR<CheckinTaskCreateWithoutAttachmentsInput, CheckinTaskUncheckedCreateWithoutAttachmentsInput>
+    connectOrCreate?: CheckinTaskCreateOrConnectWithoutAttachmentsInput
+    upsert?: CheckinTaskUpsertWithoutAttachmentsInput
+    disconnect?: CheckinTaskWhereInput | boolean
+    delete?: CheckinTaskWhereInput | boolean
+    connect?: CheckinTaskWhereUniqueInput
+    update?: XOR<XOR<CheckinTaskUpdateToOneWithWhereWithoutAttachmentsInput, CheckinTaskUpdateWithoutAttachmentsInput>, CheckinTaskUncheckedUpdateWithoutAttachmentsInput>
   }
 
   export type MessageUpdateManyWithoutAttachmentNestedInput = {
@@ -43257,6 +45074,20 @@ export namespace Prisma {
     deleteMany?: CleaningTaskMessageScalarWhereInput | CleaningTaskMessageScalarWhereInput[]
   }
 
+  export type CheckinTaskMessageUpdateManyWithoutAttachmentNestedInput = {
+    create?: XOR<CheckinTaskMessageCreateWithoutAttachmentInput, CheckinTaskMessageUncheckedCreateWithoutAttachmentInput> | CheckinTaskMessageCreateWithoutAttachmentInput[] | CheckinTaskMessageUncheckedCreateWithoutAttachmentInput[]
+    connectOrCreate?: CheckinTaskMessageCreateOrConnectWithoutAttachmentInput | CheckinTaskMessageCreateOrConnectWithoutAttachmentInput[]
+    upsert?: CheckinTaskMessageUpsertWithWhereUniqueWithoutAttachmentInput | CheckinTaskMessageUpsertWithWhereUniqueWithoutAttachmentInput[]
+    createMany?: CheckinTaskMessageCreateManyAttachmentInputEnvelope
+    set?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    disconnect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    delete?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    connect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    update?: CheckinTaskMessageUpdateWithWhereUniqueWithoutAttachmentInput | CheckinTaskMessageUpdateWithWhereUniqueWithoutAttachmentInput[]
+    updateMany?: CheckinTaskMessageUpdateManyWithWhereWithoutAttachmentInput | CheckinTaskMessageUpdateManyWithWhereWithoutAttachmentInput[]
+    deleteMany?: CheckinTaskMessageScalarWhereInput | CheckinTaskMessageScalarWhereInput[]
+  }
+
   export type MessageUncheckedUpdateManyWithoutAttachmentNestedInput = {
     create?: XOR<MessageCreateWithoutAttachmentInput, MessageUncheckedCreateWithoutAttachmentInput> | MessageCreateWithoutAttachmentInput[] | MessageUncheckedCreateWithoutAttachmentInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutAttachmentInput | MessageCreateOrConnectWithoutAttachmentInput[]
@@ -43283,6 +45114,20 @@ export namespace Prisma {
     update?: CleaningTaskMessageUpdateWithWhereUniqueWithoutAttachmentInput | CleaningTaskMessageUpdateWithWhereUniqueWithoutAttachmentInput[]
     updateMany?: CleaningTaskMessageUpdateManyWithWhereWithoutAttachmentInput | CleaningTaskMessageUpdateManyWithWhereWithoutAttachmentInput[]
     deleteMany?: CleaningTaskMessageScalarWhereInput | CleaningTaskMessageScalarWhereInput[]
+  }
+
+  export type CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput = {
+    create?: XOR<CheckinTaskMessageCreateWithoutAttachmentInput, CheckinTaskMessageUncheckedCreateWithoutAttachmentInput> | CheckinTaskMessageCreateWithoutAttachmentInput[] | CheckinTaskMessageUncheckedCreateWithoutAttachmentInput[]
+    connectOrCreate?: CheckinTaskMessageCreateOrConnectWithoutAttachmentInput | CheckinTaskMessageCreateOrConnectWithoutAttachmentInput[]
+    upsert?: CheckinTaskMessageUpsertWithWhereUniqueWithoutAttachmentInput | CheckinTaskMessageUpsertWithWhereUniqueWithoutAttachmentInput[]
+    createMany?: CheckinTaskMessageCreateManyAttachmentInputEnvelope
+    set?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    disconnect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    delete?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    connect?: CheckinTaskMessageWhereUniqueInput | CheckinTaskMessageWhereUniqueInput[]
+    update?: CheckinTaskMessageUpdateWithWhereUniqueWithoutAttachmentInput | CheckinTaskMessageUpdateWithWhereUniqueWithoutAttachmentInput[]
+    updateMany?: CheckinTaskMessageUpdateManyWithWhereWithoutAttachmentInput | CheckinTaskMessageUpdateManyWithWhereWithoutAttachmentInput[]
+    deleteMany?: CheckinTaskMessageScalarWhereInput | CheckinTaskMessageScalarWhereInput[]
   }
 
   export type ApartmentCreateNestedOneWithoutApartmentAttachmentsInput = {
@@ -44505,6 +46350,8 @@ export namespace Prisma {
     checkinAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCheckinTaskInput
     apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
+    messages?: CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput
+    attachments?: AttachmentCreateNestedManyWithoutCheckinTaskInput
   }
 
   export type CheckinTaskUncheckedCreateWithoutAssignedToInput = {
@@ -44519,6 +46366,8 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
 
   export type CheckinTaskCreateOrConnectWithoutAssignedToInput = {
@@ -45359,6 +47208,8 @@ export namespace Prisma {
     checkinAccessToken?: string | null
     booking?: BookingCreateNestedOneWithoutCheckinTaskInput
     assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
+    messages?: CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput
+    attachments?: AttachmentCreateNestedManyWithoutCheckinTaskInput
   }
 
   export type CheckinTaskUncheckedCreateWithoutApartmentInput = {
@@ -45373,6 +47224,8 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
 
   export type CheckinTaskCreateOrConnectWithoutApartmentInput = {
@@ -46179,6 +48032,8 @@ export namespace Prisma {
     checkinAccessToken?: string | null
     apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
     assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
+    messages?: CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput
+    attachments?: AttachmentCreateNestedManyWithoutCheckinTaskInput
   }
 
   export type CheckinTaskUncheckedCreateWithoutBookingInput = {
@@ -46193,6 +48048,8 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
 
   export type CheckinTaskCreateOrConnectWithoutBookingInput = {
@@ -46353,6 +48210,8 @@ export namespace Prisma {
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
+    messages?: CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput
+    attachments?: AttachmentUpdateManyWithoutCheckinTaskNestedInput
   }
 
   export type CheckinTaskUncheckedUpdateWithoutBookingInput = {
@@ -46367,6 +48226,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
+    attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
 
   export type BookingCreateWithoutCleaningTaskInput = {
@@ -46572,8 +48433,10 @@ export namespace Prisma {
     extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutAttachmentsInput
     messages?: MessageCreateNestedManyWithoutAttachmentInput
     cleaningMessages?: CleaningTaskMessageCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentUncheckedCreateWithoutCleaningTaskInput = {
@@ -46586,8 +48449,10 @@ export namespace Prisma {
     extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicketId?: string | null
+    checkinTaskId?: string | null
     messages?: MessageUncheckedCreateNestedManyWithoutAttachmentInput
     cleaningMessages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentCreateOrConnectWithoutCleaningTaskInput = {
@@ -46900,6 +48765,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Attachment"> | Date | string
     maintenanceTicketId?: StringNullableFilter<"Attachment"> | string | null
     cleaningTaskId?: StringNullableFilter<"Attachment"> | string | null
+    checkinTaskId?: StringNullableFilter<"Attachment"> | string | null
   }
 
   export type AIAssistantMessageUpsertWithWhereUniqueWithoutCleaningTaskInput = {
@@ -47239,6 +49105,80 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutCheckinTasksInput, UserUncheckedCreateWithoutCheckinTasksInput>
   }
 
+  export type CheckinTaskMessageCreateWithoutCheckinTaskInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+    attachment?: AttachmentCreateNestedOneWithoutCheckinMessagesInput
+  }
+
+  export type CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    attachmentId?: string | null
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+  }
+
+  export type CheckinTaskMessageCreateOrConnectWithoutCheckinTaskInput = {
+    where: CheckinTaskMessageWhereUniqueInput
+    create: XOR<CheckinTaskMessageCreateWithoutCheckinTaskInput, CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput>
+  }
+
+  export type CheckinTaskMessageCreateManyCheckinTaskInputEnvelope = {
+    data: CheckinTaskMessageCreateManyCheckinTaskInput | CheckinTaskMessageCreateManyCheckinTaskInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AttachmentCreateWithoutCheckinTaskInput = {
+    id?: string
+    url: string
+    fileName?: string
+    fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
+    createdAt?: Date | string
+    maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
+    cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
+    messages?: MessageCreateNestedManyWithoutAttachmentInput
+    cleaningMessages?: CleaningTaskMessageCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageCreateNestedManyWithoutAttachmentInput
+  }
+
+  export type AttachmentUncheckedCreateWithoutCheckinTaskInput = {
+    id?: string
+    url: string
+    fileName?: string
+    fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
+    createdAt?: Date | string
+    maintenanceTicketId?: string | null
+    cleaningTaskId?: string | null
+    messages?: MessageUncheckedCreateNestedManyWithoutAttachmentInput
+    cleaningMessages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
+  }
+
+  export type AttachmentCreateOrConnectWithoutCheckinTaskInput = {
+    where: AttachmentWhereUniqueInput
+    create: XOR<AttachmentCreateWithoutCheckinTaskInput, AttachmentUncheckedCreateWithoutCheckinTaskInput>
+  }
+
+  export type AttachmentCreateManyCheckinTaskInputEnvelope = {
+    data: AttachmentCreateManyCheckinTaskInput | AttachmentCreateManyCheckinTaskInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BookingUpsertWithoutCheckinTaskInput = {
     update: XOR<BookingUpdateWithoutCheckinTaskInput, BookingUncheckedUpdateWithoutCheckinTaskInput>
     create: XOR<BookingCreateWithoutCheckinTaskInput, BookingUncheckedCreateWithoutCheckinTaskInput>
@@ -47418,6 +49358,213 @@ export namespace Prisma {
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
   }
 
+  export type CheckinTaskMessageUpsertWithWhereUniqueWithoutCheckinTaskInput = {
+    where: CheckinTaskMessageWhereUniqueInput
+    update: XOR<CheckinTaskMessageUpdateWithoutCheckinTaskInput, CheckinTaskMessageUncheckedUpdateWithoutCheckinTaskInput>
+    create: XOR<CheckinTaskMessageCreateWithoutCheckinTaskInput, CheckinTaskMessageUncheckedCreateWithoutCheckinTaskInput>
+  }
+
+  export type CheckinTaskMessageUpdateWithWhereUniqueWithoutCheckinTaskInput = {
+    where: CheckinTaskMessageWhereUniqueInput
+    data: XOR<CheckinTaskMessageUpdateWithoutCheckinTaskInput, CheckinTaskMessageUncheckedUpdateWithoutCheckinTaskInput>
+  }
+
+  export type CheckinTaskMessageUpdateManyWithWhereWithoutCheckinTaskInput = {
+    where: CheckinTaskMessageScalarWhereInput
+    data: XOR<CheckinTaskMessageUpdateManyMutationInput, CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskInput>
+  }
+
+  export type CheckinTaskMessageScalarWhereInput = {
+    AND?: CheckinTaskMessageScalarWhereInput | CheckinTaskMessageScalarWhereInput[]
+    OR?: CheckinTaskMessageScalarWhereInput[]
+    NOT?: CheckinTaskMessageScalarWhereInput | CheckinTaskMessageScalarWhereInput[]
+    id?: StringFilter<"CheckinTaskMessage"> | string
+    text?: StringNullableFilter<"CheckinTaskMessage"> | string | null
+    role?: StringFilter<"CheckinTaskMessage"> | string
+    senderName?: StringFilter<"CheckinTaskMessage"> | string
+    createdAt?: DateTimeFilter<"CheckinTaskMessage"> | Date | string
+    checkinTaskId?: StringFilter<"CheckinTaskMessage"> | string
+    attachmentId?: StringNullableFilter<"CheckinTaskMessage"> | string | null
+    readByManagerAt?: DateTimeNullableFilter<"CheckinTaskMessage"> | Date | string | null
+    readByWorkerAt?: DateTimeNullableFilter<"CheckinTaskMessage"> | Date | string | null
+  }
+
+  export type AttachmentUpsertWithWhereUniqueWithoutCheckinTaskInput = {
+    where: AttachmentWhereUniqueInput
+    update: XOR<AttachmentUpdateWithoutCheckinTaskInput, AttachmentUncheckedUpdateWithoutCheckinTaskInput>
+    create: XOR<AttachmentCreateWithoutCheckinTaskInput, AttachmentUncheckedCreateWithoutCheckinTaskInput>
+  }
+
+  export type AttachmentUpdateWithWhereUniqueWithoutCheckinTaskInput = {
+    where: AttachmentWhereUniqueInput
+    data: XOR<AttachmentUpdateWithoutCheckinTaskInput, AttachmentUncheckedUpdateWithoutCheckinTaskInput>
+  }
+
+  export type AttachmentUpdateManyWithWhereWithoutCheckinTaskInput = {
+    where: AttachmentScalarWhereInput
+    data: XOR<AttachmentUpdateManyMutationInput, AttachmentUncheckedUpdateManyWithoutCheckinTaskInput>
+  }
+
+  export type CheckinTaskCreateWithoutMessagesInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+    booking?: BookingCreateNestedOneWithoutCheckinTaskInput
+    apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
+    assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
+    attachments?: AttachmentCreateNestedManyWithoutCheckinTaskInput
+  }
+
+  export type CheckinTaskUncheckedCreateWithoutMessagesInput = {
+    id?: string
+    apartmentId: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    assignedToId?: string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
+  }
+
+  export type CheckinTaskCreateOrConnectWithoutMessagesInput = {
+    where: CheckinTaskWhereUniqueInput
+    create: XOR<CheckinTaskCreateWithoutMessagesInput, CheckinTaskUncheckedCreateWithoutMessagesInput>
+  }
+
+  export type AttachmentCreateWithoutCheckinMessagesInput = {
+    id?: string
+    url: string
+    fileName?: string
+    fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
+    createdAt?: Date | string
+    maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
+    cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutAttachmentsInput
+    messages?: MessageCreateNestedManyWithoutAttachmentInput
+    cleaningMessages?: CleaningTaskMessageCreateNestedManyWithoutAttachmentInput
+  }
+
+  export type AttachmentUncheckedCreateWithoutCheckinMessagesInput = {
+    id?: string
+    url: string
+    fileName?: string
+    fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
+    createdAt?: Date | string
+    maintenanceTicketId?: string | null
+    cleaningTaskId?: string | null
+    checkinTaskId?: string | null
+    messages?: MessageUncheckedCreateNestedManyWithoutAttachmentInput
+    cleaningMessages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
+  }
+
+  export type AttachmentCreateOrConnectWithoutCheckinMessagesInput = {
+    where: AttachmentWhereUniqueInput
+    create: XOR<AttachmentCreateWithoutCheckinMessagesInput, AttachmentUncheckedCreateWithoutCheckinMessagesInput>
+  }
+
+  export type CheckinTaskUpsertWithoutMessagesInput = {
+    update: XOR<CheckinTaskUpdateWithoutMessagesInput, CheckinTaskUncheckedUpdateWithoutMessagesInput>
+    create: XOR<CheckinTaskCreateWithoutMessagesInput, CheckinTaskUncheckedCreateWithoutMessagesInput>
+    where?: CheckinTaskWhereInput
+  }
+
+  export type CheckinTaskUpdateToOneWithWhereWithoutMessagesInput = {
+    where?: CheckinTaskWhereInput
+    data: XOR<CheckinTaskUpdateWithoutMessagesInput, CheckinTaskUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type CheckinTaskUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
+    apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
+    assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
+    attachments?: AttachmentUpdateManyWithoutCheckinTaskNestedInput
+  }
+
+  export type CheckinTaskUncheckedUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
+  }
+
+  export type AttachmentUpsertWithoutCheckinMessagesInput = {
+    update: XOR<AttachmentUpdateWithoutCheckinMessagesInput, AttachmentUncheckedUpdateWithoutCheckinMessagesInput>
+    create: XOR<AttachmentCreateWithoutCheckinMessagesInput, AttachmentUncheckedCreateWithoutCheckinMessagesInput>
+    where?: AttachmentWhereInput
+  }
+
+  export type AttachmentUpdateToOneWithWhereWithoutCheckinMessagesInput = {
+    where?: AttachmentWhereInput
+    data: XOR<AttachmentUpdateWithoutCheckinMessagesInput, AttachmentUncheckedUpdateWithoutCheckinMessagesInput>
+  }
+
+  export type AttachmentUpdateWithoutCheckinMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
+    cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutAttachmentsNestedInput
+    messages?: MessageUpdateManyWithoutAttachmentNestedInput
+    cleaningMessages?: CleaningTaskMessageUpdateManyWithoutAttachmentNestedInput
+  }
+
+  export type AttachmentUncheckedUpdateWithoutCheckinMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
+    cleaningMessages?: CleaningTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
+  }
+
   export type ApartmentCreateWithoutMaintenanceTicketsInput = {
     id?: string
     name: string
@@ -47554,8 +49701,10 @@ export namespace Prisma {
     extractedText?: string | null
     createdAt?: Date | string
     cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutAttachmentsInput
     messages?: MessageCreateNestedManyWithoutAttachmentInput
     cleaningMessages?: CleaningTaskMessageCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentUncheckedCreateWithoutMaintenanceTicketInput = {
@@ -47568,8 +49717,10 @@ export namespace Prisma {
     extractedText?: string | null
     createdAt?: Date | string
     cleaningTaskId?: string | null
+    checkinTaskId?: string | null
     messages?: MessageUncheckedCreateNestedManyWithoutAttachmentInput
     cleaningMessages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentCreateOrConnectWithoutMaintenanceTicketInput = {
@@ -48335,6 +50486,43 @@ export namespace Prisma {
     create: XOR<CleaningTaskCreateWithoutAttachmentsInput, CleaningTaskUncheckedCreateWithoutAttachmentsInput>
   }
 
+  export type CheckinTaskCreateWithoutAttachmentsInput = {
+    id?: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    notes?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+    booking?: BookingCreateNestedOneWithoutCheckinTaskInput
+    apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
+    assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
+    messages?: CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput
+  }
+
+  export type CheckinTaskUncheckedCreateWithoutAttachmentsInput = {
+    id?: string
+    apartmentId: string
+    date: Date | string
+    status: string
+    createdAt?: Date | string
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    assignedToId?: string | null
+    notes?: string | null
+    bookingId?: string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: string | null
+    messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
+  }
+
+  export type CheckinTaskCreateOrConnectWithoutAttachmentsInput = {
+    where: CheckinTaskWhereUniqueInput
+    create: XOR<CheckinTaskCreateWithoutAttachmentsInput, CheckinTaskUncheckedCreateWithoutAttachmentsInput>
+  }
+
   export type MessageCreateWithoutAttachmentInput = {
     id?: string
     text?: string | null
@@ -48396,6 +50584,38 @@ export namespace Prisma {
 
   export type CleaningTaskMessageCreateManyAttachmentInputEnvelope = {
     data: CleaningTaskMessageCreateManyAttachmentInput | CleaningTaskMessageCreateManyAttachmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CheckinTaskMessageCreateWithoutAttachmentInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+    checkinTask: CheckinTaskCreateNestedOneWithoutMessagesInput
+  }
+
+  export type CheckinTaskMessageUncheckedCreateWithoutAttachmentInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    checkinTaskId: string
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+  }
+
+  export type CheckinTaskMessageCreateOrConnectWithoutAttachmentInput = {
+    where: CheckinTaskMessageWhereUniqueInput
+    create: XOR<CheckinTaskMessageCreateWithoutAttachmentInput, CheckinTaskMessageUncheckedCreateWithoutAttachmentInput>
+  }
+
+  export type CheckinTaskMessageCreateManyAttachmentInputEnvelope = {
+    data: CheckinTaskMessageCreateManyAttachmentInput | CheckinTaskMessageCreateManyAttachmentInput[]
     skipDuplicates?: boolean
   }
 
@@ -48507,6 +50727,49 @@ export namespace Prisma {
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
   }
 
+  export type CheckinTaskUpsertWithoutAttachmentsInput = {
+    update: XOR<CheckinTaskUpdateWithoutAttachmentsInput, CheckinTaskUncheckedUpdateWithoutAttachmentsInput>
+    create: XOR<CheckinTaskCreateWithoutAttachmentsInput, CheckinTaskUncheckedCreateWithoutAttachmentsInput>
+    where?: CheckinTaskWhereInput
+  }
+
+  export type CheckinTaskUpdateToOneWithWhereWithoutAttachmentsInput = {
+    where?: CheckinTaskWhereInput
+    data: XOR<CheckinTaskUpdateWithoutAttachmentsInput, CheckinTaskUncheckedUpdateWithoutAttachmentsInput>
+  }
+
+  export type CheckinTaskUpdateWithoutAttachmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
+    apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
+    assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
+    messages?: CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput
+  }
+
+  export type CheckinTaskUncheckedUpdateWithoutAttachmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    checklistProgress?: NullableJsonNullValueInput | InputJsonValue
+    checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
+  }
+
   export type MessageUpsertWithWhereUniqueWithoutAttachmentInput = {
     where: MessageWhereUniqueInput
     update: XOR<MessageUpdateWithoutAttachmentInput, MessageUncheckedUpdateWithoutAttachmentInput>
@@ -48537,6 +50800,22 @@ export namespace Prisma {
   export type CleaningTaskMessageUpdateManyWithWhereWithoutAttachmentInput = {
     where: CleaningTaskMessageScalarWhereInput
     data: XOR<CleaningTaskMessageUpdateManyMutationInput, CleaningTaskMessageUncheckedUpdateManyWithoutAttachmentInput>
+  }
+
+  export type CheckinTaskMessageUpsertWithWhereUniqueWithoutAttachmentInput = {
+    where: CheckinTaskMessageWhereUniqueInput
+    update: XOR<CheckinTaskMessageUpdateWithoutAttachmentInput, CheckinTaskMessageUncheckedUpdateWithoutAttachmentInput>
+    create: XOR<CheckinTaskMessageCreateWithoutAttachmentInput, CheckinTaskMessageUncheckedCreateWithoutAttachmentInput>
+  }
+
+  export type CheckinTaskMessageUpdateWithWhereUniqueWithoutAttachmentInput = {
+    where: CheckinTaskMessageWhereUniqueInput
+    data: XOR<CheckinTaskMessageUpdateWithoutAttachmentInput, CheckinTaskMessageUncheckedUpdateWithoutAttachmentInput>
+  }
+
+  export type CheckinTaskMessageUpdateManyWithWhereWithoutAttachmentInput = {
+    where: CheckinTaskMessageScalarWhereInput
+    data: XOR<CheckinTaskMessageUpdateManyMutationInput, CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentInput>
   }
 
   export type ApartmentCreateWithoutApartmentAttachmentsInput = {
@@ -48741,7 +51020,9 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutAttachmentsInput
     cleaningMessages?: CleaningTaskMessageCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentUncheckedCreateWithoutMessagesInput = {
@@ -48755,7 +51036,9 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     cleaningTaskId?: string | null
+    checkinTaskId?: string | null
     cleaningMessages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentCreateOrConnectWithoutMessagesInput = {
@@ -48838,7 +51121,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutAttachmentsNestedInput
     cleaningMessages?: CleaningTaskMessageUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUpdateManyWithoutAttachmentNestedInput
   }
 
   export type AttachmentUncheckedUpdateWithoutMessagesInput = {
@@ -48852,7 +51137,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningMessages?: CleaningTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
   }
 
   export type CleaningTaskCreateWithoutMessagesInput = {
@@ -48915,7 +51202,9 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicket?: MaintenanceTicketCreateNestedOneWithoutAttachmentsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutAttachmentsInput
+    checkinTask?: CheckinTaskCreateNestedOneWithoutAttachmentsInput
     messages?: MessageCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentUncheckedCreateWithoutCleaningMessagesInput = {
@@ -48929,7 +51218,9 @@ export namespace Prisma {
     createdAt?: Date | string
     maintenanceTicketId?: string | null
     cleaningTaskId?: string | null
+    checkinTaskId?: string | null
     messages?: MessageUncheckedCreateNestedManyWithoutAttachmentInput
+    checkinMessages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutAttachmentInput
   }
 
   export type AttachmentCreateOrConnectWithoutCleaningMessagesInput = {
@@ -49014,7 +51305,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutAttachmentsNestedInput
     messages?: MessageUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUpdateManyWithoutAttachmentNestedInput
   }
 
   export type AttachmentUncheckedUpdateWithoutCleaningMessagesInput = {
@@ -49028,7 +51321,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
   }
 
   export type UserCreateWithoutSupervisorReviewsInput = {
@@ -51290,6 +53585,8 @@ export namespace Prisma {
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
+    messages?: CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput
+    attachments?: AttachmentUpdateManyWithoutCheckinTaskNestedInput
   }
 
   export type CheckinTaskUncheckedUpdateWithoutAssignedToInput = {
@@ -51304,6 +53601,8 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
+    attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
 
   export type CheckinTaskUncheckedUpdateManyWithoutAssignedToInput = {
@@ -51870,6 +54169,8 @@ export namespace Prisma {
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
     assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
+    messages?: CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput
+    attachments?: AttachmentUpdateManyWithoutCheckinTaskNestedInput
   }
 
   export type CheckinTaskUncheckedUpdateWithoutApartmentInput = {
@@ -51884,6 +54185,8 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
+    attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
 
   export type CheckinTaskUncheckedUpdateManyWithoutApartmentInput = {
@@ -51921,6 +54224,7 @@ export namespace Prisma {
     extractedText?: string | null
     createdAt?: Date | string
     maintenanceTicketId?: string | null
+    checkinTaskId?: string | null
   }
 
   export type AIAssistantMessageCreateManyCleaningTaskInput = {
@@ -51986,8 +54290,10 @@ export namespace Prisma {
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutAttachmentsNestedInput
     messages?: MessageUpdateManyWithoutAttachmentNestedInput
     cleaningMessages?: CleaningTaskMessageUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUpdateManyWithoutAttachmentNestedInput
   }
 
   export type AttachmentUncheckedUpdateWithoutCleaningTaskInput = {
@@ -52000,8 +54306,10 @@ export namespace Prisma {
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
     cleaningMessages?: CleaningTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
   }
 
   export type AttachmentUncheckedUpdateManyWithoutCleaningTaskInput = {
@@ -52014,6 +54322,7 @@ export namespace Prisma {
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AIAssistantMessageUpdateWithoutCleaningTaskInput = {
@@ -52076,6 +54385,108 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CheckinTaskMessageCreateManyCheckinTaskInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    attachmentId?: string | null
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+  }
+
+  export type AttachmentCreateManyCheckinTaskInput = {
+    id?: string
+    url: string
+    fileName?: string
+    fileType?: string | null
+    size?: number | null
+    category?: string
+    extractedText?: string | null
+    createdAt?: Date | string
+    maintenanceTicketId?: string | null
+    cleaningTaskId?: string | null
+  }
+
+  export type CheckinTaskMessageUpdateWithoutCheckinTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachment?: AttachmentUpdateOneWithoutCheckinMessagesNestedInput
+  }
+
+  export type CheckinTaskMessageUncheckedUpdateWithoutCheckinTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    attachmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type AttachmentUpdateWithoutCheckinTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maintenanceTicket?: MaintenanceTicketUpdateOneWithoutAttachmentsNestedInput
+    cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
+    messages?: MessageUpdateManyWithoutAttachmentNestedInput
+    cleaningMessages?: CleaningTaskMessageUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUpdateManyWithoutAttachmentNestedInput
+  }
+
+  export type AttachmentUncheckedUpdateWithoutCheckinTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
+    cleaningMessages?: CleaningTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
+  }
+
+  export type AttachmentUncheckedUpdateManyWithoutCheckinTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableIntFieldUpdateOperationsInput | number | null
+    category?: StringFieldUpdateOperationsInput | string
+    extractedText?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maintenanceTicketId?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type AttachmentCreateManyMaintenanceTicketInput = {
     id?: string
     url: string
@@ -52086,6 +54497,7 @@ export namespace Prisma {
     extractedText?: string | null
     createdAt?: Date | string
     cleaningTaskId?: string | null
+    checkinTaskId?: string | null
   }
 
   export type MessageCreateManyMaintenanceTicketInput = {
@@ -52129,8 +54541,10 @@ export namespace Prisma {
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUpdateOneWithoutAttachmentsNestedInput
+    checkinTask?: CheckinTaskUpdateOneWithoutAttachmentsNestedInput
     messages?: MessageUpdateManyWithoutAttachmentNestedInput
     cleaningMessages?: CleaningTaskMessageUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUpdateManyWithoutAttachmentNestedInput
   }
 
   export type AttachmentUncheckedUpdateWithoutMaintenanceTicketInput = {
@@ -52143,8 +54557,10 @@ export namespace Prisma {
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUncheckedUpdateManyWithoutAttachmentNestedInput
     cleaningMessages?: CleaningTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
+    checkinMessages?: CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentNestedInput
   }
 
   export type AttachmentUncheckedUpdateManyWithoutMaintenanceTicketInput = {
@@ -52157,6 +54573,7 @@ export namespace Prisma {
     extractedText?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTaskId?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinTaskId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUpdateWithoutMaintenanceTicketInput = {
@@ -52274,6 +54691,17 @@ export namespace Prisma {
     readByWorkerAt?: Date | string | null
   }
 
+  export type CheckinTaskMessageCreateManyAttachmentInput = {
+    id?: string
+    text?: string | null
+    role: string
+    senderName: string
+    createdAt?: Date | string
+    checkinTaskId: string
+    readByManagerAt?: Date | string | null
+    readByWorkerAt?: Date | string | null
+  }
+
   export type MessageUpdateWithoutAttachmentInput = {
     id?: StringFieldUpdateOperationsInput | string
     text?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52336,6 +54764,39 @@ export namespace Prisma {
     senderName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTaskId?: StringFieldUpdateOperationsInput | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CheckinTaskMessageUpdateWithoutAttachmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    checkinTask?: CheckinTaskUpdateOneRequiredWithoutMessagesNestedInput
+  }
+
+  export type CheckinTaskMessageUncheckedUpdateWithoutAttachmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkinTaskId?: StringFieldUpdateOperationsInput | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CheckinTaskMessageUncheckedUpdateManyWithoutAttachmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: StringFieldUpdateOperationsInput | string
+    senderName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkinTaskId?: StringFieldUpdateOperationsInput | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readByWorkerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
