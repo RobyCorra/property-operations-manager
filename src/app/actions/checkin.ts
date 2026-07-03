@@ -1,7 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { setRomeTimeOnDate, preserveRomeTimeOnDate } from "@/src/lib/rome-datetime";
+import { getCurrentUserId } from "@/src/lib/tenant";
+import { sendPushToRole } from "@/src/lib/push";
+import type { Role } from "@/src/generated/prisma/client";
 
 // Orario di check-in di default (ora di Roma) se non diversamente specificato.
 const DEFAULT_CHECKIN_TIME = "15:00";
@@ -97,4 +101,82 @@ export async function syncCheckinTaskFromBooking(bookingId: string, tx?: any) {
   } catch (error) {
     console.error("Error syncing check-in task from booking:", error);
   }
+}
+
+// Avanzamento stato: PENDING -> IN_PROGRESS -> COMPLETED.
+export async function updateCheckinStatus(id: string, nextStatus: string) {
+  const task = await prisma.checkinTask.findUnique({
+    where: { id },
+    include: {
+      assignedTo: { select: { name: true } },
+      apartment: { select: { name: true, organizationId: true } },
+    },
+  });
+  if (!task) throw new Error("Check-in non trovato.");
+
+  const transitions: Record<string, string> = {
+    PENDING: "IN_PROGRESS",
+    IN_PROGRESS: "COMPLETED",
+  };
+  if (transitions[task.status] !== nextStatus) {
+    throw new Error(`Transizione non valida: ${task.status} -> ${nextStatus}`);
+  }
+
+  const updateData: any = { status: nextStatus };
+
+  if (nextStatus === "IN_PROGRESS") {
+    if (!task.startedAt) updateData.startedAt = new Date();
+    // Auto-assegna all'assistente corrente se non pre-assegnato.
+    if (!task.assignedToId) {
+      const currentUserId = await getCurrentUserId();
+      if (currentUserId) updateData.assignedToId = currentUserId;
+    }
+  }
+
+  if (nextStatus === "COMPLETED") {
+    updateData.completedAt = new Date();
+  }
+
+  await prisma.checkinTask.update({ where: { id }, data: updateData });
+
+  // Notifica al manager al completamento.
+  if (nextStatus === "COMPLETED") {
+    const who = task.assignedTo?.name ?? "L'assistente";
+    await sendPushToRole(
+      "MANAGER" as Role,
+      {
+        title: `✅ Check-in completato — ${task.apartment?.name ?? "appartamento"}`,
+        body: `${who} ha completato il check-in.`,
+        url: "/dashboard/manager",
+        tag: `checkin-done-${id}`,
+      },
+      "checkinCompleted",
+      task.apartment?.organizationId ?? null
+    ).catch(console.error);
+  }
+
+  revalidatePath("/dashboard/checkin");
+  revalidatePath("/dashboard/manager");
+}
+
+// Salva le spunte/foto della checklist di check-in (array completo aggiornato).
+export async function updateCheckinChecklist(
+  taskId: string,
+  items: { id: string; completed?: boolean; photoUrl?: string | null; skipped?: boolean }[]
+) {
+  const task = await prisma.checkinTask.findUnique({ where: { id: taskId } });
+  if (!task) throw new Error("Check-in non trovato.");
+
+  const current = Array.isArray(task.checklistProgress) ? (task.checklistProgress as any[]) : [];
+  const updates = new Map(items.map((i) => [i.id, i]));
+  const merged = current.map((item: any) => {
+    const u = updates.get(item.id);
+    return u ? { ...item, ...u } : item;
+  });
+
+  await prisma.checkinTask.update({
+    where: { id: taskId },
+    data: { checklistProgress: merged as any },
+  });
+  revalidatePath("/dashboard/checkin");
 }
