@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { setRomeTimeOnDate, preserveRomeTimeOnDate } from "@/src/lib/rome-datetime";
-import { getCurrentUserId } from "@/src/lib/tenant";
+import { getCurrentUserId, getCurrentOrg } from "@/src/lib/tenant";
 import { sendPushToRole, sendPushToUser } from "@/src/lib/push";
 import type { Role } from "@/src/generated/prisma/client";
 
@@ -258,6 +258,58 @@ export async function createCheckinTaskMessage(taskId: string, prevState: any, f
   } catch (error) {
     console.error("Error creating check-in message:", error);
     return { error: "Impossibile inviare il messaggio." };
+  }
+}
+
+// Assegna (o riassegna) un check-in a un assistente della stessa organizzazione.
+export async function assignCheckinTask(taskId: string, assignedToId: string | null) {
+  const orgId = await getCurrentOrg();
+  if (!orgId) throw new Error("Organizzazione non identificata.");
+
+  // Verifica che la task appartenga all'organizzazione corrente.
+  const task = await prisma.checkinTask.findFirst({
+    where: { id: taskId, apartment: { organizationId: orgId } },
+    include: { apartment: { select: { name: true } } },
+  });
+  if (!task) throw new Error("Check-in non trovato.");
+
+  // Se assegnato, l'utente deve essere un assistente CHECKIN della stessa org.
+  if (assignedToId) {
+    const user = await prisma.user.findFirst({
+      where: { id: assignedToId, role: "CHECKIN", organizationId: orgId },
+      select: { id: true },
+    });
+    if (!user) throw new Error("Assistente non valido per questa organizzazione.");
+  }
+
+  await prisma.checkinTask.update({
+    where: { id: taskId },
+    data: { assignedToId: assignedToId || null },
+  });
+
+  if (assignedToId) {
+    await sendPushToUser(assignedToId, {
+      title: "🔑 Nuovo check-in assegnato",
+      body: `Hai un check-in presso ${task.apartment?.name ?? "un appartamento"}.`,
+      url: "/dashboard/checkin",
+      tag: "checkin-assigned",
+    }).catch(console.error);
+  }
+
+  revalidatePath("/dashboard/checkin");
+  revalidatePath("/dashboard/manager");
+  revalidatePath(`/dashboard/manager/checkins/${taskId}`);
+}
+
+// Marca come letti dal manager i messaggi dell'assistente.
+export async function markCheckinMessagesReadByManager(taskId: string) {
+  try {
+    await prisma.checkinTaskMessage.updateMany({
+      where: { checkinTaskId: taskId, role: { not: "MANAGER" }, readByManagerAt: null },
+      data: { readByManagerAt: new Date() },
+    });
+  } catch (e) {
+    console.error("markCheckinMessagesReadByManager", e);
   }
 }
 
