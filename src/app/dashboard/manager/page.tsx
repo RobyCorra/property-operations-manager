@@ -114,7 +114,7 @@ export default async function ManagerDashboardPage() {
   const orgId = await getCurrentOrg();
 
   // Fetch all necessary data
-  const [org, apartments, bookings, cleanings, tickets, initialNotifications, unreadMessagesCount] = await Promise.all([
+  const [org, apartments, bookings, cleanings, tickets, checkins, initialNotifications, unreadMessagesCount] = await Promise.all([
     orgId ? prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } }) : null,
     prisma.apartment.findMany({ where: { organizationId: orgId } }),
     prisma.booking.findMany({
@@ -135,6 +135,10 @@ export default async function ManagerDashboardPage() {
       }
     }),
     prisma.maintenanceTicket.findMany({
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
+      include: { apartment: true, assignedTo: true },
+    }),
+    prisma.checkinTask.findMany({
       where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: { apartment: true, assignedTo: true },
     }),
@@ -576,6 +580,7 @@ export default async function ManagerDashboardPage() {
                 bookings={calendarBookings}
                 cleaningTasks={cleanings}
                 maintenanceTickets={tickets}
+                checkinTasks={checkins}
                 serverDate={serverDate}
               />
             </div>

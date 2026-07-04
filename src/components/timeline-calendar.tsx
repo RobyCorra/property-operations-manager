@@ -132,18 +132,28 @@ interface Apartment {
   bedConfig?: unknown;
 }
 
+interface CheckinTaskCal {
+  id: string;
+  apartmentId: string;
+  date: Date | string;
+  status: string;
+  assignedTo?: { id: string; name: string } | null;
+  apartment?: { name: string; address: string };
+}
+
 interface TimelineCalendarProps {
   apartments: Apartment[];
   bookings: Booking[];
   cleaningTasks: CleaningTask[];
   maintenanceTickets: MaintenanceTicket[];
+  checkinTasks?: CheckinTaskCal[];
   serverDate: string;
   readOnly?: boolean;
 }
 
 type CalendarEvent = {
   id: string;
-  type: "booking" | "cleaning" | "maintenance";
+  type: "booking" | "cleaning" | "maintenance" | "checkin";
   title: string;
   apartmentName?: string;
   start: Date;
@@ -151,7 +161,7 @@ type CalendarEvent = {
   status?: string;
   priority?: string;
   apartmentId: string;
-  data: Booking | CleaningTask | MaintenanceTicket;
+  data: Booking | CleaningTask | MaintenanceTicket | CheckinTaskCal;
 };
 
 const DAY_WIDTH = 100;
@@ -186,7 +196,7 @@ function diffLocalDays(start: Date, end: Date) {
   return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, serverDate, readOnly = false }: TimelineCalendarProps) {
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false }: TimelineCalendarProps) {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedEvent, setSelectedEvent] = useState<{ type: 'booking' | 'cleaning' | 'maintenance', data: any } | null>(null);
@@ -254,14 +264,32 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
       .filter((event) => !isNaN(event.start.getTime()))
   ), [maintenanceTickets]);
 
+  const checkinEvents = useMemo<CalendarEvent[]>(() => (
+    checkinTasks
+      .filter((task) => task.status !== "CANCELLED")
+      .map((task) => ({
+        id: task.id,
+        type: "checkin" as const,
+        title: `Check-in - ${task.apartment?.name || "Appartamento"}`,
+        apartmentName: task.apartment?.name || "",
+        start: new Date(task.date),
+        end: new Date(task.date),
+        status: task.status,
+        apartmentId: task.apartmentId,
+        data: task,
+      }))
+      .filter((event) => !isNaN(event.start.getTime()))
+  ), [checkinTasks]);
+
   const calendarEvents = useMemo<CalendarEvent[]>(() => (
     [
       ...bookingEvents,
       ...cleaningEvents,
       ...maintenanceEvents,
+      ...checkinEvents,
     ]
       .sort((a, b) => a.start.getTime() - b.start.getTime())
-  ), [bookingEvents, cleaningEvents, maintenanceEvents]);
+  ), [bookingEvents, cleaningEvents, maintenanceEvents, checkinEvents]);
 
   // Dati operativi pre-raggruppati per appartamento — calcolati UNA volta sola
   // invece di rifiltrare/rimappare l'intero dataset dentro il loop di render per
@@ -818,6 +846,39 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       >
                         <Wrench size={11} className="mr-1 opacity-70" />
                         TICKET
+                      </div>
+                    );
+                  }
+
+                  if (event.type === "checkin") {
+                    const checkin = event.data as CheckinTaskCal;
+                    const isAssigned = !!checkin.assignedTo;
+                    const checkinColor = checkin.status === "COMPLETED"
+                      ? "bg-emerald-500/15 text-emerald-700 border-emerald-500/30"
+                      : checkin.status === "IN_PROGRESS"
+                      ? "bg-violet-500/15 text-violet-700 border-violet-500/30"
+                      : isAssigned
+                      ? "bg-blue-500/15 text-blue-700 border-blue-500/30"
+                      : "bg-slate-400/15 text-slate-600 border-slate-400/30";
+                    const checkinLabel = checkin.status === "COMPLETED"
+                      ? "Completato"
+                      : checkin.status === "IN_PROGRESS"
+                      ? "In corso"
+                      : isAssigned ? "Assegnato" : "Da assegnare";
+
+                    return (
+                      <div
+                        key={`${event.type}-${event.id}`}
+                        onClick={() => { if (!readOnly) router.push(`/dashboard/manager/checkins/${checkin.id}`); }}
+                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-[15] cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${checkinColor}`}
+                        title={`Check-in - ${checkinLabel.toUpperCase()}`}
+                        style={{
+                          left: getPosition(event.start) + 6,
+                          width: Math.max(10, timelineDayWidth - 12),
+                        }}
+                      >
+                        <LogIn size={11} className="opacity-70 shrink-0" />
+                        <span className="text-[9px] font-bold uppercase truncate">{checkinLabel}</span>
                       </div>
                     );
                   }
