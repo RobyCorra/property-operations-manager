@@ -4,6 +4,7 @@ import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { logoutAction } from "@/src/app/actions/auth";
 import CheckinStartButton from "@/src/components/checkin-start-button";
+import CheckinCardChat from "@/src/components/checkin-card-chat";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 export const revalidate = 0;
@@ -32,6 +33,7 @@ export default async function CheckinDashboardPage() {
       include: {
         apartment: { select: { name: true, address: true } },
         booking: { select: { guestName: true, totalGuests: true } },
+        messages: { orderBy: { createdAt: "asc" }, include: { attachment: true } },
       },
       orderBy: { date: "asc" },
     }),
@@ -109,6 +111,13 @@ export default async function CheckinDashboardPage() {
                   Rivedi
                 </Link>
               )}
+
+              <CheckinCardChat
+                taskId={task.id}
+                initialMessages={task.messages}
+                currentUserName={user?.name ?? "Assistente"}
+                hasUnread={task.messages.some((m) => m.role === "MANAGER" && !m.readByWorkerAt)}
+              />
             </div>
           );
         })}
