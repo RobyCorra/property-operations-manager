@@ -611,7 +611,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
               RED:    "Occupato",
             };
             return (
-              <div key={apt.id} className="h-28 border-b-2 border-slate-200/70 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/30">
+              <div key={apt.id} className="h-36 border-b-2 border-slate-200/70 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/30">
                 <span className="text-base font-semibold text-slate-900 truncate tracking-tight">{apt.name}</span>
                 <div className="flex items-center gap-1.5 mt-1.5">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor[apt.status] ?? "bg-slate-400"}`} />
@@ -700,7 +700,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             </div>
 
             {apartments.map((apt) => (
-              <div key={apt.id} className="h-28 border-b-2 border-slate-200/70 relative group hover:bg-white/10 transition-colors">
+              <div key={apt.id} className="h-36 border-b-2 border-slate-200/70 relative group hover:bg-white/10 transition-colors">
                 {calendarEvents.filter((event) => event.apartmentId === apt.id).map((event) => {
                   if (event.type === "booking") {
                     const booking = event.data as Booking;
@@ -870,7 +870,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       <div
                         key={`${event.type}-${event.id}`}
                         onClick={() => { if (!readOnly) router.push(`/dashboard/manager/checkins/${checkin.id}`); }}
-                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-[15] cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${checkinColor}`}
+                        className={`absolute top-[5.5rem] h-6 px-3 rounded-full border text-[10px] font-semibold z-[15] cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${checkinColor}`}
                         title={`Check-in - ${checkinLabel.toUpperCase()}`}
                         style={{
                           left: getPosition(event.start) + 6,
