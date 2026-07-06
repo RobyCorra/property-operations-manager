@@ -645,6 +645,12 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       if (incompleteRequired.length > 0) {
         throw new Error(`Impossibile completare: ${incompleteRequired.length} punti obbligatori non smarcati.`);
       }
+      // Le voci con foto obbligatoria devono avere la foto salvata
+      const missingPhotos = items.filter(i => i.photoRequired && i.completed && !i.photoUrl);
+      if (missingPhotos.length > 0) {
+        const labels = missingPhotos.map(i => i.label).filter(Boolean).join(", ");
+        throw new Error(`Impossibile completare: foto obbligatoria mancante per ${missingPhotos.length} punti${labels ? ` (${labels})` : ""}.`);
+      }
     }
   }
 
