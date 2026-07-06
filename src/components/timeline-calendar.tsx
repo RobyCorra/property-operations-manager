@@ -853,18 +853,19 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                   if (event.type === "checkin") {
                     const checkin = event.data as CheckinTaskCal;
                     const isAssigned = !!checkin.assignedTo;
+                    // Stessi colori dello stato intervento delle pulizie
                     const checkinColor = checkin.status === "COMPLETED"
-                      ? "bg-emerald-500/15 text-emerald-700 border-emerald-500/30"
+                      ? "bg-sky-500/15 text-sky-700 border-sky-500/30 shadow-sky-100"
                       : checkin.status === "IN_PROGRESS"
-                      ? "bg-violet-500/15 text-violet-700 border-violet-500/30"
+                      ? "bg-violet-500/15 text-violet-700 border-violet-500/30 shadow-violet-100"
                       : isAssigned
-                      ? "bg-blue-500/15 text-blue-700 border-blue-500/30"
-                      : "bg-slate-400/15 text-slate-600 border-slate-400/30";
+                      ? "bg-yellow-500/15 text-yellow-700 border-yellow-500/30 shadow-yellow-100"
+                      : "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100";
                     const checkinLabel = checkin.status === "COMPLETED"
                       ? "Completato"
                       : checkin.status === "IN_PROGRESS"
                       ? "In corso"
-                      : isAssigned ? "Assegnato" : "Da assegnare";
+                      : isAssigned ? "Assegnato" : "Da fare";
 
                     return (
                       <div
