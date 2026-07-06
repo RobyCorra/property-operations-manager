@@ -121,22 +121,47 @@ export async function syncCheckinTaskFromBooking(bookingId: string, tx?: any) {
   }
 }
 
-// Modifica l'orario di un singolo check-in (formato "HH:MM"), org-scoped.
-export async function updateCheckinTime(taskId: string, time: string) {
-  if (!/^\d{2}:\d{2}$/.test(time)) throw new Error("Orario non valido.");
+// Salva insieme assegnazione e orario di un check-in (flusso Modifica → Salva), org-scoped.
+export async function updateCheckinDetails(
+  taskId: string,
+  data: { assignedToId: string | null; time: string }
+) {
+  if (!/^\d{2}:\d{2}$/.test(data.time)) throw new Error("Orario non valido.");
   const orgId = await getCurrentOrg();
   if (!orgId) throw new Error("Organizzazione non identificata.");
 
   const task = await prisma.checkinTask.findFirst({
     where: { id: taskId, apartment: { organizationId: orgId } },
-    select: { id: true, date: true },
+    include: { apartment: { select: { name: true } } },
   });
   if (!task) throw new Error("Check-in non trovato.");
 
+  if (data.assignedToId) {
+    const user = await prisma.user.findFirst({
+      where: { id: data.assignedToId, role: "CHECKIN", organizationId: orgId },
+      select: { id: true },
+    });
+    if (!user) throw new Error("Assistente non valido per questa organizzazione.");
+  }
+
   await prisma.checkinTask.update({
     where: { id: taskId },
-    data: { date: setRomeTimeOnDate(new Date(task.date), time) },
+    data: {
+      assignedToId: data.assignedToId || null,
+      date: setRomeTimeOnDate(new Date(task.date), data.time),
+    },
   });
+
+  // Notifica solo se l'assegnatario è nuovo o è cambiato.
+  if (data.assignedToId && data.assignedToId !== task.assignedToId) {
+    await sendPushToUser(data.assignedToId, {
+      title: "🔑 Nuovo check-in assegnato",
+      body: `Hai un check-in presso ${task.apartment?.name ?? "un appartamento"}.`,
+      url: "/dashboard/checkin",
+      tag: "checkin-assigned",
+    }).catch(console.error);
+  }
+
   revalidatePath(`/dashboard/manager/checkins/${taskId}`);
   revalidatePath("/dashboard/checkin");
   revalidatePath("/dashboard/manager");
@@ -319,46 +344,6 @@ export async function createCheckinTaskMessage(taskId: string, prevState: any, f
     console.error("Error creating check-in message:", error);
     return { error: "Impossibile inviare il messaggio." };
   }
-}
-
-// Assegna (o riassegna) un check-in a un assistente della stessa organizzazione.
-export async function assignCheckinTask(taskId: string, assignedToId: string | null) {
-  const orgId = await getCurrentOrg();
-  if (!orgId) throw new Error("Organizzazione non identificata.");
-
-  // Verifica che la task appartenga all'organizzazione corrente.
-  const task = await prisma.checkinTask.findFirst({
-    where: { id: taskId, apartment: { organizationId: orgId } },
-    include: { apartment: { select: { name: true } } },
-  });
-  if (!task) throw new Error("Check-in non trovato.");
-
-  // Se assegnato, l'utente deve essere un assistente CHECKIN della stessa org.
-  if (assignedToId) {
-    const user = await prisma.user.findFirst({
-      where: { id: assignedToId, role: "CHECKIN", organizationId: orgId },
-      select: { id: true },
-    });
-    if (!user) throw new Error("Assistente non valido per questa organizzazione.");
-  }
-
-  await prisma.checkinTask.update({
-    where: { id: taskId },
-    data: { assignedToId: assignedToId || null },
-  });
-
-  if (assignedToId) {
-    await sendPushToUser(assignedToId, {
-      title: "🔑 Nuovo check-in assegnato",
-      body: `Hai un check-in presso ${task.apartment?.name ?? "un appartamento"}.`,
-      url: "/dashboard/checkin",
-      tag: "checkin-assigned",
-    }).catch(console.error);
-  }
-
-  revalidatePath("/dashboard/checkin");
-  revalidatePath("/dashboard/manager");
-  revalidatePath(`/dashboard/manager/checkins/${taskId}`);
 }
 
 // Marca come letti dal manager i messaggi dell'assistente.
