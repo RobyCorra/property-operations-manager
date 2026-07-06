@@ -30,6 +30,16 @@ async function syncPendingCheckinTasks(apartmentId: string) {
   }
 }
 
+// Salva l'orario di check-in di default dell'appartamento (formato "HH:MM").
+export async function updateCheckinDefaultTime(apartmentId: string, time: string) {
+  const clean = /^\d{2}:\d{2}$/.test(time) ? time : null;
+  await prisma.apartment.update({
+    where: { id: apartmentId },
+    data: { checkinDefaultTime: clean },
+  });
+  revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checkin-checklist`);
+}
+
 export async function getCheckinChecklist(apartmentId: string) {
   return await prisma.checkinChecklistItem.findMany({
     where: { apartmentId },

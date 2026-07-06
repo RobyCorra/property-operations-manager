@@ -88,6 +88,7 @@ model Apartment {
   icalUrl              String?
   lastSyncAt           DateTime?
   technicalProfile     Json?
+  checkinDefaultTime   String?
   createdAt            DateTime              @default(now())
   bookings             Booking[]
   checklistItems       ChecklistItem[]

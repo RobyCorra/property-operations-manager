@@ -5,6 +5,7 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import BackButton from "@/src/components/back-button";
 import TicketConversation from "@/src/components/ticket-conversation";
 import CheckinAssignSelect from "@/src/components/checkin-assign-select";
+import CheckinTimeEdit from "@/src/components/checkin-time-edit";
 import { createCheckinTaskMessage, getCheckinTaskMessages, markCheckinMessagesReadByManager } from "@/src/app/actions/checkin";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
@@ -75,6 +76,15 @@ export default async function ManagerCheckinPage({ params }: { params: Promise<{
           <p className="text-sm text-slate-600">
             Checklist: <span className="font-semibold">{doneCount}/{progress.length}</span> completate
           </p>
+        </div>
+
+        {/* Orario check-in */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-5">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Orario check-in</p>
+          <CheckinTimeEdit
+            taskId={task.id}
+            initialTime={new Date(task.date).toLocaleTimeString("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hour12: false })}
+          />
         </div>
 
         {/* Assegnazione */}

@@ -89,11 +89,12 @@ export async function syncCheckinTaskFromBooking(bookingId: string, tx?: any) {
     }
 
     const checklistProgress = await computeCheckinChecklistSnapshot(db, booking.apartmentId);
+    const defaultTime = booking.apartment?.checkinDefaultTime || DEFAULT_CHECKIN_TIME;
     await db.checkinTask.create({
       data: {
         apartmentId: booking.apartmentId,
         bookingId: booking.id,
-        date: setRomeTimeOnDate(checkInDate, DEFAULT_CHECKIN_TIME),
+        date: setRomeTimeOnDate(checkInDate, defaultTime),
         status: "PENDING",
         checklistProgress,
       },
@@ -101,6 +102,27 @@ export async function syncCheckinTaskFromBooking(bookingId: string, tx?: any) {
   } catch (error) {
     console.error("Error syncing check-in task from booking:", error);
   }
+}
+
+// Modifica l'orario di un singolo check-in (formato "HH:MM"), org-scoped.
+export async function updateCheckinTime(taskId: string, time: string) {
+  if (!/^\d{2}:\d{2}$/.test(time)) throw new Error("Orario non valido.");
+  const orgId = await getCurrentOrg();
+  if (!orgId) throw new Error("Organizzazione non identificata.");
+
+  const task = await prisma.checkinTask.findFirst({
+    where: { id: taskId, apartment: { organizationId: orgId } },
+    select: { id: true, date: true },
+  });
+  if (!task) throw new Error("Check-in non trovato.");
+
+  await prisma.checkinTask.update({
+    where: { id: taskId },
+    data: { date: setRomeTimeOnDate(new Date(task.date), time) },
+  });
+  revalidatePath(`/dashboard/manager/checkins/${taskId}`);
+  revalidatePath("/dashboard/checkin");
+  revalidatePath("/dashboard/manager");
 }
 
 // Regola: il check-in si avvia solo se la pulizia di turnover che prepara
