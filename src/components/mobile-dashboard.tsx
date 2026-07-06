@@ -31,6 +31,13 @@ export type MobileLateClean = {
   href: string;
 };
 
+export type MobileLateCheckin = {
+  id: string;
+  apartmentName: string;
+  scheduledTime: string;
+  href: string;
+};
+
 export type MobileInProgressClean = {
   id: string;
   apartmentName: string;
@@ -217,6 +224,7 @@ function ticketStatusInfo(t: CalTicket): { label: string; badgeClass: string; ba
 type Props = {
   apartments: MobileApartmentData[];
   lateCleanings: MobileLateClean[];
+  lateCheckins?: MobileLateCheckin[];
   cleaningsInProgress: MobileInProgressClean[];
   todayPendingEvents: MobileTodayEvent[];
   checkinsCount: number;
@@ -296,6 +304,7 @@ function eventBgColor(type: string, status: string) {
 export default function MobileDashboard({
   apartments,
   lateCleanings,
+  lateCheckins = [],
   cleaningsInProgress,
   todayPendingEvents,
   checkinsCount,
@@ -583,6 +592,29 @@ export default function MobileDashboard({
                   <p className="text-[10px] font-black uppercase tracking-wide text-white">⚠ Pulizia in ritardo</p>
                   <p className="text-[10px] text-rose-100 truncate">
                     {lc.apartmentName} · avrebbe dovuto iniziare {lc.scheduledTime}
+                  </p>
+                </div>
+                <Link href={lc.href} className="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">
+                  Vedi
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {lateCheckins.length > 0 && (
+          <div className="px-4 mb-3 space-y-2">
+            {lateCheckins.map((lc, i) => (
+              <div
+                key={lc.id}
+                className="bg-rose-500 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-rose-300 animate-pulse"
+                style={{ animationDelay: `${i * 0.3}s` }}
+              >
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 text-white text-sm">⚠</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-wide text-white">⚠ Check-in in ritardo</p>
+                  <p className="text-[10px] text-rose-100 truncate">
+                    {lc.apartmentName} · doveva iniziare {lc.scheduledTime}
                   </p>
                 </div>
                 <Link href={lc.href} className="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">

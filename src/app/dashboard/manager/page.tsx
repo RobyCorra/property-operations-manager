@@ -169,6 +169,16 @@ export default async function ManagerDashboardPage() {
   });
   const lateCleaningIds = new Set(lateCleanings.map((cleaning: CleaningView) => cleaning.id));
 
+  // Check-in in ritardo: PENDING e ora > orario + 30 minuti
+  const lateCheckins = (checkins as any[])
+    .filter((c) => c.status === "PENDING" && now.getTime() > new Date(c.date).getTime() + 30 * 60 * 1000)
+    .map((c) => ({
+      id: c.id,
+      apartmentName: c.apartment?.name ?? "Appartamento",
+      scheduledTime: new Date(c.date).toLocaleTimeString("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hour12: false }),
+      href: `/dashboard/manager/checkins/${c.id}`,
+    }));
+
   // Data Normalization for Timeline
   const allEvents: OperationalEvent[] = [];
   cleanings.forEach((c: CleaningView) => {
@@ -482,6 +492,7 @@ export default async function ManagerDashboardPage() {
         cleaningsInProgress={mobileCleaningsInProgress}
         todayPendingEvents={mobileTodayEvents}
         checkinsCount={checkinsToday.length}
+        lateCheckins={lateCheckins}
         cleaningsCount={cleaningsToday.length}
         cleaningsDoneCount={cleaningsDoneCount}
         checkinsItems={mobileCheckinsItems}
@@ -546,6 +557,26 @@ export default async function ManagerDashboardPage() {
           </Link>
           </div>
         </div>
+      {/* Avviso check-in in ritardo */}
+      {lateCheckins.length > 0 && (
+        <div className="space-y-2">
+          {lateCheckins.map((lc) => (
+            <Link
+              key={lc.id}
+              href={lc.href}
+              className="flex items-center gap-3 bg-rose-50 border border-rose-200 rounded-2xl px-4 py-3 hover:bg-rose-100 transition-colors"
+            >
+              <span className="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 text-sm">⚠</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-black uppercase tracking-wide text-rose-700">Check-in in ritardo</p>
+                <p className="text-xs text-rose-500 truncate">{lc.apartmentName} · doveva iniziare alle {lc.scheduledTime}</p>
+              </div>
+              <span className="text-[10px] font-black uppercase text-rose-600 shrink-0">Vedi →</span>
+            </Link>
+          ))}
+        </div>
+      )}
+
       {/* 5. KPI CARDS */}
       <DashboardKpiCards
         checkinsToday={checkinsKpi}
