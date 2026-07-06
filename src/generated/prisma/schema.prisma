@@ -89,6 +89,7 @@ model Apartment {
   lastSyncAt            DateTime?
   technicalProfile      Json?
   checkinDefaultTime    String?
+  autoCheckin           Boolean                @default(false)
   createdAt             DateTime               @default(now())
   bookings              Booking[]
   checklistItems        ChecklistItem[]

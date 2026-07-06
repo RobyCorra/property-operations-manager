@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import CheckinChecklistManager from "@/src/components/checkin-checklist-manager";
 import CheckinDefaultTime from "@/src/components/checkin-default-time";
+import CheckinAutoToggle from "@/src/components/checkin-auto-toggle";
 import BackButton from "@/src/components/back-button";
 import { prisma } from "@/src/lib/prisma";
 
@@ -38,6 +39,8 @@ export default async function ApartmentCheckinChecklistPage({ params }: { params
             Configura i passaggi del check-in per <span className="font-bold text-gray-900">{apartment.name}</span>
           </p>
         </div>
+
+        <CheckinAutoToggle apartmentId={apartment.id} initialEnabled={apartment.autoCheckin} />
 
         <CheckinDefaultTime apartmentId={apartment.id} initialTime={apartment.checkinDefaultTime} />
 

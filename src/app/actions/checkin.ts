@@ -62,6 +62,15 @@ export async function syncCheckinTaskFromBooking(bookingId: string, tx?: any) {
     });
     if (!booking) return;
 
+    // Appartamento in self check-in → nessuna task assistente; annulla eventuale PENDING.
+    if (booking.apartment?.autoCheckin) {
+      const existing = await db.checkinTask.findFirst({ where: { bookingId: booking.id } });
+      if (existing && existing.status === "PENDING") {
+        await db.checkinTask.update({ where: { id: existing.id }, data: { status: "CANCELLED" } });
+      }
+      return;
+    }
+
     // Prenotazione cancellata → annulla la task di check-in se ancora PENDING.
     if (booking.status === "CANCELLED") {
       const existing = await db.checkinTask.findFirst({ where: { bookingId: booking.id } });

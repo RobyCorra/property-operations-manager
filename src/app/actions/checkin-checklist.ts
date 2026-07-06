@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { translateLabel } from "@/src/lib/translate";
-import { computeCheckinChecklistSnapshot } from "./checkin";
+import { computeCheckinChecklistSnapshot, syncCheckinTaskFromBooking } from "./checkin";
 
 // Rigenera lo snapshot della checklist per le CheckinTask PENDING dell'appartamento,
 // preservando le spunte già fatte (match per id, poi per label).
@@ -28,6 +28,37 @@ async function syncPendingCheckinTasks(apartmentId: string) {
       data: { checklistProgress: merged as any },
     });
   }
+}
+
+// Attiva/disattiva il self check-in per un appartamento.
+// Attivo: nessun check-in assistente → annulla i check-in non completati.
+// Disattivato: ricrea i check-in per le prenotazioni future non cancellate.
+export async function updateAutoCheckin(apartmentId: string, enabled: boolean) {
+  await prisma.apartment.update({
+    where: { id: apartmentId },
+    data: { autoCheckin: enabled },
+  });
+
+  if (enabled) {
+    await prisma.checkinTask.updateMany({
+      where: { apartmentId, status: { in: ["PENDING", "IN_PROGRESS"] } },
+      data: { status: "CANCELLED" },
+    });
+  } else {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const bookings = await prisma.booking.findMany({
+      where: { apartmentId, status: { not: "CANCELLED" }, checkInDate: { gte: todayStart } },
+      select: { id: true },
+    });
+    for (const b of bookings) {
+      await syncCheckinTaskFromBooking(b.id);
+    }
+  }
+
+  revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checkin-checklist`);
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/checkin");
 }
 
 // Salva l'orario di check-in di default dell'appartamento (formato "HH:MM").

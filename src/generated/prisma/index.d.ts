@@ -6766,6 +6766,7 @@ export namespace Prisma {
     icalUrl: string | null
     lastSyncAt: Date | null
     checkinDefaultTime: string | null
+    autoCheckin: boolean | null
     createdAt: Date | null
   }
 
@@ -6785,6 +6786,7 @@ export namespace Prisma {
     icalUrl: string | null
     lastSyncAt: Date | null
     checkinDefaultTime: string | null
+    autoCheckin: boolean | null
     createdAt: Date | null
   }
 
@@ -6807,6 +6809,7 @@ export namespace Prisma {
     lastSyncAt: number
     technicalProfile: number
     checkinDefaultTime: number
+    autoCheckin: number
     createdAt: number
     _all: number
   }
@@ -6846,6 +6849,7 @@ export namespace Prisma {
     icalUrl?: true
     lastSyncAt?: true
     checkinDefaultTime?: true
+    autoCheckin?: true
     createdAt?: true
   }
 
@@ -6865,6 +6869,7 @@ export namespace Prisma {
     icalUrl?: true
     lastSyncAt?: true
     checkinDefaultTime?: true
+    autoCheckin?: true
     createdAt?: true
   }
 
@@ -6887,6 +6892,7 @@ export namespace Prisma {
     lastSyncAt?: true
     technicalProfile?: true
     checkinDefaultTime?: true
+    autoCheckin?: true
     createdAt?: true
     _all?: true
   }
@@ -6996,6 +7002,7 @@ export namespace Prisma {
     lastSyncAt: Date | null
     technicalProfile: JsonValue | null
     checkinDefaultTime: string | null
+    autoCheckin: boolean
     createdAt: Date
     _count: ApartmentCountAggregateOutputType | null
     _avg: ApartmentAvgAggregateOutputType | null
@@ -7037,6 +7044,7 @@ export namespace Prisma {
     lastSyncAt?: boolean
     technicalProfile?: boolean
     checkinDefaultTime?: boolean
+    autoCheckin?: boolean
     createdAt?: boolean
     organization?: boolean | Apartment$organizationArgs<ExtArgs>
     bookings?: boolean | Apartment$bookingsArgs<ExtArgs>
@@ -7073,6 +7081,7 @@ export namespace Prisma {
     lastSyncAt?: boolean
     technicalProfile?: boolean
     checkinDefaultTime?: boolean
+    autoCheckin?: boolean
     createdAt?: boolean
     organization?: boolean | Apartment$organizationArgs<ExtArgs>
   }, ExtArgs["result"]["apartment"]>
@@ -7096,6 +7105,7 @@ export namespace Prisma {
     lastSyncAt?: boolean
     technicalProfile?: boolean
     checkinDefaultTime?: boolean
+    autoCheckin?: boolean
     createdAt?: boolean
     organization?: boolean | Apartment$organizationArgs<ExtArgs>
   }, ExtArgs["result"]["apartment"]>
@@ -7119,10 +7129,11 @@ export namespace Prisma {
     lastSyncAt?: boolean
     technicalProfile?: boolean
     checkinDefaultTime?: boolean
+    autoCheckin?: boolean
     createdAt?: boolean
   }
 
-  export type ApartmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "apartmentCode" | "organizationId" | "address" | "latitude" | "longitude" | "squareMeters" | "bedrooms" | "bathrooms" | "maxGuests" | "accessInstructions" | "accessInfo" | "bedConfig" | "icalUrl" | "lastSyncAt" | "technicalProfile" | "checkinDefaultTime" | "createdAt", ExtArgs["result"]["apartment"]>
+  export type ApartmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "apartmentCode" | "organizationId" | "address" | "latitude" | "longitude" | "squareMeters" | "bedrooms" | "bathrooms" | "maxGuests" | "accessInstructions" | "accessInfo" | "bedConfig" | "icalUrl" | "lastSyncAt" | "technicalProfile" | "checkinDefaultTime" | "autoCheckin" | "createdAt", ExtArgs["result"]["apartment"]>
   export type ApartmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | Apartment$organizationArgs<ExtArgs>
     bookings?: boolean | Apartment$bookingsArgs<ExtArgs>
@@ -7182,6 +7193,7 @@ export namespace Prisma {
       lastSyncAt: Date | null
       technicalProfile: Prisma.JsonValue | null
       checkinDefaultTime: string | null
+      autoCheckin: boolean
       createdAt: Date
     }, ExtArgs["result"]["apartment"]>
     composites: {}
@@ -7637,6 +7649,7 @@ export namespace Prisma {
     readonly lastSyncAt: FieldRef<"Apartment", 'DateTime'>
     readonly technicalProfile: FieldRef<"Apartment", 'Json'>
     readonly checkinDefaultTime: FieldRef<"Apartment", 'String'>
+    readonly autoCheckin: FieldRef<"Apartment", 'Boolean'>
     readonly createdAt: FieldRef<"Apartment", 'DateTime'>
   }
     
@@ -36086,6 +36099,7 @@ export namespace Prisma {
     lastSyncAt: 'lastSyncAt',
     technicalProfile: 'technicalProfile',
     checkinDefaultTime: 'checkinDefaultTime',
+    autoCheckin: 'autoCheckin',
     createdAt: 'createdAt'
   };
 
@@ -36908,6 +36922,7 @@ export namespace Prisma {
     lastSyncAt?: DateTimeNullableFilter<"Apartment"> | Date | string | null
     technicalProfile?: JsonNullableFilter<"Apartment">
     checkinDefaultTime?: StringNullableFilter<"Apartment"> | string | null
+    autoCheckin?: BoolFilter<"Apartment"> | boolean
     createdAt?: DateTimeFilter<"Apartment"> | Date | string
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     bookings?: BookingListRelationFilter
@@ -36943,6 +36958,7 @@ export namespace Prisma {
     lastSyncAt?: SortOrderInput | SortOrder
     technicalProfile?: SortOrderInput | SortOrder
     checkinDefaultTime?: SortOrderInput | SortOrder
+    autoCheckin?: SortOrder
     createdAt?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
     bookings?: BookingOrderByRelationAggregateInput
@@ -36981,6 +36997,7 @@ export namespace Prisma {
     lastSyncAt?: DateTimeNullableFilter<"Apartment"> | Date | string | null
     technicalProfile?: JsonNullableFilter<"Apartment">
     checkinDefaultTime?: StringNullableFilter<"Apartment"> | string | null
+    autoCheckin?: BoolFilter<"Apartment"> | boolean
     createdAt?: DateTimeFilter<"Apartment"> | Date | string
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     bookings?: BookingListRelationFilter
@@ -37016,6 +37033,7 @@ export namespace Prisma {
     lastSyncAt?: SortOrderInput | SortOrder
     technicalProfile?: SortOrderInput | SortOrder
     checkinDefaultTime?: SortOrderInput | SortOrder
+    autoCheckin?: SortOrder
     createdAt?: SortOrder
     _count?: ApartmentCountOrderByAggregateInput
     _avg?: ApartmentAvgOrderByAggregateInput
@@ -37046,6 +37064,7 @@ export namespace Prisma {
     lastSyncAt?: DateTimeNullableWithAggregatesFilter<"Apartment"> | Date | string | null
     technicalProfile?: JsonNullableWithAggregatesFilter<"Apartment">
     checkinDefaultTime?: StringNullableWithAggregatesFilter<"Apartment"> | string | null
+    autoCheckin?: BoolWithAggregatesFilter<"Apartment"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Apartment"> | Date | string
   }
 
@@ -39262,6 +39281,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -39297,6 +39317,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -39330,6 +39351,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -39365,6 +39387,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -39399,6 +39422,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
   }
 
@@ -39420,6 +39444,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -39442,6 +39467,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -41977,6 +42003,7 @@ export namespace Prisma {
     lastSyncAt?: SortOrder
     technicalProfile?: SortOrder
     checkinDefaultTime?: SortOrder
+    autoCheckin?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -42005,6 +42032,7 @@ export namespace Prisma {
     icalUrl?: SortOrder
     lastSyncAt?: SortOrder
     checkinDefaultTime?: SortOrder
+    autoCheckin?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -42024,6 +42052,7 @@ export namespace Prisma {
     icalUrl?: SortOrder
     lastSyncAt?: SortOrder
     checkinDefaultTime?: SortOrder
+    autoCheckin?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -45855,6 +45884,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemCreateNestedManyWithoutApartmentInput
@@ -45888,6 +45918,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -46011,6 +46042,7 @@ export namespace Prisma {
     lastSyncAt?: DateTimeNullableFilter<"Apartment"> | Date | string | null
     technicalProfile?: JsonNullableFilter<"Apartment">
     checkinDefaultTime?: StringNullableFilter<"Apartment"> | string | null
+    autoCheckin?: BoolFilter<"Apartment"> | boolean
     createdAt?: DateTimeFilter<"Apartment"> | Date | string
   }
 
@@ -47664,6 +47696,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -47698,6 +47731,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutApartmentInput
@@ -47746,6 +47780,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -47780,6 +47815,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutApartmentNestedInput
@@ -47812,6 +47848,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -47846,6 +47883,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -47894,6 +47932,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -47928,6 +47967,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -47960,6 +48000,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     checklistItems?: ChecklistItemCreateNestedManyWithoutApartmentInput
@@ -47994,6 +48035,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutApartmentInput
@@ -48128,6 +48170,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     checklistItems?: ChecklistItemUpdateManyWithoutApartmentNestedInput
@@ -48162,6 +48205,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutApartmentNestedInput
@@ -48327,6 +48371,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -48361,6 +48406,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -48641,6 +48687,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -48675,6 +48722,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -48866,6 +48914,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -48900,6 +48949,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -48948,6 +48998,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -48982,6 +49033,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -49049,6 +49101,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -49083,6 +49136,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -49303,6 +49357,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -49337,6 +49392,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -49639,6 +49695,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -49673,6 +49730,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -49912,6 +49970,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -49946,6 +50005,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -50120,6 +50180,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -50154,6 +50215,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -50298,6 +50360,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -50332,6 +50395,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -50900,6 +50964,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -50934,6 +50999,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -50982,6 +51048,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -51016,6 +51083,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -51736,6 +51804,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -51770,6 +51839,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -51875,6 +51945,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -51909,6 +51980,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -52004,6 +52076,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -52038,6 +52111,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -52143,6 +52217,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -52177,6 +52252,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -52987,6 +53063,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutApartmentsInput
     bookings?: BookingCreateNestedManyWithoutApartmentInput
@@ -53021,6 +53098,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
     bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
     checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
@@ -53069,6 +53147,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
@@ -53103,6 +53182,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -53151,6 +53231,7 @@ export namespace Prisma {
     lastSyncAt?: Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: string | null
+    autoCheckin?: boolean
     createdAt?: Date | string
   }
 
@@ -53246,6 +53327,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUpdateManyWithoutApartmentNestedInput
@@ -53279,6 +53361,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
     checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
@@ -53312,6 +53395,7 @@ export namespace Prisma {
     lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

@@ -185,6 +185,7 @@ exports.Prisma.ApartmentScalarFieldEnum = {
   lastSyncAt: 'lastSyncAt',
   technicalProfile: 'technicalProfile',
   checkinDefaultTime: 'checkinDefaultTime',
+  autoCheckin: 'autoCheckin',
   createdAt: 'createdAt'
 };
 
