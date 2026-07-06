@@ -8,6 +8,8 @@ interface Props {
   taskId: string;
   taskDate: string; // ISO (ora di Roma)
   cleaningBlocked?: boolean;
+  /** Dove andare dopo l'avvio; null = resta e ricarica (pagina pubblica). */
+  startRedirect?: string | null;
 }
 
 function isTodayRome(isoDate: string): boolean {
@@ -25,7 +27,7 @@ function dateLabel(isoDate: string): string {
   });
 }
 
-export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked = false }: Props) {
+export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked = false, startRedirect }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -73,7 +75,8 @@ export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked =
         startTransition(async () => {
           try {
             await updateCheckinStatus(taskId, "IN_PROGRESS");
-            router.push(`/dashboard/checkin/task/${taskId}`);
+            if (startRedirect === null) router.refresh();
+            else router.push(startRedirect ?? `/dashboard/checkin/task/${taskId}`);
           } catch (err: unknown) {
             alert((err as Error).message || "Errore durante l'avvio.");
           }

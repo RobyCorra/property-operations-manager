@@ -5,6 +5,7 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import BackButton from "@/src/components/back-button";
 import TicketConversation from "@/src/components/ticket-conversation";
 import CheckinEditPanel from "@/src/components/checkin-edit-panel";
+import CheckinShareButton from "@/src/components/checkin-share-button";
 import { createCheckinTaskMessage, getCheckinTaskMessages, markCheckinMessagesReadByManager } from "@/src/app/actions/checkin";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
@@ -75,6 +76,12 @@ export default async function ManagerCheckinPage({ params }: { params: Promise<{
           <p className="text-sm text-slate-600">
             Checklist: <span className="font-semibold">{doneCount}/{progress.length}</span> completate
           </p>
+        </div>
+
+        {/* Link pubblico per l'assistente — come pulizie e manutenzioni */}
+        <div className="bg-white rounded-2xl border border-slate-100 p-5">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Link check-in</p>
+          <CheckinShareButton checkinId={task.id} existingToken={task.checkinAccessToken} />
         </div>
 
         {/* Assegnazione e orario — flusso Modifica → Salva */}

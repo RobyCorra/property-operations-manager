@@ -24,8 +24,14 @@ interface Props {
   guestName: string | null;
   initialItems: ChecklistItem[];
   readOnly: boolean;
-  initialMessages: any[];
-  currentUserName: string;
+  initialMessages?: any[];
+  currentUserName?: string;
+  /** Nasconde la chat (versione pubblica via link, senza login). */
+  showChat?: boolean;
+  /** Dove andare dopo il completamento; null = resta e ricarica (pagina pubblica). */
+  completeRedirect?: string | null;
+  /** Mostra il footer "Check-in completato" (default: segue readOnly). */
+  isCompleted?: boolean;
 }
 
 export default function CheckinTaskView({
@@ -37,9 +43,13 @@ export default function CheckinTaskView({
   guestName,
   initialItems,
   readOnly,
-  initialMessages,
-  currentUserName,
+  initialMessages = [],
+  currentUserName = "Assistente",
+  showChat = true,
+  completeRedirect = "/dashboard/checkin",
+  isCompleted,
 }: Props) {
+  const showCompletedFooter = isCompleted ?? readOnly;
   const router = useRouter();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
@@ -98,7 +108,8 @@ export default function CheckinTaskView({
     startTransition(async () => {
       try {
         await updateCheckinStatus(taskId, "COMPLETED");
-        router.push("/dashboard/checkin");
+        if (completeRedirect) router.push(completeRedirect);
+        else router.refresh();
       } catch (err: unknown) {
         alert((err as Error).message || "Errore durante il completamento.");
       }
@@ -212,27 +223,29 @@ export default function CheckinTaskView({
             : "Completa voci e foto obbligatorie"}
         </button>
       )}
-      {readOnly && (
+      {showCompletedFooter && (
         <p className="text-center text-xs font-bold text-emerald-600 uppercase tracking-widest">
           Check-in completato
         </p>
       )}
 
-      {/* Chat con il Manager */}
-      <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-100">
-          <p className="font-semibold text-slate-800 text-sm">💬 Chat con il Manager</p>
+      {/* Chat con il Manager — solo versione con login */}
+      {showChat && (
+        <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+          <div className="px-4 py-3 border-b border-slate-100">
+            <p className="font-semibold text-slate-800 text-sm">💬 Chat con il Manager</p>
+          </div>
+          <div className="p-3">
+            <TicketConversation
+              entityId={taskId}
+              initialMessages={initialMessages}
+              currentUserRole="CHECKIN"
+              currentUserName={currentUserName}
+              submitAction={createCheckinTaskMessage}
+            />
+          </div>
         </div>
-        <div className="p-3">
-          <TicketConversation
-            entityId={taskId}
-            initialMessages={initialMessages}
-            currentUserRole="CHECKIN"
-            currentUserName={currentUserName}
-            submitAction={createCheckinTaskMessage}
-          />
-        </div>
-      </div>
+      )}
     </div>
   );
 }
