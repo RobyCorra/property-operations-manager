@@ -87,11 +87,19 @@ export async function syncCheckinTaskFromBooking(bookingId: string, tx?: any) {
     const existing = await db.checkinTask.findFirst({ where: { bookingId: booking.id } });
 
     if (existing) {
-      // Preserva l'orario già impostato, aggiorna solo la data se cambiata.
-      if (new Date(existing.date).getTime() !== preserveRomeTimeOnDate(checkInDate, existing.date).getTime()) {
+      const newDate = preserveRomeTimeOnDate(checkInDate, existing.date);
+      const dateChanged = new Date(existing.date).getTime() !== newDate.getTime();
+      // Rianima la task annullata (es. auto check-in disattivato o prenotazione
+      // riattivata): a questo punto la prenotazione è attiva e l'appartamento
+      // non è in self check-in.
+      const revive = existing.status === "CANCELLED";
+      if (dateChanged || revive) {
         await db.checkinTask.update({
           where: { id: existing.id },
-          data: { date: preserveRomeTimeOnDate(checkInDate, existing.date) },
+          data: {
+            ...(dateChanged ? { date: newDate } : {}),
+            ...(revive ? { status: "PENDING" } : {}),
+          },
         });
       }
       return;
