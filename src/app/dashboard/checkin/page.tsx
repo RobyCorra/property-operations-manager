@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import { logoutAction } from "@/src/app/actions/auth";
 import CheckinStartButton from "@/src/components/checkin-start-button";
 import CheckinCardChat from "@/src/components/checkin-card-chat";
+import { isCheckinBlockedByCleaning } from "@/src/app/actions/checkin";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 export const revalidate = 0;
@@ -38,6 +39,16 @@ export default async function CheckinDashboardPage() {
       orderBy: { date: "asc" },
     }),
   ]);
+
+  // Per ogni check-in PENDING, verifica se la pulizia di check-out blocca l'avvio.
+  const blockedByCleaning = new Map<string, boolean>();
+  await Promise.all(
+    tasks
+      .filter((t) => t.status === "PENDING")
+      .map(async (t) => {
+        blockedByCleaning.set(t.id, await isCheckinBlockedByCleaning(t.apartmentId, t.date));
+      })
+  );
 
   return (
     <main className="min-h-screen bg-[#faf8ff] pb-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
@@ -93,7 +104,11 @@ export default async function CheckinDashboardPage() {
               </p>
 
               {task.status === "PENDING" && (
-                <CheckinStartButton taskId={task.id} taskDate={task.date.toISOString()} />
+                <CheckinStartButton
+                  taskId={task.id}
+                  taskDate={task.date.toISOString()}
+                  cleaningBlocked={blockedByCleaning.get(task.id) ?? false}
+                />
               )}
               {inProgress && (
                 <Link

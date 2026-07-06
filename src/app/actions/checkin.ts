@@ -103,6 +103,23 @@ export async function syncCheckinTaskFromBooking(bookingId: string, tx?: any) {
   }
 }
 
+// Regola: il check-in si avvia solo se la pulizia di turnover che prepara
+// l'appartamento (la più recente con data <= data di check-in) è APPROVED.
+// Se non esiste alcuna pulizia da confermare, l'avvio è consentito.
+export async function isCheckinBlockedByCleaning(apartmentId: string, checkinDate: Date | string): Promise<boolean> {
+  const cleaning = await prisma.cleaningTask.findFirst({
+    where: {
+      apartmentId,
+      status: { not: "CANCELLED" },
+      date: { lte: new Date(checkinDate) },
+    },
+    orderBy: { date: "desc" },
+    select: { status: true },
+  });
+  if (!cleaning) return false; // nessuna pulizia da confermare → consenti
+  return cleaning.status !== "APPROVED";
+}
+
 // Avanzamento stato: PENDING -> IN_PROGRESS -> COMPLETED.
 export async function updateCheckinStatus(id: string, nextStatus: string) {
   const task = await prisma.checkinTask.findUnique({
@@ -125,6 +142,10 @@ export async function updateCheckinStatus(id: string, nextStatus: string) {
   const updateData: any = { status: nextStatus };
 
   if (nextStatus === "IN_PROGRESS") {
+    // Regola: la pulizia di check-out deve essere finita e confermata (APPROVED).
+    if (await isCheckinBlockedByCleaning(task.apartmentId, task.date)) {
+      throw new Error("Il check-in può essere avviato solo dopo che la pulizia di check-out è stata completata e approvata.");
+    }
     if (!task.startedAt) updateData.startedAt = new Date();
     // Auto-assegna all'assistente corrente se non pre-assegnato.
     if (!task.assignedToId) {

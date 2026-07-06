@@ -7,6 +7,7 @@ import { updateCheckinStatus } from "@/src/app/actions/checkin";
 interface Props {
   taskId: string;
   taskDate: string; // ISO (ora di Roma)
+  cleaningBlocked?: boolean;
 }
 
 function isTodayRome(isoDate: string): boolean {
@@ -24,7 +25,7 @@ function dateLabel(isoDate: string): string {
   });
 }
 
-export default function CheckinStartButton({ taskId, taskDate }: Props) {
+export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked = false }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -42,6 +43,23 @@ export default function CheckinStartButton({ taskId, taskDate }: Props) {
         </button>
         <p className="text-[10px] text-slate-400 text-center">
           Il check-in si avvia il giorno programmato.
+        </p>
+      </div>
+    );
+  }
+
+  if (cleaningBlocked) {
+    return (
+      <div className="space-y-2">
+        <button
+          type="button"
+          disabled
+          className="w-full py-3.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-black uppercase tracking-widest cursor-not-allowed"
+        >
+          In attesa della pulizia
+        </button>
+        <p className="text-[10px] text-slate-400 text-center">
+          Il check-in si avvia dopo che la pulizia di check-out è stata completata e approvata.
         </p>
       </div>
     );
