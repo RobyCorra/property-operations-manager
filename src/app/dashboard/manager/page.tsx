@@ -23,6 +23,7 @@ import type {
   CalBooking,
   CalCleaning,
   CalTicket,
+  CalCheckin,
   CalendarData,
 } from "@/src/components/mobile-dashboard";
 import {
@@ -140,7 +141,7 @@ export default async function ManagerDashboardPage() {
     }),
     prisma.checkinTask.findMany({
       where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
-      include: { apartment: true, assignedTo: true },
+      include: { apartment: true, assignedTo: true, booking: { select: { guestName: true, totalGuests: true } } },
     }),
     getNotifications(),
     getUnreadMessagesCount(),
@@ -479,7 +480,18 @@ export default async function ManagerDashboardPage() {
         scheduledStart: t.scheduledStart ? new Date(t.scheduledStart).toISOString() : null,
         assignedTo: t.assignedTo ? { name: t.assignedTo.name } : null,
       }));
-    mobileCalendarByApt[apt.id] = { bookings: calBookings, cleanings: calCleanings, tickets: calTickets };
+    const calCheckins: CalCheckin[] = (checkins as any[])
+      .filter((c) => c.apartmentId === apt.id)
+      .map((c) => ({
+        id: c.id,
+        date: new Date(c.date).toISOString(),
+        status: c.status,
+        assignedTo: c.assignedTo ? { name: c.assignedTo.name } : null,
+        booking: c.booking
+          ? { guestName: c.booking.guestName, totalGuests: c.booking.totalGuests ?? null }
+          : null,
+      }));
+    mobileCalendarByApt[apt.id] = { bookings: calBookings, cleanings: calCleanings, tickets: calTickets, checkins: calCheckins };
   }
 
   return (
