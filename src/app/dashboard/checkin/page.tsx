@@ -14,7 +14,6 @@ export default async function CheckinDashboardPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
   const userId = cookieStore.get("userId")?.value;
-  const orgId = cookieStore.get("organizationId")?.value;
 
   if (role !== "CHECKIN" || !userId) {
     redirect("/login");
@@ -24,12 +23,9 @@ export default async function CheckinDashboardPage() {
     prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
     prisma.checkinTask.findMany({
       where: {
-        OR: [
-          // Assegnati a me (qualsiasi stato attivo)
-          { assignedToId: userId, status: { in: ["PENDING", "IN_PROGRESS", "COMPLETED"] } },
-          // Non assegnati nella mia organizzazione (da prendere)
-          { assignedToId: null, status: "PENDING", apartment: { organizationId: orgId } },
-        ],
+        // Solo i check-in assegnati all'assistente corrente.
+        assignedToId: userId,
+        status: { in: ["PENDING", "IN_PROGRESS", "COMPLETED"] },
       },
       include: {
         apartment: { select: { name: true, address: true } },
