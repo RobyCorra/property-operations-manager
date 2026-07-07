@@ -31,6 +31,13 @@ export type MobileLateClean = {
   href: string;
 };
 
+export type MobileLateCheckin = {
+  id: string;
+  apartmentName: string;
+  scheduledTime: string;
+  href: string;
+};
+
 export type MobileInProgressClean = {
   id: string;
   apartmentName: string;
@@ -116,10 +123,19 @@ export type CalTicket = {
   assignedTo: { name: string } | null;
 };
 
+export type CalCheckin = {
+  id: string;
+  date: string;
+  status: string;
+  assignedTo: { name: string } | null;
+  booking: { guestName: string | null; totalGuests: number | null } | null;
+};
+
 export type CalendarData = {
   bookings: CalBooking[];
   cleanings: CalCleaning[];
   tickets: CalTicket[];
+  checkins?: CalCheckin[];
 };
 
 // ── Calendar helpers ───────────────────────────────────────────────
@@ -205,6 +221,14 @@ function cleaningStatusInfo(c: CalCleaning): { label: string; badgeClass: string
 function ticketDotHex(t: CalTicket): string {
   return unifiedDotHex(t.status, !!t.assignedTo);
 }
+
+function checkinDotHex(c: CalCheckin): string {
+  return unifiedDotHex(c.status, !!c.assignedTo);
+}
+function checkinStatusInfo(c: CalCheckin): { label: string; badgeClass: string } {
+  const assigned = !!c.assignedTo;
+  return { label: statusLabel(c.status, assigned), badgeClass: unifiedStatusColor(c.status, assigned) };
+}
 function ticketStatusInfo(t: CalTicket): { label: string; badgeClass: string; barHex: string } {
   const assigned = !!t.assignedTo;
   return {
@@ -217,6 +241,7 @@ function ticketStatusInfo(t: CalTicket): { label: string; badgeClass: string; ba
 type Props = {
   apartments: MobileApartmentData[];
   lateCleanings: MobileLateClean[];
+  lateCheckins?: MobileLateCheckin[];
   cleaningsInProgress: MobileInProgressClean[];
   todayPendingEvents: MobileTodayEvent[];
   checkinsCount: number;
@@ -296,6 +321,7 @@ function eventBgColor(type: string, status: string) {
 export default function MobileDashboard({
   apartments,
   lateCleanings,
+  lateCheckins = [],
   cleaningsInProgress,
   todayPendingEvents,
   checkinsCount,
@@ -583,6 +609,29 @@ export default function MobileDashboard({
                   <p className="text-[10px] font-black uppercase tracking-wide text-white">⚠ Pulizia in ritardo</p>
                   <p className="text-[10px] text-rose-100 truncate">
                     {lc.apartmentName} · avrebbe dovuto iniziare {lc.scheduledTime}
+                  </p>
+                </div>
+                <Link href={lc.href} className="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">
+                  Vedi
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {lateCheckins.length > 0 && (
+          <div className="px-4 mb-3 space-y-2">
+            {lateCheckins.map((lc, i) => (
+              <div
+                key={lc.id}
+                className="bg-rose-500 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-rose-300 animate-pulse"
+                style={{ animationDelay: `${i * 0.3}s` }}
+              >
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 text-white text-sm">⚠</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-wide text-white">⚠ Check-in in ritardo</p>
+                  <p className="text-[10px] text-rose-100 truncate">
+                    {lc.apartmentName} · doveva iniziare {lc.scheduledTime}
                   </p>
                 </div>
                 <Link href={lc.href} className="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">
@@ -976,6 +1025,7 @@ export default function MobileDashboard({
               // ── Per-day maps ──────────────────────────────────
               const dayCleaningsMap = new Map<number, CalCleaning[]>();
               const dayTicketsMap   = new Map<number, CalTicket[]>();
+              const dayCheckinsMap  = new Map<number, CalCheckin[]>();
 
               // Array per getApartmentOperationalStatus
               const booksForStatus = calendarData.bookings.map((b) => ({
@@ -1047,6 +1097,14 @@ export default function MobileDashboard({
                   dayTicketsMap.set(cd, arr);
                 }
               });
+              (calendarData.checkins ?? []).forEach((c) => {
+                const [cy, cm, cd] = isoToYMD(c.date).split("-").map(Number);
+                if (cy === year && cm === month + 1) {
+                  const arr = dayCheckinsMap.get(cd) ?? [];
+                  arr.push(c);
+                  dayCheckinsMap.set(cd, arr);
+                }
+              });
 
               // Raggruppa in settimane
               const cells: (number | null)[] = [
@@ -1068,7 +1126,8 @@ export default function MobileDashboard({
                 });
                 const panelCleanings = dayCleaningsMap.get(selectedDay) ?? [];
                 const panelTickets   = dayTicketsMap.get(selectedDay) ?? [];
-                const total = panelBookings.length + panelCleanings.length + panelTickets.length;
+                const panelCheckins  = dayCheckinsMap.get(selectedDay) ?? [];
+                const total = panelBookings.length + panelCleanings.length + panelTickets.length + panelCheckins.length;
                 const dateLabel = new Date(year, month, selectedDay)
                   .toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
 
@@ -1125,6 +1184,24 @@ export default function MobileDashboard({
                                   const guests = checkinBooking?.totalGuests ?? c.booking?.totalGuests;
                                   return <div className="text-[9px] text-slate-500">{guests ? `${guests} ospiti` : "—"}{c.assignedTo ? ` · ${c.assignedTo.name}` : ""}</div>;
                                 })()}
+                              </div>
+                              <span className={`text-[7px] font-bold px-2 py-1 rounded-full shrink-0 ${info.badgeClass}`}>{info.label}</span>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                            </Link>
+                          );
+                        })}
+                        {panelCheckins.map((c) => {
+                          const info = checkinStatusInfo(c);
+                          return (
+                            <Link key={c.id} href={`/dashboard/manager/checkins/${c.id}`}
+                              onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/checkins/${c.id}`)}
+                              className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 active:bg-sky-50/40 last:border-b-0">
+                              <div className="w-1 self-stretch rounded-full shrink-0" style={{ backgroundColor: checkinDotHex(c) }} />
+                              <div className="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center shrink-0 text-base">🔑</div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[8px] font-black uppercase tracking-wide text-sky-600">Check-in</div>
+                                <div className="text-[12px] font-bold text-slate-900 truncate">{selectedApt!.name}</div>
+                                <div className="text-[9px] text-slate-500">{c.booking?.guestName ?? "Ospite"}{c.assignedTo ? ` · ${c.assignedTo.name}` : ""}</div>
                               </div>
                               <span className={`text-[7px] font-bold px-2 py-1 rounded-full shrink-0 ${info.badgeClass}`}>{info.label}</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1267,10 +1344,14 @@ export default function MobileDashboard({
                             const isWeekend = di >= 5;
                             const cleans  = d ? (dayCleaningsMap.get(d) ?? []) : [];
                             const tickets = d ? (dayTicketsMap.get(d) ?? []) : [];
+                            const checkins = d ? (dayCheckinsMap.get(d) ?? []) : [];
                             return (
                               <div key={di} className="flex items-center justify-center gap-[2px]" style={{ borderRight: "1px solid #e2e8f0", background: isWeekend ? "#f4f6f9" : undefined }}>
                                 {cleans.map((c, ci) => (
                                   <span key={ci} style={{ width: 5, height: 5, borderRadius: "50%", background: cleaningDotHex(c), display: "block", flexShrink: 0 }} />
+                                ))}
+                                {checkins.map((c, ci) => (
+                                  <span key={`k${ci}`} style={{ width: 5, height: 5, borderRadius: "50%", background: checkinDotHex(c), display: "block", flexShrink: 0, boxShadow: "0 0 0 1px #fff" }} />
                                 ))}
                                 {tickets.map((t, ti) => (
                                   <span key={ti} style={{ width: 5, height: 5, borderRadius: "50%", background: ticketDotHex(t), display: "block", flexShrink: 0 }} />

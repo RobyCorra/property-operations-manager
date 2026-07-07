@@ -6,7 +6,7 @@ import { prisma } from "@/src/lib/prisma";
 import bcrypt from "bcryptjs";
 import { getCurrentOrg } from "@/src/lib/tenant";
 
-type Role = "MANAGER" | "CLEANER" | "MAINTENANCE" | "SUPERVISOR" | "OWNER";
+type Role = "MANAGER" | "CLEANER" | "MAINTENANCE" | "SUPERVISOR" | "OWNER" | "CHECKIN";
 
 export async function createUser(prevState: any, formData: FormData) {
   const name = formData.get("name") as string;

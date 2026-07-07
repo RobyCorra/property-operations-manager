@@ -184,6 +184,8 @@ exports.Prisma.ApartmentScalarFieldEnum = {
   icalUrl: 'icalUrl',
   lastSyncAt: 'lastSyncAt',
   technicalProfile: 'technicalProfile',
+  checkinDefaultTime: 'checkinDefaultTime',
+  autoCheckin: 'autoCheckin',
   createdAt: 'createdAt'
 };
 
@@ -244,6 +246,45 @@ exports.Prisma.CleaningTaskScalarFieldEnum = {
   totalGuests: 'totalGuests'
 };
 
+exports.Prisma.CheckinChecklistItemScalarFieldEnum = {
+  id: 'id',
+  apartmentId: 'apartmentId',
+  label: 'label',
+  labelTranslations: 'labelTranslations',
+  required: 'required',
+  photoRequired: 'photoRequired',
+  order: 'order',
+  createdAt: 'createdAt',
+  type: 'type'
+};
+
+exports.Prisma.CheckinTaskScalarFieldEnum = {
+  id: 'id',
+  apartmentId: 'apartmentId',
+  date: 'date',
+  status: 'status',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  assignedToId: 'assignedToId',
+  notes: 'notes',
+  bookingId: 'bookingId',
+  checklistProgress: 'checklistProgress',
+  checkinAccessToken: 'checkinAccessToken'
+};
+
+exports.Prisma.CheckinTaskMessageScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  role: 'role',
+  senderName: 'senderName',
+  createdAt: 'createdAt',
+  checkinTaskId: 'checkinTaskId',
+  attachmentId: 'attachmentId',
+  readByManagerAt: 'readByManagerAt',
+  readByWorkerAt: 'readByWorkerAt'
+};
+
 exports.Prisma.MaintenanceTicketScalarFieldEnum = {
   id: 'id',
   apartmentId: 'apartmentId',
@@ -283,7 +324,8 @@ exports.Prisma.AttachmentScalarFieldEnum = {
   extractedText: 'extractedText',
   createdAt: 'createdAt',
   maintenanceTicketId: 'maintenanceTicketId',
-  cleaningTaskId: 'cleaningTaskId'
+  cleaningTaskId: 'cleaningTaskId',
+  checkinTaskId: 'checkinTaskId'
 };
 
 exports.Prisma.ApartmentAttachmentScalarFieldEnum = {
@@ -447,7 +489,8 @@ exports.Role = exports.$Enums.Role = {
   CLEANER: 'CLEANER',
   MAINTENANCE: 'MAINTENANCE',
   SUPERVISOR: 'SUPERVISOR',
-  OWNER: 'OWNER'
+  OWNER: 'OWNER',
+  CHECKIN: 'CHECKIN'
 };
 
 exports.AIAssistantMessageRole = exports.$Enums.AIAssistantMessageRole = {
@@ -463,6 +506,9 @@ exports.Prisma.ModelName = {
   Notification: 'Notification',
   Booking: 'Booking',
   CleaningTask: 'CleaningTask',
+  CheckinChecklistItem: 'CheckinChecklistItem',
+  CheckinTask: 'CheckinTask',
+  CheckinTaskMessage: 'CheckinTaskMessage',
   MaintenanceTicket: 'MaintenanceTicket',
   AIAssistantMessage: 'AIAssistantMessage',
   Attachment: 'Attachment',

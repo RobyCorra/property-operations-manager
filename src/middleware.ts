@@ -7,6 +7,7 @@ const ROLE_ALLOWED_PREFIXES: Record<string, string[]> = {
   MAINTENANCE: ["/dashboard/maintenance", "/dashboard/history"],
   SUPERVISOR:  ["/dashboard/supervisor"],
   OWNER:       ["/dashboard/owner"],
+  CHECKIN:     ["/dashboard/checkin"],
 };
 
 export function middleware(request: NextRequest) {

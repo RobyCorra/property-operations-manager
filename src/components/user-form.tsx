@@ -155,6 +155,7 @@ export default function UserForm({ apartments = [] }: { apartments?: Apartment[]
                 className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
               >
                 <option value="CLEANER">Addetto alle Pulizie (CLEANER)</option>
+                <option value="CHECKIN">Assistente Check-in (CHECKIN)</option>
                 <option value="MAINTENANCE">Manutentore (MAINTENANCE)</option>
                 <option value="SUPERVISOR">Supervisore (SUPERVISOR)</option>
                 <option value="OWNER">Proprietario (OWNER)</option>

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { syncCleaningTaskFromBooking } from "./operational";
+import { syncCheckinTaskFromBooking } from "./checkin";
 import { consumeProductsOnCheckin } from "./product";
 
 type PrismaTx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
@@ -113,6 +114,7 @@ export async function createBooking(prevState: any, formData: FormData) {
       // 5. Auto-sync Cleaning Task within the same transaction
       console.log(`[BOOKING->CLEANING] Triggering sync for NEW booking: ${dbBooking.id} (Source: ${dbBooking.source})`);
       await syncCleaningTaskFromBooking(dbBooking.id, tx);
+      await syncCheckinTaskFromBooking(dbBooking.id, tx);
       console.log(`[BOOKING->CLEANING] Sync call completed for NEW booking: ${dbBooking.id}`);
     });
   } catch (error: any) {
@@ -231,6 +233,7 @@ export async function updateBooking(id: string, prevState: any, formData: FormDa
       // 5. Auto-sync Cleaning Task
       console.log(`[BOOKING->CLEANING] Triggering sync for UPDATED booking: ${id}`);
       await syncCleaningTaskFromBooking(id, tx);
+      await syncCheckinTaskFromBooking(id, tx);
       console.log(`[BOOKING->CLEANING] Sync call completed for UPDATED booking: ${id}`);
     });
   } catch (error: any) {
@@ -253,6 +256,7 @@ export async function deleteBooking(id: string) {
 
   // 2. Sync Cleaning Task (will set task to CANCELLED if it's PENDING)
   await syncCleaningTaskFromBooking(booking.id);
+  await syncCheckinTaskFromBooking(booking.id);
 
   revalidatePath("/dashboard/manager/bookings");
   revalidatePath("/dashboard/manager/cleanings");
