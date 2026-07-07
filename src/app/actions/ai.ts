@@ -380,6 +380,10 @@ ACTION: {"type":"BULK_ASSIGN_CLEANINGS_BY_FILTER","apartmentIds":[],"dateFrom":"
 
 - BULK_ASSIGN_CLEANINGS_BY_FILTER: usa assignedToName (nome esatto dalla sezione PERSONALE DISPONIBILE, NON l'id). Se l'utente non specifica appartamenti, usa apartmentIds: [] (= tutti). Se dice "non ancora assegnate" / "senza cleaner", aggiungi unassignedOnly: true.
 
+ACTION: {"type":"BULK_ASSIGN_CHECKINS_BY_FILTER","apartmentIds":["<apartmentId1>"],"dateFrom":"2026-07-01","dateTo":"2026-07-31","assignedToName":"Maria Grazia","description":"Assegno tutti i check-in di luglio di Trastevere 156 a Maria Grazia"}
+
+- BULK_ASSIGN_CHECKINS_BY_FILTER: assegna i CHECK-IN (non le pulizie) a un assistente check-in. Stessa logica di BULK_ASSIGN_CLEANINGS_BY_FILTER: assignedToName è il nome esatto di un assistente check-in dalla sezione PERSONALE DISPONIBILE; apartmentIds: [] = tutti; unassignedOnly: true per i soli non assegnati. Usa QUESTA azione quando l'utente parla di "check-in", non quella delle pulizie.
+
 ACTION: {"type":"BULK_CREATE_CLEANINGS","cleanings":[{"apartmentName":"Corso Buenos Aires","date":"2026-07-01T00:00:00.000Z","assignedToName":"Amina Ouali"},{"apartmentName":"Navigli Loft","date":"2026-07-05T00:00:00.000Z","assignedToName":"Giulia Moretti"},{"apartmentName":"Brera Studio","date":"2026-07-02T00:00:00.000Z","assignedToName":"Marco Ferretti"}],"description":"Creo 3 pulizie distribuite tra i cleaner"}
 
 - BULK_CREATE_CLEANINGS: usa SEMPRE questo tipo quando devi creare più pulizie in una sola richiesta. Metti tutte le pulizie nell'array "cleanings". NON generare più ACTION CREATE_CLEANING separate.
@@ -2065,7 +2069,7 @@ async function buildApartmentManagerContext(apartmentId: string, now: Date) {
     },
   }),
   prisma.user.findMany({
-    where: { role: { in: ["CLEANER", "MAINTENANCE"] }, organizationId: orgId },
+    where: { role: { in: ["CLEANER", "MAINTENANCE", "CHECKIN"] }, organizationId: orgId },
     select: { id: true, name: true, role: true },
     orderBy: { name: "asc" },
   }),
@@ -2252,7 +2256,7 @@ async function buildGeneralManagerContext(now: Date) {
       },
     }),
     prisma.user.findMany({
-      where: { role: { in: ["CLEANER", "MAINTENANCE"] }, organizationId: orgId },
+      where: { role: { in: ["CLEANER", "MAINTENANCE", "CHECKIN"] }, organizationId: orgId },
       select: { id: true, name: true, role: true },
       orderBy: { name: "asc" },
     }),

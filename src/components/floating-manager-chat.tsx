@@ -100,6 +100,7 @@ function actionTypeLabel(type: string) {
     UPDATE_CLEANING: "Modifica pulizia",
     UPDATE_TICKET: "Modifica ticket manutenzione",
     BULK_ASSIGN_CLEANINGS_BY_FILTER: "Assegnazione pulizie",
+    BULK_ASSIGN_CHECKINS_BY_FILTER: "Assegnazione check-in",
     BULK_UPDATE_BOOKINGS: "Modifica prenotazioni",
     BULK_CREATE_CLEANINGS: "Crea pulizie",
     BULK_CREATE_BOOKINGS: "Crea prenotazioni",
@@ -161,6 +162,13 @@ function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | nul
       </div>
     );
   }
+  if (action.type === "BULK_ASSIGN_CHECKINS_BY_FILTER") return (
+    <div className="space-y-0.5">
+      <p className="text-xs text-amber-700">• Assistente: {action.assignedToName}</p>
+      <p className="text-xs text-amber-700">• Periodo: {new Date(action.dateFrom).toLocaleDateString("it-IT")} → {new Date(action.dateTo).toLocaleDateString("it-IT")}</p>
+      <p className="text-xs text-amber-700">• Appartamenti: {action.apartmentIds.length > 0 ? `${action.apartmentIds.length} selezionati` : "tutti"}{action.unassignedOnly ? " · solo non assegnati" : ""}</p>
+    </div>
+  );
   if (action.type === "BULK_CREATE_CLEANINGS") return (
     <div className="space-y-0.5">
       <p className="text-xs font-bold text-amber-800">{action.cleanings.length} pulizie da creare:</p>

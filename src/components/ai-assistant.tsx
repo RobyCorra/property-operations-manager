@@ -103,6 +103,7 @@ function actionTypeLabel(type: string) {
   if (type === "UPDATE_CLEANING") return "Modifica pulizia";
   if (type === "UPDATE_TICKET") return "Modifica ticket manutenzione";
   if (type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") return "Assegnazione pulizie";
+  if (type === "BULK_ASSIGN_CHECKINS_BY_FILTER") return "Assegnazione check-in";
   return "Modifica";
 }
 
@@ -149,6 +150,15 @@ function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | nul
             • {c.apartmentName} — {new Date(c.date).toLocaleDateString("it-IT", { day: "numeric", month: "short" })} ({c.status}) {c.assignedTo ? `→ attuale: ${c.assignedTo}` : ""}
           </p>
         ))}
+      </div>
+    );
+  }
+  if (action.type === "BULK_ASSIGN_CHECKINS_BY_FILTER") {
+    return (
+      <div className="space-y-1">
+        <p className="text-xs text-amber-700">• Assistente: {action.assignedToName}</p>
+        <p className="text-xs text-amber-700">• Periodo: {new Date(action.dateFrom).toLocaleDateString("it-IT")} → {new Date(action.dateTo).toLocaleDateString("it-IT")}</p>
+        <p className="text-xs text-amber-700">• Appartamenti: {action.apartmentIds.length > 0 ? `${action.apartmentIds.length} selezionati` : "tutti"}{action.unassignedOnly ? " · solo non assegnati" : ""}</p>
       </div>
     );
   }
