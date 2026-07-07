@@ -1424,6 +1424,7 @@ export type AIActionPayload =
   | { type: "UPDATE_CLEANING"; id: string; fields: Partial<{ date: string; notes: string; assignedToName: string }>; description: string }
   | { type: "UPDATE_TICKET"; id: string; fields: Partial<{ title: string; description: string; priority: string; scheduledStart: string; notes: string; status: string; assignedToName: string }>; description: string }
   | { type: "BULK_ASSIGN_CLEANINGS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToName: string; unassignedOnly?: boolean; description: string }
+  | { type: "BULK_ASSIGN_CHECKINS_BY_FILTER"; apartmentIds: string[]; dateFrom: string; dateTo: string; assignedToName: string; unassignedOnly?: boolean; description: string }
   | { type: "BULK_UPDATE_BOOKINGS"; updates: Array<{ apartmentName: string; checkInDate: string; fields: Partial<{ guestName: string; totalGuests: number; checkInDate: string; checkOutDate: string; notes: string }> }>; description: string }
   | { type: "BULK_CREATE_CLEANINGS"; cleanings: Array<{ apartmentName: string; date: string; assignedToName?: string; notes?: string }>; description: string }
   | { type: "BULK_CREATE_BOOKINGS"; bookings: Array<{ apartmentName: string; checkInDate: string; checkOutDate: string; totalGuests: number; guestName?: string }>; description: string }
@@ -1677,6 +1678,28 @@ export async function executeAIAction(payload: AIActionPayload): Promise<{ succe
       if (result.count === 0) return { success: false, error: "Nessuna pulizia trovata con i filtri specificati." };
       revalidatePath("/dashboard/manager");
       revalidatePath("/dashboard/manager/cleanings");
+    } else if (payload.type === "BULK_ASSIGN_CHECKINS_BY_FILTER") {
+      const { apartmentIds, dateFrom, dateTo, assignedToName, unassignedOnly } = payload;
+      const user = await prisma.user.findFirst({
+        where: { name: { contains: assignedToName, mode: "insensitive" }, role: "CHECKIN", organizationId: orgId },
+      });
+      if (!user) return { success: false, error: `Assistente check-in non trovato: "${assignedToName}".` };
+      const from = new Date(dateFrom);
+      const to = new Date(dateTo);
+      to.setHours(23, 59, 59, 999);
+      const result = await prisma.checkinTask.updateMany({
+        where: {
+          apartment: { organizationId: orgId },
+          ...(apartmentIds.length > 0 ? { apartmentId: { in: apartmentIds } } : {}),
+          date: { gte: from, lte: to },
+          status: { notIn: ["CANCELLED", "COMPLETED"] },
+          ...(unassignedOnly ? { assignedToId: null } : {}),
+        },
+        data: { assignedToId: user.id },
+      });
+      if (result.count === 0) return { success: false, error: "Nessun check-in trovato con i filtri specificati." };
+      revalidatePath("/dashboard/manager");
+      revalidatePath("/dashboard/checkin");
     } else if (payload.type === "BULK_CREATE_CLEANINGS") {
       const errors: string[] = [];
       let created = 0;
