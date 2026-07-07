@@ -2,8 +2,40 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import { translateLabel } from "@/src/lib/translate";
 import { computeCheckinChecklistSnapshot, syncCheckinTaskFromBooking } from "./checkin";
+
+// Sincronizza i check-in dell'appartamento: crea quelli mancanti per le
+// prenotazioni non cancellate da oggi in poi. Idempotente (nessun duplicato).
+export async function syncApartmentCheckins(apartmentId: string) {
+  const orgId = await getCurrentOrg();
+  if (!orgId) throw new Error("Organizzazione non identificata.");
+
+  const apt = await prisma.apartment.findFirst({
+    where: { id: apartmentId, organizationId: orgId },
+    select: { id: true },
+  });
+  if (!apt) throw new Error("Appartamento non trovato.");
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const bookings = await prisma.booking.findMany({
+    where: { apartmentId, status: { not: "CANCELLED" }, checkInDate: { gte: todayStart } },
+    select: { id: true },
+  });
+
+  const before = await prisma.checkinTask.count({ where: { apartmentId, status: { not: "CANCELLED" } } });
+  for (const b of bookings) {
+    await syncCheckinTaskFromBooking(b.id);
+  }
+  const after = await prisma.checkinTask.count({ where: { apartmentId, status: { not: "CANCELLED" } } });
+
+  revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checkin-checklist`);
+  revalidatePath("/dashboard/manager");
+  return { processed: bookings.length, created: Math.max(0, after - before) };
+}
 
 // Rigenera lo snapshot della checklist per le CheckinTask PENDING dell'appartamento,
 // preservando le spunte già fatte (match per id, poi per label).
