@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import type { AnalyticsData, PeriodStats, MonthKey, PersonRow, ApartmentRow } from "@/src/app/actions/analytics";
-import { Clock, RotateCcw, Building2, Sparkles, Wrench, BarChart2 } from "lucide-react";
+import { Clock, RotateCcw, Building2, Sparkles, Wrench, BarChart2, KeyRound } from "lucide-react";
 
 const MONTH_NAMES = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
 
@@ -12,6 +12,7 @@ function emptyStats(): PeriodStats { return { total: 0, late: 0, reviews: 0, pen
 type Filters = {
   cleaners: { id: string; name: string }[];
   manutentori: { id: string; name: string }[];
+  assistenti: { id: string; name: string }[];
   apartments: { id: string; name: string }[];
 };
 
@@ -99,35 +100,41 @@ function IconBadge({ children, color }: { children: React.ReactNode; color: stri
 function AptStatBlock({
   type, stats, monthValues,
 }: {
-  type: "clean" | "maint";
+  type: "clean" | "maint" | "checkin";
   stats: PeriodStats;
   monthValues: number[];
 }) {
   const warn = stats.late > 0 || stats.reviews > 0;
   const isClean = type === "clean";
-  const pendingWarn = isClean && stats.pending > 0 && warn;
+  const isCheckin = type === "checkin";
+  const showPending = isClean || isCheckin;
+  const pendingWarn = showPending && stats.pending > 0 && warn;
+  const label = isClean ? "Pulizie" : isCheckin ? "Check-in" : "Manutenzione";
+  const totalSub = isClean ? "consegnate" : isCheckin ? "completati" : "terminate";
   return (
-    <div className="flex-1 rounded-[11px] bg-[#f2f2f7] p-3">
+    <div className="flex-1 min-w-[140px] rounded-[11px] bg-[#f2f2f7] p-3">
       <div className="flex items-center gap-1.5 mb-2">
         {isClean
           ? <Sparkles size={12} strokeWidth={2} className="text-[#8e8e93]" />
+          : isCheckin
+          ? <KeyRound size={12} strokeWidth={2} className="text-[#8e8e93]" />
           : <Wrench size={12} strokeWidth={2} className="text-[#8e8e93]" />}
         <span className="text-[11px] font-semibold uppercase tracking-wide text-[#8e8e93]">
-          {isClean ? "Pulizie" : "Manutenzione"}
+          {label}
         </span>
       </div>
       <div className="flex items-end justify-between">
         <div>
           <span className="text-[28px] font-[800] leading-none text-[#1c1c1e]">{stats.total}</span>
-          <div className="text-[10px] text-[#8e8e93] mt-0.5">{isClean ? "consegnate" : "terminate"}</div>
+          <div className="text-[10px] text-[#8e8e93] mt-0.5">{totalSub}</div>
         </div>
         <Sparkline values={monthValues} warn={warn} width={80} height={28} />
       </div>
       <div className="flex gap-1 mt-1.5">
         <StatPill n={stats.late} type="late" />
-        <StatPill n={stats.reviews} type="review" />
+        {!isCheckin && <StatPill n={stats.reviews} type="review" />}
       </div>
-      {isClean && (
+      {showPending && (
         <>
           <div className="h-px bg-[#d1d1d6] my-2" />
           <div className="flex items-center justify-between">
@@ -181,17 +188,20 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
 
   const [filterCleaner, setFilterCleaner] = useState("");
   const [filterManut, setFilterManut] = useState("");
+  const [filterAssist, setFilterAssist] = useState("");
   const [filterAptClean, setFilterAptClean] = useState("");
   const [filterAptManut, setFilterAptManut] = useState("");
+  const [filterAptCheckin, setFilterAptCheckin] = useState("");
 
-  // Filter apartments by cleaner/manutentore
+  // Filter apartments by cleaner/manutentore/assistente
   const apartments = useMemo(() => {
     return data.apartments.filter(apt => {
       if (filterCleaner && !(data.aptCleaners[apt.id] ?? []).includes(filterCleaner)) return false;
       if (filterManut && !(data.aptManuts[apt.id] ?? []).includes(filterManut)) return false;
+      if (filterAssist && !(data.aptAssistants[apt.id] ?? []).includes(filterAssist)) return false;
       return true;
     });
-  }, [data.apartments, data.aptCleaners, data.aptManuts, filterCleaner, filterManut]);
+  }, [data.apartments, data.aptCleaners, data.aptManuts, data.aptAssistants, filterCleaner, filterManut, filterAssist]);
 
   // Filter cleaners by apartment
   const cleaners = useMemo(() => {
@@ -203,6 +213,11 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
     if (!filterAptManut) return data.manutentori;
     return data.manutentori.filter(m => (data.manutApts[m.id] ?? []).includes(filterAptManut));
   }, [data.manutentori, data.manutApts, filterAptManut]);
+
+  const assistenti = useMemo(() => {
+    if (!filterAptCheckin) return data.assistenti;
+    return data.assistenti.filter(a => (data.assistantApts[a.id] ?? []).includes(filterAptCheckin));
+  }, [data.assistenti, data.assistantApts, filterAptCheckin]);
 
   const getStats = (row: ApartmentRow | PersonRow, month: MonthKey, key?: "cleanings" | "maintenance") => {
     if ("cleanings" in row) {
@@ -218,7 +233,8 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
   const isAptWarn = (row: ApartmentRow) => {
     const m = selectedMonth;
     return (row.cleanings[m]?.late ?? 0) > 0 || (row.cleanings[m]?.reviews ?? 0) > 0 ||
-           (row.maintenance[m]?.late ?? 0) > 0 || (row.maintenance[m]?.reviews ?? 0) > 0;
+           (row.maintenance[m]?.late ?? 0) > 0 || (row.maintenance[m]?.reviews ?? 0) > 0 ||
+           (row.checkins[m]?.late ?? 0) > 0;
   };
 
   const selectBase = "text-[13px] font-[500] border border-[#c6c6c8] rounded-[8px] px-[10px] py-[5px] outline-none bg-white text-[#1c1c1e] appearance-none pr-6";
@@ -236,7 +252,7 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
             </div>
             <div>
               <div className="text-[17px] font-[700] text-[#1c1c1e]">Analytics operativi</div>
-              <div className="text-[12px] text-[#8e8e93]">Pulizie e manutenzioni</div>
+              <div className="text-[12px] text-[#8e8e93]">Pulizie, manutenzioni e check-in</div>
             </div>
           </div>
 
@@ -295,6 +311,10 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
                 <option value="">Tutti i manutentori</option>
                 {filters.manutentori.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
+              <select className={selectBase} value={filterAssist} onChange={e => setFilterAssist(e.target.value)}>
+                <option value="">Tutti gli assistenti</option>
+                {filters.assistenti.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
               <div className="ml-auto flex gap-4 text-[11px] text-[#8e8e93] font-[500]">
                 <span className="flex items-center gap-1"><Clock size={12} strokeWidth={2} className="text-amber-500" /> avviato in ritardo</span>
                 <span className="flex items-center gap-1"><RotateCcw size={12} strokeWidth={2} className="text-pink-500" /> task richiesta di ripetere</span>
@@ -323,6 +343,12 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
                 const mVals = filterManut
                   ? data.months.map(m => data.manutAptStats?.[filterManut]?.[apt.id]?.[m]?.total ?? 0)
                   : data.months.map(m => apt.maintenance[m]?.total ?? 0);
+                const kStats = filterAssist
+                  ? (data.assistantAptStats?.[filterAssist]?.[apt.id]?.[selectedMonth] ?? emptyStats())
+                  : (apt.checkins[selectedMonth] ?? emptyStats());
+                const kVals = filterAssist
+                  ? data.months.map(m => data.assistantAptStats?.[filterAssist]?.[apt.id]?.[m]?.total ?? 0)
+                  : data.months.map(m => apt.checkins[m]?.total ?? 0);
                 const warn = isAptWarn(apt);
                 return (
                   <div key={apt.id} className="bg-white p-[18px] flex flex-col gap-3.5">
@@ -337,9 +363,10 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
                       </div>
                       <StatusDot ok={!warn} />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <AptStatBlock type="clean" stats={cStats} monthValues={cVals} />
                       <AptStatBlock type="maint" stats={mStats} monthValues={mVals} />
+                      <AptStatBlock type="checkin" stats={kStats} monthValues={kVals} />
                     </div>
                   </div>
                 );
@@ -506,6 +533,81 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
                     <div className="flex gap-1 mt-0.5">
                       <StatPill n={curStats.late} type="late" />
                       <StatPill n={curStats.reviews} type="review" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ══ CHECK-IN PER ASSISTENTE ══ */}
+        <section>
+          <div className="flex items-center gap-2 mb-2 px-1">
+            <IconBadge color="bg-sky-50 text-sky-700"><KeyRound size={16} strokeWidth={1.75} /></IconBadge>
+            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">Check-in per Assistente</span>
+          </div>
+          <div className="bg-white rounded-[16px] overflow-hidden" style={{ border: ".5px solid #e5e5ea" }}>
+            <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
+              <span className="text-[12px] font-[500] text-[#8e8e93]">Appartamento</span>
+              <select className={selectBase} value={filterAptCheckin} onChange={e => setFilterAptCheckin(e.target.value)}>
+                <option value="">Tutti gli appartamenti</option>
+                {filters.apartments.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-[200px_1fr_auto] gap-5 px-5 py-2 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">Assistente</span>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">Ultimi 6 mesi</span>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em] min-w-[120px] text-right">{monthLabel(selectedMonth)}</span>
+            </div>
+
+            {assistenti.length === 0 && (
+              <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">Nessun assistente con dati negli ultimi 6 mesi</div>
+            )}
+            {assistenti.map((assist, i) => {
+              const getMonthStatsA = (m: MonthKey) => filterAptCheckin
+                ? (data.assistantAptStats?.[assist.id]?.[filterAptCheckin]?.[m] ?? emptyStats())
+                : (assist.months[m] ?? emptyStats());
+              const warn = data.months.some(m => getMonthStatsA(m).late > 0);
+              const curStats = getMonthStatsA(selectedMonth);
+              const vals = data.months.map(m => getMonthStatsA(m).total);
+              const totalAll = vals.reduce((a, b) => a + b, 0);
+              const totalLate = data.months.reduce((s, m) => s + getMonthStatsA(m).late, 0);
+              return (
+                <div
+                  key={assist.id}
+                  className="grid grid-cols-[200px_1fr_auto] gap-5 items-center px-5 py-4 transition-colors hover:bg-[#f9f9fb]"
+                  style={{
+                    borderBottom: i < assistenti.length - 1 ? ".5px solid #e5e5ea" : "none",
+                    background: warn ? "#fffbf0" : "white",
+                  }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-[34px] h-[34px] rounded-full bg-[#e5e5ea] flex items-center justify-center text-[11px] font-[800] text-[#1c1c1e] shrink-0">
+                      {assist.initials}
+                    </div>
+                    <div>
+                      <div className="text-[15px] font-[600] text-[#1c1c1e]">{assist.name}</div>
+                      <StatusDot ok={!warn} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Sparkline values={vals} warn={warn} width={160} height={28} />
+                    <div className="flex gap-3 mt-1.5">
+                      <span className="text-[11px] text-[#8e8e93]">6 mesi: {totalAll}</span>
+                      <span className={`text-[11px] flex items-center gap-1 ${totalLate > 0 ? "text-amber-600 font-[500]" : "text-[#8e8e93]"}`}>
+                        <Clock size={10} strokeWidth={2} />{totalLate} ritardi
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-end gap-1 min-w-[120px]">
+                    <span className="text-[26px] font-[800] text-[#1c1c1e] leading-none">{curStats.total}</span>
+                    <span className="text-[11px] text-[#8e8e93]">check-in</span>
+                    <div className="flex gap-1 mt-0.5">
+                      <StatPill n={curStats.late} type="late" />
                     </div>
                   </div>
                 </div>

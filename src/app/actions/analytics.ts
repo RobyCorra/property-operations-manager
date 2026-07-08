@@ -24,6 +24,7 @@ export type ApartmentRow = {
   name: string;
   cleanings: Record<MonthKey, PeriodStats>;
   maintenance: Record<MonthKey, PeriodStats>;
+  checkins: Record<MonthKey, PeriodStats>;
 };
 
 export type AnalyticsData = {
@@ -31,14 +32,18 @@ export type AnalyticsData = {
   apartments: ApartmentRow[];
   cleaners: PersonRow[];
   manutentori: PersonRow[];
+  assistenti: PersonRow[];
   // association indexes for client-side filtering
   cleanerApts: Record<string, string[]>;   // cleanerId → aptId[]
   manutApts: Record<string, string[]>;     // manutId  → aptId[]
+  assistantApts: Record<string, string[]>; // assistantId → aptId[]
   aptCleaners: Record<string, string[]>;   // aptId    → cleanerId[]
   aptManuts: Record<string, string[]>;     // aptId    → manutId[]
+  aptAssistants: Record<string, string[]>; // aptId    → assistantId[]
   // per-cleaner-per-apt breakdown (for filtered stats)
   cleanerAptStats: Record<string, Record<string, Record<MonthKey, PeriodStats>>>;
   manutAptStats: Record<string, Record<string, Record<MonthKey, PeriodStats>>>;
+  assistantAptStats: Record<string, Record<string, Record<MonthKey, PeriodStats>>>;
 };
 
 function monthKey(d: Date): MonthKey {
@@ -70,7 +75,7 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
   });
 
   // Fetch base lists + raw data in parallel
-  const [allApts, allCleaners, allManut, rawCleanings, pendingCleanings, rawTickets] = await Promise.all([
+  const [allApts, allCleaners, allManut, allAssist, rawCleanings, pendingCleanings, rawTickets, rawCheckins, pendingCheckins] = await Promise.all([
     prisma.apartment.findMany({
       where: { organizationId: orgId },
       select: { id: true, name: true },
@@ -83,6 +88,11 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
     }),
     prisma.user.findMany({
       where: { organizationId: orgId, role: "MAINTENANCE" },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.user.findMany({
+      where: { organizationId: orgId, role: "CHECKIN" },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
@@ -126,11 +136,29 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
         supervisorReviews: { select: { decision: true } },
       },
     }),
+    // Check-in COMPLETATI
+    prisma.checkinTask.findMany({
+      where: {
+        apartment: { organizationId: orgId },
+        date: { gte: sixMonthsAgo },
+        status: "COMPLETED",
+      },
+      select: { date: true, startedAt: true, apartmentId: true, assignedToId: true },
+    }),
+    // Check-in DA FARE: PENDING + IN_PROGRESS
+    prisma.checkinTask.findMany({
+      where: {
+        apartment: { organizationId: orgId },
+        date: { gte: sixMonthsAgo },
+        status: { in: ["PENDING", "IN_PROGRESS"] },
+      },
+      select: { date: true, apartmentId: true, assignedToId: true },
+    }),
   ]);
 
   // ── Pre-populate maps from full lists ─────────────────────────
   const aptMap = new Map<string, ApartmentRow>(
-    allApts.map(a => [a.id, { id: a.id, name: a.name, cleanings: emptyMonths(months), maintenance: emptyMonths(months) }])
+    allApts.map(a => [a.id, { id: a.id, name: a.name, cleanings: emptyMonths(months), maintenance: emptyMonths(months), checkins: emptyMonths(months) }])
   );
 
   const cleanerMap = new Map<string, PersonRow>(
@@ -141,15 +169,22 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
     allManut.map(u => [u.id, { id: u.id, name: u.name, initials: initials(u.name), months: emptyMonths(months) }])
   );
 
+  const assistMap = new Map<string, PersonRow>(
+    allAssist.map(u => [u.id, { id: u.id, name: u.name, initials: initials(u.name), months: emptyMonths(months) }])
+  );
+
   // Association indexes
   const cleanerAptsMap = new Map<string, Set<string>>();
   const manutAptsMap = new Map<string, Set<string>>();
+  const assistAptsMap = new Map<string, Set<string>>();
   const aptCleanersMap = new Map<string, Set<string>>();
   const aptManutsMap = new Map<string, Set<string>>();
+  const aptAssistsMap = new Map<string, Set<string>>();
 
   // Per-cleaner-per-apt breakdown: cleanerId → aptId → monthKey → PeriodStats
   const cleanerAptStatsMap = new Map<string, Map<string, Map<MonthKey, PeriodStats>>>();
   const manutAptStatsMap = new Map<string, Map<string, Map<MonthKey, PeriodStats>>>();
+  const assistAptStatsMap = new Map<string, Map<string, Map<MonthKey, PeriodStats>>>();
 
   function getCleanerAptStats(cleanerId: string, aptId: string, mk: MonthKey): PeriodStats {
     if (!cleanerAptStatsMap.has(cleanerId)) cleanerAptStatsMap.set(cleanerId, new Map());
@@ -163,6 +198,15 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
   function getManutAptStats(manutId: string, aptId: string, mk: MonthKey): PeriodStats {
     if (!manutAptStatsMap.has(manutId)) manutAptStatsMap.set(manutId, new Map());
     const byApt = manutAptStatsMap.get(manutId)!;
+    if (!byApt.has(aptId)) byApt.set(aptId, new Map());
+    const byMonth = byApt.get(aptId)!;
+    if (!byMonth.has(mk)) byMonth.set(mk, emptyStats());
+    return byMonth.get(mk)!;
+  }
+
+  function getAssistAptStats(assistId: string, aptId: string, mk: MonthKey): PeriodStats {
+    if (!assistAptStatsMap.has(assistId)) assistAptStatsMap.set(assistId, new Map());
+    const byApt = assistAptStatsMap.get(assistId)!;
     if (!byApt.has(aptId)) byApt.set(aptId, new Map());
     const byMonth = byApt.get(aptId)!;
     if (!byMonth.has(mk)) byMonth.set(mk, emptyStats());
@@ -254,6 +298,49 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
     }
   }
 
+  // ── Fill check-in stats (regole come pulizie; niente review) ──
+  for (const c of rawCheckins) {
+    const mk = monthKey(new Date(c.date));
+    if (!months.includes(mk)) continue;
+
+    const apt = aptMap.get(c.apartmentId);
+    const isLate = !!(c.startedAt && new Date(c.startedAt) > new Date(c.date));
+    if (apt) {
+      apt.checkins[mk].total++;
+      if (isLate) apt.checkins[mk].late++;
+    }
+
+    if (c.assignedToId) {
+      const assist = assistMap.get(c.assignedToId);
+      if (assist) {
+        assist.months[mk].total++;
+        if (isLate) assist.months[mk].late++;
+      }
+      const aas = getAssistAptStats(c.assignedToId, c.apartmentId, mk);
+      aas.total++;
+      if (isLate) aas.late++;
+
+      if (!assistAptsMap.has(c.assignedToId)) assistAptsMap.set(c.assignedToId, new Set());
+      assistAptsMap.get(c.assignedToId)!.add(c.apartmentId);
+      if (!aptAssistsMap.has(c.apartmentId)) aptAssistsMap.set(c.apartmentId, new Set());
+      aptAssistsMap.get(c.apartmentId)!.add(c.assignedToId);
+    }
+  }
+
+  for (const c of pendingCheckins) {
+    const mk = monthKey(new Date(c.date));
+    if (!months.includes(mk)) continue;
+    const apt = aptMap.get(c.apartmentId);
+    if (apt) apt.checkins[mk].pending++;
+
+    if (c.assignedToId) {
+      if (!assistAptsMap.has(c.assignedToId)) assistAptsMap.set(c.assignedToId, new Set());
+      assistAptsMap.get(c.assignedToId)!.add(c.apartmentId);
+      if (!aptAssistsMap.has(c.apartmentId)) aptAssistsMap.set(c.apartmentId, new Set());
+      aptAssistsMap.get(c.apartmentId)!.add(c.assignedToId);
+    }
+  }
+
   const toRecord = (m: Map<string, Set<string>>) =>
     Object.fromEntries([...m.entries()].map(([k, v]) => [k, [...v]]));
 
@@ -280,23 +367,38 @@ export async function getAnalyticsData(year?: number, month?: number): Promise<A
     return out;
   };
 
+  const serializeAssistAptStats = () => {
+    const out: Record<string, Record<string, Record<MonthKey, PeriodStats>>> = {};
+    for (const [assistId, byApt] of assistAptStatsMap) {
+      out[assistId] = {};
+      for (const [aptId, byMonth] of byApt) {
+        out[assistId][aptId] = Object.fromEntries(byMonth.entries());
+      }
+    }
+    return out;
+  };
+
   return {
     months,
     apartments: [...aptMap.values()],
     cleaners: [...cleanerMap.values()],
     manutentori: [...manutMap.values()],
+    assistenti: [...assistMap.values()],
     cleanerApts: toRecord(cleanerAptsMap),
     manutApts: toRecord(manutAptsMap),
+    assistantApts: toRecord(assistAptsMap),
     aptCleaners: toRecord(aptCleanersMap),
     aptManuts: toRecord(aptManutsMap),
+    aptAssistants: toRecord(aptAssistsMap),
     cleanerAptStats: serializeCleanerAptStats(),
     manutAptStats: serializeManutAptStats(),
+    assistantAptStats: serializeAssistAptStats(),
   };
 }
 
 export async function getAnalyticsFilters() {
   const orgId = await getCurrentOrg();
-  const [cleaners, manutentori, apartments] = await Promise.all([
+  const [cleaners, manutentori, assistenti, apartments] = await Promise.all([
     prisma.user.findMany({
       where: { organizationId: orgId, role: "CLEANER" },
       select: { id: true, name: true },
@@ -307,11 +409,16 @@ export async function getAnalyticsFilters() {
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
+    prisma.user.findMany({
+      where: { organizationId: orgId, role: "CHECKIN" },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
     prisma.apartment.findMany({
       where: { organizationId: orgId },
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
   ]);
-  return { cleaners, manutentori, apartments };
+  return { cleaners, manutentori, assistenti, apartments };
 }
