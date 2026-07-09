@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { generateCheckinAccessToken } from "@/src/app/actions/checkin-token";
+import { generateCheckinAccessToken, revokeCheckinAccessToken } from "@/src/app/actions/checkin-token";
 import { Link2, Copy, CheckCheck, RefreshCw } from "lucide-react";
 
 interface CheckinShareButtonProps {
@@ -33,6 +33,16 @@ export default function CheckinShareButton({ checkinId, existingToken }: Checkin
     await navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleRevoke() {
+    setLoading(true);
+    try {
+      await revokeCheckinAccessToken(checkinId);
+      setToken(null);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -67,9 +77,19 @@ export default function CheckinShareButton({ checkinId, existingToken }: Checkin
       </button>
 
       {token && (
+        <button
+          onClick={handleRevoke}
+          disabled={loading}
+          className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50 w-fit"
+        >
+          Revoca link
+        </button>
+      )}
+
+      {token && (
         <p className="text-xs text-slate-400 break-words">
-          Invia via WhatsApp — non serve login.{" "}
-          <span className="text-amber-600">Rigenerando, il vecchio link non funzionerà.</span>
+          Invia via WhatsApp — non serve login. Scade dopo 7 giorni.{" "}
+          <span className="text-amber-600">Rigenerando o revocando, il vecchio link non funzionerà.</span>
         </p>
       )}
     </div>

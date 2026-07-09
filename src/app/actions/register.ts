@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/src/lib/prisma";
+import { validatePassword } from "@/src/lib/password-policy";
 
 function generateSlug(name: string): string {
   return name
@@ -21,15 +22,19 @@ export async function registerAction(prevState: any, formData: FormData) {
   const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
+  const privacyConsent = formData.get("privacyConsent") === "on" || formData.get("privacyConsent") === "true";
 
   // Validation
   if (!orgName || !managerName || !email || !password || !confirmPassword) {
     return { error: "Tutti i campi sono obbligatori." };
   }
 
-  if (password.length < 8) {
-    return { error: "La password deve essere di almeno 8 caratteri." };
+  if (!privacyConsent) {
+    return { error: "Devi accettare l'informativa sulla privacy per registrarti." };
   }
+
+  const pwError = validatePassword(password);
+  if (pwError) return { error: pwError };
 
   if (password !== confirmPassword) {
     return { error: "Le password non coincidono." };
@@ -64,6 +69,7 @@ export async function registerAction(prevState: any, formData: FormData) {
         password: hashedPassword,
         role: "MANAGER",
         organizationId: org.id,
+        privacyAcceptedAt: new Date(),
       },
     });
 

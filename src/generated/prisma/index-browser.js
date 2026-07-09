@@ -163,7 +163,10 @@ exports.Prisma.UserScalarFieldEnum = {
   vatNumber: 'vatNumber',
   iban: 'iban',
   organizationId: 'organizationId',
-  notificationPrefs: 'notificationPrefs'
+  notificationPrefs: 'notificationPrefs',
+  failedLoginCount: 'failedLoginCount',
+  lockedUntil: 'lockedUntil',
+  privacyAcceptedAt: 'privacyAcceptedAt'
 };
 
 exports.Prisma.ApartmentScalarFieldEnum = {
@@ -241,6 +244,7 @@ exports.Prisma.CleaningTaskScalarFieldEnum = {
   checklistProgress: 'checklistProgress',
   correctionProgress: 'correctionProgress',
   cleaningAccessToken: 'cleaningAccessToken',
+  cleaningAccessTokenExpiresAt: 'cleaningAccessTokenExpiresAt',
   cullaRequested: 'cullaRequested',
   sofaBedForced: 'sofaBedForced',
   totalGuests: 'totalGuests'
@@ -270,7 +274,8 @@ exports.Prisma.CheckinTaskScalarFieldEnum = {
   notes: 'notes',
   bookingId: 'bookingId',
   checklistProgress: 'checklistProgress',
-  checkinAccessToken: 'checkinAccessToken'
+  checkinAccessToken: 'checkinAccessToken',
+  checkinAccessTokenExpiresAt: 'checkinAccessTokenExpiresAt'
 };
 
 exports.Prisma.CheckinTaskMessageScalarFieldEnum = {
@@ -300,7 +305,8 @@ exports.Prisma.MaintenanceTicketScalarFieldEnum = {
   resolvedAt: 'resolvedAt',
   correctionProgress: 'correctionProgress',
   maintenanceTasks: 'maintenanceTasks',
-  maintenanceAccessToken: 'maintenanceAccessToken'
+  maintenanceAccessToken: 'maintenanceAccessToken',
+  maintenanceAccessTokenExpiresAt: 'maintenanceAccessTokenExpiresAt'
 };
 
 exports.Prisma.AIAssistantMessageScalarFieldEnum = {

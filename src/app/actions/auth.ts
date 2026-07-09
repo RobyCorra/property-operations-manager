@@ -29,21 +29,48 @@ export async function loginAction(prevState: any, formData: FormData) {
     return { error: "Credenziali non valide." };
   }
 
+  // Blocco temporaneo dopo troppi tentativi falliti
+  const MAX_ATTEMPTS = 5;
+  const LOCK_MINUTES = 15;
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    const mins = Math.ceil((user.lockedUntil.getTime() - Date.now()) / 60000);
+    return { error: `Account temporaneamente bloccato per troppi tentativi. Riprova tra ${mins} minuti.` };
+  }
+
   const isValid = await bcrypt.compare(password, user.password);
 
   if (!isValid) {
+    const nextCount = (user.failedLoginCount ?? 0) + 1;
+    const shouldLock = nextCount >= MAX_ATTEMPTS;
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: shouldLock
+          ? { failedLoginCount: 0, lockedUntil: new Date(Date.now() + LOCK_MINUTES * 60000) }
+          : { failedLoginCount: nextCount },
+      });
+    } catch {}
     try {
       await prisma.superAdminLog.create({
         data: {
           id: `${Date.now()}-lf`,
-          action: "LOGIN_FALLITO",
-          detail: `Password errata: ${user.name} (${email})`,
+          action: shouldLock ? "LOGIN_BLOCCATO" : "LOGIN_FALLITO",
+          detail: `Password errata: ${user.name} (${email})${shouldLock ? " — account bloccato" : ""}`,
           orgId: user.organization?.id ?? null,
           orgName: user.organization?.name ?? null,
         },
       });
     } catch {}
-    return { error: "Credenziali non valide." };
+    return shouldLock
+      ? { error: `Troppi tentativi falliti: account bloccato per ${LOCK_MINUTES} minuti.` }
+      : { error: "Credenziali non valide." };
+  }
+
+  // Login riuscito → azzera i contatori se necessario
+  if ((user.failedLoginCount ?? 0) > 0 || user.lockedUntil) {
+    try {
+      await prisma.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null } });
+    } catch {}
   }
 
   try {

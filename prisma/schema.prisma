@@ -54,6 +54,9 @@ model User {
   iban                 String?
   organizationId       String?
   notificationPrefs    Json?
+  failedLoginCount     Int                   @default(0)
+  lockedUntil          DateTime?
+  privacyAcceptedAt    DateTime?
   organization         Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   cleaningTasks        CleaningTask[]
   maintenanceTickets   MaintenanceTicket[]
@@ -165,6 +168,7 @@ model CleaningTask {
   checklistProgress   Json?                 @default("[]")
   correctionProgress  Json?
   cleaningAccessToken String?               @unique
+  cleaningAccessTokenExpiresAt DateTime?
   cullaRequested      Boolean               @default(false)
   sofaBedForced       Boolean               @default(false)
   totalGuests         Int?
@@ -207,6 +211,7 @@ model CheckinTask {
   booking            Booking?  @relation(fields: [bookingId], references: [id])
   checklistProgress  Json?     @default("[]")
   checkinAccessToken String?   @unique
+  checkinAccessTokenExpiresAt DateTime?
   apartment          Apartment @relation(fields: [apartmentId], references: [id])
   assignedTo         User?     @relation(fields: [assignedToId], references: [id])
   messages           CheckinTaskMessage[]
@@ -243,6 +248,7 @@ model MaintenanceTicket {
   correctionProgress        Json?
   maintenanceTasks          Json?
   maintenanceAccessToken    String?              @unique
+  maintenanceAccessTokenExpiresAt DateTime?
   apartment                 Apartment            @relation(fields: [apartmentId], references: [id])
   assignedTo                User?                @relation(fields: [assignedToId], references: [id])
   attachments               Attachment[]

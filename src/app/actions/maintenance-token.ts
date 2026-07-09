@@ -7,14 +7,28 @@ import { updateMaintenanceStatus } from "@/src/app/actions/operational";
 import { sendPushToRole } from "@/src/lib/push";
 import type { Role } from "@/src/generated/prisma/client";
 
-/** Genera (o rigenera) il token di accesso pubblico per un ticket di manutenzione. */
+// Scadenza di default dei link pubblici (giorni).
+const TOKEN_TTL_DAYS = 7;
+
+/** Genera (o rigenera) il token di accesso pubblico per un ticket di manutenzione, con scadenza. */
 export async function generateMaintenanceAccessToken(ticketId: string): Promise<string> {
   const token = randomBytes(24).toString("hex");
   await prisma.maintenanceTicket.update({
     where: { id: ticketId },
-    data: { maintenanceAccessToken: token },
+    data: {
+      maintenanceAccessToken: token,
+      maintenanceAccessTokenExpiresAt: new Date(Date.now() + TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000),
+    },
   });
   return token;
+}
+
+/** Revoca il link pubblico di un ticket di manutenzione. */
+export async function revokeMaintenanceAccessToken(ticketId: string): Promise<void> {
+  await prisma.maintenanceTicket.update({
+    where: { id: ticketId },
+    data: { maintenanceAccessToken: null, maintenanceAccessTokenExpiresAt: null },
+  });
 }
 
 export interface MaintenanceTaskItem {
@@ -207,7 +221,7 @@ export async function fetchMaintenanceMessages(
 
 /** Legge il ticket dal token pubblico — usato dalla pagina pubblica del manutentore. */
 export async function getMaintenanceByToken(token: string) {
-  return prisma.maintenanceTicket.findUnique({
+  const ticket = await prisma.maintenanceTicket.findUnique({
     where: { maintenanceAccessToken: token },
     select: {
       id: true,
@@ -216,6 +230,7 @@ export async function getMaintenanceByToken(token: string) {
       status: true,
       priority: true,
       scheduledStart: true,
+      maintenanceAccessTokenExpiresAt: true,
       maintenanceTasks: true,
       apartment: {
         select: { id: true, name: true, address: true },
@@ -242,4 +257,7 @@ export async function getMaintenanceByToken(token: string) {
       },
     },
   });
+  if (!ticket) return null;
+  if (ticket.maintenanceAccessTokenExpiresAt && ticket.maintenanceAccessTokenExpiresAt < new Date()) return null;
+  return ticket;
 }
