@@ -442,6 +442,17 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               ⚠ Correggi i punti sopra
             </div>
           )}
+          {status === "IN_PROGRESS" && (
+            <button
+              type="button"
+              onClick={handleApprove}
+              disabled={isPending}
+              className="w-full flex items-center justify-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-700 transition-all active:scale-95 disabled:opacity-50"
+            >
+              {isPending ? <Loader2 size={13} className="animate-spin" /> : "✓"}
+              Approva direttamente (sblocca)
+            </button>
+          )}
           {status === "AWAITING_REVIEW" && (
             <div className="w-full rounded-2xl bg-amber-50 border border-amber-200 p-3.5 flex flex-col gap-2.5">
               <div className="flex items-center gap-3">
