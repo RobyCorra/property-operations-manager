@@ -73,6 +73,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const [photoPreview, setPhotoPreview]   = useState<string | null>(null);
   const [photoFile, setPhotoFile]         = useState<File | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [isSaving, setIsSaving]           = useState(false);
   const [isCompletingTask, setIsCompletingTask] = useState(false);
   const [uploadError, setUploadError]     = useState<string | null>(null);
@@ -283,25 +284,14 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     setIsSaving(true);
     setUploadError(null);
 
-    // Se c'è una nuova foto → comprimi e metti in coda (NON upload immediato)
+    // Se c'è una nuova foto → comprimi e CARICA SUBITO (upload sincrono).
+    // La voce si completa solo quando la foto è confermata sul server.
+    let uploadedUrl: string | null = currentItem.photoUrl ?? null;
     if (completed && photoFile) {
       setIsCompressing(true);
+      let compressed: File;
       try {
-        const compressed = await compressImage(photoFile);
-        const localUrl   = URL.createObjectURL(compressed);
-
-        // Salva in memoria
-        setPendingPhotos((prev) => new Map(prev).set(currentItem.id, {
-          localUrl,
-          blob:     compressed,
-          filename: compressed.name,
-        }));
-
-        // Salva in IndexedDB (persistenza cross-refresh)
-        await saveToQueue(taskId, currentItem.id, compressed, compressed.name);
-
-        // Avvia upload subito in background (non aspettiamo)
-        uploadOne(currentItem.id);
+        compressed = await compressImage(photoFile);
       } catch {
         setUploadError("Errore durante la preparazione della foto. Riprova.");
         setIsCompressing(false);
@@ -309,12 +299,28 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         return;
       }
       setIsCompressing(false);
+
+      setIsUploadingPhoto(true);
+      try {
+        const result = await upload(
+          `uploads/cleaning/${taskId}/checklist/${currentItem.id}/${Date.now()}-${compressed.name}`,
+          compressed,
+          { access: "public", handleUploadUrl: "/api/blob-upload" },
+        );
+        uploadedUrl = result.url;
+      } catch {
+        setUploadError("Foto non caricata. Controlla la connessione e riprova.");
+        setIsUploadingPhoto(false);
+        setIsSaving(false);
+        return; // resta sulla voce: niente completamento senza foto
+      }
+      setIsUploadingPhoto(false);
     }
 
-    // Aggiorna item: completed, photoUrl rimane null finché l'upload non termina
+    // Aggiorna item: la foto (se richiesta) è già sul server → photoUrl valorizzato
     const updatedItems = items.map((item, idx) =>
       idx === currentIndex
-        ? { ...item, completed, skipped: !completed, photoUrl: item.photoUrl ?? null }
+        ? { ...item, completed, skipped: !completed, photoUrl: completed ? uploadedUrl : (item.photoUrl ?? null) }
         : item
     );
 
@@ -745,7 +751,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
                 <p className="text-[10px] text-blue-600 font-bold mt-0.5">
-                  📸 Pronta — verrà inviata in background
+                  📸 Pronta — caricata alla conferma
                 </p>
               </div>
               <button
@@ -803,10 +809,12 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         <button
           type="button"
           onClick={() => advance(true)}
-          disabled={isSaving || isCompressing}
+          disabled={isSaving || isCompressing || isUploadingPhoto}
           className="flex-1 flex items-center justify-center gap-2 rounded-full bg-green-600 py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-green-700 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-green-600/20"
         >
-          {isCompressing ? (
+          {isUploadingPhoto ? (
+            <><Loader2 size={13} className="animate-spin" /> Carico foto…</>
+          ) : isCompressing ? (
             <><Loader2 size={13} className="animate-spin" /> Preparazione...</>
           ) : isSaving ? (
             <><Loader2 size={13} className="animate-spin" /> {t.saving}</>
