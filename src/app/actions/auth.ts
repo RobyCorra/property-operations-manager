@@ -43,14 +43,23 @@ export async function loginAction(prevState: any, formData: FormData) {
     const nextCount = (user.failedLoginCount ?? 0) + 1;
     const shouldLock = nextCount >= MAX_ATTEMPTS;
     try {
-      await prisma.user.update({
+      const res = await prisma.user.updateMany({
         where: { id: user.id },
         data: shouldLock
           ? { failedLoginCount: 0, lockedUntil: new Date(Date.now() + LOCK_MINUTES * 60000) }
           : { failedLoginCount: nextCount },
       });
+      const after = await prisma.user.findUnique({ where: { id: user.id }, select: { failedLoginCount: true } });
+      try {
+        await prisma.superAdminLog.create({
+          data: {
+            id: `${Date.now()}-lockdbg`,
+            action: "LOCKOUT_DEBUG",
+            detail: `count=${res.count} before=${user.failedLoginCount} target=${nextCount} after=${after?.failedLoginCount}`,
+          },
+        });
+      } catch {}
     } catch (e) {
-      // Diagnostica: registra l'errore esatto (leggibile via SQL su SuperAdminLog)
       try {
         await prisma.superAdminLog.create({
           data: {
