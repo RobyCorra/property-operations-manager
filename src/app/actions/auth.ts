@@ -49,7 +49,18 @@ export async function loginAction(prevState: any, formData: FormData) {
           ? { failedLoginCount: 0, lockedUntil: new Date(Date.now() + LOCK_MINUTES * 60000) }
           : { failedLoginCount: nextCount },
       });
-    } catch {}
+    } catch (e) {
+      // Diagnostica: registra l'errore esatto (leggibile via SQL su SuperAdminLog)
+      try {
+        await prisma.superAdminLog.create({
+          data: {
+            id: `${Date.now()}-lockerr`,
+            action: "LOCKOUT_ERROR",
+            detail: String((e as any)?.message ?? e).slice(0, 400),
+          },
+        });
+      } catch {}
+    }
     try {
       await prisma.superAdminLog.create({
         data: {
