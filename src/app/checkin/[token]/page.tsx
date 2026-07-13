@@ -25,6 +25,9 @@ export default async function PublicCheckinPage({ params }: { params: Promise<{ 
     photoUrl: i.photoUrl ?? null,
   }));
 
+  // Minimizzazione privacy: sul link pubblico mostra solo il nome (no cognome).
+  const guestFirstName = task.booking?.guestName?.trim().split(/\s+/)[0] ?? null;
+
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
   const isPendingTask = task.status === "PENDING";
   const cleaningBlocked = isPendingTask
@@ -43,7 +46,7 @@ export default async function PublicCheckinPage({ params }: { params: Promise<{ 
         apartmentAddress={task.apartment.address}
         mapsUrl={mapsUrl}
         dateLabel={formatRomeDateTimeDisplay(task.date)}
-        guestName={task.booking?.guestName ?? null}
+        guestName={guestFirstName}
         initialItems={items}
         readOnly={task.status !== "IN_PROGRESS"}
         showChat={false}

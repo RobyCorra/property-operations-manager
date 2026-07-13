@@ -10,6 +10,8 @@ export default async function LoginPage({
       ? "Email e password richiesti."
       : error === "invalid"
       ? "Credenziali non valide."
+      : error === "locked"
+      ? "Troppi tentativi falliti: account bloccato per 15 minuti. Riprova più tardi."
       : null;
 
   return (

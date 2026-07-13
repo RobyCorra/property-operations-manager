@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(new URL("/login?error=required", req.url), { status: 303 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
+  const user = await prisma.user.findFirst({
+    where: { email: { equals: email, mode: "insensitive" } },
     include: { organization: { select: { id: true, name: true } } },
   });
 
@@ -33,20 +33,44 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(new URL("/login?error=invalid", req.url), { status: 303 });
   }
 
+  // Blocco temporaneo dopo troppi tentativi falliti
+  const MAX_ATTEMPTS = 5;
+  const LOCK_MINUTES = 15;
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    return NextResponse.redirect(new URL("/login?error=locked", req.url), { status: 303 });
+  }
+
   const isValid = await bcrypt.compare(password, user.password);
 
   if (!isValid) {
+    const nextCount = (user.failedLoginCount ?? 0) + 1;
+    const shouldLock = nextCount >= MAX_ATTEMPTS;
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: shouldLock
+          ? { failedLoginCount: 0, lockedUntil: new Date(Date.now() + LOCK_MINUTES * 60000) }
+          : { failedLoginCount: nextCount },
+      });
+    } catch (e) { console.error("[Lockout] update:", e); }
     try {
       await prisma.superAdminLog.create({
         data: {
-          action: "LOGIN_FALLITO",
-          detail: `Password errata: ${user.name} (${email})`,
+          action: shouldLock ? "LOGIN_BLOCCATO" : "LOGIN_FALLITO",
+          detail: `Password errata: ${user.name} (${email})${shouldLock ? " — account bloccato" : ""}`,
           orgId: user.organization?.id ?? null,
           orgName: user.organization?.name ?? null,
         },
       });
     } catch (e) { console.error("[Log] login_fallito:", e); }
-    return NextResponse.redirect(new URL("/login?error=invalid", req.url), { status: 303 });
+    return NextResponse.redirect(new URL(`/login?error=${shouldLock ? "locked" : "invalid"}`, req.url), { status: 303 });
+  }
+
+  // Login riuscito → azzera i contatori se necessario
+  if ((user.failedLoginCount ?? 0) > 0 || user.lockedUntil) {
+    try {
+      await prisma.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null } });
+    } catch (e) { console.error("[Lockout] reset:", e); }
   }
 
   // Log successful login

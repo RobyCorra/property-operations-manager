@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import bcrypt from "bcryptjs";
 import { getCurrentOrg } from "@/src/lib/tenant";
+import { validatePassword } from "@/src/lib/password-policy";
 
 type Role = "MANAGER" | "CLEANER" | "MAINTENANCE" | "SUPERVISOR" | "OWNER" | "CHECKIN";
 
@@ -24,6 +25,9 @@ export async function createUser(prevState: any, formData: FormData) {
   if (!name || !email || !password || !role) {
     return { error: "Tutti i campi sono obbligatori." };
   }
+
+  const pwError = validatePassword(password);
+  if (pwError) return { error: pwError };
 
   const existingUser = await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
   if (existingUser) {
@@ -79,10 +83,10 @@ export async function updateUser(prevState: any, formData: FormData) {
   }
 
   const data: any = { name, email, role, phone, address, isExternal, companyName, vatNumber, iban };
-  if (password && password.length >= 8) {
+  if (password && password.length > 0) {
+    const pwError = validatePassword(password);
+    if (pwError) return { error: pwError };
     data.password = await bcrypt.hash(password, 10);
-  } else if (password && password.length > 0) {
-    return { error: "La password deve essere di almeno 8 caratteri." };
   }
 
   // Use a transaction to keep user + apartment assignments atomic

@@ -89,6 +89,15 @@ export default function RegisterPage() {
             />
           </div>
 
+          <label className="flex items-start gap-2 text-xs text-gray-600 mt-1">
+            <input required name="privacyConsent" type="checkbox" className="mt-0.5 shrink-0" />
+            <span>
+              Ho letto e accetto l&apos;{" "}
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline text-gray-900">informativa sulla privacy</a>{" "}
+              e acconsento al trattamento dei dati secondo il GDPR.
+            </span>
+          </label>
+
           <button
             type="submit"
             disabled={isPending}

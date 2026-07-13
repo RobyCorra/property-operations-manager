@@ -5254,8 +5254,18 @@ export namespace Prisma {
 
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserAvgAggregateOutputType = {
+    failedLoginCount: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    failedLoginCount: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -5272,6 +5282,9 @@ export namespace Prisma {
     vatNumber: string | null
     iban: string | null
     organizationId: string | null
+    failedLoginCount: number | null
+    lockedUntil: Date | null
+    privacyAcceptedAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -5288,6 +5301,9 @@ export namespace Prisma {
     vatNumber: string | null
     iban: string | null
     organizationId: string | null
+    failedLoginCount: number | null
+    lockedUntil: Date | null
+    privacyAcceptedAt: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -5305,9 +5321,20 @@ export namespace Prisma {
     iban: number
     organizationId: number
     notificationPrefs: number
+    failedLoginCount: number
+    lockedUntil: number
+    privacyAcceptedAt: number
     _all: number
   }
 
+
+  export type UserAvgAggregateInputType = {
+    failedLoginCount?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    failedLoginCount?: true
+  }
 
   export type UserMinAggregateInputType = {
     id?: true
@@ -5323,6 +5350,9 @@ export namespace Prisma {
     vatNumber?: true
     iban?: true
     organizationId?: true
+    failedLoginCount?: true
+    lockedUntil?: true
+    privacyAcceptedAt?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -5339,6 +5369,9 @@ export namespace Prisma {
     vatNumber?: true
     iban?: true
     organizationId?: true
+    failedLoginCount?: true
+    lockedUntil?: true
+    privacyAcceptedAt?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -5356,6 +5389,9 @@ export namespace Prisma {
     iban?: true
     organizationId?: true
     notificationPrefs?: true
+    failedLoginCount?: true
+    lockedUntil?: true
+    privacyAcceptedAt?: true
     _all?: true
   }
 
@@ -5397,6 +5433,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
@@ -5427,6 +5475,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
@@ -5446,7 +5496,12 @@ export namespace Prisma {
     iban: string | null
     organizationId: string | null
     notificationPrefs: JsonValue | null
+    failedLoginCount: number
+    lockedUntil: Date | null
+    privacyAcceptedAt: Date | null
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
@@ -5480,6 +5535,9 @@ export namespace Prisma {
     iban?: boolean
     organizationId?: boolean
     notificationPrefs?: boolean
+    failedLoginCount?: boolean
+    lockedUntil?: boolean
+    privacyAcceptedAt?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
     cleaningTasks?: boolean | User$cleaningTasksArgs<ExtArgs>
     maintenanceTickets?: boolean | User$maintenanceTicketsArgs<ExtArgs>
@@ -5509,6 +5567,9 @@ export namespace Prisma {
     iban?: boolean
     organizationId?: boolean
     notificationPrefs?: boolean
+    failedLoginCount?: boolean
+    lockedUntil?: boolean
+    privacyAcceptedAt?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5527,6 +5588,9 @@ export namespace Prisma {
     iban?: boolean
     organizationId?: boolean
     notificationPrefs?: boolean
+    failedLoginCount?: boolean
+    lockedUntil?: boolean
+    privacyAcceptedAt?: boolean
     organization?: boolean | User$organizationArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5545,9 +5609,12 @@ export namespace Prisma {
     iban?: boolean
     organizationId?: boolean
     notificationPrefs?: boolean
+    failedLoginCount?: boolean
+    lockedUntil?: boolean
+    privacyAcceptedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "role" | "createdAt" | "name" | "phone" | "address" | "isExternal" | "companyName" | "vatNumber" | "iban" | "organizationId" | "notificationPrefs", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "role" | "createdAt" | "name" | "phone" | "address" | "isExternal" | "companyName" | "vatNumber" | "iban" | "organizationId" | "notificationPrefs" | "failedLoginCount" | "lockedUntil" | "privacyAcceptedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | User$organizationArgs<ExtArgs>
     cleaningTasks?: boolean | User$cleaningTasksArgs<ExtArgs>
@@ -5599,6 +5666,9 @@ export namespace Prisma {
       iban: string | null
       organizationId: string | null
       notificationPrefs: Prisma.JsonValue | null
+      failedLoginCount: number
+      lockedUntil: Date | null
+      privacyAcceptedAt: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -6047,6 +6117,9 @@ export namespace Prisma {
     readonly iban: FieldRef<"User", 'String'>
     readonly organizationId: FieldRef<"User", 'String'>
     readonly notificationPrefs: FieldRef<"User", 'Json'>
+    readonly failedLoginCount: FieldRef<"User", 'Int'>
+    readonly lockedUntil: FieldRef<"User", 'DateTime'>
+    readonly privacyAcceptedAt: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -11909,6 +11982,7 @@ export namespace Prisma {
     notes: string | null
     bookingId: string | null
     cleaningAccessToken: string | null
+    cleaningAccessTokenExpiresAt: Date | null
     cullaRequested: boolean | null
     sofaBedForced: boolean | null
     totalGuests: number | null
@@ -11926,6 +12000,7 @@ export namespace Prisma {
     notes: string | null
     bookingId: string | null
     cleaningAccessToken: string | null
+    cleaningAccessTokenExpiresAt: Date | null
     cullaRequested: boolean | null
     sofaBedForced: boolean | null
     totalGuests: number | null
@@ -11945,6 +12020,7 @@ export namespace Prisma {
     checklistProgress: number
     correctionProgress: number
     cleaningAccessToken: number
+    cleaningAccessTokenExpiresAt: number
     cullaRequested: number
     sofaBedForced: number
     totalGuests: number
@@ -11972,6 +12048,7 @@ export namespace Prisma {
     notes?: true
     bookingId?: true
     cleaningAccessToken?: true
+    cleaningAccessTokenExpiresAt?: true
     cullaRequested?: true
     sofaBedForced?: true
     totalGuests?: true
@@ -11989,6 +12066,7 @@ export namespace Prisma {
     notes?: true
     bookingId?: true
     cleaningAccessToken?: true
+    cleaningAccessTokenExpiresAt?: true
     cullaRequested?: true
     sofaBedForced?: true
     totalGuests?: true
@@ -12008,6 +12086,7 @@ export namespace Prisma {
     checklistProgress?: true
     correctionProgress?: true
     cleaningAccessToken?: true
+    cleaningAccessTokenExpiresAt?: true
     cullaRequested?: true
     sofaBedForced?: true
     totalGuests?: true
@@ -12114,6 +12193,7 @@ export namespace Prisma {
     checklistProgress: JsonValue | null
     correctionProgress: JsonValue | null
     cleaningAccessToken: string | null
+    cleaningAccessTokenExpiresAt: Date | null
     cullaRequested: boolean
     sofaBedForced: boolean
     totalGuests: number | null
@@ -12152,6 +12232,7 @@ export namespace Prisma {
     checklistProgress?: boolean
     correctionProgress?: boolean
     cleaningAccessToken?: boolean
+    cleaningAccessTokenExpiresAt?: boolean
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: boolean
@@ -12179,6 +12260,7 @@ export namespace Prisma {
     checklistProgress?: boolean
     correctionProgress?: boolean
     cleaningAccessToken?: boolean
+    cleaningAccessTokenExpiresAt?: boolean
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: boolean
@@ -12201,6 +12283,7 @@ export namespace Prisma {
     checklistProgress?: boolean
     correctionProgress?: boolean
     cleaningAccessToken?: boolean
+    cleaningAccessTokenExpiresAt?: boolean
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: boolean
@@ -12223,12 +12306,13 @@ export namespace Prisma {
     checklistProgress?: boolean
     correctionProgress?: boolean
     cleaningAccessToken?: boolean
+    cleaningAccessTokenExpiresAt?: boolean
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: boolean
   }
 
-  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken" | "cullaRequested" | "sofaBedForced" | "totalGuests", ExtArgs["result"]["cleaningTask"]>
+  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken" | "cleaningAccessTokenExpiresAt" | "cullaRequested" | "sofaBedForced" | "totalGuests", ExtArgs["result"]["cleaningTask"]>
   export type CleaningTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -12275,6 +12359,7 @@ export namespace Prisma {
       checklistProgress: Prisma.JsonValue | null
       correctionProgress: Prisma.JsonValue | null
       cleaningAccessToken: string | null
+      cleaningAccessTokenExpiresAt: Date | null
       cullaRequested: boolean
       sofaBedForced: boolean
       totalGuests: number | null
@@ -12721,6 +12806,7 @@ export namespace Prisma {
     readonly checklistProgress: FieldRef<"CleaningTask", 'Json'>
     readonly correctionProgress: FieldRef<"CleaningTask", 'Json'>
     readonly cleaningAccessToken: FieldRef<"CleaningTask", 'String'>
+    readonly cleaningAccessTokenExpiresAt: FieldRef<"CleaningTask", 'DateTime'>
     readonly cullaRequested: FieldRef<"CleaningTask", 'Boolean'>
     readonly sofaBedForced: FieldRef<"CleaningTask", 'Boolean'>
     readonly totalGuests: FieldRef<"CleaningTask", 'Int'>
@@ -14444,6 +14530,7 @@ export namespace Prisma {
     notes: string | null
     bookingId: string | null
     checkinAccessToken: string | null
+    checkinAccessTokenExpiresAt: Date | null
   }
 
   export type CheckinTaskMaxAggregateOutputType = {
@@ -14458,6 +14545,7 @@ export namespace Prisma {
     notes: string | null
     bookingId: string | null
     checkinAccessToken: string | null
+    checkinAccessTokenExpiresAt: Date | null
   }
 
   export type CheckinTaskCountAggregateOutputType = {
@@ -14473,6 +14561,7 @@ export namespace Prisma {
     bookingId: number
     checklistProgress: number
     checkinAccessToken: number
+    checkinAccessTokenExpiresAt: number
     _all: number
   }
 
@@ -14489,6 +14578,7 @@ export namespace Prisma {
     notes?: true
     bookingId?: true
     checkinAccessToken?: true
+    checkinAccessTokenExpiresAt?: true
   }
 
   export type CheckinTaskMaxAggregateInputType = {
@@ -14503,6 +14593,7 @@ export namespace Prisma {
     notes?: true
     bookingId?: true
     checkinAccessToken?: true
+    checkinAccessTokenExpiresAt?: true
   }
 
   export type CheckinTaskCountAggregateInputType = {
@@ -14518,6 +14609,7 @@ export namespace Prisma {
     bookingId?: true
     checklistProgress?: true
     checkinAccessToken?: true
+    checkinAccessTokenExpiresAt?: true
     _all?: true
   }
 
@@ -14606,6 +14698,7 @@ export namespace Prisma {
     bookingId: string | null
     checklistProgress: JsonValue | null
     checkinAccessToken: string | null
+    checkinAccessTokenExpiresAt: Date | null
     _count: CheckinTaskCountAggregateOutputType | null
     _min: CheckinTaskMinAggregateOutputType | null
     _max: CheckinTaskMaxAggregateOutputType | null
@@ -14638,6 +14731,7 @@ export namespace Prisma {
     bookingId?: boolean
     checklistProgress?: boolean
     checkinAccessToken?: boolean
+    checkinAccessTokenExpiresAt?: boolean
     booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
@@ -14659,6 +14753,7 @@ export namespace Prisma {
     bookingId?: boolean
     checklistProgress?: boolean
     checkinAccessToken?: boolean
+    checkinAccessTokenExpiresAt?: boolean
     booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
@@ -14677,6 +14772,7 @@ export namespace Prisma {
     bookingId?: boolean
     checklistProgress?: boolean
     checkinAccessToken?: boolean
+    checkinAccessTokenExpiresAt?: boolean
     booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CheckinTask$assignedToArgs<ExtArgs>
@@ -14695,9 +14791,10 @@ export namespace Prisma {
     bookingId?: boolean
     checklistProgress?: boolean
     checkinAccessToken?: boolean
+    checkinAccessTokenExpiresAt?: boolean
   }
 
-  export type CheckinTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "checkinAccessToken", ExtArgs["result"]["checkinTask"]>
+  export type CheckinTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "checkinAccessToken" | "checkinAccessTokenExpiresAt", ExtArgs["result"]["checkinTask"]>
   export type CheckinTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CheckinTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -14739,6 +14836,7 @@ export namespace Prisma {
       bookingId: string | null
       checklistProgress: Prisma.JsonValue | null
       checkinAccessToken: string | null
+      checkinAccessTokenExpiresAt: Date | null
     }, ExtArgs["result"]["checkinTask"]>
     composites: {}
   }
@@ -15179,6 +15277,7 @@ export namespace Prisma {
     readonly bookingId: FieldRef<"CheckinTask", 'String'>
     readonly checklistProgress: FieldRef<"CheckinTask", 'Json'>
     readonly checkinAccessToken: FieldRef<"CheckinTask", 'String'>
+    readonly checkinAccessTokenExpiresAt: FieldRef<"CheckinTask", 'DateTime'>
   }
     
 
@@ -16850,6 +16949,7 @@ export namespace Prisma {
     startedAt: Date | null
     resolvedAt: Date | null
     maintenanceAccessToken: string | null
+    maintenanceAccessTokenExpiresAt: Date | null
   }
 
   export type MaintenanceTicketMaxAggregateOutputType = {
@@ -16866,6 +16966,7 @@ export namespace Prisma {
     startedAt: Date | null
     resolvedAt: Date | null
     maintenanceAccessToken: string | null
+    maintenanceAccessTokenExpiresAt: Date | null
   }
 
   export type MaintenanceTicketCountAggregateOutputType = {
@@ -16884,6 +16985,7 @@ export namespace Prisma {
     correctionProgress: number
     maintenanceTasks: number
     maintenanceAccessToken: number
+    maintenanceAccessTokenExpiresAt: number
     _all: number
   }
 
@@ -16902,6 +17004,7 @@ export namespace Prisma {
     startedAt?: true
     resolvedAt?: true
     maintenanceAccessToken?: true
+    maintenanceAccessTokenExpiresAt?: true
   }
 
   export type MaintenanceTicketMaxAggregateInputType = {
@@ -16918,6 +17021,7 @@ export namespace Prisma {
     startedAt?: true
     resolvedAt?: true
     maintenanceAccessToken?: true
+    maintenanceAccessTokenExpiresAt?: true
   }
 
   export type MaintenanceTicketCountAggregateInputType = {
@@ -16936,6 +17040,7 @@ export namespace Prisma {
     correctionProgress?: true
     maintenanceTasks?: true
     maintenanceAccessToken?: true
+    maintenanceAccessTokenExpiresAt?: true
     _all?: true
   }
 
@@ -17027,6 +17132,7 @@ export namespace Prisma {
     correctionProgress: JsonValue | null
     maintenanceTasks: JsonValue | null
     maintenanceAccessToken: string | null
+    maintenanceAccessTokenExpiresAt: Date | null
     _count: MaintenanceTicketCountAggregateOutputType | null
     _min: MaintenanceTicketMinAggregateOutputType | null
     _max: MaintenanceTicketMaxAggregateOutputType | null
@@ -17062,6 +17168,7 @@ export namespace Prisma {
     correctionProgress?: boolean
     maintenanceTasks?: boolean
     maintenanceAccessToken?: boolean
+    maintenanceAccessTokenExpiresAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | MaintenanceTicket$assignedToArgs<ExtArgs>
     attachments?: boolean | MaintenanceTicket$attachmentsArgs<ExtArgs>
@@ -17087,6 +17194,7 @@ export namespace Prisma {
     correctionProgress?: boolean
     maintenanceTasks?: boolean
     maintenanceAccessToken?: boolean
+    maintenanceAccessTokenExpiresAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | MaintenanceTicket$assignedToArgs<ExtArgs>
   }, ExtArgs["result"]["maintenanceTicket"]>
@@ -17107,6 +17215,7 @@ export namespace Prisma {
     correctionProgress?: boolean
     maintenanceTasks?: boolean
     maintenanceAccessToken?: boolean
+    maintenanceAccessTokenExpiresAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | MaintenanceTicket$assignedToArgs<ExtArgs>
   }, ExtArgs["result"]["maintenanceTicket"]>
@@ -17127,9 +17236,10 @@ export namespace Prisma {
     correctionProgress?: boolean
     maintenanceTasks?: boolean
     maintenanceAccessToken?: boolean
+    maintenanceAccessTokenExpiresAt?: boolean
   }
 
-  export type MaintenanceTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "title" | "description" | "status" | "priority" | "createdAt" | "assignedToId" | "scheduledStart" | "scheduledEnd" | "startedAt" | "resolvedAt" | "correctionProgress" | "maintenanceTasks" | "maintenanceAccessToken", ExtArgs["result"]["maintenanceTicket"]>
+  export type MaintenanceTicketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "title" | "description" | "status" | "priority" | "createdAt" | "assignedToId" | "scheduledStart" | "scheduledEnd" | "startedAt" | "resolvedAt" | "correctionProgress" | "maintenanceTasks" | "maintenanceAccessToken" | "maintenanceAccessTokenExpiresAt", ExtArgs["result"]["maintenanceTicket"]>
   export type MaintenanceTicketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | MaintenanceTicket$assignedToArgs<ExtArgs>
@@ -17174,6 +17284,7 @@ export namespace Prisma {
       correctionProgress: Prisma.JsonValue | null
       maintenanceTasks: Prisma.JsonValue | null
       maintenanceAccessToken: string | null
+      maintenanceAccessTokenExpiresAt: Date | null
     }, ExtArgs["result"]["maintenanceTicket"]>
     composites: {}
   }
@@ -17618,6 +17729,7 @@ export namespace Prisma {
     readonly correctionProgress: FieldRef<"MaintenanceTicket", 'Json'>
     readonly maintenanceTasks: FieldRef<"MaintenanceTicket", 'Json'>
     readonly maintenanceAccessToken: FieldRef<"MaintenanceTicket", 'String'>
+    readonly maintenanceAccessTokenExpiresAt: FieldRef<"MaintenanceTicket", 'DateTime'>
   }
     
 
@@ -36074,7 +36186,10 @@ export namespace Prisma {
     vatNumber: 'vatNumber',
     iban: 'iban',
     organizationId: 'organizationId',
-    notificationPrefs: 'notificationPrefs'
+    notificationPrefs: 'notificationPrefs',
+    failedLoginCount: 'failedLoginCount',
+    lockedUntil: 'lockedUntil',
+    privacyAcceptedAt: 'privacyAcceptedAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -36167,6 +36282,7 @@ export namespace Prisma {
     checklistProgress: 'checklistProgress',
     correctionProgress: 'correctionProgress',
     cleaningAccessToken: 'cleaningAccessToken',
+    cleaningAccessTokenExpiresAt: 'cleaningAccessTokenExpiresAt',
     cullaRequested: 'cullaRequested',
     sofaBedForced: 'sofaBedForced',
     totalGuests: 'totalGuests'
@@ -36202,7 +36318,8 @@ export namespace Prisma {
     notes: 'notes',
     bookingId: 'bookingId',
     checklistProgress: 'checklistProgress',
-    checkinAccessToken: 'checkinAccessToken'
+    checkinAccessToken: 'checkinAccessToken',
+    checkinAccessTokenExpiresAt: 'checkinAccessTokenExpiresAt'
   };
 
   export type CheckinTaskScalarFieldEnum = (typeof CheckinTaskScalarFieldEnum)[keyof typeof CheckinTaskScalarFieldEnum]
@@ -36238,7 +36355,8 @@ export namespace Prisma {
     resolvedAt: 'resolvedAt',
     correctionProgress: 'correctionProgress',
     maintenanceTasks: 'maintenanceTasks',
-    maintenanceAccessToken: 'maintenanceAccessToken'
+    maintenanceAccessToken: 'maintenanceAccessToken',
+    maintenanceAccessTokenExpiresAt: 'maintenanceAccessTokenExpiresAt'
   };
 
   export type MaintenanceTicketScalarFieldEnum = (typeof MaintenanceTicketScalarFieldEnum)[keyof typeof MaintenanceTicketScalarFieldEnum]
@@ -36788,6 +36906,9 @@ export namespace Prisma {
     iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
     notificationPrefs?: JsonNullableFilter<"User">
+    failedLoginCount?: IntFilter<"User"> | number
+    lockedUntil?: DateTimeNullableFilter<"User"> | Date | string | null
+    privacyAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     cleaningTasks?: CleaningTaskListRelationFilter
     maintenanceTickets?: MaintenanceTicketListRelationFilter
@@ -36816,6 +36937,9 @@ export namespace Prisma {
     iban?: SortOrderInput | SortOrder
     organizationId?: SortOrderInput | SortOrder
     notificationPrefs?: SortOrderInput | SortOrder
+    failedLoginCount?: SortOrder
+    lockedUntil?: SortOrderInput | SortOrder
+    privacyAcceptedAt?: SortOrderInput | SortOrder
     organization?: OrganizationOrderByWithRelationInput
     cleaningTasks?: CleaningTaskOrderByRelationAggregateInput
     maintenanceTickets?: MaintenanceTicketOrderByRelationAggregateInput
@@ -36847,6 +36971,9 @@ export namespace Prisma {
     iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
     notificationPrefs?: JsonNullableFilter<"User">
+    failedLoginCount?: IntFilter<"User"> | number
+    lockedUntil?: DateTimeNullableFilter<"User"> | Date | string | null
+    privacyAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     cleaningTasks?: CleaningTaskListRelationFilter
     maintenanceTickets?: MaintenanceTicketListRelationFilter
@@ -36875,9 +37002,14 @@ export namespace Prisma {
     iban?: SortOrderInput | SortOrder
     organizationId?: SortOrderInput | SortOrder
     notificationPrefs?: SortOrderInput | SortOrder
+    failedLoginCount?: SortOrder
+    lockedUntil?: SortOrderInput | SortOrder
+    privacyAcceptedAt?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
   }
 
   export type UserScalarWhereWithAggregatesInput = {
@@ -36898,6 +37030,9 @@ export namespace Prisma {
     iban?: StringNullableWithAggregatesFilter<"User"> | string | null
     organizationId?: StringNullableWithAggregatesFilter<"User"> | string | null
     notificationPrefs?: JsonNullableWithAggregatesFilter<"User">
+    failedLoginCount?: IntWithAggregatesFilter<"User"> | number
+    lockedUntil?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    privacyAcceptedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type ApartmentWhereInput = {
@@ -37330,6 +37465,7 @@ export namespace Prisma {
     checklistProgress?: JsonNullableFilter<"CleaningTask">
     correctionProgress?: JsonNullableFilter<"CleaningTask">
     cleaningAccessToken?: StringNullableFilter<"CleaningTask"> | string | null
+    cleaningAccessTokenExpiresAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
     totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
@@ -37356,6 +37492,7 @@ export namespace Prisma {
     checklistProgress?: SortOrderInput | SortOrder
     correctionProgress?: SortOrderInput | SortOrder
     cleaningAccessToken?: SortOrderInput | SortOrder
+    cleaningAccessTokenExpiresAt?: SortOrderInput | SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrderInput | SortOrder
@@ -37385,6 +37522,7 @@ export namespace Prisma {
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CleaningTask">
     correctionProgress?: JsonNullableFilter<"CleaningTask">
+    cleaningAccessTokenExpiresAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
     totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
@@ -37411,6 +37549,7 @@ export namespace Prisma {
     checklistProgress?: SortOrderInput | SortOrder
     correctionProgress?: SortOrderInput | SortOrder
     cleaningAccessToken?: SortOrderInput | SortOrder
+    cleaningAccessTokenExpiresAt?: SortOrderInput | SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrderInput | SortOrder
@@ -37438,6 +37577,7 @@ export namespace Prisma {
     checklistProgress?: JsonNullableWithAggregatesFilter<"CleaningTask">
     correctionProgress?: JsonNullableWithAggregatesFilter<"CleaningTask">
     cleaningAccessToken?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
+    cleaningAccessTokenExpiresAt?: DateTimeNullableWithAggregatesFilter<"CleaningTask"> | Date | string | null
     cullaRequested?: BoolWithAggregatesFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolWithAggregatesFilter<"CleaningTask"> | boolean
     totalGuests?: IntNullableWithAggregatesFilter<"CleaningTask"> | number | null
@@ -37536,6 +37676,7 @@ export namespace Prisma {
     bookingId?: StringNullableFilter<"CheckinTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CheckinTask">
     checkinAccessToken?: StringNullableFilter<"CheckinTask"> | string | null
+    checkinAccessTokenExpiresAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -37556,6 +37697,7 @@ export namespace Prisma {
     bookingId?: SortOrderInput | SortOrder
     checklistProgress?: SortOrderInput | SortOrder
     checkinAccessToken?: SortOrderInput | SortOrder
+    checkinAccessTokenExpiresAt?: SortOrderInput | SortOrder
     booking?: BookingOrderByWithRelationInput
     apartment?: ApartmentOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
@@ -37579,6 +37721,7 @@ export namespace Prisma {
     assignedToId?: StringNullableFilter<"CheckinTask"> | string | null
     notes?: StringNullableFilter<"CheckinTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CheckinTask">
+    checkinAccessTokenExpiresAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -37599,6 +37742,7 @@ export namespace Prisma {
     bookingId?: SortOrderInput | SortOrder
     checklistProgress?: SortOrderInput | SortOrder
     checkinAccessToken?: SortOrderInput | SortOrder
+    checkinAccessTokenExpiresAt?: SortOrderInput | SortOrder
     _count?: CheckinTaskCountOrderByAggregateInput
     _max?: CheckinTaskMaxOrderByAggregateInput
     _min?: CheckinTaskMinOrderByAggregateInput
@@ -37620,6 +37764,7 @@ export namespace Prisma {
     bookingId?: StringNullableWithAggregatesFilter<"CheckinTask"> | string | null
     checklistProgress?: JsonNullableWithAggregatesFilter<"CheckinTask">
     checkinAccessToken?: StringNullableWithAggregatesFilter<"CheckinTask"> | string | null
+    checkinAccessTokenExpiresAt?: DateTimeNullableWithAggregatesFilter<"CheckinTask"> | Date | string | null
   }
 
   export type CheckinTaskMessageWhereInput = {
@@ -37719,6 +37864,7 @@ export namespace Prisma {
     correctionProgress?: JsonNullableFilter<"MaintenanceTicket">
     maintenanceTasks?: JsonNullableFilter<"MaintenanceTicket">
     maintenanceAccessToken?: StringNullableFilter<"MaintenanceTicket"> | string | null
+    maintenanceAccessTokenExpiresAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     attachments?: AttachmentListRelationFilter
@@ -37743,6 +37889,7 @@ export namespace Prisma {
     correctionProgress?: SortOrderInput | SortOrder
     maintenanceTasks?: SortOrderInput | SortOrder
     maintenanceAccessToken?: SortOrderInput | SortOrder
+    maintenanceAccessTokenExpiresAt?: SortOrderInput | SortOrder
     apartment?: ApartmentOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
     attachments?: AttachmentOrderByRelationAggregateInput
@@ -37770,6 +37917,7 @@ export namespace Prisma {
     resolvedAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     correctionProgress?: JsonNullableFilter<"MaintenanceTicket">
     maintenanceTasks?: JsonNullableFilter<"MaintenanceTicket">
+    maintenanceAccessTokenExpiresAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     attachments?: AttachmentListRelationFilter
@@ -37794,6 +37942,7 @@ export namespace Prisma {
     correctionProgress?: SortOrderInput | SortOrder
     maintenanceTasks?: SortOrderInput | SortOrder
     maintenanceAccessToken?: SortOrderInput | SortOrder
+    maintenanceAccessTokenExpiresAt?: SortOrderInput | SortOrder
     _count?: MaintenanceTicketCountOrderByAggregateInput
     _max?: MaintenanceTicketMaxOrderByAggregateInput
     _min?: MaintenanceTicketMinOrderByAggregateInput
@@ -37818,6 +37967,7 @@ export namespace Prisma {
     correctionProgress?: JsonNullableWithAggregatesFilter<"MaintenanceTicket">
     maintenanceTasks?: JsonNullableWithAggregatesFilter<"MaintenanceTicket">
     maintenanceAccessToken?: StringNullableWithAggregatesFilter<"MaintenanceTicket"> | string | null
+    maintenanceAccessTokenExpiresAt?: DateTimeNullableWithAggregatesFilter<"MaintenanceTicket"> | Date | string | null
   }
 
   export type AIAssistantMessageWhereInput = {
@@ -39119,6 +39269,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -39147,6 +39300,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -39173,6 +39329,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -39201,6 +39360,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -39228,6 +39390,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -39244,6 +39409,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -39261,6 +39429,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ApartmentCreateInput = {
@@ -39753,6 +39924,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -39779,6 +39951,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -39799,6 +39972,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39825,6 +39999,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39848,6 +40023,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -39864,6 +40040,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39883,6 +40060,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -39981,6 +40159,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     booking?: BookingCreateNestedOneWithoutCheckinTaskInput
     apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
     assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
@@ -40001,6 +40180,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
@@ -40015,6 +40195,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
@@ -40035,6 +40216,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
@@ -40052,6 +40234,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
   }
 
   export type CheckinTaskUpdateManyMutationInput = {
@@ -40064,6 +40247,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CheckinTaskUncheckedUpdateManyInput = {
@@ -40079,6 +40263,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CheckinTaskMessageCreateInput = {
@@ -40177,6 +40362,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
@@ -40201,6 +40387,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
@@ -40221,6 +40408,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
@@ -40245,6 +40433,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
@@ -40267,6 +40456,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
   }
 
   export type MaintenanceTicketUpdateManyMutationInput = {
@@ -40283,6 +40473,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type MaintenanceTicketUncheckedUpdateManyInput = {
@@ -40301,6 +40492,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AIAssistantMessageCreateInput = {
@@ -41825,6 +42017,13 @@ export namespace Prisma {
     iban?: SortOrder
     organizationId?: SortOrder
     notificationPrefs?: SortOrder
+    failedLoginCount?: SortOrder
+    lockedUntil?: SortOrder
+    privacyAcceptedAt?: SortOrder
+  }
+
+  export type UserAvgOrderByAggregateInput = {
+    failedLoginCount?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -41841,6 +42040,9 @@ export namespace Prisma {
     vatNumber?: SortOrder
     iban?: SortOrder
     organizationId?: SortOrder
+    failedLoginCount?: SortOrder
+    lockedUntil?: SortOrder
+    privacyAcceptedAt?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -41857,6 +42059,13 @@ export namespace Prisma {
     vatNumber?: SortOrder
     iban?: SortOrder
     organizationId?: SortOrder
+    failedLoginCount?: SortOrder
+    lockedUntil?: SortOrder
+    privacyAcceptedAt?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    failedLoginCount?: SortOrder
   }
 
   export type EnumRoleWithAggregatesFilter<$PrismaModel = never> = {
@@ -42284,6 +42493,7 @@ export namespace Prisma {
     checklistProgress?: SortOrder
     correctionProgress?: SortOrder
     cleaningAccessToken?: SortOrder
+    cleaningAccessTokenExpiresAt?: SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrder
@@ -42305,6 +42515,7 @@ export namespace Prisma {
     notes?: SortOrder
     bookingId?: SortOrder
     cleaningAccessToken?: SortOrder
+    cleaningAccessTokenExpiresAt?: SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrder
@@ -42322,6 +42533,7 @@ export namespace Prisma {
     notes?: SortOrder
     bookingId?: SortOrder
     cleaningAccessToken?: SortOrder
+    cleaningAccessTokenExpiresAt?: SortOrder
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrder
@@ -42412,6 +42624,7 @@ export namespace Prisma {
     bookingId?: SortOrder
     checklistProgress?: SortOrder
     checkinAccessToken?: SortOrder
+    checkinAccessTokenExpiresAt?: SortOrder
   }
 
   export type CheckinTaskMaxOrderByAggregateInput = {
@@ -42426,6 +42639,7 @@ export namespace Prisma {
     notes?: SortOrder
     bookingId?: SortOrder
     checkinAccessToken?: SortOrder
+    checkinAccessTokenExpiresAt?: SortOrder
   }
 
   export type CheckinTaskMinOrderByAggregateInput = {
@@ -42440,6 +42654,7 @@ export namespace Prisma {
     notes?: SortOrder
     bookingId?: SortOrder
     checkinAccessToken?: SortOrder
+    checkinAccessTokenExpiresAt?: SortOrder
   }
 
   export type CheckinTaskScalarRelationFilter = {
@@ -42514,6 +42729,7 @@ export namespace Prisma {
     correctionProgress?: SortOrder
     maintenanceTasks?: SortOrder
     maintenanceAccessToken?: SortOrder
+    maintenanceAccessTokenExpiresAt?: SortOrder
   }
 
   export type MaintenanceTicketMaxOrderByAggregateInput = {
@@ -42530,6 +42746,7 @@ export namespace Prisma {
     startedAt?: SortOrder
     resolvedAt?: SortOrder
     maintenanceAccessToken?: SortOrder
+    maintenanceAccessTokenExpiresAt?: SortOrder
   }
 
   export type MaintenanceTicketMinOrderByAggregateInput = {
@@ -42546,6 +42763,7 @@ export namespace Prisma {
     startedAt?: SortOrder
     resolvedAt?: SortOrder
     maintenanceAccessToken?: SortOrder
+    maintenanceAccessTokenExpiresAt?: SortOrder
   }
 
   export type EnumAIAssistantMessageRoleFilter<$PrismaModel = never> = {
@@ -45818,6 +46036,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -45844,6 +46065,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -46002,6 +46226,9 @@ export namespace Prisma {
     iban?: StringNullableFilter<"User"> | string | null
     organizationId?: StringNullableFilter<"User"> | string | null
     notificationPrefs?: JsonNullableFilter<"User">
+    failedLoginCount?: IntFilter<"User"> | number
+    lockedUntil?: DateTimeNullableFilter<"User"> | Date | string | null
+    privacyAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
   }
 
   export type ApartmentUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -46150,6 +46377,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -46174,6 +46402,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -46207,6 +46436,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
@@ -46229,6 +46459,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
@@ -46412,6 +46643,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     booking?: BookingCreateNestedOneWithoutCheckinTaskInput
     apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
     messages?: CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput
@@ -46430,6 +46662,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
@@ -46550,6 +46783,7 @@ export namespace Prisma {
     checklistProgress?: JsonNullableFilter<"CleaningTask">
     correctionProgress?: JsonNullableFilter<"CleaningTask">
     cleaningAccessToken?: StringNullableFilter<"CleaningTask"> | string | null
+    cleaningAccessTokenExpiresAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
     totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
@@ -46590,6 +46824,7 @@ export namespace Prisma {
     correctionProgress?: JsonNullableFilter<"MaintenanceTicket">
     maintenanceTasks?: JsonNullableFilter<"MaintenanceTicket">
     maintenanceAccessToken?: StringNullableFilter<"MaintenanceTicket"> | string | null
+    maintenanceAccessTokenExpiresAt?: DateTimeNullableFilter<"MaintenanceTicket"> | Date | string | null
   }
 
   export type SupervisorReviewUpsertWithWhereUniqueWithoutSupervisorInput = {
@@ -46809,6 +47044,7 @@ export namespace Prisma {
     bookingId?: StringNullableFilter<"CheckinTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CheckinTask">
     checkinAccessToken?: StringNullableFilter<"CheckinTask"> | string | null
+    checkinAccessTokenExpiresAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
   }
 
   export type OrganizationCreateWithoutApartmentsInput = {
@@ -46963,6 +47199,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -46987,6 +47224,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -47020,6 +47258,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
@@ -47042,6 +47281,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
@@ -47270,6 +47510,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     booking?: BookingCreateNestedOneWithoutCheckinTaskInput
     assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
     messages?: CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput
@@ -47288,6 +47529,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
@@ -48066,6 +48308,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -48090,6 +48333,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -48114,6 +48358,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
     assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
     messages?: CheckinTaskMessageCreateNestedManyWithoutCheckinTaskInput
@@ -48132,6 +48377,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
@@ -48242,6 +48488,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -48266,6 +48513,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -48296,6 +48544,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
     messages?: CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput
@@ -48314,6 +48563,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
@@ -48440,6 +48690,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -48467,6 +48720,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
@@ -48762,6 +49018,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -48789,6 +49048,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
@@ -49170,6 +49432,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -49197,6 +49462,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -49432,6 +49700,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -49459,6 +49730,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -49527,6 +49801,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     booking?: BookingCreateNestedOneWithoutCheckinTaskInput
     apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
     assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
@@ -49546,6 +49821,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
 
@@ -49612,6 +49888,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
@@ -49631,6 +49908,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
 
@@ -49764,6 +50042,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
@@ -49791,6 +50072,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
@@ -50045,6 +50329,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -50072,6 +50359,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
@@ -50246,6 +50536,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -50271,6 +50562,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -50298,6 +50590,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
@@ -50321,6 +50614,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
@@ -50432,6 +50726,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -50457,6 +50752,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -50490,6 +50786,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
@@ -50513,6 +50810,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
@@ -50532,6 +50830,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
@@ -50555,6 +50854,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
@@ -50576,6 +50876,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -50601,6 +50902,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -50624,6 +50926,7 @@ export namespace Prisma {
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     booking?: BookingCreateNestedOneWithoutCheckinTaskInput
     apartment: ApartmentCreateNestedOneWithoutCheckinTasksInput
     assignedTo?: UserCreateNestedOneWithoutCheckinTasksInput
@@ -50643,6 +50946,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
     messages?: CheckinTaskMessageUncheckedCreateNestedManyWithoutCheckinTaskInput
   }
 
@@ -50772,6 +51076,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
@@ -50795,6 +51100,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
@@ -50822,6 +51128,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -50847,6 +51154,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -50876,6 +51184,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
@@ -50895,6 +51204,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
 
@@ -51112,6 +51422,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
@@ -51135,6 +51446,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
@@ -51207,6 +51519,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
@@ -51230,6 +51543,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
@@ -51289,6 +51603,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -51314,6 +51629,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -51386,6 +51702,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51411,6 +51728,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51476,6 +51794,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -51503,6 +51824,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
@@ -51530,6 +51854,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -51555,6 +51880,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -51582,6 +51908,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
     assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
@@ -51605,6 +51932,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
@@ -51640,6 +51968,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -51667,6 +51998,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
@@ -51700,6 +52034,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51725,6 +52060,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51758,6 +52094,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
@@ -51781,6 +52118,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
@@ -51873,6 +52211,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -51900,6 +52241,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -52020,6 +52364,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -52047,6 +52394,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -52145,6 +52495,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -52172,6 +52525,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -52292,6 +52648,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -52319,6 +52678,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -52579,6 +52941,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -52606,6 +52971,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -52647,6 +53015,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -52674,6 +53045,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -52699,6 +53073,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -52726,6 +53103,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -52767,6 +53147,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -52794,6 +53177,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -52819,6 +53205,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -52846,6 +53235,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -52887,6 +53279,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -52914,6 +53309,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -52939,6 +53337,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     organization?: OrganizationCreateNestedOneWithoutUsersInput
     cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
@@ -52966,6 +53367,9 @@ export namespace Prisma {
     iban?: string | null
     organizationId?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
     cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
     maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
@@ -53007,6 +53411,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneWithoutUsersNestedInput
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
@@ -53034,6 +53441,9 @@ export namespace Prisma {
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     organizationId?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -53211,6 +53621,9 @@ export namespace Prisma {
     vatNumber?: string | null
     iban?: string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
   }
 
   export type ApartmentCreateManyOrganizationInput = {
@@ -53255,6 +53668,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
@@ -53281,6 +53697,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
     maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
@@ -53307,6 +53726,9 @@ export namespace Prisma {
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     iban?: NullableStringFieldUpdateOperationsInput | string | null
     notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ApartmentUpdateWithoutOrganizationInput = {
@@ -53432,6 +53854,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -53452,6 +53875,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
   }
 
   export type SupervisorReviewCreateManySupervisorInput = {
@@ -53504,6 +53928,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
   }
 
   export type CleaningTaskUpdateWithoutAssignedToInput = {
@@ -53517,6 +53942,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53541,6 +53967,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53563,6 +53990,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53582,6 +54010,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
@@ -53604,6 +54033,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
@@ -53625,6 +54055,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SupervisorReviewUpdateWithoutSupervisorInput = {
@@ -53751,6 +54182,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCheckinTasksNestedInput
     messages?: CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput
@@ -53769,6 +54201,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
@@ -53785,6 +54218,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type BookingCreateManyApartmentInput = {
@@ -53825,6 +54259,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: string | null
+    cleaningAccessTokenExpiresAt?: Date | string | null
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
@@ -53845,6 +54280,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
   }
 
   export type NotificationCreateManyApartmentInput = {
@@ -53925,6 +54361,7 @@ export namespace Prisma {
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
+    checkinAccessTokenExpiresAt?: Date | string | null
   }
 
   export type BookingUpdateWithoutApartmentInput = {
@@ -54017,6 +54454,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54041,6 +54479,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54063,6 +54502,7 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     cleaningAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54082,6 +54522,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
@@ -54104,6 +54545,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
@@ -54125,6 +54567,7 @@ export namespace Prisma {
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type NotificationUpdateWithoutApartmentInput = {
@@ -54335,6 +54778,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     booking?: BookingUpdateOneWithoutCheckinTaskNestedInput
     assignedTo?: UserUpdateOneWithoutCheckinTasksNestedInput
     messages?: CheckinTaskMessageUpdateManyWithoutCheckinTaskNestedInput
@@ -54353,6 +54797,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     messages?: CheckinTaskMessageUncheckedUpdateManyWithoutCheckinTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCheckinTaskNestedInput
   }
@@ -54369,6 +54814,7 @@ export namespace Prisma {
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CleaningTaskMessageCreateManyCleaningTaskInput = {
