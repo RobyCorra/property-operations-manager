@@ -25,6 +25,7 @@ import {
   SkipForward,
   CheckCircle2,
   Loader2,
+  Send,
   AlertCircle,
   Trash2,
   Upload,
@@ -545,7 +546,9 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
               <Loader2 size={16} className="animate-spin" /> Caricamento foto...
             </span>
           ) : (
-            t.completeBtn
+            <span className="flex items-center justify-center gap-2">
+              <Send size={18} /> {t.completeBtn}
+            </span>
           )}
         </button>
         <p className="text-[10px] text-slate-400 mt-3">{t.notifyHint}</p>
