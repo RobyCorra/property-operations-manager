@@ -534,7 +534,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           type="button"
           onClick={handleComplete}
           disabled={isCompletingTask || showUploadBanner}
-          className="w-full py-4 rounded-2xl text-sm font-bold bg-black text-white hover:bg-gray-800 transition-all shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 rounded-2xl text-base font-bold bg-green-600 text-white hover:bg-green-700 transition-all shadow-xl shadow-green-600/25 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isCompletingTask ? (
             <span className="flex items-center justify-center gap-2">
