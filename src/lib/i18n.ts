@@ -65,7 +65,7 @@ export const translations = {
     allDoneTitle: "Checklist completata!",
     allDoneCount: (done: number, tot: number) => `${done} / ${tot} punti verificati`,
     photosAttached: (n: number) => `📸 ${n} foto allegate`,
-    completeBtn: "✓ Intervento Completato",
+    completeBtn: "Conferma fine pulizia e invia",
     completing: "Completamento...",
     notifyHint: "Supervisor e Manager riceveranno una notifica immediata.",
 
@@ -150,7 +150,7 @@ export const translations = {
     allDoneTitle: "Checklist completed!",
     allDoneCount: (done: number, tot: number) => `${done} / ${tot} items verified`,
     photosAttached: (n: number) => `📸 ${n} photo${n === 1 ? "" : "s"} attached`,
-    completeBtn: "✓ Intervention Completed",
+    completeBtn: "Confirm and send cleaning",
     completing: "Submitting...",
     notifyHint: "Supervisor and Manager will receive an immediate notification.",
 
@@ -235,7 +235,7 @@ export const translations = {
     allDoneTitle: "¡Lista completada!",
     allDoneCount: (done: number, tot: number) => `${done} / ${tot} puntos verificados`,
     photosAttached: (n: number) => `📸 ${n} foto${n === 1 ? "" : "s"} adjuntas`,
-    completeBtn: "✓ Intervención Completada",
+    completeBtn: "Confirmar y enviar limpieza",
     completing: "Enviando...",
     notifyHint: "El supervisor y el manager recibirán una notificación inmediata.",
 
