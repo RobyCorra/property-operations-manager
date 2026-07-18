@@ -8,7 +8,7 @@ import CleanerStartButton from "@/src/components/cleaner-start-button";
 import CleanerContinueButton from "@/src/components/cleaner-continue-button";
 import CleanerLangGate from "@/src/components/cleaner-lang-gate";
 import LangSwitchPill from "@/src/components/lang-switch-pill";
-import { CleanerGreeting, CleanerSectionTitle } from "@/src/components/cleaner-dashboard-header";
+import { CleanerGreeting, CleanerSectionTitle, DetailsChatLabel } from "@/src/components/cleaner-dashboard-header";
 import CleanerStatusBadge from "@/src/components/cleaner-status-badge";
 import CleanerActionBanner from "@/src/components/cleaner-action-banner";
 import { enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
@@ -254,7 +254,7 @@ export default async function CleanerDashboardPage() {
                         href={`/dashboard/cleaner/task/${task.id}`}
                         className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-colors"
                       >
-                        💬 Dettagli &amp; Chat
+                        <DetailsChatLabel />
                       </Link>
                     </div>
                   )}

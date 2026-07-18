@@ -8,6 +8,7 @@ import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notific
 import { hapticMedium, hapticError } from "@/src/lib/haptics";
 import { startVoiceRecording, MicPermissionError, type VoiceRecorderHandle } from "@/src/lib/voice-recorder";
 import { markConversationAsRead } from "@/src/app/actions/messages";
+import { useLang } from "@/src/components/lang-context";
 
 interface Message {
   id: string;
@@ -63,6 +64,7 @@ export default function TicketConversation({
   heightClass = "h-[500px]",
   conversationType,
 }: Props) {
+  const { t } = useLang();
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -344,7 +346,7 @@ export default function TicketConversation({
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth min-h-0">
         {initialMessages.length === 0 && (
           <div className="flex justify-center items-center h-full text-gray-400 text-xs">
-            Nessun messaggio. Inizia la conversazione.
+            {t.chatEmpty}
           </div>
         )}
         {initialMessages.map((msg) => {
@@ -540,7 +542,7 @@ export default function TicketConversation({
               </button>
               {/* Text input */}
               <input autoComplete="off" type="text" name="text"
-                placeholder="Scrivi un messaggio..."
+                placeholder={t.chatPlaceholder}
                 className="flex-1 min-w-0 bg-gray-50 border-none rounded-2xl px-3 py-2 text-sm focus:ring-2 focus:ring-black transition-all outline-none" />
               {/* Mic button */}
               <button type="button" onClick={startRecording}

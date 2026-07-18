@@ -223,7 +223,7 @@ function CleaningContent({
         {showChat && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-100">
-              <p className="font-semibold text-slate-800 text-sm">💬 Chat con il Manager</p>
+              <p className="font-semibold text-slate-800 text-sm">{t.chatWithManager}</p>
             </div>
             <div className="p-3">
               <TicketConversation
