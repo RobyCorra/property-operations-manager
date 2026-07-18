@@ -422,7 +422,9 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
                 >
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-slate-800 truncate">
-                      {item.label}
+                      {lang && lang !== "it" && item.labelTranslations?.[lang]
+                        ? item.labelTranslations[lang]
+                        : item.label}
                       {item.required && <span className="text-rose-500 ml-1">*</span>}
                     </p>
                     <p className="text-[10px] text-amber-500 font-bold mt-0.5">
@@ -748,7 +750,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
                 <p className="text-[10px] text-blue-600 font-bold mt-0.5">
-                  📸 Pronta — verrà inviata in background
+                  {t.photoReadySend}
                 </p>
               </div>
               <button

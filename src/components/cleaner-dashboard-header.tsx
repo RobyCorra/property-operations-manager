@@ -22,3 +22,8 @@ export function CleanerSectionTitle() {
     </h2>
   );
 }
+
+export function DetailsChatLabel() {
+  const { t } = useLang();
+  return <>{t.detailsChat}</>;
+}
