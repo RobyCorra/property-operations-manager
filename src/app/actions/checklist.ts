@@ -216,6 +216,37 @@ export async function updateTaskChecklist(taskId: string, items: ChecklistProgre
   return { success: true };
 }
 
+/**
+ * Aggancia una singola foto alla voce di checklist indicata.
+ *
+ * A differenza di updateTaskChecklist non riscrive l'intero array: serve
+ * all'invio in background, che puo' arrivare quando la pulizia e' gia' stata
+ * inviata o approvata e non deve sovrascrivere il resto del progresso.
+ */
+export async function attachChecklistPhoto(taskId: string, itemId: string, photoUrl: string) {
+  const task = await prisma.cleaningTask.findUnique({
+    where: { id: taskId },
+    select: { checklistProgress: true },
+  });
+  if (!task || !Array.isArray(task.checklistProgress)) return { error: "Pulizia non trovata." };
+
+  const items = task.checklistProgress as ChecklistProgressItem[];
+  if (!items.some((i) => i.id === itemId)) return { error: "Voce non trovata." };
+
+  const updated = items.map((i) =>
+    i.id === itemId ? { ...i, photoUrl, photoPending: false } : i
+  );
+
+  await prisma.cleaningTask.update({
+    where: { id: taskId },
+    data: { checklistProgress: updated as unknown as object[] },
+  });
+
+  revalidatePath("/dashboard/manager");
+  revalidatePath("/dashboard/cleaner");
+  return { success: true };
+}
+
 export async function generateDefaultChecklist(apartmentId: string) {
   // Check if checklist already has items
   const count = await prisma.checklistItem.count({

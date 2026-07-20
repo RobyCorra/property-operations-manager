@@ -14,6 +14,7 @@ import CleanerActionBanner from "@/src/components/cleaner-action-banner";
 import { enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import LocationTracker from "@/src/components/location-tracker";
+import PhotoQueueUploader from "@/src/components/photo-queue-uploader";
 import { calculateLinen } from "@/src/lib/linen-calculator";
 import PushPermissionRequest from "@/src/components/push-permission";
 import ApnsRegister from "@/src/components/apns-register";
@@ -151,6 +152,7 @@ export default async function CleanerDashboardPage() {
   return (
     <CleanerLangGate>
     <LocationTracker />
+    <PhotoQueueUploader />
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-5xl mx-auto space-y-12">
 
