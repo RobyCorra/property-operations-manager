@@ -21,6 +21,9 @@ interface ChecklistItem {
   completed: boolean;
   photoUrl?: string | null;
   skipped?: boolean;
+  phase?: string;
+  answerType?: string;
+  answer?: string | null;
 }
 
 interface NextBooking {
@@ -84,7 +87,10 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
   const correctionItems = Array.isArray(task.correctionProgress) ? task.correctionProgress as CorrectionItem[] : [];
   const hasCorrections = correctionItems.length > 0;
 
-  const checklist = Array.isArray(task.checklistProgress) ? task.checklistProgress as ChecklistItem[] : [];
+  const allProgress = Array.isArray(task.checklistProgress) ? task.checklistProgress as ChecklistItem[] : [];
+  // Il questionario d'ingresso ha una sezione dedicata e non conta nel progresso pulizia.
+  const entryAnswers = allProgress.filter((i) => i.phase === "entry");
+  const checklist = allProgress.filter((i) => i.phase !== "entry");
   const completedCount = checklist.filter((i) => i.completed).length;
   const total = checklist.length;
   const progress = total > 0 ? Math.round((completedCount / total) * 100) : 0;
@@ -312,6 +318,44 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                 </span>
               </div>
             </div>
+
+            {/* Stato all'ingresso */}
+            {entryAnswers.length > 0 && (
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">🚪 Stato all'ingresso</p>
+                <div className="rounded-xl border border-gray-100 bg-white divide-y divide-gray-50 overflow-hidden">
+                  {entryAnswers.map((item) => (
+                    <div key={item.id} className="px-4 py-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="text-xs font-semibold text-gray-800 leading-snug break-words">{item.label}</p>
+                        {item.answer ? (
+                          <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest ${
+                            item.answer === "si"
+                              ? "bg-rose-100 text-rose-700"
+                              : "bg-emerald-100 text-emerald-700"
+                          }`}>
+                            {item.answer === "si" ? "Sì" : "No"}
+                          </span>
+                        ) : (
+                          <span className="shrink-0 rounded-full bg-gray-100 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                            {item.completed ? "Fatto" : "Non risposto"}
+                          </span>
+                        )}
+                      </div>
+                      {item.photoUrl && (
+                        <a href={item.photoUrl} target="_blank" rel="noreferrer" className="mt-2 inline-block group">
+                          <img
+                            src={item.photoUrl}
+                            alt={item.label}
+                            className="h-16 w-24 object-cover rounded-lg border border-gray-100 shadow-sm group-hover:scale-105 transition-transform"
+                          />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Checklist progress */}
             {total > 0 && (

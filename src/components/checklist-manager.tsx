@@ -6,6 +6,7 @@ import {
   deleteChecklistItem,
   updateChecklistItem,
   generateDefaultChecklist,
+  generateEntryQuestionnaire,
   reorderChecklistItems,
   translateAllChecklistItems,
 } from "@/src/app/actions/checklist";
@@ -18,6 +19,8 @@ interface Item {
   formula?: string | null;
   required: boolean;
   photoRequired: boolean;
+  phase?: string;
+  answerType?: string;
 }
 
 const AVAILABLE_LANGS = [
@@ -35,6 +38,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
   const [items, setItems] = useState<Item[]>(initialItems);
   const [editId, setEditId] = useState<string | null>(null);
   const [addType, setAddType] = useState<string>("static");
+  const [addPhase, setAddPhase] = useState<string>("cleaning");
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [isGenerating, startTransition] = useTransition();
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
@@ -64,9 +68,10 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
     }
   };
 
-  // Sync with server data
+  // Sync with server data — il questionario d'ingresso va sempre in cima
   useEffect(() => {
-    setItems(initialItems);
+    const phaseRank = (i: Item) => (i.phase === "entry" ? 0 : 1);
+    setItems([...initialItems].sort((a, b) => phaseRank(a) - phaseRank(b)));
   }, [initialItems]);
 
   const handleDelete = async (id: string) => {
@@ -82,6 +87,23 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
       startTransition(async () => {
         try {
           await generateDefaultChecklist(apartmentId);
+        } catch (err: any) {
+          alert(err.message || "Errore durante la generazione.");
+        }
+      });
+    }
+  };
+
+  const handleGenerateEntry = () => {
+    if (confirm("Vuoi generare il questionario d'ingresso standard (3 domande sì/no + foto stato generale)?")) {
+      startTransition(async () => {
+        try {
+          const result = await generateEntryQuestionnaire(apartmentId);
+          alert(
+            result.count === 0
+              ? "Il questionario d'ingresso è già configurato."
+              : `${result.count} domande aggiunte e tradotte in inglese e spagnolo.`
+          );
         } catch (err: any) {
           alert(err.message || "Errore durante la generazione.");
         }
@@ -121,6 +143,8 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
     setShowToast(true);
     setTimeout(() => setShowToast(false), 2000);
   };
+
+  const hasEntryItems = items.some((i) => i.phase === "entry");
 
   return (
     <div className="space-y-8 relative">
@@ -234,6 +258,21 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
             </button>
           )}
         </div>
+        {!hasEntryItems && (
+          <div className="mb-4 flex items-center justify-between gap-4 bg-violet-50 border border-violet-100 rounded-xl px-4 py-3">
+            <p className="text-xs text-violet-700">
+              Nessun questionario d'ingresso configurato. Il cleaner può segnalare lo stato dell'appartamento prima di iniziare.
+            </p>
+            <button
+              type="button"
+              disabled={isGenerating}
+              onClick={handleGenerateEntry}
+              className="shrink-0 bg-violet-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-violet-700 transition-all disabled:bg-violet-300"
+            >
+              {isGenerating ? "Generazione..." : "Genera questionario"}
+            </button>
+          </div>
+        )}
         <form action={addFormAction} className="space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
             <input 
@@ -244,6 +283,27 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
             />
             <input type="hidden" name="apartmentId" value={apartmentId} />
             
+            <select
+              name="phase"
+              value={addPhase}
+              onChange={(e) => setAddPhase(e.target.value)}
+              className="rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black bg-gray-50 text-sm font-medium"
+            >
+              <option value="cleaning">Checklist pulizia</option>
+              <option value="entry">Questionario d'ingresso</option>
+            </select>
+
+            {addPhase === "entry" && (
+              <select
+                name="answerType"
+                defaultValue="yesno"
+                className="rounded-xl border-violet-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 bg-violet-50 text-sm font-medium text-violet-700"
+              >
+                <option value="yesno">Risposta Sì / No</option>
+                <option value="check">Solo conferma</option>
+              </select>
+            )}
+
             <select 
               name="type" 
               value={addType}
@@ -302,8 +362,15 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
         </div>
         <div className="divide-y divide-gray-50">
           {items.map((item, index) => (
+            <div key={item.id}>
+            {(index === 0 || items[index - 1].phase !== item.phase) && (
+              <div className="px-4 py-2 bg-gray-50/60 border-b border-gray-100">
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  {item.phase === "entry" ? "🚪 Questionario d'ingresso" : "🧹 Checklist pulizia"}
+                </span>
+              </div>
+            )}
             <div 
-              key={item.id} 
               draggable={editId !== item.id}
               onDragStart={(e) => onDragStart(e, index)}
               onDragOver={(e) => onDragOver(e, index)}
@@ -341,6 +408,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-gray-900">{item.label}</span>
                         {item.required && <span className="text-[9px] font-black text-red-500 uppercase tracking-tighter bg-red-50 px-1.5 py-0.5 rounded border border-red-100">Obbligatorio</span>}
+                        {item.answerType === "yesno" && <span className="text-[9px] font-black text-violet-600 uppercase tracking-tighter bg-violet-50 px-1.5 py-0.5 rounded border border-violet-100">Sì / No</span>}
                         {item.photoRequired && <span className="text-[9px] font-black text-amber-600 uppercase tracking-tighter bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">📸 Foto</span>}
                         {item.type === "dynamic" && <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">Dinamico</span>}
                         {/* Translation badges */}
@@ -375,6 +443,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                 </div>
               )}
             </div>
+            </div>
           ))}
           {items.length === 0 && (
             <div className="p-12 text-center">
@@ -390,6 +459,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
 function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId: string; onCancel: () => void }) {
   const [state, formAction, isPending] = useActionState(updateChecklistItem.bind(null, item.id), null);
   const [editType, setEditType] = useState<string>(item.type);
+  const [editPhase, setEditPhase] = useState<string>(item.phase ?? "cleaning");
 
   return (
     <form action={formAction} className="space-y-3">
@@ -402,6 +472,27 @@ function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId
           className="flex-1 rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black"
         />
         
+        <select
+          name="phase"
+          value={editPhase}
+          onChange={(e) => setEditPhase(e.target.value)}
+          className="rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black bg-white"
+        >
+          <option value="cleaning">Checklist pulizia</option>
+          <option value="entry">Questionario d'ingresso</option>
+        </select>
+
+        {editPhase === "entry" && (
+          <select
+            name="answerType"
+            defaultValue={item.answerType ?? "yesno"}
+            className="rounded-lg border-violet-200 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-violet-50 text-violet-700"
+          >
+            <option value="yesno">Risposta Sì / No</option>
+            <option value="check">Solo conferma</option>
+          </select>
+        )}
+
         <select 
           name="type" 
           value={editType}

@@ -39,6 +39,9 @@ type ChecklistItemRecord = {
   required: boolean;
   photoRequired: boolean;
   formula: string | null;
+  phase?: string;
+  answerType?: string;
+  order?: number;
 };
 
 type ExistingChecklistProgressItem = Partial<ChecklistSnapshotItem> & Record<string, unknown>;
@@ -119,7 +122,16 @@ export async function computeChecklistSnapshot(db: any, apartmentId: string, tas
       bedrooms: toSafePositiveInt(apartment.bedrooms)
     };
 
-    return apartment.checklistItems.map((item: ChecklistItemRecord) => {
+    // Il questionario d'ingresso viene sempre prima delle task di pulizia.
+    const orderedItems = [...apartment.checklistItems].sort(
+      (a: ChecklistItemRecord, b: ChecklistItemRecord) => {
+        const pa = a.phase === "entry" ? 0 : 1;
+        const pb = b.phase === "entry" ? 0 : 1;
+        return pa !== pb ? pa - pb : (a.order ?? 0) - (b.order ?? 0);
+      }
+    );
+
+    return orderedItems.map((item: ChecklistItemRecord) => {
       let computedValue: number | null = null;
       if (item.type === "dynamic" && item.formula) {
         computedValue = evaluateChecklistFormula(item.formula, context);
@@ -133,6 +145,8 @@ export async function computeChecklistSnapshot(db: any, apartmentId: string, tas
         value: computedValue,
         required: item.required,
         photoRequired: item.photoRequired ?? false,
+        phase: item.phase ?? "cleaning",
+        answerType: item.answerType ?? "check",
         completed: false,
         formula: item.formula
       };
@@ -641,7 +655,8 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
 
     // Validazione checklist: tutti i punti obbligatori devono essere completati
     if (task.checklistProgress) {
-      const items = task.checklistProgress as any[];
+      // Il questionario d'ingresso è facoltativo: non blocca la chiusura.
+      const items = (task.checklistProgress as any[]).filter(i => i.phase !== "entry");
       const incompleteRequired = items.filter(i => i.required && !i.completed);
       if (incompleteRequired.length > 0) {
         throw new Error(`Impossibile completare: ${incompleteRequired.length} punti obbligatori non smarcati.`);

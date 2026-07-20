@@ -14,6 +14,9 @@ type ChecklistSnapshotItem = {
   value: number | null;
   required: boolean;
   photoRequired: boolean;
+  phase?: string;
+  answerType?: string;
+  answer?: string | null;
   completed: boolean;
 };
 
@@ -28,6 +31,9 @@ type ChecklistProgressUpdateItem = {
   formula?: string | null;
   photoUrl?: string | null;
   skipped?: boolean;
+  phase?: string;
+  answerType?: string;
+  answer?: string | null;
 };
 type DefaultChecklistItem = (typeof DEFAULT_CHECKLIST)[number];
 
@@ -60,6 +66,7 @@ async function syncPendentCleaningTasks(apartmentId: string) {
         completed: existingMatch ? !!existingMatch.completed : false,
         skipped: existingMatch ? !!existingMatch.skipped : false,
         photoUrl: existingMatch?.photoUrl ?? null,
+        answer: existingMatch?.answer ?? null,
       };
     });
 
@@ -87,6 +94,8 @@ export async function addChecklistItem(apartmentId: string, prevState: any, form
     const formula = formData.get("formula") as string;
     const required = formData.get("required") === "on";
     const photoRequired = formData.get("photoRequired") === "on";
+    const phase = formData.get("phase") === "entry" ? "entry" : "cleaning";
+    const answerType = formData.get("answerType") === "yesno" ? "yesno" : "check";
 
     if (!label || !apartmentId) {
       return { error: "L'etichetta è obbligatoria." };
@@ -106,6 +115,8 @@ export async function addChecklistItem(apartmentId: string, prevState: any, form
         formula: type === "dynamic" ? formula : null,
         required,
         photoRequired,
+        phase,
+        answerType,
         order: (lastItem?.order || 0) + 1,
       },
     });
@@ -139,6 +150,8 @@ export async function updateChecklistItem(id: string, prevState: any, formData: 
     const formula = formData.get("formula") as string;
     const required = formData.get("required") === "on";
     const photoRequired = formData.get("photoRequired") === "on";
+    const phase = formData.get("phase") === "entry" ? "entry" : "cleaning";
+    const answerType = formData.get("answerType") === "yesno" ? "yesno" : "check";
     const apartmentId = formData.get("apartmentId") as string;
 
     if (!label || !id) {
@@ -162,6 +175,8 @@ export async function updateChecklistItem(id: string, prevState: any, formData: 
         formula: type === "dynamic" ? formula : null,
         required,
         photoRequired,
+        phase,
+        answerType,
         ...(labelTranslations ? { labelTranslations } : {}),
       },
     });
@@ -311,6 +326,74 @@ export async function translateAllChecklistItems(apartmentId: string, langs: str
     console.error("Error translating checklist:", error);
     return { error: "Errore durante la traduzione." };
   }
+}
+
+/** Domande standard del questionario d'ingresso. */
+const DEFAULT_ENTRY_QUESTIONS = [
+  "Hai trovato la cucina sporca o stoviglie non lavate?",
+  "Hai trovato mobili spostati o rotti?",
+  "Ci sono danni evidenti nella casa?",
+];
+
+const GENERAL_PHOTO_QUESTION = "Vuoi allegare foto dello stato generale?";
+
+/**
+ * Crea il questionario d'ingresso standard per l'appartamento.
+ * Additivo: salta le domande già presenti.
+ */
+export async function generateEntryQuestionnaire(apartmentId: string) {
+  const existing = await prisma.checklistItem.findMany({
+    where: { apartmentId, phase: "entry" },
+    select: { label: true },
+  });
+  const existingLabels = new Set(
+    existing.map((i: { label: string }) => i.label.toLowerCase().trim())
+  );
+
+  const toCreate = [
+    ...DEFAULT_ENTRY_QUESTIONS.map((label) => ({ label, answerType: "yesno", photoRequired: true })),
+    { label: GENERAL_PHOTO_QUESTION, answerType: "check", photoRequired: false },
+  ].filter((q) => !existingLabels.has(q.label.toLowerCase().trim()));
+
+  if (toCreate.length === 0) return { count: 0 };
+
+  let order = -toCreate.length;
+  const created = [];
+  for (const q of toCreate) {
+    created.push(
+      await prisma.checklistItem.create({
+        data: {
+          apartmentId,
+          label: q.label,
+          type: "static",
+          phase: "entry",
+          answerType: q.answerType,
+          required: false,
+          photoRequired: q.photoRequired,
+          order: order++,
+        },
+      })
+    );
+  }
+
+  // Traduzione automatica (best-effort, non blocca la creazione)
+  for (const item of created) {
+    try {
+      const translations = await translateLabel(item.label, ["en", "es"]);
+      if (Object.keys(translations).length > 0) {
+        await prisma.checklistItem.update({
+          where: { id: item.id },
+          data: { labelTranslations: translations },
+        });
+      }
+    } catch (e) {
+      console.warn("Auto-translate failed (non-blocking):", e);
+    }
+  }
+
+  revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checklist`);
+  await syncPendentCleaningTasks(apartmentId);
+  return { count: created.length };
 }
 
 export async function reorderChecklistItems(apartmentId: string, orderedIds: string[]) {
