@@ -71,3 +71,14 @@ export async function getCleaningByToken(token: string) {
   if (task.cleaningAccessTokenExpiresAt && task.cleaningAccessTokenExpiresAt < new Date()) return null;
   return task;
 }
+
+/** Distingue un link scaduto da uno inesistente, per mostrare il messaggio giusto. */
+export async function getCleaningTokenStatus(token: string): Promise<"valid" | "expired" | "unknown"> {
+  const task = await prisma.cleaningTask.findUnique({
+    where: { cleaningAccessToken: token },
+    select: { cleaningAccessTokenExpiresAt: true },
+  });
+  if (!task) return "unknown";
+  if (task.cleaningAccessTokenExpiresAt && task.cleaningAccessTokenExpiresAt < new Date()) return "expired";
+  return "valid";
+}

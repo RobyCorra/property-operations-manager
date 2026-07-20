@@ -81,6 +81,17 @@ export async function getQueueForTask(taskId: string): Promise<PhotoQueueEntry[]
 }
 
 /** Rimuove una foto dalla coda dopo upload riuscito. */
+/** Tutte le foto in coda, di qualsiasi pulizia. */
+export async function getAllQueued(): Promise<PhotoQueueEntry[]> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readonly");
+    const req = tx.objectStore(STORE).getAll();
+    req.onsuccess = () => resolve(req.result as PhotoQueueEntry[]);
+    req.onerror = () => reject(req.error);
+  });
+}
+
 export async function deleteFromQueue(
   taskId: string,
   itemId: string,

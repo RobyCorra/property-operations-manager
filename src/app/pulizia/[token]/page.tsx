@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
-import { getCleaningByToken } from "@/src/app/actions/cleaning-token";
+import { getCleaningByToken, getCleaningTokenStatus } from "@/src/app/actions/cleaning-token";
+import LinkUnavailable from "@/src/components/link-unavailable";
 import PublicCleaningView from "@/src/components/public-cleaning-view";
 import { enrichCleaningTaskWithNextBooking } from "@/src/app/actions/operational";
 import { calculateLinen } from "@/src/lib/linen-calculator";
@@ -21,7 +21,10 @@ export default async function PublicCleaningPage({
   const { token } = await params;
   const task = await getCleaningByToken(token);
 
-  if (!task) return notFound();
+  if (!task) {
+    const status = await getCleaningTokenStatus(token);
+    return <LinkUnavailable reason={status === "expired" ? "expired" : "unknown"} />;
+  }
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
   const dateLabel = formatDateFull(task.date as Date);

@@ -11,7 +11,6 @@ import {
   saveToQueue,
   getQueueForTask,
   deleteFromQueue,
-  clearQueueForTask,
 } from "@/src/lib/photo-queue-db";
 import {
   saveChecklistProgress,
@@ -402,7 +401,8 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
     setIsCompletingTask(true);
     try {
-      await clearQueueForTask(taskId);
+      // La coda NON viene svuotata: eventuali foto rimaste partono da sole
+      // appena torna il segnale, anche a pulizia già inviata o approvata.
       await updateCleaningStatus(taskId, "AWAITING_REVIEW");
       hapticSuccess();
     } catch (err: unknown) {

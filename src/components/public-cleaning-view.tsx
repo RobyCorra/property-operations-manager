@@ -5,6 +5,7 @@ import LangGate from "@/src/components/lang-gate";
 import LangSwitchPill from "@/src/components/lang-switch-pill";
 import { useLang } from "@/src/components/lang-context";
 import ChecklistInteractive from "@/src/components/checklist-interactive";
+import PhotoQueueUploader from "@/src/components/photo-queue-uploader";
 import PublicStatusButton from "@/src/components/public-status-button";
 import PublicStatusPoller from "@/src/components/public-status-poller";
 import LinenSection from "@/src/components/linen-section";
@@ -125,6 +126,7 @@ function CleaningContent({
 
   return (
     <div className="min-h-screen bg-slate-100 font-sans">
+      <PhotoQueueUploader />
 
       {/* ── HEADER ── */}
       <header

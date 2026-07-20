@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import PublicCleaningView from "@/src/components/public-cleaning-view";
 import { getCleaningTaskMessages, markCleaningMessagesReadByWorker } from "@/src/app/actions/operational";
 import { ChevronLeft } from "lucide-react";
+import PhotoQueueUploader from "@/src/components/photo-queue-uploader";
 
 function formatDateFull(date: Date): string {
   const d = new Date(date);
@@ -102,6 +103,7 @@ export default async function CleanerTaskPage({
 
   return (
     <div className="relative">
+      <PhotoQueueUploader />
       {/* Back button fisso */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-indigo-900/90 backdrop-blur-sm px-4 py-3 flex items-center">
         <Link
