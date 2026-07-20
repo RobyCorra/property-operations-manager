@@ -47,6 +47,8 @@ interface ChecklistItem {
   phase?: string;
   answerType?: string;
   answer?: string | null;
+  /** Foto scattata ma non caricata: rete assente al momento dell'invio. */
+  photoPending?: boolean;
 }
 
 /** Foto compressa in attesa di upload: tenuta in memoria + IndexedDB. */
@@ -85,6 +87,12 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const [photoRequiredError, setPhotoRequiredError] = useState(false);
   // Risposta selezionata sul questionario d'ingresso (prima di confermare il passo)
   const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
+  // Diagnostica connessione: quanti giri di invio sono falliti di fila e da
+  // quanto la coda non si svuota. Serve a dare consigli progressivi.
+  const [failedRounds, setFailedRounds] = useState(0);
+  const [queuedSince, setQueuedSince]   = useState<number | null>(null);
+  const [slowNetwork, setSlowNetwork]   = useState(false);
+  const [sendBlocked, setSendBlocked]   = useState(0);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   // ── Coda foto pendenti ─────────────────────────────────────────────────────
@@ -147,8 +155,11 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         return next;
       });
       await deleteFromQueue(taskId, itemId);
+      setFailedRounds(0);
+      setSendBlocked(0);
     } catch {
       // Lascia in coda, riprova al prossimo giro
+      setFailedRounds((n) => n + 1);
     } finally {
       setUploadingIds((prev) => {
         const next = new Set(prev);
@@ -171,6 +182,21 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     const interval = setInterval(drain, UPLOAD_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [uploadOne]);
+
+  // ── Soglia "connessione lenta": coda non vuota da oltre 15 secondi ───────
+  useEffect(() => {
+    if (pendingPhotos.size === 0) {
+      setQueuedSince(null);
+      setSlowNetwork(false);
+      return;
+    }
+    if (queuedSince === null) {
+      setQueuedSince(Date.now());
+      return;
+    }
+    const timer = setTimeout(() => setSlowNetwork(true), 15_000);
+    return () => clearTimeout(timer);
+  }, [pendingPhotos.size, queuedSince]);
 
   // ── Auto-sync spunte al ritorno online ────────────────────────────────────
   const isOnlineRef = useRef(isOnline);
@@ -377,8 +403,9 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       const ids = Array.from(pendingRef.current.keys());
       setIsCompletingTask(true);
       await Promise.allSettled(ids.map((id) => uploadOne(id)));
-      // Se dopo il tentativo ci sono ancora pending, blocca
+      // Se dopo il tentativo ci sono ancora pending, spiega e offri l'uscita
       if (pendingRef.current.size > 0) {
+        setSendBlocked(pendingRef.current.size);
         setIsCompletingTask(false);
         return;
       }
@@ -391,6 +418,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         i.completed &&
         (i.answerType !== "yesno" || i.answer === "si") &&
         !i.photoUrl &&
+        !i.photoPending &&
         !pendingRef.current.has(i.id)
     );
     if (missingPhotos.length > 0) {
@@ -410,6 +438,33 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       toast.error((err as Error).message || "Errore durante il completamento.");
       setIsCompletingTask(false);
     }
+  };
+
+  /**
+   * Ultima risorsa: invia marcando le foto rimaste come "non caricate".
+   * Le foto restano in coda e partono da sole quando torna il segnale;
+   * il manager vede la segnalazione sulla scheda.
+   */
+  const handleCompleteWithoutPhotos = async () => {
+    setIsCompletingTask(true);
+    const stuck = new Set(pendingRef.current.keys());
+    const updated = itemsRef.current.map((i) =>
+      stuck.has(i.id) ? { ...i, photoPending: true } : i
+    );
+    setItems(updated);
+    try {
+      await updateTaskChecklist(taskId, updated);
+      await updateCleaningStatus(taskId, "AWAITING_REVIEW");
+      hapticSuccess();
+    } catch (err: unknown) {
+      hapticError();
+      toast.error((err as Error).message || "Errore durante il completamento.");
+      setIsCompletingTask(false);
+    }
+  };
+
+  const retryAllNow = () => {
+    for (const id of pendingRef.current.keys()) uploadOne(id);
   };
 
   // ── Valori derivati ──────────────────────────────────────────────────────
@@ -518,6 +573,35 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
               className="flex items-center gap-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-full disabled:opacity-50 hover:bg-blue-700 transition-colors"
             >
               <Upload size={12} /> Riprova ora
+            </button>
+          </div>
+        )}
+
+        {/* Invio bloccato: la rete non ha portato le foto */}
+        {sendBlocked > 0 && (
+          <div className="mb-5 rounded-2xl bg-rose-50 border border-rose-200 px-4 py-4 text-left">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle size={18} className="text-rose-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-bold text-rose-800">{t.netBlockedTitle(sendBlocked)}</p>
+                <p className="text-[11px] text-rose-700 leading-relaxed mt-1">{t.netBlockedText}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={retryAllNow}
+              disabled={uploadingCount > 0}
+              className="mt-3 w-full flex items-center justify-center gap-2 rounded-full bg-rose-600 py-3 text-[10px] font-black uppercase tracking-widest text-white disabled:opacity-50 hover:bg-rose-700 transition-colors"
+            >
+              <Upload size={12} /> {t.netRetryNow}
+            </button>
+            <button
+              type="button"
+              onClick={handleCompleteWithoutPhotos}
+              disabled={isCompletingTask}
+              className="mt-2 w-full rounded-full border border-rose-300 bg-white py-3 text-[10px] font-black uppercase tracking-widest text-rose-700 disabled:opacity-50 hover:bg-rose-50 transition-colors"
+            >
+              {t.netSendAnyway}
             </button>
           </div>
         )}
@@ -730,10 +814,12 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           </span>
           <div className="flex items-center gap-2">
             {pendingCount > 0 && (
-              <span className="text-[9px] font-black text-blue-500 flex items-center gap-1">
+              <span className={`text-[9px] font-black flex items-center gap-1 ${slowNetwork ? "text-amber-600" : "text-blue-500"}`}>
                 {uploadingCount > 0
                   ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} foto</>
-                  : <>📸 {pendingCount} in coda</>}
+                  : slowNetwork
+                    ? <><WifiOff size={9} /> {t.netSlow(pendingCount)}</>
+                    : <>📸 {pendingCount} in coda</>}
               </span>
             )}
             <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
@@ -751,6 +837,26 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         <div className="mb-3 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 animate-in fade-in slide-in-from-top-2 duration-300">
           <CheckCircle2 size={13} />
           <span className="truncate">{t.prevCompleted(justCompleted!)}</span>
+        </div>
+      )}
+
+      {failedRounds >= 2 && pendingCount > 0 && (
+        <div className="mb-3 rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3">
+          <div className="flex items-start gap-2.5">
+            <WifiOff size={16} className="text-amber-600 shrink-0 mt-0.5" />
+            <div className="text-left">
+              <p className="text-xs font-bold text-amber-800">{t.netStuckTitle}</p>
+              <p className="text-[11px] text-amber-700 leading-relaxed mt-0.5">{t.netStuckText}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={retryAllNow}
+            disabled={uploadingCount > 0}
+            className="mt-2.5 w-full flex items-center justify-center gap-2 rounded-full bg-amber-600 py-2.5 text-[10px] font-black uppercase tracking-widest text-white disabled:opacity-50 hover:bg-amber-700 transition-colors"
+          >
+            <Upload size={12} /> {t.netRetryNow}
+          </button>
         </div>
       )}
 

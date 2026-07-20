@@ -662,7 +662,9 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
         throw new Error(`Impossibile completare: ${incompleteRequired.length} punti obbligatori non smarcati.`);
       }
       // Le voci con foto obbligatoria devono avere la foto salvata
-      const missingPhotos = items.filter(i => i.photoRequired && i.completed && !i.photoUrl);
+      // photoPending = foto scattata ma non caricata per rete assente: viene
+      // segnalata al manager, non blocca l'invio.
+      const missingPhotos = items.filter(i => i.photoRequired && i.completed && !i.photoUrl && !i.photoPending);
       if (missingPhotos.length > 0) {
         const labels = missingPhotos.map(i => i.label).filter(Boolean).join(", ");
         throw new Error(`Impossibile completare: foto obbligatoria mancante per ${missingPhotos.length} punti${labels ? ` (${labels})` : ""}.`);
