@@ -41,6 +41,9 @@ type CleanerTaskChecklistItem = {
   formula?: string | null;
   photoUrl?: string | null;
   skipped?: boolean;
+  phase?: string;
+  answerType?: string;
+  answer?: string | null;
 };
 
 type CleanerDashboardTask = {
@@ -138,6 +141,7 @@ export default async function CleanerDashboardPage() {
         photoUrl:  old?.photoUrl  ?? null,
         skipped:   old?.skipped   ?? false,
         value:     old?.value     ?? newItem.value,
+        answer:    old?.answer    ?? null,
       };
     });
 
