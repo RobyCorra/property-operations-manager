@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateCleaningStatus } from "@/src/app/actions/operational";
 import { useLang } from "@/src/components/lang-context";
+import { useToast } from "@/src/components/toast-provider";
 
 interface Props {
   taskId: string;
@@ -28,6 +29,7 @@ function isTodayRome(isoDate: string): boolean {
 }
 
 export default function CleanerStartButton({ taskId, taskDate }: Props) {
+  const toast = useToast();
   const { t, lang } = useLang();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -60,7 +62,7 @@ export default function CleanerStartButton({ taskId, taskDate }: Props) {
             await updateCleaningStatus(taskId, "IN_PROGRESS");
             router.push(`/dashboard/cleaner/task/${taskId}`);
           } catch (err: unknown) {
-            alert((err as Error).message || "Errore durante l'avvio.");
+            toast.error((err as Error).message || "Errore durante l'avvio.");
           }
         })
       }

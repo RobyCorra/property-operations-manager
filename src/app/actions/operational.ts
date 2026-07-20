@@ -351,7 +351,7 @@ export async function createCleaningTask(prevState: any, formData: FormData) {
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath("/dashboard/cleaner");
-  redirect("/dashboard/manager/cleanings");
+  redirect("/dashboard/manager/cleanings?saved=cleaning");
 }
 
 export async function updateCleaningTask(id: string, prevState: any, formData: FormData) {
@@ -412,7 +412,7 @@ export async function updateCleaningTask(id: string, prevState: any, formData: F
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath("/dashboard/cleaner");
-  redirect(redirectTo ?? "/dashboard/manager/cleanings");
+  redirect(redirectTo ? `${redirectTo}${redirectTo.includes("?") ? "&" : "?"}saved=cleaning` : "/dashboard/manager/cleanings?saved=cleaning");
 }
 
 export async function recalculateCleaningChecklist(taskId: string) {
@@ -544,7 +544,7 @@ export async function createMaintenanceTicket(prevState: any, formData: FormData
 
   revalidatePath("/dashboard/manager/maintenance");
   revalidatePath("/dashboard/maintenance");
-  redirect("/dashboard/manager/maintenance");
+  redirect("/dashboard/manager/maintenance?saved=maintenance");
 }
 
 export async function updateMaintenanceTicket(id: string, prevState: any, formData: FormData) {
@@ -596,7 +596,7 @@ export async function updateMaintenanceTicket(id: string, prevState: any, formDa
 
   revalidatePath("/dashboard/manager/maintenance");
   revalidatePath("/dashboard/maintenance");
-  redirect("/dashboard/manager/maintenance");
+  redirect("/dashboard/manager/maintenance?saved=maintenance");
 }
 
 export async function deleteMaintenanceTicket(id: string) {

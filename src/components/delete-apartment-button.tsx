@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { deleteApartment } from "@/src/app/actions/apartment";
 import { Trash2 } from "./icons";
+import { useToast } from "@/src/components/toast-provider";
 
 type DeleteApartmentButtonProps = {
   id: string;
 };
 
 export default function DeleteApartmentButton({ id }: DeleteApartmentButtonProps) {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
@@ -23,7 +25,7 @@ export default function DeleteApartmentButton({ id }: DeleteApartmentButtonProps
     const result = await deleteApartment(formData);
 
     if (result?.success === false) {
-      alert(result.error);
+      toast.error(result.error);
       setLoading(false);
       return;
     }
@@ -48,7 +50,7 @@ export default function DeleteApartmentButton({ id }: DeleteApartmentButtonProps
 
       const finalResult = await deleteApartment(confirmedFormData);
       if (finalResult?.success === false) {
-        alert(finalResult.error);
+        toast.error(finalResult.error);
         setLoading(false);
       }
     }

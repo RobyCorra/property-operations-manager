@@ -31,6 +31,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useLang } from "@/src/components/lang-context";
+import { useToast } from "@/src/components/toast-provider";
 
 interface ChecklistItem {
   id: string;
@@ -65,6 +66,7 @@ interface ChecklistInteractiveProps {
 const UPLOAD_INTERVAL_MS = 15_000;
 
 export default function ChecklistInteractive({ taskId, initialItems }: ChecklistInteractiveProps) {
+  const toast = useToast();
   const { t, lang } = useLang();
   const isOnline = useOnlineStatus();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
@@ -393,7 +395,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         !pendingRef.current.has(i.id)
     );
     if (missingPhotos.length > 0) {
-      alert(`Foto obbligatoria mancante per: ${missingPhotos.map((i) => i.label).join(", ")}. Riprova o contatta il supporto.`);
+      toast.error(`Foto obbligatoria mancante per: ${missingPhotos.map((i) => i.label).join(", ")}. Riprova o contatta il supporto.`);
       setIsCompletingTask(false);
       return;
     }
@@ -405,7 +407,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       hapticSuccess();
     } catch (err: unknown) {
       hapticError();
-      alert((err as Error).message || "Errore durante il completamento.");
+      toast.error((err as Error).message || "Errore durante il completamento.");
       setIsCompletingTask(false);
     }
   };

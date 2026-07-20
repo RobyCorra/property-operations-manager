@@ -6,6 +6,7 @@ import { getApartmentSchedule } from "@/src/app/actions/operational";
 import { formatRomeDateInputValue, formatRomeTimeInputValue } from "@/src/lib/rome-datetime";
 import MaintenanceTaskEditor from "@/src/components/maintenance-task-editor";
 import type { MaintenanceTask } from "@/src/components/maintenance-task-editor";
+import { useToast } from "@/src/components/toast-provider";
 
 interface ApartmentSchedule {
   bookings: Booking[];
@@ -81,6 +82,7 @@ type TicketJson = {
 };
 
 export default function OperationalForm({ type, apartments, personnel, action, initialData, hasSofaBed = false, redirectTo }: OperationalFormProps) {
+  const toast = useToast();
   const isEditing = !!initialData;
   // If editing, we use the action bound with the ID. 
   // If not, we use the provided action directly (which matches the (prevState, formData) signature).
@@ -174,13 +176,13 @@ export default function OperationalForm({ type, apartments, personnel, action, i
 
       if (!start || !end) {
         e.preventDefault();
-        alert("Inserisci data e ora di inizio e fine dell’intervento");
+        toast.error("Inserisci data e ora di inizio e fine dell’intervento");
         return;
       }
 
       if (new Date(end) <= new Date(start)) {
         e.preventDefault();
-        alert("La data di fine non può essere precedente o uguale alla data di inizio");
+        toast.error("La data di fine non può essere precedente o uguale alla data di inizio");
         return;
       }
     }

@@ -144,7 +144,7 @@ export async function createBooking(prevState: any, formData: FormData) {
 
   revalidatePath("/dashboard/manager/bookings");
   revalidatePath("/dashboard/manager");
-  redirect("/dashboard/manager/bookings");
+  redirect("/dashboard/manager/bookings?saved=booking");
 }
 
 export async function updateBooking(id: string, prevState: any, formData: FormData) {
@@ -244,7 +244,7 @@ export async function updateBooking(id: string, prevState: any, formData: FormDa
   revalidatePath("/dashboard/manager/bookings");
   revalidatePath("/dashboard/manager/cleanings");
   revalidatePath("/dashboard/manager");
-  redirect("/dashboard/manager/bookings");
+  redirect("/dashboard/manager/bookings?saved=booking");
 }
 
 export async function deleteBooking(id: string) {

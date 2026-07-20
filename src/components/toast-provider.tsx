@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, Suspense, useCallback, useContext, useState } from "react";
 import { Check, AlertCircle, Info } from "lucide-react";
+import ToastOnRedirect from "@/src/components/toast-on-redirect";
 
 type ToastKind = "success" | "error" | "info";
 
@@ -57,6 +58,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
+      <Suspense fallback={null}>
+        <ToastOnRedirect />
+      </Suspense>
       <div
         className="fixed inset-x-0 bottom-0 z-[100] flex flex-col items-center gap-2 px-4 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pointer-events-none"
         role="status"

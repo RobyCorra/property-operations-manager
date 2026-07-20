@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { deleteBooking } from "@/src/app/actions/booking";
 import { Trash2 } from "./icons";
+import { useToast } from "@/src/components/toast-provider";
 
 type DeleteBookingButtonProps = {
   bookingId: string;
 };
 
 export default function DeleteBookingButton({ bookingId }: DeleteBookingButtonProps) {
+  const toast = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -18,7 +20,7 @@ export default function DeleteBookingButton({ bookingId }: DeleteBookingButtonPr
         await deleteBooking(bookingId);
       } catch (error) {
         console.error("Failed to delete booking:", error);
-        alert("Errore durante l'eliminazione della prenotazione.");
+        toast.error("Errore durante l'eliminazione della prenotazione.");
         setIsDeleting(false);
       }
     }

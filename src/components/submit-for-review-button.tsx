@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/src/components/toast-provider";
 
 interface Props {
   id: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function SubmitForReviewButton({ id, action, label = "Invia per revisione", className }: Props) {
+  const toast = useToast();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -22,7 +24,7 @@ export default function SubmitForReviewButton({ id, action, label = "Invia per r
         await action(id);
         router.refresh();
       } catch (err: unknown) {
-        alert(err instanceof Error ? err.message : "Errore durante l'invio per revisione.");
+        toast.error(err instanceof Error ? err.message : "Errore durante l'invio per revisione.");
       }
     });
   };
