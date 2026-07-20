@@ -12,6 +12,7 @@ import {
   clearQueueForTask,
 } from "@/src/lib/photo-queue-db";
 import { Camera, ChevronRight, ChevronLeft, CheckCircle2, Loader2, AlertCircle, Trash2, Upload } from "lucide-react";
+import { useToast } from "@/src/components/toast-provider";
 
 interface Props {
   ticketId:     string;
@@ -27,6 +28,7 @@ interface PendingPhoto {
 const UPLOAD_INTERVAL_MS = 15_000;
 
 export default function MaintenanceChecklistInteractive({ ticketId, initialTasks }: Props) {
+  const toast = useToast();
   const [tasks, setTasks] = useState<MaintenanceTaskItem[]>(initialTasks);
 
   const firstUnprocessed = initialTasks.findIndex((t) => !t.completed);
@@ -224,7 +226,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
       await completeMaintenancePublic(ticketId);
       window.location.reload();
     } catch (err: unknown) {
-      alert((err as Error).message || "Errore durante il completamento.");
+      toast.error((err as Error).message || "Errore durante il completamento.");
       setIsCompleting(false);
     }
   };

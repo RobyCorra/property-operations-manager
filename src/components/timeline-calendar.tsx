@@ -36,6 +36,7 @@ import {
 } from "./icons";
 import { Users, Home } from "lucide-react";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import { useToast } from "@/src/components/toast-provider";
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 type JsonObject = { [key: string]: JsonValue };
@@ -197,6 +198,7 @@ function diffLocalDays(start: Date, end: Date) {
 }
 
 export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false }: TimelineCalendarProps) {
+  const toast = useToast();
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [selectedEvent, setSelectedEvent] = useState<{ type: 'booking' | 'cleaning' | 'maintenance', data: any } | null>(null);
@@ -544,7 +546,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             setShowDeleteConfirm(false);
             setShowCheckInConfirm(false);
         } catch (e: any) {
-            alert(e.message || "Si è verificato un errore durante l'operazione.");
+            toast.error(e.message || "Si è verificato un errore durante l'operazione.");
         }
     });
   };
@@ -567,7 +569,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             setShowDeleteConfirm(false);
             setShowCheckInConfirm(false);
         } catch (e: any) {
-            alert(e.message || "Impossibile eliminare l'evento.");
+            toast.error(e.message || "Impossibile eliminare l'evento.");
         }
     });
   };

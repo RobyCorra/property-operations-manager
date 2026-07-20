@@ -31,6 +31,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useLang } from "@/src/components/lang-context";
+import { useToast } from "@/src/components/toast-provider";
 
 interface ChecklistItem {
   id: string;
@@ -44,6 +45,9 @@ interface ChecklistItem {
   formula?: string | null;
   photoUrl?: string | null;
   skipped?: boolean;
+  phase?: string;
+  answerType?: string;
+  answer?: string | null;
 }
 
 /** Foto compressa in attesa di upload: tenuta in memoria + IndexedDB. */
@@ -62,6 +66,7 @@ interface ChecklistInteractiveProps {
 const UPLOAD_INTERVAL_MS = 15_000;
 
 export default function ChecklistInteractive({ taskId, initialItems }: ChecklistInteractiveProps) {
+  const toast = useToast();
   const { t, lang } = useLang();
   const isOnline = useOnlineStatus();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
@@ -79,6 +84,8 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const [uploadError, setUploadError]     = useState<string | null>(null);
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [photoRequiredError, setPhotoRequiredError] = useState(false);
+  // Risposta selezionata sul questionario d'ingresso (prima di confermare il passo)
+  const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   // ── Coda foto pendenti ─────────────────────────────────────────────────────
@@ -240,6 +247,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
   const goToItem = (idx: number) => {
     clearPhoto();
+    setPendingAnswer(null);
     setJustCompleted(null);
     setCurrentIndex(idx);
   };
@@ -264,7 +272,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   };
 
   // ── Avanza passo ─────────────────────────────────────────────────────────
-  const advance = async (completed: boolean) => {
+  const advance = async (completed: boolean, answer?: string | null) => {
     const currentItem = items[currentIndex];
 
     // Foto obbligatoria: serve o photoFile nuovo, o foto già caricata, o già in coda
@@ -273,7 +281,11 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       !!currentItem.photoUrl ||
       pendingRef.current.has(currentItem.id);
 
-    if (completed && currentItem.photoRequired && !hasPhoto) {
+    const photoIsMandatory =
+      currentItem.photoRequired &&
+      (currentItem.answerType !== "yesno" || answer === "si");
+
+    if (completed && photoIsMandatory && !hasPhoto) {
       setPhotoRequiredError(true);
       setTimeout(() => setPhotoRequiredError(false), 2500);
       hapticError();
@@ -315,7 +327,13 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     // Aggiorna item: completed, photoUrl rimane null finché l'upload non termina
     const updatedItems = items.map((item, idx) =>
       idx === currentIndex
-        ? { ...item, completed, skipped: !completed, photoUrl: item.photoUrl ?? null }
+        ? {
+            ...item,
+            completed,
+            skipped: !completed,
+            photoUrl: item.photoUrl ?? null,
+            answer: answer ?? item.answer ?? null,
+          }
         : item
     );
 
@@ -344,6 +362,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         : completedTranslatedLabel;
     setJustCompleted(completed ? completedItemLabel : null);
     clearPhoto();
+    setPendingAnswer(null);
 
     const nextIdx = updatedItems.findIndex(
       (item, idx) => idx > currentIndex && !item.completed && !item.skipped
@@ -368,10 +387,15 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
     // Verifica che tutte le foto obbligatorie siano salvate nel DB
     const missingPhotos = itemsRef.current.filter(
-      (i) => i.photoRequired && i.completed && !i.photoUrl && !pendingRef.current.has(i.id)
+      (i) =>
+        i.photoRequired &&
+        i.completed &&
+        (i.answerType !== "yesno" || i.answer === "si") &&
+        !i.photoUrl &&
+        !pendingRef.current.has(i.id)
     );
     if (missingPhotos.length > 0) {
-      alert(`Foto obbligatoria mancante per: ${missingPhotos.map((i) => i.label).join(", ")}. Riprova o contatta il supporto.`);
+      toast.error(`Foto obbligatoria mancante per: ${missingPhotos.map((i) => i.label).join(", ")}. Riprova o contatta il supporto.`);
       setIsCompletingTask(false);
       return;
     }
@@ -383,7 +407,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       hapticSuccess();
     } catch (err: unknown) {
       hapticError();
-      alert((err as Error).message || "Errore durante il completamento.");
+      toast.error((err as Error).message || "Errore durante il completamento.");
       setIsCompletingTask(false);
     }
   };
@@ -392,8 +416,11 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const currentItem       = items[currentIndex];
   const completedCount    = items.filter((i) => i.completed).length;
   const allDone           = currentIndex >= items.length;
-  const allItemsCompleted = items.every((i) => i.completed);
-  const incompleteItems   = items.map((item, idx) => ({ ...item, idx })).filter((i) => !i.completed);
+  // Il questionario d'ingresso è facoltativo: non blocca la chiusura dell'intervento.
+  const allItemsCompleted = items.every((i) => i.completed || i.phase === "entry");
+  const incompleteItems   = items
+    .map((item, idx) => ({ ...item, idx }))
+    .filter((i) => !i.completed && i.phase !== "entry");
   const pendingCount      = pendingPhotos.size;
   const uploadingCount    = uploadingIds.size;
 
@@ -570,6 +597,15 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       ? `${translatedLabel}: ${currentItem.value ?? "N/A"}`
       : translatedLabel;
 
+  const isEntry   = currentItem.phase === "entry";
+  const isYesNo   = currentItem.answerType === "yesno";
+  // Sul questionario d'ingresso la foto è richiesta solo dopo un "Sì"
+  const showPhotoBox = isEntry
+    ? (!isYesNo || pendingAnswer === "si")
+    : currentItem.photoRequired;
+  const photoIsRequiredNow =
+    currentItem.photoRequired && (!isYesNo || pendingAnswer === "si");
+
   // ── Item già completato ───────────────────────────────────────────────────
   if (currentItem.completed) {
     const photoUrl    = getPhotoUrl(currentItem);
@@ -614,7 +650,14 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         <div className="rounded-2xl bg-green-50 border border-green-200 p-4 shadow-sm mb-4">
           <div className="flex items-center gap-3">
             <CheckCircle2 size={20} className="text-green-600 shrink-0" />
-            <span className="flex-1 text-base font-bold text-green-800 leading-snug">{itemLabel}</span>
+            <span className="flex-1 text-base font-bold text-green-800 leading-snug">
+              {itemLabel}
+              {currentItem.answer && (
+                <span className="block text-xs font-bold mt-1 text-green-700">
+                  {currentItem.answer === "si" ? t.entryAnswerYes : t.entryAnswerNo}
+                </span>
+              )}
+            </span>
             <button
               type="button"
               onClick={() => resetItem(currentIndex)}
@@ -718,19 +761,60 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         </div>
       )}
 
+      {isEntry && (
+        <div className="mb-3 rounded-2xl bg-violet-50 border border-violet-100 px-4 py-3">
+          <p className="text-sm font-bold text-violet-800">{t.entryTitle}</p>
+          <p className="text-[11px] text-violet-600">{t.entrySub}</p>
+          <p className="text-[10px] text-violet-400 mt-0.5">{t.entryOptional}</p>
+        </div>
+      )}
+
       <div className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm mb-4 text-center">
         <h3 className="text-lg font-bold text-slate-900 leading-snug">{itemLabel}</h3>
       </div>
 
+      {isYesNo && (
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setPendingAnswer("si")}
+            disabled={isSaving}
+            className={`rounded-2xl border-2 py-4 text-sm font-bold transition-all ${
+              pendingAnswer === "si"
+                ? "bg-rose-50 border-rose-400 text-rose-700"
+                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+            }`}
+          >
+            {t.entryYes}
+          </button>
+          <button
+            type="button"
+            onClick={() => setPendingAnswer("no")}
+            disabled={isSaving}
+            className={`rounded-2xl border-2 py-4 text-sm font-bold transition-all ${
+              pendingAnswer === "no"
+                ? "bg-green-50 border-green-400 text-green-700"
+                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+            }`}
+          >
+            {t.entryNo}
+          </button>
+        </div>
+      )}
+
       {/* Sezione foto */}
-      {currentItem.photoRequired && (
+      {showPhotoBox && (
         <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-4">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               {t.photoLabel}
             </p>
-            <span className="text-[9px] font-black uppercase tracking-wide text-white bg-rose-500 rounded-full px-2 py-0.5">
-              {t.required}
+            <span className={`text-[9px] font-black uppercase tracking-wide rounded-full px-2 py-0.5 ${
+              photoIsRequiredNow ? "text-white bg-rose-500" : "text-slate-500 bg-slate-200"
+            }`}>
+              {photoIsRequiredNow
+                ? (isEntry ? t.entryPhotoOnYes : t.required)
+                : t.entryPhotoOptional}
             </span>
           </div>
 
@@ -765,7 +849,11 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
             <button
               type="button"
               onClick={() => photoInputRef.current?.click()}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-400 border-2 border-rose-400 py-4 text-sm font-bold text-white hover:bg-slate-500 transition-colors"
+              className={`w-full flex items-center justify-center gap-2 rounded-xl py-4 text-sm font-bold text-white transition-colors ${
+                photoIsRequiredNow
+                  ? "bg-slate-400 border-2 border-rose-400 hover:bg-slate-500"
+                  : "bg-slate-400 border-2 border-slate-300 hover:bg-slate-500"
+              }`}
             >
               <Camera size={18} />
               {t.takePhoto}
@@ -807,8 +895,8 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
         <button
           type="button"
-          onClick={() => advance(true)}
-          disabled={isSaving || isCompressing}
+          onClick={() => advance(true, pendingAnswer)}
+          disabled={isSaving || isCompressing || (isYesNo && !pendingAnswer)}
           className="flex-1 flex items-center justify-center gap-2 rounded-full bg-green-600 py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-green-700 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-green-600/20"
         >
           {isCompressing ? (
@@ -816,7 +904,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           ) : isSaving ? (
             <><Loader2 size={13} className="animate-spin" /> {t.saving}</>
           ) : (
-            <><CheckCircle2 size={13} /> {t.done} <ChevronRight size={13} /></>
+            <><CheckCircle2 size={13} /> {isEntry ? t.entryContinue : t.done} <ChevronRight size={13} /></>
           )}
         </button>
       </div>

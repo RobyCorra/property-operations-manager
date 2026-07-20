@@ -4,12 +4,14 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { RefreshCw } from "lucide-react";
 import { recalculateCleaningChecklist } from "@/src/app/actions/operational";
+import { useToast } from "@/src/components/toast-provider";
 
 type RecalculateCleaningChecklistButtonProps = {
   taskId: string;
 };
 
 export default function RecalculateCleaningChecklistButton({ taskId }: RecalculateCleaningChecklistButtonProps) {
+  const toast = useToast();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -17,10 +19,11 @@ export default function RecalculateCleaningChecklistButton({ taskId }: Recalcula
     startTransition(async () => {
       try {
         await recalculateCleaningChecklist(taskId);
+        toast.success("Checklist ricalcolata");
         router.refresh();
       } catch (error) {
         const message = error instanceof Error ? error.message : "Errore durante il ricalcolo della checklist.";
-        alert(message);
+        toast.error(message);
       }
     });
   };

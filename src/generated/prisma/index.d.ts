@@ -8476,6 +8476,8 @@ export namespace Prisma {
     label: string | null
     required: boolean | null
     photoRequired: boolean | null
+    phase: string | null
+    answerType: string | null
     order: number | null
     createdAt: Date | null
     formula: string | null
@@ -8488,6 +8490,8 @@ export namespace Prisma {
     label: string | null
     required: boolean | null
     photoRequired: boolean | null
+    phase: string | null
+    answerType: string | null
     order: number | null
     createdAt: Date | null
     formula: string | null
@@ -8501,6 +8505,8 @@ export namespace Prisma {
     labelTranslations: number
     required: number
     photoRequired: number
+    phase: number
+    answerType: number
     order: number
     createdAt: number
     formula: number
@@ -8523,6 +8529,8 @@ export namespace Prisma {
     label?: true
     required?: true
     photoRequired?: true
+    phase?: true
+    answerType?: true
     order?: true
     createdAt?: true
     formula?: true
@@ -8535,6 +8543,8 @@ export namespace Prisma {
     label?: true
     required?: true
     photoRequired?: true
+    phase?: true
+    answerType?: true
     order?: true
     createdAt?: true
     formula?: true
@@ -8548,6 +8558,8 @@ export namespace Prisma {
     labelTranslations?: true
     required?: true
     photoRequired?: true
+    phase?: true
+    answerType?: true
     order?: true
     createdAt?: true
     formula?: true
@@ -8648,6 +8660,8 @@ export namespace Prisma {
     labelTranslations: JsonValue | null
     required: boolean
     photoRequired: boolean
+    phase: string
+    answerType: string
     order: number
     createdAt: Date
     formula: string | null
@@ -8680,6 +8694,8 @@ export namespace Prisma {
     labelTranslations?: boolean
     required?: boolean
     photoRequired?: boolean
+    phase?: boolean
+    answerType?: boolean
     order?: boolean
     createdAt?: boolean
     formula?: boolean
@@ -8694,6 +8710,8 @@ export namespace Prisma {
     labelTranslations?: boolean
     required?: boolean
     photoRequired?: boolean
+    phase?: boolean
+    answerType?: boolean
     order?: boolean
     createdAt?: boolean
     formula?: boolean
@@ -8708,6 +8726,8 @@ export namespace Prisma {
     labelTranslations?: boolean
     required?: boolean
     photoRequired?: boolean
+    phase?: boolean
+    answerType?: boolean
     order?: boolean
     createdAt?: boolean
     formula?: boolean
@@ -8722,13 +8742,15 @@ export namespace Prisma {
     labelTranslations?: boolean
     required?: boolean
     photoRequired?: boolean
+    phase?: boolean
+    answerType?: boolean
     order?: boolean
     createdAt?: boolean
     formula?: boolean
     type?: boolean
   }
 
-  export type ChecklistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "label" | "labelTranslations" | "required" | "photoRequired" | "order" | "createdAt" | "formula" | "type", ExtArgs["result"]["checklistItem"]>
+  export type ChecklistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "label" | "labelTranslations" | "required" | "photoRequired" | "phase" | "answerType" | "order" | "createdAt" | "formula" | "type", ExtArgs["result"]["checklistItem"]>
   export type ChecklistItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
   }
@@ -8751,6 +8773,8 @@ export namespace Prisma {
       labelTranslations: Prisma.JsonValue | null
       required: boolean
       photoRequired: boolean
+      phase: string
+      answerType: string
       order: number
       createdAt: Date
       formula: string | null
@@ -9185,6 +9209,8 @@ export namespace Prisma {
     readonly labelTranslations: FieldRef<"ChecklistItem", 'Json'>
     readonly required: FieldRef<"ChecklistItem", 'Boolean'>
     readonly photoRequired: FieldRef<"ChecklistItem", 'Boolean'>
+    readonly phase: FieldRef<"ChecklistItem", 'String'>
+    readonly answerType: FieldRef<"ChecklistItem", 'String'>
     readonly order: FieldRef<"ChecklistItem", 'Int'>
     readonly createdAt: FieldRef<"ChecklistItem", 'DateTime'>
     readonly formula: FieldRef<"ChecklistItem", 'String'>
@@ -36228,6 +36254,8 @@ export namespace Prisma {
     labelTranslations: 'labelTranslations',
     required: 'required',
     photoRequired: 'photoRequired',
+    phase: 'phase',
+    answerType: 'answerType',
     order: 'order',
     createdAt: 'createdAt',
     formula: 'formula',
@@ -37213,6 +37241,8 @@ export namespace Prisma {
     labelTranslations?: JsonNullableFilter<"ChecklistItem">
     required?: BoolFilter<"ChecklistItem"> | boolean
     photoRequired?: BoolFilter<"ChecklistItem"> | boolean
+    phase?: StringFilter<"ChecklistItem"> | string
+    answerType?: StringFilter<"ChecklistItem"> | string
     order?: IntFilter<"ChecklistItem"> | number
     createdAt?: DateTimeFilter<"ChecklistItem"> | Date | string
     formula?: StringNullableFilter<"ChecklistItem"> | string | null
@@ -37227,6 +37257,8 @@ export namespace Prisma {
     labelTranslations?: SortOrderInput | SortOrder
     required?: SortOrder
     photoRequired?: SortOrder
+    phase?: SortOrder
+    answerType?: SortOrder
     order?: SortOrder
     createdAt?: SortOrder
     formula?: SortOrderInput | SortOrder
@@ -37244,6 +37276,8 @@ export namespace Prisma {
     labelTranslations?: JsonNullableFilter<"ChecklistItem">
     required?: BoolFilter<"ChecklistItem"> | boolean
     photoRequired?: BoolFilter<"ChecklistItem"> | boolean
+    phase?: StringFilter<"ChecklistItem"> | string
+    answerType?: StringFilter<"ChecklistItem"> | string
     order?: IntFilter<"ChecklistItem"> | number
     createdAt?: DateTimeFilter<"ChecklistItem"> | Date | string
     formula?: StringNullableFilter<"ChecklistItem"> | string | null
@@ -37258,6 +37292,8 @@ export namespace Prisma {
     labelTranslations?: SortOrderInput | SortOrder
     required?: SortOrder
     photoRequired?: SortOrder
+    phase?: SortOrder
+    answerType?: SortOrder
     order?: SortOrder
     createdAt?: SortOrder
     formula?: SortOrderInput | SortOrder
@@ -37279,6 +37315,8 @@ export namespace Prisma {
     labelTranslations?: JsonNullableWithAggregatesFilter<"ChecklistItem">
     required?: BoolWithAggregatesFilter<"ChecklistItem"> | boolean
     photoRequired?: BoolWithAggregatesFilter<"ChecklistItem"> | boolean
+    phase?: StringWithAggregatesFilter<"ChecklistItem"> | string
+    answerType?: StringWithAggregatesFilter<"ChecklistItem"> | string
     order?: IntWithAggregatesFilter<"ChecklistItem"> | number
     createdAt?: DateTimeWithAggregatesFilter<"ChecklistItem"> | Date | string
     formula?: StringNullableWithAggregatesFilter<"ChecklistItem"> | string | null
@@ -39648,6 +39686,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: boolean
     photoRequired?: boolean
+    phase?: string
+    answerType?: string
     order?: number
     createdAt?: Date | string
     formula?: string | null
@@ -39662,6 +39702,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: boolean
     photoRequired?: boolean
+    phase?: string
+    answerType?: string
     order?: number
     createdAt?: Date | string
     formula?: string | null
@@ -39674,6 +39716,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: BoolFieldUpdateOperationsInput | boolean
     photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    phase?: StringFieldUpdateOperationsInput | string
+    answerType?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     formula?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39688,6 +39732,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: BoolFieldUpdateOperationsInput | boolean
     photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    phase?: StringFieldUpdateOperationsInput | string
+    answerType?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     formula?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39701,6 +39747,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: boolean
     photoRequired?: boolean
+    phase?: string
+    answerType?: string
     order?: number
     createdAt?: Date | string
     formula?: string | null
@@ -39713,6 +39761,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: BoolFieldUpdateOperationsInput | boolean
     photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    phase?: StringFieldUpdateOperationsInput | string
+    answerType?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     formula?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39726,6 +39776,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: BoolFieldUpdateOperationsInput | boolean
     photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    phase?: StringFieldUpdateOperationsInput | string
+    answerType?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     formula?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42302,6 +42354,8 @@ export namespace Prisma {
     labelTranslations?: SortOrder
     required?: SortOrder
     photoRequired?: SortOrder
+    phase?: SortOrder
+    answerType?: SortOrder
     order?: SortOrder
     createdAt?: SortOrder
     formula?: SortOrder
@@ -42318,6 +42372,8 @@ export namespace Prisma {
     label?: SortOrder
     required?: SortOrder
     photoRequired?: SortOrder
+    phase?: SortOrder
+    answerType?: SortOrder
     order?: SortOrder
     createdAt?: SortOrder
     formula?: SortOrder
@@ -42330,6 +42386,8 @@ export namespace Prisma {
     label?: SortOrder
     required?: SortOrder
     photoRequired?: SortOrder
+    phase?: SortOrder
+    answerType?: SortOrder
     order?: SortOrder
     createdAt?: SortOrder
     formula?: SortOrder
@@ -47160,6 +47218,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: boolean
     photoRequired?: boolean
+    phase?: string
+    answerType?: string
     order?: number
     createdAt?: Date | string
     formula?: string | null
@@ -47172,6 +47232,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: boolean
     photoRequired?: boolean
+    phase?: string
+    answerType?: string
     order?: number
     createdAt?: Date | string
     formula?: string | null
@@ -47676,6 +47738,8 @@ export namespace Prisma {
     labelTranslations?: JsonNullableFilter<"ChecklistItem">
     required?: BoolFilter<"ChecklistItem"> | boolean
     photoRequired?: BoolFilter<"ChecklistItem"> | boolean
+    phase?: StringFilter<"ChecklistItem"> | string
+    answerType?: StringFilter<"ChecklistItem"> | string
     order?: IntFilter<"ChecklistItem"> | number
     createdAt?: DateTimeFilter<"ChecklistItem"> | Date | string
     formula?: StringNullableFilter<"ChecklistItem"> | string | null
@@ -54240,6 +54304,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: boolean
     photoRequired?: boolean
+    phase?: string
+    answerType?: string
     order?: number
     createdAt?: Date | string
     formula?: string | null
@@ -54413,6 +54479,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: BoolFieldUpdateOperationsInput | boolean
     photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    phase?: StringFieldUpdateOperationsInput | string
+    answerType?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     formula?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54425,6 +54493,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: BoolFieldUpdateOperationsInput | boolean
     photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    phase?: StringFieldUpdateOperationsInput | string
+    answerType?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     formula?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54437,6 +54507,8 @@ export namespace Prisma {
     labelTranslations?: NullableJsonNullValueInput | InputJsonValue
     required?: BoolFieldUpdateOperationsInput | boolean
     photoRequired?: BoolFieldUpdateOperationsInput | boolean
+    phase?: StringFieldUpdateOperationsInput | string
+    answerType?: StringFieldUpdateOperationsInput | string
     order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     formula?: NullableStringFieldUpdateOperationsInput | string | null

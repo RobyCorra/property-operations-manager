@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, useEffect } from "react";
+import { Check } from "lucide-react";
+import { useToast } from "@/src/components/toast-provider";
 import {
   addCheckinChecklistItem,
   updateCheckinChecklistItem,
@@ -122,7 +124,19 @@ function EditRow({ item, apartmentId, onDone }: { item: Item; apartmentId: strin
     updateCheckinChecklistItem.bind(null, item.id),
     null
   );
-  if (state?.success) onDone();
+  const toast = useToast();
+  const [justSaved, setJustSaved] = useState(false);
+
+  // Conferma visiva prima di chiudere il form (evita l'update in fase di render)
+  useEffect(() => {
+    if (state?.success) {
+      setJustSaved(true);
+      toast.success("Modifica salvata");
+      const timer = setTimeout(onDone, 900);
+      return () => clearTimeout(timer);
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state]);
 
   return (
     <form action={action} className="bg-white rounded-xl border border-blue-200 px-4 py-3 space-y-3">
@@ -146,9 +160,11 @@ function EditRow({ item, apartmentId, onDone }: { item: Item; apartmentId: strin
         <button
           type="submit"
           disabled={pending}
-          className="rounded-full bg-black px-5 py-2 text-xs font-black uppercase tracking-widest text-white disabled:opacity-50"
+          className={`flex items-center gap-1.5 rounded-full px-5 py-2 text-xs font-black uppercase tracking-widest text-white transition-colors disabled:opacity-50 ${
+            justSaved ? "bg-emerald-600" : "bg-black"
+          }`}
         >
-          {pending ? "..." : "Salva"}
+          {justSaved ? <><Check size={13} strokeWidth={3} /> Salvato</> : pending ? "..." : "Salva"}
         </button>
         <button
           type="button"

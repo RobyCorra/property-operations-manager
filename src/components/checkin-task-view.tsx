@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
 import { updateCheckinChecklist, updateCheckinStatus, createCheckinTaskMessage } from "@/src/app/actions/checkin";
 import TicketConversation from "@/src/components/ticket-conversation";
+import { useToast } from "@/src/components/toast-provider";
 
 interface ChecklistItem {
   id: string;
@@ -49,6 +50,7 @@ export default function CheckinTaskView({
   completeRedirect = "/dashboard/checkin",
   isCompleted,
 }: Props) {
+  const toast = useToast();
   const showCompletedFooter = isCompleted ?? readOnly;
   const router = useRouter();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
@@ -93,7 +95,7 @@ export default function CheckinTaskView({
       setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, photoUrl, completed: true } : i)));
       persist(item.id, { photoUrl, completed: true });
     } catch (err: unknown) {
-      alert((err as Error).message || "Errore durante il caricamento della foto.");
+      toast.error((err as Error).message || "Errore durante il caricamento della foto.");
     } finally {
       setUploadingId(null);
     }
@@ -111,7 +113,7 @@ export default function CheckinTaskView({
         if (completeRedirect) router.push(completeRedirect);
         else router.refresh();
       } catch (err: unknown) {
-        alert((err as Error).message || "Errore durante il completamento.");
+        toast.error((err as Error).message || "Errore durante il completamento.");
       }
     });
   };

@@ -56,7 +56,7 @@ export async function createUser(prevState: any, formData: FormData) {
   }
 
   revalidatePath("/dashboard/manager/users");
-  redirect("/dashboard/manager/users");
+  redirect("/dashboard/manager/users?saved=user");
 }
 
 export async function updateUser(prevState: any, formData: FormData) {
@@ -117,7 +117,7 @@ export async function updateUser(prevState: any, formData: FormData) {
   });
 
   revalidatePath("/dashboard/manager/users");
-  redirect(`/dashboard/manager/users`);
+  redirect(`/dashboard/manager/users?saved=user`);
 }
 
 export async function deleteUser(formData: FormData) {

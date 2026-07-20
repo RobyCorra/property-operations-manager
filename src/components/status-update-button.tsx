@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/src/components/toast-provider";
 
 interface StatusButtonProps {
   id: string;
@@ -13,6 +14,7 @@ interface StatusButtonProps {
 }
 
 export default function StatusUpdateButton({ id, nextStatus, label, className, disabled, action }: StatusButtonProps) {
+  const toast = useToast();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -22,9 +24,10 @@ export default function StatusUpdateButton({ id, nextStatus, label, className, d
     startTransition(async () => {
       try {
         await action(id, nextStatus);
+        toast.success("Stato aggiornato");
         router.refresh();
       } catch (err: any) {
-        alert(err.message || "Errore durante l'aggiornamento.");
+        toast.error(err.message || "Errore durante l'aggiornamento.");
       }
     });
   };

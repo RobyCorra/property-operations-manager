@@ -1,14 +1,17 @@
 "use client";
 
 import { useActionState, useState, useTransition, useEffect } from "react";
+import { Check } from "lucide-react";
 import {
   addChecklistItem,
   deleteChecklistItem,
   updateChecklistItem,
   generateDefaultChecklist,
+  generateEntryQuestionnaire,
   reorderChecklistItems,
   translateAllChecklistItems,
 } from "@/src/app/actions/checklist";
+import { useToast } from "@/src/components/toast-provider";
 
 interface Item {
   id: string;
@@ -18,6 +21,8 @@ interface Item {
   formula?: string | null;
   required: boolean;
   photoRequired: boolean;
+  phase?: string;
+  answerType?: string;
 }
 
 const AVAILABLE_LANGS = [
@@ -31,14 +36,15 @@ interface ChecklistManagerProps {
 }
 
 export default function ChecklistManager({ apartmentId, initialItems }: ChecklistManagerProps) {
+  const toast = useToast();
   const [addState, addFormAction, isAdding] = useActionState(addChecklistItem.bind(null, apartmentId), null);
   const [items, setItems] = useState<Item[]>(initialItems);
   const [editId, setEditId] = useState<string | null>(null);
   const [addType, setAddType] = useState<string>("static");
+  const [addPhase, setAddPhase] = useState<string>("cleaning");
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [isGenerating, startTransition] = useTransition();
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
-  const [showToast, setShowToast] = useState(false);
 
   // Translation state
   const [selectedLangs, setSelectedLangs] = useState<string[]>(["en", "es"]);
@@ -58,21 +64,35 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
     const result = await translateAllChecklistItems(apartmentId, selectedLangs);
     setIsTranslating(false);
     setTranslateResult(result);
+    if (result.error) toast.error(result.error);
+    else toast.success(`${result.count} punti tradotti`);
     // Auto-hide success message after 4s
     if (result.count !== undefined) {
       setTimeout(() => setTranslateResult(null), 4000);
     }
   };
 
-  // Sync with server data
+  // Riscontro sull'aggiunta di un punto di controllo
   useEffect(() => {
-    setItems(initialItems);
+    if (addState?.success) toast.success("Punto di controllo aggiunto");
+    else if (addState?.error) toast.error(addState.error);
+  }, [addState]);
+
+  // Sync with server data — il questionario d'ingresso va sempre in cima
+  useEffect(() => {
+    const phaseRank = (i: Item) => (i.phase === "entry" ? 0 : 1);
+    setItems([...initialItems].sort((a, b) => phaseRank(a) - phaseRank(b)));
   }, [initialItems]);
 
   const handleDelete = async (id: string) => {
     if (confirm("Eliminare questo punto di controllo?")) {
       setIsDeletingId(id);
-      await deleteChecklistItem(id, apartmentId);
+      try {
+        await deleteChecklistItem(id, apartmentId);
+        toast.success("Punto di controllo eliminato");
+      } catch {
+        toast.error("Errore durante l'eliminazione");
+      }
       setIsDeletingId(null);
     }
   };
@@ -82,8 +102,26 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
       startTransition(async () => {
         try {
           await generateDefaultChecklist(apartmentId);
+          toast.success("Checklist standard generata");
         } catch (err: any) {
-          alert(err.message || "Errore durante la generazione.");
+          toast.error(err.message || "Errore durante la generazione");
+        }
+      });
+    }
+  };
+
+  const handleGenerateEntry = () => {
+    if (confirm("Vuoi generare il questionario d'ingresso standard (3 domande sì/no + foto stato generale)?")) {
+      startTransition(async () => {
+        try {
+          const result = await generateEntryQuestionnaire(apartmentId);
+          toast.success(
+            result.count === 0
+              ? "Questionario già configurato"
+              : `${result.count} domande aggiunte e tradotte`
+          );
+        } catch (err: any) {
+          toast.error(err.message || "Errore durante la generazione");
         }
       });
     }
@@ -115,22 +153,15 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
     setDraggedItemIndex(null);
     
     // Save new order
-    await reorderChecklistItems(apartmentId, items.map(i => i.id));
-    
-    // Feedback toast
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+    const result = await reorderChecklistItems(apartmentId, items.map(i => i.id));
+    if (result?.error) toast.error(result.error);
+    else toast.success("Ordine aggiornato");
   };
+
+  const hasEntryItems = items.some((i) => i.phase === "entry");
 
   return (
     <div className="space-y-8 relative">
-      {/* Toast Feedback */}
-      {showToast && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
-           ✅ Ordine aggiornato
-        </div>
-      )}
-
       {/* Empty State / Generate Button */}
       {initialItems.length === 0 && (
         <section className="bg-emerald-50 p-8 rounded-3xl border border-emerald-100 text-center animate-in fade-in slide-in-from-top-4 duration-500">
@@ -225,7 +256,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                 if (confirm("Vuoi aggiungere i nuovi punti di controllo standard mancanti?")) {
                   const { syncChecklistWithDefaults } = await import("@/src/app/actions/checklist");
                   const result = await syncChecklistWithDefaults(apartmentId);
-                  alert(`${result.count} nuovi elementi aggiunti.`);
+                  toast.success(`${result.count} nuovi elementi aggiunti`);
                 }
               }}
               className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-widest bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 transition-all"
@@ -234,37 +265,73 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
             </button>
           )}
         </div>
+        {!hasEntryItems && (
+          <div className="mb-4 flex items-center justify-between gap-4 bg-violet-50 border border-violet-100 rounded-xl px-4 py-3">
+            <p className="text-xs text-violet-700">
+              Nessun questionario d'ingresso configurato. Il cleaner può segnalare lo stato dell'appartamento prima di iniziare.
+            </p>
+            <button
+              type="button"
+              disabled={isGenerating}
+              onClick={handleGenerateEntry}
+              className="shrink-0 bg-violet-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-violet-700 transition-all disabled:bg-violet-300"
+            >
+              {isGenerating ? "Generazione..." : "Genera questionario"}
+            </button>
+          </div>
+        )}
         <form action={addFormAction} className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <input 
               required
               name="label"
               placeholder="Es. Sostituzione asciugamani"
-              className="flex-1 rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black transition-all"
+              className="flex-1 min-w-[220px] rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black transition-all"
             />
             <input type="hidden" name="apartmentId" value={apartmentId} />
             
+            <select
+              name="phase"
+              value={addPhase}
+              onChange={(e) => setAddPhase(e.target.value)}
+              className="shrink-0 rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black bg-gray-50 text-sm font-medium"
+            >
+              <option value="cleaning">Checklist pulizia</option>
+              <option value="entry">Questionario d'ingresso</option>
+            </select>
+
+            {addPhase === "entry" && (
+              <select
+                name="answerType"
+                defaultValue="yesno"
+                className="shrink-0 rounded-xl border-violet-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 bg-violet-50 text-sm font-medium text-violet-700"
+              >
+                <option value="yesno">Risposta Sì / No</option>
+                <option value="check">Solo conferma</option>
+              </select>
+            )}
+
             <select 
               name="type" 
               value={addType}
               onChange={(e) => setAddType(e.target.value)}
-              className="rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black bg-gray-50 text-sm font-medium"
+              className="shrink-0 rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black bg-gray-50 text-sm font-medium"
             >
               <option value="static">Statico</option>
               <option value="dynamic">Dinamico</option>
             </select>
 
-            <label className="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100">
+            <label className="shrink-0 whitespace-nowrap flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100">
               <input type="checkbox" name="required" defaultChecked className="w-4 h-4 accent-black" />
               <span className="text-sm font-medium text-gray-700">Obbligatorio</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer bg-amber-50 px-4 py-2.5 rounded-xl border border-amber-100">
+            <label className="shrink-0 whitespace-nowrap flex items-center gap-2 cursor-pointer bg-amber-50 px-4 py-2.5 rounded-xl border border-amber-100">
               <input type="checkbox" name="photoRequired" className="w-4 h-4 accent-amber-500" />
               <span className="text-sm font-medium text-amber-700">📸 Foto obbligatoria</span>
             </label>
             <button
               disabled={isAdding}
-              className="bg-black text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-all disabled:bg-gray-300"
+              className="shrink-0 ml-auto bg-black text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-all disabled:bg-gray-300"
             >
               {isAdding ? "Aggiunta..." : "Aggiungi"}
             </button>
@@ -302,8 +369,15 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
         </div>
         <div className="divide-y divide-gray-50">
           {items.map((item, index) => (
+            <div key={item.id}>
+            {(index === 0 || items[index - 1].phase !== item.phase) && (
+              <div className="px-4 py-2 bg-gray-50/60 border-b border-gray-100">
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  {item.phase === "entry" ? "🚪 Questionario d'ingresso" : "🧹 Checklist pulizia"}
+                </span>
+              </div>
+            )}
             <div 
-              key={item.id} 
               draggable={editId !== item.id}
               onDragStart={(e) => onDragStart(e, index)}
               onDragOver={(e) => onDragOver(e, index)}
@@ -341,6 +415,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-gray-900">{item.label}</span>
                         {item.required && <span className="text-[9px] font-black text-red-500 uppercase tracking-tighter bg-red-50 px-1.5 py-0.5 rounded border border-red-100">Obbligatorio</span>}
+                        {item.answerType === "yesno" && <span className="text-[9px] font-black text-violet-600 uppercase tracking-tighter bg-violet-50 px-1.5 py-0.5 rounded border border-violet-100">Sì / No</span>}
                         {item.photoRequired && <span className="text-[9px] font-black text-amber-600 uppercase tracking-tighter bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">📸 Foto</span>}
                         {item.type === "dynamic" && <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">Dinamico</span>}
                         {/* Translation badges */}
@@ -375,6 +450,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                 </div>
               )}
             </div>
+            </div>
           ))}
           {items.length === 0 && (
             <div className="p-12 text-center">
@@ -389,46 +465,89 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
 
 function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId: string; onCancel: () => void }) {
   const [state, formAction, isPending] = useActionState(updateChecklistItem.bind(null, item.id), null);
+  const toast = useToast();
+  const [justSaved, setJustSaved] = useState(false);
   const [editType, setEditType] = useState<string>(item.type);
+  const [editPhase, setEditPhase] = useState<string>(item.phase ?? "cleaning");
+
+  // Conferma visiva: spunta sul pulsante, poi il form si chiude
+  useEffect(() => {
+    if (state?.success) {
+      setJustSaved(true);
+      toast.success("Modifica salvata");
+      const timer = setTimeout(onCancel, 900);
+      return () => clearTimeout(timer);
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state]);
 
   return (
     <form action={formAction} className="space-y-3">
-      <div className="flex flex-col md:flex-row gap-3 items-center">
+      <div className="flex flex-wrap items-center gap-3">
         <input type="hidden" name="apartmentId" value={apartmentId} />
         <input 
           required
           name="label"
           defaultValue={item.label}
-          className="flex-1 rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black"
+          className="flex-1 min-w-[200px] rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black"
         />
         
+        <select
+          name="phase"
+          value={editPhase}
+          onChange={(e) => setEditPhase(e.target.value)}
+          className="shrink-0 rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black bg-white"
+        >
+          <option value="cleaning">Checklist pulizia</option>
+          <option value="entry">Questionario d'ingresso</option>
+        </select>
+
+        {editPhase === "entry" && (
+          <select
+            name="answerType"
+            defaultValue={item.answerType ?? "yesno"}
+            className="shrink-0 rounded-lg border-violet-200 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-violet-50 text-violet-700"
+          >
+            <option value="yesno">Risposta Sì / No</option>
+            <option value="check">Solo conferma</option>
+          </select>
+        )}
+
         <select 
           name="type" 
           value={editType}
           onChange={(e) => setEditType(e.target.value)}
-          className="rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black bg-white"
+          className="shrink-0 rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black bg-white"
         >
           <option value="static">Statico</option>
           <option value="dynamic">Dinamico</option>
         </select>
 
-        <label className="flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-gray-200">
+        <label className="shrink-0 whitespace-nowrap flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-gray-200">
           <input type="checkbox" name="required" defaultChecked={item.required} className="w-3.5 h-3.5 accent-black" />
           <span className="text-xs font-medium text-gray-600">Obbligatorio</span>
         </label>
 
-        <label className="flex items-center gap-2 cursor-pointer bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
+        <label className="shrink-0 whitespace-nowrap flex items-center gap-2 cursor-pointer bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
           <input type="checkbox" name="photoRequired" defaultChecked={item.photoRequired} className="w-3.5 h-3.5 accent-amber-500" />
           <span className="text-xs font-medium text-amber-700">📸 Foto</span>
         </label>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 ml-auto shrink-0">
           <button 
             type="submit"
             disabled={isPending}
-            className="bg-black text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 disabled:bg-gray-300"
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-white transition-colors ${
+              justSaved ? "bg-emerald-600" : "bg-black hover:bg-gray-800 disabled:bg-gray-300"
+            }`}
           >
-            {isPending ? "Salvataggio..." : "Salva"}
+            {justSaved ? (
+              <><Check size={13} strokeWidth={3} /> Salvato</>
+            ) : isPending ? (
+              "Salvataggio..."
+            ) : (
+              "Salva"
+            )}
           </button>
           <button 
             type="button"

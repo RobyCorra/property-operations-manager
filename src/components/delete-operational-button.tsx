@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { deleteCleaningTask, deleteMaintenanceTicket } from "@/src/app/actions/operational";
 import { Trash2 } from "./icons";
+import { useToast } from "@/src/components/toast-provider";
 
 type DeleteOperationalButtonProps = {
   id: string;
@@ -10,6 +11,7 @@ type DeleteOperationalButtonProps = {
 };
 
 export default function DeleteOperationalButton({ id, type }: DeleteOperationalButtonProps) {
+  const toast = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -24,7 +26,7 @@ export default function DeleteOperationalButton({ id, type }: DeleteOperationalB
         }
       } catch (error) {
         console.error("Failed to delete operational record:", error);
-        alert("Errore durante l'eliminazione.");
+        toast.error("Errore durante l'eliminazione.");
         setIsDeleting(false);
       }
     }

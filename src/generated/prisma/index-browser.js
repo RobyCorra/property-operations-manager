@@ -199,6 +199,8 @@ exports.Prisma.ChecklistItemScalarFieldEnum = {
   labelTranslations: 'labelTranslations',
   required: 'required',
   photoRequired: 'photoRequired',
+  phase: 'phase',
+  answerType: 'answerType',
   order: 'order',
   createdAt: 'createdAt',
   formula: 'formula',

@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateCheckinStatus } from "@/src/app/actions/checkin";
+import { useToast } from "@/src/components/toast-provider";
 
 interface Props {
   taskId: string;
@@ -28,6 +29,7 @@ function dateLabel(isoDate: string): string {
 }
 
 export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked = false, startRedirect }: Props) {
+  const toast = useToast();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -78,7 +80,7 @@ export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked =
             if (startRedirect === null) router.refresh();
             else router.push(startRedirect ?? `/dashboard/checkin/task/${taskId}`);
           } catch (err: unknown) {
-            alert((err as Error).message || "Errore durante l'avvio.");
+            toast.error((err as Error).message || "Errore durante l'avvio.");
           }
         })
       }

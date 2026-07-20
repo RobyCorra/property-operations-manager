@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import PWARegister from "@/src/components/pwa-register";
+import { ToastProvider } from "@/src/components/toast-provider";
 
 export const metadata: Metadata = {
   title: "Property Operations Manager",
@@ -36,7 +37,7 @@ export default function RootLayout({
     <html lang="it" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <PWARegister />
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );
