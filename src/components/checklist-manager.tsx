@@ -274,12 +274,12 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
           </div>
         )}
         <form action={addFormAction} className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <input 
               required
               name="label"
               placeholder="Es. Sostituzione asciugamani"
-              className="flex-1 rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black transition-all"
+              className="flex-1 min-w-[220px] rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black transition-all"
             />
             <input type="hidden" name="apartmentId" value={apartmentId} />
             
@@ -287,7 +287,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
               name="phase"
               value={addPhase}
               onChange={(e) => setAddPhase(e.target.value)}
-              className="rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black bg-gray-50 text-sm font-medium"
+              className="shrink-0 rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black bg-gray-50 text-sm font-medium"
             >
               <option value="cleaning">Checklist pulizia</option>
               <option value="entry">Questionario d'ingresso</option>
@@ -297,7 +297,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
               <select
                 name="answerType"
                 defaultValue="yesno"
-                className="rounded-xl border-violet-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 bg-violet-50 text-sm font-medium text-violet-700"
+                className="shrink-0 rounded-xl border-violet-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 bg-violet-50 text-sm font-medium text-violet-700"
               >
                 <option value="yesno">Risposta Sì / No</option>
                 <option value="check">Solo conferma</option>
@@ -308,23 +308,23 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
               name="type" 
               value={addType}
               onChange={(e) => setAddType(e.target.value)}
-              className="rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black bg-gray-50 text-sm font-medium"
+              className="shrink-0 rounded-xl border-gray-200 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black bg-gray-50 text-sm font-medium"
             >
               <option value="static">Statico</option>
               <option value="dynamic">Dinamico</option>
             </select>
 
-            <label className="flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100">
+            <label className="shrink-0 whitespace-nowrap flex items-center gap-2 cursor-pointer bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-100">
               <input type="checkbox" name="required" defaultChecked className="w-4 h-4 accent-black" />
               <span className="text-sm font-medium text-gray-700">Obbligatorio</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer bg-amber-50 px-4 py-2.5 rounded-xl border border-amber-100">
+            <label className="shrink-0 whitespace-nowrap flex items-center gap-2 cursor-pointer bg-amber-50 px-4 py-2.5 rounded-xl border border-amber-100">
               <input type="checkbox" name="photoRequired" className="w-4 h-4 accent-amber-500" />
               <span className="text-sm font-medium text-amber-700">📸 Foto obbligatoria</span>
             </label>
             <button
               disabled={isAdding}
-              className="bg-black text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-all disabled:bg-gray-300"
+              className="shrink-0 ml-auto bg-black text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-gray-800 transition-all disabled:bg-gray-300"
             >
               {isAdding ? "Aggiunta..." : "Aggiungi"}
             </button>
@@ -463,20 +463,20 @@ function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId
 
   return (
     <form action={formAction} className="space-y-3">
-      <div className="flex flex-col md:flex-row gap-3 items-center">
+      <div className="flex flex-wrap items-center gap-3">
         <input type="hidden" name="apartmentId" value={apartmentId} />
         <input 
           required
           name="label"
           defaultValue={item.label}
-          className="flex-1 rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black"
+          className="flex-1 min-w-[200px] rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black"
         />
         
         <select
           name="phase"
           value={editPhase}
           onChange={(e) => setEditPhase(e.target.value)}
-          className="rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black bg-white"
+          className="shrink-0 rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black bg-white"
         >
           <option value="cleaning">Checklist pulizia</option>
           <option value="entry">Questionario d'ingresso</option>
@@ -486,7 +486,7 @@ function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId
           <select
             name="answerType"
             defaultValue={item.answerType ?? "yesno"}
-            className="rounded-lg border-violet-200 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-violet-50 text-violet-700"
+            className="shrink-0 rounded-lg border-violet-200 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-violet-500 bg-violet-50 text-violet-700"
           >
             <option value="yesno">Risposta Sì / No</option>
             <option value="check">Solo conferma</option>
@@ -497,23 +497,23 @@ function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId
           name="type" 
           value={editType}
           onChange={(e) => setEditType(e.target.value)}
-          className="rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black bg-white"
+          className="shrink-0 rounded-lg border-gray-300 border px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-black bg-white"
         >
           <option value="static">Statico</option>
           <option value="dynamic">Dinamico</option>
         </select>
 
-        <label className="flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-gray-200">
+        <label className="shrink-0 whitespace-nowrap flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-gray-200">
           <input type="checkbox" name="required" defaultChecked={item.required} className="w-3.5 h-3.5 accent-black" />
           <span className="text-xs font-medium text-gray-600">Obbligatorio</span>
         </label>
 
-        <label className="flex items-center gap-2 cursor-pointer bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
+        <label className="shrink-0 whitespace-nowrap flex items-center gap-2 cursor-pointer bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
           <input type="checkbox" name="photoRequired" defaultChecked={item.photoRequired} className="w-3.5 h-3.5 accent-amber-500" />
           <span className="text-xs font-medium text-amber-700">📸 Foto</span>
         </label>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 ml-auto shrink-0">
           <button 
             type="submit"
             disabled={isPending}
