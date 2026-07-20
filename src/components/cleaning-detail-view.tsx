@@ -24,6 +24,7 @@ interface ChecklistItem {
   phase?: string;
   answerType?: string;
   answer?: string | null;
+  photoPending?: boolean;
 }
 
 interface NextBooking {
@@ -95,6 +96,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
   const total = checklist.length;
   const progress = total > 0 ? Math.round((completedCount / total) * 100) : 0;
   const photosCount = checklist.filter((i) => i.photoUrl).length;
+  const pendingPhotosCount = allProgress.filter((i) => i.photoPending && !i.photoUrl).length;
   const sc = statusConfig[status] ?? statusConfig.PENDING;
 
   const handleStatusUpdate = (nextStatus: string) => {
@@ -319,6 +321,19 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               </div>
             </div>
 
+            {/* Foto segnalate come non caricate dal cleaner */}
+            {pendingPhotosCount > 0 && (
+              <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
+                <p className="text-xs font-bold text-amber-800">
+                  📸 {pendingPhotosCount} {pendingPhotosCount === 1 ? "foto non caricata" : "foto non caricate"}
+                </p>
+                <p className="text-[11px] text-amber-700 leading-relaxed mt-0.5">
+                  Il cleaner le ha scattate ma la rete non le ha inviate. Arrivano da sole
+                  quando riapre l'app sotto copertura.
+                </p>
+              </div>
+            )}
+
             {/* Stato all'ingresso */}
             {entryAnswers.length > 0 && (
               <div>
@@ -424,6 +439,10 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                                 className="h-16 w-24 object-cover rounded-lg border border-gray-100 shadow-sm group-hover:scale-105 transition-transform"
                               />
                             </a>
+                          ) : item.photoPending ? (
+                            <p className="text-[10px] font-bold text-amber-600 mt-0.5">
+                              📸 foto non caricata — rete assente
+                            </p>
                           ) : item.completed ? (
                             <p className="text-[10px] text-gray-400 mt-0.5">nessuna foto</p>
                           ) : item.skipped ? (
