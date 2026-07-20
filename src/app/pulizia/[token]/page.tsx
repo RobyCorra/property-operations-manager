@@ -42,25 +42,35 @@ export default async function PublicCleaningPage({
 
   const checklistItems = (() => {
     const master = task.apartment.checklistItems;
-    const progress: Record<string, { completed?: boolean; value?: number | null; photoUrl?: string | null; skipped?: boolean }> = {};
+    const progress: Record<string, { completed?: boolean; value?: number | null; photoUrl?: string | null; skipped?: boolean; answer?: string | null }> = {};
     if (Array.isArray(task.checklistProgress)) {
-      for (const item of task.checklistProgress as { id?: string; completed?: boolean; value?: number | null; photoUrl?: string | null; skipped?: boolean }[]) {
+      for (const item of task.checklistProgress as { id?: string; completed?: boolean; value?: number | null; photoUrl?: string | null; skipped?: boolean; answer?: string | null }[]) {
         if (item?.id) progress[item.id] = item;
       }
     }
-    return master.map((m) => ({
-      id: m.id,
-      label: m.label,
-      labelTranslations: (m.labelTranslations ?? {}) as Record<string, string>,
-      type: m.type,
-      required: m.required,
-      photoRequired: m.photoRequired,
-      formula: m.formula,
-      completed: progress[m.id]?.completed ?? false,
-      value: progress[m.id]?.value ?? null,
-      photoUrl: progress[m.id]?.photoUrl ?? null,
-      skipped: progress[m.id]?.skipped ?? false,
-    }));
+    return master
+      // Il questionario d'ingresso viene sempre prima delle task di pulizia
+      .slice()
+      .sort((a, b) => {
+        const rank = (p: string) => (p === "entry" ? 0 : 1);
+        return rank(a.phase) - rank(b.phase) || a.order - b.order;
+      })
+      .map((m) => ({
+        id: m.id,
+        label: m.label,
+        labelTranslations: (m.labelTranslations ?? {}) as Record<string, string>,
+        type: m.type,
+        required: m.required,
+        photoRequired: m.photoRequired,
+        phase: m.phase,
+        answerType: m.answerType,
+        formula: m.formula,
+        completed: progress[m.id]?.completed ?? false,
+        value: progress[m.id]?.value ?? null,
+        photoUrl: progress[m.id]?.photoUrl ?? null,
+        skipped: progress[m.id]?.skipped ?? false,
+        answer: progress[m.id]?.answer ?? null,
+      }));
   })();
 
   const canStart    = task.status === "PENDING";
