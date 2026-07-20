@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState, useTransition, useEffect } from "react";
+import { Check } from "lucide-react";
 import {
   addChecklistItem,
   deleteChecklistItem,
@@ -10,6 +11,7 @@ import {
   reorderChecklistItems,
   translateAllChecklistItems,
 } from "@/src/app/actions/checklist";
+import { useToast } from "@/src/components/toast-provider";
 
 interface Item {
   id: string;
@@ -34,6 +36,7 @@ interface ChecklistManagerProps {
 }
 
 export default function ChecklistManager({ apartmentId, initialItems }: ChecklistManagerProps) {
+  const toast = useToast();
   const [addState, addFormAction, isAdding] = useActionState(addChecklistItem.bind(null, apartmentId), null);
   const [items, setItems] = useState<Item[]>(initialItems);
   const [editId, setEditId] = useState<string | null>(null);
@@ -42,7 +45,6 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
   const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
   const [isGenerating, startTransition] = useTransition();
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
-  const [showToast, setShowToast] = useState(false);
 
   // Translation state
   const [selectedLangs, setSelectedLangs] = useState<string[]>(["en", "es"]);
@@ -62,11 +64,19 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
     const result = await translateAllChecklistItems(apartmentId, selectedLangs);
     setIsTranslating(false);
     setTranslateResult(result);
+    if (result.error) toast.error(result.error);
+    else toast.success(`${result.count} punti tradotti`);
     // Auto-hide success message after 4s
     if (result.count !== undefined) {
       setTimeout(() => setTranslateResult(null), 4000);
     }
   };
+
+  // Riscontro sull'aggiunta di un punto di controllo
+  useEffect(() => {
+    if (addState?.success) toast.success("Punto di controllo aggiunto");
+    else if (addState?.error) toast.error(addState.error);
+  }, [addState]);
 
   // Sync with server data — il questionario d'ingresso va sempre in cima
   useEffect(() => {
@@ -77,7 +87,12 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
   const handleDelete = async (id: string) => {
     if (confirm("Eliminare questo punto di controllo?")) {
       setIsDeletingId(id);
-      await deleteChecklistItem(id, apartmentId);
+      try {
+        await deleteChecklistItem(id, apartmentId);
+        toast.success("Punto di controllo eliminato");
+      } catch {
+        toast.error("Errore durante l'eliminazione");
+      }
       setIsDeletingId(null);
     }
   };
@@ -87,8 +102,9 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
       startTransition(async () => {
         try {
           await generateDefaultChecklist(apartmentId);
+          toast.success("Checklist standard generata");
         } catch (err: any) {
-          alert(err.message || "Errore durante la generazione.");
+          toast.error(err.message || "Errore durante la generazione");
         }
       });
     }
@@ -99,13 +115,13 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
       startTransition(async () => {
         try {
           const result = await generateEntryQuestionnaire(apartmentId);
-          alert(
+          toast.success(
             result.count === 0
-              ? "Il questionario d'ingresso è già configurato."
-              : `${result.count} domande aggiunte e tradotte in inglese e spagnolo.`
+              ? "Questionario già configurato"
+              : `${result.count} domande aggiunte e tradotte`
           );
         } catch (err: any) {
-          alert(err.message || "Errore durante la generazione.");
+          toast.error(err.message || "Errore durante la generazione");
         }
       });
     }
@@ -137,24 +153,15 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
     setDraggedItemIndex(null);
     
     // Save new order
-    await reorderChecklistItems(apartmentId, items.map(i => i.id));
-    
-    // Feedback toast
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+    const result = await reorderChecklistItems(apartmentId, items.map(i => i.id));
+    if (result?.error) toast.error(result.error);
+    else toast.success("Ordine aggiornato");
   };
 
   const hasEntryItems = items.some((i) => i.phase === "entry");
 
   return (
     <div className="space-y-8 relative">
-      {/* Toast Feedback */}
-      {showToast && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
-           ✅ Ordine aggiornato
-        </div>
-      )}
-
       {/* Empty State / Generate Button */}
       {initialItems.length === 0 && (
         <section className="bg-emerald-50 p-8 rounded-3xl border border-emerald-100 text-center animate-in fade-in slide-in-from-top-4 duration-500">
@@ -249,7 +256,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                 if (confirm("Vuoi aggiungere i nuovi punti di controllo standard mancanti?")) {
                   const { syncChecklistWithDefaults } = await import("@/src/app/actions/checklist");
                   const result = await syncChecklistWithDefaults(apartmentId);
-                  alert(`${result.count} nuovi elementi aggiunti.`);
+                  toast.success(`${result.count} nuovi elementi aggiunti`);
                 }
               }}
               className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-widest bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 transition-all"
@@ -458,8 +465,21 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
 
 function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId: string; onCancel: () => void }) {
   const [state, formAction, isPending] = useActionState(updateChecklistItem.bind(null, item.id), null);
+  const toast = useToast();
+  const [justSaved, setJustSaved] = useState(false);
   const [editType, setEditType] = useState<string>(item.type);
   const [editPhase, setEditPhase] = useState<string>(item.phase ?? "cleaning");
+
+  // Conferma visiva: spunta sul pulsante, poi il form si chiude
+  useEffect(() => {
+    if (state?.success) {
+      setJustSaved(true);
+      toast.success("Modifica salvata");
+      const timer = setTimeout(onCancel, 900);
+      return () => clearTimeout(timer);
+    }
+    if (state?.error) toast.error(state.error);
+  }, [state]);
 
   return (
     <form action={formAction} className="space-y-3">
@@ -517,9 +537,17 @@ function EditItemForm({ item, apartmentId, onCancel }: { item: Item; apartmentId
           <button 
             type="submit"
             disabled={isPending}
-            className="bg-black text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-800 disabled:bg-gray-300"
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-medium text-white transition-colors ${
+              justSaved ? "bg-emerald-600" : "bg-black hover:bg-gray-800 disabled:bg-gray-300"
+            }`}
           >
-            {isPending ? "Salvataggio..." : "Salva"}
+            {justSaved ? (
+              <><Check size={13} strokeWidth={3} /> Salvato</>
+            ) : isPending ? (
+              "Salvataggio..."
+            ) : (
+              "Salva"
+            )}
           </button>
           <button 
             type="button"
