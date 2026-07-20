@@ -352,7 +352,7 @@ export async function generateEntryQuestionnaire(apartmentId: string) {
 
   const toCreate = [
     ...DEFAULT_ENTRY_QUESTIONS.map((label) => ({ label, answerType: "yesno", photoRequired: true })),
-    { label: GENERAL_PHOTO_QUESTION, answerType: "check", photoRequired: false },
+    { label: GENERAL_PHOTO_QUESTION, answerType: "yesno", photoRequired: false },
   ].filter((q) => !existingLabels.has(q.label.toLowerCase().trim()));
 
   if (toCreate.length === 0) return { count: 0 };
