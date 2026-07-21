@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import type { FormEvent } from "react";
+import { extractAirbnbListing, type AirbnbImportSuccess } from "@/src/app/actions/airbnb-import";
 
 type WizardTechnicalItem = {
   name: string;
@@ -98,11 +99,57 @@ const initialData: WizardData = {
 
 
 export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardProps) {
+  const [phase, setPhase] = useState<"import" | "wizard">("import");
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<WizardData>(initialData);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
   const progress = Math.round((step / totalSteps) * 100);
+
+  const [importSummary, setImportSummary] = useState<{ found: string[]; missing: string[] } | null>(null);
+
+  // Pre-compila il form con i dati estratti dall'annuncio Airbnb.
+  const applyImport = (res: AirbnbImportSuccess) => {
+    const data = res.data;
+    setImportSummary({ found: res.found, missing: res.missing });
+    setFormData((current) => ({
+      ...current,
+      name: data.name || current.name,
+      maxGuests: data.maxGuests ?? current.maxGuests,
+      bedrooms: data.bedrooms ?? current.bedrooms,
+      bathrooms: data.bathrooms ?? current.bathrooms,
+      accessType: data.accessType || current.accessType,
+      appliances: [
+        ...current.appliances,
+        ...data.appliances.map((a) => ({ ...emptyItem, name: a.name, type: a.type })),
+      ],
+      smartHomeItems: [
+        ...current.smartHomeItems,
+        ...data.smartHome.map((a) => ({ ...emptyItem, category: "", name: a.name, type: a.type })),
+      ],
+    }));
+    setPhase("wizard");
+    setStep(1);
+  };
+
+  if (phase === "import") {
+    return (
+      <AirbnbImportPanel
+        onImported={applyImport}
+        onManual={() => { setPhase("wizard"); setStep(0); }}
+      />
+    );
+  }
+
+  const importBanner = importSummary && (
+    <div className="mb-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+      <p className="text-sm font-bold text-emerald-800">✓ Dati importati da Airbnb</p>
+      {importSummary.found.length > 0 && (
+        <p className="mt-1 text-xs font-medium text-emerald-700">Trovati: {importSummary.found.join(", ")}.</p>
+      )}
+      <p className="mt-0.5 text-xs font-medium text-amber-600">Da inserire a mano: {importSummary.missing.join(", ")}.</p>
+    </div>
+  );
 
   const canCreate = formData.name.trim() !== "" && formData.address.trim() !== "";
   const stepTitle = useMemo(() => `Step ${Math.min(step, totalSteps)} di ${totalSteps}`, [step]);
@@ -237,6 +284,7 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
       </div>
 
       <div className="min-h-[330px]">
+        {step > 0 && step < totalSteps && importBanner}
         {step === 0 && <WizardIntro />}
 
         {step === 1 && (
@@ -477,6 +525,87 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
         </div>
       </div>
     </form>
+  );
+}
+
+function AirbnbImportPanel({ onImported, onManual }: { onImported: (res: AirbnbImportSuccess) => void; onManual: () => void }) {
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleImport = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const res = await extractAirbnbListing(url);
+      if (!res.ok) { setError(res.error); return; }
+      onImported(res);
+    } catch {
+      setError("Errore imprevisto. Puoi inserire i dati manualmente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="rounded-[2rem] border border-white/60 bg-white/70 p-6 shadow-2xl shadow-black/5 backdrop-blur-xl md:p-8">
+      <div className="mb-8 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <span>Nuovo appartamento</span>
+      </div>
+
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Importa da Airbnb</h2>
+          <div className="rounded-2xl bg-violet-50 px-4 py-3 text-sm font-medium leading-relaxed text-violet-700">
+            ✦ Incolla l&apos;URL del tuo annuncio Airbnb. Lo analizzo e pre-compilo il form automaticamente.
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">URL annuncio Airbnb</label>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <input
+              className={inputClass}
+              value={url}
+              onChange={(e) => { setUrl(e.target.value); setError(""); }}
+              placeholder="https://www.airbnb.it/rooms/..."
+              autoFocus
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={handleImport}
+              disabled={loading || !url.trim()}
+              className="shrink-0 rounded-full bg-gradient-to-r from-violet-600 to-blue-500 px-7 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-violet-200 disabled:opacity-50"
+            >
+              {loading ? "Analisi..." : "🔍 Importa"}
+            </button>
+          </div>
+          <p className="text-xs font-medium text-slate-400">
+            Indirizzo esatto e metri quadri non sono su Airbnb: li aggiungi a mano nei passi successivi.
+          </p>
+        </div>
+
+        {error && <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-600">{error}</p>}
+
+        <div className="flex items-center gap-4">
+          <div className="h-px flex-1 bg-slate-100" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">Oppure</span>
+          <div className="h-px flex-1 bg-slate-100" />
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={onManual}
+            disabled={loading}
+            className="rounded-full bg-slate-900 px-7 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-slate-200 disabled:opacity-40"
+          >
+            Inserisci manualmente
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
