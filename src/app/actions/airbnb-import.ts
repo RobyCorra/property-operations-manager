@@ -126,7 +126,7 @@ Regole:
 
   const parsed = parseJsonLoose(content);
   if (!parsed) {
-    return { ok: false, error: "Non sono riuscito a leggere l'annuncio. Inserisci i dati manualmente." };
+    return { ok: false, error: `[DIAG parse-fail] Perplexity ha risposto: ${content.slice(0, 400)}` };
   }
 
   const appliances = Array.isArray(parsed.appliances)
@@ -160,7 +160,7 @@ Regole:
     result.name || result.maxGuests || result.bedrooms || result.bathrooms ||
     result.accessType || result.appliances.length || result.smartHome.length;
   if (!gotSomething) {
-    return { ok: false, error: "Non ho trovato dati leggibili in questo annuncio. Controlla l'URL o inserisci i dati manualmente." };
+    return { ok: false, error: `[DIAG empty] Perplexity ha risposto: ${content.slice(0, 400)}` };
   }
 
   const found: string[] = [];
