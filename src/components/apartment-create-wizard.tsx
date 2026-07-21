@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import type { FormEvent } from "react";
 import { extractAirbnbListing, type AirbnbImportSuccess } from "@/src/app/actions/airbnb-import";
 
@@ -152,7 +152,7 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
   );
 
   const canCreate = formData.name.trim() !== "" && formData.address.trim() !== "";
-  const stepTitle = useMemo(() => `Step ${Math.min(step, totalSteps)} di ${totalSteps}`, [step]);
+  const stepTitle = `Step ${Math.min(step, totalSteps)} di ${totalSteps}`;
 
   const updateField = <K extends keyof WizardData>(key: K, value: WizardData[K]) => {
     setFormData((current) => ({ ...current, [key]: value }));
