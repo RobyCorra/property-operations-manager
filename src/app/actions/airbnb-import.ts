@@ -110,8 +110,12 @@ Regole:
       }),
     });
     if (!response.ok) {
-      console.error("Perplexity import error:", await response.text());
-      return { ok: false, error: "La ricerca web non ha risposto. Inserisci i dati manualmente." };
+      const body = await response.text();
+      console.error("Perplexity import error:", response.status, body);
+      if (response.status === 401 || response.status === 403) {
+        return { ok: false, error: "Chiave Perplexity non valida o assente nell'ambiente. Contatta l'amministratore." };
+      }
+      return { ok: false, error: `La ricerca web ha risposto con errore ${response.status}. Inserisci i dati manualmente.` };
     }
     const data = await response.json();
     content = data?.choices?.[0]?.message?.content || "";
@@ -149,6 +153,15 @@ Regole:
     appliances,
     smartHome,
   };
+
+  // Se non è stato estratto nulla di utile, è più onesto segnalarlo che
+  // mostrare un wizard vuoto che sembra "non funzionante".
+  const gotSomething =
+    result.name || result.maxGuests || result.bedrooms || result.bathrooms ||
+    result.accessType || result.appliances.length || result.smartHome.length;
+  if (!gotSomething) {
+    return { ok: false, error: "Non ho trovato dati leggibili in questo annuncio. Controlla l'URL o inserisci i dati manualmente." };
+  }
 
   const found: string[] = [];
   const missing: string[] = [];
