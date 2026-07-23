@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -18,16 +19,16 @@ import {
 } from "./icons";
 
 const NAV_ITEMS = [
-  { label: "Oggi", href: "/dashboard/manager", icon: LayoutDashboard },
-  { label: "Appartamenti", href: "/dashboard/manager/apartments", icon: Building2 },
-  { label: "Prenotazioni", href: "/dashboard/manager/bookings", icon: CalendarDays },
-  { label: "Mappa", href: "/dashboard/manager/mappa", icon: MapPin },
-  { label: "Messaggi", href: "/dashboard/manager/messages", icon: MessageSquare },
-  { label: "Pulizie", href: "/dashboard/manager/cleanings", icon: Brush },
-  { label: "Manutenzione", href: "/dashboard/manager/maintenance", icon: Wrench },
-  { label: "Team", href: "/dashboard/manager/users", icon: Users },
-  { label: "Analytics", href: "/dashboard/manager/analytics", icon: BarChart2 },
-];
+  { key: "navToday", href: "/dashboard/manager", icon: LayoutDashboard },
+  { key: "navApartments", href: "/dashboard/manager/apartments", icon: Building2 },
+  { key: "navBookings", href: "/dashboard/manager/bookings", icon: CalendarDays },
+  { key: "navMap", href: "/dashboard/manager/mappa", icon: MapPin },
+  { key: "navMessages", href: "/dashboard/manager/messages", icon: MessageSquare },
+  { key: "navCleanings", href: "/dashboard/manager/cleanings", icon: Brush },
+  { key: "navMaintenance", href: "/dashboard/manager/maintenance", icon: Wrench },
+  { key: "navTeam", href: "/dashboard/manager/users", icon: Users },
+  { key: "navAnalytics", href: "/dashboard/manager/analytics", icon: BarChart2 },
+] as const;
 
 interface ManagerNavbarProps {
   unreadCount?: number;
@@ -37,6 +38,7 @@ interface ManagerNavbarProps {
 
 export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle }: ManagerNavbarProps) {
   const pathname = usePathname();
+  const { t } = useLang();
 
   return (
     <aside
@@ -49,7 +51,7 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle }: 
         type="button"
         onClick={onToggle}
         className="absolute -right-3.5 top-8 w-7 h-7 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-sm hover:bg-slate-50 z-10 transition-colors"
-        aria-label={collapsed ? "Espandi sidebar" : "Comprimi sidebar"}
+        aria-label={collapsed ? t.navExpand : t.navCollapse}
       >
         <ChevronLeft
           size={14}
@@ -84,7 +86,8 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle }: 
           const isActive =
             pathname === item.href ||
             (item.href !== "/dashboard/manager" && pathname?.startsWith(item.href));
-          const isMessages = item.label === "Messaggi";
+          const label = t[item.key];
+          const isMessages = item.key === "navMessages";
           const Icon = item.icon;
 
           return (
@@ -118,7 +121,7 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle }: 
               </div>
 
               {/* Label (expanded only) */}
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && <span>{label}</span>}
 
               {/* Unread badge (expanded only) */}
               {!collapsed && isMessages && unreadCount > 0 && (
@@ -130,7 +133,7 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle }: 
               {/* Tooltip (collapsed only) */}
               {collapsed && (
                 <span className="pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 shadow-xl">
-                  {item.label}
+                  {label}
                   {isMessages && unreadCount > 0 && (
                     <span className="ml-1.5 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">
                       {unreadCount}
