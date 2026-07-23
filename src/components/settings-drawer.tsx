@@ -13,6 +13,8 @@ import {
   updateConflictSettings,
   type NotificationPrefs,
 } from "@/src/app/actions/settings";
+import LanguageSelector from "@/src/components/language-selector";
+import { useLang } from "@/src/components/lang-context";
 
 type Section = "profilo" | "org" | "notifiche";
 
@@ -144,6 +146,7 @@ function PushDiagnostics() {
 
 // ── Main drawer ───────────────────────────────────────────────────────────────
 export default function SettingsDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useLang();
   const [data, setData] = useState<SettingsData | null>(null);
   const [section, setSection] = useState<Section>("profilo");
   const [isPending, startTransition] = useTransition();
@@ -250,6 +253,11 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
           {/* ── PROFILO ── */}
           {data && section === "profilo" && (
             <>
+              <div className="bg-white rounded-[14px] p-4 flex flex-col gap-3" style={{ border: ".5px solid #e5e5ea" }}>
+                <p className="text-[13px] font-[700] text-[#1c1c1e]">{t.settingsLanguage}</p>
+                <LanguageSelector />
+              </div>
+
               <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
                 <p className="text-[13px] font-[700] text-[#1c1c1e]">Dati personali</p>
                 <form

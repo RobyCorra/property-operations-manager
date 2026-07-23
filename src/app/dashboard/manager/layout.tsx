@@ -6,9 +6,12 @@ import ApnsRegister from "@/src/components/apns-register";
 import ImpersonateBanner from "@/src/components/superadmin/impersonate-banner";
 import { getUnreadMessagesCount } from "../../actions/messages";
 import { prisma } from "@/src/lib/prisma";
+import { ManagerLangProvider } from "@/src/components/lang-context";
+import { getServerLang } from "@/src/lib/server-lang";
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
   const unreadCount = await getUnreadMessagesCount();
+  const lang = await getServerLang();
   const cookieStore = await cookies();
   const impersonatingOrgId = cookieStore.get("impersonating")?.value;
   const orgId = cookieStore.get("organizationId")?.value;
@@ -28,14 +31,16 @@ export default async function ManagerLayout({ children }: { children: React.Reac
   }
 
   return (
-    <SidebarLayout unreadCount={unreadCount} orgName={orgName} orgLogo={orgLogo}>
-      {impersonatingOrgName && <ImpersonateBanner orgName={impersonatingOrgName} />}
-      <div className={impersonatingOrgName ? "pt-9" : ""}>
-        {children}
-      </div>
-      <AutoRefresh intervalMs={15_000} />
-      <PushPermissionRequest />
-      <ApnsRegister />
-    </SidebarLayout>
+    <ManagerLangProvider initialLang={lang}>
+      <SidebarLayout unreadCount={unreadCount} orgName={orgName} orgLogo={orgLogo}>
+        {impersonatingOrgName && <ImpersonateBanner orgName={impersonatingOrgName} />}
+        <div className={impersonatingOrgName ? "pt-9" : ""}>
+          {children}
+        </div>
+        <AutoRefresh intervalMs={15_000} />
+        <PushPermissionRequest />
+        <ApnsRegister />
+      </SidebarLayout>
+    </ManagerLangProvider>
   );
 }
