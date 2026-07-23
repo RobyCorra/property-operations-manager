@@ -555,21 +555,21 @@ export default async function ManagerDashboardPage() {
             className="flex items-center gap-2 px-3 py-3 bg-gradient-to-r from-violet-600 to-blue-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-violet-200 hover:shadow-xl hover:scale-[1.03] active:scale-95 whitespace-nowrap"
           >
             <Brush size={14} />
-            Nuova Pulizia
+            {tr.pgNewCleaning}
           </Link>
           <Link 
             href="/dashboard/manager/maintenance/new"
             className="flex items-center gap-2 px-3 py-3 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-slate-200 hover:shadow-xl hover:scale-[1.03] active:scale-95 whitespace-nowrap"
           >
             <Ticket size={14} />
-            Nuovo Ticket
+            {tr.pgNewTicket}
           </Link>
           <Link 
             href="/dashboard/manager/bookings/new"
             className="flex items-center gap-2 px-3 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95 whitespace-nowrap"
           >
             <KeyRound size={14} />
-            Nuova Prenotazione
+            {tr.pgNewBooking}
           </Link>
           </div>
         </div>
@@ -614,7 +614,7 @@ export default async function ManagerDashboardPage() {
             <div className="p-8 border-b border-white/40 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-slate-900 tracking-tight uppercase">{tr.pgOperationalCalendar}</h2>
-                <p className="text-xs uppercase tracking-wide text-slate-500 mt-1">Timeline Interventi &amp; Flussi</p>
+                <p className="text-xs uppercase tracking-wide text-slate-500 mt-1">{tr.pgTimelineSub}</p>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-violet-50 rounded-full border border-violet-100">
                 <span className="w-2 h-2 bg-violet-600 rounded-full animate-pulse" />
