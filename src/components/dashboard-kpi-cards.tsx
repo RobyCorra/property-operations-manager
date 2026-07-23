@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import {
   KeyRound,
@@ -36,17 +37,6 @@ type PopupState =
   | "tickets"
   | null;
 
-const POPUP_CONFIG: Record<
-  NonNullable<PopupState>,
-  { title: string; emptyMsg: string }
-> = {
-  checkin:    { title: "Check-in Oggi",      emptyMsg: "Nessun check-in oggi" },
-  cleanings:  { title: "Pulizie Oggi",       emptyMsg: "Nessuna pulizia oggi" },
-  late:       { title: "Pulizie in Ritardo", emptyMsg: "Nessuna pulizia in ritardo" },
-  inprogress: { title: "Pulizie in Corso",   emptyMsg: "Nessuna pulizia in corso" },
-  tickets:    { title: "Ticket Oggi",        emptyMsg: "Nessun ticket oggi" },
-};
-
 export default function DashboardKpiCards({
   checkinsToday,
   cleaningsToday,
@@ -57,6 +47,14 @@ export default function DashboardKpiCards({
   ticketsTodayCount = 0,
   ticketsDoneCount = 0,
 }: DashboardKpiData) {
+  const { t } = useLang();
+  const POPUP_CONFIG: Record<NonNullable<PopupState>, { title: string; emptyMsg: string }> = {
+    checkin:    { title: t.kpiCheckinFace,     emptyMsg: t.kpiEmptyCheckin },
+    cleanings:  { title: t.kpiCleaningsFace,   emptyMsg: t.kpiEmptyCleanings },
+    late:       { title: t.kpiLateFace,        emptyMsg: t.kpiEmptyLate },
+    inprogress: { title: t.kpiInProgressFace,  emptyMsg: t.kpiEmptyInProgress },
+    tickets:    { title: t.kpiTicketsFace,     emptyMsg: t.kpiEmptyTickets },
+  };
   const [open, setOpen] = useState<PopupState>(null);
 
   const getItems = (key: NonNullable<PopupState>): KpiPopupItem[] => {
@@ -81,17 +79,17 @@ export default function DashboardKpiCards({
           className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[170px] flex flex-col justify-between transition-all hover:shadow-violet-500/10 hover:-translate-y-0.5 hover:border-violet-200/50 border border-transparent text-left cursor-pointer group"
         >
           <div className="flex justify-between items-start">
-            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">Check-in oggi</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">{t.kpiCheckinFace}</p>
             <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
               <KeyRound size={16} />
             </div>
           </div>
           <div>
             <p className="text-2xl font-semibold text-slate-900 tracking-tight">{checkinsToday.length}</p>
-            <p className="text-sm text-slate-500 mt-1">Arrivi confermati</p>
+            <p className="text-sm text-slate-500 mt-1">{t.kpiConfirmedArrivals}</p>
           </div>
           <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-2 group-hover:text-violet-500 transition-colors">
-            <span>→</span> Vedi lista
+            <span>→</span> {t.kpiViewList}
           </p>
         </button>
 
@@ -101,7 +99,7 @@ export default function DashboardKpiCards({
           className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[170px] flex flex-col justify-between transition-all hover:shadow-violet-500/10 hover:-translate-y-0.5 hover:border-violet-200/50 border border-transparent text-left cursor-pointer group"
         >
           <div className="flex justify-between items-start">
-            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">Pulizie oggi</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">{t.kpiCleaningsFace}</p>
             <div className="w-8 h-8 rounded-full bg-violet-50 text-violet-600 flex items-center justify-center">
               <Brush size={16} />
             </div>
@@ -109,17 +107,17 @@ export default function DashboardKpiCards({
           <div className="flex items-end gap-4">
             <div>
               <p className="text-2xl font-semibold text-slate-900 tracking-tight">{cleaningsToday.length}</p>
-              <p className="text-sm text-slate-500 mt-1">pianificate</p>
+              <p className="text-sm text-slate-500 mt-1">{t.kpiPlannedF}</p>
             </div>
             {cleaningsDoneCount > 0 && (
               <div className="mb-0.5">
                 <p className="text-xl font-semibold text-emerald-600 leading-none">{cleaningsDoneCount}</p>
-                <p className="text-xs font-semibold text-emerald-500 mt-1">eseguite</p>
+                <p className="text-xs font-semibold text-emerald-500 mt-1">{t.kpiDoneF}</p>
               </div>
             )}
           </div>
           <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-2 group-hover:text-violet-500 transition-colors">
-            <span>→</span> Vedi lista
+            <span>→</span> {t.kpiViewList}
           </p>
         </button>
 
@@ -134,7 +132,7 @@ export default function DashboardKpiCards({
         >
           <div className="flex justify-between items-start">
             <p className={`text-xs uppercase tracking-wide font-semibold ${isAlert ? "text-rose-600" : "text-slate-500"}`}>
-              Pulizie in ritardo
+              {t.kpiLateFace}
             </p>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isAlert ? "bg-rose-100 text-rose-600" : "bg-slate-50 text-slate-400"}`}>
               <AlertTriangle size={16} />
@@ -144,10 +142,10 @@ export default function DashboardKpiCards({
             <p className={`text-2xl font-semibold tracking-tight ${isAlert ? "text-rose-700" : "text-slate-900"}`}>
               {lateCleanings.length}
             </p>
-            <p className="text-sm text-slate-500 mt-1">Pending dopo le 10:30</p>
+            <p className="text-sm text-slate-500 mt-1">{t.kpiPendingAfter}</p>
           </div>
           <p className={`text-[10px] flex items-center gap-1 mt-2 transition-colors ${isAlert ? "text-rose-400 group-hover:text-rose-600" : "text-slate-400 group-hover:text-violet-500"}`}>
-            <span>→</span> Vedi lista
+            <span>→</span> {t.kpiViewList}
           </p>
         </button>
 
@@ -157,17 +155,17 @@ export default function DashboardKpiCards({
           className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[170px] flex flex-col justify-between transition-all hover:shadow-violet-500/10 hover:-translate-y-0.5 hover:border-violet-200/50 border border-transparent text-left cursor-pointer group"
         >
           <div className="flex justify-between items-start">
-            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">Pulizie in corso</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">{t.kpiInProgressFace}</p>
             <div className="w-8 h-8 rounded-full bg-violet-50 text-violet-600 flex items-center justify-center">
               <Clock size={16} />
             </div>
           </div>
           <div>
             <p className="text-2xl font-semibold text-slate-900 tracking-tight">{cleaningsInProgress.length}</p>
-            <p className="text-sm text-slate-500 mt-1">Interventi attivi ora</p>
+            <p className="text-sm text-slate-500 mt-1">{t.kpiActiveNow}</p>
           </div>
           <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-2 group-hover:text-violet-500 transition-colors">
-            <span>→</span> Vedi lista
+            <span>→</span> {t.kpiViewList}
           </p>
         </button>
 
@@ -177,7 +175,7 @@ export default function DashboardKpiCards({
           className="bg-white/50 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-violet-500/5 p-6 min-h-[170px] flex flex-col justify-between transition-all hover:shadow-violet-500/10 hover:-translate-y-0.5 hover:border-violet-200/50 border border-transparent text-left cursor-pointer group"
         >
           <div className="flex justify-between items-start">
-            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">Ticket oggi</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold">{t.kpiTicketsFace}</p>
             <div className="w-8 h-8 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
               <Ticket size={16} />
             </div>
@@ -185,15 +183,15 @@ export default function DashboardKpiCards({
           <div className="flex items-end gap-4">
             <div>
               <p className="text-2xl font-semibold text-slate-900 tracking-tight">{ticketsTodayCount}</p>
-              <p className="text-sm text-slate-500 mt-1">pianificati</p>
+              <p className="text-sm text-slate-500 mt-1">{t.kpiPlannedM}</p>
             </div>
             <div className="mb-0.5">
               <p className="text-xl font-semibold text-emerald-600 leading-none">{ticketsDoneCount}</p>
-              <p className="text-xs font-semibold text-emerald-500 mt-1">eseguiti</p>
+              <p className="text-xs font-semibold text-emerald-500 mt-1">{t.kpiDoneM}</p>
             </div>
           </div>
           <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-2 group-hover:text-violet-500 transition-colors">
-            <span>→</span> Vedi lista
+            <span>→</span> {t.kpiViewList}
           </p>
         </button>
 
