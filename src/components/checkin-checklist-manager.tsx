@@ -3,6 +3,7 @@
 import { useState, useActionState, useEffect } from "react";
 import { Check } from "lucide-react";
 import { useToast } from "@/src/components/toast-provider";
+import { useLang } from "@/src/components/lang-context";
 import {
   addCheckinChecklistItem,
   updateCheckinChecklistItem,
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export default function CheckinChecklistManager({ apartmentId, initialItems }: Props) {
+  const { t } = useLang();
   const [addState, addAction, isAdding] = useActionState(
     addCheckinChecklistItem.bind(null, apartmentId),
     null
@@ -37,19 +39,19 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
         action={addAction}
         className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4 shadow-sm"
       >
-        <p className="text-xs font-black uppercase tracking-widest text-gray-400">Nuova voce check-in</p>
+        <p className="text-xs font-black uppercase tracking-widest text-gray-400">{t.ckNewItem}</p>
         <input
           name="label"
           required
-          placeholder="Es. Verifica documenti ospite"
+          placeholder={t.ckPlaceholder}
           className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:ring-2 focus:ring-black"
         />
         <div className="flex flex-wrap gap-5">
           <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input type="checkbox" name="required" defaultChecked /> Obbligatoria
+            <input type="checkbox" name="required" defaultChecked /> {t.ckRequired}
           </label>
           <label className="flex items-center gap-2 text-sm text-gray-700">
-            <input type="checkbox" name="photoRequired" /> Richiede foto
+            <input type="checkbox" name="photoRequired" /> {t.ckPhotoNeeded}
           </label>
         </div>
         {addState?.error && <p className="text-sm text-rose-600">{addState.error}</p>}
@@ -58,7 +60,7 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
           disabled={isAdding}
           className="rounded-full bg-gradient-to-r from-blue-600 to-violet-500 px-6 py-2.5 text-xs font-black uppercase tracking-widest text-white shadow-lg disabled:opacity-50"
         >
-          {isAdding ? "..." : "+ Aggiungi"}
+          {isAdding ? "..." : `+ ${t.mgrAdd}`}
         </button>
       </form>
 
@@ -66,7 +68,7 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
       <div className="space-y-2">
         {initialItems.length === 0 && (
           <p className="text-sm text-gray-400 text-center py-8">
-            Nessuna voce. Aggiungi la prima voce della checklist di check-in.
+            {t.ckEmpty}
           </p>
         )}
         {initialItems.map((item) =>
@@ -86,12 +88,12 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
                 <span className="text-sm font-medium text-gray-800 truncate">{item.label}</span>
                 {item.required && (
                   <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
-                    Obbligatoria
+                    {t.ckRequired}
                   </span>
                 )}
                 {item.photoRequired && (
                   <span className="text-[9px] font-black uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 rounded px-1.5 py-0.5">
-                    Foto
+                    {t.ckPhotoBadge}
                   </span>
                 )}
               </div>
@@ -100,15 +102,15 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
                   onClick={() => setEditingId(item.id)}
                   className="text-xs font-bold text-gray-500 hover:text-gray-900 px-2 py-1"
                 >
-                  Modifica
+                  {t.mgrEdit}
                 </button>
                 <button
                   onClick={() => {
-                    if (confirm("Eliminare questa voce?")) deleteCheckinChecklistItem(item.id, apartmentId);
+                    if (confirm(t.ckDeleteConfirm)) deleteCheckinChecklistItem(item.id, apartmentId);
                   }}
                   className="text-xs font-bold text-rose-500 hover:text-rose-700 px-2 py-1"
                 >
-                  Elimina
+                  {t.mgrDelete}
                 </button>
               </div>
             </div>
@@ -125,13 +127,14 @@ function EditRow({ item, apartmentId, onDone }: { item: Item; apartmentId: strin
     null
   );
   const toast = useToast();
+  const { t } = useLang();
   const [justSaved, setJustSaved] = useState(false);
 
   // Conferma visiva prima di chiudere il form (evita l'update in fase di render)
   useEffect(() => {
     if (state?.success) {
       setJustSaved(true);
-      toast.success("Modifica salvata");
+      toast.success(t.mgrSaved);
       const timer = setTimeout(onDone, 900);
       return () => clearTimeout(timer);
     }
@@ -149,10 +152,10 @@ function EditRow({ item, apartmentId, onDone }: { item: Item; apartmentId: strin
       />
       <div className="flex flex-wrap gap-5">
         <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input type="checkbox" name="required" defaultChecked={item.required} /> Obbligatoria
+          <input type="checkbox" name="required" defaultChecked={item.required} /> {t.ckRequired}
         </label>
         <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input type="checkbox" name="photoRequired" defaultChecked={item.photoRequired} /> Richiede foto
+          <input type="checkbox" name="photoRequired" defaultChecked={item.photoRequired} /> {t.ckPhotoNeeded}
         </label>
       </div>
       {state?.error && <p className="text-sm text-rose-600">{state.error}</p>}
@@ -164,14 +167,14 @@ function EditRow({ item, apartmentId, onDone }: { item: Item; apartmentId: strin
             justSaved ? "bg-emerald-600" : "bg-black"
           }`}
         >
-          {justSaved ? <><Check size={13} strokeWidth={3} /> Salvato</> : pending ? "..." : "Salva"}
+          {justSaved ? <><Check size={13} strokeWidth={3} /> {t.mgrSaved}</> : pending ? "..." : t.mgrSave}
         </button>
         <button
           type="button"
           onClick={onDone}
           className="rounded-full border border-gray-200 px-5 py-2 text-xs font-black uppercase tracking-widest text-gray-500"
         >
-          Annulla
+          {t.mgrCancel}
         </button>
       </div>
     </form>

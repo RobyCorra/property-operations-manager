@@ -114,6 +114,22 @@ export const translations = {
     approvedSub: "Il responsabile ha verificato e approvato. Ottimo lavoro!",
 
     footer: "Property Operations Manager",
+
+    // ── Area manager ──
+    settingsLanguage: "Lingua",
+    mgrSave: "Salva",
+    mgrSaved: "Salvato",
+    mgrCancel: "Annulla",
+    mgrEdit: "Modifica",
+    mgrDelete: "Elimina",
+    mgrAdd: "Aggiungi",
+    ckNewItem: "Nuova voce check-in",
+    ckPlaceholder: "Es. Verifica documenti ospite",
+    ckRequired: "Obbligatoria",
+    ckPhotoNeeded: "Richiede foto",
+    ckPhotoBadge: "Foto",
+    ckEmpty: "Nessuna voce. Aggiungi la prima voce della checklist di check-in.",
+    ckDeleteConfirm: "Eliminare questa voce?",
   },
 
   en: {
@@ -222,6 +238,22 @@ export const translations = {
     approvedSub: "The manager has reviewed and approved. Great job!",
 
     footer: "Property Operations Manager",
+
+    // ── Manager area ──
+    settingsLanguage: "Language",
+    mgrSave: "Save",
+    mgrSaved: "Saved",
+    mgrCancel: "Cancel",
+    mgrEdit: "Edit",
+    mgrDelete: "Delete",
+    mgrAdd: "Add",
+    ckNewItem: "New check-in item",
+    ckPlaceholder: "E.g. Check guest documents",
+    ckRequired: "Required",
+    ckPhotoNeeded: "Requires photo",
+    ckPhotoBadge: "Photo",
+    ckEmpty: "No items yet. Add the first check-in checklist item.",
+    ckDeleteConfirm: "Delete this item?",
   },
 
   es: {
@@ -330,6 +362,22 @@ export const translations = {
     approvedSub: "El responsable ha revisado y aprobado. ¡Excelente trabajo!",
 
     footer: "Property Operations Manager",
+
+    // ── Área del responsable ──
+    settingsLanguage: "Idioma",
+    mgrSave: "Guardar",
+    mgrSaved: "Guardado",
+    mgrCancel: "Cancelar",
+    mgrEdit: "Editar",
+    mgrDelete: "Eliminar",
+    mgrAdd: "Añadir",
+    ckNewItem: "Nuevo elemento de check-in",
+    ckPlaceholder: "Ej. Verificar documentos del huésped",
+    ckRequired: "Obligatoria",
+    ckPhotoNeeded: "Requiere foto",
+    ckPhotoBadge: "Foto",
+    ckEmpty: "Sin elementos. Añade el primer elemento de la lista de check-in.",
+    ckDeleteConfirm: "¿Eliminar este elemento?",
   },
 } as const;
 
