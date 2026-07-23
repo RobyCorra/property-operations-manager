@@ -115,12 +115,21 @@ export async function performApartmentIcalSync(apartmentId: string) {
     await syncCheckinTaskFromBooking(booking.id);
   }
 
-  // 5. Cancel removed bookings
+  // 5. Cancel removed bookings.
+  // Airbnb esporta nel feed iCal solo le prenotazioni in corso e future: quelle
+  // già concluse spariscono dal feed col tempo, ma NON sono annullamenti. Se le
+  // marcassimo CANCELLED sparirebbero dallo storico del calendario. Quindi
+  // consideriamo "annullata" solo una prenotazione ancora in corso o futura che
+  // esce dal feed; le passate restano ACTIVE.
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
   const missingBookings = await prisma.booking.findMany({
     where: {
       apartmentId: apartment.id,
       source: "airbnb",
       status: "ACTIVE",
+      checkOutDate: { gte: startOfToday },
       NOT: { externalId: { in: activeExternalIds } },
     },
   });
