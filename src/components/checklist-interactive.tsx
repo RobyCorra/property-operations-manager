@@ -378,7 +378,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     }
 
     const completedTranslatedLabel =
-      lang && lang !== "it" && currentItem.labelTranslations?.[lang]
+      lang && currentItem.labelTranslations?.[lang]
         ? currentItem.labelTranslations[lang]
         : currentItem.label;
     const completedItemLabel =
@@ -504,7 +504,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
                 >
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-slate-800 truncate">
-                      {lang && lang !== "it" && item.labelTranslations?.[lang]
+                      {lang && item.labelTranslations?.[lang]
                         ? item.labelTranslations[lang]
                         : item.label}
                       {item.required && <span className="text-rose-500 ml-1">*</span>}
@@ -672,7 +672,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   // ── Vista passo ──────────────────────────────────────────────────────────
   const progress = Math.round((completedCount / items.length) * 100);
   const translatedLabel =
-    lang && lang !== "it" && currentItem.labelTranslations?.[lang]
+    lang && currentItem.labelTranslations?.[lang]
       ? currentItem.labelTranslations[lang]
       : currentItem.label;
 

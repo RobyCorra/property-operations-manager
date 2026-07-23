@@ -26,10 +26,17 @@ interface Item {
   answerType?: string;
 }
 
-const AVAILABLE_LANGS = [
-  { code: "en", flag: "🇬🇧", name: "Inglese" },
-  { code: "es", flag: "🇪🇸", name: "Spagnolo" },
+const ALL_LANGS = [
+  { code: "it", flag: "🇮🇹" },
+  { code: "en", flag: "🇬🇧" },
+  { code: "es", flag: "🇪🇸" },
 ];
+
+function langName(code: string, t: { langEnglish: string; langSpanish: string }): string {
+  if (code === "it") return "Italiano";
+  if (code === "en") return t.langEnglish;
+  return t.langSpanish;
+}
 
 interface ChecklistManagerProps {
   apartmentId: string;
@@ -38,7 +45,9 @@ interface ChecklistManagerProps {
 
 export default function ChecklistManager({ apartmentId, initialItems }: ChecklistManagerProps) {
   const toast = useToast();
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  // Lingue di destinazione: tutte tranne quella in cui il manager sta già scrivendo
+  const targetLangs = ALL_LANGS.filter((l) => l.code !== (lang ?? "it"));
   const [addState, addFormAction, isAdding] = useActionState(addChecklistItem.bind(null, apartmentId), null);
   const [items, setItems] = useState<Item[]>(initialItems);
   const [editId, setEditId] = useState<string | null>(null);
@@ -49,7 +58,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
 
   // Translation state
-  const [selectedLangs, setSelectedLangs] = useState<string[]>(["en", "es"]);
+  const [selectedLangs, setSelectedLangs] = useState<string[]>(() => targetLangs.map((l) => l.code));
   const [isTranslating, setIsTranslating] = useState(false);
   const [translateResult, setTranslateResult] = useState<{ count?: number; error?: string } | null>(null);
 
@@ -195,7 +204,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {AVAILABLE_LANGS.map((l) => (
+            {targetLangs.map((l) => (
               <label
                 key={l.code}
                 className={`flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-xl border transition-colors ${
@@ -211,7 +220,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                   className="w-4 h-4 accent-violet-600"
                 />
                 <span className="text-lg">{l.flag}</span>
-                <span className="text-sm font-semibold">{l.code === "en" ? t.langEnglish : t.langSpanish}</span>
+                <span className="text-sm font-semibold">{langName(l.code, t)}</span>
               </label>
             ))}
 
@@ -241,7 +250,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
             }`}>
               {translateResult.error
                 ? `❌ ${translateResult.error}`
-                : `✅ ${translateResult.count} ${translateResult.count === 1 ? "punto tradotto" : "punti tradotti"} in ${selectedLangs.map((l) => AVAILABLE_LANGS.find((a) => a.code === l)?.flag).join(" ")}`
+                : `✅ ${translateResult.count} ${t.clUnitTranslated} ${selectedLangs.map((l) => ALL_LANGS.find((a) => a.code === l)?.flag).join(" ")}`
               }
             </div>
           )}
@@ -421,7 +430,7 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                         {item.photoRequired && <span className="text-[9px] font-black text-amber-600 uppercase tracking-tighter bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">{t.clBadgePhoto}</span>}
                         {item.type === "dynamic" && <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{t.clTypeDynamic}</span>}
                         {/* Translation badges */}
-                        {AVAILABLE_LANGS.map((l) =>
+                        {ALL_LANGS.map((l) =>
                           item.labelTranslations?.[l.code] ? (
                             <span key={l.code} className="text-[11px]" title={item.labelTranslations[l.code]}>
                               {l.flag}
