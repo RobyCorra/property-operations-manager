@@ -6,6 +6,7 @@ import { logoutAction } from "@/src/app/actions/auth";
 import FloatingManagerChat from "./floating-manager-chat";
 import SettingsDrawer from "./settings-drawer";
 import MobileHeader from "./mobile-header";
+import { useLang } from "@/src/components/lang-context";
 
 interface SidebarLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ interface SidebarLayoutProps {
 }
 
 export default function SidebarLayout({ children, unreadCount, orgName, orgLogo }: SidebarLayoutProps) {
+  const { t } = useLang();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
@@ -58,7 +60,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
             </span>
             <input
               type="text"
-              placeholder="Cerca prenotazioni, pulizie o ticket..."
+              placeholder={t.navSearch}
               className="w-full bg-slate-100/50 border-none rounded-2xl py-2.5 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-violet-600/10 transition-all outline-none text-slate-600 placeholder:text-slate-400"
             />
           </div>
@@ -69,9 +71,9 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
               type="button"
               onClick={() => setAiOpen(true)}
               className="flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-10 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
-              title="AI Assistant"
+              title={t.navAi}
             >
-              🤖 AI Assistant
+              🤖 {t.navAi}
             </button>
             <button
               type="button"
@@ -79,20 +81,20 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
               className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
             >
               <span className="text-xl">⚙️</span>
-              <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">Impostazioni</span>
+              <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">{t.navSettings}</span>
             </button>
             <form action={logoutAction}>
               <button
                 type="submit"
                 className="rounded-full border border-slate-200 bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600 shadow-sm transition-colors hover:border-rose-100 hover:text-rose-600"
               >
-                Logout
+                {t.navLogout}
               </button>
             </form>
             <div className="w-[1px] h-6 bg-slate-200" />
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-slate-900 leading-none">{orgName ?? "La tua organizzazione"}</p>
+                <p className="text-xs font-bold text-slate-900 leading-none">{orgName ?? t.navYourOrg}</p>
               </div>
               <div className="w-10 h-10 rounded-2xl overflow-hidden shadow-lg shrink-0">
                 {orgLogo ? (
