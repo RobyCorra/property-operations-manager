@@ -733,7 +733,7 @@ export default function MobileDashboard({
               </svg>
             </div>
             <p className={`text-3xl font-black leading-none mb-1 ${cleaningsInProgress.length > 0 ? "text-violet-700" : "text-slate-400"}`}>{cleaningsInProgress.length}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${cleaningsInProgress.length > 0 ? "text-violet-500" : "text-slate-400"}`}>In Corso</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${cleaningsInProgress.length > 0 ? "text-violet-500" : "text-slate-400"}`}>{tr.calInProgress}</p>
           </button>
 
           {/* ─ Ticket Oggi ─ */}
@@ -2205,7 +2205,7 @@ export default function MobileDashboard({
                     )}
                   </div>
                   <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 bg-violet-50 text-violet-700">
-                    In corso
+                    {tr.calInProgress}
                   </span>
                 </div>
               </div>
