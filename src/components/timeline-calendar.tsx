@@ -9,6 +9,7 @@ import React, {
 } from "react";
 
 import { useRouter } from "next/navigation";
+import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import { getApartmentOperationalStatus, type ApartmentStatus } from "@/src/lib/apartment-status";
 import { calculateLinen } from "@/src/lib/linen-calculator";
@@ -198,6 +199,8 @@ function diffLocalDays(start: Date, end: Date) {
 }
 
 export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false }: TimelineCalendarProps) {
+  const { t, lang } = useLang();
+  const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const toast = useToast();
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -510,7 +513,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
   const monthGroups = useMemo(() => {
     const groups: { label: string; count: number }[] = [];
     days.forEach((day) => {
-      const label = day.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+      const label = day.toLocaleDateString(dateLocale, { month: "long", year: "numeric" });
       if (groups.length === 0 || groups[groups.length - 1].label !== label) {
         groups.push({ label, count: 1 });
       } else {
@@ -532,7 +535,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
   const formatDateTime = (dateInput: Date | string) => {
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return "";
-    const time = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const time = d.toLocaleTimeString(dateLocale, { hour: '2-digit', minute: '2-digit', hour12: false });
     return `${formatDate(dateInput)} ore ${time}`;
   };
 
@@ -595,7 +598,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
         >
           {/* Allineamento con la doppia riga header (mese + giorni) */}
           <div className="h-24 border-b-2 border-slate-200/70 flex items-end pb-2 px-8">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Appartamento</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t.calApartment}</span>
           </div>
           {apartments.map((apt) => {
             const dotColor: Record<string, string> = {
@@ -606,11 +609,11 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
               RED:    "bg-red-500",
             };
             const dotLabel: Record<string, string> = {
-              GREEN:  "Pronto",
-              BLUE:   "Non pronto",
-              VIOLET: "In corso",
-              YELLOW: "In verifica",
-              RED:    "Occupato",
+              GREEN:  t.calReady,
+              BLUE:   t.calNotReady,
+              VIOLET: t.calInProgress,
+              YELLOW: t.calInReview,
+              RED:    t.calOccupied,
             };
             return (
               <div key={apt.id} className="h-36 border-b-2 border-slate-200/70 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/30">
@@ -654,7 +657,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
             <div className="flex h-16">
               {days.map((day, i) => {
                 const isToday = toLocalDateKey(day) === toLocalDateKey(serverDate);
-                const weekDays = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                const weekDays = Array.from({length:7},(_,i)=>new Date(2024,0,7+i).toLocaleDateString(dateLocale,{weekday:'short'}));
                 const isWeekend = day.getDay() === 0 || day.getDay() === 6;
                 const isFirstOfMonth = day.getDate() === 1 && i > 0;
                 return (
@@ -736,13 +739,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       YELLOW: "text-yellow-600", RED: "text-red-600",
                     };
                     const statusLabelShort: Record<string, string> = {
-                      GREEN: "Pronto", BLUE: "Non pronto", VIOLET: "In corso",
-                      YELLOW: "In verifica", RED: "Occupato",
+                      GREEN: t.calReady, BLUE: t.calNotReady, VIOLET: t.calInProgress,
+                      YELLOW: t.calInReview, RED: t.calOccupied,
                     };
                     const effectiveStatus = bookingNotReady ? "BLUE" : bookingStatus.color;
-                    const effectiveLabel = bookingNotReady ? "Non pronto" : (statusLabelShort[bookingStatus.color] ?? bookingStatus.label);
+                    const effectiveLabel = bookingNotReady ? t.calNotReady : (statusLabelShort[bookingStatus.color] ?? bookingStatus.label);
                     const barWidth = Math.max(timelineDayWidth - 8, getWidth(event.start, event.end) - 4);
-                    const tooltipText = `${booking.guestName || "Ospite"} · ${booking.totalGuests ?? 0} ospiti · Stato: ${effectiveLabel}`;
+                    const tooltipText = `${booking.guestName || t.calGuest} · ${booking.totalGuests ?? 0} ${t.calGuestsShort} · ${t.calStatusWord}: ${effectiveLabel}`;
 
                     return (
                       <div
@@ -755,7 +758,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         {/* Icona sempre visibile */}
                         <LogIn size={11} className="opacity-50 shrink-0" />
                         {/* Ospiti: sempre visibili */}
-                        <span className="shrink-0">{booking.totalGuests ?? 0} osp.</span>
+                        <span className="shrink-0">{booking.totalGuests ?? 0} {t.calGuestsShort}</span>
                         {/* Separatore + dot stato: da 130px */}
                         {barWidth >= 130 && (
                           <>
@@ -791,14 +794,14 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       : "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100";
 
                     const cleaningLabel = cleaning.status === "APPROVED"
-                      ? "Approvato"
+                      ? t.calApproved
                       : cleaning.status === "AWAITING_REVIEW"
-                      ? "In verifica"
+                      ? t.calInReview
                       : cleaning.status === "COMPLETED"
-                      ? "Completata"
+                      ? t.calCompleted
                       : cleaning.status === "IN_PROGRESS"
-                      ? "In corso"
-                      : isAssigned ? "Assegnato" : "Da fare";
+                      ? t.calInProgress
+                      : isAssigned ? t.calAssigned : t.calToDo;
                     const cleaningPulse = cleaning.status === "AWAITING_REVIEW" ? "animate-pulse" : "";
 
                     return (
@@ -866,8 +869,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     const checkinLabel = checkin.status === "COMPLETED"
                       ? "Completato"
                       : checkin.status === "IN_PROGRESS"
-                      ? "In corso"
-                      : isAssigned ? "Assegnato" : "Da fare";
+                      ? t.calInProgress
+                      : isAssigned ? t.calAssigned : t.calToDo;
 
                     return (
                       <div
@@ -899,14 +902,14 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
     <div className="mt-3 flex flex-col gap-2 px-4 py-3 bg-white/30 backdrop-blur-sm rounded-2xl border border-white/20">
       {/* Riga 1 — Stato Intervento */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">Stato Intervento</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">{t.calStatusIntervention}</span>
         {[
-          { color: "bg-red-500/15 border-red-500/30 text-red-700",            label: "Da fare" },
-          { color: "bg-yellow-500/15 border-yellow-500/30 text-yellow-700",   label: "Assegnato" },
-          { color: "bg-violet-500/15 border-violet-500/30 text-violet-700",   label: "In corso" },
-          { color: "bg-sky-500/15 border-sky-500/30 text-sky-700",            label: "Completata" },
-          { color: "bg-amber-500/15 border-amber-500/30 text-amber-700",      label: "In verifica" },
-          { color: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",label: "Approvato" },
+          { color: "bg-red-500/15 border-red-500/30 text-red-700",            label: t.calToDo },
+          { color: "bg-yellow-500/15 border-yellow-500/30 text-yellow-700",   label: t.calAssigned },
+          { color: "bg-violet-500/15 border-violet-500/30 text-violet-700",   label: t.calInProgress },
+          { color: "bg-sky-500/15 border-sky-500/30 text-sky-700",            label: t.calCompleted },
+          { color: "bg-amber-500/15 border-amber-500/30 text-amber-700",      label: t.calInReview },
+          { color: "bg-emerald-500/15 border-emerald-500/30 text-emerald-700",label: t.calApproved },
         ].map(({ color, label }) => (
           <span key={label} className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${color}`}>
             <Paintbrush size={9} className="opacity-70" />{label}
@@ -919,11 +922,11 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
       {/* Riga 2 — Stato Appartamento con dot */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">Appartamento</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 w-28 shrink-0">{t.calApartment}</span>
         {[
-          { dot: "bg-emerald-500", text: "text-emerald-700", label: "Pronto" },
-          { dot: "bg-blue-500",    text: "text-blue-700",    label: "Non pronto" },
-          { dot: "bg-red-500",     text: "text-red-700",     label: "Occupato" },
+          { dot: "bg-emerald-500", text: "text-emerald-700", label: t.calReady },
+          { dot: "bg-blue-500",    text: "text-blue-700",    label: t.calNotReady },
+          { dot: "bg-red-500",     text: "text-red-700",     label: t.calOccupied },
         ].map(({ dot, text, label }) => (
           <span key={label} className={`inline-flex items-center gap-1.5 text-[10px] font-semibold ${text}`}>
             <span className={`w-2 h-2 rounded-full shrink-0 ${dot}`} />
@@ -1058,7 +1061,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         <button
                                             disabled={!isReady || isPending}
                                             onClick={() => setShowCheckInConfirm(true)}
-                                            title={!isReady ? "Appartamento non ancora pronto" : "Conferma check-in anticipato"}
+                                            title={!isReady ? t.calNotReadyTooltip : "Conferma check-in anticipato"}
                                             className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-black uppercase tracking-widest rounded-full transition-all duration-200 shadow-md ${
                                                 isReady
                                                     ? "bg-emerald-500 text-white shadow-emerald-200 hover:bg-emerald-600 active:scale-95 cursor-pointer"
@@ -1290,9 +1293,9 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 };
                                 const statusMap: Record<string, { label: string; color: string }> = {
                                     PENDING:         { label: "In attesa",    color: "bg-slate-100 text-slate-600" },
-                                    IN_PROGRESS:     { label: "In corso",     color: "bg-blue-50 text-blue-600" },
+                                    IN_PROGRESS:     { label: t.calInProgress, color: "bg-blue-50 text-blue-600" },
                                     AWAITING_REVIEW: { label: "In revisione", color: "bg-yellow-50 text-yellow-700" },
-                                    APPROVED:        { label: "Approvato",    color: "bg-emerald-50 text-emerald-600" },
+                                    APPROVED:        { label: t.calApproved, color: "bg-emerald-50 text-emerald-600" },
                                     RESOLVED:        { label: "Risolto",      color: "bg-emerald-50 text-emerald-600" },
                                 };
                                 const s = statusMap[selectedEvent.data.status] ?? { label: selectedEvent.data.status, color: "bg-slate-100 text-slate-600" };

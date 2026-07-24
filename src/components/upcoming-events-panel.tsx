@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
+import { useLang } from "@/src/components/lang-context";
 import { OperationalEvent, EventType } from "./operational-event-card";
 import Link from "next/link";
 
@@ -31,6 +32,7 @@ const TYPE_CONFIG: Record<EventType | "ALL", { label: string; icon: React.ReactN
 };
 
 export default function UpcomingEventsPanel({ events, serverDate }: Props) {
+  const { t } = useLang();
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<EventType | "ALL">("ALL");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -100,7 +102,7 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
         }`}
       >
         <CalendarDays size={16} />
-        In programma
+        {t.pgScheduled}
         <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
@@ -118,7 +120,7 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
         `}>
           {/* Header */}
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-slate-900 tracking-tight uppercase">In programma</h3>
+            <h3 className="text-xl font-semibold text-slate-900 tracking-tight uppercase">{t.pgScheduled}</h3>
             <div className="relative">
               <select 
                 value={filter}
@@ -137,7 +139,7 @@ export default function UpcomingEventsPanel({ events, serverDate }: Props) {
             {!hasEvents ? (
               <div className="py-12 text-center text-slate-300">
                 <CircleCheck size={48} className="mx-auto mb-4 opacity-10" />
-                <p className="text-slate-500 text-sm font-medium">Nessun evento in programma</p>
+                <p className="text-slate-500 text-sm font-medium">{t.pgNoScheduled}</p>
                 <p className="text-[10px] uppercase font-bold tracking-widest mt-1 opacity-50">Tutto sotto controllo</p>
               </div>
             ) : (
