@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import UnifiedFilters, { FilterField } from "./unified-filters";
 import DeleteOperationalButton from "./delete-operational-button";
@@ -37,6 +38,7 @@ interface Props {
 }
 
 export default function MaintenanceListTable({ initialTickets, apartments, collaborators }: Props) {
+  const { t: tr } = useLang();
   const [filters, setFilters] = useState<Record<string, string>>({
     search: "",
     apartmentId: "",
@@ -69,40 +71,40 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
   }, [initialTickets, filters]);
 
   const filterFields: FilterField[] = [
-    { id: "search", label: "Cerca", type: "text", placeholder: "Titolo, descr...", icon: <Search size={14} /> },
+    { id: "search", label: tr.mdSearch, type: "text", placeholder: tr.mtSearchPlaceholder, icon: <Search size={14} /> },
     { 
       id: "apartmentId", 
-      label: "Appartamento", 
+      label: tr.calApartment, 
       type: "select", 
       options: apartments.map(a => ({ value: a.id, label: a.name })),
       icon: <Building2 size={14} />
     },
     { 
       id: "status", 
-      label: "Stato", 
+      label: tr.calStatusWord, 
       type: "select", 
       options: [
-        { value: "PENDING", label: "In attesa" },
-        { value: "IN_PROGRESS", label: "In Corso" },
-        { value: "RESOLVED", label: "Risolto" }
+        { value: "PENDING", label: tr.stTicketWaiting },
+        { value: "IN_PROGRESS", label: tr.calInProgress },
+        { value: "RESOLVED", label: tr.stTicketResolved }
       ],
       icon: <Filter size={14} />
     },
     { 
       id: "priority", 
-      label: "Priorità", 
+      label: tr.mtPriority, 
       type: "select", 
       options: [
-        { value: "LOW", label: "Bassa" },
-        { value: "MEDIUM", label: "Media" },
-        { value: "HIGH", label: "Alta" },
-        { value: "URGENT", label: "Urgente" }
+        { value: "LOW", label: tr.mtLow },
+        { value: "MEDIUM", label: tr.mtMedium },
+        { value: "HIGH", label: tr.mtHigh },
+        { value: "URGENT", label: tr.mtUrgent }
       ],
       icon: <AlertTriangle size={14} />
     },
     { 
       id: "collaboratorId", 
-      label: "Assegnato a", 
+      label: tr.clnAssignedTo, 
       type: "select", 
       options: collaborators.map(c => ({ value: c.id, label: c.name })),
       icon: <User size={14} />
@@ -137,12 +139,12 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
           <table className="w-full text-left text-sm text-slate-600 border-collapse">
             <thead className="bg-white/20 border-b border-white/40">
               <tr>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Ticket e Dettagli</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Appartamento</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Priorità</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Stato</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Assegnato</th>
-                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Azioni</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtTicketDetails}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.calApartment}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtPriority}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.calStatusWord}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtAssigned}</th>
+                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.apColActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
@@ -158,7 +160,7 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
                           <div className="flex items-center gap-2 mt-0.5">
                              <Info size={10} className="text-slate-300" />
                              <span className="text-[10px] font-medium text-slate-400 line-clamp-1 max-w-[200px] tracking-wide uppercase">
-                               {ticket.description || "Nessuna descrizione"}
+                               {ticket.description || tr.mtNoDescription}
                              </span>
                           </div>
                         </div>
@@ -185,7 +187,7 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-3 text-xs font-bold text-slate-500 uppercase tracking-tight">
                       <User size={14} className="text-slate-300" />
-                      {ticket.assignedTo?.name || "Non assegnato"}
+                      {ticket.assignedTo?.name || tr.mgrUnassignedM}
                     </div>
                   </td>
                   <td className="px-10 py-6 text-right">
@@ -193,7 +195,7 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
                         <Link
                         href={`/dashboard/manager/maintenance/${ticket.id}/edit`}
                         className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
-                        title="Modifica"
+                        title={tr.mgrEdit}
                         >
                         <Pencil size={16} />
                         </Link>
@@ -208,7 +210,7 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                         <Wrench size={32} className="text-slate-200" />
                     </div>
-                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Nessun ticket trovato</p>
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{tr.mtNoTickets}</p>
                   </td>
                 </tr>
               )}
@@ -224,7 +226,7 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
               <Wrench size={28} className="text-slate-200" />
             </div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Nessun ticket trovato</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{tr.mtNoTickets}</p>
           </div>
         ) : (
           filteredTickets.map((ticket) => (
@@ -252,12 +254,12 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
                 <div className="flex items-center gap-2">
                   <div className={`flex-1 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border flex items-center gap-2 ${statusColors[ticket.status]}`}>
                     <div className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
-                    {ticket.status === "PENDING" ? "In attesa" : ticket.status === "IN_PROGRESS" ? "In corso" : "Risolto"}
+                    {ticket.status === "PENDING" ? tr.stTicketWaiting : ticket.status === "IN_PROGRESS" ? tr.calInProgress : tr.stTicketResolved}
                   </div>
                   <div className="flex-1 flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2">
                     <User size={11} className="text-slate-400 shrink-0" />
                     <span className="text-[10px] font-bold text-slate-600 uppercase tracking-tight truncate">
-                      {ticket.assignedTo?.name || "Non assegnato"}
+                      {ticket.assignedTo?.name || tr.mgrUnassignedM}
                     </span>
                   </div>
                 </div>
