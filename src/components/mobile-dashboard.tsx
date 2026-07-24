@@ -264,6 +264,16 @@ type Props = {
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────
+function aptStatusLabel(status: string, tr: T): string {
+  switch (status) {
+    case "GREEN":  return tr.calReady;
+    case "RED":    return tr.calOccupied;
+    case "BLUE":   return tr.calNotReady;
+    case "VIOLET": return tr.calInProgress;
+    case "YELLOW": return tr.calInReview;
+    default:       return tr.calReady;
+  }
+}
 function statusDotClass(status: string) {
   switch (status) {
     case "GREEN":  return "bg-emerald-500";
@@ -664,7 +674,7 @@ export default function MobileDashboard({
               </svg>
             </div>
             <p className={`text-3xl font-black leading-none mb-1 ${checkinsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{checkinsCount}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${checkinsCount > 0 ? "text-blue-500" : "text-slate-400"}`}>Check-in Oggi</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${checkinsCount > 0 ? "text-blue-500" : "text-slate-400"}`}>{tr.kpiCheckinFace}</p>
           </button>
 
           {/* ─ Pulizie oggi ─ */}
@@ -803,7 +813,7 @@ export default function MobileDashboard({
                       <div className="flex flex-col items-end gap-1 shrink-0">
                         <span className="flex items-center gap-1 text-[9px] font-black text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full">
                           <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-                          In corso
+                          {tr.calInProgress}
                         </span>
                         {c.progressTotal > 0 && (
                           <p className="text-[9px] text-slate-400">{c.progressDone}/{c.progressTotal} punti</p>
@@ -893,12 +903,12 @@ export default function MobileDashboard({
                   <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
                   <div>
                     <p className="text-sm font-bold text-slate-900">{apt.name}</p>
-                    <p className="text-[10px] text-slate-400">{apt.statusLabel}</p>
+                    <p className="text-[10px] text-slate-400">{aptStatusLabel(apt.status, tr)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold ${statusBadgeClass(apt.status)}`}>
-                    {apt.statusLabel}
+                    {aptStatusLabel(apt.status, tr)}
                   </span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5">
                     <polyline points="9 18 15 12 9 6" />
@@ -975,7 +985,7 @@ export default function MobileDashboard({
               <div className="flex-1 min-w-0">
                 <h2 className="text-[19px] font-black text-slate-900 leading-tight">{selectedApt.name}</h2>
                 <p className={`text-[10px] font-bold ${statusTextClass(selectedApt.status)}`}>
-                  {selectedApt.statusLabel}
+                  {aptStatusLabel(selectedApt.status, tr)}
                   {selectedApt.openTickets > 0 && <span className="ml-2 text-rose-600">· {selectedApt.openTickets} ticket aperti</span>}
                 </p>
               </div>
@@ -1546,7 +1556,7 @@ export default function MobileDashboard({
                             {t.priority ?? "Normal"}
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-500">Stato: {statusLabel(t.status, false, tr)}</p>
+                        <p className="text-[10px] text-slate-500">{tr.calStatusWord}: {statusLabel(t.status, false, tr)}</p>
                         {t.assignedTo && <p className="text-[10px] text-slate-500">Assegnato a {t.assignedTo.name}</p>}
                         {t.scheduledStart && <p className="text-[10px] text-slate-500">Previsto: {fmtDateFull(t.scheduledStart, dateLocale)}</p>}
                       </div>
@@ -2352,7 +2362,7 @@ export default function MobileDashboard({
                   <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
                   <span className="text-sm font-bold text-slate-900">{apt.name}</span>
                   <span className={`ml-auto text-[9px] font-bold px-2 py-0.5 rounded-full ${statusBadgeClass(apt.status)}`}>
-                    {apt.statusLabel}
+                    {aptStatusLabel(apt.status, tr)}
                   </span>
                 </Link>
               ))}
