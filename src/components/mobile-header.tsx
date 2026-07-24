@@ -17,7 +17,8 @@ interface MobileHeaderProps {
 const DASHBOARD_ACTIONS = new Set(["home", "calendar", "cleanings", "tickets", "map"]);
 
 export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseSettings, orgName }: MobileHeaderProps) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -61,7 +62,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
         )}
         <div className="flex items-center justify-between">
           <div className="flex flex-col items-center justify-center w-[42px] h-[42px] rounded-xl bg-[#f0eeff] border border-[#ede9fe] shrink-0">
-            <span className="text-[8px] font-bold uppercase text-violet-500 leading-none">{nowDate.toLocaleDateString("it-IT", { month: "short" }).replace(".", "")}</span>
+            <span className="text-[8px] font-bold uppercase text-violet-500 leading-none">{nowDate.toLocaleDateString(dateLocale, { month: "short" }).replace(".", "")}</span>
             <span className="text-[16px] font-black text-violet-700 leading-tight">{nowDate.getDate()}</span>
           </div>
           <button
