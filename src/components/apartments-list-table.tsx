@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import UnifiedFilters, { FilterField } from "./unified-filters";
 import SyncIcalButton from "./sync-ical-button";
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export default function ApartmentsListTable({ initialApartments }: Props) {
+  const { t } = useLang();
   const [filters, setFilters] = useState<Record<string, string>>({ search: "", status: "" });
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
@@ -44,7 +46,7 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
   }, [initialApartments, filters]);
 
   const filterFields: FilterField[] = [
-    { id: "search", label: "Cerca Nome / Indirizzo", type: "text", placeholder: "Es: Canova...", icon: <span className="inline-block w-4 h-4 rounded-full bg-slate-300" /> },
+    { id: "search", label: t.apSearchLabel, type: "text", placeholder: t.apSearchPlaceholder, icon: <span className="inline-block w-4 h-4 rounded-full bg-slate-300" /> },
   ];
 
   return (
@@ -62,11 +64,11 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
           <table className="w-full text-left text-sm text-slate-600 border-collapse">
             <thead className="bg-white/20 border-b border-white/40">
               <tr>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Nome e Indirizzo</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Capienza</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Dettagli</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Superficie</th>
-                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Azioni</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.apColNameAddr}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.apColCapacity}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.apColDetails}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.apColArea}</th>
+                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.apColActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
@@ -86,18 +88,18 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-2 font-bold text-slate-700">
                       <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
-                      <span>{apt.maxGuests} <span className="text-slate-400 font-medium">osp.</span></span>
+                      <span>{apt.maxGuests} <span className="text-slate-400 font-medium">{t.calGuestsShort}</span></span>
                     </div>
                   </td>
                   <td className="px-10 py-6">
                     <div className="flex flex-col gap-1.5">
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-600">
                            <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
-                           <span>{apt.bedrooms} Letti</span>
+                           <span>{apt.bedrooms} {t.apBeds}</span>
                         </div>
                         <div className="flex items-center gap-2 text-[11px] font-bold text-slate-600">
                            <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
-                           <span>{apt.bathrooms} Bagni</span>
+                           <span>{apt.bathrooms} {t.apBaths}</span>
                         </div>
                     </div>
                   </td>
@@ -120,26 +122,26 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                         className="h-10 px-5 flex items-center gap-2 bg-violet-500/5 text-violet-600 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-violet-500 hover:text-white transition-all border border-violet-500/10"
                         >
                         <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
-                        Prodotti
+                        {t.apProducts}
                         </Link>
                         <Link
                         href={`/dashboard/manager/apartments/${apt.id}/checklist`}
                         className="h-10 px-5 flex items-center gap-2 bg-emerald-500/5 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-emerald-500 hover:text-white transition-all border border-emerald-500/10"
                         >
                         <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
-                        Checklist
+                        {t.apChecklist}
                         </Link>
                         <Link
                         href={`/dashboard/manager/apartments/${apt.id}/checkin-checklist`}
                         className="h-10 px-5 flex items-center gap-2 bg-blue-500/5 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-blue-500 hover:text-white transition-all border border-blue-500/10"
                         >
                         <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
-                        Check-in
+                        {t.apCheckin}
                         </Link>
                         <Link
                         href={`/dashboard/manager/apartments/${apt.id}/edit`}
                         className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
-                        title="Modifica"
+                        title={t.mgrEdit}
                         >
                         <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
                         </Link>
@@ -154,7 +156,7 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                         <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
                     </div>
-                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Nessun risultato trovato</p>
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{t.apNoResults}</p>
                   </td>
                 </tr>
               )}
@@ -170,7 +172,7 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
               <span className="inline-block w-4 h-4 rounded-full bg-slate-300" />
             </div>
-            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Nessun risultato trovato</p>
+            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{t.apNoResults}</p>
           </div>
         ) : (
           filteredApartments.map((apt) => (
@@ -181,7 +183,7 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                 <div className="flex items-start justify-between gap-2 mb-0.5">
                   <p className="text-[17px] font-extrabold text-slate-900 tracking-tight leading-tight truncate">{apt.name}</p>
                   <div className="shrink-0 bg-[#f0eeff] border border-[#ede9fe] rounded-full px-3 py-1 text-[10px] font-bold text-violet-700 uppercase tracking-widest">
-                    Attivo
+                    {t.apActive}
                   </div>
                 </div>
                 <p className="text-[12px] text-slate-400 font-medium mt-0.5 mb-4 truncate">{apt.address}</p>
@@ -191,17 +193,17 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                   <div className="flex items-center gap-1.5 bg-[#f8f7ff] border border-[#ede9fe] rounded-xl px-2.5 py-1.5">
                     <span className="text-xs">👥</span>
                     <span className="text-[12px] font-bold text-slate-800">{apt.maxGuests}</span>
-                    <span className="text-[10px] font-medium text-violet-400">ospiti</span>
+                    <span className="text-[10px] font-medium text-violet-400">{t.apGuestsWord}</span>
                   </div>
                   <div className="flex items-center gap-1.5 bg-[#f8f7ff] border border-[#ede9fe] rounded-xl px-2.5 py-1.5">
                     <span className="text-xs">🛏</span>
                     <span className="text-[12px] font-bold text-slate-800">{apt.bedrooms}</span>
-                    <span className="text-[10px] font-medium text-violet-400">letti</span>
+                    <span className="text-[10px] font-medium text-violet-400">{t.apBedsLower}</span>
                   </div>
                   <div className="flex items-center gap-1.5 bg-[#f8f7ff] border border-[#ede9fe] rounded-xl px-2.5 py-1.5">
                     <span className="text-xs">🚿</span>
                     <span className="text-[12px] font-bold text-slate-800">{apt.bathrooms}</span>
-                    <span className="text-[10px] font-medium text-violet-400">bagni</span>
+                    <span className="text-[10px] font-medium text-violet-400">{t.apBathsLower}</span>
                   </div>
                   <div className="flex items-center gap-1.5 bg-[#f8f7ff] border border-[#ede9fe] rounded-xl px-2.5 py-1.5">
                     <span className="text-xs">📐</span>
@@ -221,7 +223,7 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                       <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
-                    Modifica
+                    {t.mgrEdit}
                   </Link>
 
                   {/* Menu ⋮ */}
@@ -249,8 +251,8 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
                             </div>
                             <div>
-                              <p className="text-[13px] font-semibold text-slate-800">Prodotti</p>
-                              <p className="text-[11px] text-slate-400">Gestisci i prodotti</p>
+                              <p className="text-[13px] font-semibold text-slate-800">{t.apProducts}</p>
+                              <p className="text-[11px] text-slate-400">{t.apManageProducts}</p>
                             </div>
                           </Link>
 
@@ -263,8 +265,8 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                             </div>
                             <div>
-                              <p className="text-[13px] font-semibold text-slate-800">Checklist</p>
-                              <p className="text-[11px] text-slate-400">Pulizia e controllo</p>
+                              <p className="text-[13px] font-semibold text-slate-800">{t.apChecklist}</p>
+                              <p className="text-[11px] text-slate-400">{t.apCleaningControl}</p>
                             </div>
                           </Link>
 
@@ -277,8 +279,8 @@ export default function ApartmentsListTable({ initialApartments }: Props) {
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10V7a2 2 0 00-2-2h-3"/><path d="M3 10V7a2 2 0 012-2h3"/><path d="M3 14v3a2 2 0 002 2h3"/><path d="M21 14v3a2 2 0 01-2 2h-3"/><circle cx="12" cy="12" r="2"/></svg>
                             </div>
                             <div>
-                              <p className="text-[13px] font-semibold text-slate-800">Check-in</p>
-                              <p className="text-[11px] text-slate-400">Checklist di arrivo</p>
+                              <p className="text-[13px] font-semibold text-slate-800">{t.apCheckin}</p>
+                              <p className="text-[11px] text-slate-400">{t.apArrivalChecklist}</p>
                             </div>
                           </Link>
 
