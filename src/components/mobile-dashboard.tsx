@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useLang } from "@/src/components/lang-context";
+import type { T } from "@/src/lib/i18n";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -139,13 +141,13 @@ export type CalendarData = {
 };
 
 // ── Calendar helpers ───────────────────────────────────────────────
-function fmtDate(iso: string) {
+function fmtDate(iso: string, locale: string = "it-IT") {
   const d = new Date(iso);
-  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "short" });
+  return d.toLocaleDateString(locale, { day: "2-digit", month: "short" });
 }
-function fmtDateFull(iso: string) {
+function fmtDateFull(iso: string, locale: string = "it-IT") {
   const d = new Date(iso);
-  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" });
+  return d.toLocaleDateString(locale, { day: "2-digit", month: "long", year: "numeric" });
 }
 function isoToYMD(iso: string) {
   // Returns YYYY-MM-DD in local time (avoids UTC shift)
@@ -159,15 +161,15 @@ function diffDays(a: string, b: string) {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
 // ── Mappa status → label unificata ────────────────────────────────
-function statusLabel(s: string, assigned = false) {
-  if (s === "PENDING" && assigned) return "Assegnato";
+function statusLabel(s: string, assigned: boolean, tr: T) {
+  if (s === "PENDING" && assigned) return tr.calAssigned;
   const map: Record<string, string> = {
-    PENDING: "Da fare",
-    IN_PROGRESS: "In corso",
-    COMPLETED: "Completata",
-    AWAITING_REVIEW: "In verifica", RESOLVED: "In verifica",
-    APPROVED: "Approvato",
-    CONFIRMED: "Confermata", DONE: "Approvato",
+    PENDING: tr.calToDo,
+    IN_PROGRESS: tr.calInProgress,
+    COMPLETED: tr.calCompleted,
+    AWAITING_REVIEW: tr.calInReview, RESOLVED: tr.calInReview,
+    APPROVED: tr.calApproved,
+    CONFIRMED: tr.mdConfirmed, DONE: tr.calApproved,
   };
   return map[s] ?? s;
 }
@@ -186,7 +188,7 @@ function unifiedStatusColor(s: string, assigned = false): string {
 // ── Legacy aliases ─────────────────────────────────────────────────
 function cleaningStatusColor(s: string, assigned = false) { return unifiedStatusColor(s, assigned); }
 function ticketPriorityColor(_p: string | null) { return "bg-slate-50 text-slate-600"; }
-const MONTH_NAMES_IT = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+const MONTH_NAMES_IT = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"]; // fallback; localized at render
 
 // ── Apartment status → calendar colors ────────────────────────────
 function aptStatusColors(status: string) {
@@ -213,9 +215,9 @@ function unifiedDotHex(status: string, assigned = false): string {
 function cleaningDotHex(c: CalCleaning): string {
   return unifiedDotHex(c.status, !!c.assignedTo);
 }
-function cleaningStatusInfo(c: CalCleaning): { label: string; badgeClass: string } {
+function cleaningStatusInfo(c: CalCleaning, tr: T): { label: string; badgeClass: string } {
   const assigned = !!c.assignedTo;
-  return { label: statusLabel(c.status, assigned), badgeClass: unifiedStatusColor(c.status, assigned) };
+  return { label: statusLabel(c.status, assigned, tr), badgeClass: unifiedStatusColor(c.status, assigned) };
 }
 
 function ticketDotHex(t: CalTicket): string {
@@ -225,14 +227,14 @@ function ticketDotHex(t: CalTicket): string {
 function checkinDotHex(c: CalCheckin): string {
   return unifiedDotHex(c.status, !!c.assignedTo);
 }
-function checkinStatusInfo(c: CalCheckin): { label: string; badgeClass: string } {
+function checkinStatusInfo(c: CalCheckin, tr: T): { label: string; badgeClass: string } {
   const assigned = !!c.assignedTo;
-  return { label: statusLabel(c.status, assigned), badgeClass: unifiedStatusColor(c.status, assigned) };
+  return { label: statusLabel(c.status, assigned, tr), badgeClass: unifiedStatusColor(c.status, assigned) };
 }
-function ticketStatusInfo(t: CalTicket): { label: string; badgeClass: string; barHex: string } {
+function ticketStatusInfo(t: CalTicket, tr: T): { label: string; badgeClass: string; barHex: string } {
   const assigned = !!t.assignedTo;
   return {
-    label: statusLabel(t.status, assigned),
+    label: statusLabel(t.status, assigned, tr),
     badgeClass: unifiedStatusColor(t.status, assigned),
     barHex: unifiedDotHex(t.status, assigned),
   };
@@ -340,6 +342,8 @@ export default function MobileDashboard({
   unreadMessagesCount = 0,
   orgName = "",
 }: Props) {
+  const { t: tr, lang } = useLang();
+  const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const [activeTab, setActiveTab]           = useState<"dashboard" | "calendar">("dashboard");
   const [sidebarOpen, setSidebarOpen]       = useState(false);
   const [mapOpen, setMapOpen]               = useState(false);
@@ -370,7 +374,7 @@ export default function MobileDashboard({
   const [lateCleanSheetOpen, setLateCleanSheetOpen]   = useState(false);
   const [inProgressSheetOpen, setInProgressSheetOpen] = useState(false);
 
-  // ── Sheet "Tutte le pulizie" ───────────────────────────────────
+  // ── Sheet tr.mdAllCleanings ───────────────────────────────────
   type AllCleaningItem = {
     id: string;
     date: string;
@@ -495,7 +499,7 @@ export default function MobileDashboard({
   const HamburgerBtn = () => (
     <button
       onClick={openSidebar}
-      aria-label="Apri menu"
+      aria-label={tr.mdOpenMenu}
       className="w-12 h-12 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center gap-1.5 px-2.5 shrink-0"
     >
       <span className="block w-full h-0.5 bg-slate-700 rounded-full" />
@@ -683,7 +687,7 @@ export default function MobileDashboard({
               )}
             </div>
             <p className={`text-3xl font-black leading-none mb-1 ${cleaningsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{cleaningsCount}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${cleaningsCount > 0 ? "text-violet-500" : "text-slate-400"}`}>Pulizie Oggi</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${cleaningsCount > 0 ? "text-violet-500" : "text-slate-400"}`}>{tr.mdCleaningsToday}</p>
           </button>
 
           {/* ─ Pulizie in ritardo ─ */}
@@ -701,7 +705,7 @@ export default function MobileDashboard({
               </svg>
             </div>
             <p className={`text-3xl font-black leading-none mb-1 ${lateCleanings.length > 0 ? "text-amber-600" : "text-slate-400"}`}>{lateCleanings.length}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${lateCleanings.length > 0 ? "text-amber-500" : "text-slate-400"}`}>In Ritardo</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${lateCleanings.length > 0 ? "text-amber-500" : "text-slate-400"}`}>{tr.mdLate}</p>
           </button>
 
           {/* ─ Pulizie in corso ─ */}
@@ -742,7 +746,7 @@ export default function MobileDashboard({
               )}
             </div>
             <p className={`text-3xl font-black leading-none mb-1 ${ticketsTodayCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{ticketsTodayCount}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${ticketsTodayCount > 0 ? "text-orange-500" : "text-slate-400"}`}>Ticket Oggi</p>
+            <p className={`text-[11px] font-black uppercase tracking-widest ${ticketsTodayCount > 0 ? "text-orange-500" : "text-slate-400"}`}>{tr.mdTicketsToday}</p>
           </button>
 
           {/* Chiedi a IA */}
@@ -750,14 +754,14 @@ export default function MobileDashboard({
             onClick={() => setAiChatOpen(true)}
             className="bg-gradient-to-br from-violet-600 to-blue-500 rounded-2xl p-4 shadow-lg shadow-violet-200 text-left active:scale-95 transition-transform"
           >
-            <p className="text-[9px] font-black uppercase tracking-widest text-violet-200 mb-1">Assistente</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-violet-200 mb-1">{tr.mdAssistant}</p>
             <div className="flex items-center gap-2 mt-1">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
-              <p className="text-white font-black text-base leading-tight">Chiedi<br/>a IA</p>
+              <p className="text-white font-black text-base leading-tight" dangerouslySetInnerHTML={{__html: tr.mdAskAI}} />
             </div>
-            <p className="text-violet-200 text-[10px] mt-2">Domande operative</p>
+            <p className="text-violet-200 text-[10px] mt-2">{tr.mdOperationalQuestions}</p>
           </button>
         </div>
 
@@ -766,7 +770,7 @@ export default function MobileDashboard({
           <div className="px-4 mb-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Pulizie in corso</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{tr.mdCleaningsInProgress}</p>
                 <span className="w-5 h-5 rounded-full bg-violet-600 text-white text-[9px] font-black flex items-center justify-center">
                   {cleaningsInProgress.length}
                 </span>
@@ -825,7 +829,7 @@ export default function MobileDashboard({
 
         {/* ── AZIONI RAPIDE ───────────────────────────────── */}
         <div className="px-4 mb-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Azioni Rapide</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">{tr.mdQuickActions}</p>
           <div className="flex gap-2.5">
             <Link
               href="/dashboard/manager/cleanings/new"
@@ -839,7 +843,7 @@ export default function MobileDashboard({
                   <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
                 </svg>
               </div>
-              <p className="text-[13px] font-extrabold text-white leading-tight">Nuova<br/>Pulizia</p>
+              <p className="text-[13px] font-extrabold text-white leading-tight">{tr.pgNewCleaning}</p>
             </Link>
 
             <Link
@@ -853,7 +857,7 @@ export default function MobileDashboard({
                   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                 </svg>
               </div>
-              <p className="text-[13px] font-extrabold text-white leading-tight">Nuovo<br/>Ticket</p>
+              <p className="text-[13px] font-extrabold text-white leading-tight">{tr.pgNewTicket}</p>
             </Link>
 
             <Link
@@ -870,14 +874,14 @@ export default function MobileDashboard({
                   <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
               </div>
-              <p className="text-[13px] font-extrabold text-white leading-tight">Nuova<br/>Prenot.</p>
+              <p className="text-[13px] font-extrabold text-white leading-tight">{tr.pgNewBooking}</p>
             </Link>
           </div>
         </div>
 
         {/* ── STATO APPARTAMENTI ──────────────────────────── */}
         <div className="px-4 mb-8">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Stato Appartamenti</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">{tr.mdApartmentsStatus}</p>
           <div className="space-y-2">
             {apartments.map((apt) => (
               <button
@@ -914,13 +918,13 @@ export default function MobileDashboard({
           {/* Header calendario */}
           <div className="px-4 pt-4 pb-3 flex items-center gap-3 border-b border-slate-100">
             <div className="flex-1">
-              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Scegli appartamento</p>
-              <h2 className="text-xl font-bold text-slate-900">Calendario</h2>
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.mdChooseApartment}</p>
+              <h2 className="text-xl font-bold text-slate-900">{tr.navCalendar}</h2>
             </div>
             <button
               onClick={() => setActiveTab("dashboard")}
               className="w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
-              aria-label="Chiudi"
+              aria-label={tr.mdClose}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -978,7 +982,7 @@ export default function MobileDashboard({
               <button
                 onClick={() => { setSelectedApt(null); setCalendarData(null); }}
                 className="w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
-                aria-label="Chiudi"
+                aria-label={tr.mdClose}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -987,19 +991,19 @@ export default function MobileDashboard({
             </div>
             {/* Tabs */}
             <div className="flex gap-2 pb-0">
-              {(["calendar","bookings","cleanings","tickets"] as const).map((t) => {
-                const labels = { calendar: "Calendario", bookings: "Prenotazioni", cleanings: "Pulizie", tickets: "Ticket" };
+              {(["calendar","bookings","cleanings","tickets"] as const).map((tab) => {
+                const labels = { calendar: tr.navCalendar, bookings: tr.navBookings, cleanings: tr.navCleanings, tickets: tr.navTickets };
                 return (
                   <button
-                    key={t}
-                    onClick={() => setCalendarTab(t)}
+                    key={tab}
+                    onClick={() => setCalendarTab(tab)}
                     className={`flex-1 py-2 text-[10px] font-bold rounded-t-xl border-b-2 transition-colors ${
-                      calendarTab === t
+                      calendarTab === tab
                         ? "border-violet-600 text-violet-700 bg-violet-50"
                         : "border-transparent text-slate-500 bg-transparent"
                     }`}
                   >
-                    {labels[t]}
+                    {labels[tab]}
                   </button>
                 );
               })}
@@ -1129,7 +1133,7 @@ export default function MobileDashboard({
                 const panelCheckins  = dayCheckinsMap.get(selectedDay) ?? [];
                 const total = panelBookings.length + panelCleanings.length + panelTickets.length + panelCheckins.length;
                 const dateLabel = new Date(year, month, selectedDay)
-                  .toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+                  .toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
 
                 return (
                   <div className="bg-white rounded-2xl border border-violet-100 shadow-md overflow-hidden mb-4">
@@ -1143,13 +1147,13 @@ export default function MobileDashboard({
                       </div>
                     </div>
                     {total === 0 ? (
-                      <div className="py-6 text-center text-sm text-slate-400 italic">Nessun evento in questa data</div>
+                      <div className="py-6 text-center text-sm text-slate-400 italic">{tr.mdNoEventThisDate}</div>
                     ) : (
                       <div>
                         {panelBookings.map((b) => {
                           const isCI = isoToYMD(b.checkInDate) === selYMD;
                           const isCO = isoToYMD(b.checkOutDate) === selYMD;
-                          const label = isCI ? "Check-in" : isCO ? "Check-out" : "In soggiorno";
+                          const label = isCI ? "Check-in" : isCO ? "Check-out" : tr.mdInStay;
                           return (
                             <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`}
                               onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/bookings/${b.id}/edit`)}
@@ -1159,16 +1163,16 @@ export default function MobileDashboard({
                               <div className="flex-1 min-w-0">
                                 <div className="text-[8px] font-black uppercase tracking-wide text-violet-600">Prenotazione — {label}</div>
                                 <div className="text-[12px] font-bold text-slate-900 truncate">{selectedApt!.name}</div>
-                                <div className="text-[9px] text-slate-500">{b.guestName ?? "Ospite"}{b.totalGuests ? ` · ${b.totalGuests} osp.` : ""}</div>
-                                <div className="text-[9px] text-slate-400">{fmtDate(b.checkInDate)} → {fmtDate(b.checkOutDate)}</div>
+                                <div className="text-[9px] text-slate-500">{b.guestName ?? tr.calGuest}{b.totalGuests ? ` · ${b.totalGuests} osp.` : ""}</div>
+                                <div className="text-[9px] text-slate-400">{fmtDate(b.checkInDate, dateLocale)} → {fmtDate(b.checkOutDate, dateLocale)}</div>
                               </div>
-                              <span className="text-[7px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">Confermata</span>
+                              <span className="text-[7px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">{tr.mdConfirmed}</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
                             </Link>
                           );
                         })}
                         {panelCleanings.map((c) => {
-                          const info = cleaningStatusInfo(c);
+                          const info = cleaningStatusInfo(c, tr);
                           return (
                             <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`}
                               onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/cleanings/${c.id}`)}
@@ -1176,7 +1180,7 @@ export default function MobileDashboard({
                               <div className="w-1 self-stretch rounded-full bg-blue-400 shrink-0" />
                               <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-base">🧹</div>
                               <div className="flex-1 min-w-0">
-                                <div className="text-[8px] font-black uppercase tracking-wide text-blue-600">Pulizia</div>
+                                <div className="text-[8px] font-black uppercase tracking-wide text-blue-600">{tr.mdSingleCleaning}</div>
                                 <div className="text-[12px] font-bold text-slate-900 truncate">{selectedApt!.name}</div>
                                 {(() => {
                                   const cleaningDay = isoToYMD(c.date);
@@ -1191,7 +1195,7 @@ export default function MobileDashboard({
                           );
                         })}
                         {panelCheckins.map((c) => {
-                          const info = checkinStatusInfo(c);
+                          const info = checkinStatusInfo(c, tr);
                           return (
                             <Link key={c.id} href={`/dashboard/manager/checkins/${c.id}`}
                               onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/checkins/${c.id}`)}
@@ -1201,7 +1205,7 @@ export default function MobileDashboard({
                               <div className="flex-1 min-w-0">
                                 <div className="text-[8px] font-black uppercase tracking-wide text-sky-600">Check-in</div>
                                 <div className="text-[12px] font-bold text-slate-900 truncate">{selectedApt!.name}</div>
-                                <div className="text-[9px] text-slate-500">{c.booking?.guestName ?? "Ospite"}{c.assignedTo ? ` · ${c.assignedTo.name}` : ""}</div>
+                                <div className="text-[9px] text-slate-500">{c.booking?.guestName ?? tr.calGuest}{c.assignedTo ? ` · ${c.assignedTo.name}` : ""}</div>
                               </div>
                               <span className={`text-[7px] font-bold px-2 py-1 rounded-full shrink-0 ${info.badgeClass}`}>{info.label}</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1209,7 +1213,7 @@ export default function MobileDashboard({
                           );
                         })}
                         {panelTickets.map((t) => {
-                          const info = ticketStatusInfo(t);
+                          const info = ticketStatusInfo(t, tr);
                           return (
                             <Link key={t.id} href={`/dashboard/manager/maintenance/${t.id}`}
                               onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/maintenance/${t.id}`)}
@@ -1219,7 +1223,7 @@ export default function MobileDashboard({
                               <div className="flex-1 min-w-0">
                                 <div className="text-[8px] font-black uppercase tracking-wide" style={{ color: info.barHex }}>Ticket · {info.label}</div>
                                 <div className="text-[12px] font-bold text-slate-900 truncate">{t.title}</div>
-                                <div className="text-[9px] text-slate-500">{t.assignedTo?.name ?? "Non assegnato"}</div>
+                                <div className="text-[9px] text-slate-500">{t.assignedTo?.name ?? tr.mgrUnassignedM}</div>
                               </div>
                               <span className={`text-[7px] font-bold px-2 py-1 rounded-full shrink-0 ${info.badgeClass}`}>{info.label}</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1239,7 +1243,7 @@ export default function MobileDashboard({
                     <button onClick={() => changeCalMonth(-1)} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
-                    <span className="text-base font-black text-slate-900">{MONTH_NAMES_IT[month]} {year}</span>
+                    <span className="text-base font-black text-slate-900">{new Date(year, month, 1).toLocaleDateString(dateLocale, { month: "long" })} {year}</span>
                     <button onClick={() => changeCalMonth(1)} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
@@ -1249,7 +1253,7 @@ export default function MobileDashboard({
                   <div className="bg-white rounded-2xl pt-2 pb-1 shadow-sm border border-slate-100 mb-3 overflow-hidden">
                     {/* Intestazione giorni */}
                     <div className="grid grid-cols-7" style={{ borderBottom: "2px solid #e2e8f0", borderLeft: "1px solid #e2e8f0" }}>
-                      {["Lun","Mar","Mer","Gio","Ven","Sab","Dom"].map((d, i) => (
+                      {Array.from({length:7},(_,i)=>new Date(2024,0,1+i).toLocaleDateString(dateLocale,{weekday:"short"})).map((d, i) => (
                         <div
                           key={d}
                           className="text-center text-[8px] font-black uppercase py-1.5"
@@ -1372,14 +1376,14 @@ export default function MobileDashboard({
 
                     {/* Stato Appartamento */}
                     <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Stato Appartamento</p>
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">{tr.mdApartmentStatus}</p>
                       <div className="space-y-1.5">
                         {([
-                          { color: "#22c55e", label: "Pronto",      textColor: "#15803d" },
-                          { color: "#3b82f6", label: "Non pronto",  textColor: "#1d4ed8" },
-                          { color: "#7c3aed", label: "In corso",    textColor: "#6d28d9" },
-                          { color: "#eab308", label: "In verifica", textColor: "#a16207" },
-                          { color: "#ef4444", label: "Occupato",    textColor: "#b91c1c" },
+                          { color: "#22c55e", label: tr.calReady,      textColor: "#15803d" },
+                          { color: "#3b82f6", label: tr.calNotReady,  textColor: "#1d4ed8" },
+                          { color: "#7c3aed", label: tr.calInProgress,    textColor: "#6d28d9" },
+                          { color: "#eab308", label: tr.calInReview, textColor: "#a16207" },
+                          { color: "#ef4444", label: tr.calOccupied,    textColor: "#b91c1c" },
                         ] as const).map(({ color, label, textColor }) => (
                           <div key={label} className="flex items-center gap-2">
                             <div className="flex shrink-0" style={{ height: 14 }}>
@@ -1395,14 +1399,14 @@ export default function MobileDashboard({
 
                     {/* Pulizie */}
                     <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Pulizie</p>
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">{tr.navCleanings}</p>
                       <div className="flex flex-wrap gap-x-3 gap-y-1.5">
                         {([
-                          { hex: "#eab308", label: "In attesa" },
-                          { hex: "#f43f5e", label: "Non assegnata" },
-                          { hex: "#f97316", label: "In ritardo" },
-                          { hex: "#7c3aed", label: "In corso / verifica" },
-                          { hex: "#22c55e", label: "Completata" },
+                          { hex: "#eab308", label: tr.stTicketWaiting },
+                          { hex: "#f43f5e", label: tr.mgrUnassignedF },
+                          { hex: "#f97316", label: tr.mdLate },
+                          { hex: "#7c3aed", label: tr.mdInProgressReview },
+                          { hex: "#22c55e", label: tr.calCompleted },
                         ] as const).map(({ hex, label }) => (
                           <div key={label} className="flex items-center gap-1.5">
                             <div style={{ width: 7, height: 7, borderRadius: "50%", background: hex, flexShrink: 0 }} />
@@ -1414,11 +1418,11 @@ export default function MobileDashboard({
 
                     {/* Ticket */}
                     <div className="bg-white rounded-2xl border border-slate-100 px-3 py-2.5">
-                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Ticket manutenzione</p>
+                      <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">{tr.mdMaintTickets}</p>
                       <div className="flex flex-wrap gap-x-3 gap-y-1.5">
                         {([
                           { hex: "#ef4444", label: "Urgente" },
-                          { hex: "#f97316", label: "Non urgente" },
+                          { hex: "#f97316", label: tr.mdNotUrgent },
                           { hex: "#94a3b8", label: "Risolto" },
                         ] as const).map(({ hex, label }) => (
                           <div key={label} className="flex items-center gap-1.5">
@@ -1441,7 +1445,7 @@ export default function MobileDashboard({
                 : null;
               const dayLabel = selectedDay
                 ? new Date(calMonth.year, calMonth.month, selectedDay)
-                    .toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })
+                    .toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" })
                 : null;
               const items = selYMD
                 ? calendarData.bookings.filter((b) => {
@@ -1453,8 +1457,8 @@ export default function MobileDashboard({
               return (
                 <div className="px-4 pt-4 space-y-3">
                   {dayLabel && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 capitalize">{dayLabel}</p>}
-                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
-                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessuna prenotazione in questa data</div>}
+                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">{tr.mdTapDay}</div>}
+                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">{tr.mdNoBookingThisDate}</div>}
                   {items.map((b) => (
                     <Link key={b.id} href={`/dashboard/manager/bookings/${b.id}/edit`} onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/bookings/${b.id}/edit`)} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
                       <div className="h-1 bg-violet-500" />
@@ -1462,13 +1466,13 @@ export default function MobileDashboard({
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-slate-900 truncate">{selectedApt!.name}</p>
-                            <p className="text-[10px] text-slate-500 mt-0.5">{b.guestName ?? "Ospite"}</p>
-                            <p className="text-[10px] text-slate-500">Check-in: {fmtDateFull(b.checkInDate)}</p>
-                            <p className="text-[10px] text-slate-500">Check-out: {fmtDateFull(b.checkOutDate)}</p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">{b.guestName ?? tr.calGuest}</p>
+                            <p className="text-[10px] text-slate-500">Check-in: {fmtDateFull(b.checkInDate, dateLocale)}</p>
+                            <p className="text-[10px] text-slate-500">Check-out: {fmtDateFull(b.checkOutDate, dateLocale)}</p>
                             {b.totalGuests && <p className="text-[10px] text-slate-500">{b.totalGuests} ospiti · {diffDays(b.checkInDate, b.checkOutDate)} notti</p>}
                             {b.notes && <p className="text-[10px] text-slate-400 mt-1 italic">{b.notes}</p>}
                           </div>
-                          <span className="text-[8px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">Confermata</span>
+                          <span className="text-[8px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full shrink-0">{tr.mdConfirmed}</span>
                         </div>
                       </div>
                     </Link>
@@ -1483,7 +1487,7 @@ export default function MobileDashboard({
                 : null;
               const dayLabel = selectedDay
                 ? new Date(calMonth.year, calMonth.month, selectedDay)
-                    .toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })
+                    .toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" })
                 : null;
               const items = selYMD
                 ? calendarData.cleanings.filter((c) => isoToYMD(c.date) === selYMD)
@@ -1491,8 +1495,8 @@ export default function MobileDashboard({
               return (
                 <div className="px-4 pt-4 space-y-3">
                   {dayLabel && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 capitalize">{dayLabel}</p>}
-                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
-                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessuna pulizia in questa data</div>}
+                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">{tr.mdTapDay}</div>}
+                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">{tr.mdNoCleaningThisDate}</div>}
                   {items.map((c) => (
                     <Link key={c.id} href={`/dashboard/manager/cleanings/${c.id}`} onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/cleanings/${c.id}`)} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
                       <div className="h-1 bg-blue-400" />
@@ -1508,7 +1512,7 @@ export default function MobileDashboard({
                           })()}
                           {c.assignedTo && <p className="text-[10px] text-slate-400">{c.assignedTo.name}</p>}
                         </div>
-                        <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${cleaningStatusColor(c.status)}`}>{statusLabel(c.status)}</span>
+                        <span className={`text-[8px] font-bold px-2 py-1 rounded-full shrink-0 ${cleaningStatusColor(c.status)}`}>{statusLabel(c.status, false, tr)}</span>
                       </div>
                     </Link>
                   ))}
@@ -1522,7 +1526,7 @@ export default function MobileDashboard({
                 : null;
               const dayLabel = selectedDay
                 ? new Date(calMonth.year, calMonth.month, selectedDay)
-                    .toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })
+                    .toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" })
                 : null;
               const items = selYMD
                 ? calendarData.tickets.filter((t) => isoToYMD(t.scheduledStart ?? t.createdAt) === selYMD)
@@ -1530,8 +1534,8 @@ export default function MobileDashboard({
               return (
                 <div className="px-4 pt-4 space-y-3">
                   {dayLabel && <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 capitalize">{dayLabel}</p>}
-                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">Tocca un giorno sul calendario</div>}
-                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">Nessun ticket in questa data</div>}
+                  {!selYMD && <div className="text-center py-12 text-slate-400 text-sm">{tr.mdTapDay}</div>}
+                  {selYMD && items.length === 0 && <div className="text-center py-12 text-slate-400 text-sm">{tr.mdNoTicketThisDate}</div>}
                   {items.map((t) => (
                     <Link key={t.id} href={`/dashboard/manager/maintenance/${t.id}`} onClick={() => saveCalendarStateAndNavigate(`/dashboard/manager/maintenance/${t.id}`)} className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform">
                       <div className="h-1 bg-rose-400" />
@@ -1542,9 +1546,9 @@ export default function MobileDashboard({
                             {t.priority ?? "Normal"}
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-500">Stato: {statusLabel(t.status)}</p>
+                        <p className="text-[10px] text-slate-500">Stato: {statusLabel(t.status, false, tr)}</p>
                         {t.assignedTo && <p className="text-[10px] text-slate-500">Assegnato a {t.assignedTo.name}</p>}
-                        {t.scheduledStart && <p className="text-[10px] text-slate-500">Previsto: {fmtDateFull(t.scheduledStart)}</p>}
+                        {t.scheduledStart && <p className="text-[10px] text-slate-500">Previsto: {fmtDateFull(t.scheduledStart, dateLocale)}</p>}
                       </div>
                     </Link>
                   ))}
@@ -1579,8 +1583,8 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs font-black text-slate-800">Manager</p>
-                  <p className="text-[10px] text-slate-400">Dashboard Operativa</p>
+                  <p className="text-xs font-black text-slate-800">{tr.mdManager}</p>
+                  <p className="text-[10px] text-slate-400">{tr.mdOperationalDash}</p>
                 </div>
               </div>
             </div>
@@ -1589,7 +1593,7 @@ export default function MobileDashboard({
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
 
               {/* NAVIGAZIONE label */}
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">Navigazione</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">{tr.mdNavigation}</p>
 
               <button
                 onClick={() => navigateTo("dashboard")}
@@ -1605,7 +1609,7 @@ export default function MobileDashboard({
                 </div>
                 <div>
                   <p className={`text-sm font-bold ${activeTab === "dashboard" ? "text-violet-700" : "text-slate-700"}`}>Dashboard</p>
-                  <p className="text-[10px] text-slate-400">Vista principale</p>
+                  <p className="text-[10px] text-slate-400">{tr.mdMainView}</p>
                 </div>
               </button>
 
@@ -1622,8 +1626,8 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <div>
-                  <p className={`text-sm font-bold ${activeTab === "calendar" ? "text-violet-700" : "text-slate-700"}`}>Calendario</p>
-                  <p className="text-[10px] text-slate-400">Per appartamento</p>
+                  <p className={`text-sm font-bold ${activeTab === "calendar" ? "text-violet-700" : "text-slate-700"}`}>{tr.navCalendar}</p>
+                  <p className="text-[10px] text-slate-400">{tr.mdPerApartment}</p>
                 </div>
               </button>
 
@@ -1642,8 +1646,8 @@ export default function MobileDashboard({
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-bold text-slate-700">Messaggi</p>
-                  <p className="text-[10px] text-slate-400">Chat con il team</p>
+                  <p className="text-sm font-bold text-slate-700">{tr.navMessages}</p>
+                  <p className="text-[10px] text-slate-400">{tr.mdChatTeam}</p>
                 </div>
                 {unreadMessagesCount > 0 && (
                   <span className="min-w-[20px] h-[20px] px-1 bg-rose-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-md shadow-rose-200">
@@ -1662,7 +1666,7 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-700">Cerca</p>
+                  <p className="text-sm font-bold text-slate-700">{tr.mdSearch}</p>
                   <p className="text-[10px] text-slate-400">Appartamenti, ospiti…</p>
                 </div>
               </button>
@@ -1678,8 +1682,8 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-700">Appartamenti</p>
-                  <p className="text-[10px] text-slate-400">Elenco proprietà</p>
+                  <p className="text-sm font-bold text-slate-700">{tr.navApartments}</p>
+                  <p className="text-[10px] text-slate-400">{tr.mdPropertyList}</p>
                 </div>
               </div>
 
@@ -1696,14 +1700,14 @@ export default function MobileDashboard({
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-700">Team</p>
-                  <p className="text-[10px] text-slate-400">Gestione collaboratori</p>
+                  <p className="text-sm font-bold text-slate-700">{tr.navTeam}</p>
+                  <p className="text-[10px] text-slate-400">{tr.mdCollabMgmt}</p>
                 </div>
               </div>
 
               {/* Divider */}
               <div className="my-3 h-px bg-slate-100 mx-2" />
-              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">Crea Nuovo</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">{tr.mdCreateNew}</p>
 
               <div
                 onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/cleanings/new")); }}
@@ -1715,7 +1719,7 @@ export default function MobileDashboard({
                     <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
                   </svg>
                 </div>
-                <p className="text-sm font-bold text-slate-700">Nuova Pulizia</p>
+                <p className="text-sm font-bold text-slate-700">{tr.pgNewCleaning}</p>
               </div>
 
               <div
@@ -1727,7 +1731,7 @@ export default function MobileDashboard({
                     <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                   </svg>
                 </div>
-                <p className="text-sm font-bold text-slate-700">Nuovo Ticket</p>
+                <p className="text-sm font-bold text-slate-700">{tr.pgNewTicket}</p>
               </div>
 
               <div
@@ -1739,7 +1743,7 @@ export default function MobileDashboard({
                     <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
                   </svg>
                 </div>
-                <p className="text-sm font-bold text-slate-700">Nuova Prenotazione</p>
+                <p className="text-sm font-bold text-slate-700">{tr.pgNewBooking}</p>
               </div>
 
               <div
@@ -1752,7 +1756,7 @@ export default function MobileDashboard({
                     <polyline points="9 22 9 12 15 12 15 22" />
                   </svg>
                 </div>
-                <p className="text-sm font-bold text-slate-700">Nuovo Appartamento</p>
+                <p className="text-sm font-bold text-slate-700">{tr.mdNewApartment}</p>
               </div>
             </nav>
 
@@ -1792,7 +1796,7 @@ export default function MobileDashboard({
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col" style={{ paddingTop: "calc(env(safe-area-inset-top) + 58px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Oggi</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.navToday}</p>
               <h2 className="text-xl font-bold text-slate-900">
                 {checkinsCount > 0 ? `${checkinsCount} check-in` : "Nessun check-in oggi"}
               </h2>
@@ -1845,7 +1849,7 @@ export default function MobileDashboard({
         const grouped: Record<string, AllCleaningItem[]> = {};
         allCleaningsData.forEach((item) => {
           const d = new Date(item.date);
-          const key = d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+          const key = d.toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
           if (!grouped[key]) grouped[key] = [];
           grouped[key].push(item);
         });
@@ -1858,17 +1862,17 @@ export default function MobileDashboard({
         for (let i = -3; i <= 8; i++) {
           const d = new Date(base.getFullYear(), base.getMonth() + i, 1);
           const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-          const label = d.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+          const label = d.toLocaleDateString(dateLocale, { month: "long", year: "numeric" });
           monthOptions.push({ value: val, label: label.charAt(0).toUpperCase() + label.slice(1) });
         }
 
         const statusOptions = [
           { value: "ALL", label: "Tutte" },
-          { value: "PENDING", label: "In attesa" },
-          { value: "IN_PROGRESS", label: "In corso" },
+          { value: "PENDING", label: tr.stTicketWaiting },
+          { value: "IN_PROGRESS", label: tr.calInProgress },
           { value: "AWAITING_REVIEW", label: "Revisione" },
-          { value: "COMPLETED", label: "Completate" },
-          { value: "APPROVED", label: "Approvate" },
+          { value: "COMPLETED", label: tr.mdCompletedPlural },
+          { value: "APPROVED", label: tr.mdApprovedPlural },
         ];
 
         function barColor(status: string, assigned: boolean) {
@@ -1884,7 +1888,7 @@ export default function MobileDashboard({
           <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col" style={{ paddingTop: "calc(env(safe-area-inset-top) + 58px)" }}>
             {/* Header */}
             <div className="px-5 pt-3 pb-3 flex items-center justify-between border-b border-[#ede9fe] shrink-0">
-              <span className="text-lg font-bold text-slate-900">Pulizie</span>
+              <span className="text-lg font-bold text-slate-900">{tr.navCleanings}</span>
               <button
                 onClick={() => setCleaningsSheetOpen(false)}
                 className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"
@@ -1902,7 +1906,7 @@ export default function MobileDashboard({
                 onChange={(e) => { setAllCleaningsApt(e.target.value); fetchAllCleanings(allCleaningsMonth, e.target.value, allCleaningsStatus); }}
                 className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#ede9fe] bg-white text-violet-700 min-w-0 appearance-none"
               >
-                <option value="ALL">Tutti gli appartamenti</option>
+                <option value="ALL">{tr.mdAllApartments}</option>
                 {apartments.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
               <select
@@ -1950,7 +1954,7 @@ export default function MobileDashboard({
                   ))}
                 </div>
               ) : groupKeys.length === 0 ? (
-                <div className="text-center py-16 text-slate-400 text-sm">Nessuna pulizia trovata</div>
+                <div className="text-center py-16 text-slate-400 text-sm">{tr.mdNoCleaningFound}</div>
               ) : (
                 <div className="px-5 py-4 space-y-5">
                   {groupKeys.map((dayLabel) => (
@@ -1961,8 +1965,8 @@ export default function MobileDashboard({
                           const assigned = !!item.assignedToName;
                           const bc = barColor(item.status, assigned);
                           const badgeClass = unifiedStatusColor(item.status, assigned);
-                          const lbl = statusLabel(item.status, assigned);
-                          const timeStr = new Date(item.date).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+                          const lbl = statusLabel(item.status, assigned, tr);
+                          const timeStr = new Date(item.date).toLocaleTimeString(dateLocale, { hour: "2-digit", minute: "2-digit" });
                           const iconBg = item.status === "APPROVED" ? "bg-emerald-50"
                             : item.status === "AWAITING_REVIEW" ? "bg-amber-50"
                             : item.status === "COMPLETED" ? "bg-sky-50"
@@ -1991,7 +1995,7 @@ export default function MobileDashboard({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
-                                  <p className="text-[10px] text-slate-400 truncate">{item.assignedToName ?? "Non assegnata"} · {timeStr}</p>
+                                  <p className="text-[10px] text-slate-400 truncate">{item.assignedToName ?? tr.mgrUnassignedF} · {timeStr}</p>
                                 </div>
                                 <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 ${badgeClass}`}>{lbl}</span>
                               </div>
@@ -2015,11 +2019,11 @@ export default function MobileDashboard({
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col" style={{ paddingTop: "calc(env(safe-area-inset-top) + 58px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">Manutenzione</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">{tr.navMaintenance}</p>
               <h2 className="text-xl font-bold text-slate-900">
                 {ticketsTodayItems.length > 0
                   ? `${ticketsTodayItems.length} ticket oggi`
-                  : "Nessun ticket oggi"}
+                  : tr.kpiEmptyTickets}
               </h2>
             </div>
             <button
@@ -2039,7 +2043,7 @@ export default function MobileDashboard({
             )}
             {ticketsTodayItems.map((ticket) => {
               const badgeClass = unifiedStatusColor(ticket.status, ticket.isAssigned);
-              const ticketStatusLabel = statusLabel(ticket.status, ticket.isAssigned);
+              const ticketStatusLabel = statusLabel(ticket.status, ticket.isAssigned, tr);
               const barColor = ticket.status === "APPROVED" ? "bg-emerald-400"
                 : ["AWAITING_REVIEW","RESOLVED"].includes(ticket.status) ? "bg-amber-400"
                 : ticket.status === "IN_PROGRESS" ? "bg-violet-500"
@@ -2080,11 +2084,11 @@ export default function MobileDashboard({
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col" style={{ paddingTop: "calc(env(safe-area-inset-top) + 58px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">Attenzione</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">{tr.mdWarning}</p>
               <h2 className="text-xl font-bold text-slate-900">
                 {lateCleanings.length > 0
                   ? `${lateCleanings.length} pulizie in ritardo`
-                  : "Nessuna pulizia in ritardo"}
+                  : tr.kpiEmptyLate}
               </h2>
             </div>
             <button
@@ -2137,11 +2141,11 @@ export default function MobileDashboard({
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col" style={{ paddingTop: "calc(env(safe-area-inset-top) + 58px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">In esecuzione</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.mdRunning}</p>
               <h2 className="text-xl font-bold text-slate-900">
                 {cleaningsInProgress.length > 0
                   ? `${cleaningsInProgress.length} pulizie in corso`
-                  : "Nessuna pulizia in corso"}
+                  : tr.kpiEmptyInProgress}
               </h2>
             </div>
             <button
@@ -2222,7 +2226,7 @@ export default function MobileDashboard({
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Oggi — Da completare</p>
               <h2 className="text-xl font-bold text-slate-900">
-                {pendingCount > 0 ? `${pendingCount} eventi pendenti` : "Nessun evento pendente"}
+                {pendingCount > 0 ? `${pendingCount} eventi pendenti` : tr.mdNoPendingEvent}
               </h2>
             </div>
             <button
@@ -2264,7 +2268,7 @@ export default function MobileDashboard({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                       <span className={`text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full ${eventBadgeClass(ev.type, ev.status)}`}>
-                        {ev.type === "CLEANING" ? "Pulizia" : "Manutenzione"}
+                        {ev.type === "CLEANING" ? "Pulizia" : tr.navMaintenance}
                       </span>
                       {ev.time && <span className="text-[9px] text-slate-400">{ev.time}</span>}
                       {ev.isUrgent && <span className="text-[9px] text-rose-500 font-bold">● URGENTE</span>}
@@ -2289,8 +2293,8 @@ export default function MobileDashboard({
         <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col" style={{ paddingTop: "calc(env(safe-area-inset-top) + 58px)" }}>
           <div className="px-5 py-3 flex items-center justify-between shrink-0">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">Mappa Geospaziale</p>
-              <h2 className="text-lg font-bold text-white">Appartamenti Live</h2>
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">{tr.mdGeoMap}</p>
+              <h2 className="text-lg font-bold text-white">{tr.mdAppsLive}</h2>
             </div>
             <button
               onClick={() => setMapOpen(false)}
@@ -2314,7 +2318,7 @@ export default function MobileDashboard({
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex flex-col justify-end">
           <div className="bg-white rounded-t-3xl px-5 pt-5 pb-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-slate-900">Cerca</h2>
+              <h2 className="text-lg font-bold text-slate-900">{tr.mdSearch}</h2>
               <button
                 onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
                 className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"
@@ -2353,7 +2357,7 @@ export default function MobileDashboard({
                 </Link>
               ))}
               {filteredApartments.length === 0 && (
-                <p className="text-center text-slate-400 text-sm py-4">Nessun risultato</p>
+                <p className="text-center text-slate-400 text-sm py-4">{tr.mdNoResults}</p>
               )}
             </div>
           </div>
