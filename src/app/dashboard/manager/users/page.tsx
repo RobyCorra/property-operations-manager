@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
@@ -28,6 +29,7 @@ type UserView = {
 };
 
 export default async function UsersListPage() {
+  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 
@@ -58,7 +60,7 @@ export default async function UsersListPage() {
           <div className="flex items-center gap-3">
             <BackButton />
             <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-slate-900 uppercase">
-              Team <span className="text-violet-600">.</span>
+              {tr.navTeam} <span className="text-violet-600">.</span>
             </h1>
           </div>
 
@@ -68,16 +70,16 @@ export default async function UsersListPage() {
               className="flex items-center gap-3 px-4 md:px-8 py-2.5 md:py-3.5 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
             >
               <Activity size={16} />
-              <span className="md:hidden">Storico</span>
-              <span className="hidden md:inline">Storico Attività</span>
+              <span className="md:hidden">{tr.usHistoryShort}</span>
+              <span className="hidden md:inline">{tr.usActivityHistory}</span>
             </Link>
             <Link
               href="/dashboard/manager/users/new"
               className="flex items-center gap-3 bg-gradient-to-r from-violet-600 to-blue-500 px-4 md:px-8 py-2.5 md:py-3.5 text-[10px] font-black text-white shadow-xl shadow-violet-200/50 transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-95 uppercase tracking-widest whitespace-nowrap rounded-full"
             >
               <Plus size={16} />
-              <span className="md:hidden">Nuovo</span>
-              <span className="hidden md:inline">Nuovo Collaboratore</span>
+              <span className="md:hidden">{tr.usNew}</span>
+              <span className="hidden md:inline">{tr.usNewCollab}</span>
             </Link>
           </div>
         </div>
@@ -88,11 +90,11 @@ export default async function UsersListPage() {
             <table className="w-full text-left text-sm text-slate-600 border-collapse">
               <thead className="bg-white/20 border-b border-white/40">
                 <tr>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Collaboratore</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Contatto</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Autorizzazioni</th>
-                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Data Iscrizione</th>
-                  <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Azioni</th>
+                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.usCollaborator}</th>
+                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.usContact}</th>
+                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.usAuthorizations}</th>
+                  <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.usJoinDate}</th>
+                  <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.apColActions}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100/50">
@@ -133,7 +135,7 @@ export default async function UsersListPage() {
                             <Link
                               href={`/dashboard/manager/users/${u.id}/edit`}
                               className="w-10 h-10 flex items-center justify-center rounded-full text-slate-300 hover:text-violet-600 hover:bg-violet-50 transition-all"
-                              title="Modifica utente"
+                              title={tr.usEditUser}
                             >
                               <Pencil size={16} />
                             </Link>
@@ -188,7 +190,7 @@ export default async function UsersListPage() {
                     <Link
                       href={`/dashboard/manager/users/${u.id}/edit`}
                       className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-all text-[8px] font-bold"
-                      title="Modifica utente"
+                      title={tr.usEditUser}
                     >
                       <Pencil size={12} />
                       Modifica
