@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useLang } from "@/src/components/lang-context";
 
 export interface FilterField {
   id: string;
@@ -21,31 +22,32 @@ interface UnifiedFiltersProps {
 }
 
 export default function UnifiedFilters({
-  title = "Filtri Ricerca",
+  title,
   fields,
   values,
   onChange,
   onReset,
   className = "",
 }: UnifiedFiltersProps) {
+  const { t } = useLang();
   return (
     <div className={`bg-white/40 backdrop-blur-xl p-3 md:p-8 rounded-2xl border border-white/20 shadow-2xl shadow-black/5 space-y-2 md:space-y-6 ${className}`}>
       <div className="hidden md:flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-slate-900 tracking-tight uppercase">{title}</h3>
+        <h3 className="text-sm font-semibold text-slate-900 tracking-tight uppercase">{title ?? t.ufTitle}</h3>
         <button
           onClick={onReset}
           className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-2"
         >
-          <span>↺</span> Reset Filtri
+          <span>↺</span> {t.ufReset}
         </button>
       </div>
       <div className="md:hidden flex justify-end">
         <button
           onClick={onReset}
-          aria-label="Reset filtri"
+          aria-label={t.ufReset}
           className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-1"
         >
-          <span>↺</span> Reset
+          <span>↺</span> {t.ufResetShort}
         </button>
       </div>
 
@@ -62,7 +64,7 @@ export default function UnifiedFilters({
                 value={values[field.id] || ""}
                 onChange={(e) => onChange(field.id, e.target.value)}
               >
-                <option value="">Tutti</option>
+                <option value="">{t.ufAll}</option>
                 {field.options?.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}

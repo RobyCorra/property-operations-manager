@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
@@ -8,6 +9,7 @@ import CleaningsListTable from "@/src/components/cleanings-list-table";
 import BackButton from "@/src/components/back-button";
 
 export default async function CleaningsListPage() {
+  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 
@@ -43,14 +45,14 @@ export default async function CleaningsListPage() {
           <BackButton />
           <div className="flex-1 flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-900 uppercase">Gestione Pulizie</h1>
-              <p className="text-slate-500 mt-1 font-medium">Coordinamento flussi e qualità operativa</p>
+              <h1 className="text-3xl font-semibold tracking-tight text-slate-900 uppercase">{tr.clnTitle}</h1>
+              <p className="text-slate-500 mt-1 font-medium">{tr.clnSubtitle}</p>
             </div>
             <Link
               href="/dashboard/manager/cleanings/new"
               className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-8 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] active:scale-95 uppercase tracking-wide"
             >
-              + Nuova Pulizia
+              {tr.clnNewCleaning}
             </Link>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import UnifiedFilters, { FilterField } from "./unified-filters";
 import DeleteOperationalButton from "./delete-operational-button";
@@ -41,6 +42,7 @@ interface Props {
 }
 
 export default function CleaningsListTable({ initialCleanings, apartments, collaborators }: Props) {
+  const { t } = useLang();
   const [filters, setFilters] = useState<Record<string, string>>({
     apartmentId: "",
     status: "",
@@ -74,31 +76,31 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
   const filterFields: FilterField[] = [
     { 
       id: "apartmentId", 
-      label: "Appartamento", 
+      label: t.calApartment, 
       type: "select", 
       options: apartments.map(a => ({ value: a.id, label: a.name })),
       icon: <Building2 size={14} />
     },
     { 
       id: "status", 
-      label: "Stato", 
+      label: t.calStatusWord, 
       type: "select", 
       options: [
-        { value: "PENDING", label: "Da Fare" },
-        { value: "IN_PROGRESS", label: "In Corso" },
-        { value: "COMPLETED", label: "Completata" }
+        { value: "PENDING", label: t.calToDo },
+        { value: "IN_PROGRESS", label: t.calInProgress },
+        { value: "COMPLETED", label: t.calCompleted }
       ],
       icon: <Filter size={14} />
     },
     { 
       id: "collaboratorId", 
-      label: "Assegnato a", 
+      label: t.clnAssignedTo, 
       type: "select", 
       options: collaborators.map(c => ({ value: c.id, label: c.name })),
       icon: <User size={14} />
     },
-    { id: "startDate", label: "Data Dal", type: "date", icon: <CalendarDays size={14} /> },
-    { id: "endDate", label: "Al", type: "date" },
+    { id: "startDate", label: t.clnDateFrom, type: "date", icon: <CalendarDays size={14} /> },
+    { id: "endDate", label: t.bkTo, type: "date" },
   ];
 
   const statusColors: Record<string, string> = {
@@ -119,7 +121,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
         
         {/* Quick Filters Presets */}
         <div className="flex items-center gap-3 mt-8 px-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Preset Rapidi</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.clnQuickPresets}</span>
             <div className="h-px w-8 bg-slate-100" />
             <button 
                 onClick={() => {
@@ -132,7 +134,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     : "bg-white text-slate-500 border-slate-100 hover:border-slate-200"
                 }`}
             >
-                Oggi
+                {t.navToday}
             </button>
             <button 
                 onClick={() => {
@@ -145,7 +147,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     : "bg-white text-slate-500 border-slate-100 hover:border-slate-200"
                 }`}
             >
-                Prossimi
+                {t.clnPresetNext}
             </button>
             <button 
                 onClick={() => {
@@ -157,7 +159,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     : "bg-white text-slate-500 border-slate-100 hover:border-slate-200"
                 }`}
             >
-                Completati
+                {t.clnPresetCompleted}
             </button>
         </div>
       </div>
@@ -168,12 +170,12 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
           <table className="w-full text-left text-sm text-slate-600 border-collapse">
             <thead className="bg-white/20 border-b border-white/40">
               <tr>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Pianificazione</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Appartamento</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Collaboratore</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Obiettivo</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Stato</th>
-                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Azioni</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.clnPlanning}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.calApartment}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.clnCollaborator}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.clnTarget}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.calStatusWord}</th>
+                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.apColActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
@@ -199,7 +201,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                            <User size={14} />
                         </div>
                         <span className="text-xs text-slate-700 font-bold uppercase tracking-tight">
-                            {task.assignedTo?.name || "Non assegnato"}
+                            {task.assignedTo?.name || t.mgrUnassignedM}
                         </span>
                     </div>
                   </td>
@@ -244,7 +246,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     })() : (
                       <div className="flex items-center gap-2 opacity-30">
                         <Clock size={12} />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Nessun arrivo</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">{t.clnNoArrival}</span>
                       </div>
                     )}
                   </td>
@@ -259,7 +261,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                         <Link
                         href={`/dashboard/manager/cleanings/${task.id}/edit`}
                         className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
-                        title="Modifica"
+                        title={t.mgrEdit}
                         >
                         <Pencil size={16} />
                         </Link>
@@ -274,7 +276,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                         <Filter size={32} className="text-slate-200" />
                     </div>
-                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Nessuna pulizia trovata</p>
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{t.clnNoCleanings}</p>
                   </td>
                 </tr>
               )}
@@ -290,7 +292,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
               <Filter size={28} className="text-slate-200" />
             </div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Nessuna pulizia trovata</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t.clnNoCleanings}</p>
           </div>
         ) : (
           filteredCleanings.map((task) => (
@@ -310,7 +312,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                   </div>
                   <div className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border flex items-center gap-1 shrink-0 ${statusColors[task.status]}`}>
                     <div className="w-1.5 h-1.5 rounded-full bg-current" />
-                    {task.status === "PENDING" ? "Da fare" : task.status === "IN_PROGRESS" ? "In corso" : "Fatto"}
+                    {task.status === "PENDING" ? t.calToDo : task.status === "IN_PROGRESS" ? t.calInProgress : t.clnDone}
                   </div>
                 </div>
 
@@ -320,7 +322,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     <User size={12} className="text-slate-400" />
                   </div>
                   <span className="text-xs font-bold text-slate-600 uppercase tracking-tight">
-                    {task.assignedTo?.name || "Non assegnato"}
+                    {task.assignedTo?.name || t.mgrUnassignedM}
                   </span>
                 </div>
 

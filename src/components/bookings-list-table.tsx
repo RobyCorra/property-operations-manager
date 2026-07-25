@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useLang } from "@/src/components/lang-context";
 
 import { 
   Users, 
@@ -37,6 +38,7 @@ type Props = {
 };
 
 export default function BookingsListTable({ initialBookings, apartments }: Props) {
+  const { t } = useLang();
   const [filters, setFilters] = useState<Record<string, string>>({
     search: "",
     apartmentId: "",
@@ -68,27 +70,27 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
   }, [initialBookings, filters]);
 
   const filterFields: FilterField[] = [
-    { id: "search", label: "Ospite", type: "text", placeholder: "Cerca nome...", icon: <Search size={14} /> },
+    { id: "search", label: t.calGuest, type: "text", placeholder: t.bkSearchPlaceholder, icon: <Search size={14} /> },
     { 
       id: "apartmentId", 
-      label: "Appartamento", 
+      label: t.calApartment, 
       type: "select", 
       options: apartments.map(a => ({ value: a.id, label: a.name })),
       icon: <Building2 size={14} />
     },
     { 
       id: "status", 
-      label: "Stato", 
+      label: t.calStatusWord, 
       type: "select", 
       options: [
-        { value: "CONFIRMED", label: "Confermato" },
-        { value: "CANCELLED", label: "Annullato" },
+        { value: "CONFIRMED", label: t.bkConfirmed },
+        { value: "CANCELLED", label: t.bkCancelled },
         { value: "null", label: "Manual" }
       ],
       icon: <Filter size={14} />
     },
-    { id: "startDate", label: "Check-in Dal", type: "date", icon: <CalendarDays size={14} /> },
-    { id: "endDate", label: "Al", type: "date" },
+    { id: "startDate", label: t.bkCheckinFrom, type: "date", icon: <CalendarDays size={14} /> },
+    { id: "endDate", label: t.bkTo, type: "date" },
   ];
 
   return (
@@ -106,11 +108,11 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
           <table className="w-full text-left text-sm text-slate-600 border-collapse">
             <thead className="bg-white/20 border-b border-white/40">
               <tr>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Ospite</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Appartamento</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Arrivo / Partenza</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Ospiti</th>
-                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Azioni</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.calGuest}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.calApartment}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.bkArrivalDeparture}</th>
+                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.bkGuests}</th>
+                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{t.apColActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
@@ -122,7 +124,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
                            <User size={20} />
                         </div>
                         <span className="text-sm font-semibold text-slate-900 tracking-tight line-clamp-1 group-hover:text-violet-600 transition-colors uppercase">
-                            {b.guestName || "Prenotazione Manuale"}
+                            {b.guestName || t.bkManualBooking}
                         </span>
                     </div>
                   </td>
@@ -147,7 +149,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-2 font-bold text-slate-900 text-xs">
                       <Users size={14} className="text-slate-300" />
-                      <span>{b.totalGuests} <span className="text-slate-400 font-medium lowercase">osp.</span></span>
+                      <span>{b.totalGuests} <span className="text-slate-400 font-medium lowercase">{t.calGuestsShort}</span></span>
                     </div>
                   </td>
                   <td className="px-10 py-6 text-right">
@@ -155,7 +157,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
                         <Link
                         href={`/dashboard/manager/bookings/${b.id}/edit`}
                         className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
-                        title="Modifica"
+                        title={t.mgrEdit}
                         >
                         <Pencil size={16} />
                         </Link>
@@ -170,7 +172,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                         <CalendarDays size={32} className="text-slate-200" />
                     </div>
-                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Nessuna prenotazione trovata</p>
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{t.bkNoBookings}</p>
                   </td>
                 </tr>
               )}
@@ -186,7 +188,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
               <CalendarDays size={28} className="text-slate-200" />
             </div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Nessuna prenotazione trovata</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t.bkNoBookings}</p>
           </div>
         ) : (
           filteredBookings.map((b) => (
@@ -199,7 +201,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-slate-900 uppercase tracking-tight truncate">
-                      {b.guestName || "Prenotazione Manuale"}
+                      {b.guestName || t.bkManualBooking}
                     </p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <Building2 size={10} className="text-slate-400 shrink-0" />
@@ -238,7 +240,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
                     className="flex-1 py-2.5 flex items-center justify-center gap-2 rounded-xl bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-100 active:scale-95 transition-all"
                   >
                     <Pencil size={12} />
-                    Modifica
+                    {t.mgrEdit}
                   </Link>
                   <DeleteBookingButton bookingId={b.id} />
                 </div>
