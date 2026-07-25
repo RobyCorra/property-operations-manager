@@ -357,6 +357,10 @@ export const translations = {
     mtAssigned: "Assegnato",
     mtNoTickets: "Nessun ticket trovato",
     mtNoDescription: "Nessuna descrizione",
+    ufTitle: "Filtri Ricerca",
+    ufReset: "Reset Filtri",
+    ufResetShort: "Reset",
+    ufAll: "Tutti",
   },
 
   en: {
@@ -708,6 +712,10 @@ export const translations = {
     mtAssigned: "Assigned",
     mtNoTickets: "No tickets found",
     mtNoDescription: "No description",
+    ufTitle: "Search Filters",
+    ufReset: "Reset Filters",
+    ufResetShort: "Reset",
+    ufAll: "All",
   },
 
   es: {
@@ -1059,6 +1067,10 @@ export const translations = {
     mtAssigned: "Asignado",
     mtNoTickets: "Sin tickets",
     mtNoDescription: "Sin descripción",
+    ufTitle: "Filtros de búsqueda",
+    ufReset: "Restablecer filtros",
+    ufResetShort: "Restablecer",
+    ufAll: "Todos",
   },
 } as const;
 
