@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
@@ -10,6 +11,7 @@ interface ProductsPageProps {
 }
 
 export default async function ApartmentProductsPage({ params }: ProductsPageProps) {
+  const tr = await getT();
   const { id } = await params;
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -51,7 +53,7 @@ export default async function ApartmentProductsPage({ params }: ProductsPageProp
           <BackButton />
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-              Prodotti &amp; Scorte
+              {tr.pdTitle}
             </h1>
             <p className="text-gray-500 mt-1">{apartment.name}</p>
           </div>
