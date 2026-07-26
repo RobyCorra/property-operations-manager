@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getT } from "@/src/lib/server-lang";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
@@ -82,6 +83,7 @@ type ApartmentView = {
 };
 
 export default async function CalendarioOperativoPage() {
+  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 
@@ -218,7 +220,7 @@ export default async function CalendarioOperativoPage() {
       {/* PAGE HEADER */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">Mappa</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-slate-900 uppercase">{tr.navMap}</h1>
           <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal">
             {new Date(serverDate).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
@@ -264,7 +266,7 @@ export default async function CalendarioOperativoPage() {
           <section className="bg-white/50 backdrop-blur-xl rounded-[2.5rem] border border-white/40 shadow-2xl shadow-violet-500/5 overflow-hidden transition-all duration-300 hover:shadow-violet-500/10">
             <div className="p-8 border-b border-white/40">
               <h2 className="text-xl font-semibold text-slate-900 tracking-tight uppercase">Mappa & Stato Live</h2>
-              <p className="text-xs uppercase tracking-wide text-slate-500 mt-1">Monitoraggio Geospaziale</p>
+              <p className="text-xs uppercase tracking-wide text-slate-500 mt-1">{tr.mapSubtitle}</p>
             </div>
             <div className="p-6">
               <div className="rounded-3xl overflow-hidden border border-white/60 shadow-inner bg-slate-50 relative h-[500px]">
@@ -281,11 +283,11 @@ export default async function CalendarioOperativoPage() {
                   })}
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-white/20 whitespace-nowrap">
                     <span className="text-xs">🧹</span>
-                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tight">Cleaner live</span>
+                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tight">{tr.mapCleanerLive}</span>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-white/20 whitespace-nowrap">
                     <span className="text-xs">🔧</span>
-                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tight">Manutentore live</span>
+                    <span className="text-[9px] font-bold text-slate-600 uppercase tracking-tight">{tr.mapMaintainerLive}</span>
                   </div>
                 </div>
               </div>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo, useTransition, useCallback } from "react";
+import { useLang } from "@/src/components/lang-context";
+import type { T } from "@/src/lib/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import TicketConversation from "./ticket-conversation";
@@ -64,14 +66,23 @@ interface Props {
   submitAction: any;
 }
 
-function relativeTime(date: Date): string {
+function relativeTime(date: Date, locale: string, tr: T): string {
   const now = new Date();
   const d = new Date(date);
   const diffDays = Math.floor((now.getTime() - d.getTime()) / 86400000);
-  if (diffDays === 0) return d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
-  if (diffDays === 1) return "Ieri";
-  if (diffDays < 7) return d.toLocaleDateString("it-IT", { weekday: "short" });
-  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
+  if (diffDays === 0) return d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
+  if (diffDays === 1) return tr.msgYesterday;
+  if (diffDays < 7) return d.toLocaleDateString(locale, { weekday: "short" });
+  return d.toLocaleDateString(locale, { day: "2-digit", month: "2-digit" });
+}
+
+function statusText(st: string, tr: T): string {
+  const m: Record<string, string> = { PENDING: tr.stTicketWaiting, IN_PROGRESS: tr.calInProgress, COMPLETED: tr.calCompleted, AWAITING_REVIEW: tr.msgInReview, APPROVED: tr.calApproved, OPEN: tr.stTicketWaiting, RESOLVED: tr.stTicketResolved, CANCELLED: tr.bkCancelled };
+  return m[st] ?? st;
+}
+function priorityText(p: string, tr: T): string {
+  const m: Record<string, string> = { LOW: tr.mtLow, MEDIUM: tr.mtMedium, HIGH: tr.mtHigh, URGENT: tr.mtUrgent };
+  return m[p] ?? p;
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -104,6 +115,7 @@ interface InfoPanelProps {
 }
 
 function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
+  const { t } = useLang();
   return (
     <div className="flex flex-col">
       {/* ── Header ─────────────────────────────────────────── */}
@@ -119,18 +131,18 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
               ? <Brush size={10} />
               : <Wrench size={10} />
             }
-            {thread.type === "CLEANING" ? "Pulizia" : "Manutenzione"}
+            {thread.type === "CLEANING" ? t.mdSingleCleaning : t.navMaintenance}
           </div>
           {STATUS_LABELS[thread.status] && (
             <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_LABELS[thread.status].color}`}>
-              {STATUS_LABELS[thread.status].label}
+              {statusText(thread.status, t)}
             </span>
           )}
         </div>
 
         {/* Title */}
         <h2 className="text-xl font-bold text-slate-900 tracking-tight leading-snug mb-1">
-          {thread.type === "MAINTENANCE" ? thread.title : "Pulizia Appartamento"}
+          {thread.type === "MAINTENANCE" ? thread.title : t.msgApartmentCleaning}
         </h2>
 
         {/* Apartment subtitle */}
@@ -153,7 +165,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
               <div className="flex items-start gap-3">
                 <CalendarDays size={15} className="text-violet-500 mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Quando</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{t.msgWhen}</p>
                   <p className="text-xs font-semibold text-slate-800 mt-0.5">
                     {thread.type === "CLEANING" && thread.date
                       ? new Date(thread.date).toLocaleDateString("it-IT", {
@@ -183,7 +195,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
               <div className="flex items-start gap-3">
                 <MapPin size={15} className="text-violet-500 mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Indirizzo</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{t.msgAddress}</p>
                   <p className="text-xs font-semibold text-slate-800 mt-0.5">{thread.apartmentAddress}</p>
                 </div>
               </div>
@@ -194,7 +206,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
               <User size={15} className="text-violet-500 mt-0.5 shrink-0" />
               <div>
                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                  {thread.type === "CLEANING" ? "Cleaner" : "Tecnico"}
+                  {thread.type === "CLEANING" ? t.msgCleaner : t.msgTechnician}
                 </p>
                 <p className="text-xs font-semibold text-slate-800 mt-0.5">{thread.assignedUser}</p>
               </div>
@@ -206,7 +218,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
         {thread.description && (
           <div>
             <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">
-              {thread.type === "CLEANING" ? "Note Operative" : "Descrizione"}
+              {thread.type === "CLEANING" ? t.msgOperationalNotes : t.msgDescription}
             </h4>
             <div className={`p-4 rounded-2xl border text-xs leading-relaxed ${
               thread.type === "CLEANING"
@@ -226,10 +238,10 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
           <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-4">
             {/* Stato Attuale */}
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">Stato Attuale</span>
+              <span className="text-xs font-semibold text-slate-500">{t.msgCurrentStatus}</span>
               {STATUS_LABELS[thread.status] && (
                 <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide bg-white border border-slate-200 shadow-sm ${STATUS_LABELS[thread.status].color}`}>
-                  {STATUS_LABELS[thread.status].label}
+                  {statusText(thread.status, t)}
                 </span>
               )}
             </div>
@@ -280,9 +292,9 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
             {/* Priorità — maintenance */}
             {thread.type === "MAINTENANCE" && thread.priority && PRIORITY_LABELS[thread.priority] && (
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">Priorità</span>
+                <span className="text-xs font-semibold text-slate-500">{t.mtPriority}</span>
                 <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide ${PRIORITY_LABELS[thread.priority].color}`}>
-                  {PRIORITY_LABELS[thread.priority].label}
+                  {priorityText(thread.priority, t)}
                 </span>
               </div>
             )}
@@ -303,7 +315,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
                 onClick={() => onAction(() => updateCleaningStatus(thread.id, "IN_PROGRESS"))}
                 className="w-full py-3 bg-slate-100 border border-slate-200 text-slate-900 text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-all active:scale-95 disabled:opacity-50"
               >
-                ▶ Avvia Pulizia
+                {t.msgStartCleaning}
               </button>
             )}
             {thread.status === "IN_PROGRESS" && (
@@ -313,7 +325,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
                 onClick={() => onAction(() => updateCleaningStatus(thread.id, "AWAITING_REVIEW"))}
                 className="w-full py-3 bg-amber-500 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-amber-400 transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-amber-200"
               >
-                ✓ Completata — Invia per verifica
+                {t.msgSendForReview}
               </button>
             )}
             {thread.status === "AWAITING_REVIEW" && (
@@ -323,12 +335,12 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
                 onClick={() => onAction(() => approveCleaningDirectly(thread.id))}
                 className="w-full py-3 bg-emerald-500 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-400 transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-emerald-200"
               >
-                ✓ Approva
+                {t.msgApprove}
               </button>
             )}
             {thread.status === "APPROVED" && (
               <div className="w-full py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black uppercase tracking-widest rounded-2xl text-center">
-                ✓ Approvata
+                {t.msgApprovedDone}
               </div>
             )}
           </>
@@ -344,7 +356,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
                 onClick={() => onAction(() => updateMaintenanceStatus(thread.id, "IN_PROGRESS"))}
                 className="w-full py-3 bg-slate-100 border border-slate-200 text-slate-900 text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-all active:scale-95 disabled:opacity-50"
               >
-                Prendi in Carico
+                {t.msgTakeCharge}
               </button>
             )}
             {thread.status === "IN_PROGRESS" && (
@@ -354,7 +366,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
                 onClick={() => onAction(() => updateMaintenanceStatus(thread.id, "AWAITING_REVIEW"))}
                 className="w-full py-3 bg-amber-500 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-amber-400 transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-amber-200"
               >
-                ✓ Completato — Invia per verifica
+                {t.msgSendForReviewM}
               </button>
             )}
             {thread.status === "AWAITING_REVIEW" && (
@@ -364,12 +376,12 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
                 onClick={() => onAction(() => approveMaintenanceDirectly(thread.id))}
                 className="w-full py-3 bg-emerald-500 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-400 transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-emerald-200"
               >
-                ✓ Approva / Risolvi
+                {t.msgApproveResolve}
               </button>
             )}
             {thread.status === "RESOLVED" && (
               <div className="w-full py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black uppercase tracking-widest rounded-2xl text-center">
-                ✓ Risolto
+                {t.msgResolvedDone}
               </div>
             )}
           </>
@@ -400,6 +412,8 @@ export default function MessagesDashboard({
   userName,
   submitAction,
 }: Props) {
+  const { t: tr, lang } = useLang();
+  const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const router = useRouter();
   const [isActing, startTransition] = useTransition();
   const [search, setSearch] = useState("");
@@ -446,7 +460,7 @@ export default function MessagesDashboard({
         <div className="px-4 pt-5 pb-3 border-b border-slate-100">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-base font-black text-slate-900 tracking-tight">Messaggi</span>
+              <span className="text-base font-black text-slate-900 tracking-tight">{tr.navMessages}</span>
             </div>
             {unreadCount > 0 && (
               <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
@@ -460,7 +474,7 @@ export default function MessagesDashboard({
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Cerca..."
+              placeholder={tr.msgSearchPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-slate-50 rounded-lg pl-8 pr-3 py-2 text-xs font-medium outline-none text-slate-700 placeholder:text-slate-400 border border-slate-100 focus:border-violet-300 focus:bg-white transition-colors"
@@ -471,7 +485,7 @@ export default function MessagesDashboard({
           <div className="flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {(["ALL", "MAINTENANCE", "CLEANING", "UNREAD"] as FilterType[]).map((f) => {
               const labels: Record<FilterType, string> = {
-                ALL: "Tutti", MAINTENANCE: "Manutenzioni", CLEANING: "Pulizie", UNREAD: "Non letti",
+                ALL: tr.ufAll, MAINTENANCE: tr.msgMaintenancePlural, CLEANING: tr.navCleanings, UNREAD: tr.msgUnread,
               };
               const isActive = filter === f;
               return (
@@ -532,7 +546,7 @@ export default function MessagesDashboard({
                       {thread.apartmentName}
                     </span>
                     <span className="text-[10px] text-slate-400 shrink-0 font-medium">
-                      {relativeTime(thread.updatedAt)}
+                      {relativeTime(thread.updatedAt, dateLocale, tr)}
                     </span>
                   </div>
                   <div className="flex items-center gap-1 mb-1">
@@ -616,7 +630,7 @@ export default function MessagesDashboard({
                     <>
                       <span className="text-slate-300">·</span>
                       <span className={`${STATUS_LABELS[selectedThread.status].color} px-1.5 py-0.5 rounded-full text-[9px] font-black`}>
-                        {STATUS_LABELS[selectedThread.status].label}
+                        {statusText(selectedThread.status, tr)}
                       </span>
                     </>
                   )}
@@ -654,7 +668,7 @@ export default function MessagesDashboard({
                 type="button"
                 onClick={() => setShowInfoSheet(true)}
                 className="w-full pt-2.5 pb-1 flex justify-center"
-                aria-label="Apri dettagli intervento"
+                aria-label={tr.msgOpenDetails}
               >
                 <div className="w-10 h-1 bg-slate-300 rounded-full" />
               </button>
@@ -686,17 +700,17 @@ export default function MessagesDashboard({
               <div className="px-4 pb-2 flex gap-2">
                 {STATUS_LABELS[selectedThread.status] && (
                   <div className="flex flex-col items-center bg-slate-50 rounded-xl px-3 py-1.5 flex-1">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Stato</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{tr.calStatusWord}</span>
                     <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${STATUS_LABELS[selectedThread.status].color}`}>
-                      {STATUS_LABELS[selectedThread.status].label}
+                      {statusText(selectedThread.status, tr)}
                     </span>
                   </div>
                 )}
                 {selectedThread.priority && PRIORITY_LABELS[selectedThread.priority] && (
                   <div className="flex flex-col items-center bg-slate-50 rounded-xl px-3 py-1.5 flex-1">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Priorità</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{tr.mtPriority}</span>
                     <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${PRIORITY_LABELS[selectedThread.priority].color}`}>
-                      {PRIORITY_LABELS[selectedThread.priority].label}
+                      {priorityText(selectedThread.priority, tr)}
                     </span>
                   </div>
                 )}
@@ -732,7 +746,7 @@ export default function MessagesDashboard({
                 <MessageSquare size={36} className="text-violet-400" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-slate-900 tracking-tight">Seleziona una chat</h2>
+                <h2 className="text-lg font-black text-slate-900 tracking-tight">{tr.msgSelectChat}</h2>
                 <p className="text-xs text-slate-400 font-medium mt-1">
                   Scegli una conversazione dalla lista
                 </p>
