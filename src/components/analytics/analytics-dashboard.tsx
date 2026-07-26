@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useLang } from "@/src/components/lang-context";
 import { useRouter } from "next/navigation";
 import type { AnalyticsData, PeriodStats, MonthKey, PersonRow, ApartmentRow } from "@/src/app/actions/analytics";
 import { Clock, RotateCcw, Building2, Sparkles, Wrench, BarChart2, KeyRound } from "lucide-react";
@@ -79,10 +80,11 @@ function StatPill({ n, type }: { n: number; type: "late" | "review" }) {
 
 // ── Status dot ────────────────────────────────────────────────────────────
 function StatusDot({ ok }: { ok: boolean }) {
+  const { t } = useLang();
   return (
     <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold">
       <span className={`w-[7px] h-[7px] rounded-full ${ok ? "bg-[#30d158]" : "bg-[#ff9f0a]"}`} />
-      <span style={{ color: ok ? "#30d158" : "#ff9f0a" }}>{ok ? "Ok" : "Attenzione"}</span>
+      <span style={{ color: ok ? "#30d158" : "#ff9f0a" }}>{ok ? t.anOk : t.mdWarning}</span>
     </span>
   );
 }
@@ -104,13 +106,14 @@ function AptStatBlock({
   stats: PeriodStats;
   monthValues: number[];
 }) {
+  const { t } = useLang();
   const warn = stats.late > 0 || stats.reviews > 0;
   const isClean = type === "clean";
   const isCheckin = type === "checkin";
   const showPending = isClean || isCheckin;
   const pendingWarn = showPending && stats.pending > 0 && warn;
-  const label = isClean ? "Pulizie" : isCheckin ? "Check-in" : "Manutenzione";
-  const totalSub = isClean ? "consegnate" : isCheckin ? "completati" : "terminate";
+  const label = isClean ? t.navCleanings : isCheckin ? t.apCheckin : t.navMaintenance;
+  const totalSub = isClean ? t.anDelivered : isCheckin ? t.anCompletedM : t.anFinished;
   return (
     <div className="flex-1 min-w-[140px] rounded-[11px] bg-[#f2f2f7] p-3">
       <div className="flex items-center gap-1.5 mb-2">
@@ -138,7 +141,7 @@ function AptStatBlock({
         <>
           <div className="h-px bg-[#d1d1d6] my-2" />
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-[500] text-[#8e8e93]">⏳ Da fare</span>
+            <span className="text-[11px] font-[500] text-[#8e8e93]">{t.anTodo}</span>
             <span className={`text-[11px] font-[700] px-2 py-0.5 rounded-[6px] ${
               stats.pending === 0
                 ? "bg-[#f2f2f7] text-[#8e8e93] font-[500]"
@@ -162,6 +165,8 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
   selectedYear?: number;
   selectedMonth?: number;
 }) {
+  const { t, lang } = useLang();
+  const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const router = useRouter();
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -251,14 +256,14 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
               <BarChart2 size={18} color="white" strokeWidth={2} />
             </div>
             <div>
-              <div className="text-[17px] font-[700] text-[#1c1c1e]">Analytics operativi</div>
-              <div className="text-[12px] text-[#8e8e93]">Pulizie, manutenzioni e check-in</div>
+              <div className="text-[17px] font-[700] text-[#1c1c1e]">{t.anTitle}</div>
+              <div className="text-[12px] text-[#8e8e93]">{t.anSubtitle}</div>
             </div>
           </div>
 
           {/* Year + Month selectors */}
           <div className="flex items-center gap-2">
-            <span className="text-[12px] font-[500] text-[#8e8e93]">Periodo</span>
+            <span className="text-[12px] font-[500] text-[#8e8e93]">{t.anPeriod}</span>
             <div className="relative">
               <select
                 value={activeYear}
@@ -277,15 +282,15 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
                 className="appearance-none bg-white border border-[#d1d1d6] rounded-[10px] px-3 py-[6px] pr-7 text-[14px] font-[600] text-[#1c1c1e] outline-none cursor-pointer"
                 style={{ boxShadow: "0 1px 3px rgba(0,0,0,.06)", minWidth: 120 }}
               >
-                {MONTH_NAMES.map((name, i) => (
-                  <option key={i + 1} value={i + 1}>{name}</option>
+                {MONTH_NAMES.map((_n, i) => (
+                  <option key={i + 1} value={i + 1}>{new Date(2024, i, 1).toLocaleDateString(dateLocale, { month: "long" })}</option>
                 ))}
               </select>
               <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-[#8e8e93]">▾</span>
             </div>
             <div className="flex items-center gap-1.5 bg-[#1c1c1e] text-white text-[13px] font-[600] px-3 py-[5px] rounded-full">
               <span className="w-[6px] h-[6px] rounded-full bg-[#30d158]" />
-              {MONTH_NAMES[activeMonth - 1]?.slice(0, 3)} {activeYear}
+              {new Date(2024, activeMonth - 1, 1).toLocaleDateString(dateLocale, { month: "short" })} {activeYear}
             </div>
           </div>
         </div>
@@ -297,22 +302,22 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
         <section>
           <div className="flex items-center gap-2 mb-2 px-1">
             <IconBadge color="bg-blue-100 text-blue-700"><Building2 size={16} strokeWidth={1.75} /></IconBadge>
-            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">Appartamenti</span>
+            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">{t.navApartments}</span>
           </div>
           <div className="bg-white rounded-[16px] overflow-hidden" style={{ border: ".5px solid #e5e5ea" }}>
             {/* Filters */}
             <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
-              <span className="text-[12px] font-[500] text-[#8e8e93]">Filtra per</span>
+              <span className="text-[12px] font-[500] text-[#8e8e93]">{t.anFilterBy}</span>
               <select className={selectBase} value={filterCleaner} onChange={e => setFilterCleaner(e.target.value)}>
-                <option value="">Tutti i cleaner</option>
+                <option value="">{t.anAllCleaners}</option>
                 {filters.cleaners.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
               <select className={selectBase} value={filterManut} onChange={e => setFilterManut(e.target.value)}>
-                <option value="">Tutti i manutentori</option>
+                <option value="">{t.anAllMaintainers}</option>
                 {filters.manutentori.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
               <select className={selectBase} value={filterAssist} onChange={e => setFilterAssist(e.target.value)}>
-                <option value="">Tutti gli assistenti</option>
+                <option value="">{t.anAllAssistants}</option>
                 {filters.assistenti.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
               <div className="ml-auto flex gap-4 text-[11px] text-[#8e8e93] font-[500]">
@@ -354,7 +359,7 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
                   <div key={apt.id} className="bg-white p-[18px] flex flex-col gap-3.5">
                     {warn && (
                       <div className="text-[10px] font-[700] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1">
-                        ⚠ Attenzione — ritardi o review questo mese
+                        {t.anWarningMonth}
                       </div>
                     )}
                     <div className="flex items-start justify-between">
@@ -379,26 +384,26 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
         <section>
           <div className="flex items-center gap-2 mb-2 px-1">
             <IconBadge color="bg-green-50 text-green-700"><Sparkles size={16} strokeWidth={1.75} /></IconBadge>
-            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">Pulizie per Cleaner</span>
+            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">{t.anCleaningsPerCleaner}</span>
           </div>
           <div className="bg-white rounded-[16px] overflow-hidden" style={{ border: ".5px solid #e5e5ea" }}>
             <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
-              <span className="text-[12px] font-[500] text-[#8e8e93]">Appartamento</span>
+              <span className="text-[12px] font-[500] text-[#8e8e93]">{t.calApartment}</span>
               <select className={selectBase} value={filterAptClean} onChange={e => setFilterAptClean(e.target.value)}>
-                <option value="">Tutti gli appartamenti</option>
+                <option value="">{t.mdAllApartments}</option>
                 {filters.apartments.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
             </div>
 
             {/* Column headers */}
             <div className="grid grid-cols-[200px_1fr_auto] gap-5 px-5 py-2 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
-              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">Cleaner</span>
-              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">Ultimi 6 mesi</span>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">{t.anCleaner}</span>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">{t.anLast6Months}</span>
               <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em] min-w-[120px] text-right">{monthLabel(selectedMonth)}</span>
             </div>
 
             {cleaners.length === 0 && (
-              <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">Nessun cleaner con dati negli ultimi 6 mesi</div>
+              <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">{t.anNoCleaner}</div>
             )}
             {cleaners.map((cleaner, i) => {
               // Se filtro appartamento attivo usa stats per cleaner+apt
@@ -464,25 +469,25 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
         <section>
           <div className="flex items-center gap-2 mb-2 px-1">
             <IconBadge color="bg-amber-50 text-amber-700"><Wrench size={16} strokeWidth={1.75} /></IconBadge>
-            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">Manutenzione per Manutentore</span>
+            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">{t.anMaintPerMaintainer}</span>
           </div>
           <div className="bg-white rounded-[16px] overflow-hidden" style={{ border: ".5px solid #e5e5ea" }}>
             <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
-              <span className="text-[12px] font-[500] text-[#8e8e93]">Appartamento</span>
+              <span className="text-[12px] font-[500] text-[#8e8e93]">{t.calApartment}</span>
               <select className={selectBase} value={filterAptManut} onChange={e => setFilterAptManut(e.target.value)}>
-                <option value="">Tutti gli appartamenti</option>
+                <option value="">{t.mdAllApartments}</option>
                 {filters.apartments.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
             </div>
 
             <div className="grid grid-cols-[200px_1fr_auto] gap-5 px-5 py-2 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
-              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">Manutentore</span>
-              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">Ultimi 6 mesi</span>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">{t.anMaintainer}</span>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">{t.anLast6Months}</span>
               <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em] min-w-[120px] text-right">{monthLabel(selectedMonth)}</span>
             </div>
 
             {manutentori.length === 0 && (
-              <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">Nessun manutentore con dati negli ultimi 6 mesi</div>
+              <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">{t.anNoMaintainer}</div>
             )}
             {manutentori.map((manut, i) => {
               // Se filtro appartamento attivo usa stats per manut+apt
@@ -545,25 +550,25 @@ export default function AnalyticsDashboard({ data, filters, selectedYear, select
         <section>
           <div className="flex items-center gap-2 mb-2 px-1">
             <IconBadge color="bg-sky-50 text-sky-700"><KeyRound size={16} strokeWidth={1.75} /></IconBadge>
-            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">Check-in per Assistente</span>
+            <span className="text-[13px] font-[600] text-[#6e6e73] uppercase tracking-[.02em]">{t.anCheckinPerAssistant}</span>
           </div>
           <div className="bg-white rounded-[16px] overflow-hidden" style={{ border: ".5px solid #e5e5ea" }}>
             <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
-              <span className="text-[12px] font-[500] text-[#8e8e93]">Appartamento</span>
+              <span className="text-[12px] font-[500] text-[#8e8e93]">{t.calApartment}</span>
               <select className={selectBase} value={filterAptCheckin} onChange={e => setFilterAptCheckin(e.target.value)}>
-                <option value="">Tutti gli appartamenti</option>
+                <option value="">{t.mdAllApartments}</option>
                 {filters.apartments.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
             </div>
 
             <div className="grid grid-cols-[200px_1fr_auto] gap-5 px-5 py-2 border-b" style={{ background: "#f9f9fb", borderColor: "#e5e5ea" }}>
-              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">Assistente</span>
-              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">Ultimi 6 mesi</span>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">{t.anAssistant}</span>
+              <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em]">{t.anLast6Months}</span>
               <span className="text-[11px] font-[600] text-[#8e8e93] uppercase tracking-[.04em] min-w-[120px] text-right">{monthLabel(selectedMonth)}</span>
             </div>
 
             {assistenti.length === 0 && (
-              <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">Nessun assistente con dati negli ultimi 6 mesi</div>
+              <div className="px-6 py-8 text-center text-[#8e8e93] text-sm">{t.anNoAssistant}</div>
             )}
             {assistenti.map((assist, i) => {
               const getMonthStatsA = (m: MonthKey) => filterAptCheckin
