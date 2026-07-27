@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useLang } from "@/src/components/lang-context";
 import { ChevronDown, ChevronUp, Pencil, X, Loader2 } from "lucide-react";
 import OperationalForm from "@/src/components/operational-form";
 import TicketConversation from "@/src/components/ticket-conversation";
@@ -78,6 +79,7 @@ const statusConfig: Record<string, { label: string; dot: string; badge: string }
 };
 
 export default function CleaningDetailView({ task, apartments, cleaners, messages, userName }: Props) {
+  const { t } = useLang();
   const bc = task.apartment.bedConfig as Record<string, { count?: number }> | null;
   const hasSofaBed = !!(bc && ((bc.divanoMatrimoniale?.count ?? 0) > 0 || (bc.divanoSingolo?.count ?? 0) > 0));
 
@@ -142,7 +144,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-violet-600">
-                  🧹 Pulizia
+                  {t.cdvCleaningTag}
                 </span>
                 <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest ${sc.badge}`}>
                   <span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} />
@@ -161,7 +163,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                   : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
               }`}
             >
-              {editOpen ? <><X size={13} /> Chiudi</> : <><Pencil size={13} /> Modifica</>}
+              {editOpen ? <><X size={13} /> {t.mdClose}</> : <><Pencil size={13} /> {t.mgrEdit}</>}
             </button>
           </div>
         </div>
@@ -172,19 +174,19 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
           {/* Left: informazioni */}
           <div className="p-4 md:p-6 space-y-5">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Informazioni chiave</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">{t.tcKeyInfo}</p>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
                   <span className="text-lg leading-none mt-0.5 shrink-0">📅</span>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Quando</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t.msgWhen}</p>
                     <p className="text-sm font-bold text-gray-900">{formatRomeDateTimeDisplay(task.date)}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <span className="text-lg leading-none mt-0.5 shrink-0">👤</span>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Cleaner</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t.msgCleaner}</p>
                     <p className="text-sm font-bold text-gray-900">{task.assignedTo?.name ?? "Non assegnato"}</p>
                   </div>
                 </div>
@@ -192,7 +194,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                   <div className="flex items-start gap-3">
                     <span className="text-lg leading-none mt-0.5 shrink-0">🎯</span>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Preparazione per</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t.tcPrepFor}</p>
                       <p className="text-sm font-bold text-gray-900 break-words">{task.nextBooking.guestName ?? "Ospite"}</p>
                       <p className="text-[10px] text-gray-500">{task.nextBooking.totalGuests} ospiti</p>
                     </div>
@@ -211,21 +213,21 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               );
               return (
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Biancheria da Preparare</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">{t.cdvLinenToPrep}</p>
 
                   {/* Asciugamani + Tappetini */}
                   <div className="grid grid-cols-2 gap-2 mb-3">
                     <div className="rounded-xl bg-gray-50 border border-gray-100 px-3 py-2 flex items-center gap-2">
                       <span className="text-sm shrink-0">🛁</span>
                       <div className="min-w-0">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Asciugamani</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{t.towelsLabel}</p>
                         <p className="text-lg font-black text-gray-900 leading-none">{task.nextBooking.totalGuests * 2}</p>
                       </div>
                     </div>
                     <div className="rounded-xl bg-gray-50 border border-gray-100 px-3 py-2 flex items-center gap-2">
                       <span className="text-sm shrink-0">🚿</span>
                       <div className="min-w-0">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Tappetini</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{t.tcBathMatsShort}</p>
                         <p className="text-lg font-black text-gray-900 leading-none">{task.apartment.bathrooms ?? "—"}</p>
                       </div>
                     </div>
@@ -276,8 +278,8 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                   {linen.culla && (
                     <div className="rounded-xl bg-emerald-50 border border-emerald-100 px-3 py-2.5">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="bg-emerald-500 text-white text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded shrink-0">culla</span>
-                        <span className="text-[10px] font-black text-emerald-800 uppercase tracking-tight">Lettino Neonato</span>
+                        <span className="bg-emerald-500 text-white text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded shrink-0">{t.tcCotWord}</span>
+                        <span className="text-[10px] font-black text-emerald-800 uppercase tracking-tight">{t.tcBabyCot}</span>
                       </div>
                       <div className="flex gap-1.5">
                         {[
@@ -298,7 +300,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
 
             {task.notes && (
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Note operative</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">{t.msgOperationalNotes}</p>
                 <div className="rounded-xl bg-amber-50 border border-amber-100 px-4 py-3 text-sm text-amber-900 italic break-words">
                   "{task.notes}"
                 </div>
@@ -311,9 +313,9 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
 
             {/* Stato attuale */}
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Stato operativo</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">{t.tcOperationalStatus}</p>
               <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 flex items-center justify-between gap-2">
-                <span className="text-sm font-semibold text-gray-500">Stato attuale</span>
+                <span className="text-sm font-semibold text-gray-500">{t.msgCurrentStatus}</span>
                 <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest shrink-0 ${sc.badge}`}>
                   <span className={`h-1.5 w-1.5 rounded-full ${sc.dot}`} />
                   {sc.label}
@@ -328,8 +330,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                   📸 {pendingPhotosCount} {pendingPhotosCount === 1 ? "foto non caricata" : "foto non caricate"}
                 </p>
                 <p className="text-[11px] text-amber-700 leading-relaxed mt-0.5">
-                  Il cleaner le ha scattate ma la rete non le ha inviate. Arrivano da sole
-                  quando riapre l'app sotto copertura.
+                  {t.cdvPhotoPendingHint}
                 </p>
               </div>
             )}
@@ -337,7 +338,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             {/* Stato all'ingresso */}
             {entryAnswers.length > 0 && (
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">🚪 Stato all'ingresso</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">{t.cdvEntryState}</p>
                 <div className="rounded-xl border border-gray-100 bg-white divide-y divide-gray-50 overflow-hidden">
                   {entryAnswers.map((item) => (
                     <div key={item.id} className="px-4 py-3">
@@ -375,7 +376,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             {/* Checklist progress */}
             {total > 0 && (
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Checklist qualità</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">{t.tcQualityChecklist}</p>
                 <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-3">
                   <div className="flex items-end justify-between gap-2">
                     <p className={`text-2xl font-semibold tracking-tight ${progress === 100 ? "text-emerald-600" : "text-gray-900"}`}>
@@ -441,14 +442,14 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                             </a>
                           ) : item.photoPending ? (
                             <p className="text-[10px] font-bold text-amber-600 mt-0.5">
-                              📸 foto non caricata — rete assente
+                              {t.cdvPhotoNotUploaded}
                             </p>
                           ) : item.completed ? (
-                            <p className="text-[10px] text-gray-400 mt-0.5">nessuna foto</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">{t.cdvNoPhoto}</p>
                           ) : item.skipped ? (
-                            <p className="text-[10px] text-amber-500 mt-0.5">saltato</p>
+                            <p className="text-[10px] text-amber-500 mt-0.5">{t.cdvSkipped}</p>
                           ) : (
-                            <p className="text-[10px] text-gray-300 mt-0.5">non completato</p>
+                            <p className="text-[10px] text-gray-300 mt-0.5">{t.cdvNotCompleted}</p>
                           )}
                         </div>
                       </div>
@@ -461,13 +462,13 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             {/* Tempi reali */}
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 mb-1">Inizio</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700 mb-1">{t.cdvStart}</p>
                 <p className="text-xs font-bold text-gray-800 break-words">
                   {task.startedAt ? formatRomeDateTimeDisplay(task.startedAt) : "—"}
                 </p>
               </div>
               <div className="rounded-xl bg-blue-50 border border-blue-100 p-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-blue-700 mb-1">Fine</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-blue-700 mb-1">{t.cdvEnd}</p>
                 <p className="text-xs font-bold text-gray-800 break-words">
                   {task.completedAt ? formatRomeDateTimeDisplay(task.completedAt) : "—"}
                 </p>
@@ -502,7 +503,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
           )}
           {status === "IN_PROGRESS" && hasCorrections && (
             <div className="w-full text-center rounded-full bg-rose-50 border border-rose-200 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-rose-600">
-              ⚠ Correggi i punti sopra
+              {t.cdvFixPoints}
             </div>
           )}
           {status === "IN_PROGRESS" && (
@@ -521,7 +522,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-lg">⏳</div>
                 <div>
-                  <p className="text-[12px] font-black text-amber-900">In attesa di revisione</p>
+                  <p className="text-[12px] font-black text-amber-900">{t.cdvAwaitingReview}</p>
                   {task.assignedTo?.name && (
                     <p className="text-[11px] text-amber-700 font-medium">{task.assignedTo.name} ha completato la pulizia</p>
                   )}
@@ -545,13 +546,13 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                 className="w-full h-10 flex items-center justify-center gap-2 rounded-xl border border-rose-300 text-rose-600 text-[12px] font-bold active:scale-95 transition-transform disabled:opacity-50"
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Richiedi correzioni
+                {t.cdvRequestCorrections}
               </button>
             </div>
           )}
           {status === "APPROVED" && (
             <div className="w-full text-center rounded-full bg-emerald-50 border border-emerald-100 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-700">
-              ✓ Approvata
+              {t.msgApprovedDone}
             </div>
           )}
           <button
@@ -570,7 +571,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
           <div className="rounded-2xl bg-white border border-gray-100 shadow-sm overflow-hidden">
             <div className="flex items-center gap-3 px-4 md:px-6 py-4 border-b border-gray-100">
               <Pencil size={15} className="text-gray-400" />
-              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-700">Modifica Pulizia</h2>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-gray-700">{t.cdvModifyCleaning}</h2>
             </div>
             <div className="p-4 md:p-6">
               <OperationalForm
@@ -595,7 +596,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
           </div>
 
           <div id="cleaning-chat-section" className="rounded-2xl bg-white border border-gray-100 shadow-sm p-4 md:p-6">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-700 mb-4">💬 Chat con Addetto</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-700 mb-4">{t.cdvChatStaff}</h2>
             <TicketConversation
               entityId={task.id}
               initialMessages={messages as any}

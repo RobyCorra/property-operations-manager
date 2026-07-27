@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
@@ -9,6 +10,7 @@ import { getCleaningTaskMessages, enrichCleaningTaskWithNextBooking } from "@/sr
 import BackButton from "@/src/components/back-button";
 
 export default async function EditCleaningPage({ params }: { params: Promise<{ id: string }> }) {
+  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
   const userName = (() => { try { return decodeURIComponent(cookieStore.get("userName")?.value || ""); } catch { return cookieStore.get("userName")?.value || ""; } })() || "Manager";
@@ -55,7 +57,7 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
         {/* Link condivisibile per il cleaner */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2">
           <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-            🔗 Link cleaner (accesso senza login)
+            🔗 {tr.shLinkCleaner}
           </p>
           <CleaningShareButton
             cleaningId={id}

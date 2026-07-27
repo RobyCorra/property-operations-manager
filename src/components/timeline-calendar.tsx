@@ -962,7 +962,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                              )}
                         </div>
                         <h2 className="text-4xl font-semibold text-slate-900 tracking-tight">
-                            {selectedEvent.type === 'maintenance' ? selectedEvent.data.title : selectedEvent.data.guestName || 'Intervento Operativo'}
+                            {selectedEvent.type === 'maintenance' ? selectedEvent.data.title : selectedEvent.data.guestName || t.tcOperativeJob}
                         </h2>
                         <p className="text-slate-500 font-semibold mt-1 uppercase text-sm tracking-wide">
                             {selectedEvent.data.apartment?.name || apartments.find(a => a.id === selectedEvent.data.apartmentId)?.name}
@@ -971,7 +971,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     <button
                         onClick={() => setSelectedEvent(null)}
                         className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-600 hover:text-slate-900 text-lg font-bold transition-colors"
-                        aria-label="Chiudi"
+                        aria-label={t.mdClose}
                     >
                         ✕
                     </button>
@@ -982,11 +982,11 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     {/* Left Column: Details */}
                     <div className="space-y-8">
                         <div>
-                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Informazioni Chiave</h4>
+                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{t.tcKeyInfo}</h4>
                             <div className="space-y-4">
                                 <DetailItem 
                                     icon={<CalendarDays size={22} className="text-violet-600" />} 
-                                    label="Quando" 
+                                    label={t.msgWhen} 
                                     value={
                                       selectedEvent.type === "cleaning"
                                         ? formatRomeDateTimeDisplay(selectedEvent.data.date)
@@ -997,13 +997,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 />
                                 <DetailItem 
                                     icon={<MapPin size={22} className="text-violet-600" />} 
-                                    label="Indirizzo" 
-                                    value={selectedEvent.data.apartment?.address || apartments.find(a => a.id === selectedEvent.data.apartmentId)?.address || "Non disponibile"} 
+                                    label={t.msgAddress} 
+                                    value={selectedEvent.data.apartment?.address || apartments.find(a => a.id === selectedEvent.data.apartmentId)?.address || t.tcNotAvailable} 
                                 />
                                 <DetailItem 
                                     icon={<UserCircle size={22} className="text-violet-600" />} 
-                                    label={selectedEvent.type === 'booking' ? "Ospite" : selectedEvent.type === 'cleaning' ? "Cleaner" : "Tecnico"} 
-                                    value={selectedEvent.data.assignedTo?.name || selectedEvent.data.guestName || "Non assegnato"} 
+                                    label={selectedEvent.type === 'booking' ? t.calGuest : selectedEvent.type === 'cleaning' ? t.msgCleaner : t.msgTechnician} 
+                                    value={selectedEvent.data.assignedTo?.name || selectedEvent.data.guestName || t.mgrUnassignedM} 
                                 />
                             </div>
                         </div>
@@ -1012,12 +1012,12 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         {selectedEvent.type === 'booking' && (
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Dettagli Soggiorno</h4>
+                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{t.tcStayDetails}</h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <SummaryBox icon={<LogIn size={16} />} label="Check-in" value={formatDate(selectedEvent.data.checkInDate)} />
                                         <SummaryBox icon={<DoorOpen size={16} />} label="Check-out" value={formatDate(selectedEvent.data.checkOutDate)} />
                                         <SummaryBox icon={<UserCircle size={16} />} label="Ospiti" value={`${selectedEvent.data.totalGuests || 1} Persone`} />
-                                        <SummaryBox icon={<CalendarDays size={16} />} label="Sorgente" value={selectedEvent.data.source || "Diretto"} />
+                                        <SummaryBox icon={<CalendarDays size={16} />} label={t.tcSource} value={selectedEvent.data.source || t.tcDirect} />
                                     </div>
                                 </div>
 
@@ -1030,20 +1030,20 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     if (alreadyCheckedIn) {
                                         return (
                                             <div className="flex items-center gap-2 px-4 py-3 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-black uppercase tracking-widest">
-                                                <LogIn size={13} /> Check in confermato
+                                                <LogIn size={13} /> {t.tcCheckinConfirmed}
                                             </div>
                                         );
                                     }
 
                                     return showCheckInConfirm ? (
                                         <div className="bg-emerald-500/8 border border-emerald-500/20 rounded-2xl p-4 flex items-center justify-between gap-3">
-                                            <p className="text-sm font-semibold text-slate-700">Confermi che i clienti hanno effettuato il check in?</p>
+                                            <p className="text-sm font-semibold text-slate-700">{t.tcConfirmCheckin}</p>
                                             <div className="flex items-center gap-2 shrink-0">
                                                 <button
                                                     onClick={() => setShowCheckInConfirm(false)}
                                                     className="px-4 py-2 bg-white border border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-50 transition-all"
                                                 >
-                                                    Annulla
+                                                    {t.mgrCancel}
                                                 </button>
                                                 <button
                                                     disabled={isPending}
@@ -1053,7 +1053,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                     })}
                                                     className="px-5 py-2 bg-emerald-500 text-white text-xs font-bold uppercase tracking-wide rounded-full shadow-md shadow-emerald-200 hover:bg-emerald-600 transition-all disabled:opacity-50"
                                                 >
-                                                    ✓ Conferma
+                                                    {t.tcConfirm}
                                                 </button>
                                             </div>
                                         </div>
@@ -1069,7 +1069,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                             }`}
                                         >
                                             <LogIn size={14} />
-                                            Check in ok
+                                            {t.tcCheckinOk}
                                         </button>
                                     );
                                 })()}
@@ -1098,17 +1098,17 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         <>
                                             {/* Target Preparazione */}
                                             <div>
-                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Target Preparazione</h4>
+                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">{t.tcPrepTarget}</h4>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <SummaryBox
                                                         icon={<UserCircle size={16} />}
-                                                        label="Preparazione Per"
-                                                        value={nextB ? (nextB.guestName || "Ospite") : "Nessun arrivo"}
+                                                        label={t.tcPrepFor}
+                                                        value={nextB ? (nextB.guestName || t.calGuest) : t.clnNoArrival}
                                                     />
                                                     <SummaryBox
                                                         icon={<Users size={16} />}
-                                                        label="Numero Ospiti"
-                                                        value={nextB ? `${nextB.totalGuests} Persone` : "Non disponibile"}
+                                                        label={t.tcGuestCount}
+                                                        value={nextB ? `${nextB.totalGuests} Persone` : t.tcNotAvailable}
                                                     />
                                                 </div>
                                             </div>
@@ -1116,21 +1116,21 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                             {/* Biancheria */}
                                             {nextB && linen && (
                                                 <div>
-                                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Biancheria & Servizi</h4>
+                                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{t.tcLinenServices}</h4>
 
                                                     {/* Asciugamani + Tappetini */}
                                                     <div className="grid grid-cols-2 gap-3 mb-3">
                                                         <div className="bg-slate-50 rounded-xl border border-slate-100 p-3 flex items-center gap-3">
                                                             <span className="text-base">🛁</span>
                                                             <div>
-                                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Asciugamani</p>
+                                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{t.towelsLabel}</p>
                                                                 <p className="text-lg font-black text-slate-900 leading-none">{(nextB.totalGuests ?? 0) * 2}</p>
                                                             </div>
                                                         </div>
                                                         <div className="bg-slate-50 rounded-xl border border-slate-100 p-3 flex items-center gap-3">
                                                             <span className="text-base">🚿</span>
                                                             <div>
-                                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Tappetini</p>
+                                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{t.tcBathMatsShort}</p>
                                                                 <p className="text-lg font-black text-slate-900 leading-none">{apt?.bathrooms ?? "—"}</p>
                                                             </div>
                                                         </div>
@@ -1144,7 +1144,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                                     <div className={`w-2 h-2 rounded-full ${bed.isFixed ? "bg-blue-500" : "bg-amber-500"}`} />
                                                                     <div>
                                                                         <p className="text-[10px] font-black text-slate-700 uppercase tracking-tight">{bed.label} ×{bed.count}</p>
-                                                                        <p className="text-[9px] text-slate-400 font-semibold">{bed.isFixed ? "fisso" : "aggiunto"}</p>
+                                                                        <p className="text-[9px] text-slate-400 font-semibold">{bed.isFixed ? t.tcFixed : t.tcAdded}</p>
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex gap-1.5">
@@ -1181,8 +1181,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                     {linen.culla && (
                                                         <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 flex items-center justify-between">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="bg-emerald-500 text-white text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded">culla</span>
-                                                                <span className="text-[10px] font-black text-emerald-800 uppercase tracking-tight">Lettino Neonato</span>
+                                                                <span className="bg-emerald-500 text-white text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded">{t.tcCotWord}</span>
+                                                                <span className="text-[10px] font-black text-emerald-800 uppercase tracking-tight">{t.tcBabyCot}</span>
                                                             </div>
                                                             <div className="flex gap-1.5">
                                                                 {[
@@ -1205,7 +1205,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                                 {selectedEvent.data.notes && (
                                     <div>
-                                        <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-6">Note Operative</h4>
+                                        <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-6">{t.msgOperationalNotes}</h4>
                                         <div className="bg-amber-500/5 p-6 rounded-2xl border border-amber-500/10 text-sm text-amber-900">
                                             "{selectedEvent.data.notes}"
                                         </div>
@@ -1216,7 +1216,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                         {selectedEvent.type === 'maintenance' && (
                             <div>
-                                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-6">Descrizione</h4>
+                                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-6">{t.msgDescription}</h4>
                                 <div className="bg-red-500/5 p-6 rounded-2xl border border-red-500/10 text-sm text-slate-700">
                                     {selectedEvent.data.description || "Nessuna descrizione fornita."}
                                 </div>
@@ -1229,13 +1229,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                         {/* ── Stato Operativo — compatto ── */}
                         <div>
-                            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Stato Operativo</h4>
+                            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">{t.tcOperationalStatus}</h4>
 
                             {/* Cleaning: box con checklist */}
                             {selectedEvent.type === 'cleaning' && (
                                 <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 shadow-sm space-y-6">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-semibold text-slate-500">Stato Attuale</span>
+                                        <span className="text-sm font-semibold text-slate-500">{t.msgCurrentStatus}</span>
                                         <span className="px-4 py-1.5 rounded-full text-xs font-semibold uppercase bg-white border border-slate-200 shadow-sm">
                                             {selectedEvent.data.status || 'ATTIVO'}
                                         </span>
@@ -1251,15 +1251,15 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                     <>
                                                         <div className="flex justify-between items-end mb-4">
                                                             <div>
-                                                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Checklist Qualità</p>
+                                                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">{t.tcQualityChecklist}</p>
                                                                 <p className={`text-2xl font-semibold tracking-tight ${isFullyCompleted ? "text-emerald-600" : "text-slate-900"}`}>
-                                                                    {completed} <span className="text-sm font-medium text-slate-400">/ {total} Punti</span>
+                                                                    {completed} <span className="text-sm font-medium text-slate-400">/ {total} {t.tcPoints}</span>
                                                                 </p>
                                                             </div>
                                                             {isFullyCompleted && (
                                                                 <span className="bg-emerald-500/10 text-emerald-600 text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wide flex items-center gap-2">
                                                                     <CircleCheck size={12} />
-                                                                    Completata
+                                                                    {t.calCompleted}
                                                                 </span>
                                                             )}
                                                         </div>
@@ -1286,30 +1286,30 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                             {/* Maintenance: singola riga compatta Stato + Priorità */}
                             {selectedEvent.type === 'maintenance' && (() => {
                                 const priorityMap: Record<string, { label: string; color: string }> = {
-                                    LOW:    { label: "Bassa",   color: "bg-slate-100 text-slate-500" },
-                                    MEDIUM: { label: "Media",   color: "bg-amber-50 text-amber-600" },
-                                    HIGH:   { label: "Alta",    color: "bg-orange-50 text-orange-600" },
-                                    URGENT: { label: "Urgente", color: "bg-rose-50 text-rose-600" },
+                                    LOW:    { label: t.mtLow,   color: "bg-slate-100 text-slate-500" },
+                                    MEDIUM: { label: t.mtMedium,   color: "bg-amber-50 text-amber-600" },
+                                    HIGH:   { label: t.mtHigh,    color: "bg-orange-50 text-orange-600" },
+                                    URGENT: { label: t.mtUrgent, color: "bg-rose-50 text-rose-600" },
                                 };
                                 const statusMap: Record<string, { label: string; color: string }> = {
-                                    PENDING:         { label: "In attesa",    color: "bg-slate-100 text-slate-600" },
+                                    PENDING:         { label: t.stTicketWaiting,    color: "bg-slate-100 text-slate-600" },
                                     IN_PROGRESS:     { label: t.calInProgress, color: "bg-blue-50 text-blue-600" },
-                                    AWAITING_REVIEW: { label: "In revisione", color: "bg-yellow-50 text-yellow-700" },
+                                    AWAITING_REVIEW: { label: t.msgInReview, color: "bg-yellow-50 text-yellow-700" },
                                     APPROVED:        { label: t.calApproved, color: "bg-emerald-50 text-emerald-600" },
-                                    RESOLVED:        { label: "Risolto",      color: "bg-emerald-50 text-emerald-600" },
+                                    RESOLVED:        { label: t.stTicketResolved,      color: "bg-emerald-50 text-emerald-600" },
                                 };
                                 const s = statusMap[selectedEvent.data.status] ?? { label: selectedEvent.data.status, color: "bg-slate-100 text-slate-600" };
                                 const p = priorityMap[selectedEvent.data.priority] ?? { label: selectedEvent.data.priority, color: "bg-slate-100 text-slate-500" };
                                 return (
                                     <div className="bg-slate-50 rounded-2xl px-5 py-4 border border-slate-100 shadow-sm flex items-center justify-between gap-4">
                                         <div className="flex items-center gap-3">
-                                            <span className="text-sm font-semibold text-slate-500">Stato</span>
+                                            <span className="text-sm font-semibold text-slate-500">{t.calStatusWord}</span>
                                             <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase border border-slate-200 shadow-sm ${s.color}`}>
                                                 {s.label}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <span className="text-sm font-semibold text-slate-500">Priorità</span>
+                                            <span className="text-sm font-semibold text-slate-500">{t.mtPriority}</span>
                                             <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${p.color}`}>
                                                 {p.label}
                                             </span>
@@ -1328,7 +1328,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                             const isAll = done === total;
                             return (
                                 <div>
-                                    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Task da Eseguire</h4>
+                                    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">{t.tcTasksToDo}</h4>
 
                                     {/* Contatore + barra segmentata */}
                                     <div className="mb-4">
@@ -1336,7 +1336,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                             {done} <span className="text-sm font-medium text-slate-400">/ {total} Task</span>
                                             {isAll && (
                                                 <span className="ml-3 text-xs font-semibold bg-emerald-500/10 text-emerald-600 px-3 py-1 rounded-full uppercase tracking-wide align-middle">
-                                                    ✓ Tutte completate
+                                                    {t.tcAllCompleted}
                                                 </span>
                                             )}
                                         </p>
@@ -1393,7 +1393,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         {/* External IDs */}
                         {selectedEvent.data.externalId && (
                             <div>
-                                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">ID Esterno</h4>
+                                <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">{t.tcExternalId}</h4>
                                 <code className="text-xs font-mono bg-slate-50 p-3 rounded-xl border border-slate-100 block shadow-inner">{selectedEvent.data.externalId}</code>
                             </div>
                         )}
@@ -1411,7 +1411,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         onClick={() => handleAction(() => updateCleaningStatus(selectedEvent.data.id, 'IN_PROGRESS'))}
                                         className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
                                     >
-                                        Avvia Pulizia
+                                        {t.msgStartCleaning}
                                     </button>
                                 )}
                                 {selectedEvent.data.status === 'IN_PROGRESS' && (
@@ -1420,7 +1420,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         onClick={() => handleAction(() => updateCleaningStatus(selectedEvent.data.id, 'AWAITING_REVIEW'))}
                                         className="px-8 py-3.5 bg-amber-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-amber-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
                                     >
-                                        ✓ Completata — Invia per verifica
+                                        {t.msgSendForReview}
                                     </button>
                                 )}
                                 {selectedEvent.data.status === 'AWAITING_REVIEW' && (
@@ -1430,16 +1430,16 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                             onClick={() => handleAction(() => approveCleaningDirectly(selectedEvent.data.id))}
                                             className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
                                         >
-                                            ✓ Approva
+                                            {t.msgApprove}
                                         </button>
                                         <span className="px-8 py-3.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold uppercase tracking-wide rounded-full">
-                                            ⏳ In Attesa di Revisione
+                                            {t.tcAwaitingReview}
                                         </span>
                                     </div>
                                 )}
                                 {selectedEvent.data.status === 'APPROVED' && (
                                     <span className="px-8 py-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold uppercase tracking-wide rounded-full">
-                                        ✓ Approvata
+                                        {t.msgApprovedDone}
                                     </span>
                                 )}
                             </>
@@ -1452,7 +1452,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         onClick={() => handleAction(() => updateMaintenanceStatus(selectedEvent.data.id, 'IN_PROGRESS'))}
                                         className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
                                     >
-                                        Prendi in Carico
+                                        {t.msgTakeCharge}
                                     </button>
                                 )}
                                 {selectedEvent.data.status === 'IN_PROGRESS' && (
@@ -1461,7 +1461,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         onClick={() => handleAction(() => updateMaintenanceStatus(selectedEvent.data.id, 'AWAITING_REVIEW'))}
                                         className="px-8 py-3.5 bg-amber-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-amber-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
                                     >
-                                        ✓ Completato — Invia per verifica
+                                        {t.msgSendForReviewM}
                                     </button>
                                 )}
                                 {selectedEvent.data.status === 'AWAITING_REVIEW' && (
@@ -1471,10 +1471,10 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                             onClick={() => handleAction(() => approveMaintenanceDirectly(selectedEvent.data.id))}
                                             className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
                                         >
-                                            ✓ Approva
+                                            {t.msgApprove}
                                         </button>
                                         <span className="px-8 py-3.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold uppercase tracking-wide rounded-full animate-pulse">
-                                            ⏳ In verifica
+                                            {t.tcInReviewShort}
                                         </span>
                                     </div>
                                 )}
@@ -1490,7 +1490,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 href={`/dashboard/manager/bookings/${selectedEvent.data.id}/edit`}
                                 className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
-                                Modifica prenotazione
+                                {t.tcEditBooking}
                             </Link>
                         )}
                         {selectedEvent.type === 'cleaning' && (
@@ -1519,7 +1519,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         onClick={() => setShowDeleteConfirm(false)}
                                         className="px-4 py-2 bg-white/80 text-slate-500 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white transition-all duration-200"
                                     >
-                                        Annulla
+                                        {t.mgrCancel}
                                     </button>
                                     <button
                                         disabled={isPending}
