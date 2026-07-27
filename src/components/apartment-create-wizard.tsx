@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useLang } from "@/src/components/lang-context";
 import type { FormEvent } from "react";
 
 type WizardTechnicalItem = {
@@ -98,6 +99,7 @@ const initialData: WizardData = {
 
 
 export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardProps) {
+  const { t } = useLang();
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<WizardData>(initialData);
   const [error, setError] = useState("");
@@ -105,7 +107,8 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
   const progress = Math.round((step / totalSteps) * 100);
 
   const canCreate = formData.name.trim() !== "" && formData.address.trim() !== "";
-  const stepTitle = useMemo(() => `Step ${Math.min(step, totalSteps)} di ${totalSteps}`, [step]);
+  const stepWord = t.awStepWord;
+  const stepTitle = useMemo(() => `${stepWord} ${Math.min(step, totalSteps)} / ${totalSteps}`, [step, stepWord]);
 
   const updateField = <K extends keyof WizardData>(key: K, value: WizardData[K]) => {
     setFormData((current) => ({ ...current, [key]: value }));
@@ -124,15 +127,15 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
 
   const saveTechnicalItem = (section: "systems" | "appliances" | "smartHomeItems") => {
     if (section === "systems") {
-      if (!isItemFilled(formData.system)) { setError("Inserisci almeno un dato dell'impianto prima di salvarlo."); return; }
+      if (!isItemFilled(formData.system)) { setError(t.awErrSystem); return; }
       setFormData((c) => ({ ...c, systems: [...c.systems, c.system], system: { ...emptyItem }, addSystem: false }));
     }
     if (section === "appliances") {
-      if (!isItemFilled(formData.appliance)) { setError("Inserisci almeno un dato dell'elettrodomestico prima di salvarlo."); return; }
+      if (!isItemFilled(formData.appliance)) { setError(t.awErrAppliance); return; }
       setFormData((c) => ({ ...c, appliances: [...c.appliances, c.appliance], appliance: { ...emptyItem }, addAppliance: false }));
     }
     if (section === "smartHomeItems") {
-      if (!isItemFilled(formData.smartHome)) { setError("Seleziona o inserisci almeno un dato del dispositivo smart."); return; }
+      if (!isItemFilled(formData.smartHome)) { setError(t.awErrSmart); return; }
       setFormData((c) => ({ ...c, smartHomeItems: [...c.smartHomeItems, c.smartHome], smartHome: { ...emptyItem, category: "" }, addSmartHome: false }));
     }
     setError("");
@@ -140,7 +143,7 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
 
   const saveRecurringIssue = () => {
     if (!formData.recurringIssue.title.trim() && !formData.recurringIssue.symptoms.trim()) {
-      setError("Inserisci almeno il titolo o i sintomi del problema.");
+      setError(t.awErrProblem);
       return;
     }
     setFormData((c) => ({
@@ -162,8 +165,8 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
 
   const goToStep = (target: number) => { setError(""); setStep(target); };
   const nextStep = () => {
-    if (step === 1 && !formData.name.trim()) { setError("Il nome appartamento è obbligatorio."); return; }
-    if (step === 2 && !formData.address.trim()) { setError("L'indirizzo è obbligatorio."); return; }
+    if (step === 1 && !formData.name.trim()) { setError(t.awErrName); return; }
+    if (step === 2 && !formData.address.trim()) { setError(t.awErrAddress); return; }
     setError("");
     setStep((c) => Math.min(c + 1, totalSteps));
   };
@@ -185,7 +188,7 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
 
   const handleCreate = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!canCreate) { setError("Nome e indirizzo sono obbligatori per creare l'appartamento."); return; }
+    if (!canCreate) { setError(t.awErrNameAddr); return; }
 
     const payload = new FormData();
     payload.set("name", formData.name.trim());
@@ -240,40 +243,40 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
         {step === 0 && <WizardIntro />}
 
         {step === 1 && (
-          <WizardStep title="Come si chiama l'appartamento?">
+          <WizardStep title={t.awStepName}>
             <input className={inputClass} value={formData.name} onChange={(e) => updateField("name", e.target.value)} placeholder="Trastevere 68 Stylish Apartment" autoFocus />
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Codice breve (opzionale)</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.awShortCode}</label>
               <input className={inputClass} value={formData.apartmentCode} onChange={(e) => updateField("apartmentCode", e.target.value)} placeholder="Es. TRA68 — se vuoto viene generato automaticamente dal nome" />
-              <p className="text-xs font-medium text-slate-400">Usato dall&apos;AI per identificare l&apos;appartamento nelle conversazioni.</p>
+              <p className="text-xs font-medium text-slate-400">{t.awShortCodeHint}</p>
             </div>
           </WizardStep>
         )}
 
         {step === 2 && (
-          <WizardStep title="Dove si trova?">
+          <WizardStep title={t.awStepAddress}>
             <input className={inputClass} value={formData.address} onChange={(e) => updateField("address", e.target.value)} placeholder="Via della Scala 68, Roma" autoFocus />
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">URL calendario Airbnb / Booking (opzionale)</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.awIcalLabel}</label>
               <input className={inputClass} value={formData.icalUrl} onChange={(e) => updateField("icalUrl", e.target.value)} placeholder="webcal://..." />
-              <p className="text-xs font-medium text-slate-400">Puoi aggiungerlo o modificarlo anche dopo dalla scheda appartamento.</p>
+              <p className="text-xs font-medium text-slate-400">{t.awIcalHint}</p>
             </div>
           </WizardStep>
         )}
 
         {step === 3 && (
-          <WizardStep title="Quanti ospiti può ospitare?">
+          <WizardStep title={t.awStepGuests}>
             <div className="grid grid-cols-2 gap-4">
-              <NumberField label="Ospiti" value={formData.maxGuests} onChange={(v) => updateField("maxGuests", v)} />
-              <NumberField label="Camere" value={formData.bedrooms} onChange={(v) => updateField("bedrooms", v)} />
-              <NumberField label="Bagni" value={formData.bathrooms} onChange={(v) => updateField("bathrooms", v)} />
-              <NumberField label="Metri quadri" value={formData.squareMeters} onChange={(v) => updateField("squareMeters", v)} />
+              <NumberField label={t.awGuests} value={formData.maxGuests} onChange={(v) => updateField("maxGuests", v)} />
+              <NumberField label={t.awBedrooms} value={formData.bedrooms} onChange={(v) => updateField("bedrooms", v)} />
+              <NumberField label={t.awBaths} value={formData.bathrooms} onChange={(v) => updateField("bathrooms", v)} />
+              <NumberField label={t.awSqm} value={formData.squareMeters} onChange={(v) => updateField("squareMeters", v)} />
             </div>
           </WizardStep>
         )}
 
         {step === 4 && (
-          <WizardStep title="Come entrano gli ospiti?">
+          <WizardStep title={t.awStepAccess}>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {ACCESS_TYPES.map((option) => (
                 <button key={option} type="button" onClick={() => updateField("accessType", option)}
@@ -285,11 +288,11 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
             {formData.accessType && formData.accessType !== "Da completare dopo" && (
               <div className="space-y-4 rounded-3xl border border-slate-100 bg-slate-50 p-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Codice / PIN accesso (opzionale)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.awAccessCode}</label>
                   <input className={inputClass} value={formData.accessCode} onChange={(e) => updateField("accessCode", e.target.value)} placeholder="Es. 1234 o A-12B" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Istruzioni per l&apos;accesso (opzionale)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.awAccessInstructions}</label>
                   <textarea className={inputClass} rows={3} value={formData.accessNotes} onChange={(e) => updateField("accessNotes", e.target.value)} placeholder="Es. Cassetta chiavi al portone, codice 1234. Scala A, interno 3..." />
                 </div>
               </div>
@@ -299,10 +302,10 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
 
         {step === 5 && (
           <MultiTechnicalItemStep
-            title="Vuoi aggiungere un primo impianto?"
-            listTitle="Impianti aggiunti"
-            addAnotherLabel="Aggiungi altro impianto"
-            saveLabel="Salva impianto"
+            title={t.awAddFirstSystem}
+            listTitle={t.awSystemsAdded}
+            addAnotherLabel={t.awAddAnotherSystem}
+            saveLabel={t.awSaveSystem}
             enabled={formData.addSystem}
             onToggle={(v) => updateField("addSystem", v)}
             item={formData.system}
@@ -319,10 +322,10 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
 
         {step === 6 && (
           <MultiTechnicalItemStep
-            title="Vuoi aggiungere un elettrodomestico?"
-            listTitle="Elettrodomestici aggiunti"
-            addAnotherLabel="Aggiungi altro elettrodomestico"
-            saveLabel="Salva elettrodomestico"
+            title={t.awAddApplianceQ}
+            listTitle={t.awAppliancesAdded}
+            addAnotherLabel={t.awAddAnotherAppliance}
+            saveLabel={t.awSaveAppliance}
             enabled={formData.addAppliance}
             onToggle={(v) => updateField("addAppliance", v)}
             item={formData.appliance}
@@ -337,8 +340,8 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
         )}
 
         {step === 7 && (
-          <WizardStep title="Hai dispositivi smart o domotici?">
-            <AddedItemsList title="Dispositivi domotici aggiunti" items={formData.smartHomeItems} onRemove={(i) => removeTechnicalItem("smartHomeItems", i)} />
+          <WizardStep title={t.awStepSmart}>
+            <AddedItemsList title={t.awSmartAdded} items={formData.smartHomeItems} onRemove={(i) => removeTechnicalItem("smartHomeItems", i)} />
             <div className="grid grid-cols-2 gap-3">
               {["Serratura smart", "Termostato", "Sensori", "Router/Wi-Fi", "Altro", "Salta"].map((option) => (
                 <button key={option} type="button" onClick={() => {
@@ -353,22 +356,22 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
             {formData.addSmartHome && (
               <>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <TextField label="Marca" value={formData.smartHome.brand} onChange={(v) => updateItem("smartHome", "brand", v)} />
-                  <TextField label="Modello" value={formData.smartHome.model} onChange={(v) => updateItem("smartHome", "model", v)} />
-                  <TextField label="Posizione" value={formData.smartHome.location} onChange={(v) => updateItem("smartHome", "location", v)} />
-                  <TextField label="Note" value={formData.smartHome.notes} onChange={(v) => updateItem("smartHome", "notes", v)} />
+                  <TextField label={t.awBrand} value={formData.smartHome.brand} onChange={(v) => updateItem("smartHome", "brand", v)} />
+                  <TextField label={t.awModel} value={formData.smartHome.model} onChange={(v) => updateItem("smartHome", "model", v)} />
+                  <TextField label={t.awLocation} value={formData.smartHome.location} onChange={(v) => updateItem("smartHome", "location", v)} />
+                  <TextField label={t.awNotes} value={formData.smartHome.notes} onChange={(v) => updateItem("smartHome", "notes", v)} />
                 </div>
                 <button type="button" onClick={() => saveTechnicalItem("smartHomeItems")} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-slate-200">
-                  Salva dispositivo
+                  {t.awSaveDevice}
                 </button>
               </>
             )}
             {formData.smartHomeItems.length > 0 && !formData.addSmartHome && (
               <div className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
-                <p className="mb-3 text-sm font-bold text-slate-700">Vuoi aggiungerne un altro?</p>
+                <p className="mb-3 text-sm font-bold text-slate-700">{t.awAddAnotherQ}</p>
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <button type="button" onClick={() => updateField("addSmartHome", true)} className="rounded-full border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-600">Aggiungi altro</button>
-                  <button type="button" onClick={nextStep} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white">Continua</button>
+                  <button type="button" onClick={() => updateField("addSmartHome", true)} className="rounded-full border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-600">{t.awAddAnother}</button>
+                  <button type="button" onClick={nextStep} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white">{t.awContinue}</button>
                 </div>
               </div>
             )}
@@ -376,15 +379,15 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
         )}
 
         {step === 8 && (
-          <WizardStep title="Ci sono problemi noti o ricorrenti?">
+          <WizardStep title={t.awStepIssues}>
             {formData.recurringIssues.length > 0 && (
               <div className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
-                <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-400">Problemi aggiunti</p>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-slate-400">{t.awProblemsAdded}</p>
                 <div className="space-y-2">
                   {formData.recurringIssues.map((issue, index) => (
                     <div key={index} className="flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3">
                       <p className="truncate text-sm font-bold text-slate-700">{issue.title || issue.symptoms || "Problema"}</p>
-                      <button type="button" onClick={() => removeRecurringIssue(index)} className="shrink-0 text-[10px] font-black uppercase tracking-widest text-rose-500">Rimuovi</button>
+                      <button type="button" onClick={() => removeRecurringIssue(index)} className="shrink-0 text-[10px] font-black uppercase tracking-widest text-rose-500">{t.awRemove}</button>
                     </div>
                   ))}
                 </div>
@@ -393,39 +396,39 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => updateField("addRecurringIssue", true)}
                 className={`rounded-2xl border px-4 py-3 text-sm font-bold ${formData.addRecurringIssue ? "border-violet-200 bg-violet-50 text-violet-700" : "border-slate-100 bg-white text-slate-600"}`}>
-                Aggiungi
+                {t.awAdd}
               </button>
               <button type="button" onClick={() => updateField("addRecurringIssue", false)}
                 className={`rounded-2xl border px-4 py-3 text-sm font-bold ${!formData.addRecurringIssue ? "border-violet-200 bg-violet-50 text-violet-700" : "border-slate-100 bg-white text-slate-600"}`}>
-                Salta
+                {t.awSkip}
               </button>
             </div>
             {formData.addRecurringIssue && (
               <div className="space-y-4 rounded-3xl border border-slate-100 bg-slate-50 p-4">
-                <TextField label="Titolo problema" value={formData.recurringIssue.title} onChange={(v) => updateIssueField("title", v)} />
+                <TextField label={t.awProblemTitle} value={formData.recurringIssue.title} onChange={(v) => updateIssueField("title", v)} />
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Sintomi / Descrizione</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.awSymptoms}</label>
                   <textarea className={inputClass} rows={2} value={formData.recurringIssue.symptoms} onChange={(e) => updateIssueField("symptoms", e.target.value)} placeholder="Es. Il climatizzatore mostra errore E5 dopo ore di funzionamento..." />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Soluzione nota (opzionale)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.awKnownSolution}</label>
                   <textarea className={inputClass} rows={2} value={formData.recurringIssue.solution} onChange={(e) => updateIssueField("solution", e.target.value)} placeholder="Es. Spegnere e attendere 30 minuti, poi riavviare..." />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Quando chiamare il tecnico (opzionale)</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.awWhenToCall}</label>
                   <input className={inputClass} value={formData.recurringIssue.whenToCall} onChange={(e) => updateIssueField("whenToCall", e.target.value)} placeholder="Es. Se il problema persiste dopo il riavvio" />
                 </div>
                 <button type="button" onClick={saveRecurringIssue} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-slate-200">
-                  Salva problema
+                  {t.awSaveProblem}
                 </button>
               </div>
             )}
             {formData.recurringIssues.length > 0 && !formData.addRecurringIssue && (
               <div className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
-                <p className="mb-3 text-sm font-bold text-slate-700">Vuoi aggiungerne un altro?</p>
+                <p className="mb-3 text-sm font-bold text-slate-700">{t.awAddAnotherQ}</p>
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <button type="button" onClick={() => updateField("addRecurringIssue", true)} className="rounded-full border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-600">Aggiungi altro</button>
-                  <button type="button" onClick={nextStep} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white">Continua</button>
+                  <button type="button" onClick={() => updateField("addRecurringIssue", true)} className="rounded-full border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-600">{t.awAddAnother}</button>
+                  <button type="button" onClick={nextStep} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white">{t.awContinue}</button>
                 </div>
               </div>
             )}
@@ -433,9 +436,9 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
         )}
 
         {step === 9 && (
-          <WizardStep title="Note per l'assistente AI">
+          <WizardStep title={t.awStepAiNotes}>
             <p className="text-sm font-medium text-slate-500">
-              Informazioni che aiutano l&apos;AI a rispondere meglio sulle domande operative di questo appartamento.
+              {t.awAiHint}
             </p>
             <textarea
               className={inputClass}
@@ -444,7 +447,7 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
               onChange={(e) => updateField("aiNotes", e.target.value)}
               placeholder={`Es.\n- L'appartamento si chiama "Trastevere" ma è tecnicamente in zona Prati\n- Il portone richiede doppia pressione del citofono\n- Contattare sempre Maria per le emergenze al piano`}
             />
-            <p className="text-xs font-medium text-slate-400">Puoi saltare questo step e completarlo dopo nella scheda tecnica.</p>
+            <p className="text-xs font-medium text-slate-400">{t.awAiSkipHint}</p>
           </WizardStep>
         )}
 
@@ -457,21 +460,21 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button type="button" onClick={previousStep} disabled={step === 0 || isPending} className="rounded-full border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-600 disabled:opacity-40">
-          Indietro
+          {t.awBack}
         </button>
         <div className="flex flex-col gap-3 sm:flex-row">
           {step > 0 && step < totalSteps && (
             <button type="button" onClick={skipStep} disabled={isPending || step === 1 || step === 2} className="rounded-full border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-500 disabled:opacity-40">
-              Salta
+              {t.awSkip}
             </button>
           )}
           {step < totalSteps ? (
             <button type="button" onClick={nextStep} disabled={isPending} className="rounded-full bg-slate-900 px-7 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-slate-200">
-              {step === 0 ? "Inizia" : "Avanti"}
+              {step === 0 ? t.awStart : t.awNext}
             </button>
           ) : (
             <button type="submit" disabled={isPending || !canCreate} className="rounded-full bg-gradient-to-r from-violet-600 to-blue-500 px-7 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-violet-200 disabled:opacity-50">
-              {isPending ? "Creazione..." : "Crea appartamento"}
+              {isPending ? t.awCreating : t.awCreate}
             </button>
           )}
         </div>
@@ -481,12 +484,13 @@ export default function ApartmentCreateWizard({ action }: ApartmentCreateWizardP
 }
 
 function WizardIntro() {
+  const { t } = useLang();
   return (
     <div className="flex min-h-[300px] flex-col justify-center space-y-5 text-center">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-violet-50 text-3xl">🏠</div>
-      <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Configuriamo il tuo appartamento</h2>
+      <h2 className="text-3xl font-semibold tracking-tight text-slate-900">{t.awConfigTitle}</h2>
       <p className="mx-auto max-w-md text-sm font-medium leading-relaxed text-slate-500">
-        Ti guiderò passo passo. Puoi saltare le informazioni e completarle dopo.
+        {t.awConfigSub}
       </p>
     </div>
   );
@@ -502,6 +506,7 @@ function WizardStep({ title, children }: { title: string; children: React.ReactN
 }
 
 function NumberField({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  const { t } = useLang();
   return (
     <label className="space-y-2">
       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
@@ -511,6 +516,7 @@ function NumberField({ label, value, onChange }: { label: string; value: number;
 }
 
 function TextField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const { t } = useLang();
   return (
     <label className="space-y-2">
       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
@@ -520,11 +526,12 @@ function TextField({ label, value, onChange }: { label: string; value: string; o
 }
 
 function SelectField({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
+  const { t } = useLang();
   return (
     <label className="space-y-2">
       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
       <select className={selectClass} value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">— Seleziona —</option>
+        <option value="">{t.awSelect}</option>
         {options.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
       </select>
     </label>
@@ -532,6 +539,7 @@ function SelectField({ label, value, onChange, options }: { label: string; value
 }
 
 function AddedItemsList({ title, items, onRemove }: { title: string; items: WizardTechnicalItem[]; onRemove: (i: number) => void }) {
+  const { t } = useLang();
   if (items.length === 0) return null;
   return (
     <div className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
@@ -540,7 +548,7 @@ function AddedItemsList({ title, items, onRemove }: { title: string; items: Wiza
         {items.map((item, index) => (
           <div key={`${item.name}-${index}`} className="flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3">
             <p className="truncate text-sm font-bold text-slate-700">{item.name || item.type || "Elemento"} {item.brand} {item.model} {item.location}</p>
-            <button type="button" onClick={() => onRemove(index)} className="shrink-0 text-[10px] font-black uppercase tracking-widest text-rose-500">Rimuovi</button>
+            <button type="button" onClick={() => onRemove(index)} className="shrink-0 text-[10px] font-black uppercase tracking-widest text-rose-500">{t.awRemove}</button>
           </div>
         ))}
       </div>
@@ -558,26 +566,27 @@ function MultiTechnicalItemStep({
   onRemove: (i: number) => void; onContinue: () => void;
   typeOptions: string[]; helper?: boolean;
 }) {
+  const { t } = useLang();
   return (
     <WizardStep title={title}>
       <AddedItemsList title={listTitle} items={items} onRemove={onRemove} />
       <div className="grid grid-cols-2 gap-3">
-        <button type="button" onClick={() => onToggle(true)} className={`rounded-2xl border px-4 py-3 text-sm font-bold ${enabled ? "border-violet-200 bg-violet-50 text-violet-700" : "border-slate-100 bg-white text-slate-600"}`}>Aggiungi</button>
-        <button type="button" onClick={() => onToggle(false)} className={`rounded-2xl border px-4 py-3 text-sm font-bold ${!enabled ? "border-violet-200 bg-violet-50 text-violet-700" : "border-slate-100 bg-white text-slate-600"}`}>Salta</button>
+        <button type="button" onClick={() => onToggle(true)} className={`rounded-2xl border px-4 py-3 text-sm font-bold ${enabled ? "border-violet-200 bg-violet-50 text-violet-700" : "border-slate-100 bg-white text-slate-600"}`}>{t.awAdd}</button>
+        <button type="button" onClick={() => onToggle(false)} className={`rounded-2xl border px-4 py-3 text-sm font-bold ${!enabled ? "border-violet-200 bg-violet-50 text-violet-700" : "border-slate-100 bg-white text-slate-600"}`}>{t.awSkip}</button>
       </div>
       {enabled && (
         <>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <TextField label="Nome" value={item.name} onChange={(v) => onChange("name", v)} />
-            <SelectField label="Tipo" value={item.type} onChange={(v) => onChange("type", v)} options={typeOptions} />
-            <TextField label="Marca" value={item.brand} onChange={(v) => onChange("brand", v)} />
-            <TextField label="Modello" value={item.model} onChange={(v) => onChange("model", v)} />
-            <TextField label="Posizione" value={item.location} onChange={(v) => onChange("location", v)} />
-            <TextField label="Note" value={item.notes} onChange={(v) => onChange("notes", v)} />
+            <TextField label={t.awName} value={item.name} onChange={(v) => onChange("name", v)} />
+            <SelectField label={t.awType} value={item.type} onChange={(v) => onChange("type", v)} options={typeOptions} />
+            <TextField label={t.awBrand} value={item.brand} onChange={(v) => onChange("brand", v)} />
+            <TextField label={t.awModel} value={item.model} onChange={(v) => onChange("model", v)} />
+            <TextField label={t.awLocation} value={item.location} onChange={(v) => onChange("location", v)} />
+            <TextField label={t.awNotes} value={item.notes} onChange={(v) => onChange("notes", v)} />
           </div>
           {helper && (
             <div className="rounded-3xl border border-violet-100 bg-violet-50 px-5 py-4 text-sm font-medium text-violet-700">
-              🤖 Suggerimento: inserisci marca e modello per permettere all&apos;AI di cercare manuali e problemi comuni.
+              {t.awSmartHint}
             </div>
           )}
           <button type="button" onClick={onSave} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-slate-200">{saveLabel}</button>
@@ -585,10 +594,10 @@ function MultiTechnicalItemStep({
       )}
       {items.length > 0 && !enabled && (
         <div className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
-          <p className="mb-3 text-sm font-bold text-slate-700">Vuoi aggiungerne un altro?</p>
+          <p className="mb-3 text-sm font-bold text-slate-700">{t.awAddAnotherQ}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <button type="button" onClick={onAddAnother} className="rounded-full border border-slate-200 bg-white px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-600">{addAnotherLabel}</button>
-            <button type="button" onClick={onContinue} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white">Continua</button>
+            <button type="button" onClick={onContinue} className="rounded-full bg-slate-900 px-5 py-3 text-xs font-black uppercase tracking-widest text-white">{t.awContinue}</button>
           </div>
         </div>
       )}
@@ -598,6 +607,7 @@ function MultiTechnicalItemStep({
 
 
 function WizardSummary({ formData, onGoTo }: { formData: WizardData; onGoTo: (step: number) => void }) {
+  const { t } = useLang();
   const rows: [string, string, number][] = [
     ["Nome", formData.name || "Mancante", 1],
     ["Codice", formData.apartmentCode || "Auto-generato dal nome", 1],
@@ -616,7 +626,7 @@ function WizardSummary({ formData, onGoTo }: { formData: WizardData; onGoTo: (st
   ];
 
   return (
-    <WizardStep title="Riepilogo">
+    <WizardStep title={t.awStepSummary}>
       <div className="space-y-2">
         {rows.map(([label, value, targetStep]) => (
           <button key={label} type="button" onClick={() => onGoTo(targetStep)}
@@ -626,7 +636,7 @@ function WizardSummary({ formData, onGoTo }: { formData: WizardData; onGoTo: (st
           </button>
         ))}
       </div>
-      <p className="text-xs font-medium text-slate-400 text-center">Clicca su una riga per modificarla.</p>
+      <p className="text-xs font-medium text-slate-400 text-center">{t.awClickRow}</p>
     </WizardStep>
   );
 }
