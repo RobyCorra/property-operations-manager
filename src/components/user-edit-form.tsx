@@ -90,14 +90,14 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
                 onClick={() => setIsExternal(false)}
                 className={`flex-1 py-2.5 rounded-full text-sm font-medium border transition-all ${!isExternal ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
               >
-                Interno
+                {t.usrInternal}
               </button>
               <button
                 type="button"
                 onClick={() => setIsExternal(true)}
                 className={`flex-1 py-2.5 rounded-full text-sm font-medium border transition-all ${isExternal ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
               >
-                Esterno / Fornitore
+                {t.usrExternal}
               </button>
             </div>
             <input type="hidden" name="isExternal" value={String(isExternal)} />
@@ -154,8 +154,8 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
             <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
               <Building2 size={16} className="text-gray-400" />
               <h2 className="text-lg font-medium text-gray-900">
-                Appartamenti assegnati
-                {selectedRole === "SUPERVISOR" ? " (supervisione)" : " (proprietà)"}
+                {t.usrAssignedApartments}
+                {selectedRole === "SUPERVISOR" ? t.usrSupervision : t.usrProperty}
               </h2>
             </div>
             {apartments.length === 0 ? (

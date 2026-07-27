@@ -512,6 +512,9 @@ export const translations = {
     usrRoleCleaner: "Addetto alle Pulizie (CLEANER)",
     usrRoleMaintenance: "Manutentore (MAINTENANCE)",
     usrRoleCheckin: "Assistente Check-in (CHECKIN)",
+    usrAssignedApartments: "Appartamenti assegnati",
+    usrSupervision: " (supervisione)",
+    usrProperty: " (proprietà)",
   },
 
   en: {
@@ -1018,6 +1021,9 @@ export const translations = {
     usrRoleCleaner: "Cleaner (CLEANER)",
     usrRoleMaintenance: "Maintainer (MAINTENANCE)",
     usrRoleCheckin: "Check-in Assistant (CHECKIN)",
+    usrAssignedApartments: "Assigned apartments",
+    usrSupervision: " (supervision)",
+    usrProperty: " (ownership)",
   },
 
   es: {
@@ -1524,6 +1530,9 @@ export const translations = {
     usrRoleCleaner: "Limpiador (CLEANER)",
     usrRoleMaintenance: "Técnico (MAINTENANCE)",
     usrRoleCheckin: "Asistente de check-in (CHECKIN)",
+    usrAssignedApartments: "Apartamentos asignados",
+    usrSupervision: " (supervisión)",
+    usrProperty: " (propiedad)",
   },
 } as const;
 
