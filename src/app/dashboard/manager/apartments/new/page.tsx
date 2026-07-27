@@ -1,10 +1,12 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createApartment } from "@/src/app/actions/apartment";
 import ApartmentCreateWizard from "@/src/components/apartment-create-wizard";
 import BackButton from "@/src/components/back-button";
 export default async function NewApartmentPage() {
+  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 
@@ -19,8 +21,8 @@ export default async function NewApartmentPage() {
         {/* Header */}
         <div>
           <BackButton />
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Aggiungi Appartamento</h1>
-          <p className="text-gray-500 mt-1">Censisci una nuova proprietà per l'operatività</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{tr.awPageTitle}</h1>
+          <p className="text-gray-500 mt-1">{tr.awPageSub}</p>
         </div>
 
         <ApartmentCreateWizard action={createApartment} />
