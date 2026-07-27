@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useLang } from "@/src/components/lang-context";
 import { useRef, useState, useTransition } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { ChevronRight } from "@/src/components/icons";
@@ -436,6 +437,7 @@ function AttachmentFields({
   attachment: TechnicalAttachment;
   onChange: (key: keyof TechnicalAttachment, value: string) => void;
 }) {
+  const { t } = useLang();
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -473,20 +475,20 @@ function AttachmentFields({
             <p className="text-xs text-gray-500">{attachment.mimeType || "Link"}{attachment.size ? ` - ${Math.round(attachment.size / 1024)} KB` : ""}</p>
           </div>
           <a href={attachment.url} target="_blank" rel="noreferrer" className="self-start rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-white">
-            Apri
+            {t.afOpen}
           </a>
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">File</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t.afFile}</label>
           <input type="file" onChange={handleFileChange} className={inputClass} disabled={uploadStatus === "uploading"} />
-          {uploadStatus === "uploading" && <p className="mt-1 text-xs text-blue-600">Caricamento in corso...</p>}
-          {uploadStatus === "done" && <p className="mt-1 text-xs text-green-600">File caricato ✓ — clicca &quot;Carica allegato&quot; per salvare</p>}
-          {uploadStatus === "error" && <p className="mt-1 text-xs text-red-600">Errore caricamento. Riprova.</p>}
+          {uploadStatus === "uploading" && <p className="mt-1 text-xs text-blue-600">{t.afUploading}</p>}
+          {uploadStatus === "done" && <p className="mt-1 text-xs text-green-600">{t.afFileUploaded}</p>}
+          {uploadStatus === "error" && <p className="mt-1 text-xs text-red-600">{t.afUploadError}</p>}
         </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t.afCategory}</label>
         <select
           name={`${baseName}.category`}
           value={attachment.category}
@@ -500,13 +502,13 @@ function AttachmentFields({
       </div>
         <Field label="Note" name={`${baseName}.notes`} value={attachment.notes} multiline onChange={(value) => onChange("notes", value)} />
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Link Google Drive</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t.afGoogleDrive}</label>
           <input type="url" name={`${baseName}.driveUrl`} defaultValue={attachment.url.startsWith("http") ? attachment.url : ""} className={inputClass} />
         </div>
       </div>
       <div className="flex justify-end">
         <button type="submit" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
-          Carica allegato
+          {t.afUploadAttachment}
         </button>
       </div>
     </div>
@@ -555,6 +557,7 @@ function TechnicalItemsSection({
   items: TechnicalItem[];
   setItems: Dispatch<SetStateAction<TechnicalItem[]>>;
 }) {
+  const { t } = useLang();
   const updateItem = (index: number, key: keyof TechnicalItem, value: string) => {
     setItems((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, [key]: value } : item));
   };
@@ -587,7 +590,7 @@ function TechnicalItemsSection({
         </div>
 
         {items.length === 0 ? (
-          <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-500">Nessun elemento inserito.</p>
+          <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-500">{t.afNoItems}</p>
         ) : (
           <div className="space-y-4">
             {items.map((item, itemIndex) => (
@@ -609,7 +612,7 @@ function TechnicalItemsSection({
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-gray-800">{item.name || `${title} ${itemIndex + 1}`}</p>
                     <button type="button" onClick={() => setItems((current) => current.filter((_, index) => index !== itemIndex))} className="rounded-full px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
-                      Elimina
+                      {t.mgrDelete}
                     </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -639,6 +642,7 @@ function RecurringIssuesSection({
   issues: RecurringIssueItem[];
   setIssues: Dispatch<SetStateAction<RecurringIssueItem[]>>;
 }) {
+  const { t } = useLang();
   const updateIssue = (index: number, key: keyof RecurringIssueItem, value: string) => {
     setIssues((current) => current.map((issue, issueIndex) => issueIndex === index ? { ...issue, [key]: value } : issue));
   };
@@ -660,11 +664,11 @@ function RecurringIssuesSection({
       <div className="space-y-4">
         <div className="flex justify-end">
           <button type="button" onClick={() => setIssues((current) => [...current, { ...emptyRecurringIssue }])} className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
-            + Aggiungi problema
+            {t.afAddProblem}
           </button>
         </div>
         {issues.length === 0 ? (
-          <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-500">Nessun problema inserito.</p>
+          <p className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-500">{t.afNoProblems}</p>
         ) : (
           <div className="space-y-4">
             {issues.map((issue, issueIndex) => (
@@ -687,7 +691,7 @@ function RecurringIssuesSection({
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-gray-800">{issue.title || `Problema ${issueIndex + 1}`}</p>
                     <button type="button" onClick={() => setIssues((current) => current.filter((_, index) => index !== issueIndex))} className="rounded-full px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
-                      Elimina
+                      {t.mgrDelete}
                     </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -723,22 +727,23 @@ function AttachmentList({
   onRemove: (index: number) => void;
   onChange: (index: number, key: keyof TechnicalAttachment, value: string) => void;
 }) {
+  const { t } = useLang();
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
-        <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500">Allegati</h4>
+        <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t.afAttachments}</h4>
         <button type="button" onClick={onAdd} className="rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-white">
-          + Aggiungi allegato
+          {t.afAddAttachment}
         </button>
       </div>
       {attachments.length === 0 ? (
-        <p className="rounded-lg bg-white px-4 py-3 text-sm text-gray-500">Nessun allegato inserito.</p>
+        <p className="rounded-lg bg-white px-4 py-3 text-sm text-gray-500">{t.afNoAttachments}</p>
       ) : (
         attachments.map((attachment, attachmentIndex) => (
           <div key={attachmentIndex} className="space-y-3">
             <div className="flex justify-end">
               <button type="button" onClick={() => onRemove(attachmentIndex)} className="rounded-full px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
-                Elimina allegato
+                {t.afDeleteAttachment}
               </button>
             </div>
             <AttachmentFields
@@ -788,6 +793,7 @@ function AccessCodeField({ label, name, value, onChange, mono, secret }: { label
 }
 
 export default function ApartmentForm({ initialData, action, title, initialAccessMedia = [] }: ApartmentFormProps) {
+  const { t } = useLang();
   const technicalProfile = (initialData?.technicalProfile as TechnicalProfile | null) ?? {};
   const rawAccessInfo = (initialData?.accessInfo as AccessInfo | null) ?? {};
   const [activeSection, setActiveSection] = useState<FormSectionKey>("main");
@@ -889,50 +895,50 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
           <div className="min-w-0 p-6 pb-28 md:p-8 md:pb-28">
             <div hidden={activeSection !== "main"} className="space-y-8">
               <div className="space-y-4">
-                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Informazioni Base</h2>
+                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afBaseInfo}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nome Proprietà *</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{t.afPropertyName} *</label>
                     <input required type="text" id="name" name="name" defaultValue={initialData?.name} placeholder="Es. Domus Colosseo" className={inputClass} />
                   </div>
                   <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">Indirizzo Fisico *</label>
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">{t.afPhysicalAddress} *</label>
                     <input required type="text" id="address" name="address" defaultValue={initialData?.address} placeholder="Via Roma 10, Roma" className={inputClass} />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4 pt-2">
-                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Geolocalizzazione</h2>
+                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afGeolocation}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-1">Latitudine *</label>
+                    <label htmlFor="latitude" className="block text-sm font-medium text-gray-700 mb-1">{t.afLatitude} *</label>
                     <input required type="number" step="any" id="latitude" name="latitude" defaultValue={initialData?.latitude} placeholder="Es. 41.8902" className={inputClass} />
                   </div>
                   <div>
-                    <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-1">Longitudine *</label>
+                    <label htmlFor="longitude" className="block text-sm font-medium text-gray-700 mb-1">{t.afLongitude} *</label>
                     <input required type="number" step="any" id="longitude" name="longitude" defaultValue={initialData?.longitude} placeholder="Es. 12.4922" className={inputClass} />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4 pt-2">
-                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Caratteristiche</h2>
+                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afFeatures}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <label htmlFor="squareMeters" className="block text-sm font-medium text-gray-700 mb-1">Superficie (m2)</label>
                     <input required type="number" min="0" id="squareMeters" name="squareMeters" defaultValue={initialData?.squareMeters ?? 50} className={inputClass} />
                   </div>
                   <div>
-                    <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-700 mb-1">Stanze</label>
+                    <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-700 mb-1">{t.afRooms}</label>
                     <input required type="number" min="0" id="bedrooms" name="bedrooms" defaultValue={initialData?.bedrooms ?? 1} className={inputClass} />
                   </div>
                   <div>
-                    <label htmlFor="bathrooms" className="block text-sm font-medium text-gray-700 mb-1">Bagni</label>
+                    <label htmlFor="bathrooms" className="block text-sm font-medium text-gray-700 mb-1">{t.afBaths}</label>
                     <input required type="number" min="0" id="bathrooms" name="bathrooms" defaultValue={initialData?.bathrooms ?? 1} className={inputClass} />
                   </div>
                   <div>
-                    <label htmlFor="maxGuests" className="block text-sm font-medium text-gray-700 mb-1">Ospiti Max</label>
+                    <label htmlFor="maxGuests" className="block text-sm font-medium text-gray-700 mb-1">{t.afMaxGuests}</label>
                     <input required type="number" min="1" id="maxGuests" name="maxGuests" defaultValue={initialData?.maxGuests ?? 2} className={inputClass} />
                   </div>
                 </div>
@@ -940,7 +946,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
 
               {/* ── LETTI & BIANCHERIA ── */}
               <div className="space-y-4 pt-2">
-                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Letti &amp; Biancheria</h2>
+                <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afBedsLinen}</h2>
 
                 {/* hidden inputs per serializzare bedConfig */}
                 {(["matrimoniale","singolo","divanoMatrimoniale","divanoSingolo"] as const).map((k) => (
@@ -960,19 +966,19 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                   <table className="w-full min-w-[560px] border-collapse">
                     <thead>
                       <tr>
-                        <th className="text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 pb-2 pr-4">Tipo</th>
-                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 pb-2 px-2 w-20">N° letti</th>
+                        <th className="text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 pb-2 pr-4">{t.afType}</th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 pb-2 px-2 w-20">{t.afNumBeds}</th>
                         <th className="w-3"></th>
-                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">Lenzuola</th>
-                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">Federe</th>
-                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-28">Copri piumino</th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">{t.afSheets}</th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">{t.afPillowcases}</th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-28">{t.afDuvet}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
 
                       {/* LETTI FISSI */}
                       <tr><td colSpan={6} className="pt-3 pb-1">
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-700 px-3 py-1 rounded-full">🛏 Letti fissi — sempre preparati</span>
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-700 px-3 py-1 rounded-full">{t.afFixedBeds}</span>
                       </td></tr>
 
                       {([
@@ -1012,7 +1018,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
 
                       {/* LETTI AGGIUNTIVI */}
                       <tr><td colSpan={6} className="pt-4 pb-1">
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-amber-50 text-amber-700 px-3 py-1 rounded-full">🛋 Letti aggiuntivi — attivati se gli ospiti superano i letti fissi</span>
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-amber-50 text-amber-700 px-3 py-1 rounded-full">{t.afExtraBeds}</span>
                       </td></tr>
 
                       {([
@@ -1052,15 +1058,15 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
 
                       {/* CULLA */}
                       <tr><td colSpan={6} className="pt-4 pb-1">
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full">🪺 Culla — attivata dalla prenotazione, biancheria separata</span>
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full">{t.afCot}</span>
                       </td></tr>
                       <tr className="hover:bg-gray-50/50">
                         <td className="py-2 pr-4">
                           <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                            <span>🪺</span>Culla
+                            <span>🪺</span>{t.afCotWord}
                           </span>
                         </td>
-                        <td className="py-2 px-2 text-center text-xs text-gray-400 italic">da prenotaz.</td>
+                        <td className="py-2 px-2 text-center text-xs text-gray-400 italic">{t.afFromBooking}</td>
                         <td className="w-3 text-gray-200 text-center">│</td>
                         <td className="py-2 px-2 text-center">
                           <input type="number" min="0" value={bedConfig.culla.lenzuola}
@@ -1086,16 +1092,16 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
             </div>
 
             <div hidden={activeSection !== "calendar"} className="space-y-4">
-              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Sincronizzazione iCal</h2>
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afIcalSync}</h2>
               <div>
-                <label htmlFor="icalUrl" className="block text-sm font-medium text-gray-700 mb-1">Airbnb iCal URL</label>
+                <label htmlFor="icalUrl" className="block text-sm font-medium text-gray-700 mb-1">{t.afIcalUrl}</label>
                 <input type="url" id="icalUrl" name="icalUrl" defaultValue={initialData?.icalUrl ?? ""} placeholder="https://www.airbnb.com/calendar/ical/..." className={inputClass} />
-                <p className="text-xs text-gray-400 mt-1">Incolla qui l'URL iCal di Airbnb per sincronizzare automaticamente le prenotazioni.</p>
+                <p className="text-xs text-gray-400 mt-1">{t.afIcalHint}</p>
               </div>
             </div>
 
             <div hidden={activeSection !== "technical"} className="space-y-4">
-              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Scheda Tecnica Appartamento</h2>
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afTechSheet}</h2>
               <TechnicalItemsSection title="Impianti" addLabel="+ Aggiungi impianto" prefix="systems" items={systems} setItems={setSystems} />
               <TechnicalItemsSection title="Elettrodomestici" addLabel="+ Aggiungi elettrodomestico" prefix="appliances" items={appliances} setItems={setAppliances} />
               <TechnicalItemsSection title="Domotica" addLabel="+ Aggiungi dispositivo domotico" prefix="smartHome" items={smartHome} setItems={setSmartHome} />
@@ -1103,9 +1109,9 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
             </div>
 
             <div hidden={activeSection !== "attachments"} className="space-y-4">
-              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Allegati</h2>
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afAttachments}</h2>
               <div className="space-y-4 rounded-xl border border-gray-100 p-4">
-                <h3 className="text-sm font-semibold text-gray-800">Allegati generali</h3>
+                <h3 className="text-sm font-semibold text-gray-800">{t.afGeneralAttachments}</h3>
                 <AttachmentList
                   baseName="technicalProfile.generalAttachments"
                   attachments={generalAttachments}
@@ -1117,21 +1123,21 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
             </div>
 
             <div hidden={activeSection !== "ai"} className="space-y-4">
-              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Note IA</h2>
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afAiNotes}</h2>
               <div className="space-y-4 rounded-xl border border-gray-100 p-4">
-                <h3 className="text-sm font-semibold text-gray-800">Note per IA</h3>
-                <textarea id="technicalProfile.aiNotes" name="technicalProfile.aiNotes" defaultValue={technicalProfile.aiNotes ?? ""} rows={4} placeholder="Note operative utili per cleaner, manutentori e manager..." className={inputClass} />
+                <h3 className="text-sm font-semibold text-gray-800">{t.afAiNotesFull}</h3>
+                <textarea id="technicalProfile.aiNotes" name="technicalProfile.aiNotes" defaultValue={technicalProfile.aiNotes ?? ""} rows={4} placeholder={t.afAiNotesPlaceholder} className={inputClass} />
               </div>
             </div>
 
             {/* ── ACCESSO ── */}
             <div hidden={activeSection !== "access"} className="space-y-3">
-              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">Accesso appartamento</h2>
+              <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afApartmentAccess}</h2>
 
               {/* Codici */}
               <div className="rounded-xl border border-gray-100 overflow-hidden">
                 <button type="button" onClick={() => setAccessOpen((s) => ({ ...s, codes: !s.codes }))} className="w-full flex items-center justify-between px-4 py-3 bg-gray-50/60 hover:bg-gray-100/60 transition-colors text-left">
-                  <div className="flex items-center gap-2"><span>🔐</span><span className="text-sm font-medium text-gray-800">Codici di accesso</span></div>
+                  <div className="flex items-center gap-2"><span>🔐</span><span className="text-sm font-medium text-gray-800">{t.afAccessCodes}</span></div>
                   <span className="text-gray-400 text-xs">{accessOpen.codes ? "▲" : "▼"}</span>
                 </button>
                 {accessOpen.codes && (
@@ -1153,7 +1159,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
               {/* Istruzioni */}
               <div className="rounded-xl border border-gray-100 overflow-hidden">
                 <button type="button" onClick={() => setAccessOpen((s) => ({ ...s, instructions: !s.instructions }))} className="w-full flex items-center justify-between px-4 py-3 bg-gray-50/60 hover:bg-gray-100/60 transition-colors text-left">
-                  <div className="flex items-center gap-2"><span>📋</span><span className="text-sm font-medium text-gray-800">Istruzioni</span></div>
+                  <div className="flex items-center gap-2"><span>📋</span><span className="text-sm font-medium text-gray-800">{t.afInstructions}</span></div>
                   <span className="text-gray-400 text-xs">{accessOpen.instructions ? "▲" : "▼"}</span>
                 </button>
                 {accessOpen.instructions && (
@@ -1177,7 +1183,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                 <button type="button" onClick={() => setAccessOpen((s) => ({ ...s, media: !s.media }))} className="w-full flex items-center justify-between px-4 py-3 bg-gray-50/60 hover:bg-gray-100/60 transition-colors text-left">
                   <div className="flex items-center gap-2">
                     <span>📸</span>
-                    <span className="text-sm font-medium text-gray-800">Foto e video accesso</span>
+                    <span className="text-sm font-medium text-gray-800">{t.afAccessPhotos}</span>
                     {accessMedia.length > 0 && <span className="rounded-full bg-blue-50 text-blue-700 px-2 py-0.5 text-[10px] font-semibold">{accessMedia.length} file</span>}
                   </div>
                   <span className="text-gray-400 text-xs">{accessOpen.media ? "▲" : "▼"}</span>
@@ -1188,8 +1194,8 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                     {accessMedia.length === 0 ? (
                       <div onClick={() => mediaInputRef.current?.click()} className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 py-8 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors">
                         <span className="text-3xl mb-1">📸</span>
-                        <p className="text-xs font-medium text-gray-500">Carica foto o video dell'accesso</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">Cassetta chiavi, portone, video istruzioni...</p>
+                        <p className="text-xs font-medium text-gray-500">{t.afUploadAccess}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{t.afAccessPlaceholder}</p>
                       </div>
                     ) : (
                       <div className="grid grid-cols-3 gap-2">
@@ -1216,7 +1222,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                       </div>
                     )}
                     <button type="button" onClick={() => mediaInputRef.current?.click()} disabled={mediaUploading} className="flex items-center gap-1.5 rounded-full bg-black px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-50">
-                      {mediaUploading ? <><span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Caricamento...</> : "↑ Carica foto/video"}
+                      {mediaUploading ? <><span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" /> {t.afLoading}</> : t.afUploadAccessBtn}
                     </button>
                     <input ref={mediaInputRef} type="file" className="hidden" accept=".jpg,.jpeg,.png,.webp,.mp4,.mov,.webm" onChange={handleMediaUpload} />
                   </div>
@@ -1229,7 +1235,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
 
         <div className="sticky bottom-0 z-20 flex items-center justify-end gap-3 border-t border-gray-100 bg-white/90 px-6 py-4 backdrop-blur md:px-8">
           <Link href="/dashboard/manager/apartments" className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-            Annulla
+            {t.mgrCancel}
           </Link>
           {formError && (
             <p className="mr-auto max-w-md rounded-lg border border-red-100 bg-red-50 px-4 py-2 text-sm font-medium text-red-700">
