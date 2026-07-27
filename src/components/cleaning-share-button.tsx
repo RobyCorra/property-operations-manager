@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/src/components/lang-context";
 import { generateCleaningAccessToken, revokeCleaningAccessToken } from "@/src/app/actions/cleaning-token";
 import { Link2, Copy, CheckCheck, RefreshCw } from "lucide-react";
 
@@ -10,6 +11,7 @@ interface CleaningShareButtonProps {
 }
 
 export default function CleaningShareButton({ cleaningId, existingToken }: CleaningShareButtonProps) {
+  const { t } = useLang();
   const [token, setToken] = useState<string | null>(existingToken ?? null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -73,7 +75,7 @@ export default function CleaningShareButton({ cleaningId, existingToken }: Clean
         ) : (
           <Link2 className="w-4 h-4" />
         )}
-        {token ? "Rigenera link" : "Genera link cleaner"}
+        {token ? "Rigenera link" : "{t.shGenerateLink}"}
       </button>
 
       {token && (
@@ -89,7 +91,7 @@ export default function CleaningShareButton({ cleaningId, existingToken }: Clean
       {token && (
         <p className="text-xs text-slate-400 break-words">
           Invia via WhatsApp — non serve login. Scade dopo 7 giorni.{" "}
-          <span className="text-amber-600">Rigenerando o revocando, il vecchio link non funzionerà.</span>
+          <span className="text-amber-600">{t.shRegenWarn}</span>
         </p>
       )}
     </div>
