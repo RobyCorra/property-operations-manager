@@ -526,7 +526,7 @@ export default function TicketConversation({
               {/* Attachment generico */}
               <button type="button" onClick={() => fileInputRef.current?.click()}
                 className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
-                title="Allega file">
+                title={t.tcvAttachFile}>
                 <span className="text-lg">📎</span>
                 <input ref={fileInputRef} type="file" name="files" className="hidden" onChange={handleFileChange} />
               </button>
@@ -547,7 +547,7 @@ export default function TicketConversation({
               {/* Mic button */}
               <button type="button" onClick={startRecording}
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
-                title="Registra messaggio vocale">
+                title={t.tcvVoiceMessage}>
                 <svg width="16" height="16" fill="none" stroke="#475569" stroke-width="1.8" viewBox="0 0 24 24">
                   <rect x="9" y="2" width="6" height="11" rx="3"/>
                   <path d="M5 10a7 7 0 0 0 14 0"/>
