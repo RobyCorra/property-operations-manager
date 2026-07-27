@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState, useEffect } from "react";
+import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import { createBooking, updateBooking } from "@/src/app/actions/booking";
 
@@ -53,6 +54,7 @@ const addDaysToInputDate = (value: string, days: number) => {
 };
 
 export default function BookingForm({ apartments, initialData, serverDate }: BookingFormProps) {
+  const { t } = useLang();
   const isEditing = !!initialData;
   const action = isEditing 
     ? updateBooking.bind(null, initialData!.id) 
@@ -91,26 +93,26 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
 
         <div className="space-y-6">
           <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">
-            {isEditing ? "Modifica Prenotazione" : "Dettagli Prenotazione"}
+            {isEditing ? t.bfEditTitle : t.bfDetails}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="guestName" className="block text-sm font-medium text-gray-700 mb-1.5">Nome Ospite *</label>
+                <label htmlFor="guestName" className="block text-sm font-medium text-gray-700 mb-1.5">{t.bfGuestName} *</label>
                 <input 
                   required 
                   type="text" 
                   id="guestName" 
                   name="guestName" 
                   defaultValue={initialData?.guestName}
-                  placeholder="Es. Mario Rossi" 
+                  placeholder={t.bfGuestPlaceholder} 
                   className="w-full rounded-xl border-gray-200 border px-4 py-3 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all" 
                 />
               </div>
 
               <div>
-                <label htmlFor="apartmentId" className="block text-sm font-medium text-gray-700 mb-1.5">Appartamento *</label>
+                <label htmlFor="apartmentId" className="block text-sm font-medium text-gray-700 mb-1.5">{t.bfApartment} *</label>
                 <select 
                   required 
                   id="apartmentId" 
@@ -119,7 +121,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
                   onChange={(e) => setApartmentId(e.target.value)}
                   className="w-full rounded-xl border-gray-200 border px-4 py-3 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
                 >
-                  <option value="">Seleziona un appartamento</option>
+                  <option value="">{t.bfSelectApartment}</option>
                   {apartments.map((apt) => (
                     <option key={apt.id} value={apt.id}>{apt.name}</option>
                   ))}
@@ -127,7 +129,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
               </div>
 
               <div>
-                <label htmlFor="totalGuests" className="block text-sm font-medium text-gray-700 mb-1.5">Ospiti Totali *</label>
+                <label htmlFor="totalGuests" className="block text-sm font-medium text-gray-700 mb-1.5">{t.bfTotalGuests} *</label>
                 <input
                   required
                   type="number"
@@ -155,10 +157,10 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
                 <span className="text-2xl">🪺</span>
                 <div className="text-left">
                   <p className={`text-sm font-bold ${cullaRequested ? "text-emerald-800" : "text-gray-700"}`}>
-                    Culla necessaria
+                    {t.bfCotNeeded}
                   </p>
                   <p className={`text-xs ${cullaRequested ? "text-emerald-600" : "text-gray-400"}`}>
-                    Aggiunge la biancheria culla al calcolo — mostrata separatamente
+                    {t.bfCotHint}
                   </p>
                 </div>
               </div>
@@ -169,14 +171,14 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
 
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Periodo di Soggiorno *
+                {t.bfStayPeriod} *
               </label>
 
               <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-4 space-y-4">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="checkInDate" className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Check-in *
+                      {t.bfCheckin} *
                     </label>
                     <input
                       required
@@ -198,7 +200,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
 
                   <div>
                     <label htmlFor="checkOutDate" className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Check-out *
+                      {t.bfCheckout} *
                     </label>
                     <input
                       required
@@ -214,7 +216,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
                 </div>
 
                 <div className="rounded-xl bg-white border border-gray-100 px-4 py-3 text-sm text-gray-600">
-                  <span className="font-medium text-gray-900">Riepilogo:</span> {rangeSummary}
+                  <span className="font-medium text-gray-900">{t.bfSummary}</span> {rangeSummary}
                 </div>
 
                 {isDateRangeInvalid && (
@@ -225,7 +227,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
 
                 {!apartmentId && (
                   <p className="text-[10px] text-gray-400">
-                    Seleziona un appartamento per completare la prenotazione
+                    {t.bfSelectToComplete}
                   </p>
                 )}
               </div>
@@ -242,7 +244,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
             disabled={isPending || !apartmentId || !checkInDate || !checkOutDate || isDateRangeInvalid}
             className="rounded-full bg-black px-10 py-3 text-sm font-medium text-white shadow-md transition-all hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
-            {isPending ? "Salvataggio..." : isEditing ? "Aggiorna Prenotazione" : "Crea Prenotazione"}
+            {isPending ? "Salvataggio..." : isEditing ? t.bfUpdate : t.bfCreate}
           </button>
         </div>
         
