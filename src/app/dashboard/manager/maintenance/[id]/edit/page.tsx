@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
@@ -38,6 +39,7 @@ type TicketView = {
 };
 
 export default async function EditMaintenancePage({ params }: { params: Promise<{ id: string }> }) {
+  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 
@@ -82,8 +84,8 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
       <div className="max-w-7xl mx-auto space-y-8">
         <div>
           <BackButton />
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Dettagli Ticket #{id.slice(0, 8)}</h1>
-          <p className="text-gray-500 mt-1">Gestisci la segnalazione e comunica con il tecnico</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{tr.meTicketDetails} #{id.slice(0, 8)}</h1>
+          <p className="text-gray-500 mt-1">{tr.meManageReport}</p>
         </div>
 
         {/* Link condivisibile per il manutentore */}
@@ -100,15 +102,15 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="space-y-6">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <span>📋</span> Informazioni Intervento
+              <span>📋</span> {tr.meInfoIntervention}
             </h2>
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 space-y-3">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Orari Intervento</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{tr.meInterventionTimes}</p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                 <div className="rounded-xl bg-gray-50 p-3">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Orario pianificato</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{tr.meScheduledTime}</p>
                   <p className="mt-1 font-semibold text-gray-800">
-                    {ticket.scheduledStart ? formatRomeDateTimeDisplay(ticket.scheduledStart) : "Non pianificato"}
+                    {ticket.scheduledStart ? formatRomeDateTimeDisplay(ticket.scheduledStart) : tr.meNotScheduled}
                   </p>
                   {ticket.scheduledEnd && (
                     <p className="mt-1 text-xs text-gray-500">
@@ -117,15 +119,15 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
                   )}
                 </div>
                 <div className="rounded-xl bg-gray-50 p-3">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Inizio intervento reale</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{tr.meRealStart}</p>
                   <p className="mt-1 font-semibold text-gray-800">
-                    {ticket.startedAt ? formatRomeDateTimeDisplay(ticket.startedAt) : "Non avviato"}
+                    {ticket.startedAt ? formatRomeDateTimeDisplay(ticket.startedAt) : tr.meNotStarted}
                   </p>
                 </div>
                 <div className="rounded-xl bg-gray-50 p-3">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Fine intervento reale</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{tr.meRealEnd}</p>
                   <p className="mt-1 font-semibold text-gray-800">
-                    {ticket.resolvedAt ? formatRomeDateTimeDisplay(ticket.resolvedAt) : "Non completato"}
+                    {ticket.resolvedAt ? formatRomeDateTimeDisplay(ticket.resolvedAt) : tr.meNotCompleted}
                   </p>
                 </div>
               </div>
@@ -133,7 +135,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
             {/* Riepilogo lavori eseguiti dal manutentore */}
             {Array.isArray(ticket.maintenanceTasks) && (ticket.maintenanceTasks as any[]).some((t: any) => t.completed) && (
               <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">🔧 Riepilogo lavori eseguiti</p>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">{tr.meWorkSummary}</p>
                 <div className="space-y-3">
                   {(ticket.maintenanceTasks as any[]).map((task: any, idx: number) => (
                     <div key={task.id ?? idx} className={`flex items-start gap-3 rounded-xl p-3 ${task.completed ? "bg-emerald-50 border border-emerald-100" : "bg-gray-50 border border-gray-100"}`}>
@@ -143,7 +145,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
                           {task.label || `Task ${idx + 1}`}
                         </p>
                         {task.photoRequired && !task.photoUrl && !task.completed && (
-                          <p className="text-[10px] text-gray-400 mt-0.5">📷 Foto richiesta — non ancora scattata</p>
+                          <p className="text-[10px] text-gray-400 mt-0.5">{tr.mePhotoRequired}</p>
                         )}
                       </div>
                       {task.photoUrl && (
@@ -151,7 +153,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={task.photoUrl}
-                            alt="Foto task"
+                            alt={tr.meTaskPhoto}
                             className="w-16 h-16 object-cover rounded-lg border border-emerald-200 hover:scale-105 transition-transform"
                           />
                         </a>
@@ -165,13 +167,13 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
             {role === "MANAGER" && ticket.status === "RESOLVED" && (
               <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-bold text-gray-900">Ticket risolto</p>
-                  <p className="text-xs text-gray-500 mt-1">Riapri la manutenzione se serve un nuovo intervento operativo.</p>
+                  <p className="text-sm font-bold text-gray-900">{tr.meTicketResolved}</p>
+                  <p className="text-xs text-gray-500 mt-1">{tr.meReopenHint}</p>
                 </div>
                 <StatusUpdateButton
                   id={ticket.id}
                   nextStatus="PENDING"
-                  label="Riapri manutenzione"
+                  label={tr.meReopen}
                   action={reopenMaintenanceTicket}
                   className="shrink-0 bg-slate-900 text-white uppercase tracking-widest hover:bg-slate-700"
                 />
@@ -199,7 +201,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
             {/* Display current attachments list for manager */}
             {ticket.attachments.length > 0 && (
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Allegati Correnti</h3>
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">{tr.meCurrentAttachments}</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {ticket.attachments.map((att: AttachmentView) => (
                     <a 
@@ -218,7 +220,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
                         </div>
                       )}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                        <span className="opacity-0 group-hover:opacity-100 text-white text-[10px] font-bold">Apri</span>
+                        <span className="opacity-0 group-hover:opacity-100 text-white text-[10px] font-bold">{tr.afOpen}</span>
                       </div>
                     </a>
                   ))}
@@ -229,7 +231,7 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
 
           <div className="space-y-6">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <span>💬</span> Conversazione Live
+              <span>💬</span> {tr.meLiveConversation}
             </h2>
             <TicketConversation
               entityId={ticket.id}

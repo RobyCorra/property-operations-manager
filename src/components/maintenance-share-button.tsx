@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/src/components/lang-context";
 import { generateMaintenanceAccessToken, revokeMaintenanceAccessToken } from "@/src/app/actions/maintenance-token";
 import { Link2, Copy, CheckCheck, RefreshCw } from "lucide-react";
 
@@ -10,6 +11,7 @@ interface MaintenanceShareButtonProps {
 }
 
 export default function MaintenanceShareButton({ ticketId, existingToken }: MaintenanceShareButtonProps) {
+  const { t } = useLang();
   const [token, setToken] = useState<string | null>(existingToken ?? null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -74,7 +76,7 @@ export default function MaintenanceShareButton({ ticketId, existingToken }: Main
           ) : (
             <Link2 className="w-4 h-4" />
           )}
-          {token ? "Rigenera link" : "Genera link manutentore"}
+          {token ? "Rigenera link" : "{t.mshGenerateLink}"}
         </button>
         {token && (
           <button
@@ -82,7 +84,7 @@ export default function MaintenanceShareButton({ ticketId, existingToken }: Main
             disabled={loading}
             className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50"
           >
-            Revoca
+            {t.mshRevoke}
           </button>
         )}
       </div>
@@ -90,7 +92,7 @@ export default function MaintenanceShareButton({ ticketId, existingToken }: Main
       {token && (
         <p className="text-xs text-slate-400">
           Invia questo link al manutentore via WhatsApp — non serve login. Scade dopo 7 giorni.{" "}
-          <span className="text-amber-600">Rigenerando o revocando, il vecchio non funzionerà più.</span>
+          <span className="text-amber-600">{t.mshRegenWarn}</span>
         </p>
       )}
     </div>
