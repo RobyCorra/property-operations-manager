@@ -755,6 +755,14 @@ export const translations = {
     mshGenerateLink: "Genera link manutentore",
     mshRevoke: "Revoca",
     mshRegenWarn: "Rigenerando o revocando, il vecchio non funzionerà più.",
+    tcBookingTag: "Prenotazione",
+    tcLenzShort: "Lenz.",
+    tcFedShort: "Fed.",
+    tcCopShort: "Cop.",
+    tcDuvetFull: "Copripium.",
+    tcDeleteConfirm: "Eliminare l'evento?",
+    tcDeleting: "Eliminazione...",
+    tcPersonsCap: "Persone",
   },
 
   en: {
@@ -1504,6 +1512,14 @@ export const translations = {
     mshGenerateLink: "Generate maintainer link",
     mshRevoke: "Revoke",
     mshRegenWarn: "Regenerating or revoking will disable the old one.",
+    tcBookingTag: "Booking",
+    tcLenzShort: "Sheets",
+    tcFedShort: "Pillow.",
+    tcCopShort: "Duvet",
+    tcDuvetFull: "Duvet cover",
+    tcDeleteConfirm: "Delete the event?",
+    tcDeleting: "Deleting...",
+    tcPersonsCap: "People",
   },
 
   es: {
@@ -2253,6 +2269,14 @@ export const translations = {
     mshGenerateLink: "Generar enlace del técnico",
     mshRevoke: "Revocar",
     mshRegenWarn: "Al regenerar o revocar, el anterior dejará de funcionar.",
+    tcBookingTag: "Reserva",
+    tcLenzShort: "Sáb.",
+    tcFedShort: "Fund.",
+    tcCopShort: "Nórd.",
+    tcDuvetFull: "Funda nórdica",
+    tcDeleteConfirm: "¿Eliminar el evento?",
+    tcDeleting: "Eliminando...",
+    tcPersonsCap: "Personas",
   },
 } as const;
 

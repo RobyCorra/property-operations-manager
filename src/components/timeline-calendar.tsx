@@ -952,7 +952,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 "bg-red-500/10 text-red-600"
                              }`}>
                                 {selectedEvent.type === 'booking' ? <LogIn size={12} /> : selectedEvent.type === 'cleaning' ? <Paintbrush size={12} /> : <Wrench size={12} />}
-                                {selectedEvent.type === 'booking' ? 'Prenotazione' : selectedEvent.type === 'cleaning' ? 'Pulizia' : 'Manutenzione'}
+                                {selectedEvent.type === 'booking' ? t.tcBookingTag : selectedEvent.type === 'cleaning' ? t.mdSingleCleaning : t.navMaintenance}
                              </div>
                              {selectedEvent.data.status && (
                                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide flex items-center gap-2">
@@ -1016,7 +1016,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     <div className="grid grid-cols-2 gap-4">
                                         <SummaryBox icon={<LogIn size={16} />} label="Check-in" value={formatDate(selectedEvent.data.checkInDate)} />
                                         <SummaryBox icon={<DoorOpen size={16} />} label="Check-out" value={formatDate(selectedEvent.data.checkOutDate)} />
-                                        <SummaryBox icon={<UserCircle size={16} />} label="Ospiti" value={`${selectedEvent.data.totalGuests || 1} Persone`} />
+                                        <SummaryBox icon={<UserCircle size={16} />} label="Ospiti" value={`${selectedEvent.data.totalGuests || 1} ${t.tcPersonsCap}`} />
                                         <SummaryBox icon={<CalendarDays size={16} />} label={t.tcSource} value={selectedEvent.data.source || t.tcDirect} />
                                     </div>
                                 </div>
@@ -1108,7 +1108,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                     <SummaryBox
                                                         icon={<Users size={16} />}
                                                         label={t.tcGuestCount}
-                                                        value={nextB ? `${nextB.totalGuests} Persone` : t.tcNotAvailable}
+                                                        value={nextB ? `${nextB.totalGuests} ${t.tcPersonsCap}` : t.tcNotAvailable}
                                                     />
                                                 </div>
                                             </div>
@@ -1149,9 +1149,9 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                                 </div>
                                                                 <div className="flex gap-1.5">
                                                                     {[
-                                                                        { v: bed.linen.lenzuola, l: "Lenz." },
-                                                                        { v: bed.linen.federe,   l: "Fed."  },
-                                                                        { v: bed.linen.copriPiumino, l: "Cop." },
+                                                                        { v: bed.linen.lenzuola, l: t.tcLenzShort },
+                                                                        { v: bed.linen.federe,   l: t.tcFedShort  },
+                                                                        { v: bed.linen.copriPiumino, l: t.tcCopShort },
                                                                     ].map(chip => (
                                                                         <div key={chip.l} className="bg-white/70 border border-white/40 rounded-lg px-2 py-1 text-center min-w-[32px]">
                                                                             <p className="text-[11px] font-black text-slate-900 leading-none">{chip.v}</p>
@@ -1166,9 +1166,9 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                     {/* Totali */}
                                                     <div className="bg-slate-900 rounded-xl px-3 py-2 flex mb-2">
                                                         {[
-                                                            { v: linen.adults.lenzuola,     l: "Lenzuola" },
-                                                            { v: linen.adults.federe,       l: "Federe"   },
-                                                            { v: linen.adults.copriPiumino, l: "Copripium." },
+                                                            { v: linen.adults.lenzuola,     l: t.sheetsLabel },
+                                                            { v: linen.adults.federe,       l: t.pillowcasesLabel   },
+                                                            { v: linen.adults.copriPiumino, l: t.tcDuvetFull },
                                                         ].map((t, i) => (
                                                             <div key={t.l} className={`flex-1 text-center ${i > 0 ? "border-l border-white/10" : ""}`}>
                                                                 <p className="text-[8px] font-black uppercase tracking-widest text-white/40">{t.l}</p>
@@ -1186,8 +1186,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                             </div>
                                                             <div className="flex gap-1.5">
                                                                 {[
-                                                                    { v: linen.culla.lenzuola, l: "Lenz." },
-                                                                    { v: linen.culla.federe,   l: "Fed."  },
+                                                                    { v: linen.culla.lenzuola, l: t.tcLenzShort },
+                                                                    { v: linen.culla.federe,   l: t.tcFedShort  },
                                                                 ].map(chip => (
                                                                     <div key={chip.l} className="bg-emerald-100 border border-emerald-200 rounded-lg px-2 py-1 text-center min-w-[32px]">
                                                                         <p className="text-[11px] font-black text-emerald-900 leading-none">{chip.v}</p>
@@ -1498,7 +1498,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 href={`/dashboard/manager/cleanings/${selectedEvent.data.id}/edit`}
                                 className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
-                                Modifica pulizia
+                                {t.cdvModifyCleaning}
                             </Link>
                         )}
                         {selectedEvent.type === 'maintenance' && (
@@ -1513,7 +1513,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                         {/* Delete Section */}
                         {showDeleteConfirm ? (
                             <div className="flex items-center gap-4 bg-red-500/10 p-3 pl-6 rounded-full border border-red-500/20 animate-in slide-in-from-right-4 shadow-lg shadow-red-200/50">
-                                <span className="text-xs font-semibold uppercase tracking-wide text-red-600">Eliminare l'evento?</span>
+                                <span className="text-xs font-semibold uppercase tracking-wide text-red-600">{t.tcDeleteConfirm}</span>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => setShowDeleteConfirm(false)}
@@ -1526,7 +1526,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         onClick={handleDelete}
                                         className="px-4 py-2 bg-red-600 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-red-500 transition-all duration-200 disabled:opacity-50"
                                     >
-                                        {isPending ? "Eliminazione..." : "Elimina"}
+                                        {isPending ? t.tcDeleting : t.mgrDelete}
                                     </button>
                                 </div>
                             </div>
@@ -1535,7 +1535,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 onClick={() => setShowDeleteConfirm(true)}
                                 className="px-8 py-3.5 bg-white text-red-500 border border-red-200 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
-                                Elimina
+                                {t.mgrDelete}
                             </button>
                         )}
                     </div>
