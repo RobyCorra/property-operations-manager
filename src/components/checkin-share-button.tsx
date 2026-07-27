@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/src/components/lang-context";
 import { generateCheckinAccessToken, revokeCheckinAccessToken } from "@/src/app/actions/checkin-token";
 import { Link2, Copy, CheckCheck, RefreshCw } from "lucide-react";
 
@@ -10,6 +11,7 @@ interface CheckinShareButtonProps {
 }
 
 export default function CheckinShareButton({ checkinId, existingToken }: CheckinShareButtonProps) {
+  const { t } = useLang();
   const [token, setToken] = useState<string | null>(existingToken ?? null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -73,7 +75,7 @@ export default function CheckinShareButton({ checkinId, existingToken }: Checkin
         ) : (
           <Link2 className="w-4 h-4" />
         )}
-        {token ? "Rigenera link" : "Genera link check-in"}
+        {token ? "Rigenera link" : "{t.ciGenerateLink}"}
       </button>
 
       {token && (
@@ -89,7 +91,7 @@ export default function CheckinShareButton({ checkinId, existingToken }: Checkin
       {token && (
         <p className="text-xs text-slate-400 break-words">
           Invia via WhatsApp — non serve login. Scade dopo 7 giorni.{" "}
-          <span className="text-amber-600">Rigenerando o revocando, il vecchio link non funzionerà.</span>
+          <span className="text-amber-600">{t.shRegenWarn}</span>
         </p>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
@@ -12,6 +13,7 @@ import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 export const revalidate = 0;
 
 export default async function ManagerCheckinPage({ params }: { params: Promise<{ id: string }> }) {
+  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
   const userName = cookieStore.get("userName")?.value;
@@ -45,10 +47,10 @@ export default async function ManagerCheckinPage({ params }: { params: Promise<{
   const doneCount = progress.filter((i) => i.completed).length;
 
   const statusLabel: Record<string, string> = {
-    PENDING: "Da fare",
-    IN_PROGRESS: "In corso",
-    COMPLETED: "Completato",
-    CANCELLED: "Annullato",
+    PENDING: tr.calToDo,
+    IN_PROGRESS: tr.calInProgress,
+    COMPLETED: tr.ciStatusDone,
+    CANCELLED: tr.bkCancelled,
   };
 
   return (
@@ -69,18 +71,18 @@ export default async function ManagerCheckinPage({ params }: { params: Promise<{
           <p className="text-sm text-slate-600">{task.apartment.address}</p>
           {task.booking?.guestName && (
             <p className="text-sm text-slate-600">
-              Ospite: <span className="font-semibold">{task.booking.guestName}</span>
-              {task.booking.totalGuests ? ` · ${task.booking.totalGuests} persone` : ""}
+              {tr.ciGuestLabel} <span className="font-semibold">{task.booking.guestName}</span>
+              {task.booking.totalGuests ? ` · ${task.booking.totalGuests} ${tr.ciPersons}` : ""}
             </p>
           )}
           <p className="text-sm text-slate-600">
-            Checklist: <span className="font-semibold">{doneCount}/{progress.length}</span> completate
+            {tr.ciChecklistLabel} <span className="font-semibold">{doneCount}/{progress.length}</span> {tr.ciCompletedF}
           </p>
         </div>
 
         {/* Link pubblico per l'assistente — come pulizie e manutenzioni */}
         <div className="bg-white rounded-2xl border border-slate-100 p-5">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Link check-in</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">{tr.ciLinkCheckin}</p>
           <CheckinShareButton checkinId={task.id} existingToken={task.checkinAccessToken} />
         </div>
 
@@ -96,7 +98,7 @@ export default async function ManagerCheckinPage({ params }: { params: Promise<{
         {/* Checklist status */}
         {progress.length > 0 && (
           <div className="bg-white rounded-2xl border border-slate-100 p-5">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Stato checklist</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">{tr.ciChecklistStatus}</p>
             <div className="space-y-1.5">
               {progress.map((item: any, idx: number) => (
                 <div key={item.id ?? idx} className="flex items-center gap-2 text-sm">
@@ -118,7 +120,7 @@ export default async function ManagerCheckinPage({ params }: { params: Promise<{
         {/* Chat */}
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100">
-            <p className="font-semibold text-slate-800 text-sm">💬 Chat con l&apos;assistente</p>
+            <p className="font-semibold text-slate-800 text-sm">{tr.ciChatAssistant}</p>
           </div>
           <div className="p-3">
             <TicketConversation
