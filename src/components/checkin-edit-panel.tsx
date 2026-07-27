@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useLang } from "@/src/components/lang-context";
 import { useRouter } from "next/navigation";
 import { updateCheckinDetails } from "@/src/app/actions/checkin";
 
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function CheckinEditPanel({ taskId, assignedToId, assignedToName, initialTime, assistants }: Props) {
+  const { t } = useLang();
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [selectedId, setSelectedId] = useState<string>(assignedToId ?? "");
@@ -43,14 +45,14 @@ export default function CheckinEditPanel({ taskId, assignedToId, assignedToName,
   return (
     <div className="bg-white rounded-2xl border border-slate-100 p-5">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Assegnazione e orario</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.ciAssignmentTime}</p>
         {!editing && (
           <button
             type="button"
             onClick={() => setEditing(true)}
             className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 active:scale-95 transition-all"
           >
-            ✏️ Modifica
+            ✏️ {t.mgrEdit}
           </button>
         )}
       </div>
@@ -58,21 +60,21 @@ export default function CheckinEditPanel({ taskId, assignedToId, assignedToName,
       {!editing ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500">Assegnato a</span>
+            <span className="text-slate-500">{t.ciAssignedTo}</span>
             <span className="font-semibold text-slate-900">{assignedToName ?? "Non assegnato"}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-500">Orario check-in</span>
+            <span className="text-slate-500">{t.ciCheckinTime}</span>
             <span className="font-semibold text-slate-900">{initialTime}</span>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">Assegna a</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1">{t.ciAssignTo}</label>
             {assistants.length === 0 ? (
               <p className="text-sm text-slate-400">
-                Nessun assistente check-in. Crea un utente con ruolo &quot;Assistente Check-in&quot;.
+                {t.ciNoAssistants}
               </p>
             ) : (
               <select
@@ -81,7 +83,7 @@ export default function CheckinEditPanel({ taskId, assignedToId, assignedToName,
                 disabled={isPending}
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:ring-2 focus:ring-black disabled:opacity-50"
               >
-                <option value="">Non assegnato</option>
+                <option value="">{t.mgrUnassignedM}</option>
                 {assistants.map((a) => (
                   <option key={a.id} value={a.id}>{a.name}</option>
                 ))}
@@ -90,7 +92,7 @@ export default function CheckinEditPanel({ taskId, assignedToId, assignedToName,
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">Orario check-in</label>
+            <label className="block text-xs font-medium text-slate-500 mb-1">{t.ciCheckinTime}</label>
             <input
               type="time"
               value={time}
@@ -109,7 +111,7 @@ export default function CheckinEditPanel({ taskId, assignedToId, assignedToName,
               disabled={isPending}
               className="flex-1 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-blue-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all disabled:opacity-50"
             >
-              {isPending ? "..." : "Salva"}
+              {isPending ? "..." : t.mgrSave}
             </button>
             <button
               type="button"
@@ -117,7 +119,7 @@ export default function CheckinEditPanel({ taskId, assignedToId, assignedToName,
               disabled={isPending}
               className="flex-1 py-3 rounded-xl border border-slate-200 bg-white text-slate-500 text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50"
             >
-              Annulla
+              {t.mgrCancel}
             </button>
           </div>
         </div>
