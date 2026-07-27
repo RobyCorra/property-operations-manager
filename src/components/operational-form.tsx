@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState, useEffect, useCallback } from "react";
+import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import { getApartmentSchedule } from "@/src/app/actions/operational";
 import { formatRomeDateInputValue, formatRomeTimeInputValue } from "@/src/lib/rome-datetime";
@@ -82,6 +83,7 @@ type TicketJson = {
 };
 
 export default function OperationalForm({ type, apartments, personnel, action, initialData, hasSofaBed = false, redirectTo }: OperationalFormProps) {
+  const { t } = useLang();
   const toast = useToast();
   const isEditing = !!initialData;
   // If editing, we use the action bound with the ID. 
@@ -205,7 +207,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="apartmentId" className="block text-sm font-medium text-gray-700 mb-1">Appartamento *</label>
+              <label htmlFor="apartmentId" className="block text-sm font-medium text-gray-700 mb-1">{t.calApartment} *</label>
                   <select 
                     required 
                     id="apartmentId" 
@@ -214,21 +216,21 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                     onChange={(e) => setSelectedApartment(e.target.value)}
                     className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
                   >
-                    <option value="">Seleziona...</option>
+                    <option value="">{t.ofSelect}</option>
                     {apartments.map((apt) => (
                       <option key={apt.id} value={apt.id}>{apt.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label htmlFor="assignedToId" className="block text-sm font-medium text-gray-700 mb-1">Assegna a</label>
+              <label htmlFor="assignedToId" className="block text-sm font-medium text-gray-700 mb-1">{t.ofAssignTo}</label>
                 <select 
                   id="assignedToId" 
                   name="assignedToId" 
                 defaultValue={initialData?.assignedToId || ""}
                   className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
                 >
-                <option value="">Nessun assegnatario</option>
+                <option value="">{t.ofNoAssignee}</option>
                 {personnel.map((p) => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
@@ -241,7 +243,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
-                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Data Intervento *</label>
+                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">{t.ofInterventionDate} *</label>
                     <input
                       required
                       type="date"
@@ -252,7 +254,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                     />
                   </div>
                   <div className="flex-1">
-                    <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">Ora Intervento *</label>
+                    <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">{t.ofInterventionTime} *</label>
                     <input
                       required
                       type="time"
@@ -264,30 +266,30 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">Note / Istruzioni</label>
+                  <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">{t.ofNotes}</label>
                     <input 
                       type="text" 
                       id="notes" 
                       name="notes" 
                     defaultValue={initialData?.notes || ""}
-                      placeholder="Es. Pulizia profonda, cambio lenzuola" 
+                      placeholder={t.ofNotesPh} 
                       className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent" 
                     />
                 </div>
               </div>
               {isEditing && (
                 <div>
-                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Stato Pulizia</label>
+                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">{t.ofCleaningStatus}</label>
                   <select 
                     id="status" 
                     name="status" 
                     defaultValue={initialData.status}
                     className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   >
-                    <option value="PENDING">Da fare</option>
-                    <option value="IN_PROGRESS">In corso</option>
-                    <option value="AWAITING_REVIEW">In verifica</option>
-                    <option value="APPROVED">Approvato</option>
+                    <option value="PENDING">{t.calToDo}</option>
+                    <option value="IN_PROGRESS">{t.calInProgress}</option>
+                    <option value="AWAITING_REVIEW">{t.calInReview}</option>
+                    <option value="APPROVED">{t.calApproved}</option>
                   </select>
                 </div>
               )}
@@ -299,20 +301,20 @@ export default function OperationalForm({ type, apartments, personnel, action, i
               )}
               {!isEditing && (
                 <div className="border-t border-gray-100 pt-4">
-                  <label htmlFor="totalGuests" className="block text-sm font-medium text-gray-700 mb-1">Numero ospiti (per calcolo biancheria)</label>
+                  <label htmlFor="totalGuests" className="block text-sm font-medium text-gray-700 mb-1">{t.ofNumGuests}</label>
                   <input
                     type="number"
                     id="totalGuests"
                     name="totalGuests"
                     min={0}
-                    placeholder="Es. 2"
+                    placeholder={t.ofNumGuestsPh}
                     className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   />
                 </div>
               )}
               {isEditing && (
                 <div className="border-t border-gray-100 pt-4 space-y-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Configurazione biancheria</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{t.ofLinenConfig}</p>
                   <input type="hidden" name="cullaRequested" value={cullaRequested ? "true" : "false"} />
                   <input type="hidden" name="sofaBedForced"  value={sofaBedForced  ? "true" : "false"} />
 
@@ -327,8 +329,8 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                         <span className="text-sm">🛏</span>
                       </div>
                       <div>
-                        <p className={`text-sm font-semibold ${cullaRequested ? "text-emerald-800" : "text-gray-700"}`}>Richiedi culla</p>
-                        <p className={`text-xs ${cullaRequested ? "text-emerald-600" : "text-gray-400"}`}>Aggiunge biancheria culla al calcolo</p>
+                        <p className={`text-sm font-semibold ${cullaRequested ? "text-emerald-800" : "text-gray-700"}`}>{t.ofRequestCot}</p>
+                        <p className={`text-xs ${cullaRequested ? "text-emerald-600" : "text-gray-400"}`}>{t.ofCotHint}</p>
                       </div>
                     </div>
                     <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${cullaRequested ? "bg-emerald-500" : "bg-gray-300"}`}>
@@ -348,8 +350,8 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                           <span className="text-sm">🛋</span>
                         </div>
                         <div>
-                          <p className={`text-sm font-semibold ${sofaBedForced ? "text-violet-800" : "text-gray-700"}`}>Attiva divano letto</p>
-                          <p className={`text-xs ${sofaBedForced ? "text-violet-600" : "text-gray-400"}`}>Prepara biancheria anche se non necessario</p>
+                          <p className={`text-sm font-semibold ${sofaBedForced ? "text-violet-800" : "text-gray-700"}`}>{t.ofActivateSofa}</p>
+                          <p className={`text-xs ${sofaBedForced ? "text-violet-600" : "text-gray-400"}`}>{t.ofPrepareLinen}</p>
                         </div>
                       </div>
                       <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${sofaBedForced ? "bg-violet-500" : "bg-gray-300"}`}>
@@ -364,19 +366,19 @@ export default function OperationalForm({ type, apartments, personnel, action, i
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Titolo Problema *</label>
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">{t.ofTitleProblem} *</label>
                   <input 
                     required 
                     type="text" 
                     id="title" 
                     name="title" 
                     defaultValue={initialData?.title || ""}
-                    placeholder="Es. Perdita rubinetto cucina" 
+                    placeholder={t.ofProblemPh} 
                     className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent" 
                   />
                 </div>
                 <div>
-                  <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">Priorità *</label>
+                  <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-1">{t.mtPriority} *</label>
                   <select 
                     required 
                     id="priority" 
@@ -384,17 +386,17 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                     defaultValue={initialData?.priority || "MEDIUM"}
                     className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   >
-                    <option value="LOW">Bassa</option>
-                    <option value="MEDIUM">Media</option>
-                    <option value="HIGH">Alta</option>
-                    <option value="URGENT">Urgente</option>
+                    <option value="LOW">{t.mtLow}</option>
+                    <option value="MEDIUM">{t.mtMedium}</option>
+                    <option value="HIGH">{t.mtHigh}</option>
+                    <option value="URGENT">{t.mtUrgent}</option>
                   </select>
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="scheduledStart" className="block text-sm font-medium text-gray-700 mb-1">Inizio Intervento Programmato *</label>
+                  <label htmlFor="scheduledStart" className="block text-sm font-medium text-gray-700 mb-1">{t.ofScheduledStart} *</label>
                   <input 
                     required 
                     type="datetime-local" 
@@ -406,7 +408,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
                   />
                 </div>
                 <div>
-                  <label htmlFor="scheduledEnd" className="block text-sm font-medium text-gray-700 mb-1">Fine Intervento Programmata *</label>
+                  <label htmlFor="scheduledEnd" className="block text-sm font-medium text-gray-700 mb-1">{t.ofScheduledEnd} *</label>
                   <input 
                     required 
                     type="datetime-local" 
@@ -422,7 +424,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
               {warnings.length > 0 && (
                 <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 space-y-1 animate-in fade-in slide-in-from-top-2">
                   <h4 className="text-xs font-bold text-amber-700 uppercase tracking-wider flex items-center gap-2">
-                    <span>⚠️</span> Possibili Conflitti Rilevati
+                    <span>⚠️</span> {t.ofConflicts}
                   </h4>
                   <ul className="list-none space-y-1">
                     {warnings.map((w, i) => (
@@ -434,22 +436,22 @@ export default function OperationalForm({ type, apartments, personnel, action, i
 
               {isEditing && (
                 <div>
-                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Stato Ticket</label>
+                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">{t.ofTicketStatus}</label>
                   <select 
                     id="status" 
                     name="status" 
                     defaultValue={initialData.status}
                     className="w-full rounded-lg border-gray-300 border px-4 py-2.5 outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   >
-                    <option value="PENDING">In attesa</option>
-                    <option value="IN_PROGRESS">In corso</option>
-                    <option value="AWAITING_REVIEW">In verifica</option>
-                    <option value="APPROVED">Approvato</option>
+                    <option value="PENDING">{t.stTicketWaiting}</option>
+                    <option value="IN_PROGRESS">{t.calInProgress}</option>
+                    <option value="AWAITING_REVIEW">{t.calInReview}</option>
+                    <option value="APPROVED">{t.calApproved}</option>
                   </select>
                 </div>
               )}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Descrizione</label>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">{t.msgDescription}</label>
                 <textarea 
                   id="description" 
                   name="description" 
@@ -472,13 +474,13 @@ export default function OperationalForm({ type, apartments, personnel, action, i
 
               {/* Maintenance Attachments (Manager Side) */}
               <div className="pt-4 border-t border-gray-50">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Allegati (Immagini, Video, PDF)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t.ofAttachments}</label>
                 <div className="flex items-center justify-center w-full">
                   <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all">
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <span className="text-2xl mb-2">📁</span>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Trascina o clicca per caricare</p>
-                      <p className="text-[9px] text-gray-400 mt-1">Supporta multipli file</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t.ofDragUpload}</p>
+                      <p className="text-[9px] text-gray-400 mt-1">{t.ofSupportMulti}</p>
                     </div>
                     <input 
                       type="file" 
@@ -496,14 +498,14 @@ export default function OperationalForm({ type, apartments, personnel, action, i
 
         <div className="pt-4 flex items-center justify-end gap-3 mt-8 border-t border-gray-50 pt-6">
           <Link href={isEditing ? (type === "CLEANING" ? "/dashboard/manager/cleanings" : "/dashboard/manager/maintenance") : "/dashboard/manager"} className="px-5 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-            Annulla
+            {t.mgrCancel}
           </Link>
           <button 
             type="submit" 
             disabled={isPending}
             className="rounded-full bg-black px-10 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
-            {isPending ? "Salvataggio..." : isEditing ? "Aggiorna Intervento" : (type === "CLEANING" ? "Pianifica Pulizia" : "Apri Ticket")}
+            {isPending ? t.clSavingLong : isEditing ? t.ofUpdate : (type === "CLEANING" ? t.ofPlanCleaning : t.ofOpenTicket)}
           </button>
         </div>
       </form>
