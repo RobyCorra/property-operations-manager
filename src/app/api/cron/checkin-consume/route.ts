@@ -31,10 +31,7 @@ export async function GET(req: NextRequest) {
   const results: { bookingId: string; apartmentId: string; alerts: string[] }[] = [];
 
   for (const booking of bookings) {
-    const result = await consumeProductsOnCheckin(
-      booking.apartmentId,
-      booking.totalGuests ?? 1
-    );
+    const result = await consumeProductsOnCheckin(booking.id);
     if (result.success) {
       results.push({
         bookingId: booking.id,

@@ -139,20 +139,21 @@ model Notification {
 }
 
 model Booking {
-  id             String        @id @default(uuid())
-  apartmentId    String
-  guestName      String?
-  totalGuests    Int
-  checkInDate    DateTime
-  checkOutDate   DateTime
-  status         String?
-  externalId     String?       @unique
-  source         String?
-  cullaRequested Boolean       @default(false)
-  createdAt      DateTime      @default(now())
-  apartment      Apartment     @relation(fields: [apartmentId], references: [id])
-  cleaningTask   CleaningTask?
-  checkinTask    CheckinTask?
+  id                 String        @id @default(uuid())
+  apartmentId        String
+  guestName          String?
+  totalGuests        Int
+  checkInDate        DateTime
+  checkOutDate       DateTime
+  status             String?
+  externalId         String?       @unique
+  source             String?
+  cullaRequested     Boolean       @default(false)
+  productsConsumedAt DateTime?
+  createdAt          DateTime      @default(now())
+  apartment          Apartment     @relation(fields: [apartmentId], references: [id])
+  cleaningTask       CleaningTask?
+  checkinTask        CheckinTask?
 }
 
 model CleaningTask {

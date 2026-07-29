@@ -229,6 +229,7 @@ exports.Prisma.BookingScalarFieldEnum = {
   externalId: 'externalId',
   source: 'source',
   cullaRequested: 'cullaRequested',
+  productsConsumedAt: 'productsConsumedAt',
   createdAt: 'createdAt'
 };
 

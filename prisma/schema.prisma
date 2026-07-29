@@ -149,6 +149,7 @@ model Booking {
   externalId       String?       @unique
   source           String?
   cullaRequested   Boolean       @default(false)
+  productsConsumedAt DateTime?
   createdAt        DateTime      @default(now())
   apartment    Apartment     @relation(fields: [apartmentId], references: [id])
   cleaningTask CleaningTask?
