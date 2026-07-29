@@ -224,6 +224,7 @@ Sei un assistente specializzato nella gestione delle pulizie di appartamenti tur
 Il tuo unico dominio sono le pulizie: stato task, checklist, assegnazioni, note, messaggi del personale.
 
 REGOLA FONTE DATI: I dati operativi vengono SOLO dal contesto fornito (sezione "CONTESTO OPERATIVO MANAGER"). NON usare le risposte precedenti della chat come fonte di dati — possono essere errate. Ogni risposta deve basarsi sul contesto attuale.
+REGOLA CHECK-OUT (obbligatoria): il check-out di una prenotazione è ESCLUSIVAMENTE il valore "check-out:" della SUA riga prenotazione nel contesto. NON dedurlo mai da: pulizie, data del prossimo arrivo/check-in di un'altra prenotazione, o risposte precedenti della chat. Prima di scrivere un check-out, RILEGGI la riga "check-in: ... | check-out: ..." di quella prenotazione e copia il valore esatto. Se elenchi più prenotazioni, ogni check-out va preso dalla riga della rispettiva prenotazione, mai da quella successiva.
 
 REGOLA CRITICA — STATO vs ASSEGNAZIONE (non confonderli mai):
 - "stato" indica la fase operativa: PENDING = pianificata (non ancora iniziata), IN_PROGRESS = in corso, COMPLETED = completata, AWAITING_REVIEW = in verifica, APPROVED = approvata.
@@ -1568,7 +1569,7 @@ async function buildCleaningContext(apartmentId: string) {
   if (!apartment) return "CONTESTO PULIZIE\n- Appartamento non trovato.";
 
   const bookingLines = apartment.bookings.map((b) =>
-    `- ${bookingTag(b.checkInDate, b.checkOutDate)} ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "n/d"}`
+    `- ${bookingTag(b.checkInDate, b.checkOutDate)} check-in: ${formatDate(b.checkInDate)} | check-out: ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "n/d"}`
   );
 
   const checklistLines = apartment.checklistItems.map((item) =>
@@ -1646,7 +1647,7 @@ async function buildBookingsContext(apartmentId: string) {
   if (!apartment) return "CONTESTO PRENOTAZIONI\n- Appartamento non trovato.";
 
   const bookingLines = apartment.bookings.map((b) =>
-    `- ${bookingTag(b.checkInDate, b.checkOutDate)} ${formatDate(b.checkInDate)} → ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "manuale"} | externalId: ${b.externalId || "n/d"}`
+    `- ${bookingTag(b.checkInDate, b.checkOutDate)} check-in: ${formatDate(b.checkInDate)} | check-out: ${formatDate(b.checkOutDate)} | ospite: ${b.guestName || "n/d"} | ospiti: ${b.totalGuests} | stato: ${b.status || "n/d"} | fonte: ${b.source || "manuale"} | externalId: ${b.externalId || "n/d"}`
   );
 
   const cleaningLines = apartment.cleaningTasks.map((t) =>
@@ -1660,7 +1661,7 @@ PRENOTAZIONI
 ${bookingLines.length > 0 ? bookingLines.join("\n") : "- Nessuna prenotazione."}
 
 PULIZIE PROGRAMMATE (stato sintetico)
-${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia programmata."}`, 14000);
+${cleaningLines.length > 0 ? cleaningLines.join("\n") : "- Nessuna pulizia programmata."}`, 40000);
 }
 
 async function buildTechnicalContext(apartmentId: string) {
