@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
@@ -7,6 +8,7 @@ import UserForm from "@/src/components/user-form";
 import BackButton from "@/src/components/back-button";
 
 export default async function NewUserPage() {
+  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 
@@ -28,8 +30,8 @@ export default async function NewUserPage() {
 
         <div>
           <BackButton />
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Aggiungi al Team</h1>
-          <p className="text-gray-500 mt-1">Registra un nuovo collaboratore per gestire pulizie o manutenzione</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{tr.teamAddTitle}</h1>
+          <p className="text-gray-500 mt-1">{tr.teamAddSub}</p>
         </div>
 
         <UserForm apartments={apartments} />

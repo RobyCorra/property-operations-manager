@@ -185,13 +185,13 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
 
         <div className="pt-4 flex items-center justify-end gap-3">
           <Link href="/dashboard/manager/users" className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-            Annulla
+            {t.mgrCancel}
           </Link>
           <button
             type="submit" disabled={isPending}
             className="rounded-full bg-black px-8 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 focus:outline-none disabled:bg-gray-400"
           >
-            {isPending ? "Salvataggio..." : "Salva Modifiche"}
+            {isPending ? t.usrSaving : t.usrSaveChanges}
           </button>
         </div>
       </form>
