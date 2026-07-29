@@ -553,7 +553,7 @@ export default function MessagesDashboard({
                     <span className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full ${
                       isMaintenance ? "text-amber-600 bg-amber-50" : "text-violet-600 bg-violet-50"
                     }`}>
-                      {isMaintenance ? "Manutenzione" : "Pulizia"}
+                      {isMaintenance ? tr.navMaintenance : tr.mdSingleCleaning}
                     </span>
                     <span className="text-[10px] text-slate-400 truncate">· {thread.assignedUser}</span>
                   </div>
@@ -748,7 +748,7 @@ export default function MessagesDashboard({
               <div>
                 <h2 className="text-lg font-black text-slate-900 tracking-tight">{tr.msgSelectChat}</h2>
                 <p className="text-xs text-slate-400 font-medium mt-1">
-                  Scegli una conversazione dalla lista
+                  {tr.msgChooseConversation}
                 </p>
               </div>
             </div>
@@ -767,7 +767,7 @@ export default function MessagesDashboard({
                 <Building2 size={20} className="text-slate-300" />
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">
-                Dettagli intervento
+                {tr.msgJobDetails}
               </p>
             </div>
           </div>
