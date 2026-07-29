@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
@@ -7,6 +8,7 @@ import UserEditForm from "@/src/components/user-edit-form";
 import BackButton from "@/src/components/back-button";
 
 export default async function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
+  const tr = await getT();
   const { id } = await params;
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -40,7 +42,7 @@ export default async function EditUserPage({ params }: { params: Promise<{ id: s
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
           <BackButton />
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Modifica Collaboratore</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{tr.teamEditTitle}</h1>
           <p className="text-gray-500 mt-1">{user.name} · {user.email}</p>
         </div>
 
