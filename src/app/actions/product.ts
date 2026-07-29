@@ -116,8 +116,28 @@ export async function restockProduct(id: string, apartmentId: string, addQty: nu
 // Chiamata ogni volta che un check-in viene registrato/confermato.
 // Sottrae il consumo dalla scorta e crea notifiche se sotto minimo.
 
-export async function consumeProductsOnCheckin(apartmentId: string, guestCount: number) {
+export async function consumeProductsOnCheckin(bookingId: string) {
   try {
+    // Guardia di idempotenza atomica: consuma solo se non è già stato fatto.
+    // updateMany con productsConsumedAt=null vince la corsa tra pulsante manuale e cron.
+    const claim = await prisma.booking.updateMany({
+      where: { id: bookingId, status: { not: "CANCELLED" }, productsConsumedAt: null },
+      data: { productsConsumedAt: new Date() },
+    });
+    if (claim.count === 0) {
+      // Già consumato (o prenotazione annullata): non sottrarre di nuovo.
+      return { success: true, skipped: true, alerts: [] as string[] };
+    }
+
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+      select: { apartmentId: true, totalGuests: true },
+    });
+    if (!booking) return { success: true, skipped: true, alerts: [] as string[] };
+
+    const apartmentId = booking.apartmentId;
+    const guestCount = booking.totalGuests ?? 1;
+
     const products = await prisma.apartmentProduct.findMany({
       where: { apartmentId },
     });

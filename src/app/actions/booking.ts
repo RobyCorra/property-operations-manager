@@ -293,8 +293,8 @@ export async function confirmCheckIn(bookingId: string) {
     data: { status: "CHECKED_IN" },
   });
 
-  // Sottrai i prodotti consumati per questo check-in
-  await consumeProductsOnCheckin(booking.apartmentId, booking.totalGuests ?? 1);
+  // Sottrai i prodotti consumati per questo check-in (idempotente: una sola volta)
+  await consumeProductsOnCheckin(bookingId);
 
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/mappa");

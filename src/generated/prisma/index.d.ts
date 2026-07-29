@@ -10786,6 +10786,7 @@ export namespace Prisma {
     externalId: string | null
     source: string | null
     cullaRequested: boolean | null
+    productsConsumedAt: Date | null
     createdAt: Date | null
   }
 
@@ -10800,6 +10801,7 @@ export namespace Prisma {
     externalId: string | null
     source: string | null
     cullaRequested: boolean | null
+    productsConsumedAt: Date | null
     createdAt: Date | null
   }
 
@@ -10814,6 +10816,7 @@ export namespace Prisma {
     externalId: number
     source: number
     cullaRequested: number
+    productsConsumedAt: number
     createdAt: number
     _all: number
   }
@@ -10838,6 +10841,7 @@ export namespace Prisma {
     externalId?: true
     source?: true
     cullaRequested?: true
+    productsConsumedAt?: true
     createdAt?: true
   }
 
@@ -10852,6 +10856,7 @@ export namespace Prisma {
     externalId?: true
     source?: true
     cullaRequested?: true
+    productsConsumedAt?: true
     createdAt?: true
   }
 
@@ -10866,6 +10871,7 @@ export namespace Prisma {
     externalId?: true
     source?: true
     cullaRequested?: true
+    productsConsumedAt?: true
     createdAt?: true
     _all?: true
   }
@@ -10967,6 +10973,7 @@ export namespace Prisma {
     externalId: string | null
     source: string | null
     cullaRequested: boolean
+    productsConsumedAt: Date | null
     createdAt: Date
     _count: BookingCountAggregateOutputType | null
     _avg: BookingAvgAggregateOutputType | null
@@ -11000,6 +11007,7 @@ export namespace Prisma {
     externalId?: boolean
     source?: boolean
     cullaRequested?: boolean
+    productsConsumedAt?: boolean
     createdAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     cleaningTask?: boolean | Booking$cleaningTaskArgs<ExtArgs>
@@ -11017,6 +11025,7 @@ export namespace Prisma {
     externalId?: boolean
     source?: boolean
     cullaRequested?: boolean
+    productsConsumedAt?: boolean
     createdAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["booking"]>
@@ -11032,6 +11041,7 @@ export namespace Prisma {
     externalId?: boolean
     source?: boolean
     cullaRequested?: boolean
+    productsConsumedAt?: boolean
     createdAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["booking"]>
@@ -11047,10 +11057,11 @@ export namespace Prisma {
     externalId?: boolean
     source?: boolean
     cullaRequested?: boolean
+    productsConsumedAt?: boolean
     createdAt?: boolean
   }
 
-  export type BookingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "guestName" | "totalGuests" | "checkInDate" | "checkOutDate" | "status" | "externalId" | "source" | "cullaRequested" | "createdAt", ExtArgs["result"]["booking"]>
+  export type BookingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "guestName" | "totalGuests" | "checkInDate" | "checkOutDate" | "status" | "externalId" | "source" | "cullaRequested" | "productsConsumedAt" | "createdAt", ExtArgs["result"]["booking"]>
   export type BookingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     cleaningTask?: boolean | Booking$cleaningTaskArgs<ExtArgs>
@@ -11081,6 +11092,7 @@ export namespace Prisma {
       externalId: string | null
       source: string | null
       cullaRequested: boolean
+      productsConsumedAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["booking"]>
     composites: {}
@@ -11518,6 +11530,7 @@ export namespace Prisma {
     readonly externalId: FieldRef<"Booking", 'String'>
     readonly source: FieldRef<"Booking", 'String'>
     readonly cullaRequested: FieldRef<"Booking", 'Boolean'>
+    readonly productsConsumedAt: FieldRef<"Booking", 'DateTime'>
     readonly createdAt: FieldRef<"Booking", 'DateTime'>
   }
     
@@ -36290,6 +36303,7 @@ export namespace Prisma {
     externalId: 'externalId',
     source: 'source',
     cullaRequested: 'cullaRequested',
+    productsConsumedAt: 'productsConsumedAt',
     createdAt: 'createdAt'
   };
 
@@ -37407,6 +37421,7 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Booking"> | string | null
     source?: StringNullableFilter<"Booking"> | string | null
     cullaRequested?: BoolFilter<"Booking"> | boolean
+    productsConsumedAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     cleaningTask?: XOR<CleaningTaskNullableScalarRelationFilter, CleaningTaskWhereInput> | null
@@ -37424,6 +37439,7 @@ export namespace Prisma {
     externalId?: SortOrderInput | SortOrder
     source?: SortOrderInput | SortOrder
     cullaRequested?: SortOrder
+    productsConsumedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     apartment?: ApartmentOrderByWithRelationInput
     cleaningTask?: CleaningTaskOrderByWithRelationInput
@@ -37444,6 +37460,7 @@ export namespace Prisma {
     status?: StringNullableFilter<"Booking"> | string | null
     source?: StringNullableFilter<"Booking"> | string | null
     cullaRequested?: BoolFilter<"Booking"> | boolean
+    productsConsumedAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     createdAt?: DateTimeFilter<"Booking"> | Date | string
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     cleaningTask?: XOR<CleaningTaskNullableScalarRelationFilter, CleaningTaskWhereInput> | null
@@ -37461,6 +37478,7 @@ export namespace Prisma {
     externalId?: SortOrderInput | SortOrder
     source?: SortOrderInput | SortOrder
     cullaRequested?: SortOrder
+    productsConsumedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: BookingCountOrderByAggregateInput
     _avg?: BookingAvgOrderByAggregateInput
@@ -37483,6 +37501,7 @@ export namespace Prisma {
     externalId?: StringNullableWithAggregatesFilter<"Booking"> | string | null
     source?: StringNullableWithAggregatesFilter<"Booking"> | string | null
     cullaRequested?: BoolWithAggregatesFilter<"Booking"> | boolean
+    productsConsumedAt?: DateTimeNullableWithAggregatesFilter<"Booking"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Booking"> | Date | string
   }
 
@@ -39870,6 +39889,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
     apartment: ApartmentCreateNestedOneWithoutBookingsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutBookingInput
@@ -39887,6 +39907,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
     cleaningTask?: CleaningTaskUncheckedCreateNestedOneWithoutBookingInput
     checkinTask?: CheckinTaskUncheckedCreateNestedOneWithoutBookingInput
@@ -39902,6 +39923,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartment?: ApartmentUpdateOneRequiredWithoutBookingsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutBookingNestedInput
@@ -39919,6 +39941,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUncheckedUpdateOneWithoutBookingNestedInput
     checkinTask?: CheckinTaskUncheckedUpdateOneWithoutBookingNestedInput
@@ -39935,6 +39958,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -39948,6 +39972,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -39962,6 +39987,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -42457,6 +42483,7 @@ export namespace Prisma {
     externalId?: SortOrder
     source?: SortOrder
     cullaRequested?: SortOrder
+    productsConsumedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -42475,6 +42502,7 @@ export namespace Prisma {
     externalId?: SortOrder
     source?: SortOrder
     cullaRequested?: SortOrder
+    productsConsumedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -42489,6 +42517,7 @@ export namespace Prisma {
     externalId?: SortOrder
     source?: SortOrder
     cullaRequested?: SortOrder
+    productsConsumedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -47182,6 +47211,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
     cleaningTask?: CleaningTaskCreateNestedOneWithoutBookingInput
     checkinTask?: CheckinTaskCreateNestedOneWithoutBookingInput
@@ -47197,6 +47227,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
     cleaningTask?: CleaningTaskUncheckedCreateNestedOneWithoutBookingInput
     checkinTask?: CheckinTaskUncheckedCreateNestedOneWithoutBookingInput
@@ -47709,6 +47740,7 @@ export namespace Prisma {
     externalId?: StringNullableFilter<"Booking"> | string | null
     source?: StringNullableFilter<"Booking"> | string | null
     cullaRequested?: BoolFilter<"Booking"> | boolean
+    productsConsumedAt?: DateTimeNullableFilter<"Booking"> | Date | string | null
     createdAt?: DateTimeFilter<"Booking"> | Date | string
   }
 
@@ -48642,6 +48674,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
     apartment: ApartmentCreateNestedOneWithoutBookingsInput
     checkinTask?: CheckinTaskCreateNestedOneWithoutBookingInput
@@ -48658,6 +48691,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
     checkinTask?: CheckinTaskUncheckedCreateNestedOneWithoutBookingInput
   }
@@ -48958,6 +48992,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartment?: ApartmentUpdateOneRequiredWithoutBookingsNestedInput
     checkinTask?: CheckinTaskUpdateOneWithoutBookingNestedInput
@@ -48974,6 +49009,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     checkinTask?: CheckinTaskUncheckedUpdateOneWithoutBookingNestedInput
   }
@@ -49384,6 +49420,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
     apartment: ApartmentCreateNestedOneWithoutBookingsInput
     cleaningTask?: CleaningTaskCreateNestedOneWithoutBookingInput
@@ -49400,6 +49437,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
     cleaningTask?: CleaningTaskUncheckedCreateNestedOneWithoutBookingInput
   }
@@ -49640,6 +49678,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartment?: ApartmentUpdateOneRequiredWithoutBookingsNestedInput
     cleaningTask?: CleaningTaskUpdateOneWithoutBookingNestedInput
@@ -49656,6 +49695,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUncheckedUpdateOneWithoutBookingNestedInput
   }
@@ -54295,6 +54335,7 @@ export namespace Prisma {
     externalId?: string | null
     source?: string | null
     cullaRequested?: boolean
+    productsConsumedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -54440,6 +54481,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUpdateOneWithoutBookingNestedInput
     checkinTask?: CheckinTaskUpdateOneWithoutBookingNestedInput
@@ -54455,6 +54497,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     cleaningTask?: CleaningTaskUncheckedUpdateOneWithoutBookingNestedInput
     checkinTask?: CheckinTaskUncheckedUpdateOneWithoutBookingNestedInput
@@ -54470,6 +54513,7 @@ export namespace Prisma {
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     source?: NullableStringFieldUpdateOperationsInput | string | null
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
