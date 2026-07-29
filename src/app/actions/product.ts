@@ -144,7 +144,7 @@ export async function consumeProductsOnCheckin(bookingId: string) {
 
     const apartment = await prisma.apartment.findUnique({
       where: { id: apartmentId },
-      select: { name: true },
+      select: { name: true, organizationId: true },
     });
 
     const alerts: string[] = [];
@@ -183,7 +183,7 @@ export async function consumeProductsOnCheckin(bookingId: string) {
         body: `${alerts.length} prodotto/i sotto la scorta minima dopo il check-in.`,
         url: `/dashboard/manager/apartments/${apartmentId}/products`,
         tag: `low-stock-${apartmentId}`,
-      }).catch(console.error);
+      }, undefined, apartment.organizationId).catch(console.error);
     }
 
     revalidatePath(`/dashboard/manager/apartments/${apartmentId}/products`);
