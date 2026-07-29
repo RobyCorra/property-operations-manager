@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
       body: `${products.length} prodotto/i sotto la scorta minima.`,
       url: `/dashboard/manager/apartments/${apartmentId}/products`,
       tag: `low-stock-${apartmentId}`,
-    }).catch(console.error);
+    }, undefined, apt.organizationId).catch(console.error);
 
     totalAlerts++;
   }
