@@ -172,7 +172,7 @@ const inputClass = "w-full rounded-lg border-gray-300 border px-4 py-2.5 outline
 const cardClass = "space-y-4 rounded-xl border border-gray-100 bg-gray-50/60 p-4";
 const attachmentCategories = ["MANUAL", "WARRANTY", "PHOTO", "TECHNICAL_SHEET", "INSTALLER_INSTRUCTIONS", "OTHER"];
 const formSections: { key: FormSectionKey; label: string; icon: string }[] = [
-  { key: "main", label: "Dati principali", icon: "🏠" },
+  { key: "main", label: "Dati principali", icon: "🏠" }, // label sostituita a render via i18n
   { key: "calendar", label: "Calendario / iCal", icon: "📅" },
   { key: "technical", label: "Scheda tecnica", icon: "🛠" },
   { key: "ai", label: "Note IA", icon: "🤖" },
@@ -886,7 +886,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                   }`}
                 >
                   <span>{section.icon}</span>
-                  <span>{section.label}</span>
+                  <span>{({ main: t.aeMainData, calendar: t.aeCalendarIcal, technical: t.aeTechSheet, ai: t.aeAiNotesTab, access: t.aeAccess } as Record<string,string>)[section.key] ?? section.label}</span>
                 </button>
               ))}
             </div>
@@ -926,7 +926,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                 <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afFeatures}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <label htmlFor="squareMeters" className="block text-sm font-medium text-gray-700 mb-1">Superficie (m2)</label>
+                    <label htmlFor="squareMeters" className="block text-sm font-medium text-gray-700 mb-1">{t.aeSqmLabel}</label>
                     <input required type="number" min="0" id="squareMeters" name="squareMeters" defaultValue={initialData?.squareMeters ?? 50} className={inputClass} />
                   </div>
                   <div>
@@ -982,8 +982,8 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                       </td></tr>
 
                       {([
-                        { key: "matrimoniale" as const,       label: "Letto matrimoniale",  icon: "🛏", note: "2 posti" },
-                        { key: "singolo" as const,            label: "Letto singolo",        icon: "🛏", note: "1 posto" },
+                        { key: "matrimoniale" as const,       label: t.bedDouble, icon: "🛏", note: t.bed2Places },
+                        { key: "singolo" as const,            label: t.bedSingle, icon: "🛏", note: t.bed1Place },
                       ]).map(({ key, label, icon, note }) => (
                         <tr key={key} className="hover:bg-gray-50/50">
                           <td className="py-2 pr-4">
@@ -1022,8 +1022,8 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                       </td></tr>
 
                       {([
-                        { key: "divanoMatrimoniale" as const, label: "Divano letto matrimoniale", icon: "🛋", note: "2 posti" },
-                        { key: "divanoSingolo" as const,      label: "Divano letto singolo",      icon: "🛋", note: "1 posto" },
+                        { key: "divanoMatrimoniale" as const, label: t.bedSofaDouble, icon: "🛋", note: t.bed2Places },
+                        { key: "divanoSingolo" as const,      label: t.bedSofaSingle, icon: "🛋", note: t.bed1Place },
                       ]).map(({ key, label, icon, note }) => (
                         <tr key={key} className="hover:bg-gray-50/50">
                           <td className="py-2 pr-4">
@@ -1243,7 +1243,7 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
             </p>
           )}
           <button type="submit" className="rounded-full bg-black px-8 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900">
-            {initialData ? "Aggiorna Proprietà" : "Salva Proprietà"}
+            {initialData ? t.aeUpdateProperty : t.aeSaveProperty}
           </button>
         </div>
       </form>

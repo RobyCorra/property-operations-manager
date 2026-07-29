@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { useLang } from "@/src/components/lang-context";
 import { upload } from "@vercel/blob/client";
 import {
   saveApartmentAttachmentFromBlob,
@@ -27,14 +28,16 @@ interface Props {
   items: ApartmentItem[];
 }
 
-const CATEGORIES: Record<string, string> = {
-  MANUAL: "Manuale",
-  WARRANTY: "Garanzia",
-  PHOTO: "Foto",
-  TECHNICAL_SHEET: "Scheda tecnica",
-  INSTALLER_INSTRUCTIONS: "Istruzioni",
-  OTHER: "Altro",
-};
+function categoriesMap(t: import("@/src/lib/i18n").T): Record<string, string> {
+  return {
+    MANUAL: t.catManual,
+    WARRANTY: t.catWarranty,
+    PHOTO: t.catPhoto,
+    TECHNICAL_SHEET: t.catTechSheet,
+    INSTALLER_INSTRUCTIONS: t.catInstructions,
+    OTHER: t.catOther,
+  };
+}
 
 const CATEGORY_COLORS: Record<string, string> = {
   MANUAL: "bg-blue-50 text-blue-700",
@@ -61,6 +64,8 @@ function formatSize(bytes: number | null) {
 }
 
 export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachments, items }: Props) {
+  const { t } = useLang();
+  const CATEGORIES = categoriesMap(t);
   const [attachments, setAttachments] = useState<Attachment[]>(initialAttachments);
   const [activeFilter, setActiveFilter] = useState<string>("ALL");
   const [showForm, setShowForm] = useState(false);
@@ -154,14 +159,14 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
       <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
         <div>
           <h2 className="text-base font-semibold text-gray-900">
-            Allegati
+            {t.aeAttachTitle}
             {attachments.length > 0 && (
               <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
                 {attachments.length}
               </span>
             )}
           </h2>
-          <p className="text-xs text-gray-400 mt-0.5">Manuali, garanzie, foto e documenti tecnici</p>
+          <p className="text-xs text-gray-400 mt-0.5">{t.aeAttachSub}</p>
         </div>
         <button
           type="button"
@@ -172,10 +177,10 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
           {uploadStatus === "uploading" ? (
             <>
               <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              Caricamento...
+              {t.aeUploading}
             </>
           ) : (
-            <>↑ Carica file</>
+            <>{t.aeUploadFile}</>
           )}
         </button>
         <input
@@ -194,7 +199,7 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
             onClick={() => setActiveFilter("ALL")}
             className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${activeFilter === "ALL" ? "bg-black text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
           >
-            Tutti ({attachments.length})
+            {t.ufAll} ({attachments.length})
           </button>
           {activeCategories.map((cat) => (
             <button
@@ -224,7 +229,7 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Categoria</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">{t.aeCategory}</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
@@ -237,17 +242,17 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Collegato a <span className="text-gray-400 font-normal">(opzionale)</span>
+                {t.aeLinkedTo} <span className="text-gray-400 font-normal">(opzionale)</span>
               </label>
               <select
                 value={linkedTo}
                 onChange={(e) => setLinkedTo(e.target.value)}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-black"
               >
-                <option value="">— Generale —</option>
+                <option value="">{t.aeGeneral}</option>
                 {items.length > 0 && (
                   <>
-                    {["Impianto", "Elettrodomestico", "Domotica"].map((sectionLabel) => {
+                    {[t.catSystem, t.catAppliance, t.catDomotics].map((sectionLabel) => {
                       const sectionItems = items.filter((i) => i.label === sectionLabel);
                       if (sectionItems.length === 0) return null;
                       return (
@@ -264,7 +269,7 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
             </div>
             <div className="sm:col-span-2">
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Note <span className="text-gray-400 font-normal">(opzionale)</span>
+                {t.aeNote} <span className="text-gray-400 font-normal">(opzionale)</span>
               </label>
               <input
                 type="text"
@@ -292,7 +297,7 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
               onClick={handleCancel}
               className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
             >
-              Annulla
+              {t.mgrCancel}
             </button>
           </div>
         </div>
@@ -304,10 +309,10 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
           <div className="flex flex-col items-center justify-center py-10 text-center text-gray-400">
             <span className="text-4xl mb-3">📂</span>
             <p className="text-sm font-medium">
-              {activeFilter === "ALL" ? "Nessun allegato caricato" : `Nessun allegato nella categoria ${CATEGORIES[activeFilter] ?? activeFilter}`}
+              {activeFilter === "ALL" ? t.aeNoAttachments : `${t.aeNoAttachInCat} ${CATEGORIES[activeFilter] ?? activeFilter}`}
             </p>
             {activeFilter === "ALL" && (
-              <p className="text-xs mt-1">Clicca &quot;Carica file&quot; per aggiungere manuali, garanzie e foto</p>
+              <p className="text-xs mt-1">{t.aeUploadHint}</p>
             )}
           </div>
         ) : (
@@ -351,7 +356,7 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
                       rel="noreferrer"
                       className="flex-1 rounded-lg border border-gray-200 py-1.5 text-center text-[11px] font-medium text-gray-700 transition-colors hover:bg-white"
                     >
-                      Apri
+                      {t.afOpen}
                     </a>
                   )}
                   <button
@@ -359,7 +364,7 @@ export default function ApartmentAttachmentsPanel({ apartmentId, initialAttachme
                     onClick={() => handleDelete(att.id)}
                     className="rounded-lg border border-gray-200 px-3 py-1.5 text-[11px] font-medium text-red-500 transition-colors hover:border-red-100 hover:bg-red-50"
                   >
-                    Elimina
+                    {t.mgrDelete}
                   </button>
                 </div>
               </div>

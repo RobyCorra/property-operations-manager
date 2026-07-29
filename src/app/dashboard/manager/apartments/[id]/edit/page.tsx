@@ -5,7 +5,8 @@ import { prisma } from "@/src/lib/prisma";
 import { updateApartment } from "@/src/app/actions/apartment";
 import ApartmentForm from "@/src/components/apartment-form";
 import ApartmentAttachmentsPanel, { type ApartmentItem } from "@/src/components/apartment-attachments-panel";
-import BackButton from "@/src/components/back-button";
+import BackButton from "@/src/components/back-button"
+import { getT } from "@/src/lib/server-lang";
 
 interface EditApartmentPageProps {
   params: Promise<{ id: string }>;
@@ -34,6 +35,7 @@ function extractItems(profile: unknown): ApartmentItem[] {
 }
 
 export default async function EditApartmentPage({ params }: EditApartmentPageProps) {
+  const tr = await getT();
   const { id } = await params;
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
@@ -67,8 +69,8 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
         <div>
           <BackButton />
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Modifica Appartamento</h1>
-            <p className="text-gray-500 mt-1">Aggiorna i dettagli della proprietà: {apartment.name}</p>
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{tr.aeEditTitle}</h1>
+            <p className="text-gray-500 mt-1">{tr.aeEditSub} {apartment.name}</p>
           </div>
         </div>
 
