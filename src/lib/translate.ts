@@ -2,10 +2,40 @@ import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+const MODEL = "gpt-4o";
+
+const LANG_NAMES: Record<string, string> = {
+  en: "English",
+  es: "Spanish",
+  it: "Italian",
+};
+
+// Istruzioni di dominio condivise: le stringhe tradotte sono voci operative
+// (checklist di pulizia e di check-in, note del responsabile) per collaboratori
+// di case vacanza. Devono suonare naturali e professionali, non letterali.
+const DOMAIN_GUIDE = `You are a professional translator for a short-term rental operations app.
+The source language is ITALIAN. You translate short operational strings for cleaners and check-in assistants:
+cleaning-checklist items, check-in-checklist steps, and manager notes.
+
+Rules:
+- Keep the same intent and the imperative/instructional tone (e.g. "Prendere le chiavi" → "Pick up the keys", not "Taking the keys").
+- Translate naturally and idiomatically, NOT word-for-word. It must read like a native hospitality professional wrote it.
+- Keep it concise; do not add words that aren't in the source.
+- Preserve numbers, codes, door/box codes, and proper names exactly as-is.
+- Preserve any emoji.
+- Consistent hospitality glossary:
+  · "cassetta chiavi" / "box chiavi" / "key box" → English "lockbox", Spanish "caja de llaves"
+  · "climatizzazione" / "aria condizionata" → English "air conditioning", Spanish "aire acondicionado"
+  · "check-in" / "check-out" → keep as "check-in" / "check-out"
+  · "citofono" → English "intercom", Spanish "portero automático"
+  · "portone" → English "main door", Spanish "portal"
+  · "ospiti" → English "guests", Spanish "huéspedes"
+  · "biancheria" → English "linen", Spanish "ropa de cama"`;
+
 /**
- * Translates a text to the given target languages using gpt-4o-mini.
- * Returns a Record<lang, translatedText>.
- * Example: translateLabel("Asciugamani", ["en", "es"]) → { en: "Towels", es: "Toallas" }
+ * Traduce un testo verso le lingue indicate (default en, es) con gpt-4o.
+ * Ritorna un Record<lang, testoTradotto>.
+ * Esempio: translateLabel("Asciugamani", ["en", "es"]) → { en: "Towels", es: "Toallas" }
  */
 export async function translateLabel(
   text: string,
@@ -13,25 +43,18 @@ export async function translateLabel(
 ): Promise<Record<string, string>> {
   if (!text?.trim() || targetLangs.length === 0) return {};
 
-  const langNames: Record<string, string> = {
-    en: "English",
-    es: "Spanish",
-    it: "Italian",
-  };
-
-  const langList = targetLangs.map((l) => `"${l}": ${langNames[l] ?? l}`).join(", ");
+  const langList = targetLangs.map((l) => `"${l}" (${LANG_NAMES[l] ?? l})`).join(", ");
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: MODEL,
     messages: [
       {
         role: "system",
-        content:
-          "You are a professional translator for short cleaning/hospitality texts. Return ONLY valid JSON with language codes as keys and translated text as values. No explanation, no markdown.",
+        content: `${DOMAIN_GUIDE}\n\nReturn ONLY valid JSON with the language codes as keys and the translated text as values. No explanation, no markdown.`,
       },
       {
         role: "user",
-        content: `Translate this text to: ${langList}.\nText: "${text}"\nReturn JSON like: { "en": "...", "es": "..." }`,
+        content: `Translate this Italian text into: ${langList}.\nText: "${text}"\nReturn JSON like: { "en": "...", "es": "..." }`,
       },
     ],
     response_format: { type: "json_object" },
@@ -46,8 +69,7 @@ export async function translateLabel(
 }
 
 /**
- * Translates a note to a single target language.
- * Used client-side via the API route.
+ * Traduce una nota verso una singola lingua. Usata lato client via API route.
  */
 export async function translateNote(
   text: string,
@@ -55,23 +77,16 @@ export async function translateNote(
 ): Promise<string> {
   if (!text?.trim()) return text;
 
-  const langNames: Record<string, string> = {
-    en: "English",
-    es: "Spanish",
-    it: "Italian",
-  };
-
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: MODEL,
     messages: [
       {
         role: "system",
-        content:
-          "You are a professional translator for short cleaning/hospitality notes. Return ONLY the translated text, nothing else.",
+        content: `${DOMAIN_GUIDE}\n\nReturn ONLY the translated text, nothing else.`,
       },
       {
         role: "user",
-        content: `Translate to ${langNames[targetLang] ?? targetLang}: "${text}"`,
+        content: `Translate this Italian text into ${LANG_NAMES[targetLang] ?? targetLang}: "${text}"`,
       },
     ],
     temperature: 0.2,
