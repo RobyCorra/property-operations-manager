@@ -199,3 +199,42 @@ export async function deleteCheckinChecklistItem(id: string, apartmentId: string
   revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checkin-checklist`);
   await syncPendingCheckinTasks(apartmentId);
 }
+
+/**
+ * Traduce tutte le voci della checklist di check-in di un appartamento nelle
+ * lingue indicate. Speculare a translateAllChecklistItems (checklist pulizia).
+ */
+export async function translateAllCheckinChecklistItems(apartmentId: string, langs: string[]) {
+  if (!langs || langs.length === 0) return { error: "Seleziona almeno una lingua." };
+
+  try {
+    const items = await prisma.checkinChecklistItem.findMany({
+      where: { apartmentId },
+      select: { id: true, label: true },
+    });
+
+    if (items.length === 0) return { count: 0 };
+
+    let translated = 0;
+    for (const item of items) {
+      try {
+        const translations = await translateLabel(item.label, langs);
+        if (Object.keys(translations).length > 0) {
+          await prisma.checkinChecklistItem.update({
+            where: { id: item.id },
+            data: { labelTranslations: translations },
+          });
+          translated++;
+        }
+      } catch (e) {
+        console.warn(`Failed to translate check-in item ${item.id}:`, e);
+      }
+    }
+
+    revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checkin-checklist`);
+    return { count: translated };
+  } catch (error) {
+    console.error("Error translating check-in checklist:", error);
+    return { error: "Errore durante la traduzione." };
+  }
+}

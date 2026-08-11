@@ -8,7 +8,20 @@ import {
   addCheckinChecklistItem,
   updateCheckinChecklistItem,
   deleteCheckinChecklistItem,
+  translateAllCheckinChecklistItems,
 } from "@/src/app/actions/checkin-checklist";
+
+const ALL_LANGS = [
+  { code: "it", flag: "🇮🇹" },
+  { code: "en", flag: "🇬🇧" },
+  { code: "es", flag: "🇪🇸" },
+];
+
+function langName(code: string, t: { langEnglish: string; langSpanish: string }): string {
+  if (code === "it") return "Italiano";
+  if (code === "en") return t.langEnglish;
+  return t.langSpanish;
+}
 
 interface Item {
   id: string;
@@ -25,12 +38,39 @@ interface Props {
 }
 
 export default function CheckinChecklistManager({ apartmentId, initialItems }: Props) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const toast = useToast();
   const [addState, addAction, isAdding] = useActionState(
     addCheckinChecklistItem.bind(null, apartmentId),
     null
   );
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Traduzioni: lingue di destinazione = tutte tranne quella in cui il manager scrive
+  const targetLangs = ALL_LANGS.filter((l) => l.code !== (lang ?? "it"));
+  const [selectedLangs, setSelectedLangs] = useState<string[]>(() => targetLangs.map((l) => l.code));
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [translateResult, setTranslateResult] = useState<{ count?: number; error?: string } | null>(null);
+
+  const toggleLang = (code: string) => {
+    setSelectedLangs((prev) =>
+      prev.includes(code) ? prev.filter((l) => l !== code) : [...prev, code]
+    );
+  };
+
+  const handleTranslateAll = async () => {
+    if (selectedLangs.length === 0) return;
+    setIsTranslating(true);
+    setTranslateResult(null);
+    const result = await translateAllCheckinChecklistItems(apartmentId, selectedLangs);
+    setIsTranslating(false);
+    setTranslateResult(result);
+    if (result.error) toast.error(result.error);
+    else toast.success(`${result.count} ${t.clUnitTranslated}`);
+    if (result.count !== undefined) {
+      setTimeout(() => setTranslateResult(null), 4000);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -63,6 +103,68 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
           {isAdding ? "..." : `+ ${t.mgrAdd}`}
         </button>
       </form>
+
+      {/* ── Sezione Traduzioni ── */}
+      {initialItems.length > 0 && (
+        <section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400">{t.clAutoTransTitle}</h3>
+              <p className="text-xs text-gray-400 mt-1">{t.clAutoTransSub}</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {targetLangs.map((l) => (
+              <label
+                key={l.code}
+                className={`flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-xl border transition-colors ${
+                  selectedLangs.includes(l.code)
+                    ? "bg-violet-50 border-violet-200 text-violet-700"
+                    : "bg-gray-50 border-gray-200 text-gray-500"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedLangs.includes(l.code)}
+                  onChange={() => toggleLang(l.code)}
+                  className="w-4 h-4 accent-violet-600"
+                />
+                <span className="text-lg">{l.flag}</span>
+                <span className="text-sm font-semibold">{langName(l.code, t)}</span>
+              </label>
+            ))}
+
+            <button
+              onClick={handleTranslateAll}
+              disabled={isTranslating || selectedLangs.length === 0}
+              className="flex items-center gap-2 bg-violet-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-violet-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isTranslating ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  {t.clTranslating}
+                </>
+              ) : (
+                <>{t.clTranslateAll}</>
+              )}
+            </button>
+          </div>
+
+          {translateResult && (
+            <div className={`mt-3 px-4 py-2.5 rounded-xl text-sm font-semibold ${
+              translateResult.error
+                ? "bg-red-50 text-red-700 border border-red-100"
+                : "bg-emerald-50 text-emerald-700 border border-emerald-100"
+            }`}>
+              {translateResult.error
+                ? `❌ ${translateResult.error}`
+                : `✅ ${translateResult.count} ${t.clUnitTranslated} ${selectedLangs.map((l) => ALL_LANGS.find((a) => a.code === l)?.flag).join(" ")}`
+              }
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Lista voci */}
       <div className="space-y-2">
