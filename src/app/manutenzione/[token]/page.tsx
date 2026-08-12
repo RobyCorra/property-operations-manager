@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getMaintenanceByToken } from "@/src/app/actions/maintenance-token";
 import PublicMaintenanceView from "@/src/components/public-maintenance-view";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import { CookieLangProvider } from "@/src/components/lang-context";
+import { getMaintenanceLang, MAINTENANCE_LANG_COOKIE } from "@/src/lib/server-lang";
 
 export default async function PublicMaintenancePage({
   params,
@@ -14,8 +16,10 @@ export default async function PublicMaintenancePage({
   if (!ticket) return notFound();
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ticket.apartment.address)}`;
+  const lang = await getMaintenanceLang();
 
   return (
+    <CookieLangProvider initialLang={lang} cookieName={MAINTENANCE_LANG_COOKIE}>
     <PublicMaintenanceView
       ticketId={ticket.id}
       apartmentName={ticket.apartment.name}
@@ -31,5 +35,6 @@ export default async function PublicMaintenancePage({
       tasks={Array.isArray(ticket.maintenanceTasks) ? (ticket.maintenanceTasks as any[]) : []}
       messages={(ticket.messages ?? []) as any[]}
     />
+    </CookieLangProvider>
   );
 }

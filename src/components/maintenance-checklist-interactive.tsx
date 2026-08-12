@@ -13,6 +13,7 @@ import {
 } from "@/src/lib/photo-queue-db";
 import { Camera, ChevronRight, ChevronLeft, CheckCircle2, Loader2, AlertCircle, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/src/components/toast-provider";
+import { useLang } from "@/src/components/lang-context";
 
 interface Props {
   ticketId:     string;
@@ -29,6 +30,7 @@ const UPLOAD_INTERVAL_MS = 15_000;
 
 export default function MaintenanceChecklistInteractive({ ticketId, initialTasks }: Props) {
   const toast = useToast();
+  const { t } = useLang();
   const [tasks, setTasks] = useState<MaintenanceTaskItem[]>(initialTasks);
 
   const firstUnprocessed = initialTasks.findIndex((t) => !t.completed);
@@ -192,7 +194,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
         await saveToQueue(ticketId, currentTask.id, compressed, compressed.name);
         uploadOne(currentTask.id); // avvio immediato in background
       } catch {
-        setUploadError("Errore nella preparazione della foto. Riprova.");
+        setUploadError(t.moPhotoPrepError);
         setIsCompressing(false);
         setIsSaving(false);
         return;
@@ -226,7 +228,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
       await completeMaintenancePublic(ticketId);
       window.location.reload();
     } catch (err: unknown) {
-      toast.error((err as Error).message || "Errore durante il completamento.");
+      toast.error((err as Error).message || t.moCompleteError);
       setIsCompleting(false);
     }
   };
@@ -251,9 +253,9 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
             <div className="flex items-start gap-3 mb-4">
               <AlertCircle size={20} className="text-amber-500 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-bold text-amber-800">Task non completate</p>
+                <p className="text-sm font-bold text-amber-800">{t.moTasksIncomplete}</p>
                 <p className="text-xs text-amber-600 mt-0.5">
-                  {incomplete.length} task {incomplete.length === 1 ? "richiede" : "richiedono"} attenzione.
+                  {incomplete.length} task {incomplete.length === 1 ? t.moNeedsOne : t.moNeedsMany} {t.moAttention}
                 </p>
               </div>
             </div>
@@ -263,16 +265,16 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
                   <p className="text-xs font-semibold text-slate-800 truncate min-w-0">{task.label}</p>
                   <button type="button" onClick={() => goToItem(task.idx)}
                     className="shrink-0 flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 transition-all">
-                    Risolvi <ChevronRight size={11} />
+                    {t.moResolve} <ChevronRight size={11} />
                   </button>
                 </div>
               ))}
             </div>
           </div>
           <button type="button" disabled className="w-full py-4 rounded-2xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed">
-            ✅ Completa intervento
+            {t.moCompleteIntervention}
           </button>
-          <p className="text-[10px] text-slate-400 mt-2 text-center">Completa tutte le task per inviare al manager.</p>
+          <p className="text-[10px] text-slate-400 mt-2 text-center">{t.moCompleteAllHint}</p>
         </div>
       );
     }
@@ -282,9 +284,9 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
     return (
       <div className="text-center py-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="text-6xl mb-3">🎉</div>
-        <h3 className="text-xl font-bold text-slate-900 mb-1">Tutte le task completate!</h3>
+        <h3 className="text-xl font-bold text-slate-900 mb-1">{t.moAllTasksDone}</h3>
         <p className="text-sm text-slate-500 mb-5">
-          {completedCount} di {tasks.length} task {tasks.length === 1 ? "completata" : "completate"}
+          {completedCount} {t.moOf} {tasks.length} task {tasks.length === 1 ? t.moDoneOne : t.moDoneMany}
         </p>
 
         {/* Banner foto in caricamento */}
@@ -294,18 +296,18 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
               <Loader2 size={16} className="text-blue-500 animate-spin shrink-0" />
               <p className="text-sm font-bold text-blue-800 text-left">
                 {uploadingCount > 0
-                  ? `📤 Caricamento foto in corso... (${uploadingCount} rimaste)`
-                  : `📸 ${pendingCount} foto da caricare`}
+                  ? `📤 ${t.moUploadingPhotos} (${uploadingCount} ${t.moRemaining})`
+                  : `📸 ${pendingCount} ${t.moPhotosToUpload}`}
               </p>
             </div>
             <p className="text-[11px] text-blue-600 text-left mb-3 leading-relaxed">
-              Le foto vengono inviate in background. Puoi aspettare o riprovare subito.
+              {t.moPhotosBackground}
             </p>
             <button type="button"
               onClick={() => { for (const id of pendingRef.current.keys()) uploadOne(id); }}
               disabled={uploadingCount > 0}
               className="flex items-center gap-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-full disabled:opacity-50 hover:bg-blue-700 transition-colors">
-              <Upload size={12} /> Riprova ora
+              <Upload size={12} /> {t.moRetryNow}
             </button>
           </div>
         )}
@@ -314,7 +316,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
         {photosWithUrls.length > 0 && (
           <div className="mb-5">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-              {photosWithUrls.length} foto {photosWithUrls.length === 1 ? "allegata" : "allegate"}
+              {photosWithUrls.length} {t.moPhotos} {photosWithUrls.length === 1 ? t.moAttachedOne : t.moAttachedMany}
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {photosWithUrls.map((task) => {
@@ -343,12 +345,12 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
         <button type="button" onClick={handleComplete} disabled={isCompleting || showUploadBanner}
           className="w-full py-4 rounded-2xl text-sm font-bold bg-black text-white hover:bg-gray-800 transition-all shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
           {isCompleting ? (
-            <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> Invio...</span>
+            <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> {t.moSending}</span>
           ) : showUploadBanner ? (
-            <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> Caricamento foto...</span>
-          ) : "✅ Completa intervento"}
+            <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> {t.moUploadingPhotoShort}</span>
+          ) : t.moCompleteIntervention}
         </button>
-        <p className="text-[10px] text-slate-400 mt-3">Il manager riceverà una notifica.</p>
+        <p className="text-[10px] text-slate-400 mt-3">{t.moManagerNotified}</p>
       </div>
     );
   }
@@ -368,12 +370,12 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
         <div className="mb-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Task {currentIndex + 1} di {tasks.length}
+              {t.moTask} {currentIndex + 1} {t.moOf} {tasks.length}
             </span>
             <div className="flex items-center gap-2">
               {pendingCount > 0 && (
                 <span className="text-[9px] font-black text-blue-500 flex items-center gap-1">
-                  {uploadingCount > 0 ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} foto</> : <>📸 {pendingCount} in coda</>}
+                  {uploadingCount > 0 ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} {t.moPhotos}</> : <>📸 {pendingCount} {t.moInQueue}</>}
                 </span>
               )}
               <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
@@ -408,7 +410,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
                 )}
               </div>
               <span className={`text-[10px] font-bold uppercase tracking-wider ${photoIsPend ? "text-blue-500" : photoIsLoad ? "text-blue-400" : "text-green-600"}`}>
-                {photoIsLoad ? "Caricamento..." : photoIsPend ? "In coda" : "Foto allegata"}
+                {photoIsLoad ? t.moLoadingShort : photoIsPend ? t.moInQueueLabel : t.moPhotoAttached}
               </span>
             </div>
           )}
@@ -417,11 +419,11 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
         <div className="flex gap-2">
           <button type="button" onClick={goBack} disabled={currentIndex === 0}
             className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-            <ChevronLeft size={13} /> Indietro
+            <ChevronLeft size={13} /> {t.moBack}
           </button>
           <button type="button" onClick={goForward} disabled={currentIndex >= tasks.length - 1}
             className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-            Avanti <ChevronRight size={13} />
+            {t.moNext} <ChevronRight size={13} />
           </button>
         </div>
       </div>
@@ -439,7 +441,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
           <div className="flex items-center gap-2">
             {pendingCount > 0 && (
               <span className="text-[9px] font-black text-blue-500 flex items-center gap-1">
-                {uploadingCount > 0 ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} foto</> : <>📸 {pendingCount} in coda</>}
+                {uploadingCount > 0 ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} {t.moPhotos}</> : <>📸 {pendingCount} {t.moInQueue}</>}
               </span>
             )}
             <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
@@ -464,10 +466,10 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
       {/* Sezione foto */}
       <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-4">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Foto</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.moPhoto}</p>
           {currentTask.photoRequired
-            ? <span className="text-[9px] font-black uppercase tracking-wide text-white bg-rose-500 rounded-full px-2 py-0.5">Obbligatoria</span>
-            : <span className="text-[9px] font-black uppercase tracking-wide text-slate-400 bg-slate-200 rounded-full px-2 py-0.5">Facoltativa</span>}
+            ? <span className="text-[9px] font-black uppercase tracking-wide text-white bg-rose-500 rounded-full px-2 py-0.5">{t.moRequired}</span>
+            : <span className="text-[9px] font-black uppercase tracking-wide text-slate-400 bg-slate-200 rounded-full px-2 py-0.5">{t.moOptional}</span>}
         </div>
 
         {uploadError && (
@@ -477,10 +479,10 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
         {photoPreview ? (
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photoPreview} alt="Anteprima" className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0" />
+            <img src={photoPreview} alt={t.moPreview} className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
-              <p className="text-[10px] text-blue-600 font-bold mt-0.5">📸 Pronta — verrà inviata in background</p>
+              <p className="text-[10px] text-blue-600 font-bold mt-0.5">{t.moPhotoReady}</p>
             </div>
             <button type="button" onClick={clearPhoto}
               className="w-7 h-7 rounded-full bg-rose-100 text-rose-500 text-[10px] flex items-center justify-center hover:bg-rose-200 shrink-0">✕</button>
@@ -491,7 +493,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
               currentTask.photoRequired
                 ? "bg-slate-500 border-rose-400 text-white hover:bg-slate-600"
                 : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"}`}>
-            <Camera size={18} /> Scatta foto
+            <Camera size={18} /> {t.moTakePhoto}
           </button>
         )}
 
@@ -511,11 +513,11 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
             photoMissing ? "bg-slate-200 text-slate-400 cursor-not-allowed"
               : "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 shadow-lg shadow-emerald-600/20"}`}>
           {isCompressing ? (
-            <><Loader2 size={13} className="animate-spin" /> Preparazione...</>
+            <><Loader2 size={13} className="animate-spin" /> {t.moPreparing}</>
           ) : isSaving ? (
-            <><Loader2 size={13} className="animate-spin" /> Salvataggio...</>
+            <><Loader2 size={13} className="animate-spin" /> {t.moSaving}</>
           ) : (
-            <><CheckCircle2 size={13} /> Fatto <ChevronRight size={13} /></>
+            <><CheckCircle2 size={13} /> {t.moDoneBtn} <ChevronRight size={13} /></>
           )}
         </button>
       </div>

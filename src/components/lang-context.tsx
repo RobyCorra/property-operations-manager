@@ -67,16 +67,18 @@ export function useLang() {
 const MANAGER_LANG_COOKIE = "app_lang";
 
 /**
- * Provider per l'area manager. A differenza di LangProvider (cleaner, basato su
- * localStorage), la lingua vive in un cookie leggibile anche dal server, così
- * i server component traducono con getT() e i client component con useLang()
- * restano allineati. Al cambio lingua ricarica i dati server con router.refresh().
+ * Provider basato su COOKIE (leggibile anche dal server). A differenza di
+ * LangProvider (cleaner, localStorage), la lingua vive in un cookie così i
+ * server component traducono con getT()/getMaintenanceT() e i client component
+ * con useLang() restano allineati. Al cambio lingua ricarica la pagina.
  */
-export function ManagerLangProvider({
+export function CookieLangProvider({
   initialLang,
+  cookieName,
   children,
 }: {
   initialLang: Lang;
+  cookieName: string;
   children: ReactNode;
 }) {
   const [lang, setLangState] = useState<Lang>(initialLang);
@@ -84,7 +86,7 @@ export function ManagerLangProvider({
   const setLang = (l: string) => {
     const next = (l in translations ? l : "it") as Lang;
     setLangState(next);
-    document.cookie = `${MANAGER_LANG_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+    document.cookie = `${cookieName}=${next}; path=/; max-age=31536000; samesite=lax`;
     // Ricarica i server component con la nuova lingua
     if (typeof window !== "undefined") window.location.reload();
   };
@@ -95,5 +97,20 @@ export function ManagerLangProvider({
     <LangContext.Provider value={{ lang, contentLang: lang, mounted: true, setLang, t }}>
       {children}
     </LangContext.Provider>
+  );
+}
+
+/** Provider per l'area manager (cookie app_lang). */
+export function ManagerLangProvider({
+  initialLang,
+  children,
+}: {
+  initialLang: Lang;
+  children: ReactNode;
+}) {
+  return (
+    <CookieLangProvider initialLang={initialLang} cookieName={MANAGER_LANG_COOKIE}>
+      {children}
+    </CookieLangProvider>
   );
 }
