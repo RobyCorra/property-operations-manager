@@ -297,8 +297,8 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
                     {t.ckPhotoBadge}
                   </span>
                 )}
-                {/* Bandiere traduzioni — solo lingue presenti; hover per vedere/modificare */}
-                {LANGUAGE_CATALOG.filter((l) => item.labelTranslations?.[l.code]).map((l) => (
+                {/* Bandiere traduzioni — tutte le lingue attive (grigia se mancante); hover per vedere/modificare/aggiungere */}
+                {activeLangs.map((l) => (
                   <FlagTranslation
                     key={l.code}
                     flag={l.flag}

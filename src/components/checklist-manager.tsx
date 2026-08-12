@@ -532,8 +532,8 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                         {item.answerType === "yesno" && <span className="text-[9px] font-black text-violet-600 uppercase tracking-tighter bg-violet-50 px-1.5 py-0.5 rounded border border-violet-100">{t.clBadgeYesNo}</span>}
                         {item.photoRequired && <span className="text-[9px] font-black text-amber-600 uppercase tracking-tighter bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">{t.clBadgePhoto}</span>}
                         {item.type === "dynamic" && <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{t.clTypeDynamic}</span>}
-                        {/* Bandiere traduzioni — solo lingue presenti; hover per vedere/modificare */}
-                        {LANGUAGE_CATALOG.filter((l) => item.labelTranslations?.[l.code]).map((l) => (
+                        {/* Bandiere traduzioni — tutte le lingue attive (grigia se mancante); hover per vedere/modificare/aggiungere */}
+                        {activeLangs.map((l) => (
                           <FlagTranslation
                             key={l.code}
                             flag={l.flag}
