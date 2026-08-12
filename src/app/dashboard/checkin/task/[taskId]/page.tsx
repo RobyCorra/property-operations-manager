@@ -3,6 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import CheckinTaskView from "@/src/components/checkin-task-view";
+import CleanerLangGate from "@/src/components/cleaner-lang-gate";
+import LangSwitchPill from "@/src/components/lang-switch-pill";
 import { ChevronLeft } from "lucide-react";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { getCheckinTaskMessages, markCheckinMessagesReadByWorker } from "@/src/app/actions/checkin";
@@ -36,6 +38,7 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
   const items = progress.map((i) => ({
     id: i.id,
     label: i.label,
+    labelTranslations: i.labelTranslations ?? null,
     required: !!i.required,
     photoRequired: !!i.photoRequired,
     completed: !!i.completed,
@@ -45,8 +48,9 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
 
   return (
+    <CleanerLangGate>
     <div className="min-h-screen bg-[#faf8ff]">
-      <div className="sticky top-0 z-50 bg-indigo-900/90 backdrop-blur-sm px-4 py-3" style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}>
+      <div className="sticky top-0 z-50 bg-indigo-900/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-3" style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}>
         <Link
           href="/dashboard/checkin"
           className="flex items-center gap-1.5 text-white/90 text-xs font-black uppercase tracking-widest"
@@ -54,6 +58,7 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
           <ChevronLeft size={14} />
           Dashboard
         </Link>
+        <LangSwitchPill />
       </div>
 
       <CheckinTaskView
@@ -69,5 +74,6 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
         currentUserName={userRecord?.name ?? "Assistente"}
       />
     </div>
+    </CleanerLangGate>
   );
 }

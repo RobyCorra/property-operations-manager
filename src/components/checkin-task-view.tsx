@@ -6,10 +6,12 @@ import { upload } from "@vercel/blob/client";
 import { updateCheckinChecklist, updateCheckinStatus, createCheckinTaskMessage } from "@/src/app/actions/checkin";
 import TicketConversation from "@/src/components/ticket-conversation";
 import { useToast } from "@/src/components/toast-provider";
+import { useLang } from "@/src/components/lang-context";
 
 interface ChecklistItem {
   id: string;
   label: string;
+  labelTranslations?: Record<string, string> | null;
   required: boolean;
   photoRequired: boolean;
   completed: boolean;
@@ -51,6 +53,7 @@ export default function CheckinTaskView({
   isCompleted,
 }: Props) {
   const toast = useToast();
+  const { contentLang } = useLang();
   const showCompletedFooter = isCompleted ?? readOnly;
   const router = useRouter();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
@@ -165,7 +168,7 @@ export default function CheckinTaskView({
                     )}
                   </span>
                   <span className={`text-sm ${item.completed ? "text-slate-400 line-through" : "text-slate-800"}`}>
-                    {item.label}
+                    {(contentLang && item.labelTranslations?.[contentLang]) || item.label}
                   </span>
                 </button>
                 <div className="flex items-center gap-2 shrink-0">
