@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState, useActionState, useEffect, useMemo } from "react";
 import { Check } from "lucide-react";
 import { useToast } from "@/src/components/toast-provider";
 import { useLang } from "@/src/components/lang-context";
+import { LANGUAGE_CATALOG, langFlag, langNative } from "@/src/lib/languages";
 import {
   addCheckinChecklistItem,
   updateCheckinChecklistItem,
@@ -12,17 +13,8 @@ import {
   updateCheckinChecklistItemTranslation,
 } from "@/src/app/actions/checkin-checklist";
 
-const ALL_LANGS = [
-  { code: "it", flag: "🇮🇹" },
-  { code: "en", flag: "🇬🇧" },
-  { code: "es", flag: "🇪🇸" },
-];
-
-function langName(code: string, t: { langEnglish: string; langSpanish: string }): string {
-  if (code === "it") return "Italiano";
-  if (code === "en") return t.langEnglish;
-  return t.langSpanish;
-}
+// Lingue target attivate di default; le altre si aggiungono col menu "+".
+const DEFAULT_TARGETS = ["en", "es"];
 
 interface Item {
   id: string;
@@ -49,11 +41,47 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
   const [items, setItems] = useState<Item[]>(initialItems);
   useEffect(() => setItems(initialItems), [initialItems]);
 
-  // Traduzioni: lingue di destinazione = tutte tranne quella in cui il manager scrive
-  const targetLangs = ALL_LANGS.filter((l) => l.code !== (lang ?? "it"));
-  const [selectedLangs, setSelectedLangs] = useState<string[]>(() => targetLangs.map((l) => l.code));
+  // ── Stato traduzioni ──
+  const [manualLangs, setManualLangs] = useState<string[]>([]);
   const [isTranslating, setIsTranslating] = useState(false);
   const [translateResult, setTranslateResult] = useState<{ count?: number; error?: string } | null>(null);
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [pendingAdd, setPendingAdd] = useState<string[]>([]);
+
+  const presentLangs = useMemo(() => {
+    const s = new Set<string>();
+    for (const it of items) {
+      for (const code of Object.keys(it.labelTranslations ?? {})) s.add(code);
+    }
+    return s;
+  }, [items]);
+
+  const activeLangs = useMemo(() => {
+    const codes = new Set<string>();
+    DEFAULT_TARGETS.forEach((c) => codes.add(c));
+    presentLangs.forEach((c) => codes.add(c));
+    manualLangs.forEach((c) => codes.add(c));
+    codes.delete("it");
+    codes.delete(lang ?? "it");
+    return LANGUAGE_CATALOG.filter((l) => codes.has(l.code));
+  }, [presentLangs, manualLangs, lang]);
+
+  const activeCodes = useMemo(() => new Set(activeLangs.map((l) => l.code)), [activeLangs]);
+
+  const addableLangs = useMemo(
+    () => LANGUAGE_CATALOG.filter((l) => l.code !== (lang ?? "it") && !activeCodes.has(l.code)),
+    [activeCodes, lang]
+  );
+
+  const [selectedLangs, setSelectedLangs] = useState<string[]>(() => {
+    const codes = new Set<string>(DEFAULT_TARGETS);
+    for (const it of initialItems) {
+      for (const code of Object.keys(it.labelTranslations ?? {})) codes.add(code);
+    }
+    codes.delete("it");
+    codes.delete(lang ?? "it");
+    return [...codes];
+  });
 
   const toggleLang = (code: string) => {
     setSelectedLangs((prev) =>
@@ -61,11 +89,11 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
     );
   };
 
-  const handleTranslateAll = async () => {
-    if (selectedLangs.length === 0) return;
+  const runTranslate = async (langs: string[]) => {
+    if (langs.length === 0) return;
     setIsTranslating(true);
     setTranslateResult(null);
-    const result = await translateAllCheckinChecklistItems(apartmentId, selectedLangs);
+    const result = await translateAllCheckinChecklistItems(apartmentId, langs);
     setIsTranslating(false);
     setTranslateResult(result);
     if (result.error) toast.error(result.error);
@@ -73,6 +101,18 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
     if (result.count !== undefined) {
       setTimeout(() => setTranslateResult(null), 4000);
     }
+  };
+
+  const handleTranslateAll = () => runTranslate(selectedLangs);
+
+  const handleConfirmAdd = async () => {
+    if (pendingAdd.length === 0) return;
+    const toAdd = pendingAdd;
+    setManualLangs((prev) => [...new Set([...prev, ...toAdd])]);
+    setSelectedLangs((prev) => [...new Set([...prev, ...toAdd])]);
+    setPendingAdd([]);
+    setAddMenuOpen(false);
+    await runTranslate(toAdd);
   };
 
   return (
@@ -118,7 +158,7 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {targetLangs.map((l) => (
+            {activeLangs.map((l) => (
               <label
                 key={l.code}
                 className={`flex items-center gap-2 cursor-pointer px-4 py-2.5 rounded-xl border transition-colors ${
@@ -134,9 +174,65 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
                   className="w-4 h-4 accent-violet-600"
                 />
                 <span className="text-lg">{l.flag}</span>
-                <span className="text-sm font-semibold">{langName(l.code, t)}</span>
+                <span className="text-sm font-semibold">{l.native}</span>
               </label>
             ))}
+
+            {/* Menu "+" per aggiungere una lingua dal catalogo */}
+            {addableLangs.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => setAddMenuOpen((o) => !o)}
+                  disabled={isTranslating}
+                  title={t.clAddLanguage}
+                  className="flex items-center justify-center w-11 h-11 rounded-xl border border-dashed border-gray-300 text-gray-500 text-xl font-bold hover:border-violet-300 hover:text-violet-600 transition-colors disabled:opacity-50"
+                >
+                  +
+                </button>
+
+                {addMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setAddMenuOpen(false)} />
+                    <div className="absolute left-0 top-full z-50 mt-2 w-60 rounded-xl border border-gray-200 bg-white p-2 shadow-xl">
+                      <p className="px-2 py-1.5 text-[10px] font-black uppercase tracking-wider text-gray-400">
+                        {t.clAddLanguage}
+                      </p>
+                      <div className="max-h-56 overflow-y-auto">
+                        {addableLangs.map((l) => (
+                          <label
+                            key={l.code}
+                            className="flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-50"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={pendingAdd.includes(l.code)}
+                              onChange={() =>
+                                setPendingAdd((prev) =>
+                                  prev.includes(l.code)
+                                    ? prev.filter((c) => c !== l.code)
+                                    : [...prev, l.code]
+                                )
+                              }
+                              className="w-4 h-4 accent-violet-600"
+                            />
+                            <span className="text-lg">{l.flag}</span>
+                            <span className="text-sm font-medium text-gray-700">{l.native}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <button
+                        onClick={handleConfirmAdd}
+                        disabled={pendingAdd.length === 0 || isTranslating}
+                        className="mt-2 w-full rounded-lg bg-violet-600 px-3 py-2 text-xs font-bold text-white hover:bg-violet-700 disabled:opacity-40"
+                      >
+                        {t.mgrAdd}
+                        {pendingAdd.length > 0 ? ` (${pendingAdd.length})` : ""}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
 
             <button
               onClick={handleTranslateAll}
@@ -162,7 +258,7 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
             }`}>
               {translateResult.error
                 ? `❌ ${translateResult.error}`
-                : `✅ ${translateResult.count} ${t.clUnitTranslated} ${selectedLangs.map((l) => ALL_LANGS.find((a) => a.code === l)?.flag).join(" ")}`
+                : `✅ ${translateResult.count} ${t.clUnitTranslated} ${selectedLangs.map((l) => langFlag(l)).join(" ")}`
               }
             </div>
           )}
@@ -201,8 +297,8 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
                     {t.ckPhotoBadge}
                   </span>
                 )}
-                {/* Bandiere traduzioni — hover per vedere/modificare/aggiungere */}
-                {ALL_LANGS.filter((l) => l.code !== "it").map((l) => (
+                {/* Bandiere traduzioni — solo lingue presenti; hover per vedere/modificare */}
+                {LANGUAGE_CATALOG.filter((l) => item.labelTranslations?.[l.code]).map((l) => (
                   <FlagTranslation
                     key={l.code}
                     flag={l.flag}
@@ -319,7 +415,7 @@ function FlagTranslation({
           onClick={(e) => e.stopPropagation()}
         >
           <p className="mb-1.5 text-[10px] font-black uppercase tracking-wider text-gray-400">
-            {flag} {langName(code, t)}
+            {flag} {langNative(code)}
           </p>
           <textarea
             value={draft}

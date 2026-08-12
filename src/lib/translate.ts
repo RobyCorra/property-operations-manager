@@ -1,14 +1,9 @@
 import OpenAI from "openai";
+import { LANG_ENGLISH_NAMES as LANG_NAMES } from "./languages";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const MODEL = "gpt-4o";
-
-const LANG_NAMES: Record<string, string> = {
-  en: "English",
-  es: "Spanish",
-  it: "Italian",
-};
 
 // Istruzioni di dominio condivise: le stringhe tradotte sono voci operative
 // (checklist di pulizia e di check-in, note del responsabile) per collaboratori
