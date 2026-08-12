@@ -6,6 +6,8 @@ import { askAI } from "@/src/app/actions/ai";
 import { executeAIAction } from "@/src/app/actions/operational";
 import type { AIActionPayload } from "@/src/app/actions/operational";
 import { useRouter } from "next/navigation";
+import { useLang } from "@/src/components/lang-context";
+import type { T } from "@/src/lib/i18n";
 
 type PreviewCleaning = {
   id: string;
@@ -95,59 +97,59 @@ function sanitizeAIText(text: string): string {
     .trim();
 }
 
-function actionTypeLabel(type: string) {
-  if (type === "CREATE_BOOKING") return "Nuova prenotazione";
-  if (type === "CREATE_CLEANING") return "Nuova pulizia";
-  if (type === "CREATE_TICKET") return "Nuovo ticket manutenzione";
-  if (type === "UPDATE_BOOKING") return "Modifica prenotazione";
-  if (type === "UPDATE_CLEANING") return "Modifica pulizia";
-  if (type === "UPDATE_TICKET") return "Modifica ticket manutenzione";
-  if (type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") return "Assegnazione pulizie";
-  if (type === "BULK_ASSIGN_CHECKINS_BY_FILTER") return "Assegnazione check-in";
-  return "Modifica";
+function actionTypeLabel(type: string, t: T) {
+  if (type === "CREATE_BOOKING") return t.aiActCreateBooking;
+  if (type === "CREATE_CLEANING") return t.aiActCreateCleaning;
+  if (type === "CREATE_TICKET") return t.aiActCreateTicket;
+  if (type === "UPDATE_BOOKING") return t.aiActUpdateBooking;
+  if (type === "UPDATE_CLEANING") return t.aiActUpdateCleaning;
+  if (type === "UPDATE_TICKET") return t.aiActUpdateTicket;
+  if (type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") return t.aiActAssignCleanings;
+  if (type === "BULK_ASSIGN_CHECKINS_BY_FILTER") return t.aiActAssignCheckins;
+  return t.aiActEdit;
 }
 
-function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | null): React.ReactNode {
+function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | null, t: T, locale: string): React.ReactNode {
   if (action.type === "CREATE_BOOKING") {
     return (
       <div className="space-y-1">
-        <p className="text-xs text-amber-700">• Appartamento: {action.apartmentName}</p>
-        <p className="text-xs text-amber-700">• Check-in: {new Date(action.checkInDate).toLocaleDateString("it-IT")}</p>
-        <p className="text-xs text-amber-700">• Check-out: {new Date(action.checkOutDate).toLocaleDateString("it-IT")}</p>
-        <p className="text-xs text-amber-700">• Ospiti: {action.totalGuests}</p>
-        {action.guestName && <p className="text-xs text-amber-700">• Nome ospite: {action.guestName}</p>}
+        <p className="text-xs text-amber-700">• {t.aiFApartment}: {action.apartmentName}</p>
+        <p className="text-xs text-amber-700">• {t.aiFCheckin}: {new Date(action.checkInDate).toLocaleDateString(locale)}</p>
+        <p className="text-xs text-amber-700">• {t.aiFCheckout}: {new Date(action.checkOutDate).toLocaleDateString(locale)}</p>
+        <p className="text-xs text-amber-700">• {t.aiFGuests}: {action.totalGuests}</p>
+        {action.guestName && <p className="text-xs text-amber-700">• {t.aiFGuestName}: {action.guestName}</p>}
       </div>
     );
   }
   if (action.type === "CREATE_CLEANING") {
     return (
       <div className="space-y-1">
-        <p className="text-xs text-amber-700">• Appartamento: {action.apartmentName}</p>
-        <p className="text-xs text-amber-700">• Data: {new Date(action.date).toLocaleDateString("it-IT")}</p>
-        {action.notes && <p className="text-xs text-amber-700">• Note: {action.notes}</p>}
+        <p className="text-xs text-amber-700">• {t.aiFApartment}: {action.apartmentName}</p>
+        <p className="text-xs text-amber-700">• {t.aiFDate}: {new Date(action.date).toLocaleDateString(locale)}</p>
+        {action.notes && <p className="text-xs text-amber-700">• {t.aiFNotes}: {action.notes}</p>}
       </div>
     );
   }
   if (action.type === "CREATE_TICKET") {
     return (
       <div className="space-y-1">
-        <p className="text-xs text-amber-700">• Appartamento: {action.apartmentName}</p>
-        <p className="text-xs text-amber-700">• Titolo: {action.title}</p>
-        <p className="text-xs text-amber-700">• Priorità: {action.priority}</p>
-        {action.ticketDescription && <p className="text-xs text-amber-700">• Descrizione: {action.ticketDescription}</p>}
-        {action.scheduledStart && <p className="text-xs text-amber-700">• Programmato: {new Date(action.scheduledStart).toLocaleDateString("it-IT")}</p>}
+        <p className="text-xs text-amber-700">• {t.aiFApartment}: {action.apartmentName}</p>
+        <p className="text-xs text-amber-700">• {t.aiFTitle}: {action.title}</p>
+        <p className="text-xs text-amber-700">• {t.aiFPriority}: {action.priority}</p>
+        {action.ticketDescription && <p className="text-xs text-amber-700">• {t.aiFDescription}: {action.ticketDescription}</p>}
+        {action.scheduledStart && <p className="text-xs text-amber-700">• {t.aiFScheduled}: {new Date(action.scheduledStart).toLocaleDateString(locale)}</p>}
       </div>
     );
   }
   if (action.type === "BULK_ASSIGN_CLEANINGS_BY_FILTER") {
-    if (!preview) return <p className="text-xs text-amber-500 animate-pulse">Caricamento anteprima...</p>;
-    if (preview.length === 0) return <p className="text-xs text-red-600">⚠ Nessuna pulizia trovata con questi filtri.</p>;
+    if (!preview) return <p className="text-xs text-amber-500 animate-pulse">{t.aiLoadingPreview}</p>;
+    if (preview.length === 0) return <p className="text-xs text-red-600">{t.aiNoCleaningsFound}</p>;
     return (
       <div className="space-y-1">
-        <p className="text-xs font-bold text-amber-800">{preview.length} pulizie trovate:</p>
+        <p className="text-xs font-bold text-amber-800">{preview.length} {t.aiCleaningsFound}</p>
         {preview.map((c) => (
           <p key={c.id} className="text-xs text-amber-700">
-            • {c.apartmentName} — {new Date(c.date).toLocaleDateString("it-IT", { day: "numeric", month: "short" })} ({c.status}) {c.assignedTo ? `→ attuale: ${c.assignedTo}` : ""}
+            • {c.apartmentName} — {new Date(c.date).toLocaleDateString(locale, { day: "numeric", month: "short" })} ({c.status}) {c.assignedTo ? `→ ${t.aiCurrent}: ${c.assignedTo}` : ""}
           </p>
         ))}
       </div>
@@ -156,48 +158,50 @@ function actionSummary(action: AIActionPayload, preview: PreviewCleaning[] | nul
   if (action.type === "BULK_ASSIGN_CHECKINS_BY_FILTER") {
     return (
       <div className="space-y-1">
-        <p className="text-xs text-amber-700">• Assistente: {action.assignedToName}</p>
-        <p className="text-xs text-amber-700">• Periodo: {new Date(action.dateFrom).toLocaleDateString("it-IT")} → {new Date(action.dateTo).toLocaleDateString("it-IT")}</p>
-        <p className="text-xs text-amber-700">• Appartamenti: {action.apartmentIds.length > 0 ? `${action.apartmentIds.length} selezionati` : "tutti"}{action.unassignedOnly ? " · solo non assegnati" : ""}</p>
+        <p className="text-xs text-amber-700">• {t.aiFAssistant}: {action.assignedToName}</p>
+        <p className="text-xs text-amber-700">• {t.aiFPeriod}: {new Date(action.dateFrom).toLocaleDateString(locale)} → {new Date(action.dateTo).toLocaleDateString(locale)}</p>
+        <p className="text-xs text-amber-700">• {t.aiFApartments}: {action.apartmentIds.length > 0 ? `${action.apartmentIds.length} ${t.aiSelected}` : t.aiAll}{action.unassignedOnly ? ` · ${t.aiUnassignedOnly}` : ""}</p>
       </div>
     );
   }
   const fields = (action as any).fields ?? {};
   return Object.entries(fields).map(([k, v]) => (
-    <p key={k} className="text-xs text-amber-700">• {fieldLabel(k, v)}</p>
+    <p key={k} className="text-xs text-amber-700">• {fieldLabel(k, v, t, locale)}</p>
   ));
 }
 
-function fieldLabel(key: string, value: unknown): string {
+function fieldLabel(key: string, value: unknown, t: T, locale: string): string {
   const labels: Record<string, string> = {
-    guestName: "Nome ospite",
-    totalGuests: "Numero ospiti",
-    checkInDate: "Check-in",
-    checkOutDate: "Check-out",
-    notes: "Note",
-    date: "Data pulizia",
-    assignedToId: "Cleaner assegnato",
-    title: "Titolo",
-    description: "Descrizione",
-    priority: "Priorità",
-    scheduledStart: "Data intervento",
-    status: "Stato",
+    guestName: t.aiFGuestName,
+    totalGuests: t.aiFNumGuests,
+    checkInDate: t.aiFCheckin,
+    checkOutDate: t.aiFCheckout,
+    notes: t.aiFNotes,
+    date: t.aiFCleaningDate,
+    assignedToId: t.aiFAssignedCleaner,
+    title: t.aiFTitle,
+    description: t.aiFDescription,
+    priority: t.aiFPriority,
+    scheduledStart: t.aiFInterventionDate,
+    status: t.aiFStatus,
   };
   const label = labels[key] ?? key;
   let display = String(value);
   // Formatta le date ISO in leggibile
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
-    display = new Date(value).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" });
+    display = new Date(value).toLocaleString(locale, { dateStyle: "short", timeStyle: "short" });
   }
   return `${label}: ${display}`;
 }
 
-const SUGGESTIONS = [
-  { emoji: "🧹", label: "Pulizie di oggi", prompt: "Quali pulizie ci sono oggi?" },
-  { emoji: "🔧", label: "Ticket aperti", prompt: "Quali ticket di manutenzione sono aperti?" },
-  { emoji: "📅", label: "Check-in domani", prompt: "Quali check-in ci sono domani?" },
-  { emoji: "➕", label: "Nuova pulizia", prompt: "Crea una nuova pulizia" },
-];
+function makeSuggestions(t: T) {
+  return [
+    { emoji: "🧹", label: t.aiSugCleaningsTodayLabel, prompt: t.aiSugCleaningsTodayPrompt },
+    { emoji: "🔧", label: t.aiSugOpenTicketsLabel, prompt: t.aiSugOpenTicketsPrompt },
+    { emoji: "📅", label: t.aiSugCheckinsTomorrowLabel, prompt: t.aiSugCheckinsTomorrowPrompt },
+    { emoji: "➕", label: t.aiSugNewCleaningLabel, prompt: t.aiSugNewCleaningPrompt },
+  ];
+}
 
 export default function AIAssistant({
   role,
@@ -212,6 +216,9 @@ export default function AIAssistant({
   contextLabel,
 }: AIAssistantProps) {
   const router = useRouter();
+  const { t, lang } = useLang();
+  const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
+  const SUGGESTIONS = makeSuggestions(t);
   const [input, setInput] = useState("");
   const [internalOpen, setInternalOpen] = useState(false);
   const [webSearch, setWebSearch] = useState(false);
@@ -370,16 +377,16 @@ export default function AIAssistant({
               🤖
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-[15px] font-extrabold text-white tracking-tight">Assistente AI</h2>
+              <h2 className="text-[15px] font-extrabold text-white tracking-tight">{t.aiTitle}</h2>
               <p className="text-[11px] text-white/75 flex items-center gap-1.5">
                 <span className="w-[7px] h-[7px] bg-green-400 rounded-full inline-block" />
-                {contextLabel || "Sempre disponibile"}
+                {contextLabel || t.aiAlwaysAvailable}
               </p>
             </div>
             <button
               type="button"
               onClick={closeSheet}
-              aria-label="Chiudi"
+              aria-label={t.moClose}
               className="w-8 h-8 rounded-full flex items-center justify-center"
               style={{ background: "rgba(255,255,255,.18)" }}
             >
@@ -392,7 +399,7 @@ export default function AIAssistant({
 
             {messages.length === 0 && (
               <div className="max-w-[82%] self-start bg-white rounded-[18px] rounded-bl-md px-3.5 py-2.5 text-[13.5px] leading-relaxed text-slate-800 shadow-sm">
-                Ciao 👋 Posso creare pulizie, ticket e prenotazioni, o rispondere a domande sugli appartamenti.
+                {t.aiGreeting}
               </div>
             )}
 
@@ -430,26 +437,26 @@ export default function AIAssistant({
                       <div className="w-[30px] h-[30px] rounded-[10px] bg-amber-100 flex items-center justify-center text-sm shrink-0">
                         {message.action.type.includes("CLEANING") ? "🧹" : message.action.type.includes("TICKET") ? "🔧" : message.action.type.includes("BOOKING") ? "📅" : "✏️"}
                       </div>
-                      <p className="text-[12px] font-extrabold text-amber-800">{actionTypeLabel(message.action.type)}</p>
+                      <p className="text-[12px] font-extrabold text-amber-800">{actionTypeLabel(message.action.type, t)}</p>
                     </div>
                     <p className="text-[12.5px] font-medium text-amber-900">{message.action.description}</p>
                     <div className="space-y-1">
-                      {actionSummary(message.action, message.preview ?? null)}
+                      {actionSummary(message.action, message.preview ?? null, t, dateLocale)}
                     </div>
                     {message.conflictWarning && (
                       <div className="rounded-xl bg-orange-50 border border-orange-200 px-3 py-2 space-y-0.5">
-                        <p className="text-xs font-bold text-orange-700">⚠ Appartamento occupato in questa data</p>
+                        <p className="text-xs font-bold text-orange-700">{t.aiOccupied}</p>
                         <p className="text-xs text-orange-600">
-                          Prenotazione: {message.conflictWarning.guestName || "n/d"} —{" "}
-                          {new Date(message.conflictWarning.checkInDate).toLocaleDateString("it-IT")} →{" "}
-                          {new Date(message.conflictWarning.checkOutDate).toLocaleDateString("it-IT")}
+                          {t.aiBookingLabel}: {message.conflictWarning.guestName || t.aiNa} —{" "}
+                          {new Date(message.conflictWarning.checkInDate).toLocaleDateString(dateLocale)} →{" "}
+                          {new Date(message.conflictWarning.checkOutDate).toLocaleDateString(dateLocale)}
                         </p>
-                        <p className="text-xs text-orange-600 font-medium">Puoi comunque procedere confermando.</p>
+                        <p className="text-xs text-orange-600 font-medium">{t.aiProceedAnyway}</p>
                       </div>
                     )}
                     {message.actionError && (
                       <p className="text-xs font-bold text-red-600 bg-red-50 rounded-xl px-3 py-2">
-                        ⚠ {message.actionError} — riprova o annulla.
+                        ⚠ {message.actionError} — {t.aiRetryOrCancel}
                       </p>
                     )}
                     <div className="flex gap-2 pt-1">
@@ -460,13 +467,13 @@ export default function AIAssistant({
                         style={{ background: "linear-gradient(135deg,#059669,#10b981)", boxShadow: "0 4px 12px rgba(5,150,105,.3)" }}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                        Conferma
+                        {t.aiConfirm}
                       </button>
                       <button
                         onClick={() => handleDismissAction(index)}
                         className="w-[84px] h-10 rounded-[13px] bg-white border-[1.5px] border-slate-200 text-slate-500 text-[13px] font-bold active:scale-95 transition-transform"
                       >
-                        Annulla
+                        {t.mgrCancel}
                       </button>
                     </div>
                   </div>
@@ -475,14 +482,14 @@ export default function AIAssistant({
                 {message.actionState === "done" && (
                   <div className="max-w-[82%] self-start rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2">
                     <p className="text-xs font-bold text-emerald-700">
-                      ✓ {message.preview ? `${message.preview.length} pulizie assegnate` : "Modifica applicata"}
+                      ✓ {message.preview ? `${message.preview.length} ${t.aiCleaningsAssigned}` : t.aiChangeApplied}
                     </p>
                   </div>
                 )}
 
                 {message.actionState === "error" && (
                   <div className="max-w-[82%] self-start rounded-2xl border border-red-200 bg-red-50 px-4 py-2">
-                    <p className="text-xs font-bold text-red-700">⚠ {message.actionError || "Errore durante l'aggiornamento"}</p>
+                    <p className="text-xs font-bold text-red-700">⚠ {message.actionError || t.aiUpdateError}</p>
                   </div>
                 )}
               </div>
@@ -506,7 +513,7 @@ export default function AIAssistant({
                 className="w-full h-10 rounded-[13px] flex items-center justify-center gap-1.5 text-white text-[13px] font-extrabold animate-pulse"
                 style={{ background: "linear-gradient(135deg,#059669,#10b981)", boxShadow: "0 4px 12px rgba(5,150,105,.3)" }}
               >
-                ✓ Conferma azione in sospeso
+                {t.aiConfirmPending}
               </button>
             </div>
           )}
@@ -534,8 +541,8 @@ export default function AIAssistant({
             <button
               type="button"
               onClick={() => setWebSearch((w) => !w)}
-              aria-label="Ricerca web"
-              title="Ricerca web"
+              aria-label={t.aiWebSearch}
+              title={t.aiWebSearch}
               className={`w-[42px] h-[42px] rounded-full flex items-center justify-center text-base shrink-0 border-[1.5px] transition-colors ${
                 webSearch ? "bg-indigo-600 border-indigo-600" : "bg-[#f4f2fc] border-[#ede9fe]"
               }`}
@@ -544,7 +551,7 @@ export default function AIAssistant({
             </button>
             <input
               className="flex-1 bg-[#f4f2fc] rounded-[22px] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300 min-w-0"
-              placeholder={webSearch ? "Cerca sul web…" : "Scrivi un messaggio…"}
+              placeholder={webSearch ? t.aiSearchWeb : t.moWriteMessage}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
@@ -558,7 +565,7 @@ export default function AIAssistant({
               type="button"
               onClick={() => handleAsk(false)}
               disabled={loading || !input.trim()}
-              aria-label="Invia"
+              aria-label={t.moSend}
               className="w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 disabled:opacity-40 active:scale-90 transition-transform"
               style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 12px rgba(124,58,237,.35)" }}
             >

@@ -8,6 +8,7 @@ import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notific
 import { compressImage } from "@/src/lib/compress-image";
 import { startVoiceRecording, MicPermissionError, type VoiceRecorderHandle } from "@/src/lib/voice-recorder";
 import { Camera, Send, X, Loader2, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
+import { useLang } from "@/src/components/lang-context";
 
 interface Props {
   ticketId: string;
@@ -17,15 +18,15 @@ interface Props {
   title?: string;
 }
 
-function formatTime(date: Date) {
+function formatTime(date: Date, locale: string, todayLabel: string) {
   const d = new Date(date);
   const now = new Date();
   const isToday =
     d.getDate() === now.getDate() &&
     d.getMonth() === now.getMonth() &&
     d.getFullYear() === now.getFullYear();
-  const time = d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
-  return isToday ? `Oggi ${time}` : d.toLocaleDateString("it-IT", { day: "numeric", month: "short" }) + ` · ${time}`;
+  const time = d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
+  return isToday ? `${todayLabel} ${time}` : d.toLocaleDateString(locale, { day: "numeric", month: "short" }) + ` · ${time}`;
 }
 
 function formatDuration(secs: number) {
@@ -43,6 +44,8 @@ function isImage(fileType?: string | null, url?: string) {
 }
 
 export default function MaintenanceNoteForm({ ticketId, authorName, initialMessages, isDone, title }: Props) {
+  const { t, lang } = useLang();
+  const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const [messages, setMessages]       = useState<MaintenancePublicMessage[]>(initialMessages);
   const [text, setText]               = useState("");
   const [photos, setPhotos]           = useState<File[]>([]);
@@ -157,9 +160,9 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
       timerRef.current = setInterval(() => setRecordingSec(s => s + 1), 1000);
     } catch (e) {
       if (e instanceof MicPermissionError) {
-        setError("Permesso microfono negato. Abilitalo nelle impostazioni del dispositivo per PropOps.");
+        setError(t.moMicDenied);
       } else {
-        setError(e instanceof Error ? e.message : "Microfono non accessibile. Verifica il permesso del microfono.");
+        setError(e instanceof Error ? e.message : t.moMicUnavailable);
       }
     }
   }
@@ -176,7 +179,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
       setAudioBlob(rec.blob);
       setAudioPreview(rec.url);
     } catch {
-      setError("Errore durante la registrazione. Riprova.");
+      setError(t.moRecError);
     }
   }
 
@@ -209,7 +212,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
       setJustSent(true);
       setTimeout(() => setJustSent(false), 3000);
     } catch {
-      setError("Errore durante l'invio del vocale. Riprova.");
+      setError(t.moVoiceSendError);
     } finally {
       setSendingVoice(false);
     }
@@ -250,7 +253,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
       setJustSent(true);
       setTimeout(() => setJustSent(false), 3000);
     } catch {
-      setError("Errore durante l'invio. Riprova.");
+      setError(t.moSendError);
     } finally {
       setSending(false);
     }
@@ -265,12 +268,12 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
         <span className="text-base mt-0.5">📝</span>
         <div>
           <p className="text-sm font-bold text-slate-800">
-            {isDone ? "Note inviate" : (title ?? "Note al manager")}
+            {isDone ? t.moNotesSent : (title ?? t.moNotesToManager)}
           </p>
           <p className="text-[10px] text-slate-400 mt-0.5">
             {isDone
-              ? "Riepilogo comunicazioni inviate"
-              : "Segnala problemi, materiali mancanti o info extra"}
+              ? t.moCommsSummary
+              : t.moReportHint}
           </p>
         </div>
       </div>
@@ -303,7 +306,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                         {isManager ? `💼 ${msg.senderName}` : `👷 ${msg.senderName}`}
                       </span>
                       <span className="text-[9px] text-slate-400 font-semibold">
-                        {formatTime(msg.createdAt)}
+                        {formatTime(msg.createdAt, dateLocale, t.moToday)}
                       </span>
                     </div>
                     {msg.text && (
@@ -362,7 +365,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value.slice(0, 500))}
-                  placeholder="Scrivi un messaggio…"
+                  placeholder={t.moWriteMessage}
                   rows={3}
                   className={`w-full border rounded-xl px-3 py-2.5 text-sm text-slate-800 resize-none outline-none transition-colors bg-slate-50 ${
                     text.length > 0 ? "border-orange-300 bg-white" : "border-slate-200"
@@ -386,7 +389,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                   onClick={stopRecording}
                   className="flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-lg hover:bg-red-700 transition-colors"
                 >
-                  <Square size={11} /> Stop
+                  <Square size={11} /> {t.moStop}
                 </button>
               </div>
             )}
@@ -397,7 +400,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                 <div className="flex items-center gap-2">
                   <Mic size={14} className="text-orange-500 shrink-0" />
                   <span className="text-xs font-bold text-orange-700 flex-1">
-                    Vocale · {formatDuration(recordingSeconds)}
+                    {t.moVoice} · {formatDuration(recordingSeconds)}
                   </span>
                 </div>
                 <audio controls src={audioPreviewUrl ?? undefined} className="w-full h-8" />
@@ -408,7 +411,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                     disabled={sendingVoice}
                     className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-colors disabled:opacity-50"
                   >
-                    <Trash2 size={11} /> Scarta
+                    <Trash2 size={11} /> {t.moDiscard}
                   </button>
                   <button
                     type="button"
@@ -417,8 +420,8 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                     className="flex-1 flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-wider px-3 py-2 rounded-lg bg-orange-600 text-white hover:bg-orange-700 transition-colors disabled:opacity-70"
                   >
                     {sendingVoice
-                      ? <><Loader2 size={11} className="animate-spin" /> Invio...</>
-                      : <><Send size={11} /> Invia vocale</>
+                      ? <><Loader2 size={11} className="animate-spin" /> {t.moSending}</>
+                      : <><Send size={11} /> {t.moSendVoice}</>
                     }
                   </button>
                 </div>
@@ -435,7 +438,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                   className="w-14 h-14 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-0.5 hover:border-orange-300 hover:bg-orange-50 transition-colors flex-shrink-0"
                 >
                   <Camera size={16} className="text-slate-400" />
-                  <span className="text-[8px] font-bold text-slate-400 uppercase">Foto</span>
+                  <span className="text-[8px] font-bold text-slate-400 uppercase">{t.moPhoto}</span>
                 </button>
                 {/* Microfono */}
                 <button
@@ -444,7 +447,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                   className="w-14 h-14 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-0.5 hover:border-red-300 hover:bg-red-50 transition-colors flex-shrink-0"
                 >
                   <Mic size={16} className="text-slate-400" />
-                  <span className="text-[8px] font-bold text-slate-400 uppercase">Voce</span>
+                  <span className="text-[8px] font-bold text-slate-400 uppercase">{t.moVoiceLabel}</span>
                 </button>
                 {/* Anteprime foto */}
                 {previews.map((src, idx) => (
@@ -492,11 +495,11 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                 }`}
               >
                 {sending ? (
-                  <><Loader2 size={15} className="animate-spin" /> Invio in corso...</>
+                  <><Loader2 size={15} className="animate-spin" /> {t.moSendingLong}</>
                 ) : (
                   <>
                     <Send size={15} />
-                    {photos.length > 0 ? `Invia + ${photos.length} foto` : "Invia"}
+                    {photos.length > 0 ? `${t.moSend} + ${photos.length} ${t.moPhotos}` : t.moSend}
                   </>
                 )}
               </button>
