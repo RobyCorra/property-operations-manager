@@ -375,8 +375,8 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
       </section>
 
       {/* List */}
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-gray-50 bg-gray-50/30">
+      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="p-4 border-b border-gray-50 bg-gray-50/30 rounded-t-2xl">
           <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400">{t.clCurrentPoints}</h3>
         </div>
         <div className="divide-y divide-gray-50">
