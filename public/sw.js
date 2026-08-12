@@ -5,7 +5,7 @@
 //  • Tutto il resto: NetworkFirst
 //  • Offline fallback: /offline se non c'è niente in cache
 
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const STATIC_CACHE  = `static-${CACHE_VERSION}`;
 const PAGES_CACHE   = `pages-${CACHE_VERSION}`;
 const API_CACHE     = `api-${CACHE_VERSION}`;
@@ -157,21 +157,36 @@ async function networkFirst(request, cacheName, timeoutMs = 5000) {
 }
 
 async function networkFirstWithOfflineFallback(request, cacheName) {
-  try {
-    const response = await Promise.race([
-      fetch(request),
-      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000)),
-    ]);
+  // Fetch reale unica: la riusiamo sia per la corsa col timeout sia per l'attesa
+  // successiva. Un render lento ma ONLINE non deve mai diventare "offline".
+  const networkFetch = fetch(request).then(async (response) => {
     if (response.ok) {
       const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
     }
     return response;
+  });
+  // Evita warning di "unhandled rejection" se prendiamo la via cache dopo il timeout.
+  networkFetch.catch(() => {});
+
+  try {
+    // Timeout generoso (le pagine operative fanno render server-side pesanti su
+    // lambda fredde): entro 20s proviamo a rispondere dalla rete.
+    return await Promise.race([
+      networkFetch,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 20000)),
+    ]);
   } catch {
+    // Timeout o errore di rete: se c'è una versione in cache, servila subito.
     const cached = await caches.match(request);
     if (cached) return cached;
-    // Offline fallback
-    const offlinePage = await caches.match(OFFLINE_URL);
-    return offlinePage ?? new Response("Sei offline", { status: 503, headers: { "Content-Type": "text/plain" } });
+    try {
+      // Nessuna cache: il render è solo lento, NON offline → aspetta la rete vera.
+      return await networkFetch;
+    } catch {
+      // Solo qui siamo davvero offline / la rete ha fallito.
+      const offlinePage = await caches.match(OFFLINE_URL);
+      return offlinePage ?? new Response("Sei offline", { status: 503, headers: { "Content-Type": "text/plain" } });
+    }
   }
 }
