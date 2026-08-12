@@ -1,12 +1,12 @@
 "use client";
 
 import { useLang } from "@/src/components/lang-context";
-import { Lang } from "@/src/lib/i18n";
+import { LANGUAGE_CATALOG } from "@/src/lib/languages";
 
-const LANGS: { code: Lang; flag: string; name: string }[] = [
+// Italiano (lingua base) + tutto il catalogo lingue.
+const LANGS = [
   { code: "it", flag: "🇮🇹", name: "Italiano" },
-  { code: "en", flag: "🇬🇧", name: "English" },
-  { code: "es", flag: "🇪🇸", name: "Español" },
+  ...LANGUAGE_CATALOG.map((l) => ({ code: l.code, flag: l.flag, name: l.native })),
 ];
 
 export default function LangPicker() {
@@ -14,7 +14,7 @@ export default function LangPicker() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-6"
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-10"
       style={{ background: "linear-gradient(160deg, #4338ca, #7c3aed)" }}
     >
       <div className="text-6xl mb-6">🧹</div>

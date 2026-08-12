@@ -121,8 +121,8 @@ function CleaningContent({
   currentUserRole,
   currentUserName,
 }: Props) {
-  const { t, lang } = useLang();
-  const { translatedNote, translating } = useTranslatedNote(taskId, notes, lang);
+  const { t, contentLang } = useLang();
+  const { translatedNote, translating } = useTranslatedNote(taskId, notes, contentLang);
 
   return (
     <div className="min-h-screen bg-slate-100 font-sans">

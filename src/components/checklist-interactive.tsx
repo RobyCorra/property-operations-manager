@@ -68,7 +68,7 @@ const UPLOAD_INTERVAL_MS = 15_000;
 
 export default function ChecklistInteractive({ taskId, initialItems }: ChecklistInteractiveProps) {
   const toast = useToast();
-  const { t, lang } = useLang();
+  const { t, contentLang } = useLang();
   const isOnline = useOnlineStatus();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
 
@@ -378,8 +378,8 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     }
 
     const completedTranslatedLabel =
-      lang && currentItem.labelTranslations?.[lang]
-        ? currentItem.labelTranslations[lang]
+      contentLang && currentItem.labelTranslations?.[contentLang]
+        ? currentItem.labelTranslations[contentLang]
         : currentItem.label;
     const completedItemLabel =
       currentItem.type === "dynamic"
@@ -504,8 +504,8 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
                 >
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-slate-800 truncate">
-                      {lang && item.labelTranslations?.[lang]
-                        ? item.labelTranslations[lang]
+                      {contentLang && item.labelTranslations?.[contentLang]
+                        ? item.labelTranslations[contentLang]
                         : item.label}
                       {item.required && <span className="text-rose-500 ml-1">*</span>}
                     </p>
@@ -672,8 +672,8 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   // ── Vista passo ──────────────────────────────────────────────────────────
   const progress = Math.round((completedCount / items.length) * 100);
   const translatedLabel =
-    lang && currentItem.labelTranslations?.[lang]
-      ? currentItem.labelTranslations[lang]
+    contentLang && currentItem.labelTranslations?.[contentLang]
+      ? currentItem.labelTranslations[contentLang]
       : currentItem.label;
 
   const itemLabel =
