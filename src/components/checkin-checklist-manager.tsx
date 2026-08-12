@@ -9,6 +9,7 @@ import {
   updateCheckinChecklistItem,
   deleteCheckinChecklistItem,
   translateAllCheckinChecklistItems,
+  updateCheckinChecklistItemTranslation,
 } from "@/src/app/actions/checkin-checklist";
 
 const ALL_LANGS = [
@@ -45,6 +46,8 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
     null
   );
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [items, setItems] = useState<Item[]>(initialItems);
+  useEffect(() => setItems(initialItems), [initialItems]);
 
   // Traduzioni: lingue di destinazione = tutte tranne quella in cui il manager scrive
   const targetLangs = ALL_LANGS.filter((l) => l.code !== (lang ?? "it"));
@@ -168,12 +171,12 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
 
       {/* Lista voci */}
       <div className="space-y-2">
-        {initialItems.length === 0 && (
+        {items.length === 0 && (
           <p className="text-sm text-gray-400 text-center py-8">
             {t.ckEmpty}
           </p>
         )}
-        {initialItems.map((item) =>
+        {items.map((item) =>
           editingId === item.id ? (
             <EditRow
               key={item.id}
@@ -198,6 +201,28 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
                     {t.ckPhotoBadge}
                   </span>
                 )}
+                {/* Bandiere traduzioni — hover per vedere/modificare/aggiungere */}
+                {ALL_LANGS.filter((l) => l.code !== "it").map((l) => (
+                  <FlagTranslation
+                    key={l.code}
+                    flag={l.flag}
+                    code={l.code}
+                    value={item.labelTranslations?.[l.code] ?? ""}
+                    apartmentId={apartmentId}
+                    itemId={item.id}
+                    onSaved={(newValue) =>
+                      setItems((prev) =>
+                        prev.map((it) => {
+                          if (it.id !== item.id) return it;
+                          const next = { ...(it.labelTranslations ?? {}) };
+                          if (newValue) next[l.code] = newValue;
+                          else delete next[l.code];
+                          return { ...it, labelTranslations: next };
+                        })
+                      )
+                    }
+                  />
+                ))}
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
@@ -220,6 +245,110 @@ export default function CheckinChecklistManager({ apartmentId, initialItems }: P
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * Bandiera traduzione: hover per vedere il testo tradotto, modificabile inline.
+ * Bandiera grigia = traduzione mancante (si può aggiungere da qui). Salva solo
+ * quella lingua via updateCheckinChecklistItemTranslation.
+ */
+function FlagTranslation({
+  flag,
+  code,
+  value,
+  apartmentId,
+  itemId,
+  onSaved,
+}: {
+  flag: string;
+  code: string;
+  value: string;
+  apartmentId: string;
+  itemId: string;
+  onSaved: (newValue: string) => void;
+}) {
+  const { t } = useLang();
+  const toast = useToast();
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setDraft(value);
+  }, [value]);
+
+  const dirty = draft.trim() !== value.trim();
+
+  const handleSave = async () => {
+    if (!dirty) {
+      setOpen(false);
+      return;
+    }
+    setSaving(true);
+    const res = await updateCheckinChecklistItemTranslation(itemId, apartmentId, code, draft);
+    setSaving(false);
+    if (res.error) {
+      toast.error(res.error);
+      return;
+    }
+    onSaved(res.value ?? "");
+    toast.success(t.mgrSaved);
+    setOpen(false);
+  };
+
+  return (
+    <span
+      className="relative inline-flex"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => {
+        if (!dirty && !saving) setOpen(false);
+      }}
+    >
+      <span
+        className={`text-[11px] cursor-pointer transition-opacity ${
+          value.trim() ? "" : "opacity-30 grayscale hover:opacity-70"
+        }`}
+      >
+        {flag}
+      </span>
+
+      {open && (
+        <div
+          className="absolute left-0 top-full z-50 mt-1 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <p className="mb-1.5 text-[10px] font-black uppercase tracking-wider text-gray-400">
+            {flag} {langName(code, t)}
+          </p>
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={2}
+            placeholder={t.clAddTranslationPlaceholder}
+            className="w-full resize-none rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm outline-none focus:ring-2 focus:ring-violet-500"
+          />
+          <div className="mt-2 flex items-center justify-end gap-2">
+            <button
+              onClick={() => {
+                setDraft(value);
+                setOpen(false);
+              }}
+              className="text-xs font-semibold text-gray-400 hover:text-gray-700"
+            >
+              {t.mgrCancel}
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving || !dirty}
+              className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700 disabled:opacity-40"
+            >
+              {saving ? "..." : t.mgrSave}
+            </button>
+          </div>
+        </div>
+      )}
+    </span>
   );
 }
 

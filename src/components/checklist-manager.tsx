@@ -430,30 +430,28 @@ export default function ChecklistManager({ apartmentId, initialItems }: Checklis
                         {item.answerType === "yesno" && <span className="text-[9px] font-black text-violet-600 uppercase tracking-tighter bg-violet-50 px-1.5 py-0.5 rounded border border-violet-100">{t.clBadgeYesNo}</span>}
                         {item.photoRequired && <span className="text-[9px] font-black text-amber-600 uppercase tracking-tighter bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100">{t.clBadgePhoto}</span>}
                         {item.type === "dynamic" && <span className="text-[9px] font-black text-blue-500 uppercase tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">{t.clTypeDynamic}</span>}
-                        {/* Translation badges — hover per vedere/modificare la traduzione */}
-                        {ALL_LANGS.map((l) =>
-                          item.labelTranslations?.[l.code] ? (
-                            <FlagTranslation
-                              key={l.code}
-                              flag={l.flag}
-                              code={l.code}
-                              value={item.labelTranslations[l.code]}
-                              apartmentId={apartmentId}
-                              itemId={item.id}
-                              onSaved={(newValue) =>
-                                setItems((prev) =>
-                                  prev.map((it) => {
-                                    if (it.id !== item.id) return it;
-                                    const next = { ...(it.labelTranslations ?? {}) };
-                                    if (newValue) next[l.code] = newValue;
-                                    else delete next[l.code];
-                                    return { ...it, labelTranslations: next };
-                                  })
-                                )
-                              }
-                            />
-                          ) : null
-                        )}
+                        {/* Bandiere traduzioni — hover per vedere/modificare/aggiungere */}
+                        {ALL_LANGS.filter((l) => l.code !== "it").map((l) => (
+                          <FlagTranslation
+                            key={l.code}
+                            flag={l.flag}
+                            code={l.code}
+                            value={item.labelTranslations?.[l.code] ?? ""}
+                            apartmentId={apartmentId}
+                            itemId={item.id}
+                            onSaved={(newValue) =>
+                              setItems((prev) =>
+                                prev.map((it) => {
+                                  if (it.id !== item.id) return it;
+                                  const next = { ...(it.labelTranslations ?? {}) };
+                                  if (newValue) next[l.code] = newValue;
+                                  else delete next[l.code];
+                                  return { ...it, labelTranslations: next };
+                                })
+                              )
+                            }
+                          />
+                        ))}
                       </div>
                       {item.type === "dynamic" && item.formula && (
                         <span className="text-[10px] text-blue-400 font-medium mt-0.5">{t.clFormulaPrefix} {item.formula}</span>
@@ -550,7 +548,13 @@ function FlagTranslation({
         if (!dirty && !saving) setOpen(false);
       }}
     >
-      <span className="text-[11px] cursor-pointer">{flag}</span>
+      <span
+        className={`text-[11px] cursor-pointer transition-opacity ${
+          value.trim() ? "" : "opacity-30 grayscale hover:opacity-70"
+        }`}
+      >
+        {flag}
+      </span>
 
       {open && (
         <div
@@ -564,6 +568,7 @@ function FlagTranslation({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={2}
+            placeholder={t.clAddTranslationPlaceholder}
             className="w-full resize-none rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm outline-none focus:ring-2 focus:ring-violet-500"
           />
           <div className="mt-2 flex items-center justify-end gap-2">

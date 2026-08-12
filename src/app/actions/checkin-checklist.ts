@@ -238,3 +238,39 @@ export async function translateAllCheckinChecklistItems(apartmentId: string, lan
     return { error: "Errore durante la traduzione." };
   }
 }
+
+/**
+ * Aggiorna (o rimuove, se value vuoto) la traduzione di una singola voce di
+ * check-in in una singola lingua, preservando le altre lingue nel JSON.
+ */
+export async function updateCheckinChecklistItemTranslation(
+  itemId: string,
+  apartmentId: string,
+  lang: string,
+  value: string
+) {
+  try {
+    const item = await prisma.checkinChecklistItem.findUnique({
+      where: { id: itemId },
+      select: { labelTranslations: true },
+    });
+    if (!item) return { error: "Voce non trovata." };
+
+    const current = (item.labelTranslations as Record<string, string> | null) ?? {};
+    const next = { ...current };
+    const trimmed = value.trim();
+    if (trimmed) next[lang] = trimmed;
+    else delete next[lang];
+
+    await prisma.checkinChecklistItem.update({
+      where: { id: itemId },
+      data: { labelTranslations: next },
+    });
+
+    revalidatePath(`/dashboard/manager/apartments/${apartmentId}/checkin-checklist`);
+    return { success: true, value: trimmed };
+  } catch (error) {
+    console.error("updateCheckinChecklistItemTranslation error:", error);
+    return { error: "Errore durante il salvataggio." };
+  }
+}
