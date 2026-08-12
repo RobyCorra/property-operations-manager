@@ -73,10 +73,10 @@ export function formatRomeTimeInputValue(dateInput: Date | string) {
   return `${pad(parts.hour)}:${pad(parts.minute)}`;
 }
 
-export function formatRomeDateTimeDisplay(dateInput: Date | string) {
+export function formatRomeDateTimeDisplay(dateInput: Date | string, atLabel = "alle") {
   const parts = getRomeDateParts(dateInput);
   if (!parts) return "";
-  return `${pad(parts.day)}/${pad(parts.month)}/${parts.year} alle ${pad(parts.hour)}:${pad(parts.minute)}`;
+  return `${pad(parts.day)}/${pad(parts.month)}/${parts.year} ${atLabel} ${pad(parts.hour)}:${pad(parts.minute)}`;
 }
 
 export function formatRomeDateDisplay(dateInput: Date | string) {

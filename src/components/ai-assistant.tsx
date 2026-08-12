@@ -357,8 +357,8 @@ export default function AIAssistant({
             🤖
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[13.5px] font-extrabold text-slate-900">Assistente AI</p>
-            <p className="text-[11px] text-slate-400">Chiedi aiuto o crea pulizie e ticket</p>
+            <p className="text-[13.5px] font-extrabold text-slate-900">{t.aiTitle}</p>
+            <p className="text-[11px] text-slate-400">{t.aiLauncherSubtitle}</p>
           </div>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         </button>

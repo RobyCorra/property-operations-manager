@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useLang } from "@/src/components/lang-context";
 
 type ExpandableMaintenanceCardProps = {
   className: string;
@@ -19,6 +20,7 @@ export default function ExpandableMaintenanceCard({
   actionRow,
   expandedContent,
 }: ExpandableMaintenanceCardProps) {
+  const { t } = useLang();
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -37,7 +39,7 @@ export default function ExpandableMaintenanceCard({
           className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-700 shadow-sm transition-colors hover:bg-slate-50 lg:w-auto"
         >
           {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-          {isExpanded ? "Chiudi dettagli" : "Vedi dettagli"}
+          {isExpanded ? t.moCloseDetails : t.moSeeDetails}
         </button>
       </div>
 

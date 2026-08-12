@@ -232,7 +232,7 @@ export default async function MaintenanceDashboardPage({
                       {ticket.scheduledStart && (
                         <div className="mt-1 flex items-center gap-2 lg:hidden">
                           <CalendarDays size={13} className="text-slate-400" />
-                          <span className="text-xs font-bold text-slate-700">{formatRomeDateTimeDisplay(ticket.scheduledStart)}</span>
+                          <span className="text-xs font-bold text-slate-700">{formatRomeDateTimeDisplay(ticket.scheduledStart, t.moAt)}</span>
                         </div>
                       )}
                     </div>
@@ -244,7 +244,7 @@ export default async function MaintenanceDashboardPage({
                         <div className="flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-white shadow-lg shadow-slate-200">
                           <CalendarDays size={14} />
                           <span className="text-[10px] font-black uppercase tracking-widest text-white/90">
-                            {formatRomeDateTimeDisplay(ticket.scheduledStart)}
+                            {formatRomeDateTimeDisplay(ticket.scheduledStart, t.moAt)}
                           </span>
                         </div>
                       ) : (
@@ -297,11 +297,11 @@ export default async function MaintenanceDashboardPage({
                             </div>
                             {ticket.scheduledStart ? (
                               <div className="flex flex-wrap gap-2 text-sm font-bold text-slate-900">
-                                <span>{formatRomeDateTimeDisplay(ticket.scheduledStart)}</span>
+                                <span>{formatRomeDateTimeDisplay(ticket.scheduledStart, t.moAt)}</span>
                                 {ticket.scheduledEnd && (
                                   <>
                                     <span className="text-slate-300">→</span>
-                                    <span>{formatRomeDateTimeDisplay(ticket.scheduledEnd)}</span>
+                                    <span>{formatRomeDateTimeDisplay(ticket.scheduledEnd, t.moAt)}</span>
                                   </>
                                 )}
                               </div>
@@ -310,8 +310,8 @@ export default async function MaintenanceDashboardPage({
                             )}
                             {(ticket.startedAt || ticket.resolvedAt) && (
                               <div className="space-y-1 pt-2 text-xs font-bold text-slate-600">
-                                {ticket.startedAt && <p>{t.moRealStart} <span>{formatRomeDateTimeDisplay(ticket.startedAt)}</span></p>}
-                                {ticket.resolvedAt && <p>{t.moRealEnd} <span>{formatRomeDateTimeDisplay(ticket.resolvedAt)}</span></p>}
+                                {ticket.startedAt && <p>{t.moRealStart} <span>{formatRomeDateTimeDisplay(ticket.startedAt, t.moAt)}</span></p>}
+                                {ticket.resolvedAt && <p>{t.moRealEnd} <span>{formatRomeDateTimeDisplay(ticket.resolvedAt, t.moAt)}</span></p>}
                               </div>
                             )}
                           </div>
