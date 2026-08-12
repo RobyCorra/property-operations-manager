@@ -366,9 +366,13 @@ function FlagTranslation({
 }) {
   const { t } = useLang();
   const toast = useToast();
-  const [open, setOpen] = useState(false);
+  // hovering = anteprima passeggera; pinned = aperto col click, resta finché
+  // non si salva/annulla o si clicca fuori (così si può modificare con calma).
+  const [hovering, setHovering] = useState(false);
+  const [pinned, setPinned] = useState(false);
   const [draft, setDraft] = useState(value);
   const [saving, setSaving] = useState(false);
+  const open = hovering || pinned;
 
   useEffect(() => {
     setDraft(value);
@@ -376,9 +380,15 @@ function FlagTranslation({
 
   const dirty = draft.trim() !== value.trim();
 
+  const close = () => {
+    setPinned(false);
+    setHovering(false);
+    setDraft(value);
+  };
+
   const handleSave = async () => {
     if (!dirty) {
-      setOpen(false);
+      close();
       return;
     }
     setSaving(true);
@@ -390,18 +400,21 @@ function FlagTranslation({
     }
     onSaved(res.value ?? "");
     toast.success(t.mgrSaved);
-    setOpen(false);
+    setPinned(false);
+    setHovering(false);
   };
 
   return (
     <span
       className="relative inline-flex"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => {
-        if (!dirty && !saving) setOpen(false);
-      }}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
     >
+      {/* Backdrop: chiude il popup fissato quando si clicca fuori */}
+      {pinned && <div className="fixed inset-0 z-40" onClick={close} />}
+
       <span
+        onClick={() => setPinned(true)}
         className={`text-[11px] cursor-pointer transition-opacity ${
           value.trim() ? "" : "opacity-30 grayscale hover:opacity-70"
         }`}
@@ -416,20 +429,19 @@ function FlagTranslation({
         >
           <p className="mb-1.5 text-[10px] font-black uppercase tracking-wider text-gray-400">
             {flag} {langNative(code)}
+            {!pinned && <span className="ml-1 normal-case font-medium text-gray-300">· {t.clClickToEdit}</span>}
           </p>
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
+            onFocus={() => setPinned(true)}
             rows={2}
             placeholder={t.clAddTranslationPlaceholder}
             className="w-full resize-none rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm outline-none focus:ring-2 focus:ring-violet-500"
           />
           <div className="mt-2 flex items-center justify-end gap-2">
             <button
-              onClick={() => {
-                setDraft(value);
-                setOpen(false);
-              }}
+              onClick={close}
               className="text-xs font-semibold text-gray-400 hover:text-gray-700"
             >
               {t.mgrCancel}
