@@ -5,7 +5,7 @@ import CheckinTaskView from "@/src/components/checkin-task-view";
 import CheckinStartButton from "@/src/components/checkin-start-button";
 import { CookieLangProvider } from "@/src/components/lang-context";
 import OperativeLangPill from "@/src/components/operative-lang-pill";
-import { getCheckinLang, CHECKIN_LANG_COOKIE } from "@/src/lib/server-lang";
+import { getCheckinLang, getCheckinT, CHECKIN_LANG_COOKIE } from "@/src/lib/server-lang";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 export const revalidate = 0;
@@ -38,6 +38,7 @@ export default async function PublicCheckinPage({ params }: { params: Promise<{ 
     ? await isCheckinBlockedByCleaning(task.apartmentId, task.date)
     : false;
   const lang = await getCheckinLang();
+  const t = await getCheckinT();
 
   return (
     <CookieLangProvider initialLang={lang} cookieName={CHECKIN_LANG_COOKIE}>
@@ -52,7 +53,7 @@ export default async function PublicCheckinPage({ params }: { params: Promise<{ 
         apartmentName={task.apartment.name}
         apartmentAddress={task.apartment.address}
         mapsUrl={mapsUrl}
-        dateLabel={formatRomeDateTimeDisplay(task.date)}
+        dateLabel={formatRomeDateTimeDisplay(task.date, t.moAt)}
         guestName={guestFirstName}
         initialItems={items}
         readOnly={task.status !== "IN_PROGRESS"}

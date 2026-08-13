@@ -5,7 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import CheckinTaskView from "@/src/components/checkin-task-view";
 import { CookieLangProvider } from "@/src/components/lang-context";
 import OperativeLangPill from "@/src/components/operative-lang-pill";
-import { getCheckinLang, CHECKIN_LANG_COOKIE } from "@/src/lib/server-lang";
+import { getCheckinLang, getCheckinT, CHECKIN_LANG_COOKIE } from "@/src/lib/server-lang";
 import { ChevronLeft } from "lucide-react";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { getCheckinTaskMessages, markCheckinMessagesReadByWorker } from "@/src/app/actions/checkin";
@@ -48,6 +48,7 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
   const lang = await getCheckinLang();
+  const t = await getCheckinT();
 
   return (
     <CookieLangProvider initialLang={lang} cookieName={CHECKIN_LANG_COOKIE}>
@@ -68,7 +69,7 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
         apartmentName={task.apartment.name}
         apartmentAddress={task.apartment.address}
         mapsUrl={mapsUrl}
-        dateLabel={formatRomeDateTimeDisplay(task.date)}
+        dateLabel={formatRomeDateTimeDisplay(task.date, t.moAt)}
         guestName={task.booking?.guestName ?? null}
         initialItems={items}
         readOnly={task.status === "COMPLETED"}
