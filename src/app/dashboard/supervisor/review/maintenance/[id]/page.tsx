@@ -5,13 +5,16 @@ import { prisma } from "@/src/lib/prisma";
 import SupervisorReviewForm from "@/src/components/supervisor-review-form";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { ArrowLeft, Wrench, Home, User, CalendarDays, AlertCircle } from "lucide-react";
+import { CookieLangProvider } from "@/src/components/lang-context";
+import { getSupervisorLang, getSupervisorT, SUPERVISOR_LANG_COOKIE } from "@/src/lib/server-lang";
+import type { T } from "@/src/lib/i18n";
 
-const priorityLabel: Record<string, string> = {
-  LOW: "Bassa",
-  MEDIUM: "Media",
-  HIGH: "Alta",
-  URGENT: "Urgente",
-};
+function priorityLabel(code: string, t: T): string {
+  const m: Record<string, string> = {
+    LOW: t.moPrioLow, MEDIUM: t.moPrioMedium, HIGH: t.moPrioHigh, URGENT: t.moPrioUrgent,
+  };
+  return m[code] ?? code;
+}
 
 const priorityColor: Record<string, string> = {
   LOW: "bg-slate-100 text-slate-600",
@@ -56,9 +59,12 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
     if (!assignment) redirect("/dashboard/supervisor");
   }
 
+  const t = await getSupervisorT();
+  const lang = await getSupervisorLang();
   const lastReview = ticket.supervisorReviews[0];
 
   return (
+    <CookieLangProvider initialLang={lang} cookieName={SUPERVISOR_LANG_COOKIE}>
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-10 font-sans text-slate-900 lg:p-10">
       <div className="max-w-2xl mx-auto space-y-8">
 
@@ -71,7 +77,7 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
             <ArrowLeft size={18} />
           </Link>
           <div>
-            <h1 className="text-2xl font-semibold uppercase tracking-tight text-slate-900">Revisione Manutenzione</h1>
+            <h1 className="text-2xl font-semibold uppercase tracking-tight text-slate-900">{t.svMaintenanceReview}</h1>
             <p className="text-xs font-medium text-slate-500 mt-0.5">{ticket.apartment.name}</p>
           </div>
         </div>
@@ -84,7 +90,7 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
               <p className="mt-1 text-sm text-slate-600">{ticket.description}</p>
             </div>
             <span className={`shrink-0 rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-widest ${priorityColor[ticket.priority] ?? "bg-slate-100 text-slate-600"}`}>
-              {priorityLabel[ticket.priority] ?? ticket.priority}
+              {priorityLabel(ticket.priority, t)}
             </span>
           </div>
 
@@ -92,7 +98,7 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
             <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
               <Home size={14} className="text-slate-400 shrink-0" />
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Appartamento</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.aiFApartment}</p>
                 <p className="text-sm font-semibold text-slate-900">{ticket.apartment.name}</p>
                 <p className="text-xs text-slate-500">{ticket.apartment.address}</p>
               </div>
@@ -100,16 +106,16 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
             <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
               <User size={14} className="text-slate-400 shrink-0" />
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Manutentore</p>
-                <p className="text-sm font-semibold text-slate-900">{ticket.assignedTo?.name ?? "Non assegnato"}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.svTechnician}</p>
+                <p className="text-sm font-semibold text-slate-900">{ticket.assignedTo?.name ?? t.svUnassignedM}</p>
               </div>
             </div>
             {ticket.scheduledStart && (
               <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
                 <CalendarDays size={14} className="text-slate-400 shrink-0" />
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Programmato</p>
-                  <p className="text-sm font-semibold text-slate-900">{formatRomeDateTimeDisplay(ticket.scheduledStart)}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.aiFScheduled}</p>
+                  <p className="text-sm font-semibold text-slate-900">{formatRomeDateTimeDisplay(ticket.scheduledStart, t.moAt)}</p>
                 </div>
               </div>
             )}
@@ -117,8 +123,8 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
               <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-3">
                 <Wrench size={14} className="text-slate-400 shrink-0" />
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Avviato</p>
-                  <p className="text-sm font-semibold text-slate-900">{formatRomeDateTimeDisplay(ticket.startedAt)}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.svStarted}</p>
+                  <p className="text-sm font-semibold text-slate-900">{formatRomeDateTimeDisplay(ticket.startedAt, t.moAt)}</p>
                 </div>
               </div>
             )}
@@ -128,10 +134,10 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
         {/* Previous review */}
         {lastReview && (
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-1">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ultima revisione</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{t.svLastReview}</p>
             <p className="text-sm font-medium text-slate-700">
               <span className={`font-black ${lastReview.decision === "REJECTED" ? "text-rose-600" : "text-emerald-600"}`}>{lastReview.decision}</span>
-              {" "}da {lastReview.supervisor.name}
+              {" "}{t.svBy} {lastReview.supervisor.name}
             </p>
             {lastReview.notes && <p className="text-xs text-slate-500 italic">"{lastReview.notes}"</p>}
           </div>
@@ -140,7 +146,7 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
         {/* Messages */}
         {ticket.messages.length > 0 && (
           <div className="rounded-[2rem] border border-white/60 bg-white/55 p-5 shadow-lg backdrop-blur-xl space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-tight text-slate-900">Storico messaggi</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-tight text-slate-900">{t.svMessageHistory}</h2>
             <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
               {ticket.messages.map(msg => (
                 <div
@@ -158,16 +164,17 @@ export default async function MaintenanceReviewPage({ params }: { params: Promis
         {ticket.messages.length === 0 && (
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 border-dashed bg-slate-50/50 p-4">
             <AlertCircle size={16} className="text-slate-300" />
-            <p className="text-sm font-medium text-slate-400">Nessun messaggio per questo ticket.</p>
+            <p className="text-sm font-medium text-slate-400">{t.svNoMessages}</p>
           </div>
         )}
 
         {/* Review Form */}
         <div className="rounded-[2rem] border border-white/60 bg-white/55 p-5 shadow-lg backdrop-blur-xl">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-tight text-slate-900">Decisione</h2>
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-tight text-slate-900">{t.svDecision}</h2>
           <SupervisorReviewForm entityId={ticket.id} supervisorId={userId} type="maintenance" />
         </div>
       </div>
     </main>
+    </CookieLangProvider>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, Camera, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { approveCleaningReview, rejectCleaningReview, approveMaintenanceReview, rejectMaintenanceReview } from "@/src/app/actions/operational";
+import { useLang } from "@/src/components/lang-context";
 
 type CorrectionItem = {
   id: string;
@@ -20,6 +21,7 @@ type Props = {
 
 export default function SupervisorReviewForm({ entityId, supervisorId, type }: Props) {
   const router = useRouter();
+  const { t } = useLang();
   const [isPending, startTransition] = useTransition();
   const [items, setItems] = useState<CorrectionItem[]>([]);
   const [notes, setNotes] = useState("");
@@ -50,18 +52,18 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
         router.push("/dashboard/supervisor");
         router.refresh();
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : "Errore durante l'approvazione.");
+        setError(e instanceof Error ? e.message : t.svApproveError);
       }
     });
   }
 
   function handleReject() {
     if (items.some(i => !i.label.trim())) {
-      setError("Tutti i punti devono avere una descrizione.");
+      setError(t.svAllPointsNeedDesc);
       return;
     }
     if (items.length === 0) {
-      setError("Aggiungi almeno un punto da correggere.");
+      setError(t.svAddAtLeastOne);
       return;
     }
     setError(null);
@@ -75,7 +77,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
         router.push("/dashboard/supervisor");
         router.refresh();
       } catch (e: unknown) {
-        setError(e instanceof Error ? e.message : "Errore durante il rifiuto.");
+        setError(e instanceof Error ? e.message : t.svRejectError);
       }
     });
   }
@@ -86,7 +88,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
         <div className="rounded-3xl border border-rose-100 bg-rose-50/50 p-5 space-y-4">
           <div className="flex items-center gap-2 mb-2">
             <XCircle size={18} className="text-rose-500" />
-            <h3 className="text-sm font-semibold uppercase tracking-tight text-slate-900">Punti da correggere</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-tight text-slate-900">{t.svPointsToCorrect}</h3>
           </div>
 
           <div className="space-y-3">
@@ -97,14 +99,14 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
                   <div className="flex-1 space-y-2">
                     <input
                       type="text"
-                      placeholder="Descrizione del problema *"
+                      placeholder={t.svProblemDesc}
                       value={item.label}
                       onChange={e => updateItem(item.id, "label", e.target.value)}
                       className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
                     />
                     <input
                       type="text"
-                      placeholder="Nota opzionale"
+                      placeholder={t.svOptionalNote}
                       value={item.note}
                       onChange={e => updateItem(item.id, "note", e.target.value)}
                       className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
@@ -116,7 +118,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
                       >
                         {item.requiresPhoto && <Camera size={11} className="text-white" />}
                       </div>
-                      <span className="text-xs font-medium text-slate-600">Foto obbligatoria</span>
+                      <span className="text-xs font-medium text-slate-600">{t.svPhotoMandatory}</span>
                     </label>
                   </div>
                   <button
@@ -137,16 +139,16 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
             className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-rose-200 py-3 text-xs font-black uppercase tracking-widest text-rose-500 hover:border-rose-400 hover:bg-rose-50 transition-colors"
           >
             <Plus size={14} />
-            Aggiungi punto
+            {t.svAddPoint}
           </button>
 
           <div>
-            <label className="mb-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Note generali (opzionale)</label>
+            <label className="mb-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t.svGeneralNotes}</label>
             <textarea
               value={notes}
               onChange={e => setNotes(e.target.value)}
               rows={3}
-              placeholder="Aggiungi note generali per il cleaner..."
+              placeholder={t.svGeneralNotesPlaceholder}
               className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500/20 resize-none"
             />
           </div>
@@ -169,7 +171,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
               className="flex flex-1 items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-emerald-200 transition-all hover:bg-emerald-600 hover:scale-[1.02] active:scale-95 disabled:opacity-60"
             >
               {isPending ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
-              Approva
+              {t.svApprove}
             </button>
             <button
               type="button"
@@ -177,7 +179,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
               className="flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-rose-200 bg-white px-6 py-4 text-[10px] font-black uppercase tracking-widest text-rose-600 shadow-sm transition-all hover:bg-rose-50 hover:scale-[1.02] active:scale-95"
             >
               <XCircle size={14} />
-              Rifiuta
+              {t.svReject}
             </button>
           </>
         ) : (
@@ -189,7 +191,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
               className="flex flex-1 items-center justify-center gap-2 rounded-full bg-rose-500 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-rose-200 transition-all hover:bg-rose-600 hover:scale-[1.02] active:scale-95 disabled:opacity-60"
             >
               {isPending ? <Loader2 size={14} className="animate-spin" /> : <XCircle size={14} />}
-              Conferma Rifiuto
+              {t.svConfirmReject}
             </button>
             <button
               type="button"
@@ -197,7 +199,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
               disabled={isPending}
               className="flex flex-1 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-600 shadow-sm transition-all hover:bg-slate-50 active:scale-95 disabled:opacity-60"
             >
-              Annulla
+              {t.mgrCancel}
             </button>
           </>
         )}
