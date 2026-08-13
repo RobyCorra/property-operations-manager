@@ -8,7 +8,7 @@ import CleanerStartButton from "@/src/components/cleaner-start-button";
 import CleanerContinueButton from "@/src/components/cleaner-continue-button";
 import CleanerLangGate from "@/src/components/cleaner-lang-gate";
 import LangSwitchPill from "@/src/components/lang-switch-pill";
-import { CleanerGreeting, CleanerSectionTitle, DetailsChatLabel } from "@/src/components/cleaner-dashboard-header";
+import { CleanerGreeting, CleanerSectionTitle, DetailsChatLabel, CleanerMyHistoryLabel, CleanerSeeHistoryLabel, CleanerNavHistoryLabel, CleanerTaskDate, CleanerNavCleaningsLabel, CleanerLogoutLabel, CleanerAllUnderControl, CleanerNoTasks } from "@/src/components/cleaner-dashboard-header";
 import CleanerStatusBadge from "@/src/components/cleaner-status-badge";
 import CleanerActionBanner from "@/src/components/cleaner-action-banner";
 import { enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/src/app/actions/operational";
@@ -171,7 +171,7 @@ export default async function CleanerDashboardPage() {
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
             >
               <ScrollText size={14} />
-              Mio Storico
+              <CleanerMyHistoryLabel />
             </Link>
             <form action={logoutAction}>
               <button className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-100 transition-all shadow-sm">
@@ -239,7 +239,7 @@ export default async function CleanerDashboardPage() {
                       {/* Data */}
                       <div className="mt-2 flex items-center gap-2">
                         <CalendarDays size={12} className="text-slate-400" />
-                        <span className="text-xs font-bold text-slate-600">{formatRomeDateTimeDisplay(task.date)}</span>
+                        <span className="text-xs font-bold text-slate-600"><CleanerTaskDate iso={task.date.toISOString()} /></span>
                       </div>
                     </div>
                   )}
@@ -313,14 +313,14 @@ export default async function CleanerDashboardPage() {
                 <div className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-2xl border border-slate-100">
                   <Sparkles size={48} className="text-violet-500" />
                 </div>
-                <h3 className="text-2xl font-semibold text-slate-900 tracking-tight uppercase">Tutto Sotto Controllo</h3>
-                <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal mb-10">Non ci sono interventi di pulizia assegnati a te al momento.</p>
+                <h3 className="text-2xl font-semibold text-slate-900 tracking-tight uppercase"><CleanerAllUnderControl /></h3>
+                <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal mb-10"><CleanerNoTasks /></p>
                 <Link
                   href="/dashboard/history"
                   className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all hover:scale-[1.03] active:scale-95 shadow-xl shadow-slate-200"
                 >
                   <ScrollText size={14} />
-                  Vedi Storico
+                  <CleanerSeeHistoryLabel />
                 </Link>
               </div>
             )}
@@ -335,19 +335,19 @@ export default async function CleanerDashboardPage() {
           className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-violet-600"
         >
           <ClipboardList size={20} />
-          <span className="text-[9px] font-black uppercase tracking-widest">Pulizie</span>
+          <span className="text-[9px] font-black uppercase tracking-widest"><CleanerNavCleaningsLabel /></span>
         </Link>
         <Link
           href="/dashboard/history"
           className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-slate-700"
         >
           <ScrollText size={20} />
-          <span className="text-[9px] font-black uppercase tracking-widest">Storico</span>
+          <span className="text-[9px] font-black uppercase tracking-widest"><CleanerNavHistoryLabel /></span>
         </Link>
         <form action={logoutAction} className="flex flex-1">
           <button type="submit" className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-rose-500">
             <LogOut size={20} />
-            <span className="text-[9px] font-black uppercase tracking-widest">Esci</span>
+            <span className="text-[9px] font-black uppercase tracking-widest"><CleanerLogoutLabel /></span>
           </button>
         </form>
       </nav>
