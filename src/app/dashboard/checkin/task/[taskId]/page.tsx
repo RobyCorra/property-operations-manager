@@ -3,8 +3,9 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import CheckinTaskView from "@/src/components/checkin-task-view";
-import CleanerLangGate from "@/src/components/cleaner-lang-gate";
-import LangSwitchPill from "@/src/components/lang-switch-pill";
+import { CookieLangProvider } from "@/src/components/lang-context";
+import OperativeLangPill from "@/src/components/operative-lang-pill";
+import { getCheckinLang, CHECKIN_LANG_COOKIE } from "@/src/lib/server-lang";
 import { ChevronLeft } from "lucide-react";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { getCheckinTaskMessages, markCheckinMessagesReadByWorker } from "@/src/app/actions/checkin";
@@ -46,9 +47,10 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
   }));
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
+  const lang = await getCheckinLang();
 
   return (
-    <CleanerLangGate>
+    <CookieLangProvider initialLang={lang} cookieName={CHECKIN_LANG_COOKIE}>
     <div className="min-h-screen bg-[#faf8ff]">
       <div className="sticky top-0 z-50 bg-indigo-900/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-3" style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}>
         <Link
@@ -58,7 +60,7 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
           <ChevronLeft size={14} />
           Dashboard
         </Link>
-        <LangSwitchPill />
+        <OperativeLangPill variant="dark" />
       </div>
 
       <CheckinTaskView
@@ -74,6 +76,6 @@ export default async function CheckinTaskPage({ params }: { params: Promise<{ ta
         currentUserName={userRecord?.name ?? "Assistente"}
       />
     </div>
-    </CleanerLangGate>
+    </CookieLangProvider>
   );
 }

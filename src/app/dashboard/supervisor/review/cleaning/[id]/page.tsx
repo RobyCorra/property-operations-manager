@@ -11,6 +11,7 @@ import { getSupervisorLang, getSupervisorT, SUPERVISOR_LANG_COOKIE } from "@/src
 type ChecklistItem = {
   id: string;
   label: string;
+  labelTranslations?: Record<string, string> | null;
   completed: boolean;
   type?: string;
   value?: number | null;
@@ -222,7 +223,7 @@ export default async function CleaningReviewPage({ params }: { params: Promise<{
                     : <Circle size={16} className="mt-0.5 shrink-0 text-slate-300" />
                   }
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium ${item.completed ? "text-emerald-800" : "text-slate-600"}`}>{item.label}</p>
+                    <p className={`text-sm font-medium ${item.completed ? "text-emerald-800" : "text-slate-600"}`}>{item.labelTranslations?.[lang] ?? item.label}</p>
                     {item.type === "numeric" && item.value != null && (
                       <p className="text-xs text-slate-500 mt-0.5">{t.svValue} {item.value}</p>
                     )}

@@ -3,8 +3,9 @@ import { getCheckinByToken } from "@/src/app/actions/checkin-token";
 import { isCheckinBlockedByCleaning } from "@/src/app/actions/checkin";
 import CheckinTaskView from "@/src/components/checkin-task-view";
 import CheckinStartButton from "@/src/components/checkin-start-button";
-import CleanerLangGate from "@/src/components/cleaner-lang-gate";
-import LangSwitchPill from "@/src/components/lang-switch-pill";
+import { CookieLangProvider } from "@/src/components/lang-context";
+import OperativeLangPill from "@/src/components/operative-lang-pill";
+import { getCheckinLang, CHECKIN_LANG_COOKIE } from "@/src/lib/server-lang";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 export const revalidate = 0;
@@ -36,13 +37,14 @@ export default async function PublicCheckinPage({ params }: { params: Promise<{ 
   const cleaningBlocked = isPendingTask
     ? await isCheckinBlockedByCleaning(task.apartmentId, task.date)
     : false;
+  const lang = await getCheckinLang();
 
   return (
-    <CleanerLangGate>
+    <CookieLangProvider initialLang={lang} cookieName={CHECKIN_LANG_COOKIE}>
     <div className="min-h-screen bg-[#faf8ff]">
       <div className="sticky top-0 z-50 bg-indigo-900/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-3" style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}>
         <p className="text-white/90 text-xs font-black uppercase tracking-widest">🔑 Check-in — {task.apartment.name}</p>
-        <LangSwitchPill />
+        <OperativeLangPill variant="dark" />
       </div>
 
       <CheckinTaskView
@@ -72,6 +74,6 @@ export default async function PublicCheckinPage({ params }: { params: Promise<{ 
       )}
 
     </div>
-    </CleanerLangGate>
+    </CookieLangProvider>
   );
 }

@@ -133,6 +133,7 @@ export default function UserEditForm({ user, apartments, assignedApartmentIds }:
                 className={`${inputClass} text-gray-700`}
               >
                 <option value="CLEANER">{t.usrRoleCleaner}</option>
+                <option value="CHECKIN">{t.usrRoleCheckin}</option>
                 <option value="MAINTENANCE">{t.usrRoleMaintenance}</option>
                 <option value="SUPERVISOR">{t.usrRoleSupervisor}</option>
                 <option value="OWNER">{t.usrRoleOwner}</option>

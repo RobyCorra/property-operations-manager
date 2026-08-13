@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateCheckinStatus } from "@/src/app/actions/checkin";
 import { useToast } from "@/src/components/toast-provider";
+import { useLang } from "@/src/components/lang-context";
 
 interface Props {
   taskId: string;
@@ -19,8 +20,8 @@ function isTodayRome(isoDate: string): boolean {
   return taskDate === today;
 }
 
-function dateLabel(isoDate: string): string {
-  return new Date(isoDate).toLocaleDateString("it-IT", {
+function dateLabel(isoDate: string, locale: string): string {
+  return new Date(isoDate).toLocaleDateString(locale, {
     timeZone: "Europe/Rome",
     weekday: "short",
     day: "numeric",
@@ -30,6 +31,8 @@ function dateLabel(isoDate: string): string {
 
 export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked = false, startRedirect }: Props) {
   const toast = useToast();
+  const { t, lang } = useLang();
+  const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -43,10 +46,10 @@ export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked =
           disabled
           className="w-full py-3.5 rounded-xl bg-slate-100 text-slate-400 text-[10px] font-black uppercase tracking-widest cursor-not-allowed"
         >
-          Bloccato fino al {dateLabel(taskDate)}
+          {t.ckBlockedUntil} {dateLabel(taskDate, dateLocale)}
         </button>
         <p className="text-[10px] text-slate-400 text-center">
-          Il check-in si avvia il giorno programmato.
+          {t.ckStartsOnDay}
         </p>
       </div>
     );
@@ -60,10 +63,10 @@ export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked =
           disabled
           className="w-full py-3.5 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-black uppercase tracking-widest cursor-not-allowed"
         >
-          In attesa della pulizia
+          {t.ckWaitingCleaning}
         </button>
         <p className="text-[10px] text-slate-400 text-center">
-          Il check-in si avvia dopo che la pulizia di check-out è stata completata e approvata.
+          {t.ckWaitingCleaningHint}
         </p>
       </div>
     );
@@ -80,13 +83,13 @@ export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked =
             if (startRedirect === null) router.refresh();
             else router.push(startRedirect ?? `/dashboard/checkin/task/${taskId}`);
           } catch (err: unknown) {
-            toast.error((err as Error).message || "Errore durante l'avvio.");
+            toast.error((err as Error).message || t.ckStartError);
           }
         })
       }
       className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-violet-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
     >
-      {isPending ? "..." : "Avvia check-in"}
+      {isPending ? "..." : t.ckStart}
     </button>
   );
 }

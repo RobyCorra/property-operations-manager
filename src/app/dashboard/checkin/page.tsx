@@ -7,6 +7,9 @@ import CheckinStartButton from "@/src/components/checkin-start-button";
 import CheckinCardChat from "@/src/components/checkin-card-chat";
 import { isCheckinBlockedByCleaning } from "@/src/app/actions/checkin";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import { CookieLangProvider } from "@/src/components/lang-context";
+import OperativeLangPill from "@/src/components/operative-lang-pill";
+import { getCheckinLang, getCheckinT, CHECKIN_LANG_COOKIE } from "@/src/lib/server-lang";
 
 export const revalidate = 0;
 
@@ -18,6 +21,9 @@ export default async function CheckinDashboardPage() {
   if (role !== "CHECKIN" || !userId) {
     redirect("/login");
   }
+
+  const t = await getCheckinT();
+  const lang = await getCheckinLang();
 
   const [user, tasks] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
@@ -47,22 +53,26 @@ export default async function CheckinDashboardPage() {
   );
 
   return (
+    <CookieLangProvider initialLang={lang} cookieName={CHECKIN_LANG_COOKIE}>
     <main className="min-h-screen bg-[#faf8ff] pb-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
       <header className="px-5 pt-5 pb-3 flex items-center justify-between">
         <div>
-          <p className="text-lg font-semibold text-slate-900">Ciao, {user?.name ?? "Assistente"}</p>
-          <p className="text-sm text-slate-500">I tuoi check-in</p>
+          <p className="text-lg font-semibold text-slate-900">{t.moHello}, {user?.name ?? "Assistente"}</p>
+          <p className="text-sm text-slate-500">{t.ckYourCheckins}</p>
         </div>
-        <form action={logoutAction}>
-          <button className="text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-4 py-2 bg-white">
-            Esci
-          </button>
-        </form>
+        <div className="flex items-center gap-2">
+          <OperativeLangPill variant="light" />
+          <form action={logoutAction}>
+            <button className="text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-4 py-2 bg-white">
+              {t.moNavLogout}
+            </button>
+          </form>
+        </div>
       </header>
 
       <div className="px-5 space-y-3">
         {tasks.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-16">Nessun check-in assegnato.</p>
+          <p className="text-sm text-slate-400 text-center py-16">{t.ckNoCheckins}</p>
         )}
 
         {tasks.map((task) => {
@@ -85,18 +95,18 @@ export default async function CheckinDashboardPage() {
                       : "bg-slate-100 text-slate-500"
                   }`}
                 >
-                  {isDone ? "Completato" : inProgress ? "In corso" : "Da fare"}
+                  {isDone ? t.moStCompleted : inProgress ? t.moStInProgress : t.ckStTodo}
                 </span>
                 <span className="text-xs font-bold text-slate-500">
-                  {formatRomeDateTimeDisplay(task.date)}
+                  {formatRomeDateTimeDisplay(task.date, t.moAt)}
                 </span>
               </div>
 
               <p className="text-base font-semibold text-slate-900">{task.apartment.name}</p>
               <p className="text-xs text-slate-500 mb-3">
                 {task.apartment.address}
-                {task.booking?.guestName ? ` · Ospite: ${task.booking.guestName}` : ""}
-                {task.booking?.totalGuests ? ` · ${task.booking.totalGuests} persone` : ""}
+                {task.booking?.guestName ? ` · ${t.svGuestLabel}: ${task.booking.guestName}` : ""}
+                {task.booking?.totalGuests ? ` · ${task.booking.totalGuests} ${t.ckPeople}` : ""}
               </p>
 
               {task.status === "PENDING" && (
@@ -111,7 +121,7 @@ export default async function CheckinDashboardPage() {
                   href={`/dashboard/checkin/task/${task.id}`}
                   className="block w-full text-center py-3 rounded-xl bg-gradient-to-r from-violet-600 to-blue-500 text-white text-[10px] font-black uppercase tracking-widest"
                 >
-                  Continua check-in
+                  {t.ckContinue}
                 </Link>
               )}
               {isDone && (
@@ -119,7 +129,7 @@ export default async function CheckinDashboardPage() {
                   href={`/dashboard/checkin/task/${task.id}`}
                   className="block w-full text-center py-3 rounded-xl bg-slate-50 text-slate-500 text-[10px] font-black uppercase tracking-widest border border-slate-100"
                 >
-                  Rivedi
+                  {t.ckReview}
                 </Link>
               )}
 
@@ -134,5 +144,6 @@ export default async function CheckinDashboardPage() {
         })}
       </div>
     </main>
+    </CookieLangProvider>
   );
 }

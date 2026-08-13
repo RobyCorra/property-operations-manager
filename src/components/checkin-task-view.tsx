@@ -53,7 +53,7 @@ export default function CheckinTaskView({
   isCompleted,
 }: Props) {
   const toast = useToast();
-  const { contentLang } = useLang();
+  const { t, contentLang } = useLang();
   const showCompletedFooter = isCompleted ?? readOnly;
   const router = useRouter();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
@@ -98,7 +98,7 @@ export default function CheckinTaskView({
       setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, photoUrl, completed: true } : i)));
       persist(item.id, { photoUrl, completed: true });
     } catch (err: unknown) {
-      toast.error((err as Error).message || "Errore durante il caricamento della foto.");
+      toast.error((err as Error).message || t.ckPhotoUploadError);
     } finally {
       setUploadingId(null);
     }
@@ -116,7 +116,7 @@ export default function CheckinTaskView({
         if (completeRedirect) router.push(completeRedirect);
         else router.refresh();
       } catch (err: unknown) {
-        toast.error((err as Error).message || "Errore durante il completamento.");
+        toast.error((err as Error).message || t.moCompleteError);
       }
     });
   };
@@ -127,7 +127,7 @@ export default function CheckinTaskView({
       <div className="bg-white rounded-2xl border border-slate-100 p-5">
         <p className="text-lg font-semibold text-slate-900">{apartmentName}</p>
         <p className="text-sm text-slate-500">{dateLabel}</p>
-        {guestName && <p className="text-sm text-slate-500">Ospite: {guestName}</p>}
+        {guestName && <p className="text-sm text-slate-500">{t.svGuestLabel}: {guestName}</p>}
         <a
           href={mapsUrl}
           target="_blank"
@@ -141,11 +141,11 @@ export default function CheckinTaskView({
       {/* Checklist */}
       <div className="bg-white rounded-2xl border border-slate-100 p-5">
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-          Checklist check-in
+          {t.ckChecklistTitle}
         </p>
         <div className="space-y-1">
           {items.length === 0 && (
-            <p className="text-sm text-slate-400 py-4">Nessuna voce configurata per questo appartamento.</p>
+            <p className="text-sm text-slate-400 py-4">{t.ckNoItems}</p>
           )}
           {items.map((item) => (
             <div key={item.id} className="py-2.5 border-b border-slate-50 last:border-0">
@@ -173,7 +173,7 @@ export default function CheckinTaskView({
                 </button>
                 <div className="flex items-center gap-2 shrink-0">
                   {item.required && (
-                    <span className="text-[9px] font-black uppercase tracking-wider text-amber-600">obblig.</span>
+                    <span className="text-[9px] font-black uppercase tracking-wider text-amber-600">{t.ckReqShort}</span>
                   )}
                   {item.photoRequired && !readOnly && (
                     <button
@@ -185,7 +185,7 @@ export default function CheckinTaskView({
                           : "bg-blue-50 text-blue-600 border border-blue-200"
                       }`}
                     >
-                      {uploadingId === item.id ? "..." : item.photoUrl ? "📷 ok" : "📷 foto"}
+                      {uploadingId === item.id ? "..." : item.photoUrl ? "📷 ok" : `📷 ${t.moPhotoTag}`}
                     </button>
                   )}
                 </div>
@@ -204,7 +204,7 @@ export default function CheckinTaskView({
               {item.photoUrl && (
                 <img
                   src={item.photoUrl}
-                  alt="foto check-in"
+                  alt={t.ckPhotoAlt}
                   className="mt-2 ml-9 w-24 h-24 object-cover rounded-lg border border-slate-200"
                 />
               )}
@@ -224,13 +224,13 @@ export default function CheckinTaskView({
           {isPending
             ? "..."
             : canComplete
-            ? "Completa check-in"
-            : "Completa voci e foto obbligatorie"}
+            ? t.ckComplete
+            : t.ckCompleteHint}
         </button>
       )}
       {showCompletedFooter && (
         <p className="text-center text-xs font-bold text-emerald-600 uppercase tracking-widest">
-          Check-in completato
+          {t.ckCompleted}
         </p>
       )}
 
@@ -238,7 +238,7 @@ export default function CheckinTaskView({
       {showChat && (
         <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
           <div className="px-4 py-3 border-b border-slate-100">
-            <p className="font-semibold text-slate-800 text-sm">💬 Chat con il Manager</p>
+            <p className="font-semibold text-slate-800 text-sm">💬 {t.moChatManager}</p>
           </div>
           <div className="p-3">
             <TicketConversation
