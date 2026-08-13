@@ -104,8 +104,8 @@ export default async function CleanerTaskPage({
   return (
     <div className="relative">
       <PhotoQueueUploader />
-      {/* Back button fisso */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-indigo-900/90 backdrop-blur-sm px-4 py-3 flex items-center">
+      {/* Back button — sticky (fixed non affidabile su iOS/Capacitor) */}
+      <div className="sticky top-0 z-50 bg-indigo-900/90 backdrop-blur-sm px-4 py-3 flex items-center" style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}>
         <Link
           href="/dashboard/cleaner"
           className="flex items-center gap-1.5 text-white/90 text-xs font-black uppercase tracking-widest hover:text-white transition-colors"
@@ -114,8 +114,7 @@ export default async function CleanerTaskPage({
           Dashboard
         </Link>
       </div>
-      {/* Offset per il back button */}
-      <div className="pt-10">
+      <div>
         <PublicCleaningView
           taskId={task.id}
           apartmentName={task.apartment.name}
