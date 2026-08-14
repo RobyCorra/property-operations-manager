@@ -6,6 +6,7 @@ import SupervisorReviewForm from "@/src/components/supervisor-review-form";
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { ArrowLeft, ClipboardList, Home, User, CalendarDays, CheckCircle2, Circle, Camera, AlertTriangle } from "lucide-react";
 import { CookieLangProvider } from "@/src/components/lang-context";
+import { pickLabel } from "@/src/lib/languages";
 import { getSupervisorLang, getSupervisorT, SUPERVISOR_LANG_COOKIE } from "@/src/lib/server-lang";
 
 type ChecklistItem = {
@@ -223,7 +224,7 @@ export default async function CleaningReviewPage({ params }: { params: Promise<{
                     : <Circle size={16} className="mt-0.5 shrink-0 text-slate-300" />
                   }
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium ${item.completed ? "text-emerald-800" : "text-slate-600"}`}>{item.labelTranslations?.[lang] ?? item.label}</p>
+                    <p className={`text-sm font-medium ${item.completed ? "text-emerald-800" : "text-slate-600"}`}>{pickLabel(item.label, item.labelTranslations, lang)}</p>
                     {item.type === "numeric" && item.value != null && (
                       <p className="text-xs text-slate-500 mt-0.5">{t.svValue} {item.value}</p>
                     )}

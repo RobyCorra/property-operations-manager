@@ -7,6 +7,7 @@ import { updateCheckinChecklist, updateCheckinStatus, createCheckinTaskMessage }
 import TicketConversation from "@/src/components/ticket-conversation";
 import { useToast } from "@/src/components/toast-provider";
 import { useLang } from "@/src/components/lang-context";
+import { pickLabel } from "@/src/lib/languages";
 
 interface ChecklistItem {
   id: string;
@@ -168,7 +169,7 @@ export default function CheckinTaskView({
                     )}
                   </span>
                   <span className={`text-sm ${item.completed ? "text-slate-400 line-through" : "text-slate-800"}`}>
-                    {(contentLang && item.labelTranslations?.[contentLang]) || item.label}
+                    {pickLabel(item.label, item.labelTranslations, contentLang)}
                   </span>
                 </button>
                 <div className="flex items-center gap-2 shrink-0">

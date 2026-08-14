@@ -4,6 +4,7 @@ import { LangProvider } from "@/src/components/lang-context";
 import LangGate from "@/src/components/lang-gate";
 import LangSwitchPill from "@/src/components/lang-switch-pill";
 import { useLang } from "@/src/components/lang-context";
+import { extraTranslatedLangs } from "@/src/lib/languages";
 import ChecklistInteractive from "@/src/components/checklist-interactive";
 import PhotoQueueUploader from "@/src/components/photo-queue-uploader";
 import PublicStatusButton from "@/src/components/public-status-button";
@@ -123,6 +124,7 @@ function CleaningContent({
 }: Props) {
   const { t, contentLang } = useLang();
   const { translatedNote, translating } = useTranslatedNote(taskId, notes, contentLang);
+  const extraLangs = extraTranslatedLangs(checklistItems.map((i) => i.labelTranslations));
 
   return (
     <div className="min-h-screen bg-slate-100 font-sans">
@@ -134,7 +136,7 @@ function CleaningContent({
         style={{ background: "linear-gradient(145deg, #4338ca, #7c3aed)" }}
       >
         <div className="max-w-lg mx-auto">
-          <LangSwitchPill />
+          <LangSwitchPill availableExtraLangs={extraLangs} />
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xl">🧹</span>
             <p className="text-xl font-extrabold leading-tight">{apartmentName}</p>

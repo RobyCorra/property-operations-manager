@@ -4,15 +4,25 @@ import { useState } from "react";
 import { useLang } from "@/src/components/lang-context";
 import { LANGUAGE_CATALOG, langFlag } from "@/src/lib/languages";
 
-// Italiano (base) + catalogo. `label` breve per la pillola.
-const LANGS = [
-  { code: "it", flag: "🇮🇹", label: "IT" },
-  ...LANGUAGE_CATALOG.map((l) => ({ code: l.code, flag: l.flag, label: l.code.toUpperCase() })),
-];
+// Lingue con UI completa: sempre disponibili.
+const UI_CODES = ["en", "es"];
 
-export default function LangSwitchPill() {
+/**
+ * availableExtraLangs: lingue extra (fuori da it/en/es) da mostrare perché
+ * effettivamente tradotte nelle checklist. Le extra non tradotte restano
+ * nascoste (darebbero UI inglese + checklist italiana).
+ */
+export default function LangSwitchPill({ availableExtraLangs = [] }: { availableExtraLangs?: string[] }) {
   const { contentLang, setLang } = useLang();
   const [open, setOpen] = useState(false);
+
+  const extra = new Set(availableExtraLangs);
+  const LANGS = [
+    { code: "it", flag: "🇮🇹", label: "IT" },
+    ...LANGUAGE_CATALOG
+      .filter((l) => UI_CODES.includes(l.code) || extra.has(l.code))
+      .map((l) => ({ code: l.code, flag: l.flag, label: l.code.toUpperCase() })),
+  ];
 
   if (!contentLang) return null;
 

@@ -37,3 +37,38 @@ export function langNative(code: string): string {
   if (code === "it") return "Italiano";
   return LANGUAGE_CATALOG.find((l) => l.code === code)?.native ?? code.toUpperCase();
 }
+
+// Lingue dell'app con UI completa: mostrate sempre nel selettore.
+const UI_LANGS = new Set(["it", "en", "es"]);
+
+/**
+ * Dato l'insieme delle traduzioni (una per voce), ritorna i codici lingua
+ * EXTRA (fuori da it/en/es) effettivamente presenti in almeno una voce.
+ * Usato per mostrare nel selettore solo le lingue extra realmente tradotte.
+ */
+export function extraTranslatedLangs(
+  itemsTranslations: (Record<string, string> | null | undefined)[]
+): string[] {
+  const found = new Set<string>();
+  for (const tr of itemsTranslations) {
+    if (!tr) continue;
+    for (const code of Object.keys(tr)) {
+      if (!UI_LANGS.has(code) && tr[code]?.trim()) found.add(code);
+    }
+  }
+  // Ordine del catalogo per coerenza
+  return LANGUAGE_CATALOG.filter((l) => found.has(l.code)).map((l) => l.code);
+}
+
+/**
+ * Etichetta nella lingua scelta con fallback: scelta → inglese → master (IT).
+ * Se la lingua è italiano (o assente) usa direttamente l'etichetta master.
+ */
+export function pickLabel(
+  label: string,
+  translations: Record<string, string> | null | undefined,
+  lang: string | null | undefined
+): string {
+  if (!lang || lang === "it") return label;
+  return translations?.[lang] || translations?.en || label;
+}

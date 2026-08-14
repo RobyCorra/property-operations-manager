@@ -30,6 +30,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useLang } from "@/src/components/lang-context";
+import { pickLabel } from "@/src/lib/languages";
 import { useToast } from "@/src/components/toast-provider";
 
 interface ChecklistItem {
@@ -378,9 +379,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     }
 
     const completedTranslatedLabel =
-      contentLang && currentItem.labelTranslations?.[contentLang]
-        ? currentItem.labelTranslations[contentLang]
-        : currentItem.label;
+      pickLabel(currentItem.label, currentItem.labelTranslations, contentLang);
     const completedItemLabel =
       currentItem.type === "dynamic"
         ? `${completedTranslatedLabel}: ${currentItem.value ?? "N/A"}`
@@ -504,9 +503,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
                 >
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-slate-800 truncate">
-                      {contentLang && item.labelTranslations?.[contentLang]
-                        ? item.labelTranslations[contentLang]
-                        : item.label}
+                      {pickLabel(item.label, item.labelTranslations, contentLang)}
                       {item.required && <span className="text-rose-500 ml-1">*</span>}
                     </p>
                     <p className="text-[10px] text-amber-500 font-bold mt-0.5">
@@ -672,9 +669,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   // ── Vista passo ──────────────────────────────────────────────────────────
   const progress = Math.round((completedCount / items.length) * 100);
   const translatedLabel =
-    contentLang && currentItem.labelTranslations?.[contentLang]
-      ? currentItem.labelTranslations[contentLang]
-      : currentItem.label;
+    pickLabel(currentItem.label, currentItem.labelTranslations, contentLang);
 
   const itemLabel =
     currentItem.type === "dynamic"

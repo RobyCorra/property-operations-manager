@@ -8,6 +8,7 @@ import CleanerStartButton from "@/src/components/cleaner-start-button";
 import CleanerContinueButton from "@/src/components/cleaner-continue-button";
 import CleanerLangGate from "@/src/components/cleaner-lang-gate";
 import LangSwitchPill from "@/src/components/lang-switch-pill";
+import { extraTranslatedLangs } from "@/src/lib/languages";
 import { CleanerGreeting, CleanerSectionTitle, DetailsChatLabel, CleanerMyHistoryLabel, CleanerSeeHistoryLabel, CleanerNavHistoryLabel, CleanerTaskDate, CleanerNavCleaningsLabel, CleanerLogoutLabel, CleanerAllUnderControl, CleanerNoTasks } from "@/src/components/cleaner-dashboard-header";
 import CleanerStatusBadge from "@/src/components/cleaner-status-badge";
 import CleanerActionBanner from "@/src/components/cleaner-action-banner";
@@ -149,6 +150,12 @@ export default async function CleanerDashboardPage() {
     return { ...task, checklistItems };
   }));
 
+  // Lingue extra (fuori da it/en/es) effettivamente tradotte nelle checklist dei task:
+  // solo queste vengono mostrate nel selettore oltre a IT/EN/ES.
+  const extraLangs = extraTranslatedLangs(
+    tasksWithChecklists.flatMap((t) => t.checklistItems.map((i) => (i as { labelTranslations?: Record<string, string> | null }).labelTranslations))
+  );
+
   return (
     <CleanerLangGate>
     <LocationTracker />
@@ -160,7 +167,7 @@ export default async function CleanerDashboardPage() {
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <div className="mb-3">
-              <LangSwitchPill />
+              <LangSwitchPill availableExtraLangs={extraLangs} />
             </div>
             <CleanerGreeting name={user.name} />
           </div>
