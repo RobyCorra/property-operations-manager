@@ -36,6 +36,7 @@ import {
   UserCircle 
 } from "./icons";
 import { Users, Home } from "lucide-react";
+import CleaningReviewPanel from "@/src/components/cleaning-review-panel";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { useToast } from "@/src/components/toast-provider";
 
@@ -151,6 +152,8 @@ interface TimelineCalendarProps {
   checkinTasks?: CheckinTaskCal[];
   serverDate: string;
   readOnly?: boolean;
+  /** userId del manager loggato: abilita la verifica/approvazione pulizie nel modal. */
+  currentUserId?: string;
 }
 
 type CalendarEvent = {
@@ -198,7 +201,7 @@ function diffLocalDays(start: Date, end: Date) {
   return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false }: TimelineCalendarProps) {
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId }: TimelineCalendarProps) {
   const { t, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const toast = useToast();
@@ -1283,6 +1286,22 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 </div>
                             )}
 
+                            {/* Verifica pulizia (checklist + foto) e approvazione — solo manager */}
+                            {selectedEvent.type === 'cleaning'
+                                && !readOnly
+                                && currentUserId
+                                && selectedEvent.data.status === 'AWAITING_REVIEW'
+                                && Array.isArray(selectedEvent.data.checklistProgress) && (
+                                <div className="mt-4">
+                                    <CleaningReviewPanel
+                                        taskId={selectedEvent.data.id}
+                                        reviewerId={currentUserId}
+                                        items={selectedEvent.data.checklistProgress as any[]}
+                                        onDone={() => { setSelectedEvent(null); router.refresh(); }}
+                                    />
+                                </div>
+                            )}
+
                             {/* Maintenance: singola riga compatta Stato + Priorità */}
                             {selectedEvent.type === 'maintenance' && (() => {
                                 const priorityMap: Record<string, { label: string; color: string }> = {
@@ -1425,13 +1444,16 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 )}
                                 {selectedEvent.data.status === 'AWAITING_REVIEW' && (
                                     <div className="flex items-center gap-3">
-                                        <button
-                                            disabled={isPending}
-                                            onClick={() => handleAction(() => approveCleaningDirectly(selectedEvent.data.id))}
-                                            className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
-                                        >
-                                            {t.msgApprove}
-                                        </button>
+                                        {/* Approva diretto solo come fallback: se manca la verifica in-modal (currentUserId) */}
+                                        {!currentUserId && (
+                                            <button
+                                                disabled={isPending}
+                                                onClick={() => handleAction(() => approveCleaningDirectly(selectedEvent.data.id))}
+                                                className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                            >
+                                                {t.msgApprove}
+                                            </button>
+                                        )}
                                         <span className="px-8 py-3.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-semibold uppercase tracking-wide rounded-full">
                                             {t.tcAwaitingReview}
                                         </span>

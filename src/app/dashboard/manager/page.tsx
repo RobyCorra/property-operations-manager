@@ -108,6 +108,7 @@ type ApartmentView = {
 export default async function ManagerDashboardPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
+  const currentUserId = cookieStore.get("userId")?.value;
 
   if (role !== "MANAGER") {
     redirect("/login");
@@ -629,6 +630,7 @@ export default async function ManagerDashboardPage() {
                 maintenanceTickets={tickets}
                 checkinTasks={checkins}
                 serverDate={serverDate}
+                currentUserId={currentUserId}
               />
             </div>
           </section>

@@ -17,11 +17,20 @@ type Props = {
   entityId: string;
   supervisorId: string;
   type: "cleaning" | "maintenance";
+  /** Se passato, viene chiamato al posto del redirect a /dashboard/supervisor
+   *  (es. dentro il modal del calendario: chiude e ricarica). */
+  onDone?: () => void;
 };
 
-export default function SupervisorReviewForm({ entityId, supervisorId, type }: Props) {
+export default function SupervisorReviewForm({ entityId, supervisorId, type, onDone }: Props) {
   const router = useRouter();
   const { t } = useLang();
+
+  const finish = () => {
+    if (onDone) { onDone(); return; }
+    router.push("/dashboard/supervisor");
+    router.refresh();
+  };
   const [isPending, startTransition] = useTransition();
   const [items, setItems] = useState<CorrectionItem[]>([]);
   const [notes, setNotes] = useState("");
@@ -49,8 +58,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
         } else {
           await approveMaintenanceReview(entityId, supervisorId);
         }
-        router.push("/dashboard/supervisor");
-        router.refresh();
+        finish();
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : t.svApproveError);
       }
@@ -74,8 +82,7 @@ export default function SupervisorReviewForm({ entityId, supervisorId, type }: P
         } else {
           await rejectMaintenanceReview(entityId, supervisorId, notes, items);
         }
-        router.push("/dashboard/supervisor");
-        router.refresh();
+        finish();
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : t.svRejectError);
       }
