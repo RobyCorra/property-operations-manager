@@ -157,7 +157,7 @@ export default async function CleanerDashboardPage() {
   );
 
   return (
-    <CleanerLangGate>
+    <CleanerLangGate availableExtraLangs={extraLangs}>
     <LocationTracker />
     <PhotoQueueUploader />
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">

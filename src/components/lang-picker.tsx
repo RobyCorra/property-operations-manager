@@ -3,14 +3,20 @@
 import { useLang } from "@/src/components/lang-context";
 import { LANGUAGE_CATALOG } from "@/src/lib/languages";
 
-// Italiano (lingua base) + tutto il catalogo lingue.
-const LANGS = [
-  { code: "it", flag: "🇮🇹", name: "Italiano" },
-  ...LANGUAGE_CATALOG.map((l) => ({ code: l.code, flag: l.flag, name: l.native })),
-];
+// Lingue con UI completa: sempre disponibili.
+const UI_CODES = ["en", "es"];
 
-export default function LangPicker() {
+export default function LangPicker({ availableExtraLangs = [] }: { availableExtraLangs?: string[] }) {
   const { setLang } = useLang();
+
+  const extra = new Set(availableExtraLangs);
+  // Italiano (base) + EN/ES sempre + solo le extra effettivamente tradotte.
+  const LANGS = [
+    { code: "it", flag: "🇮🇹", name: "Italiano" },
+    ...LANGUAGE_CATALOG
+      .filter((l) => UI_CODES.includes(l.code) || extra.has(l.code))
+      .map((l) => ({ code: l.code, flag: l.flag, name: l.native })),
+  ];
 
   return (
     <div

@@ -264,9 +264,10 @@ function CleaningContent({
 }
 
 export default function PublicCleaningView(props: Props) {
+  const extraLangs = extraTranslatedLangs(props.checklistItems.map((i) => i.labelTranslations));
   return (
     <LangProvider>
-      <LangGate>
+      <LangGate availableExtraLangs={extraLangs}>
         <CleaningContent {...props} />
       </LangGate>
     </LangProvider>

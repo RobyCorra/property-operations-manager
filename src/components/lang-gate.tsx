@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { useLang } from "@/src/components/lang-context";
 import LangPicker from "@/src/components/lang-picker";
 
-export default function LangGate({ children }: { children: ReactNode }) {
+export default function LangGate({ children, availableExtraLangs }: { children: ReactNode; availableExtraLangs?: string[] }) {
   const { lang, mounted } = useLang();
 
   // Not mounted yet: show neutral loading (same gradient, no content flash)
@@ -19,7 +19,7 @@ export default function LangGate({ children }: { children: ReactNode }) {
 
   // Mounted but no language selected: show picker
   if (!lang) {
-    return <LangPicker />;
+    return <LangPicker availableExtraLangs={availableExtraLangs} />;
   }
 
   // Language selected: show full content
