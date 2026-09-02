@@ -7,6 +7,7 @@ import Link from "next/link";
 import { enrichCleaningTasksWithNextBooking } from "@/src/app/actions/operational";
 import CleaningsListTable from "@/src/components/cleanings-list-table";
 import BackButton from "@/src/components/back-button";
+import DbErrorState from "@/src/components/db-error-state";
 
 export default async function CleaningsListPage() {
   const tr = await getT();
@@ -19,7 +20,7 @@ export default async function CleaningsListPage() {
 
   const orgId = await getCurrentOrg();
 
-  const [cleanings, apartments, collaborators] = await Promise.all([
+  const data = await Promise.all([
     prisma.cleaningTask.findMany({
       where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
       include: {
@@ -32,9 +33,25 @@ export default async function CleaningsListPage() {
     }),
     prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
     prisma.user.findMany({ where: { role: "CLEANER", organizationId: orgId }, select: { id: true, name: true } })
-  ]);
+  ]).catch((e) => {
+    console.error("Pulizie: impossibile caricare i dati dal DB", e);
+    return null;
+  });
 
-  const enrichedCleanings = await enrichCleaningTasksWithNextBooking(cleanings);
+  if (!data) {
+    return <DbErrorState />;
+  }
+
+  const [cleanings, apartments, collaborators] = data;
+
+  const enrichedCleanings = await enrichCleaningTasksWithNextBooking(cleanings).catch((e) => {
+    console.error("Pulizie: impossibile arricchire i dati dal DB", e);
+    return null;
+  });
+
+  if (!enrichedCleanings) {
+    return <DbErrorState />;
+  }
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans overflow-x-hidden">

@@ -6,6 +6,7 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import BookingsListTable from "@/src/components/bookings-list-table";
 import BackButton from "@/src/components/back-button";
+import DbErrorState from "@/src/components/db-error-state";
 
 
 export const revalidate = 0;
@@ -21,7 +22,7 @@ export default async function BookingsListPage() {
   const orgId = await getCurrentOrg();
   const tr = await getT();
 
-  const [bookings, apartments] = await Promise.all([
+  const data = await Promise.all([
     prisma.booking.findMany({
       where: {
         apartment: { organizationId: orgId },
@@ -38,7 +39,16 @@ export default async function BookingsListPage() {
       },
     }),
     prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } })
-  ]);
+  ]).catch((e) => {
+    console.error("Prenotazioni: impossibile caricare i dati dal DB", e);
+    return null;
+  });
+
+  if (!data) {
+    return <DbErrorState />;
+  }
+
+  const [bookings, apartments] = data;
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans overflow-x-hidden">

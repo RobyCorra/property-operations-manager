@@ -6,6 +6,7 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
 import MaintenanceListTable from "@/src/components/maintenance-list-table";
 import BackButton from "@/src/components/back-button";
+import DbErrorState from "@/src/components/db-error-state";
 
 export default async function MaintenanceListPage() {
   const tr = await getT();
@@ -18,7 +19,7 @@ export default async function MaintenanceListPage() {
 
   const orgId = await getCurrentOrg();
 
-  const [tickets, apartments, collaborators] = await Promise.all([
+  const data = await Promise.all([
     prisma.maintenanceTicket.findMany({
       where: { apartment: { organizationId: orgId } },
       include: {
@@ -32,7 +33,16 @@ export default async function MaintenanceListPage() {
     }),
     prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }),
     prisma.user.findMany({ where: { role: "MAINTENANCE", organizationId: orgId }, select: { id: true, name: true } })
-  ]);
+  ]).catch((e) => {
+    console.error("Manutenzioni: impossibile caricare i dati dal DB", e);
+    return null;
+  });
+
+  if (!data) {
+    return <DbErrorState />;
+  }
+
+  const [tickets, apartments, collaborators] = data;
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans overflow-x-hidden">

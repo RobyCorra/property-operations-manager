@@ -6,6 +6,7 @@ import { getT } from "@/src/lib/server-lang";
 import Link from "next/link";
 import ApartmentsListTable from "@/src/components/apartments-list-table";
 import BackButton from "@/src/components/back-button";
+import DbErrorState from "@/src/components/db-error-state";
 
 export default async function ApartmentsListPage() {
   const cookieStore = await cookies();
@@ -21,7 +22,14 @@ export default async function ApartmentsListPage() {
   const apartments = await prisma.apartment.findMany({
     where: { organizationId: orgId },
     orderBy: { createdAt: "desc" },
+  }).catch((e) => {
+    console.error("Appartamenti: impossibile caricare i dati dal DB", e);
+    return null;
   });
+
+  if (!apartments) {
+    return <DbErrorState />;
+  }
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans overflow-x-hidden">
