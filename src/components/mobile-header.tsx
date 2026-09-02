@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLang } from "@/src/components/lang-context";
 import { usePathname, useRouter } from "next/navigation";
 import NotificationBell from "@/src/components/notification-bell";
@@ -23,6 +23,22 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const nowDate = new Date();
+
+  // Prefetch delle rotte del menu: la navigazione qui usa router.push (che NON
+  // pre-scarica, a differenza di <Link>), quindi le pre-carichiamo a mano così
+  // al tocco la pagina è già pronta e la navigazione risulta più rapida.
+  useEffect(() => {
+    const routes = [
+      "/dashboard/manager/messages",
+      "/dashboard/manager/bookings",
+      "/dashboard/manager/apartments",
+      "/dashboard/manager/users",
+      "/dashboard/manager/analytics",
+    ];
+    routes.forEach((r) => {
+      try { router.prefetch(r); } catch { /* prefetch best-effort */ }
+    });
+  }, [router]);
 
   const go = (action: string, href?: string) => {
     setMenuOpen(false);
