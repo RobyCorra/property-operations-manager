@@ -13,6 +13,7 @@ import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import MobileDashboard from "@/src/components/mobile-dashboard";
+import DbErrorState from "@/src/components/db-error-state";
 import type {
   MobileApartmentData,
   MobileLateClean,
@@ -116,8 +117,11 @@ export default async function ManagerDashboardPage() {
 
   const orgId = await getCurrentOrg();
 
-  // Fetch all necessary data
-  const [org, apartments, bookings, cleanings, tickets, checkins, initialNotifications, unreadMessagesCount] = await Promise.all([
+  // Fetch all necessary data.
+  // .catch(() => null): se il DB va in timeout, invece di far crashare la
+  // pagina (errore "Qualcosa è andato storto" che bloccava l'accesso) mostriamo
+  // uno stato "Riprova" degradato, con header e navigazione ancora funzionanti.
+  const data = await Promise.all([
     orgId ? prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } }) : null,
     prisma.apartment.findMany({ where: { organizationId: orgId } }),
     prisma.booking.findMany({
@@ -147,7 +151,16 @@ export default async function ManagerDashboardPage() {
     }),
     getNotifications(),
     getUnreadMessagesCount(),
-  ]);
+  ]).catch((error) => {
+    console.error("Dashboard manager: impossibile caricare i dati dal DB", error);
+    return null;
+  });
+
+  if (!data) {
+    return <DbErrorState />;
+  }
+
+  const [org, apartments, bookings, cleanings, tickets, checkins, initialNotifications, unreadMessagesCount] = data;
 
   const now = new Date();
   const serverDate = now.toISOString();

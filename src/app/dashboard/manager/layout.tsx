@@ -16,18 +16,30 @@ export default async function ManagerLayout({ children }: { children: React.Reac
   const impersonatingOrgId = cookieStore.get("impersonating")?.value;
   const orgId = cookieStore.get("organizationId")?.value;
 
+  // Le query org sono avvolte in try/catch: se il DB va in timeout NON devono
+  // far crashare il layout (che è il guscio dell'intera sezione manager —
+  // se crasha lui, l'utente resta bloccato fuori da TUTTE le pagine).
+  // In caso di errore si degrada con grazia: nome/logo assenti, ma l'app apre.
   let impersonatingOrgName: string | null = null;
   if (impersonatingOrgId) {
-    const org = await prisma.organization.findUnique({ where: { id: impersonatingOrgId }, select: { name: true } });
-    impersonatingOrgName = org?.name ?? null;
+    try {
+      const org = await prisma.organization.findUnique({ where: { id: impersonatingOrgId }, select: { name: true } });
+      impersonatingOrgName = org?.name ?? null;
+    } catch (e) {
+      console.error("Layout manager: impossibile leggere l'org impersonata dal DB", e);
+    }
   }
 
   let orgName: string | undefined;
   let orgLogo: string | null = null;
   if (orgId) {
-    const org = await prisma.organization.findUnique({ where: { id: orgId }, select: { name: true, logoUrl: true } });
-    orgName = org?.name ?? undefined;
-    orgLogo = org?.logoUrl ?? null;
+    try {
+      const org = await prisma.organization.findUnique({ where: { id: orgId }, select: { name: true, logoUrl: true } });
+      orgName = org?.name ?? undefined;
+      orgLogo = org?.logoUrl ?? null;
+    } catch (e) {
+      console.error("Layout manager: impossibile leggere l'org corrente dal DB", e);
+    }
   }
 
   return (
