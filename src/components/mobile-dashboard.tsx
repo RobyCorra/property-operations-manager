@@ -625,7 +625,7 @@ export default function MobileDashboard({
                     {lc.apartmentName} · avrebbe dovuto iniziare {lc.scheduledTime}
                   </p>
                 </div>
-                <Link href={lc.href} className="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">
+                <Link href={lc.href} className="px-4 min-h-[44px] inline-flex items-center bg-white text-rose-600 text-[11px] font-black rounded-full shrink-0">
                   Vedi
                 </Link>
               </div>
@@ -648,7 +648,7 @@ export default function MobileDashboard({
                     {lc.apartmentName} · doveva iniziare {lc.scheduledTime}
                   </p>
                 </div>
-                <Link href={lc.href} className="px-3 py-1.5 bg-white text-rose-600 text-[10px] font-black rounded-full shrink-0">
+                <Link href={lc.href} className="px-4 min-h-[44px] inline-flex items-center bg-white text-rose-600 text-[11px] font-black rounded-full shrink-0">
                   Vedi
                 </Link>
               </div>
@@ -1250,11 +1250,11 @@ export default function MobileDashboard({
                 <div className="px-4 pt-4">
                   {/* Month nav */}
                   <div className="flex items-center justify-between mb-3">
-                    <button onClick={() => changeCalMonth(-1)} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
+                    <button onClick={() => changeCalMonth(-1)} className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
                     <span className="text-base font-black text-slate-900">{new Date(year, month, 1).toLocaleDateString(dateLocale, { month: "long" })} {year}</span>
-                    <button onClick={() => changeCalMonth(1)} className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
+                    <button onClick={() => changeCalMonth(1)} className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   </div>
