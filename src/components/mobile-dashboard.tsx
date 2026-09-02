@@ -665,7 +665,7 @@ export default function MobileDashboard({
           {/* ─ Check-in oggi ─ */}
           <button
             onClick={() => { hapticLight(); setCheckinsSheetOpen(true); }}
-            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 ${
+            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 ${
               checkinsCount > 0
                 ? "bg-blue-50 border-blue-200 shadow-sm shadow-blue-100"
                 : "bg-white border-slate-100 shadow-sm opacity-70"
@@ -683,7 +683,7 @@ export default function MobileDashboard({
           {/* ─ Pulizie oggi ─ */}
           <button
             onClick={() => { hapticLight(); setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); }}
-            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 bg-white border-slate-100 shadow-sm ${cleaningsCount > 0 ? "" : "opacity-70"}`}
+            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 bg-white border-slate-100 shadow-sm ${cleaningsCount > 0 ? "" : "opacity-70"}`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "bg-emerald-100" : "bg-violet-100"}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "#10b981" : "#7c3aed"} strokeWidth="2.5">
@@ -700,7 +700,7 @@ export default function MobileDashboard({
           {/* ─ Pulizie in corso ─ */}
           <button
             onClick={() => { hapticLight(); setInProgressSheetOpen(true); }}
-            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 ${
+            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 ${
               cleaningsInProgress.length > 0
                 ? "bg-violet-50 border-violet-200 shadow-sm shadow-violet-100"
                 : "bg-white border-slate-100 shadow-sm opacity-70"
@@ -718,7 +718,7 @@ export default function MobileDashboard({
           {/* ─ Ticket Oggi ─ */}
           <button
             onClick={() => { hapticLight(); setTicketsSheetOpen(true); }}
-            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 ${
+            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 ${
               ticketsTodayCount > 0
                 ? "bg-orange-50 border-orange-200 shadow-sm shadow-orange-100"
                 : "bg-white border-slate-100 shadow-sm opacity-70"
@@ -739,7 +739,7 @@ export default function MobileDashboard({
           {/* ─ Chiedi a IA ─ */}
           <button
             onClick={() => { hapticLight(); setAiChatOpen(true); }}
-            className="w-full min-h-[64px] bg-gradient-to-br from-violet-600 to-blue-500 rounded-2xl px-4 py-3 shadow-lg shadow-violet-200 text-left active:scale-[0.93] transition-transform duration-100 flex items-center gap-3.5"
+            className="w-full min-h-[64px] bg-gradient-to-br from-violet-600 to-blue-500 rounded-2xl px-4 py-3 shadow-lg shadow-violet-200 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 flex items-center gap-3.5"
           >
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
