@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NotificationBell from "@/src/components/notification-bell";
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
+import { hapticLight } from "@/src/lib/haptics";
 import { ApartmentStatus, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import { logoutAction } from "@/src/app/actions/auth";
 import FloatingManagerChat from "@/src/components/floating-manager-chat";
@@ -657,121 +658,99 @@ export default function MobileDashboard({
         )}
 
         {/* ── KPI GRID ────────────────────────────────────── */}
-        <div className="px-4 grid grid-cols-2 gap-3 mb-3">
-          {/* Check-in oggi — cliccabile */}
+        {/* KPI in banner orizzontali (stessa dimensione dell'avviso rosso).
+            Ogni banner è un <button> a tutta larghezza → cliccabile su tutta la riga.
+            active:scale-[0.93] + hapticLight() = feedback al tocco più marcato. */}
+        <div className="px-4 flex flex-col gap-2.5 mb-3">
           {/* ─ Check-in oggi ─ */}
           <button
-            onClick={() => setCheckinsSheetOpen(true)}
-            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
+            onClick={() => { hapticLight(); setCheckinsSheetOpen(true); }}
+            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 ${
               checkinsCount > 0
                 ? "bg-blue-50 border-blue-200 shadow-sm shadow-blue-100"
                 : "bg-white border-slate-100 shadow-sm opacity-70"
             }`}
           >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-2 ${checkinsCount > 0 ? "bg-blue-100" : "bg-slate-100"}`}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={checkinsCount > 0 ? "#3b82f6" : "#94a3b8"} strokeWidth="2.5">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${checkinsCount > 0 ? "bg-blue-100" : "bg-slate-100"}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={checkinsCount > 0 ? "#3b82f6" : "#94a3b8"} strokeWidth="2.5">
                 <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
               </svg>
             </div>
-            <p className={`text-3xl font-black leading-none mb-1 ${checkinsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{checkinsCount}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${checkinsCount > 0 ? "text-blue-500" : "text-slate-400"}`}>{tr.kpiCheckinFace}</p>
+            <p className={`flex-1 text-[11px] font-black uppercase tracking-widest ${checkinsCount > 0 ? "text-blue-500" : "text-slate-400"}`}>{tr.kpiCheckinFace}</p>
+            <p className={`text-3xl font-black leading-none shrink-0 ${checkinsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{checkinsCount}</p>
           </button>
 
           {/* ─ Pulizie oggi ─ */}
           <button
-            onClick={() => { setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); }}
-            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
-              cleaningsCount > 0
-                ? "bg-white border-slate-100 shadow-sm"
-                : "bg-white border-slate-100 shadow-sm opacity-70"
-            }`}
+            onClick={() => { hapticLight(); setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); }}
+            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 bg-white border-slate-100 shadow-sm ${cleaningsCount > 0 ? "" : "opacity-70"}`}
           >
-            <div className="flex items-center justify-between mb-2">
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "bg-emerald-100" : "bg-violet-100"}`}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "#10b981" : "#7c3aed"} strokeWidth="2.5">
-                  <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
-                </svg>
-              </div>
-              {cleaningsDoneCount > 0 && (
-                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">{cleaningsDoneCount}/{cleaningsCount} ✓</span>
-              )}
-            </div>
-            <p className={`text-3xl font-black leading-none mb-1 ${cleaningsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{cleaningsCount}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${cleaningsCount > 0 ? "text-violet-500" : "text-slate-400"}`}>{tr.mdCleaningsToday}</p>
-          </button>
-
-          {/* ─ Pulizie in ritardo ─ */}
-          <button
-            onClick={() => setLateCleanSheetOpen(true)}
-            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
-              lateCleanings.length > 0
-                ? "bg-amber-50 border-amber-300 shadow-sm shadow-amber-100"
-                : "bg-white border-slate-100 shadow-sm opacity-70"
-            }`}
-          >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-2 ${lateCleanings.length > 0 ? "bg-amber-100" : "bg-slate-100"}`}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={lateCleanings.length > 0 ? "#f59e0b" : "#94a3b8"} strokeWidth="2.5">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "bg-emerald-100" : "bg-violet-100"}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "#10b981" : "#7c3aed"} strokeWidth="2.5">
+                <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
               </svg>
             </div>
-            <p className={`text-3xl font-black leading-none mb-1 ${lateCleanings.length > 0 ? "text-amber-600" : "text-slate-400"}`}>{lateCleanings.length}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${lateCleanings.length > 0 ? "text-amber-500" : "text-slate-400"}`}>{tr.mdLate}</p>
+            <p className={`flex-1 text-[11px] font-black uppercase tracking-widest ${cleaningsCount > 0 ? "text-violet-500" : "text-slate-400"}`}>{tr.mdCleaningsToday}</p>
+            {cleaningsDoneCount > 0 && (
+              <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg shrink-0">{cleaningsDoneCount}/{cleaningsCount} ✓</span>
+            )}
+            <p className={`text-3xl font-black leading-none shrink-0 ${cleaningsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{cleaningsCount}</p>
           </button>
 
           {/* ─ Pulizie in corso ─ */}
           <button
-            onClick={() => setInProgressSheetOpen(true)}
-            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
+            onClick={() => { hapticLight(); setInProgressSheetOpen(true); }}
+            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 ${
               cleaningsInProgress.length > 0
                 ? "bg-violet-50 border-violet-200 shadow-sm shadow-violet-100"
                 : "bg-white border-slate-100 shadow-sm opacity-70"
             }`}
           >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-2 ${cleaningsInProgress.length > 0 ? "bg-violet-100" : "bg-slate-100"}`}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={cleaningsInProgress.length > 0 ? "#7c3aed" : "#94a3b8"} strokeWidth="2.5">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${cleaningsInProgress.length > 0 ? "bg-violet-100" : "bg-slate-100"}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={cleaningsInProgress.length > 0 ? "#7c3aed" : "#94a3b8"} strokeWidth="2.5">
                 <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
               </svg>
             </div>
-            <p className={`text-3xl font-black leading-none mb-1 ${cleaningsInProgress.length > 0 ? "text-violet-700" : "text-slate-400"}`}>{cleaningsInProgress.length}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${cleaningsInProgress.length > 0 ? "text-violet-500" : "text-slate-400"}`}>{tr.calInProgress}</p>
+            <p className={`flex-1 text-[11px] font-black uppercase tracking-widest ${cleaningsInProgress.length > 0 ? "text-violet-500" : "text-slate-400"}`}>{tr.calInProgress}</p>
+            <p className={`text-3xl font-black leading-none shrink-0 ${cleaningsInProgress.length > 0 ? "text-violet-700" : "text-slate-400"}`}>{cleaningsInProgress.length}</p>
           </button>
 
           {/* ─ Ticket Oggi ─ */}
           <button
-            onClick={() => setTicketsSheetOpen(true)}
-            className={`rounded-2xl p-4 border text-left active:scale-95 transition-transform ${
+            onClick={() => { hapticLight(); setTicketsSheetOpen(true); }}
+            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 ${
               ticketsTodayCount > 0
                 ? "bg-orange-50 border-orange-200 shadow-sm shadow-orange-100"
                 : "bg-white border-slate-100 shadow-sm opacity-70"
             }`}
           >
-            <div className="flex items-center justify-between mb-2">
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${ticketsTodayCount > 0 ? "bg-orange-100" : "bg-slate-100"}`}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={ticketsTodayCount > 0 ? "#f97316" : "#94a3b8"} strokeWidth="2.5">
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-              </div>
-              {ticketsDoneCount > 0 && (
-                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">{ticketsDoneCount}/{ticketsTodayCount} ✓</span>
-              )}
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${ticketsTodayCount > 0 ? "bg-orange-100" : "bg-slate-100"}`}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={ticketsTodayCount > 0 ? "#f97316" : "#94a3b8"} strokeWidth="2.5">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
             </div>
-            <p className={`text-3xl font-black leading-none mb-1 ${ticketsTodayCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{ticketsTodayCount}</p>
-            <p className={`text-[11px] font-black uppercase tracking-widest ${ticketsTodayCount > 0 ? "text-orange-500" : "text-slate-400"}`}>{tr.mdTicketsToday}</p>
+            <p className={`flex-1 text-[11px] font-black uppercase tracking-widest ${ticketsTodayCount > 0 ? "text-orange-500" : "text-slate-400"}`}>{tr.mdTicketsToday}</p>
+            {ticketsDoneCount > 0 && (
+              <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg shrink-0">{ticketsDoneCount}/{ticketsTodayCount} ✓</span>
+            )}
+            <p className={`text-3xl font-black leading-none shrink-0 ${ticketsTodayCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{ticketsTodayCount}</p>
           </button>
 
-          {/* Chiedi a IA */}
+          {/* ─ Chiedi a IA ─ */}
           <button
-            onClick={() => setAiChatOpen(true)}
-            className="bg-gradient-to-br from-violet-600 to-blue-500 rounded-2xl p-4 shadow-lg shadow-violet-200 text-left active:scale-95 transition-transform"
+            onClick={() => { hapticLight(); setAiChatOpen(true); }}
+            className="w-full min-h-[64px] bg-gradient-to-br from-violet-600 to-blue-500 rounded-2xl px-4 py-3 shadow-lg shadow-violet-200 text-left active:scale-[0.93] transition-transform duration-100 flex items-center gap-3.5"
           >
-            <p className="text-[9px] font-black uppercase tracking-widest text-violet-200 mb-1">{tr.mdAssistant}</p>
-            <div className="flex items-center gap-2 mt-1">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
-              <p className="text-white font-black text-base leading-tight" dangerouslySetInnerHTML={{__html: tr.mdAskAI}} />
             </div>
-            <p className="text-violet-200 text-[10px] mt-2">{tr.mdOperationalQuestions}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-black text-[15px] leading-tight" dangerouslySetInnerHTML={{__html: tr.mdAskAI}} />
+              <p className="text-violet-200 text-[10px] mt-0.5">{tr.mdOperationalQuestions}</p>
+            </div>
+            <span className="text-white/80 text-2xl leading-none shrink-0">›</span>
           </button>
         </div>
 
