@@ -72,15 +72,17 @@ button:active, a:active, [role="button"]:active {
    GPU, rendendo l'interfaccia impastata e i pulsanti lenti a rispondere.
    Lo disattiviamo SOLO su touch — il glassmorphism resta intatto su desktop.
    Le superfici restano semi-trasparenti, ma senza il costo del blur.
-   NB: usiamo blur(0), NON "none". Il minificatore Lightning CSS (Next 16)
-   considera "backdrop-filter: none" ridondante (è il valore iniziale) e
-   SVUOTA la regola in produzione, lasciando il blur attivo su mobile.
-   blur(0) non è il valore iniziale → sopravvive alla minificazione e, con
-   raggio 0, salta comunque il costoso passaggio gaussiano sulla GPU. */
+   NB: NON sovrascriviamo backdrop-filter direttamente. Il minificatore
+   Lightning CSS (Next 16) massacra quell'override: "none" viene rimosso
+   (valore iniziale ridondante), "blur(0)" diventa "blur()" e la versione
+   non-prefissata viene scartata → in produzione il blur resta attivo su
+   mobile. Azzeriamo invece la variabile che Tailwind v4 usa per comporre
+   il filtro (--tw-backdrop-blur): con "initial" (guaranteed-invalid) il
+   var() risolve a vuoto e il blur sparisce. "initial" è una keyword che il
+   minificatore non tocca, quindi il fix sopravvive alla build. */
 @media (hover: none) and (pointer: coarse) {
   [class*="backdrop-blur"] {
-    backdrop-filter: blur(0) !important;
-    -webkit-backdrop-filter: blur(0) !important;
+    --tw-backdrop-blur: initial;
   }
 }
 
