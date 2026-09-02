@@ -71,11 +71,16 @@ button:active, a:active, [role="button"]:active {
    responsabile della lentezza: ogni scroll/tap forza il ricalcolo del blur sulla
    GPU, rendendo l'interfaccia impastata e i pulsanti lenti a rispondere.
    Lo disattiviamo SOLO su touch — il glassmorphism resta intatto su desktop.
-   Le superfici restano semi-trasparenti, ma senza il costo del blur. */
+   Le superfici restano semi-trasparenti, ma senza il costo del blur.
+   NB: usiamo blur(0), NON "none". Il minificatore Lightning CSS (Next 16)
+   considera "backdrop-filter: none" ridondante (è il valore iniziale) e
+   SVUOTA la regola in produzione, lasciando il blur attivo su mobile.
+   blur(0) non è il valore iniziale → sopravvive alla minificazione e, con
+   raggio 0, salta comunque il costoso passaggio gaussiano sulla GPU. */
 @media (hover: none) and (pointer: coarse) {
   [class*="backdrop-blur"] {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    backdrop-filter: blur(0) !important;
+    -webkit-backdrop-filter: blur(0) !important;
   }
 }
 
