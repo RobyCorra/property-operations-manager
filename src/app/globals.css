@@ -88,6 +88,20 @@ button:active, a:active, [role="button"]:active {
   transition: opacity 60ms ease;
 }
 
+/* Feedback al tocco ISTANTANEO su tutta l'app (solo dispositivi touch).
+   Molti bottoni hanno active:scale-95 insieme a transition-all duration-200/300:
+   così la pressione si animava per 200-300ms e sembrava lenta. Qui, mentre il
+   dito preme (:active), azzeriamo la transizione → lo scale/opacity scattano
+   subito. Al rilascio (:active rimosso) riprende la transizione normale del
+   bottone, quindi il ritorno resta morbido. Su desktop non cambia nulla. */
+@media (hover: none) and (pointer: coarse) {
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transition: none !important;
+  }
+}
+
 /* ── Performance mobile ──────────────────────────────────────────────────────
    Su dispositivi touch (Android/iOS) il backdrop-filter: blur() è il principale
    responsabile della lentezza: ogni scroll/tap forza il ricalcolo del blur sulla
