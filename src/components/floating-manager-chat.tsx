@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback, startTransition } from "react";
+import { useEffect, useRef, useState, useCallback, startTransition, memo } from "react";
 import ReactMarkdown from "react-markdown";
 import { askAI } from "@/src/app/actions/ai";
 import { executeAIAction } from "@/src/app/actions/operational";
@@ -234,6 +234,78 @@ type FloatingManagerChatProps = {
   externalOpen?: boolean;
   onExternalClose?: () => void;
 };
+
+// ────────────────────────────────────────────────────────────────────────────
+// AIComposer — textarea + bottone Invia con stato locale.
+// Estratto e memoizzato per evitare che ogni keystroke re-renderizzi tutta la
+// chat (ReactMarkdown sui messaggi è costoso su iOS WebView e faceva
+// "inchiodare" la tastiera).
+// ────────────────────────────────────────────────────────────────────────────
+const AIComposer = memo(function AIComposer({
+  placeholder,
+  disabled,
+  onSend,
+}: {
+  placeholder: string;
+  disabled: boolean;
+  onSend: (text: string) => void;
+}) {
+  const [text, setText] = useState("");
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  const doSend = useCallback(() => {
+    const t = text.trim();
+    if (!t || disabled) return;
+    onSend(t);
+    setText("");
+    if (ref.current) ref.current.style.height = "auto";
+  }, [text, disabled, onSend]);
+
+  return (
+    <div className="flex-1 relative bg-[#f4f2fc] rounded-[24px] border border-[#ede9fe] min-w-0">
+      <textarea
+        ref={ref}
+        className="block w-full bg-transparent px-4 py-3 pr-[52px] text-[16px] outline-none resize-none min-h-[52px] max-h-[140px] leading-snug"
+        placeholder={placeholder}
+        value={text}
+        onChange={(e) => {
+          const val = e.target.value;
+          setText(val);
+          // Autosize schedulato in rAF: evita reflow sincrono ad ogni tasto.
+          const el = e.target as HTMLTextAreaElement;
+          requestAnimationFrame(() => {
+            el.style.height = "auto";
+            el.style.height = Math.min(el.scrollHeight, 140) + "px";
+          });
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            doSend();
+          }
+        }}
+        rows={1}
+        readOnly={disabled}
+        enterKeyHint="send"
+        autoCapitalize="sentences"
+        autoCorrect="on"
+        inputMode="text"
+      />
+      <button
+        type="button"
+        onClick={doSend}
+        disabled={disabled || !text.trim()}
+        aria-label="Invia"
+        className="absolute right-2 bottom-2 w-9 h-9 rounded-full flex items-center justify-center disabled:opacity-40 active:scale-90 transition-transform"
+        style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 10px rgba(124,58,237,.35)" }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  );
+});
 
 export default function FloatingManagerChat({
   inline = false,
@@ -508,6 +580,14 @@ export default function FloatingManagerChat({
 
   const CONFIRM_WORDS = /^(ok|sì|si|yes|confermo|conferma|vai|procedi|fatto|esegui|assegna)$/i;
 
+  // Riferimento sempre aggiornato a handleAsk, così AIComposer può ricevere
+  // un onSend con riferimento STABILE (senza forzarne il re-render ad ogni
+  // cambio di stato del parent).
+  const handleAskRef = useRef<((forceWeb?: boolean, overrideContent?: string) => Promise<void>) | null>(null);
+  const onComposerSend = useCallback((text: string) => {
+    handleAskRef.current?.(false, text);
+  }, []);
+
   async function handleAsk(forceWeb = false, overrideContent?: string) {
     if (isPastSession) return;
     const useWeb = forceWeb || webSearch;
@@ -606,6 +686,11 @@ export default function FloatingManagerChat({
   function handleDismissAction(msgIndex: number) {
     setMessages((prev) => prev.map((m, i) => i === msgIndex ? { ...m, action: undefined, actionState: undefined } : m));
   }
+
+  // Mantieni handleAskRef sempre in linea con l'ultima versione di handleAsk.
+  useEffect(() => {
+    handleAskRef.current = handleAsk;
+  });
 
   const lastPendingIdx = messages.map((m, i) => ({ m, i }))
     .reverse()
@@ -855,7 +940,7 @@ export default function FloatingManagerChat({
           )}
 
           {/* Card azioni rapide (2 colonne) — quando la chat è vuota */}
-          {!isPastSession && input.length === 0 && !loading && messages.length === 0 && (
+          {!isPastSession && !loading && messages.length === 0 && (
             <div className="px-3.5 pb-2 shrink-0 grid grid-cols-2 gap-2">
               {SUGGESTIONS.map((s) => (
                 <button
@@ -940,43 +1025,12 @@ export default function FloatingManagerChat({
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 14px)" }}
             >
               <div className="flex items-end gap-2.5">
-                {/* Campo con solo icona Invia integrata */}
-                <div className="flex-1 relative bg-[#f4f2fc] rounded-[24px] border border-[#ede9fe] min-w-0">
-                  <textarea
-                    ref={inputRef as any}
-                    className="block w-full bg-transparent px-4 py-3 pr-[52px] text-[15px] outline-none resize-none min-h-[52px] max-h-[140px] leading-snug"
-                    placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : (webSearch ? "Cerca sul web…" : "Scrivi un messaggio…")}
-                    value={input}
-                    onChange={(e) => {
-                      setInput(e.target.value);
-                      // Autosize: fit content up to max-height
-                      const el = e.target as HTMLTextAreaElement;
-                      el.style.height = "auto";
-                      el.style.height = Math.min(el.scrollHeight, 140) + "px";
-                    }}
-                    onKeyDown={(e) => {
-                      // Enter invia, Shift+Enter va a capo
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleAsk(false);
-                      }
-                    }}
-                    rows={1}
-                    disabled={loading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleAsk(false)}
-                    disabled={loading || !input.trim()}
-                    aria-label="Invia"
-                    className="absolute right-2 bottom-2 w-9 h-9 rounded-full flex items-center justify-center disabled:opacity-40 active:scale-90 transition-transform"
-                    style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 10px rgba(124,58,237,.35)" }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                    </svg>
-                  </button>
-                </div>
+                {/* Composer memoizzato — stato locale, non ri-renderizza la chat ad ogni tasto */}
+                <AIComposer
+                  placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : (webSearch ? "Cerca sul web…" : "Scrivi un messaggio…")}
+                  disabled={loading}
+                  onSend={onComposerSend}
+                />
 
                 {/* Toggle Ricerca web grande (al posto del microfono) */}
                 <button
