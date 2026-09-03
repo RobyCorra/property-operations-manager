@@ -146,7 +146,9 @@ export default async function ManagerDashboardPage() {
       include: { apartment: true, assignedTo: true },
     }),
     prisma.checkinTask.findMany({
-      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
+      // Escludi check-in di appartamenti con auto check-in: quei check-in non
+      // richiedono azione del manager, quindi non devono contare nei KPI/sheet.
+      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId, autoCheckin: false } },
       include: { apartment: true, assignedTo: true, booking: { select: { guestName: true, totalGuests: true } } },
     }),
     getNotifications(),

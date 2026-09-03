@@ -21,7 +21,9 @@ export async function GET(req: NextRequest) {
   const orgId = await getCurrentOrg();
 
   const where = {
-    apartment: { organizationId: orgId },
+    // Escludi appartamenti con auto check-in: quei check-in non richiedono
+    // azione del manager, quindi non devono comparire in questa lista.
+    apartment: { organizationId: orgId, autoCheckin: false },
     date: { gte: from, lte: to },
     ...(apartmentId ? { apartmentId } : {}),
     ...(status && status !== "ALL" ? { status } : {}),
