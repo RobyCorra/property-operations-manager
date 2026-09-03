@@ -28,6 +28,21 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
     setMounted(true);
   }, []);
 
+  // Blocca lo scroll del DOCUMENTO (html/body) mentre la sezione manager è montata.
+  // Su iOS l'intera pagina scrollava di pochi px, trascinando su l'header fisso.
+  // Gli scroll interni (contenitori overflow-y-auto) continuano a funzionare.
+  // Scoped alla sezione manager: login/checkin/altri ruoli non sono toccati.
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    html.classList.add("lock-scroll");
+    body.classList.add("lock-scroll");
+    return () => {
+      html.classList.remove("lock-scroll");
+      body.classList.remove("lock-scroll");
+    };
+  }, []);
+
   const toggle = () => {
     setCollapsed((prev) => {
       const next = !prev;
