@@ -401,6 +401,46 @@ export default function MobileDashboard({
   const [allCleaningsStatus, setAllCleaningsStatus] = useState("ALL");
   const [allCleaningsData, setAllCleaningsData]   = useState<AllCleaningItem[]>([]);
   const [allCleaningsLoading, setAllCleaningsLoading] = useState(false);
+
+  // ── Sheet tutti i check-in ───────────────────────────────────
+  type AllCheckinItem = {
+    id: string;
+    date: string;
+    status: string;
+    apartmentId: string;
+    apartmentName: string;
+    guestName: string | null;
+    totalGuests: number | null;
+    checkOutDate: string | null;
+    href: string;
+  };
+  const [allCheckinsMonth, setAllCheckinsMonth]     = useState(`${nowForSheet.getFullYear()}-${String(nowForSheet.getMonth() + 1).padStart(2, "0")}`);
+  const [allCheckinsApt, setAllCheckinsApt]         = useState("ALL");
+  const [allCheckinsStatus, setAllCheckinsStatus]   = useState("ALL");
+  const [allCheckinsData, setAllCheckinsData]       = useState<AllCheckinItem[]>([]);
+  const [allCheckinsLoading, setAllCheckinsLoading] = useState(false);
+
+  // ── Sheet tutti i ticket ───────────────────────────────────
+  type AllTicketItem = {
+    id: string;
+    date: string;
+    scheduledStart: string | null;
+    createdAt: string;
+    title: string;
+    status: string;
+    priority: string | null;
+    apartmentId: string;
+    apartmentName: string;
+    assignedToName: string | null;
+    isAssigned: boolean;
+    href: string;
+  };
+  const [allTicketsMonth, setAllTicketsMonth]     = useState(`${nowForSheet.getFullYear()}-${String(nowForSheet.getMonth() + 1).padStart(2, "0")}`);
+  const [allTicketsApt, setAllTicketsApt]         = useState("ALL");
+  const [allTicketsStatus, setAllTicketsStatus]   = useState("ALL");
+  const [allTicketsData, setAllTicketsData]       = useState<AllTicketItem[]>([]);
+  const [allTicketsLoading, setAllTicketsLoading] = useState(false);
+
   const [aiChatOpen, setAiChatOpen]         = useState(false);
   const [searchOpen, setSearchOpen]         = useState(false);
   const [searchQuery, setSearchQuery]       = useState("");
@@ -506,6 +546,40 @@ export default function MobileDashboard({
     }
   }
 
+  // ── Fetch tutti i check-in ────────────────────────────────────────
+  async function fetchAllCheckins(month: string, aptId: string, status: string) {
+    setAllCheckinsLoading(true);
+    try {
+      const params = new URLSearchParams({ month });
+      if (aptId !== "ALL") params.set("apartmentId", aptId);
+      if (status !== "ALL") params.set("status", status);
+      const res = await fetch(`/api/checkins-all?${params}`);
+      const data = await res.json();
+      setAllCheckinsData(data);
+    } catch {
+      setAllCheckinsData([]);
+    } finally {
+      setAllCheckinsLoading(false);
+    }
+  }
+
+  // ── Fetch tutti i ticket ────────────────────────────────────────
+  async function fetchAllTickets(month: string, aptId: string, status: string) {
+    setAllTicketsLoading(true);
+    try {
+      const params = new URLSearchParams({ month });
+      if (aptId !== "ALL") params.set("apartmentId", aptId);
+      if (status !== "ALL") params.set("status", status);
+      const res = await fetch(`/api/tickets-all?${params}`);
+      const data = await res.json();
+      setAllTicketsData(data);
+    } catch {
+      setAllTicketsData([]);
+    } finally {
+      setAllTicketsLoading(false);
+    }
+  }
+
   // ── Hamburger button (reused in multiple headers) ──────────────────
   const HamburgerBtn = () => (
     <button
@@ -538,7 +612,7 @@ export default function MobileDashboard({
     sessionStorage.removeItem("returnToSheet");
 
     if (action === "cleanings") { setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); setTicketsSheetOpen(false); }
-    else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); }
+    else if (action === "tickets") { setTicketsSheetOpen(true); fetchAllTickets(allTicketsMonth, allTicketsApt, allTicketsStatus); setCleaningsSheetOpen(false); }
     else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
     else if (action === "map") { setMapOpen(true); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
     else { setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
@@ -562,7 +636,7 @@ export default function MobileDashboard({
       setInProgressSheetOpen(false);
 
       if (action === "cleanings") { setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
-      else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
+      else if (action === "tickets") { setTicketsSheetOpen(true); fetchAllTickets(allTicketsMonth, allTicketsApt, allTicketsStatus); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
       else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
       else if (action === "map") { setMapOpen(true); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
       else {
@@ -589,7 +663,7 @@ export default function MobileDashboard({
         setCalendarData(null);
       } else if (action === "calendar") { setActiveTab("calendar"); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); }
       else if (action === "cleanings") { setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
-      else if (action === "tickets") { setTicketsSheetOpen(true); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
+      else if (action === "tickets") { setTicketsSheetOpen(true); fetchAllTickets(allTicketsMonth, allTicketsApt, allTicketsStatus); setCleaningsSheetOpen(false); setActiveTab("dashboard"); }
       else if (action === "map") { setMapOpen(true); setCleaningsSheetOpen(false); setTicketsSheetOpen(false); setActiveTab("dashboard"); }
     };
     window.addEventListener("mobile-tab-action", onAction);
@@ -676,7 +750,7 @@ export default function MobileDashboard({
 
           {/* ─ Check-in oggi ─ */}
           <button
-            onClick={() => { hapticLight(); setCheckinsSheetOpen(true); }}
+            onClick={() => { hapticLight(); setCheckinsSheetOpen(true); fetchAllCheckins(allCheckinsMonth, allCheckinsApt, allCheckinsStatus); }}
             className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 ${
               checkinsCount > 0
                 ? "bg-blue-50 border-blue-200 shadow-sm shadow-blue-100"
@@ -711,7 +785,7 @@ export default function MobileDashboard({
 
           {/* ─ Ticket Oggi ─ */}
           <button
-            onClick={() => { hapticLight(); setTicketsSheetOpen(true); }}
+            onClick={() => { hapticLight(); setTicketsSheetOpen(true); fetchAllTickets(allTicketsMonth, allTicketsApt, allTicketsStatus); }}
             className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 ${
               ticketsTodayCount > 0
                 ? "bg-orange-50 border-orange-200 shadow-sm shadow-orange-100"
@@ -1709,57 +1783,222 @@ export default function MobileDashboard({
       )}
 
       {/* ════════════════════════════════════════════════════
-          CHECK-IN OGGI SHEET
+          CHECK-IN SHEET — Oggi in evidenza + lista mese
           ════════════════════════════════════════════════════ */}
-      {checkinsSheetOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
-          <div className="px-5 pt-3 pb-4 flex items-center gap-3 border-b border-slate-100">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.navToday}</p>
-              <h2 className="text-xl font-bold text-slate-900">
-                {checkinsCount > 0 ? `${checkinsCount} check-in` : "Nessun check-in oggi"}
-              </h2>
-            </div>
-            <button
-              onClick={() => setCheckinsSheetOpen(false)}
-              aria-label="Indietro"
-              className="order-first shrink-0 w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
-              </svg>
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
-            {checkinsItems.length === 0 && (
-              <div className="text-center py-12 text-slate-400 text-sm">Nessun check-in previsto per oggi</div>
-            )}
-            {checkinsItems.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => { setCheckinsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
-                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
+      {checkinsSheetOpen && (() => {
+        // Data server per calcolare "oggi" in modo coerente
+        const todayYMD = serverDate;
+        const todayItems = allCheckinsData.filter((c) => isoToYMD(c.date) === todayYMD);
+        const otherItems = allCheckinsData.filter((c) => isoToYMD(c.date) !== todayYMD);
+
+        // Raggruppa per giorno gli altri
+        const grouped: Record<string, AllCheckinItem[]> = {};
+        otherItems.forEach((item) => {
+          const d = new Date(item.date);
+          const key = d.toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push(item);
+        });
+        const groupKeys = Object.keys(grouped);
+
+        // Mesi disponibili
+        const monthOptions: { value: string; label: string }[] = [];
+        const base = new Date();
+        base.setDate(1);
+        for (let i = -3; i <= 8; i++) {
+          const d = new Date(base.getFullYear(), base.getMonth() + i, 1);
+          const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+          const label = d.toLocaleDateString(dateLocale, { month: "long", year: "numeric" });
+          monthOptions.push({ value: val, label: label.charAt(0).toUpperCase() + label.slice(1) });
+        }
+
+        const statusOptions = [
+          { value: "ALL",         label: "Tutti" },
+          { value: "PENDING",     label: tr.stTicketWaiting },
+          { value: "COMPLETED",   label: tr.mdCompletedPlural },
+        ];
+
+        function barColor(status: string) {
+          if (status === "COMPLETED") return "bg-emerald-500";
+          if (status === "IN_PROGRESS") return "bg-violet-500";
+          return "bg-blue-500";
+        }
+
+        const todayDateLabel = new Date().toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
+
+        return (
+          <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
+            {/* Header */}
+            <div className="px-5 pt-3 pb-3 flex items-center gap-3 border-b border-[#dbeafe] shrink-0">
+              <button
+                onClick={() => setCheckinsSheetOpen(false)}
+                aria-label="Indietro"
+                className="shrink-0 w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"
               >
-                <div className="h-1 bg-blue-500" />
-                <div className="px-4 py-3 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5">
-                      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
-                    </svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+                </svg>
+              </button>
+              <span className="text-lg font-bold text-slate-900">Check-in</span>
+            </div>
+
+            <div className="flex-1 overflow-y-auto pb-24">
+              {/* HERO Oggi */}
+              <div
+                className="mx-4 mt-4 mb-3 rounded-3xl p-4 text-white shadow-[0_10px_24px_rgba(37,99,235,.28)]"
+                style={{ background: "linear-gradient(135deg, #2563eb, #6366f1)" }}
+              >
+                <p className="text-[10px] font-black uppercase tracking-[.12em] opacity-85 capitalize">Oggi · {todayDateLabel}</p>
+                <p className="text-3xl font-black leading-none mt-1 mb-3">
+                  {todayItems.length}
+                  <span className="text-sm font-bold opacity-90 ml-2">
+                    {todayItems.length === 1 ? "check-in" : "check-in in arrivo"}
+                  </span>
+                </p>
+                {todayItems.length === 0 ? (
+                  <div className="rounded-2xl bg-white/15 border border-white/20 py-3 text-center text-xs font-bold">
+                    ✓ Nessun check-in per oggi
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
-                    <p className="text-[10px] text-slate-400 truncate">Ospite: {item.guestName}</p>
+                ) : (
+                  <div className="space-y-2">
+                    {todayItems.map((item) => {
+                      const time = new Date(item.date).toLocaleTimeString(dateLocale, { hour: "2-digit", minute: "2-digit" });
+                      return (
+                        <div
+                          key={item.id}
+                          onClick={() => { sessionStorage.setItem("returnToSheet", "checkins"); setCheckinsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
+                          className="rounded-2xl bg-white/15 border border-white/20 px-3 py-2.5 flex items-center gap-3 active:bg-white/25 transition-colors cursor-pointer"
+                        >
+                          <div className="w-9 h-9 rounded-xl bg-white/25 flex items-center justify-center shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-bold truncate">{item.apartmentName}</p>
+                            <p className="text-[11px] opacity-85 truncate">
+                              {item.guestName ?? "—"}{item.totalGuests ? ` · ${item.totalGuests} ospiti` : ""}
+                            </p>
+                          </div>
+                          <span className="text-[11.5px] font-bold bg-white/25 px-2.5 py-1 rounded-full shrink-0">{time}</span>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full shrink-0">
-                    Apri
-                  </div>
-                </div>
+                )}
               </div>
-            ))}
+
+              {/* Divider "Tutti i check-in" */}
+              <div className="px-5 pt-2 pb-2 flex items-center gap-3">
+                <p className="text-[11px] font-black uppercase tracking-[.09em] text-slate-400">Tutti i check-in</p>
+                <div className="flex-1 h-px bg-slate-200"></div>
+              </div>
+
+              {/* Filtri appartamento + mese */}
+              <div className="px-4 py-2 flex gap-2">
+                <select
+                  value={allCheckinsApt}
+                  onChange={(e) => { setAllCheckinsApt(e.target.value); fetchAllCheckins(allCheckinsMonth, e.target.value, allCheckinsStatus); }}
+                  className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#dbeafe] bg-white text-blue-700 min-w-0 appearance-none"
+                >
+                  <option value="ALL">{tr.mdAllApartments}</option>
+                  {apartments.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </select>
+                <select
+                  value={allCheckinsMonth}
+                  onChange={(e) => { setAllCheckinsMonth(e.target.value); fetchAllCheckins(e.target.value, allCheckinsApt, allCheckinsStatus); }}
+                  className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#dbeafe] bg-white text-blue-700 min-w-0 appearance-none"
+                >
+                  {monthOptions.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                </select>
+              </div>
+
+              {/* Chip stato */}
+              <div className="px-4 py-2 flex gap-2 overflow-x-auto scrollbar-hide">
+                {statusOptions.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => { setAllCheckinsStatus(opt.value); fetchAllCheckins(allCheckinsMonth, allCheckinsApt, opt.value); }}
+                    className={`text-[11px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap border transition-all ${
+                      allCheckinsStatus === opt.value
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-slate-500 border-[#dbeafe]"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Lista giorni successivi */}
+              {allCheckinsLoading ? (
+                <div className="px-5 py-4 space-y-3">
+                  {[1,2,3].map((i) => (
+                    <div key={i} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+                      <div className="h-1 bg-slate-100 animate-pulse" />
+                      <div className="px-4 py-3 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 animate-pulse shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 bg-slate-100 animate-pulse rounded w-3/4" />
+                          <div className="h-2 bg-slate-100 animate-pulse rounded w-1/2" />
+                        </div>
+                        <div className="w-16 h-6 bg-slate-100 animate-pulse rounded-lg" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : groupKeys.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 text-sm">Nessun altro check-in nel mese</div>
+              ) : (
+                <div className="px-5 py-3 space-y-5">
+                  {groupKeys.map((dayLabel) => (
+                    <div key={dayLabel}>
+                      <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2 capitalize">{dayLabel}</p>
+                      <div className="space-y-2">
+                        {grouped[dayLabel].map((item) => {
+                          const time = new Date(item.date).toLocaleTimeString(dateLocale, { hour: "2-digit", minute: "2-digit" });
+                          const nights = item.checkOutDate ? diffDays(item.date, item.checkOutDate) : null;
+                          const badgeClass = item.status === "COMPLETED" ? "bg-emerald-50 text-emerald-700" : "bg-blue-50 text-blue-700";
+                          const badgeLbl = item.status === "COMPLETED" ? tr.mdCompletedPlural : "In arrivo";
+                          return (
+                            <div
+                              key={item.id}
+                              onClick={() => { sessionStorage.setItem("returnToSheet", "checkins"); setCheckinsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
+                              className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
+                            >
+                              <div className={`h-1 ${barColor(item.status)}`} />
+                              <div className="px-4 py-3 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5">
+                                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
+                                  <p className="text-[10px] text-slate-400 truncate">
+                                    {item.guestName ?? "—"}{item.totalGuests ? ` · ${item.totalGuests} ospiti` : ""}
+                                  </p>
+                                  <div className="flex gap-1.5 mt-1">
+                                    <span className="text-[10px] font-bold text-slate-600 bg-slate-50 px-2 py-0.5 rounded-full">📅 {time}</span>
+                                    {nights !== null && nights > 0 && (
+                                      <span className="text-[10px] font-bold text-slate-600 bg-slate-50 px-2 py-0.5 rounded-full">{nights} {nights === 1 ? "notte" : "notti"}</span>
+                                    )}
+                                  </div>
+                                </div>
+                                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 ${badgeClass}`}>{badgeLbl}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ════════════════════════════════════════════════════
           TUTTE LE PULIZIE SHEET
@@ -1936,68 +2175,232 @@ export default function MobileDashboard({
       {/* ════════════════════════════════════════════════════
           TICKET OGGI SHEET
           ════════════════════════════════════════════════════ */}
-      {ticketsSheetOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
-          <div className="px-5 pt-3 pb-4 flex items-center gap-3 border-b border-slate-100">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">{tr.navMaintenance}</p>
-              <h2 className="text-xl font-bold text-slate-900">
-                {ticketsTodayItems.length > 0
-                  ? `${ticketsTodayItems.length} ticket oggi`
-                  : tr.kpiEmptyTickets}
-              </h2>
+      {ticketsSheetOpen && (() => {
+        const todayYMD = serverDate;
+        const todayItems = allTicketsData.filter((tk) => isoToYMD(tk.date) === todayYMD);
+        const otherItems = allTicketsData.filter((tk) => isoToYMD(tk.date) !== todayYMD);
+
+        const grouped: Record<string, AllTicketItem[]> = {};
+        otherItems.forEach((item) => {
+          const d = new Date(item.date);
+          const key = d.toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push(item);
+        });
+        const groupKeys = Object.keys(grouped);
+
+        const monthOptions: { value: string; label: string }[] = [];
+        const base = new Date();
+        base.setDate(1);
+        for (let i = -3; i <= 8; i++) {
+          const d = new Date(base.getFullYear(), base.getMonth() + i, 1);
+          const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+          const label = d.toLocaleDateString(dateLocale, { month: "long", year: "numeric" });
+          monthOptions.push({ value: val, label: label.charAt(0).toUpperCase() + label.slice(1) });
+        }
+
+        const statusOptions = [
+          { value: "ALL",             label: "Tutti" },
+          { value: "OPEN",            label: "Aperti" },
+          { value: "IN_PROGRESS",     label: tr.calInProgress },
+          { value: "AWAITING_REVIEW", label: "Revisione" },
+          { value: "APPROVED",        label: tr.mdApprovedPlural },
+        ];
+
+        function tkBar(status: string, assigned: boolean) {
+          if (status === "APPROVED") return "bg-emerald-500";
+          if (["AWAITING_REVIEW","RESOLVED"].includes(status)) return "bg-amber-400";
+          if (status === "IN_PROGRESS") return "bg-violet-500";
+          if (assigned) return "bg-yellow-400";
+          return "bg-red-500";
+        }
+        function prioLabel(p: string | null) {
+          if (!p) return null;
+          if (p === "URGENT") return "🔥 Urgente";
+          if (p === "HIGH") return "Alta";
+          if (p === "MEDIUM") return "Media";
+          if (p === "LOW") return "Bassa";
+          return p;
+        }
+
+        const todayDateLabel = new Date().toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
+
+        return (
+          <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
+            {/* Header */}
+            <div className="px-5 pt-3 pb-3 flex items-center gap-3 border-b border-[#fed7aa] shrink-0">
+              <button
+                onClick={() => setTicketsSheetOpen(false)}
+                aria-label="Indietro"
+                className="shrink-0 w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+                </svg>
+              </button>
+              <span className="text-lg font-bold text-slate-900">{tr.navMaintenance}</span>
             </div>
-            <button
-              onClick={() => setTicketsSheetOpen(false)}
-              aria-label="Indietro"
-              className="order-first shrink-0 w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
-              </svg>
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
-            {ticketsTodayItems.length === 0 && (
-              <div className="text-center py-12 text-slate-400 text-sm">
-                ✓ Nessun ticket per oggi
-              </div>
-            )}
-            {ticketsTodayItems.map((ticket) => {
-              const badgeClass = unifiedStatusColor(ticket.status, ticket.isAssigned);
-              const ticketStatusLabel = statusLabel(ticket.status, ticket.isAssigned, tr);
-              const barColor = ticket.status === "APPROVED" ? "bg-emerald-400"
-                : ["AWAITING_REVIEW","RESOLVED"].includes(ticket.status) ? "bg-amber-400"
-                : ticket.status === "IN_PROGRESS" ? "bg-violet-500"
-                : ticket.isAssigned ? "bg-yellow-400"
-                : "bg-red-400";
-              return (
-                <div
-                  key={ticket.id}
-                  onClick={() => { sessionStorage.setItem("returnToSheet", "tickets"); setTicketsSheetOpen(false); requestAnimationFrame(() => router.push(ticket.href)); }}
-                  className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
-                >
-                  <div className={`h-1 ${barColor}`} />
-                  <div className="px-4 py-3 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2.5">
-                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-900 truncate">{ticket.title}</p>
-                      <p className="text-[10px] text-slate-400 truncate">{ticket.apartmentName}</p>
-                    </div>
-                    <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 ${badgeClass}`}>
-                      {ticketStatusLabel}
-                    </span>
+
+            <div className="flex-1 overflow-y-auto pb-24">
+              {/* HERO Oggi */}
+              <div
+                className="mx-4 mt-4 mb-3 rounded-3xl p-4 text-white shadow-[0_10px_24px_rgba(249,115,22,.30)]"
+                style={{ background: "linear-gradient(135deg, #f97316, #ef4444)" }}
+              >
+                <p className="text-[10px] font-black uppercase tracking-[.12em] opacity-85 capitalize">Oggi · {todayDateLabel}</p>
+                <p className="text-3xl font-black leading-none mt-1 mb-3">
+                  {todayItems.length}
+                  <span className="text-sm font-bold opacity-90 ml-2">
+                    {todayItems.length === 1 ? "intervento in giornata" : "interventi in giornata"}
+                  </span>
+                </p>
+                {todayItems.length === 0 ? (
+                  <div className="rounded-2xl bg-white/15 border border-white/20 py-3 text-center text-xs font-bold">
+                    ✓ Nessun ticket per oggi
                   </div>
+                ) : (
+                  <div className="space-y-2">
+                    {todayItems.map((tk) => {
+                      const st = statusLabel(tk.status, tk.isAssigned, tr);
+                      return (
+                        <div
+                          key={tk.id}
+                          onClick={() => { sessionStorage.setItem("returnToSheet", "tickets"); setTicketsSheetOpen(false); requestAnimationFrame(() => router.push(tk.href)); }}
+                          className="rounded-2xl bg-white/15 border border-white/20 px-3 py-2.5 flex items-center gap-3 active:bg-white/25 transition-colors cursor-pointer"
+                        >
+                          <div className="w-9 h-9 rounded-xl bg-white/25 flex items-center justify-center shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-bold truncate">{tk.title} · {tk.apartmentName}</p>
+                            <p className="text-[11px] opacity-85 truncate">
+                              {prioLabel(tk.priority) ?? "—"} · {tk.assignedToName ?? tr.mgrUnassignedM ?? "Non assegnato"}
+                            </p>
+                          </div>
+                          <span className="text-[11.5px] font-bold bg-white/25 px-2.5 py-1 rounded-full shrink-0">{st}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div className="px-5 pt-2 pb-2 flex items-center gap-3">
+                <p className="text-[11px] font-black uppercase tracking-[.09em] text-slate-400">Tutti i ticket</p>
+                <div className="flex-1 h-px bg-slate-200"></div>
+              </div>
+
+              {/* Filtri */}
+              <div className="px-4 py-2 flex gap-2">
+                <select
+                  value={allTicketsApt}
+                  onChange={(e) => { setAllTicketsApt(e.target.value); fetchAllTickets(allTicketsMonth, e.target.value, allTicketsStatus); }}
+                  className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#fed7aa] bg-white text-orange-700 min-w-0 appearance-none"
+                >
+                  <option value="ALL">{tr.mdAllApartments}</option>
+                  {apartments.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </select>
+                <select
+                  value={allTicketsMonth}
+                  onChange={(e) => { setAllTicketsMonth(e.target.value); fetchAllTickets(e.target.value, allTicketsApt, allTicketsStatus); }}
+                  className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#fed7aa] bg-white text-orange-700 min-w-0 appearance-none"
+                >
+                  {monthOptions.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                </select>
+              </div>
+
+              {/* Chip stato */}
+              <div className="px-4 py-2 flex gap-2 overflow-x-auto scrollbar-hide">
+                {statusOptions.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => { setAllTicketsStatus(opt.value); fetchAllTickets(allTicketsMonth, allTicketsApt, opt.value); }}
+                    className={`text-[11px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap border transition-all ${
+                      allTicketsStatus === opt.value
+                        ? "bg-orange-600 text-white border-orange-600"
+                        : "bg-white text-slate-500 border-[#fed7aa]"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Lista */}
+              {allTicketsLoading ? (
+                <div className="px-5 py-4 space-y-3">
+                  {[1,2,3].map((i) => (
+                    <div key={i} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+                      <div className="h-1 bg-slate-100 animate-pulse" />
+                      <div className="px-4 py-3 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 animate-pulse shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 bg-slate-100 animate-pulse rounded w-3/4" />
+                          <div className="h-2 bg-slate-100 animate-pulse rounded w-1/2" />
+                        </div>
+                        <div className="w-16 h-6 bg-slate-100 animate-pulse rounded-lg" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              );
-            })}
+              ) : groupKeys.length === 0 ? (
+                <div className="text-center py-10 text-slate-400 text-sm">Nessun altro ticket nel mese</div>
+              ) : (
+                <div className="px-5 py-3 space-y-5">
+                  {groupKeys.map((dayLabel) => (
+                    <div key={dayLabel}>
+                      <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2 capitalize">{dayLabel}</p>
+                      <div className="space-y-2">
+                        {grouped[dayLabel].map((tk) => {
+                          const bc = tkBar(tk.status, tk.isAssigned);
+                          const badgeClass = unifiedStatusColor(tk.status, tk.isAssigned);
+                          const lbl = statusLabel(tk.status, tk.isAssigned, tr);
+                          const time = tk.scheduledStart
+                            ? new Date(tk.scheduledStart).toLocaleTimeString(dateLocale, { hour: "2-digit", minute: "2-digit" })
+                            : null;
+                          const prio = prioLabel(tk.priority);
+                          return (
+                            <div
+                              key={tk.id}
+                              onClick={() => { sessionStorage.setItem("returnToSheet", "tickets"); setTicketsSheetOpen(false); requestAnimationFrame(() => router.push(tk.href)); }}
+                              className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
+                            >
+                              <div className={`h-1 ${bc}`} />
+                              <div className="px-4 py-3 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2.5">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                                  </svg>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-bold text-slate-900 truncate">{tk.title}</p>
+                                  <p className="text-[10px] text-slate-400 truncate">
+                                    {tk.apartmentName}{tk.assignedToName ? ` · ${tk.assignedToName}` : ""}
+                                  </p>
+                                  {(prio || time) && (
+                                    <div className="flex gap-1.5 mt-1">
+                                      {prio && <span className="text-[10px] font-bold text-slate-600 bg-slate-50 px-2 py-0.5 rounded-full">{prio}</span>}
+                                      {time && <span className="text-[10px] font-bold text-slate-600 bg-slate-50 px-2 py-0.5 rounded-full">🕐 {time}</span>}
+                                    </div>
+                                  )}
+                                </div>
+                                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 ${badgeClass}`}>{lbl}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ════════════════════════════════════════════════════
           PULIZIE IN RITARDO SHEET
