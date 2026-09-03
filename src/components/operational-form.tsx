@@ -1,9 +1,11 @@
 "use client";
 
-import { useActionState, useState, useEffect, useCallback } from "react";
+import { useActionState, useState, useEffect, useCallback, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
-import { getApartmentSchedule } from "@/src/app/actions/operational";
+import { Trash2, AlertTriangle } from "lucide-react";
+import { getApartmentSchedule, deleteCleaningTask } from "@/src/app/actions/operational";
 import { formatRomeDateInputValue, formatRomeTimeInputValue } from "@/src/lib/rome-datetime";
 import MaintenanceTaskEditor from "@/src/components/maintenance-task-editor";
 import type { MaintenanceTask } from "@/src/components/maintenance-task-editor";
@@ -85,7 +87,19 @@ type TicketJson = {
 export default function OperationalForm({ type, apartments, personnel, action, initialData, hasSofaBed = false, redirectTo }: OperationalFormProps) {
   const { t } = useLang();
   const toast = useToast();
+  const router = useRouter();
   const isEditing = !!initialData;
+  const canDelete = isEditing && type === "CLEANING";
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isDeleting, startDelete] = useTransition();
+
+  function handleDelete() {
+    if (!initialData) return;
+    startDelete(async () => {
+      await deleteCleaningTask(initialData.id);
+      router.push("/dashboard/manager/cleanings");
+    });
+  }
   // If editing, we use the action bound with the ID. 
   // If not, we use the provided action directly (which matches the (prevState, formData) signature).
   const finalAction = isEditing ? (action as any).bind(null, initialData.id) : action;
@@ -496,17 +510,83 @@ export default function OperationalForm({ type, apartments, personnel, action, i
           )}
         </div>
 
-        <div className="pt-4 flex items-center justify-end gap-3 mt-8 border-t border-gray-50 pt-6">
-          <Link href={isEditing ? (type === "CLEANING" ? "/dashboard/manager/cleanings" : "/dashboard/manager/maintenance") : "/dashboard/manager"} className="px-5 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-            {t.mgrCancel}
-          </Link>
-          <button 
-            type="submit" 
-            disabled={isPending}
-            className="rounded-full bg-black px-10 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            {isPending ? t.clSavingLong : isEditing ? t.ofUpdate : (type === "CLEANING" ? t.ofPlanCleaning : t.ofOpenTicket)}
-          </button>
+        <div className="mt-8 border-t border-gray-50 pt-6">
+          {canDelete ? (
+            <div className="flex flex-col gap-2.5">
+              {/* Azione primaria */}
+              <button
+                type="submit"
+                disabled={isPending || isDeleting}
+                className="w-full h-12 flex items-center justify-center rounded-2xl bg-black text-sm font-semibold text-white shadow-md active:scale-[.98] transition-transform disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                {isPending ? t.clSavingLong : t.ofUpdate}
+              </button>
+              <Link
+                href="/dashboard/manager/cleanings"
+                className="w-full h-11 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-sm font-semibold text-gray-600 active:scale-[.98] transition-transform"
+              >
+                {t.mgrCancel}
+              </Link>
+
+              {/* Zona distruttiva, isolata */}
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                {!confirmDelete ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDelete(true)}
+                      className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-white border border-rose-200 text-sm font-semibold text-rose-600 active:scale-[.98] transition-transform"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {t.ofDeleteCleaning}
+                    </button>
+                    <p className="text-xs text-gray-400 mt-2 px-1">{t.ofDeleteCleaningWarn}</p>
+                  </>
+                ) : (
+                  <div className="rounded-2xl border border-rose-200 bg-rose-50 p-3.5 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex items-start gap-2.5">
+                      <AlertTriangle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                      <p className="text-[13px] text-rose-800 leading-snug">
+                        <span className="font-bold">{t.ofDeleteCleaningQ}</span><br />
+                        {t.ofDeleteCleaningWarn}
+                      </p>
+                    </div>
+                    <div className="flex gap-2.5 mt-3">
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDelete(false)}
+                        disabled={isDeleting}
+                        className="flex-1 h-11 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-sm font-semibold text-gray-600 active:scale-[.98] transition-transform disabled:opacity-50"
+                      >
+                        {t.mgrCancel}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="flex-1 h-11 flex items-center justify-center gap-2 rounded-xl bg-rose-600 text-sm font-semibold text-white active:scale-[.98] transition-transform disabled:opacity-60"
+                      >
+                        {isDeleting ? t.ofDeleting : t.ofDeleteYes}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-end gap-3">
+              <Link href={isEditing ? "/dashboard/manager/maintenance" : "/dashboard/manager"} className="px-5 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                {t.mgrCancel}
+              </Link>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="rounded-full bg-black px-10 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                {isPending ? t.clSavingLong : isEditing ? t.ofUpdate : (type === "CLEANING" ? t.ofPlanCleaning : t.ofOpenTicket)}
+              </button>
+            </div>
+          )}
         </div>
       </form>
     </section>
