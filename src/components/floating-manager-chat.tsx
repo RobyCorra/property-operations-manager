@@ -11,6 +11,7 @@ import {
   saveManagerChatMessage,
   getSessionDates,
   getSessionMessages,
+  clearSessionMessages,
 } from "@/src/app/actions/manager-chat";
 import { useRouter } from "next/navigation";
 
@@ -262,6 +263,35 @@ export default function FloatingManagerChat({
   const [isPastSession, setIsPastSession] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const clearedAtRef = useRef<number>(0); // timestamp ms — messaggi DB prima di questo vengono ignorati
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  // "+ Nuova chat" — pulisce la vista corrente senza toccare il DB.
+  // I messaggi restano nell'archivio (tab date) ma non compaiono più in "Oggi".
+  function handleNewChat() {
+    clearedAtRef.current = Date.now();
+    setMessages([]);
+    setInput("");
+  }
+
+  // "🗑 Elimina" — cancella davvero dal DB i messaggi della sessione attiva.
+  async function handleDeleteSession() {
+    if (!sessionId) return;
+    setDeleting(true);
+    try {
+      await clearSessionMessages(sessionId);
+      clearedAtRef.current = Date.now();
+      setMessages([]);
+      setDeleteConfirm(false);
+      // Aggiorna elenco date perché la sessione potrebbe essere vuota ora
+      try {
+        const dates = await getSessionDates();
+        setSessionDates(dates);
+      } catch {}
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   // ── Drag state ────────────────────────────────────────────────────────────
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
@@ -646,18 +676,37 @@ export default function FloatingManagerChat({
               </p>
             </div>
             <button
-              onClick={() => {
-                clearedAtRef.current = Date.now();
-                setMessages([]);
-              }}
+              onClick={handleNewChat}
               title="Nuova chat"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-sm"
-              style={{ background: "rgba(255,255,255,.18)" }}
-            >🗑️</button>
+              aria-label="Nuova chat"
+              className="h-9 px-3 rounded-full flex items-center gap-1.5 text-[12px] font-bold text-white"
+              style={{ background: "rgba(255,255,255,.22)" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Nuova
+            </button>
+            {messages.length > 0 && (
+              <button
+                onClick={() => setDeleteConfirm(true)}
+                title="Elimina definitivamente questa conversazione"
+                aria-label="Elimina questa conversazione"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white"
+                style={{ background: "rgba(255,255,255,.18)" }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                  <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            )}
             <button
               onClick={() => setOpen(false)}
               aria-label="Chiudi"
-              className="w-8 h-8 rounded-full flex items-center justify-center"
+              className="w-9 h-9 rounded-full flex items-center justify-center"
               style={{ background: "rgba(255,255,255,.18)" }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -805,73 +854,163 @@ export default function FloatingManagerChat({
             </div>
           )}
 
-          {/* Chip suggerimenti */}
-          {!isPastSession && input.length === 0 && !loading && (
-            <div className="flex gap-2 px-3.5 pb-2.5 overflow-x-auto shrink-0" style={{ scrollbarWidth: "none" }}>
+          {/* Card azioni rapide (2 colonne) — quando la chat è vuota */}
+          {!isPastSession && input.length === 0 && !loading && messages.length === 0 && (
+            <div className="px-3.5 pb-2 shrink-0 grid grid-cols-2 gap-2">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s.label}
                   onClick={() => handleAsk(false, s.prompt)}
-                  className="shrink-0 bg-white border-[1.5px] border-[#ede9fe] rounded-full px-3.5 py-2 text-[12px] font-semibold text-violet-700 whitespace-nowrap shadow-sm active:scale-95 transition-transform"
+                  className="bg-white border border-[#ede9fe] rounded-2xl px-3 py-3 flex items-center gap-3 shadow-sm active:scale-[.98] transition-transform text-left"
                 >
-                  {s.emoji} {s.label}
+                  <div className="w-11 h-11 rounded-xl bg-violet-50 flex items-center justify-center text-[20px] shrink-0">
+                    {s.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-extrabold text-slate-800 leading-tight truncate">{s.label}</p>
+                    <p className="text-[10.5px] text-slate-400 mt-0.5 truncate">Tocca per chiedere</p>
+                  </div>
                 </button>
               ))}
+            </div>
+          )}
+
+          {/* Conferma eliminazione */}
+          {deleteConfirm && (
+            <div className="mx-3.5 mb-2 rounded-2xl border border-rose-200 bg-rose-50 p-3 shrink-0 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-start gap-2.5">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2.5" className="shrink-0 mt-0.5">
+                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <p className="text-[13px] text-rose-800 leading-snug">
+                  <span className="font-bold">Eliminare questa conversazione?</span><br />
+                  I messaggi verranno cancellati dal database e non saranno più recuperabili.
+                </p>
+              </div>
+              <div className="flex gap-2 mt-3">
+                <button
+                  type="button"
+                  onClick={() => setDeleteConfirm(false)}
+                  disabled={deleting}
+                  className="flex-1 h-10 rounded-xl bg-white border border-slate-200 text-[13px] font-bold text-slate-600 active:scale-[.98] transition-transform disabled:opacity-50"
+                >
+                  Annulla
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteSession}
+                  disabled={deleting}
+                  className="flex-1 h-10 rounded-xl bg-rose-600 text-[13px] font-bold text-white active:scale-[.98] transition-transform disabled:opacity-60"
+                >
+                  {deleting ? "Eliminazione…" : "Sì, elimina"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Indicatore ascolto vocale */}
+          {listening && (
+            <div className="mx-3.5 mb-2 rounded-2xl bg-gradient-to-r from-violet-50 to-fuchsia-50 border border-violet-200 px-4 py-3 shrink-0 flex items-center gap-3">
+              <div className="flex items-end gap-[3px] h-6">
+                <span className="w-[3px] bg-violet-600 rounded-full animate-[voiceWave_1s_ease_infinite]" style={{ height: 14 }} />
+                <span className="w-[3px] bg-violet-600 rounded-full animate-[voiceWave_1s_ease_infinite]" style={{ height: 22, animationDelay: ".15s" }} />
+                <span className="w-[3px] bg-violet-600 rounded-full animate-[voiceWave_1s_ease_infinite]" style={{ height: 10, animationDelay: ".3s" }} />
+                <span className="w-[3px] bg-violet-600 rounded-full animate-[voiceWave_1s_ease_infinite]" style={{ height: 20, animationDelay: ".45s" }} />
+                <span className="w-[3px] bg-violet-600 rounded-full animate-[voiceWave_1s_ease_infinite]" style={{ height: 14, animationDelay: ".6s" }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-bold text-violet-800">Sto ascoltando…</p>
+                <p className="text-[11px] text-slate-500">Parla pure — trascrivo in messaggio</p>
+              </div>
+              <button
+                type="button"
+                onClick={toggleMic}
+                aria-label="Stop dettatura"
+                className="w-9 h-9 rounded-full bg-white border border-violet-200 text-violet-600 flex items-center justify-center active:scale-90 transition-transform shrink-0"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+              </button>
             </div>
           )}
 
           {/* Input bar */}
           {!isPastSession && (
             <div
-              className="bg-white border-t border-slate-100 px-3 pt-2 shrink-0"
+              className="bg-white border-t border-slate-100 px-3 pt-3 shrink-0"
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 14px)" }}
             >
-              {/* Toggle ricerca web */}
-              <div className="flex gap-2 mb-2">
-                <button
-                  type="button"
-                  onClick={() => setWebSearch((v) => !v)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-bold border transition-all active:scale-95 ${
-                    webSearch
-                      ? "bg-blue-500 border-blue-500 text-white shadow-[0_2px_8px_rgba(59,130,246,.35)]"
-                      : "bg-white border-slate-200 text-slate-500 hover:border-blue-300 hover:text-blue-600"
-                  }`}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                  </svg>
-                  Ricerca web
-                  {webSearch && (
-                    <span className="ml-0.5 opacity-80">✓</span>
-                  )}
-                </button>
-              </div>
-              <div className="flex items-end gap-2">
-                <input
-                  ref={inputRef as any}
-                  className="flex-1 bg-[#f4f2fc] rounded-[22px] px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300 min-w-0"
-                  placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : "Scrivi un messaggio…"}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAsk(false);
-                    }
-                  }}
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAsk(false)}
-                  disabled={loading || !input.trim()}
-                  aria-label="Invia"
-                  className="w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 disabled:opacity-40 active:scale-90 transition-transform"
-                  style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 12px rgba(124,58,237,.35)" }}
-                >
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                </button>
+              <div className="flex items-end gap-2.5">
+                {/* Campo con icone Web/Send integrate */}
+                <div className="flex-1 relative bg-[#f4f2fc] rounded-[24px] border border-[#ede9fe] min-w-0">
+                  <textarea
+                    ref={inputRef as any}
+                    className="block w-full bg-transparent px-4 py-3 pr-[92px] text-[15px] outline-none resize-none min-h-[52px] max-h-[140px] leading-snug"
+                    placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : (webSearch ? "Cerca sul web…" : "Scrivi o usa il microfono…")}
+                    value={input}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      // Autosize: fit content up to max-height
+                      const el = e.target as HTMLTextAreaElement;
+                      el.style.height = "auto";
+                      el.style.height = Math.min(el.scrollHeight, 140) + "px";
+                    }}
+                    onKeyDown={(e) => {
+                      // Enter invia, Shift+Enter va a capo
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAsk(false);
+                      }
+                    }}
+                    rows={1}
+                    disabled={loading}
+                  />
+                  <div className="absolute right-2 bottom-2 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setWebSearch((v) => !v)}
+                      aria-label={webSearch ? "Disattiva ricerca web" : "Attiva ricerca web"}
+                      title="Ricerca web"
+                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+                        webSearch ? "bg-blue-500 text-white" : "text-slate-400 hover:text-blue-500"
+                      }`}
+                    >
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleAsk(false)}
+                      disabled={loading || !input.trim()}
+                      aria-label="Invia"
+                      className="w-9 h-9 rounded-full flex items-center justify-center disabled:opacity-40 active:scale-90 transition-transform"
+                      style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 10px rgba(124,58,237,.35)" }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Microfono grande — solo se il campo è vuoto e non stiamo ascoltando */}
+                {input.trim().length === 0 && !listening && (
+                  <button
+                    type="button"
+                    onClick={toggleMic}
+                    disabled={loading}
+                    aria-label="Dettatura vocale"
+                    className="relative w-[60px] h-[60px] rounded-full flex items-center justify-center text-white shrink-0 active:scale-95 transition-transform disabled:opacity-40"
+                    style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 6px 16px rgba(124,58,237,.35)" }}
+                  >
+                    <span className="absolute inset-[-6px] rounded-full border-2 border-violet-400/40 animate-[voicePulse_2s_ease_infinite] pointer-events-none" />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/>
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
           )}

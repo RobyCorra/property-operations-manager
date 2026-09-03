@@ -13,6 +13,19 @@
   50% { transform: translateX(3px); }
 }
 
+/* Onde audio nel banner "sto ascoltando" della dettatura vocale */
+@keyframes voiceWave {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(.4); }
+}
+
+/* Anello pulsante attorno al microfono per suggerire l'interazione */
+@keyframes voicePulse {
+  0%   { transform: scale(1);   opacity: .7; }
+  70%  { transform: scale(1.25); opacity: 0; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
 /* Apertura pannelli (sheet): micro-animazione fade + leggero slide dal basso,
    per un'apparizione più "nativa" invece del taglio netto. */
 @keyframes sheetIn {
