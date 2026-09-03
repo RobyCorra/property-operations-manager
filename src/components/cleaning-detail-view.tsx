@@ -581,6 +581,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                 action={updateCleaningTask as any}
                 hasSofaBed={hasSofaBed}
                 redirectTo="/dashboard/manager?sheet=cleanings"
+                onCancel={() => setEditOpen(false)}
                 initialData={{
                   id: task.id,
                   apartmentId: task.apartmentId,

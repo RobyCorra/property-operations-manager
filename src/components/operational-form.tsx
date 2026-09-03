@@ -54,6 +54,12 @@ interface OperationalFormProps {
   initialData?: OperationalInitialData;
   hasSofaBed?: boolean;
   redirectTo?: string;
+  /**
+   * Se fornita, "Annulla" chiude il form inline (torna alla vista precedente
+   * della stessa scheda) invece di fare router.back(). Usato dalla scheda
+   * pulizia dove Modifica/Annulla sono uno stato locale, non una navigazione.
+   */
+  onCancel?: () => void;
 }
 
 type ActionState = {
@@ -84,7 +90,7 @@ type TicketJson = {
   [key: string]: unknown;
 };
 
-export default function OperationalForm({ type, apartments, personnel, action, initialData, hasSofaBed = false, redirectTo }: OperationalFormProps) {
+export default function OperationalForm({ type, apartments, personnel, action, initialData, hasSofaBed = false, redirectTo, onCancel }: OperationalFormProps) {
   const { t } = useLang();
   const toast = useToast();
   const router = useRouter();
@@ -102,6 +108,13 @@ export default function OperationalForm({ type, apartments, personnel, action, i
       router.push("/dashboard/manager");
     });
   }
+
+  // Annulla: se il form è inline in una scheda (onCancel fornito) chiude solo
+  // la modalità edit; altrimenti torna indietro nello stack di navigazione.
+  const handleCancel = () => {
+    if (onCancel) onCancel();
+    else router.back();
+  };
   // If editing, we use the action bound with the ID. 
   // If not, we use the provided action directly (which matches the (prevState, formData) signature).
   const finalAction = isEditing ? (action as any).bind(null, initialData.id) : action;
@@ -525,7 +538,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
               </button>
               <button
                 type="button"
-                onClick={() => router.back()}
+                onClick={handleCancel}
                 className="w-full h-11 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-sm font-semibold text-gray-600 active:scale-[.98] transition-transform"
               >
                 {t.mgrCancel}
@@ -580,7 +593,7 @@ export default function OperationalForm({ type, apartments, personnel, action, i
             <div className="flex items-center justify-end gap-3">
               <button
                 type="button"
-                onClick={() => (isEditing ? router.back() : router.push("/dashboard/manager"))}
+                onClick={() => (isEditing ? handleCancel() : router.push("/dashboard/manager"))}
                 className="px-5 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
               >
                 {t.mgrCancel}
