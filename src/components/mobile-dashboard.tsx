@@ -1787,7 +1787,7 @@ export default function MobileDashboard({
           ════════════════════════════════════════════════════ */}
       {checkinsSheetOpen && (() => {
         // Data server per calcolare "oggi" in modo coerente
-        const todayYMD = serverDate;
+        const todayYMD = isoToYMD(serverDate);
         const todayItems = allCheckinsData.filter((c) => isoToYMD(c.date) === todayYMD);
         const otherItems = allCheckinsData.filter((c) => isoToYMD(c.date) !== todayYMD);
 
@@ -2004,15 +2004,22 @@ export default function MobileDashboard({
           TUTTE LE PULIZIE SHEET
           ════════════════════════════════════════════════════ */}
       {cleaningsSheetOpen && (() => {
-        // Raggruppa per data (giorno)
+        // Split oggi vs futuri
+        const todayYMD = isoToYMD(serverDate);
+        const todayItems = allCleaningsData.filter((c) => isoToYMD(c.date) === todayYMD);
+        const otherItems = allCleaningsData.filter((c) => isoToYMD(c.date) !== todayYMD);
+
+        // Raggruppa per data (giorno) solo i futuri
         const grouped: Record<string, AllCleaningItem[]> = {};
-        allCleaningsData.forEach((item) => {
+        otherItems.forEach((item) => {
           const d = new Date(item.date);
           const key = d.toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
           if (!grouped[key]) grouped[key] = [];
           grouped[key].push(item);
         });
         const groupKeys = Object.keys(grouped);
+
+        const todayDateLabel = new Date().toLocaleDateString(dateLocale, { weekday: "long", day: "numeric", month: "long" });
 
         // Mesi disponibili: mese corrente + 11 mesi futuri
         const monthOptions: { value: string; label: string }[] = [];
@@ -2059,44 +2066,98 @@ export default function MobileDashboard({
               <span className="text-lg font-bold text-slate-900">{tr.navCleanings}</span>
             </div>
 
-            {/* Filtri riga 1: appartamento + mese */}
-            <div className="px-4 py-2 flex gap-2 border-b border-[#ede9fe] shrink-0">
-              <select
-                value={allCleaningsApt}
-                onChange={(e) => { setAllCleaningsApt(e.target.value); fetchAllCleanings(allCleaningsMonth, e.target.value, allCleaningsStatus); }}
-                className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#ede9fe] bg-white text-violet-700 min-w-0 appearance-none"
-              >
-                <option value="ALL">{tr.mdAllApartments}</option>
-                {apartments.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-              </select>
-              <select
-                value={allCleaningsMonth}
-                onChange={(e) => { setAllCleaningsMonth(e.target.value); fetchAllCleanings(e.target.value, allCleaningsApt, allCleaningsStatus); }}
-                className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#ede9fe] bg-white text-violet-700 min-w-0 appearance-none"
-              >
-                {monthOptions.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-              </select>
-            </div>
-
-            {/* Filtri riga 2: stato pills */}
-            <div className="px-4 py-2 flex gap-2 overflow-x-auto border-b border-[#ede9fe] shrink-0 scrollbar-hide">
-              {statusOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => { setAllCleaningsStatus(opt.value); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, opt.value); }}
-                  className={`text-[11px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap border transition-all ${
-                    allCleaningsStatus === opt.value
-                      ? "bg-violet-600 text-white border-violet-600"
-                      : "bg-white text-slate-500 border-[#ede9fe]"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Lista */}
             <div className="flex-1 overflow-y-auto pb-24">
+              {/* HERO Oggi */}
+              <div
+                className="mx-4 mt-4 mb-3 rounded-3xl p-4 text-white shadow-[0_10px_24px_rgba(124,58,237,.28)]"
+                style={{ background: "linear-gradient(135deg, #7c3aed, #8b5cf6)" }}
+              >
+                <p className="text-[10px] font-black uppercase tracking-[.12em] opacity-85 capitalize">Oggi · {todayDateLabel}</p>
+                <p className="text-3xl font-black leading-none mt-1 mb-3">
+                  {todayItems.length}
+                  <span className="text-sm font-bold opacity-90 ml-2">
+                    {todayItems.length === 1 ? "pulizia oggi" : "pulizie oggi"}
+                  </span>
+                </p>
+                {todayItems.length === 0 ? (
+                  <div className="rounded-2xl bg-white/15 border border-white/20 py-3 text-center text-xs font-bold">
+                    ✓ Nessuna pulizia per oggi
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {todayItems.map((item) => {
+                      const assigned = !!item.assignedToName;
+                      const st = statusLabel(item.status, assigned, tr);
+                      const time = new Date(item.date).toLocaleTimeString(dateLocale, { hour: "2-digit", minute: "2-digit" });
+                      return (
+                        <div
+                          key={item.id}
+                          onClick={() => { sessionStorage.setItem("returnToSheet", "cleanings"); setCleaningsSheetOpen(false); requestAnimationFrame(() => router.push(item.href)); }}
+                          className="rounded-2xl bg-white/15 border border-white/20 px-3 py-2.5 flex items-center gap-3 active:bg-white/25 transition-colors cursor-pointer"
+                        >
+                          <div className="w-9 h-9 rounded-xl bg-white/25 flex items-center justify-center shrink-0">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                              <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                              <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-bold truncate">{item.apartmentName}</p>
+                            <p className="text-[11px] opacity-85 truncate">
+                              {item.assignedToName ?? tr.mgrUnassignedF} · {st}
+                            </p>
+                          </div>
+                          <span className="text-[11.5px] font-bold bg-white/25 px-2.5 py-1 rounded-full shrink-0">{time}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div className="px-5 pt-2 pb-2 flex items-center gap-3">
+                <p className="text-[11px] font-black uppercase tracking-[.09em] text-slate-400">{tr.mdAllCleanings}</p>
+                <div className="flex-1 h-px bg-slate-200"></div>
+              </div>
+
+              {/* Filtri riga 1: appartamento + mese */}
+              <div className="px-4 py-2 flex gap-2">
+                <select
+                  value={allCleaningsApt}
+                  onChange={(e) => { setAllCleaningsApt(e.target.value); fetchAllCleanings(allCleaningsMonth, e.target.value, allCleaningsStatus); }}
+                  className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#ede9fe] bg-white text-violet-700 min-w-0 appearance-none"
+                >
+                  <option value="ALL">{tr.mdAllApartments}</option>
+                  {apartments.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+                </select>
+                <select
+                  value={allCleaningsMonth}
+                  onChange={(e) => { setAllCleaningsMonth(e.target.value); fetchAllCleanings(e.target.value, allCleaningsApt, allCleaningsStatus); }}
+                  className="flex-1 text-[12px] font-bold py-2 px-3 rounded-xl border border-[#ede9fe] bg-white text-violet-700 min-w-0 appearance-none"
+                >
+                  {monthOptions.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                </select>
+              </div>
+
+              {/* Filtri riga 2: stato pills */}
+              <div className="px-4 py-2 flex gap-2 overflow-x-auto scrollbar-hide">
+                {statusOptions.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => { setAllCleaningsStatus(opt.value); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, opt.value); }}
+                    className={`text-[11px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap border transition-all ${
+                      allCleaningsStatus === opt.value
+                        ? "bg-violet-600 text-white border-violet-600"
+                        : "bg-white text-slate-500 border-[#ede9fe]"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Lista giorni futuri */}
               {allCleaningsLoading ? (
                 <div className="px-5 py-4 space-y-3">
                   {[1,2,3,4].map((i) => (
@@ -2114,9 +2175,9 @@ export default function MobileDashboard({
                   ))}
                 </div>
               ) : groupKeys.length === 0 ? (
-                <div className="text-center py-16 text-slate-400 text-sm">{tr.mdNoCleaningFound}</div>
+                <div className="text-center py-10 text-slate-400 text-sm">Nessun'altra pulizia nel mese</div>
               ) : (
-                <div className="px-5 py-4 space-y-5">
+                <div className="px-5 py-3 space-y-5">
                   {groupKeys.map((dayLabel) => (
                     <div key={dayLabel}>
                       <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2 capitalize">{dayLabel}</p>
@@ -2176,7 +2237,7 @@ export default function MobileDashboard({
           TICKET OGGI SHEET
           ════════════════════════════════════════════════════ */}
       {ticketsSheetOpen && (() => {
-        const todayYMD = serverDate;
+        const todayYMD = isoToYMD(serverDate);
         const todayItems = allTicketsData.filter((tk) => isoToYMD(tk.date) === todayYMD);
         const otherItems = allTicketsData.filter((tk) => isoToYMD(tk.date) !== todayYMD);
 
