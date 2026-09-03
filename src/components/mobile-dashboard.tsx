@@ -606,33 +606,9 @@ export default function MobileDashboard({
 
 
         {/* ── ALERT RITARDI — impilati ─────────────────────── */}
-        {lateCleanings.length > 0 && (
-          <div className="px-4 mb-3 space-y-2">
-            {lateCleanings.map((lc, i) => (
-              <div
-                key={lc.id}
-                className="bg-rose-500 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-rose-300 animate-pulse"
-                style={{ animationDelay: `${i * 0.3}s` }}
-              >
-                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                    <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-                  </svg>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-black uppercase tracking-wide text-white">⚠ Pulizia in ritardo</p>
-                  <p className="text-[10px] text-rose-100 truncate">
-                    {lc.apartmentName} · avrebbe dovuto iniziare {lc.scheduledTime}
-                  </p>
-                </div>
-                <Link href={lc.href} className="px-4 min-h-[44px] inline-flex items-center bg-white text-rose-600 text-[11px] font-black rounded-full shrink-0">
-                  Vedi
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* I vecchi banner "pulizia in ritardo" per-appartamento sono stati
+            sostituiti da un'unica card rossa col totale, in cima allo stack KPI
+            qui sotto (apre la lista completa al tocco). */}
 
         {lateCheckins.length > 0 && (
           <div className="px-4 mb-3 space-y-2">
@@ -662,6 +638,24 @@ export default function MobileDashboard({
             Ogni banner è un <button> a tutta larghezza → cliccabile su tutta la riga.
             active:scale-[0.93] + hapticLight() = feedback al tocco più marcato. */}
         <div className="px-4 flex flex-col gap-2.5 mb-3">
+          {/* ─ Pulizie in ritardo — SOLO se presenti: card rossa col totale, apre la lista ─ */}
+          {lateCleanings.length > 0 && (
+            <button
+              onClick={() => { hapticLight(); setLateCleanSheetOpen(true); }}
+              className="w-full min-h-[64px] rounded-2xl px-4 py-3 border border-rose-500 bg-rose-500 shadow-lg shadow-rose-300 flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0"
+            >
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+              <p className="flex-1 text-[11px] font-black uppercase tracking-widest text-white">{tr.kpiLateCard}</p>
+              <p className="text-3xl font-black leading-none shrink-0 text-white">{lateCleanings.length}</p>
+              <span className="text-white/80 text-2xl leading-none shrink-0">›</span>
+            </button>
+          )}
+
           {/* ─ Check-in oggi ─ */}
           <button
             onClick={() => { hapticLight(); setCheckinsSheetOpen(true); }}

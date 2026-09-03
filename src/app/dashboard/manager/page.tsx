@@ -293,14 +293,19 @@ export default async function ManagerDashboardPage() {
   }));
 
   const mobileLateCleanings: MobileLateClean[] = lateCleanings.map((c: CleaningView) => {
-    const d = new Date(c.date);
-    const h = String(d.getHours()).padStart(2, "0");
-    const m = String(d.getMinutes()).padStart(2, "0");
+    // Orario programmato in ora di Roma (prima usava getHours() = UTC sul server,
+    // mostrando 08:00 invece di 10:00).
+    const scheduledTime = new Date(c.date).toLocaleTimeString("it-IT", {
+      timeZone: "Europe/Rome",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
     return {
       id: c.id,
       apartmentName: c.apartment.name,
       assignedToName: c.assignedTo?.name ?? tr.mgrUnassignedF,
-      scheduledTime: `${h}:${m}`,
+      scheduledTime,
       href: `/dashboard/manager/cleanings/${c.id}/edit`,
     };
   });
