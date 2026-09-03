@@ -820,13 +820,8 @@ export default function MobileDashboard({
                     <p className="text-[10px] text-slate-400">{aptStatusLabel(apt.status, tr)}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold ${statusBadgeClass(apt.status)}`}>
-                    {aptStatusLabel(apt.status, tr)}
-                  </span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2.5">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
+                <div className="w-[38px] h-[38px] rounded-xl bg-[#f0eeff] border border-[#e9d5ff] flex items-center justify-center text-violet-600 shrink-0" aria-label={tr.navCalendar}>
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 </div>
               </button>
             ))}
