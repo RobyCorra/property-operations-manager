@@ -656,6 +656,24 @@ export default function MobileDashboard({
             </button>
           )}
 
+          {/* ─ Pulizie in corso — SOLO se presenti: card viola col totale, apre la lista ─ */}
+          {cleaningsInProgress.length > 0 && (
+            <button
+              onClick={() => { hapticLight(); setInProgressSheetOpen(true); }}
+              className="w-full min-h-[64px] rounded-2xl px-4 py-3 border border-violet-600 bg-violet-600 shadow-lg shadow-violet-300 flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0"
+            >
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                  <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
+                  <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
+                </svg>
+              </div>
+              <p className="flex-1 text-[11px] font-black uppercase tracking-widest text-white">{tr.kpiInProgressCard}</p>
+              <p className="text-3xl font-black leading-none shrink-0 text-white">{cleaningsInProgress.length}</p>
+              <span className="text-white/80 text-2xl leading-none shrink-0">›</span>
+            </button>
+          )}
+
           {/* ─ Check-in oggi ─ */}
           <button
             onClick={() => { hapticLight(); setCheckinsSheetOpen(true); }}
@@ -689,24 +707,6 @@ export default function MobileDashboard({
               <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg shrink-0">{cleaningsDoneCount}/{cleaningsCount} ✓</span>
             )}
             <p className={`text-3xl font-black leading-none shrink-0 ${cleaningsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{cleaningsCount}</p>
-          </button>
-
-          {/* ─ Pulizie in corso ─ */}
-          <button
-            onClick={() => { hapticLight(); setInProgressSheetOpen(true); }}
-            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 ${
-              cleaningsInProgress.length > 0
-                ? "bg-violet-50 border-violet-200 shadow-sm shadow-violet-100"
-                : "bg-white border-slate-100 shadow-sm opacity-70"
-            }`}
-          >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${cleaningsInProgress.length > 0 ? "bg-violet-100" : "bg-slate-100"}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={cleaningsInProgress.length > 0 ? "#7c3aed" : "#94a3b8"} strokeWidth="2.5">
-                <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
-              </svg>
-            </div>
-            <p className={`flex-1 text-[11px] font-black uppercase tracking-widest ${cleaningsInProgress.length > 0 ? "text-violet-500" : "text-slate-400"}`}>{tr.calInProgress}</p>
-            <p className={`text-3xl font-black leading-none shrink-0 ${cleaningsInProgress.length > 0 ? "text-violet-700" : "text-slate-400"}`}>{cleaningsInProgress.length}</p>
           </button>
 
           {/* ─ Ticket Oggi ─ */}
@@ -748,67 +748,8 @@ export default function MobileDashboard({
           </button>
         </div>
 
-        {/* ── PULIZIE IN CORSO ────────────────────────────── */}
-        {cleaningsInProgress.length > 0 && (
-          <div className="px-4 mb-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{tr.mdCleaningsInProgress}</p>
-                <span className="w-5 h-5 rounded-full bg-violet-600 text-white text-[9px] font-black flex items-center justify-center">
-                  {cleaningsInProgress.length}
-                </span>
-              </div>
-              <Link href="/dashboard/manager/cleanings" className="text-[10px] font-bold text-violet-600">
-                Tutte →
-              </Link>
-            </div>
-            <div className="space-y-2">
-              {cleaningsInProgress.map((c) => {
-                const pct = c.progressTotal > 0 ? Math.round((c.progressDone / c.progressTotal) * 100) : 0;
-                return (
-                  <Link
-                    key={c.id}
-                    href={c.href}
-                    className="block bg-white rounded-2xl border border-violet-200 shadow-sm overflow-hidden active:scale-[.99] transition-transform"
-                  >
-                    <div className="h-1 bg-gradient-to-r from-violet-500 to-blue-500" />
-                    <div className="px-4 py-3 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5">
-                          <path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
-                          <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-900 truncate">{c.apartmentName}</p>
-                        <p className="text-[10px] text-slate-400">{c.assignedToName} · dal {c.startTime}</p>
-                      </div>
-                      <div className="flex flex-col items-end gap-1 shrink-0">
-                        <span className="flex items-center gap-1 text-[9px] font-black text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full">
-                          <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-                          {tr.calInProgress}
-                        </span>
-                        {c.progressTotal > 0 && (
-                          <p className="text-[9px] text-slate-400">{c.progressDone}/{c.progressTotal} punti</p>
-                        )}
-                      </div>
-                    </div>
-                    {c.progressTotal > 0 && (
-                      <div className="px-4 pb-3">
-                        <div className="h-1.5 bg-slate-100 rounded-full">
-                          <div
-                            className="h-full bg-gradient-to-r from-violet-500 to-blue-400 rounded-full transition-all"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {/* La sezione inline "Pulizie in corso" è stata rimossa: ora l'elenco si
+            apre dalla card viola in cima (che apre il pannello in corso). */}
 
         {/* ── AZIONI RAPIDE ───────────────────────────────── */}
         <div className="px-4 mb-4">
