@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { X, User, Building2, Bell, ChevronRight, ExternalLink, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, User, Building2, Bell, ChevronRight, ExternalLink, Check, Loader2 } from "lucide-react";
 import {
   getSettingsData,
   updateProfile,
@@ -215,14 +215,14 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
       >
         {/* Header — figlio flex, shrink-0: non scorre mai */}
         <div className="shrink-0">
-          <div className="flex items-center justify-between px-5 border-b border-[#e5e5ea]" style={{ background: "rgba(255,255,255,.97)", paddingTop: "calc(env(safe-area-inset-top) + 58px + 16px)", paddingBottom: "16px" }}>
+          <div className="flex items-center gap-3 px-5 border-b border-[#e5e5ea]" style={{ background: "rgba(255,255,255,.97)", paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)", paddingBottom: "16px" }}>
+            <button onClick={onClose} aria-label="Indietro" className="shrink-0 w-[36px] h-[36px] rounded-full bg-[#e5e5ea] flex items-center justify-center hover:bg-[#d1d1d6] transition-colors">
+              <ArrowLeft size={18} strokeWidth={2.5} className="text-[#3c3c43]" />
+            </button>
             <div className="flex items-center gap-2">
               <span className="text-[20px]">⚙️</span>
               <span className="text-[17px] font-[700] text-[#1c1c1e]">Impostazioni</span>
             </div>
-            <button onClick={onClose} className="w-[30px] h-[30px] rounded-full bg-[#e5e5ea] flex items-center justify-center hover:bg-[#d1d1d6] transition-colors">
-              <X size={16} strokeWidth={2.5} className="text-[#3c3c43]" />
-            </button>
           </div>
           <div className="flex gap-1 px-4 py-3 border-b border-[#e5e5ea] bg-white">
             {sections.map(s => (
