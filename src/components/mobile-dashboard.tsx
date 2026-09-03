@@ -597,7 +597,7 @@ export default function MobileDashboard({
   }, []);
 
   return (
-    <div className="relative bg-[#f8f7ff] h-full min-h-0 flex flex-col overflow-hidden">
+    <div className="relative bg-[#f8f7ff] h-screen flex flex-col overflow-hidden">
 
       {/* ════════════════════════════════════════════════════
           DASHBOARD VIEW

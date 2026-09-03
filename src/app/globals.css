@@ -54,7 +54,6 @@ html.lock-scroll,
 body.lock-scroll {
   overflow: hidden !important;
   overscroll-behavior: none;
-  height: 100%;
 }
 
 body {

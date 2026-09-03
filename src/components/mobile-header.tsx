@@ -40,22 +40,6 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
     });
   }, [router]);
 
-  // "Congela" l'altezza della safe-area superiore: su iOS env(safe-area-inset-top)
-  // può collassare a 0 durante lo scroll, facendo schiacciare l'header. La misuriamo
-  // una volta all'avvio e la fissiamo in una variabile CSS stabile (--sat).
-  useEffect(() => {
-    try {
-      const probe = document.createElement("div");
-      probe.style.cssText = "position:fixed;top:0;left:0;height:0;padding-top:env(safe-area-inset-top);visibility:hidden;pointer-events:none;";
-      document.body.appendChild(probe);
-      const v = getComputedStyle(probe).paddingTop;
-      document.body.removeChild(probe);
-      if (v && parseFloat(v) > 0) {
-        document.documentElement.style.setProperty("--sat", v);
-      }
-    } catch { /* best-effort */ }
-  }, []);
-
   const go = (action: string, href?: string) => {
     setMenuOpen(false);
     onCloseSettings?.();
@@ -88,7 +72,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
 
   return (
     <>
-      <div className="relative shrink-0 z-[100] px-3 pb-2 bg-white border-b border-[#ede9fe] md:hidden" style={{ paddingTop: "var(--sat, env(safe-area-inset-top))" }}>
+      <div className="relative shrink-0 z-[100] px-3 pb-2 bg-white border-b border-[#ede9fe] md:hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         {orgName && (
           <p className="text-[13px] font-bold text-slate-900 text-center pt-1.5 pb-1.5 truncate">{orgName}</p>
         )}
