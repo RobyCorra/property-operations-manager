@@ -833,7 +833,7 @@ export default function MobileDashboard({
           CALENDAR VIEW — slide in from right
           ════════════════════════════════════════════════════ */}
       {activeTab === "calendar" && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-20 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+        <div className="fixed inset-0 bg-[#f8f7ff] z-20 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
           {/* Header calendario */}
           <div className="px-4 pt-4 pb-3 flex items-center gap-3 border-b border-slate-100">
             <div className="flex-1">
@@ -884,7 +884,7 @@ export default function MobileDashboard({
           PER-APARTMENT CALENDAR — full screen in-state
           ════════════════════════════════════════════════════ */}
       {selectedApt && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-30 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+        <div className="fixed inset-0 bg-[#f8f7ff] z-30 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
 
           {/* Header */}
           <div className="bg-white border-b border-slate-100 px-4 pb-0 pt-4">
@@ -1712,7 +1712,7 @@ export default function MobileDashboard({
           CHECK-IN OGGI SHEET
           ════════════════════════════════════════════════════ */}
       {checkinsSheetOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.navToday}</p>
@@ -1804,7 +1804,7 @@ export default function MobileDashboard({
         }
 
         return (
-          <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+          <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
             {/* Header */}
             <div className="px-5 pt-3 pb-3 flex items-center justify-between border-b border-[#ede9fe] shrink-0">
               <span className="text-lg font-bold text-slate-900">{tr.navCleanings}</span>
@@ -1935,7 +1935,7 @@ export default function MobileDashboard({
           TICKET OGGI SHEET
           ════════════════════════════════════════════════════ */}
       {ticketsSheetOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">{tr.navMaintenance}</p>
@@ -2000,7 +2000,7 @@ export default function MobileDashboard({
           PULIZIE IN RITARDO SHEET
           ════════════════════════════════════════════════════ */}
       {lateCleanSheetOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">{tr.mdWarning}</p>
@@ -2057,7 +2057,7 @@ export default function MobileDashboard({
           PULIZIE IN CORSO SHEET
           ════════════════════════════════════════════════════ */}
       {inProgressSheetOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.mdRunning}</p>
@@ -2140,7 +2140,7 @@ export default function MobileDashboard({
           EVENTS DRAWER — slide up
           ════════════════════════════════════════════════════ */}
       {eventsOpen && (
-        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
           <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Oggi — Da completare</p>
@@ -2209,7 +2209,7 @@ export default function MobileDashboard({
           MAP PANEL — slide up
           ════════════════════════════════════════════════════ */}
       {mapOpen && (
-        <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 58px), 118px)" }}>
+        <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
           <div className="px-5 py-3 flex items-center justify-between shrink-0">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">{tr.mdGeoMap}</p>
