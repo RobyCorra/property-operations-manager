@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/src/components/lang-context";
 import { usePathname, useRouter } from "next/navigation";
 import NotificationBell from "@/src/components/notification-bell";
@@ -27,7 +27,13 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
   // Prefetch delle rotte del menu: la navigazione qui usa router.push (che NON
   // pre-scarica, a differenza di <Link>), quindi le pre-carichiamo a mano così
   // al tocco la pagina è già pronta e la navigazione risulta più rapida.
+  // Prefetch delle rotte del menu: eseguito SOLO quando l'utente apre il menu
+  // (o dopo idle timeout) invece che al mount. Su Android WebView / rete lenta,
+  // 5 fetch paralleli al primo paint saturano la banda e rallentano il cold start.
+  const prefetchedRef = useRef(false);
   useEffect(() => {
+    if (!menuOpen || prefetchedRef.current) return;
+    prefetchedRef.current = true;
     const routes = [
       "/dashboard/manager/messages",
       "/dashboard/manager/bookings",
@@ -38,7 +44,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
     routes.forEach((r) => {
       try { router.prefetch(r); } catch { /* prefetch best-effort */ }
     });
-  }, [router]);
+  }, [menuOpen, router]);
 
   const go = (action: string, href?: string) => {
     setMenuOpen(false);

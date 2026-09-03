@@ -135,6 +135,23 @@ button:active, a:active, [role="button"]:active {
   }
 }
 
+/* Android WebView spesso non risponde al var trick sopra e usa il prefisso
+   -webkit-. Copertura esplicita per touch: azzera il filtro backdrop su tutto
+   ciò che ne dichiara uno via classe utility. Il selettore [class*="…"] è già
+   il criterio più affidabile e il minificatore non lo tocca. */
+@media (hover: none) and (pointer: coarse) {
+  [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: initial;
+  }
+}
+
+/* Rimbalzo scroll del document = 60fps sprecati su Android WebView.
+   Blocca la propagazione oltre i contenitori scrollabili interni. */
+[class*="overflow-y-auto"],
+[class*="overflow-auto"] {
+  overscroll-behavior: contain;
+}
+
 /* Tutti gli elementi fissi/sticky ancorati in basso devono avere questo padding
    aggiuntivo altrimenti la nav bar di Android li copre parzialmente o totalmente. */
 .safe-bottom {
