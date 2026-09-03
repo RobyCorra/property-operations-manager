@@ -97,7 +97,9 @@ export default function OperationalForm({ type, apartments, personnel, action, i
     if (!initialData) return;
     startDelete(async () => {
       await deleteCleaningTask(initialData.id);
-      router.push("/dashboard/manager/cleanings");
+      // Torna alla dashboard: la scheda della pulizia appena eliminata
+      // non esiste più, quindi router.back() non ha senso.
+      router.push("/dashboard/manager");
     });
   }
   // If editing, we use the action bound with the ID. 
@@ -521,12 +523,13 @@ export default function OperationalForm({ type, apartments, personnel, action, i
               >
                 {isPending ? t.clSavingLong : t.ofUpdate}
               </button>
-              <Link
-                href="/dashboard/manager/cleanings"
+              <button
+                type="button"
+                onClick={() => router.back()}
                 className="w-full h-11 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-sm font-semibold text-gray-600 active:scale-[.98] transition-transform"
               >
                 {t.mgrCancel}
-              </Link>
+              </button>
 
               {/* Zona distruttiva, isolata */}
               <div className="mt-3 pt-3 border-t border-gray-100">
@@ -575,9 +578,13 @@ export default function OperationalForm({ type, apartments, personnel, action, i
             </div>
           ) : (
             <div className="flex items-center justify-end gap-3">
-              <Link href={isEditing ? "/dashboard/manager/maintenance" : "/dashboard/manager"} className="px-5 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+              <button
+                type="button"
+                onClick={() => (isEditing ? router.back() : router.push("/dashboard/manager"))}
+                className="px-5 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+              >
                 {t.mgrCancel}
-              </Link>
+              </button>
               <button
                 type="submit"
                 disabled={isPending}
