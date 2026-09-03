@@ -6,6 +6,19 @@ export default function PWARegister() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // ── Splash smart ─────────────────────────────────────────────────────
+    // Nasconde la splash nativa non appena il DOM del layout root è montato,
+    // invece di aspettare i 2s del launchShowDuration Capacitor. Se non siamo
+    // dentro Capacitor (browser web) l'import fallisce silenziosamente.
+    // Doppio rAF per assicurarsi che il primo paint sia già avvenuto.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        import("@capacitor/splash-screen")
+          .then(({ SplashScreen }) => SplashScreen.hide().catch(() => {}))
+          .catch(() => {});
+      });
+    });
+
     // Azzera il badge PWA quando l'utente apre/torna sull'app
     function clearBadge() {
       if ("clearAppBadge" in navigator) {

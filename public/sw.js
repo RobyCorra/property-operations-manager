@@ -5,7 +5,7 @@
 //  • Tutto il resto: NetworkFirst
 //  • Offline fallback: /offline se non c'è niente in cache
 
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const STATIC_CACHE  = `static-${CACHE_VERSION}`;
 const PAGES_CACHE   = `pages-${CACHE_VERSION}`;
 const API_CACHE     = `api-${CACHE_VERSION}`;
@@ -13,6 +13,10 @@ const OFFLINE_URL   = "/offline";
 
 const STATIC_EXTENSIONS = /\.(js|css|woff2?|ttf|otf|png|jpg|jpeg|svg|gif|webp|ico)(\?.*)?$/;
 const OPERATIVE_PAGES   = /^\/(dashboard\/cleaner|dashboard\/maintenance|pulizia\/|manutenzione\/)/;
+// Pagine del manager: serviamo subito dalla cache e aggiorniamo in background
+// (Stale-While-Revalidate). Su Android WebView / rete lenta questo elimina
+// l'attesa di 5s che c'era con NetworkFirst → navigazione istantanea.
+const MANAGER_PAGES     = /^\/dashboard\/manager(\/|$)/;
 const API_ROUTES        = /^\/api\//;
 
 // ── Message: skip waiting per aggiornamenti silenziosi ───────────────────────
@@ -118,7 +122,15 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 4. Tutto il resto → NetworkFirst senza fallback speciale
+  // 4. Pagine del manager → StaleWhileRevalidate
+  //    Servite subito dalla cache (istantaneo), aggiornate in background.
+  //    Per la navigazione tra le schede questo elimina il freeze.
+  if (MANAGER_PAGES.test(url.pathname)) {
+    event.respondWith(staleWhileRevalidate(request, PAGES_CACHE));
+    return;
+  }
+
+  // 5. Tutto il resto → NetworkFirst senza fallback speciale
   event.respondWith(networkFirst(request, PAGES_CACHE, 5000));
 });
 
@@ -137,6 +149,23 @@ async function cacheFirst(request, cacheName) {
   } catch {
     return new Response("Offline", { status: 503 });
   }
+}
+
+// Stale-While-Revalidate: rispondi SUBITO dalla cache se c'è, e aggiorna
+// silenziosamente in background per la prossima volta.
+// Se non c'è cache (primo accesso), aspetta la rete.
+async function staleWhileRevalidate(request, cacheName) {
+  const cached = await caches.match(request);
+  const networkFetch = fetch(request).then(async (response) => {
+    if (response.ok) {
+      const cache = await caches.open(cacheName);
+      cache.put(request, response.clone());
+    }
+    return response;
+  }).catch(() => null);
+  if (cached) return cached;
+  const fresh = await networkFetch;
+  return fresh ?? new Response("Offline", { status: 503 });
 }
 
 async function networkFirst(request, cacheName, timeoutMs = 5000) {
