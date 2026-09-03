@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function BackButton() {
   const router = useRouter();
@@ -14,13 +14,13 @@ export default function BackButton() {
       >
         <ArrowLeft size={18} />
       </button>
-      {/* Mobile: X per chiudere e tornare al sheet */}
+      {/* Mobile: freccia indietro */}
       <button
         onClick={() => router.back()}
         className="flex md:hidden h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
-        aria-label="Chiudi"
+        aria-label="Torna indietro"
       >
-        <X size={20} />
+        <ArrowLeft size={20} />
       </button>
     </>
   );

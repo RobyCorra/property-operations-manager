@@ -842,11 +842,11 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setActiveTab("dashboard")}
-              className="w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
-              aria-label={tr.mdClose}
+              className="order-first w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
+              aria-label="Indietro"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
               </svg>
             </button>
           </div>
@@ -900,11 +900,11 @@ export default function MobileDashboard({
               </div>
               <button
                 onClick={() => { setSelectedApt(null); setCalendarData(null); }}
-                className="w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
-                aria-label={tr.mdClose}
+                className="order-first w-11 h-11 flex items-center justify-center rounded-2xl bg-slate-100 text-slate-500 active:bg-slate-200 transition-colors shrink-0"
+                aria-label="Indietro"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
                 </svg>
               </button>
             </div>
@@ -1713,7 +1713,7 @@ export default function MobileDashboard({
           ════════════════════════════════════════════════════ */}
       {checkinsSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
-          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+          <div className="px-5 pt-3 pb-4 flex items-center gap-3 border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.navToday}</p>
               <h2 className="text-xl font-bold text-slate-900">
@@ -1722,10 +1722,11 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setCheckinsSheetOpen(false)}
-              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
+              aria-label="Indietro"
+              className="order-first shrink-0 w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
               </svg>
             </button>
           </div>
@@ -1806,16 +1807,17 @@ export default function MobileDashboard({
         return (
           <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
             {/* Header */}
-            <div className="px-5 pt-3 pb-3 flex items-center justify-between border-b border-[#ede9fe] shrink-0">
-              <span className="text-lg font-bold text-slate-900">{tr.navCleanings}</span>
+            <div className="px-5 pt-3 pb-3 flex items-center gap-3 border-b border-[#ede9fe] shrink-0">
               <button
                 onClick={() => setCleaningsSheetOpen(false)}
-                className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"
+                aria-label="Indietro"
+                className="shrink-0 w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
                 </svg>
               </button>
+              <span className="text-lg font-bold text-slate-900">{tr.navCleanings}</span>
             </div>
 
             {/* Filtri riga 1: appartamento + mese */}
@@ -1936,7 +1938,7 @@ export default function MobileDashboard({
           ════════════════════════════════════════════════════ */}
       {ticketsSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
-          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+          <div className="px-5 pt-3 pb-4 flex items-center gap-3 border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">{tr.navMaintenance}</p>
               <h2 className="text-xl font-bold text-slate-900">
@@ -1947,10 +1949,11 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setTicketsSheetOpen(false)}
-              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
+              aria-label="Indietro"
+              className="order-first shrink-0 w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
               </svg>
             </button>
           </div>
@@ -2001,7 +2004,7 @@ export default function MobileDashboard({
           ════════════════════════════════════════════════════ */}
       {lateCleanSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
-          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+          <div className="px-5 pt-3 pb-4 flex items-center gap-3 border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-orange-500">{tr.mdWarning}</p>
               <h2 className="text-xl font-bold text-slate-900">
@@ -2012,10 +2015,11 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setLateCleanSheetOpen(false)}
-              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
+              aria-label="Indietro"
+              className="order-first shrink-0 w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
               </svg>
             </button>
           </div>
@@ -2058,7 +2062,7 @@ export default function MobileDashboard({
           ════════════════════════════════════════════════════ */}
       {inProgressSheetOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
-          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+          <div className="px-5 pt-3 pb-4 flex items-center gap-3 border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.mdRunning}</p>
               <h2 className="text-xl font-bold text-slate-900">
@@ -2069,10 +2073,11 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setInProgressSheetOpen(false)}
-              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
+              aria-label="Indietro"
+              className="order-first shrink-0 w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
               </svg>
             </button>
           </div>
@@ -2141,7 +2146,7 @@ export default function MobileDashboard({
           ════════════════════════════════════════════════════ */}
       {eventsOpen && (
         <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
-          <div className="px-5 pt-3 pb-4 flex items-center justify-between border-b border-slate-100">
+          <div className="px-5 pt-3 pb-4 flex items-center gap-3 border-b border-slate-100">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Oggi — Da completare</p>
               <h2 className="text-xl font-bold text-slate-900">
@@ -2150,10 +2155,11 @@ export default function MobileDashboard({
             </div>
             <button
               onClick={() => setEventsOpen(false)}
-              className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
+              aria-label="Indietro"
+              className="order-first shrink-0 w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
               </svg>
             </button>
           </div>
@@ -2210,19 +2216,20 @@ export default function MobileDashboard({
           ════════════════════════════════════════════════════ */}
       {mapOpen && (
         <div className="fixed inset-0 bg-slate-900 z-50 flex flex-col" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
-          <div className="px-5 py-3 flex items-center justify-between shrink-0">
+          <div className="px-5 py-3 flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setMapOpen(false)}
+              aria-label="Indietro"
+              className="order-first shrink-0 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+              </svg>
+            </button>
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">{tr.mdGeoMap}</p>
               <h2 className="text-lg font-bold text-white">{tr.mdAppsLive}</h2>
             </div>
-            <button
-              onClick={() => setMapOpen(false)}
-              className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
           </div>
           <div className="flex-1 mx-4 mb-4 rounded-3xl overflow-hidden">
             <ApartmentMapWrapper apartments={apartments} />
