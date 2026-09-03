@@ -940,12 +940,12 @@ export default function FloatingManagerChat({
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 14px)" }}
             >
               <div className="flex items-end gap-2.5">
-                {/* Campo con icone Web/Send integrate */}
+                {/* Campo con solo icona Invia integrata */}
                 <div className="flex-1 relative bg-[#f4f2fc] rounded-[24px] border border-[#ede9fe] min-w-0">
                   <textarea
                     ref={inputRef as any}
-                    className="block w-full bg-transparent px-4 py-3 pr-[92px] text-[15px] outline-none resize-none min-h-[52px] max-h-[140px] leading-snug"
-                    placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : (webSearch ? "Cerca sul web…" : "Scrivi o usa il microfono…")}
+                    className="block w-full bg-transparent px-4 py-3 pr-[52px] text-[15px] outline-none resize-none min-h-[52px] max-h-[140px] leading-snug"
+                    placeholder={lastPendingIdx ? "Scrivi 'ok' per confermare…" : (webSearch ? "Cerca sul web…" : "Scrivi un messaggio…")}
                     value={input}
                     onChange={(e) => {
                       setInput(e.target.value);
@@ -964,53 +964,47 @@ export default function FloatingManagerChat({
                     rows={1}
                     disabled={loading}
                   />
-                  <div className="absolute right-2 bottom-2 flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setWebSearch((v) => !v)}
-                      aria-label={webSearch ? "Disattiva ricerca web" : "Attiva ricerca web"}
-                      title="Ricerca web"
-                      className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-                        webSearch ? "bg-blue-500 text-white" : "text-slate-400 hover:text-blue-500"
-                      }`}
-                    >
-                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleAsk(false)}
-                      disabled={loading || !input.trim()}
-                      aria-label="Invia"
-                      className="w-9 h-9 rounded-full flex items-center justify-center disabled:opacity-40 active:scale-90 transition-transform"
-                      style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 10px rgba(124,58,237,.35)" }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Microfono grande — solo se il campo è vuoto e non stiamo ascoltando */}
-                {input.trim().length === 0 && !listening && (
                   <button
                     type="button"
-                    onClick={toggleMic}
-                    disabled={loading}
-                    aria-label="Dettatura vocale"
-                    className="relative w-[60px] h-[60px] rounded-full flex items-center justify-center text-white shrink-0 active:scale-95 transition-transform disabled:opacity-40"
-                    style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 6px 16px rgba(124,58,237,.35)" }}
+                    onClick={() => handleAsk(false)}
+                    disabled={loading || !input.trim()}
+                    aria-label="Invia"
+                    className="absolute right-2 bottom-2 w-9 h-9 rounded-full flex items-center justify-center disabled:opacity-40 active:scale-90 transition-transform"
+                    style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 4px 10px rgba(124,58,237,.35)" }}
                   >
-                    <span className="absolute inset-[-6px] rounded-full border-2 border-violet-400/40 animate-[voicePulse_2s_ease_infinite] pointer-events-none" />
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
                     </svg>
                   </button>
-                )}
+                </div>
+
+                {/* Toggle Ricerca web grande (al posto del microfono) */}
+                <button
+                  type="button"
+                  onClick={() => setWebSearch((v) => !v)}
+                  aria-label={webSearch ? "Disattiva ricerca web" : "Attiva ricerca web"}
+                  title="Ricerca web"
+                  className={`relative w-[58px] h-[58px] rounded-full flex items-center justify-center shrink-0 active:scale-95 transition-transform border ${
+                    webSearch
+                      ? "text-white border-transparent"
+                      : "bg-white text-violet-600 border-[#ede9fe]"
+                  }`}
+                  style={
+                    webSearch
+                      ? { background: "linear-gradient(135deg,#3b82f6,#6366f1)", boxShadow: "0 6px 16px rgba(59,130,246,.40)" }
+                      : { boxShadow: "0 4px 12px rgba(0,0,0,.06)" }
+                  }
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                  {webSearch && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
           )}
