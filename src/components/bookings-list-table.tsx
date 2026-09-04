@@ -26,6 +26,7 @@ type Props = {
     checkInDate: Date;
     checkOutDate: Date;
     status: string | null;
+    source?: string | null;
     apartment: {
       id: string;
       name: string;
@@ -59,7 +60,10 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
     return initialBookings.filter((b) => {
       const matchesSearch = !filters.search || (b.guestName || "").toLowerCase().includes(filters.search.toLowerCase());
       const matchesApartment = !filters.apartmentId || b.apartment.id === filters.apartmentId;
-      const matchesStatus = !filters.status || b.status === filters.status;
+      // "MANUAL" = prenotazione senza status (inserita a mano). Prima il valore
+      // era la stringa "null" che non matchava mai b.status === null → filtro rotto.
+      const matchesStatus = !filters.status
+        || (filters.status === "MANUAL" ? !b.status : b.status === filters.status);
       
       const checkIn = new Date(b.checkInDate);
       const matchesStart = !filters.startDate || checkIn >= new Date(filters.startDate);
@@ -85,7 +89,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
       options: [
         { value: "CONFIRMED", label: t.bkConfirmed },
         { value: "CANCELLED", label: t.bkCancelled },
-        { value: "null", label: "Manual" }
+        { value: "MANUAL", label: "Manual" }
       ],
       icon: <Filter size={14} />
     },
@@ -93,14 +97,87 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
     { id: "endDate", label: t.bkTo, type: "date" },
   ];
 
+  // ── Helper vista mobile (Proposta B) ────────────────────────────────
+  const dateLocale = "it-IT";
+
+  function bookingSource(b: { status: string | null; source?: string | null }) {
+    const src = (b.source || "").toUpperCase();
+    const isManual = !src || src === "MANUAL";
+    if (isManual) return { manual: true, label: "Manuale", emoji: "✏️", tintBg: "bg-violet-100", badge: "bg-violet-50 text-violet-700" };
+    const nice = src === "AIRBNB" ? "Airbnb" : src === "ICAL" ? "iCal" : src === "BOOKING" ? "Booking" : (src.charAt(0) + src.slice(1).toLowerCase());
+    return { manual: false, label: nice, emoji: "🏠", tintBg: "bg-rose-100", badge: "bg-rose-50 text-rose-700" };
+  }
+  function nightsBetween(a: Date, b: Date) {
+    return Math.max(1, Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000));
+  }
+  // Raggruppa per mese di check-in (le prenotazioni sono già ordinate per data)
+  const groupedMobile: { key: string; label: string; items: typeof filteredBookings }[] = [];
+  for (const b of filteredBookings) {
+    const d = new Date(b.checkInDate);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    let g = groupedMobile.find((x) => x.key === key);
+    if (!g) {
+      const lbl = d.toLocaleDateString(dateLocale, { month: "long", year: "numeric" });
+      g = { key, label: lbl.charAt(0).toUpperCase() + lbl.slice(1), items: [] };
+      groupedMobile.push(g);
+    }
+    g.items.push(b);
+  }
+
+  const statusChips = [
+    { value: "", label: "Tutte" },
+    { value: "CONFIRMED", label: t.bkConfirmed },
+    { value: "MANUAL", label: "Manuali" },
+  ];
+
   return (
     <div className="space-y-6">
-      <UnifiedFilters 
-        fields={filterFields}
-        values={filters}
-        onChange={handleFilterChange}
-        onReset={handleReset}
-      />
+      {/* Filtri desktop */}
+      <div className="hidden md:block">
+        <UnifiedFilters
+          fields={filterFields}
+          values={filters}
+          onChange={handleFilterChange}
+          onReset={handleReset}
+        />
+      </div>
+
+      {/* Filtri mobile — ricerca + appartamento + chip stato */}
+      <div className="md:hidden space-y-2.5">
+        <div className="flex items-center gap-2 bg-white border border-[#ede9f6] rounded-2xl px-3.5 py-2.5">
+          <Search size={15} className="text-slate-400 shrink-0" />
+          <input
+            value={filters.search}
+            onChange={(e) => handleFilterChange("search", e.target.value)}
+            placeholder={t.bkSearchPlaceholder}
+            className="flex-1 min-w-0 bg-transparent outline-none text-[15px] text-slate-700 placeholder:text-slate-400"
+          />
+          {(filters.search || filters.apartmentId || filters.status) && (
+            <button onClick={handleReset} className="text-[10px] font-black uppercase tracking-widest text-violet-500 shrink-0">Reset</button>
+          )}
+        </div>
+        <select
+          value={filters.apartmentId}
+          onChange={(e) => handleFilterChange("apartmentId", e.target.value)}
+          className="w-full text-[13px] font-bold py-2.5 px-3.5 rounded-2xl border border-[#ede9f6] bg-white text-violet-700 appearance-none"
+        >
+          <option value="">{t.mdAllApartments}</option>
+          {apartments.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+        </select>
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+          {statusChips.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => handleFilterChange("status", c.value)}
+              className={`text-[11px] font-bold px-3.5 py-1.5 rounded-full whitespace-nowrap border transition-all ${
+                filters.status === c.value ? "bg-violet-600 text-white border-violet-600" : "bg-white text-slate-500 border-[#ede9f6]"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Desktop Table */}
       <section className="hidden md:block bg-white/40 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-2xl shadow-black/5 overflow-hidden transition-all duration-200">
@@ -181,8 +258,8 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
         </div>
       </section>
 
-      {/* Mobile Card List */}
-      <div className="md:hidden space-y-3">
+      {/* Mobile Card List — Proposta B (scheda arrivo con timeline soggiorno) */}
+      <div className="md:hidden">
         {filteredBookings.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
@@ -191,62 +268,78 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t.bkNoBookings}</p>
           </div>
         ) : (
-          filteredBookings.map((b) => (
-            <div key={b.id} className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-sm overflow-hidden">
-              <div className="p-4 space-y-3">
-                {/* Header */}
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
-                    <User size={16} className="text-slate-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-900 uppercase tracking-tight truncate">
-                      {b.guestName || t.bkManualBooking}
-                    </p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <Building2 size={10} className="text-slate-400 shrink-0" />
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide truncate">{b.apartment.name}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0 bg-slate-100 rounded-full px-2.5 py-1">
-                    <Users size={10} className="text-slate-500" />
-                    <span className="text-[10px] font-black text-slate-600">{b.totalGuests}</span>
-                  </div>
-                </div>
+          <div className="space-y-5">
+            {groupedMobile.map((group) => (
+              <div key={group.key}>
+                <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2 capitalize">{group.label}</p>
+                <div className="space-y-2.5">
+                  {group.items.map((b) => {
+                    const ci = new Date(b.checkInDate);
+                    const co = new Date(b.checkOutDate);
+                    const nights = nightsBetween(ci, co);
+                    const src = bookingSource(b);
+                    const fmtDay = (d: Date) => ({
+                      day: d.toLocaleDateString(dateLocale, { day: "numeric" }),
+                      mon: d.toLocaleDateString(dateLocale, { month: "short" }).replace(".", ""),
+                    });
+                    const ciF = fmtDay(ci);
+                    const coF = fmtDay(co);
+                    return (
+                      <div key={b.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                        {/* Header: fonte + nome + ospiti */}
+                        <div className="px-3.5 pt-3 pb-2 flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl ${src.tintBg} flex items-center justify-center text-lg shrink-0`}>
+                            {src.emoji}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-slate-900 truncate">{b.guestName || t.bkManualBooking}</p>
+                            <p className="text-[11px] text-slate-400 truncate">{b.apartment.name} · {src.label}</p>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0 bg-[#f0eeff] rounded-full px-2.5 py-1">
+                            <Users size={11} className="text-violet-500" />
+                            <span className="text-[11px] font-black text-violet-700">{b.totalGuests}</span>
+                          </div>
+                        </div>
 
-                {/* Date row */}
-                <div className="flex items-center gap-4 bg-slate-50 rounded-xl px-3 py-2.5">
-                  <div>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Check-in</p>
-                    <div className="flex items-center gap-1.5">
-                      <CalendarDays size={11} className="text-emerald-500" />
-                      <SafeDate date={b.checkInDate} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-xs font-bold text-slate-900" />
-                    </div>
-                  </div>
-                  <div className="h-6 w-px bg-slate-200" />
-                  <div>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Check-out</p>
-                    <div className="flex items-center gap-1.5">
-                      <CalendarDays size={11} className="text-slate-400" />
-                      <SafeDate date={b.checkOutDate} format={{ day: '2-digit', month: '2-digit', year: 'numeric' }} className="text-xs font-semibold text-slate-600" />
-                    </div>
-                  </div>
-                </div>
+                        {/* Timeline soggiorno */}
+                        <div className="mx-3.5 mb-2.5 bg-[#f8f7fc] border border-slate-100 rounded-xl px-3 py-2.5 flex items-center">
+                          <div className="text-center shrink-0">
+                            <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Check-in</p>
+                            <p className="text-base font-black text-slate-900 leading-tight">{ciF.day}</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase">{ciF.mon}</p>
+                          </div>
+                          <div className="flex-1 mx-2.5 relative h-0.5 bg-slate-200 rounded-full">
+                            <span className="absolute top-1/2 -translate-y-1/2 -left-0.5 w-2 h-2 rounded-full bg-violet-500" />
+                            <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[9.5px] font-black text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full whitespace-nowrap">
+                              {nights} {nights === 1 ? "notte" : "notti"}
+                            </span>
+                            <span className="absolute top-1/2 -translate-y-1/2 -right-0.5 w-2 h-2 rounded-full bg-emerald-500" />
+                          </div>
+                          <div className="text-center shrink-0">
+                            <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Check-out</p>
+                            <p className="text-base font-black text-slate-900 leading-tight">{coF.day}</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase">{coF.mon}</p>
+                          </div>
+                        </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
-                  <Link
-                    href={`/dashboard/manager/bookings/${b.id}/edit`}
-                    className="flex-1 py-2.5 flex items-center justify-center gap-2 rounded-xl bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-100 active:scale-95 transition-all"
-                  >
-                    <Pencil size={12} />
-                    {t.mgrEdit}
-                  </Link>
-                  <DeleteBookingButton bookingId={b.id} />
+                        {/* Azioni */}
+                        <div className="flex items-center gap-2 px-3.5 pb-3">
+                          <Link
+                            href={`/dashboard/manager/bookings/${b.id}/edit`}
+                            className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl bg-black text-white text-[11px] font-black uppercase tracking-widest active:scale-[.98] transition-transform"
+                          >
+                            <Pencil size={13} />
+                            {t.mgrEdit}
+                          </Link>
+                          <DeleteBookingButton bookingId={b.id} />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>

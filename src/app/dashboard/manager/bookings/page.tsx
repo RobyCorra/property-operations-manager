@@ -55,20 +55,29 @@ export default async function BookingsListPage() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="sticky top-0 z-30 -mx-4 md:-mx-6 px-4 md:px-6 pb-3 -mt-4 md:-mt-6 bg-[#faf8ff] flex items-center gap-4" style={{ paddingTop: "calc(env(safe-area-inset-top) + 16px)" }}>
-          <BackButton />
-          <div className="flex-1 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-900 uppercase">{tr.navBookings}</h1>
-              <p className="text-slate-500 mt-1 font-medium">{tr.bkSubtitle}</p>
+        <div className="sticky top-0 z-30 -mx-4 md:-mx-6 px-4 md:px-6 pb-3 -mt-4 md:-mt-6 bg-[#faf8ff]" style={{ paddingTop: "calc(env(safe-area-inset-top) + 16px)" }}>
+          <div className="flex items-center gap-3">
+            <BackButton />
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-3xl font-bold md:font-semibold tracking-tight text-slate-900 md:uppercase truncate">{tr.navBookings}</h1>
+              <p className="hidden md:block text-slate-500 mt-1 font-medium">{tr.bkSubtitle}</p>
             </div>
+            {/* Bottone desktop */}
             <Link
               href="/dashboard/manager/bookings/new"
-              className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-8 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] active:scale-95 uppercase tracking-wide"
+              className="hidden md:inline-flex rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-8 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-[1.02] active:scale-95 uppercase tracking-wide"
             >
               {tr.bkNewBooking}
             </Link>
           </div>
+          {/* Bottone mobile a tutta larghezza (niente più overflow) */}
+          <Link
+            href="/dashboard/manager/bookings/new"
+            className="md:hidden mt-3 h-11 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-500 to-blue-500 text-white text-sm font-bold shadow-lg shadow-violet-200 active:scale-[.98] transition-transform"
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            {tr.bkNewBooking}
+          </Link>
         </div>
 
         {/* List */}
