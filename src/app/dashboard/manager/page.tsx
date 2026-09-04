@@ -20,6 +20,7 @@ import type {
   MobileInProgressClean,
   MobileTodayEvent,
   MobileCheckinItem,
+  MobileStayItem,
   MobileCleaningTodayItem,
   MobileUrgentTicketItem,
   CalBooking,
@@ -403,6 +404,41 @@ export default async function ManagerDashboardPage() {
     href: `/dashboard/manager/bookings/${b.id}/edit`,
   }));
 
+  // ── Check-in OPERATIVI di oggi (task del responsabile, self check-in esclusi) ──
+  // La card "Check-in oggi" ora conta questi, non gli arrivi informativi.
+  const operationalCheckinsToday = (checkins as any[]).filter(
+    (c) => formatLocalDateKey(c.date) === todayLocalStr && c.status === "PENDING"
+  );
+
+  // ── Arrivi (IN) e Partenze (OUT) di oggi — informativi, dalle prenotazioni ──
+  const romeHm = (d: Date | string) =>
+    new Date(d).toLocaleTimeString("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hour12: false });
+  const nightsOf = (b: BookingView) =>
+    Math.max(1, Math.round((new Date(b.checkOutDate).getTime() - new Date(b.checkInDate).getTime()) / 86400000));
+
+  const departuresToday = bookings.filter(
+    (b: BookingView) => new Date(b.checkOutDate).toISOString().split("T")[0] === todayStr
+  );
+
+  const mobileArrivals: MobileStayItem[] = checkinsToday.map((b: BookingView) => ({
+    id: b.id,
+    guestName: b.guestName ?? "Ospite",
+    apartmentName: b.apartment.name,
+    time: romeHm(b.checkInDate),
+    guests: b.totalGuests ?? null,
+    nights: nightsOf(b),
+    href: `/dashboard/manager/bookings/${b.id}/edit`,
+  }));
+  const mobileDepartures: MobileStayItem[] = departuresToday.map((b: BookingView) => ({
+    id: b.id,
+    guestName: b.guestName ?? "Ospite",
+    apartmentName: b.apartment.name,
+    time: romeHm(b.checkOutDate),
+    guests: b.totalGuests ?? null,
+    nights: null,
+    href: `/dashboard/manager/bookings/${b.id}/edit`,
+  }));
+
   // Pulizie di oggi per il sheet mobile
   const mobileCleaningsTodayItems: MobileCleaningTodayItem[] = cleaningsToday.map((c: CleaningView) => ({
     id: c.id,
@@ -528,7 +564,9 @@ export default async function ManagerDashboardPage() {
         lateCleanings={mobileLateCleanings}
         cleaningsInProgress={mobileCleaningsInProgress}
         todayPendingEvents={mobileTodayEvents}
-        checkinsCount={checkinsToday.length}
+        checkinsCount={operationalCheckinsToday.length}
+        arrivalsItems={mobileArrivals}
+        departuresItems={mobileDepartures}
         lateCheckins={lateCheckins}
         cleaningsCount={cleaningsToday.length}
         cleaningsDoneCount={cleaningsDoneCount}

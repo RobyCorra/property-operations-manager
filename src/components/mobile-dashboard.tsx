@@ -74,6 +74,17 @@ export type MobileCheckinItem = {
   href: string;
 };
 
+// Arrivo/partenza informativi (IN oggi / OUT oggi)
+export type MobileStayItem = {
+  id: string;
+  guestName: string;
+  apartmentName: string;
+  time: string;
+  guests: number | null;
+  nights: number | null;
+  href: string;
+};
+
 export type MobileCleaningTodayItem = {
   id: string;
   apartmentName: string;
@@ -252,6 +263,8 @@ type Props = {
   cleaningsInProgress: MobileInProgressClean[];
   todayPendingEvents: MobileTodayEvent[];
   checkinsCount: number;
+  arrivalsItems?: MobileStayItem[];
+  departuresItems?: MobileStayItem[];
   cleaningsCount: number;
   cleaningsDoneCount: number;
   checkinsItems: MobileCheckinItem[];
@@ -342,6 +355,8 @@ export default function MobileDashboard({
   cleaningsInProgress,
   todayPendingEvents,
   checkinsCount,
+  arrivalsItems = [],
+  departuresItems = [],
   cleaningsCount,
   cleaningsDoneCount,
   checkinsItems,
@@ -384,6 +399,8 @@ export default function MobileDashboard({
   };
 
   const [checkinsSheetOpen, setCheckinsSheetOpen]     = useState(false);
+  const [arrivalsSheetOpen, setArrivalsSheetOpen]     = useState(false);
+  const [departuresSheetOpen, setDeparturesSheetOpen] = useState(false);
   const [cleaningsSheetOpen, setCleaningsSheetOpen]   = useState(false);
   const [ticketsSheetOpen, setTicketsSheetOpen]       = useState(false);
   const [lateCleanSheetOpen, setLateCleanSheetOpen]   = useState(false);
@@ -758,23 +775,56 @@ export default function MobileDashboard({
             </button>
           )}
 
-          {/* ─ Check-in oggi ─ */}
-          <button
-            onClick={() => { hapticLight(); setCheckinsSheetOpen(true); fetchAllCheckins(allCheckinsMonth, allCheckinsApt, allCheckinsStatus); }}
-            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 ${
-              checkinsCount > 0
-                ? "bg-blue-50 border-blue-200 shadow-sm shadow-blue-100"
-                : "bg-white border-slate-100 shadow-sm opacity-70"
-            }`}
-          >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${checkinsCount > 0 ? "bg-blue-100" : "bg-slate-100"}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={checkinsCount > 0 ? "#3b82f6" : "#94a3b8"} strokeWidth="2.5">
-                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-              </svg>
+          {/* ─ Check-in da gestire (operativo) — solo se ci sono task ─ */}
+          {checkinsCount > 0 && (
+            <button
+              onClick={() => { hapticLight(); setCheckinsSheetOpen(true); fetchAllCheckins(allCheckinsMonth, allCheckinsApt, allCheckinsStatus); }}
+              className="w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 bg-blue-50 border-blue-200 shadow-sm shadow-blue-100"
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-blue-100">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+              </div>
+              <p className="flex-1 text-[11px] font-black uppercase tracking-widest text-blue-500">{tr.kpiCheckinFace}</p>
+              <p className="text-3xl font-black leading-none shrink-0 text-slate-900">{checkinsCount}</p>
+              <span className="text-blue-400 text-2xl leading-none shrink-0">›</span>
+            </button>
+          )}
+
+          {/* ─ Coppia IN / OUT oggi (informativa) — ognuna solo se > 0 ─ */}
+          {(arrivalsItems.length > 0 || departuresItems.length > 0) && (
+            <div className="flex gap-2.5">
+              {arrivalsItems.length > 0 && (
+                <button
+                  onClick={() => { hapticLight(); setArrivalsSheetOpen(true); }}
+                  className="flex-1 min-h-[60px] rounded-2xl px-3.5 py-3 border border-emerald-200 bg-emerald-50 flex items-center gap-3 text-left active:scale-[0.95] transition-transform duration-100 active:duration-0"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10.5px] font-black uppercase tracking-widest text-emerald-600">{tr.kpiInToday}</p>
+                    <p className="text-2xl font-black leading-none text-emerald-900 mt-0.5">{arrivalsItems.length}</p>
+                  </div>
+                </button>
+              )}
+              {departuresItems.length > 0 && (
+                <button
+                  onClick={() => { hapticLight(); setDeparturesSheetOpen(true); }}
+                  className="flex-1 min-h-[60px] rounded-2xl px-3.5 py-3 border border-orange-200 bg-orange-50 flex items-center gap-3 text-left active:scale-[0.95] transition-transform duration-100 active:duration-0"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10.5px] font-black uppercase tracking-widest text-orange-600">{tr.kpiOutToday}</p>
+                    <p className="text-2xl font-black leading-none text-orange-900 mt-0.5">{departuresItems.length}</p>
+                  </div>
+                </button>
+              )}
             </div>
-            <p className={`flex-1 text-[11px] font-black uppercase tracking-widest ${checkinsCount > 0 ? "text-blue-500" : "text-slate-400"}`}>{tr.kpiCheckinFace}</p>
-            <p className={`text-3xl font-black leading-none shrink-0 ${checkinsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{checkinsCount}</p>
-          </button>
+          )}
 
           {/* ─ Pulizie oggi ─ */}
           <button
@@ -2009,6 +2059,56 @@ export default function MobileDashboard({
           </div>
         );
       })()}
+
+      {/* ════════════════════════════════════════════════════
+          ARRIVI (IN) e PARTENZE (OUT) di oggi
+          ════════════════════════════════════════════════════ */}
+      {[
+        { open: arrivalsSheetOpen, close: () => setArrivalsSheetOpen(false), items: arrivalsItems, isOut: false, title: tr.kpiInToday, kicker: "Arrivi di oggi" },
+        { open: departuresSheetOpen, close: () => setDeparturesSheetOpen(false), items: departuresItems, isOut: true, title: tr.kpiOutToday, kicker: "Partenze di oggi" },
+      ].map((s, i) => s.open && (
+        <div key={i} className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
+          <div className={`px-5 pt-3 pb-3 flex items-center gap-3 border-b shrink-0 ${s.isOut ? "border-orange-100" : "border-emerald-100"}`}>
+            <button onClick={s.close} aria-label="Indietro" className="shrink-0 w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+            </button>
+            <div>
+              <p className={`text-[10px] font-black uppercase tracking-widest ${s.isOut ? "text-orange-500" : "text-emerald-600"}`}>{s.kicker}</p>
+              <h2 className="text-lg font-bold text-slate-900">{s.items.length} {s.items.length === 1 ? "prenotazione" : "prenotazioni"}</h2>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2.5 pb-24">
+            {s.items.length === 0 && (
+              <div className="text-center py-12 text-slate-400 text-sm">{s.isOut ? "Nessuna partenza oggi" : "Nessun arrivo oggi"}</div>
+            )}
+            {s.items.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => { s.close(); requestAnimationFrame(() => router.push(item.href)); }}
+                className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
+              >
+                <div className={`h-1 ${s.isOut ? "bg-orange-400" : "bg-emerald-500"}`} />
+                <div className="px-4 py-3 flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${s.isOut ? "bg-orange-50" : "bg-emerald-50"}`}>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={s.isOut ? "#ea580c" : "#059669"} strokeWidth="2.5">
+                      {s.isOut
+                        ? (<><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>)
+                        : (<><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></>)}
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 truncate">{item.apartmentName}</p>
+                    <p className="text-[11px] text-slate-400 truncate">
+                      {item.guestName}{item.guests ? ` · ${item.guests} ospiti` : ""}{!s.isOut && item.nights ? ` · ${item.nights} ${item.nights === 1 ? "notte" : "notti"}` : ""}
+                    </p>
+                  </div>
+                  <span className={`text-[11.5px] font-bold px-2.5 py-1 rounded-full shrink-0 ${s.isOut ? "bg-orange-50 text-orange-700" : "bg-emerald-50 text-emerald-700"}`}>{item.time}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
 
       {/* ════════════════════════════════════════════════════
           TUTTE LE PULIZIE SHEET
