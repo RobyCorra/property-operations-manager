@@ -38,11 +38,16 @@ export default function FastTap() {
     let tracking = false;
     let targetEl: HTMLElement | null = null;
 
-    // Elementi per cui abbiamo appena emesso un click sintetico: sopprimiamo il
-    // click nativo (isTrusted) che arriva subito dopo per lo stesso elemento.
-    // Una Map (elemento → scadenza) gestisce correttamente tap rapidi in
-    // sequenza su pulsanti diversi.
-    const suppress = new Map<HTMLElement, number>();
+    // Dopo un click sintetico, il browser emette comunque un click "vero"
+    // (isTrusted) ~300ms dopo. Va soppresso, altrimenti l'azione parte due volte
+    // — ma soprattutto, se il tap ha cambiato la UI (es. chiuso un pannello), il
+    // click vero cade sul contenuto ora rivelato NELLA STESSA POSIZIONE dello
+    // schermo → "ghost click" (es. riapre la card che sta sotto la freccia).
+    // Per questo sopprimiamo per COORDINATE (stessa posizione del tap), non per
+    // elemento: così becchiamo il ghost anche quando l'elemento sotto è cambiato.
+    const SUPPRESS_RADIUS = 24; // px
+    const SUPPRESS_MS = 700;
+    const recentTaps: { x: number; y: number; exp: number }[] = [];
 
     function actionable(node: EventTarget | null): HTMLElement | null {
       let el = node as HTMLElement | null;
@@ -87,21 +92,25 @@ export default function FastTap() {
       const up = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
       if (!up || (up !== el && !el.contains(up) && !up.contains(el))) return;
 
-      suppress.set(el, Date.now() + 800);
+      recentTaps.push({ x: e.clientX, y: e.clientY, exp: Date.now() + SUPPRESS_MS });
       el.click(); // click sintetico (isTrusted = false) → parte subito l'azione
     }
 
-    // Cattura il click nativo che segue e lo blocca (una sola volta per elemento).
+    // Cattura il click nativo che segue e lo blocca. Confronto per coordinate:
+    // il ghost/trailing click arriva nella stessa posizione del tap.
     function onClickCapture(e: MouseEvent) {
-      if (suppress.size === 0 || !e.isTrusted) return; // il sintetico deve passare
+      if (!e.isTrusted) return; // il nostro sintetico deve passare
       const now = Date.now();
-      const t = e.target as HTMLElement | null;
-      for (const [el, exp] of suppress) {
-        if (exp < now) { suppress.delete(el); continue; }
-        if (t && (t === el || el.contains(t) || t.contains(el))) {
+      // Pulisci le voci scadute
+      for (let i = recentTaps.length - 1; i >= 0; i--) {
+        if (recentTaps[i].exp < now) recentTaps.splice(i, 1);
+      }
+      for (let i = 0; i < recentTaps.length; i++) {
+        const tap = recentTaps[i];
+        if (Math.abs(e.clientX - tap.x) <= SUPPRESS_RADIUS && Math.abs(e.clientY - tap.y) <= SUPPRESS_RADIUS) {
           e.stopPropagation();
           e.preventDefault();
-          suppress.delete(el);
+          recentTaps.splice(i, 1);
           return;
         }
       }
