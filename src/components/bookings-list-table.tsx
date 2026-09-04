@@ -114,9 +114,10 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
     // manuali non hanno externalId.
     const isImported = !!b.externalId || (!!src && src !== "MANUAL");
     if (!isImported) return { manual: true, label: "Manuale", emoji: "✏️", tintBg: "bg-violet-100", badge: "bg-violet-50 text-violet-700" };
-    // Etichetta: usa il source se presente, altrimenti (import senza source)
-    // è comunque Airbnb (il feed iCal qui è di Airbnb).
-    const nice = src === "AIRBNB" || !src ? "Airbnb" : src === "ICAL" ? "iCal" : src === "BOOKING" ? "Booking" : (src.charAt(0) + src.slice(1).toLowerCase());
+    // Etichetta canale: se importata è Airbnb per default (feed iCal = Airbnb),
+    // salvo canali espliciti diversi. Non mostrare mai "Manual" qui: se ha
+    // externalId è comunque una prenotazione importata.
+    const nice = src === "ICAL" ? "iCal" : src === "BOOKING" ? "Booking" : "Airbnb";
     return { manual: false, label: nice, emoji: "🏠", tintBg: "bg-rose-100", badge: "bg-rose-50 text-rose-700" };
   }
   function nightsBetween(a: Date, b: Date) {
