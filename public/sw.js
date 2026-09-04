@@ -5,7 +5,12 @@
 //  • Tutto il resto: NetworkFirst
 //  • Offline fallback: /offline se non c'è niente in cache
 
-const CACHE_VERSION = "v3";
+// v4: rimosso StaleWhileRevalidate sulle rotte manager. Il caching HTML di
+// pagine Next.js SSR causava hydration mismatch (dati stale nel markup vs
+// dati freschi lato client) → scroll e bottoni si bloccavano su Android.
+// Ora il SW cacha SOLO gli asset statici (JS/CSS/font/img) — che è dove sta
+// il grosso del beneficio velocità. Le pagine HTML vanno sempre in rete.
+const CACHE_VERSION = "v4";
 const STATIC_CACHE  = `static-${CACHE_VERSION}`;
 const PAGES_CACHE   = `pages-${CACHE_VERSION}`;
 const API_CACHE     = `api-${CACHE_VERSION}`;
@@ -13,10 +18,6 @@ const OFFLINE_URL   = "/offline";
 
 const STATIC_EXTENSIONS = /\.(js|css|woff2?|ttf|otf|png|jpg|jpeg|svg|gif|webp|ico)(\?.*)?$/;
 const OPERATIVE_PAGES   = /^\/(dashboard\/cleaner|dashboard\/maintenance|pulizia\/|manutenzione\/)/;
-// Pagine del manager: serviamo subito dalla cache e aggiorniamo in background
-// (Stale-While-Revalidate). Su Android WebView / rete lenta questo elimina
-// l'attesa di 5s che c'era con NetworkFirst → navigazione istantanea.
-const MANAGER_PAGES     = /^\/dashboard\/manager(\/|$)/;
 const API_ROUTES        = /^\/api\//;
 
 // ── Message: skip waiting per aggiornamenti silenziosi ───────────────────────
@@ -122,15 +123,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 4. Pagine del manager → StaleWhileRevalidate
-  //    Servite subito dalla cache (istantaneo), aggiornate in background.
-  //    Per la navigazione tra le schede questo elimina il freeze.
-  if (MANAGER_PAGES.test(url.pathname)) {
-    event.respondWith(staleWhileRevalidate(request, PAGES_CACHE));
-    return;
-  }
-
-  // 5. Tutto il resto → NetworkFirst senza fallback speciale
+  // 4. Tutto il resto (incluse pagine manager) → NetworkFirst.
+  //    NON usiamo StaleWhileRevalidate su Next.js SSR: rischia hydration
+  //    mismatch (markup cached con dati vecchi vs dati client freschi) che
+  //    su Android WebView blocca scroll e input.
   event.respondWith(networkFirst(request, PAGES_CACHE, 5000));
 });
 

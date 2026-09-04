@@ -86,8 +86,10 @@ input::placeholder, textarea::placeholder {
   color: #9ca3af;
 }
 
-/* Elimina il 300ms tap delay su iOS WebView / Capacitor */
-* {
+/* Elimina il 300ms tap delay su iOS WebView / Capacitor.
+   Applicato solo a elementi interattivi: applicandolo a "*" può
+   confondere lo scroll interno su Android WebView. */
+button, a, [role="button"], input, select, textarea, label {
   touch-action: manipulation;
 }
 
