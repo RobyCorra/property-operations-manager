@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import dynamic from "next/dynamic";
 import { useLang } from "@/src/components/lang-context";
 import type { T } from "@/src/lib/i18n";
@@ -334,6 +334,46 @@ function eventBgColor(type: string, status: string) {
   return "bg-rose-50";
 }
 
+// ── Lista "Stato appartamenti" — memoizzata ────────────────────────────
+// Estratta e avvolta in memo così NON si ri-renderizza quando il padre cambia
+// stato (es. apertura di un pannello). Dipende solo da `apartments`, `tr` e da
+// `onOpen` (tutti stabili tra un toggle e l'altro) → React salta il re-render.
+const ApartmentStatusList = memo(function ApartmentStatusList({
+  apartments,
+  tr,
+  onOpen,
+}: {
+  apartments: MobileApartmentData[];
+  tr: T;
+  onOpen: (apt: MobileApartmentData) => void;
+}) {
+  return (
+    <div className="px-4 mb-8">
+      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">{tr.mdApartmentsStatus}</p>
+      <div className="space-y-2">
+        {apartments.map((apt) => (
+          <button
+            key={apt.id}
+            onClick={() => onOpen(apt)}
+            className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100 active:scale-[.98] transition-transform text-left"
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
+              <div>
+                <p className="text-sm font-bold text-slate-900">{apt.name}</p>
+                <p className="text-[10px] text-slate-400">{aptStatusLabel(apt.status, tr)}</p>
+              </div>
+            </div>
+            <div className="w-[38px] h-[38px] rounded-xl bg-[#f0eeff] border border-[#e9d5ff] flex items-center justify-center text-violet-600 shrink-0" aria-label={tr.navCalendar}>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+});
+
 // ── Component ──────────────────────────────────────────────────────────
 export default function MobileDashboard({
   apartments,
@@ -482,15 +522,25 @@ export default function MobileDashboard({
     }
   }, []);
 
-  function openApartmentCalendar(apt: MobileApartmentData) {
+  // useCallback stabile (dip. solo da calendarDataByApt, prop stabile tra i
+  // toggle) → permette a <ApartmentStatusList> di restare memoizzato.
+  // `now` calcolato dentro per non dipendere da nowDate (nuovo ad ogni render).
+  const openApartmentCalendar = useCallback((apt: MobileApartmentData) => {
+    const now = new Date();
     setSelectedApt(apt);
     setCalendarTab("calendar");
     setCalendarLoading(false);
     // Torna sempre al mese corrente e seleziona oggi di default
-    setCalMonth({ year: nowDate.getFullYear(), month: nowDate.getMonth() });
-    setSelectedDay(nowDate.getDate());
+    setCalMonth({ year: now.getFullYear(), month: now.getMonth() });
+    setSelectedDay(now.getDate());
     setCalendarData(calendarDataByApt[apt.id] ?? { bookings: [], cleanings: [], tickets: [] });
-  }
+  }, [calendarDataByApt]);
+
+  // Handler stabile per la lista appartamenti: apre il calendario dell'app.
+  const onOpenApartment = useCallback((apt: MobileApartmentData) => {
+    openApartmentCalendar(apt);
+    setActiveTab("calendar");
+  }, [openApartmentCalendar]);
 
   function changeCalMonth(delta: number) {
     const next = new Date(calMonth.year, calMonth.month + delta, 1);
@@ -887,30 +937,8 @@ export default function MobileDashboard({
           </div>
         </div>
 
-        {/* ── STATO APPARTAMENTI ──────────────────────────── */}
-        <div className="px-4 mb-8">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">{tr.mdApartmentsStatus}</p>
-          <div className="space-y-2">
-            {apartments.map((apt) => (
-              <button
-                key={apt.id}
-                onClick={() => { openApartmentCalendar(apt); setActiveTab("calendar"); }}
-                className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100 active:scale-[.98] transition-transform text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{apt.name}</p>
-                    <p className="text-[10px] text-slate-400">{aptStatusLabel(apt.status, tr)}</p>
-                  </div>
-                </div>
-                <div className="w-[38px] h-[38px] rounded-xl bg-[#f0eeff] border border-[#e9d5ff] flex items-center justify-center text-violet-600 shrink-0" aria-label={tr.navCalendar}>
-                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* ── STATO APPARTAMENTI (memoizzato) ──────────────── */}
+        <ApartmentStatusList apartments={apartments} tr={tr} onOpen={onOpenApartment} />
       </div>
 
       {/* ════════════════════════════════════════════════════
