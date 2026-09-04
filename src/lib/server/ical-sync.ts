@@ -97,7 +97,9 @@ export async function performApartmentIcalSync(apartmentId: string) {
     // 3. Upsert Booking
     const booking = await prisma.booking.upsert({
       where: { externalId },
-      update: { checkInDate, checkOutDate, status: "ACTIVE" },
+      // Backfill di source anche in update: le prenotazioni importate prima che
+      // il campo esistesse avevano source null → ora si ripara ad ogni sync.
+      update: { checkInDate, checkOutDate, status: "ACTIVE", source: "airbnb" },
       create: {
         externalId,
         apartmentId: apartment.id,

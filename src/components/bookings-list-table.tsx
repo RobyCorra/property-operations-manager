@@ -27,6 +27,7 @@ type Props = {
     checkOutDate: Date;
     status: string | null;
     source?: string | null;
+    externalId?: string | null;
     apartment: {
       id: string;
       name: string;
@@ -106,11 +107,16 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
   // ── Helper vista mobile (Proposta B) ────────────────────────────────
   const dateLocale = "it-IT";
 
-  function bookingSource(b: { status: string | null; source?: string | null }) {
+  function bookingSource(b: { status: string | null; source?: string | null; externalId?: string | null }) {
     const src = (b.source || "").toUpperCase();
-    const isManual = !src || src === "MANUAL";
-    if (isManual) return { manual: true, label: "Manuale", emoji: "✏️", tintBg: "bg-violet-100", badge: "bg-violet-50 text-violet-700" };
-    const nice = src === "AIRBNB" ? "Airbnb" : src === "ICAL" ? "iCal" : src === "BOOKING" ? "Booking" : (src.charAt(0) + src.slice(1).toLowerCase());
+    // Segnale AFFIDABILE di import: l'externalId (UID iCal) c'è sempre sulle
+    // prenotazioni importate, anche su quelle vecchie con source null. Le
+    // manuali non hanno externalId.
+    const isImported = !!b.externalId || (!!src && src !== "MANUAL");
+    if (!isImported) return { manual: true, label: "Manuale", emoji: "✏️", tintBg: "bg-violet-100", badge: "bg-violet-50 text-violet-700" };
+    // Etichetta: usa il source se presente, altrimenti (import senza source)
+    // è comunque Airbnb (il feed iCal qui è di Airbnb).
+    const nice = src === "AIRBNB" || !src ? "Airbnb" : src === "ICAL" ? "iCal" : src === "BOOKING" ? "Booking" : (src.charAt(0) + src.slice(1).toLowerCase());
     return { manual: false, label: nice, emoji: "🏠", tintBg: "bg-rose-100", badge: "bg-rose-50 text-rose-700" };
   }
   function nightsBetween(a: Date, b: Date) {
