@@ -703,7 +703,9 @@ export default function MobileDashboard({
       {/* ════════════════════════════════════════════════════
           DASHBOARD VIEW
           ════════════════════════════════════════════════════ */}
-      <div className="pb-24">
+      {/* pt-2.5 = stesso spazio del gap tra le card, così la prima card
+          (qualunque sia) non è attaccata all'header. */}
+      <div className="pt-2.5 pb-24">
 
 
         {/* ── ALERT RITARDI — impilati ─────────────────────── */}
