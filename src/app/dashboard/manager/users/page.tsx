@@ -7,6 +7,7 @@ import Link from "next/link";
 import DeleteUserButton from "@/src/components/delete-user-button";
 import SafeDate from "@/src/components/safe-date";
 import BackButton from "@/src/components/back-button";
+import TeamListMobile from "@/src/components/team-list-mobile";
 import {
   User,
   Mail,
@@ -57,28 +58,31 @@ export default async function UsersListPage() {
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <div className="sticky top-0 z-30 -mx-6 lg:-mx-10 px-6 lg:px-10 pb-4 -mt-6 lg:-mt-10 bg-[#faf8ff] flex flex-row items-center md:items-end justify-between gap-4 md:gap-6" style={{ paddingTop: "calc(env(safe-area-inset-top) + 16px)" }}>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <BackButton />
-            <h1 className="text-2xl md:text-4xl font-semibold tracking-tight text-slate-900 uppercase">
-              {tr.navTeam} <span className="text-violet-600">.</span>
+            <h1 className="text-xl md:text-4xl font-bold md:font-semibold tracking-tight text-slate-900 md:uppercase truncate">
+              {tr.navTeam}<span className="hidden md:inline text-violet-600"> .</span>
             </h1>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+            {/* Mobile: icone compatte. Desktop: bottoni con testo. */}
             <Link
               href="/dashboard/manager/users/history"
-              className="flex items-center gap-3 px-4 md:px-8 py-2.5 md:py-3.5 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
+              aria-label={tr.usActivityHistory}
+              className="w-10 h-10 md:w-auto md:h-auto md:px-8 md:py-3.5 flex items-center justify-center md:gap-3 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-2xl md:rounded-full shadow-sm hover:shadow-md active:scale-95 whitespace-nowrap"
             >
-              <Activity size={16} />
-              <span className="md:hidden">{tr.usHistoryShort}</span>
+              <Activity size={18} className="md:hidden" />
+              <Activity size={16} className="hidden md:inline" />
               <span className="hidden md:inline">{tr.usActivityHistory}</span>
             </Link>
             <Link
               href="/dashboard/manager/users/new"
-              className="flex items-center gap-3 bg-gradient-to-r from-violet-600 to-blue-500 px-4 md:px-8 py-2.5 md:py-3.5 text-[10px] font-black text-white shadow-xl shadow-violet-200/50 transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-95 uppercase tracking-widest whitespace-nowrap rounded-full"
+              aria-label={tr.usNewCollab}
+              className="w-10 h-10 md:w-auto md:h-auto md:px-8 md:py-3.5 flex items-center justify-center md:gap-3 bg-gradient-to-r from-violet-600 to-blue-500 text-[10px] font-black text-white shadow-lg shadow-violet-200/50 hover:shadow-2xl active:scale-95 uppercase tracking-widest whitespace-nowrap rounded-2xl md:rounded-full"
             >
-              <Plus size={16} />
-              <span className="md:hidden">{tr.usNew}</span>
+              <Plus size={20} className="md:hidden" />
+              <Plus size={16} className="hidden md:inline" />
               <span className="hidden md:inline">{tr.usNewCollab}</span>
             </Link>
           </div>
@@ -151,59 +155,12 @@ export default async function UsersListPage() {
           </div>
         </section>
 
-        {/* List — Mobile (card view) */}
-        <div className="md:hidden space-y-2">
-          {users.map((u: UserView) => (
-            <div key={u.id} className="bg-white/40 backdrop-blur-xl rounded-xl border border-white/40 shadow-sm overflow-hidden transition-all duration-200 hover:bg-white/60">
-              <div className="p-3 space-y-2">
-                {/* Name and Role */}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
-                      <User size={16} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-slate-900 tracking-tight uppercase truncate">{u.name}</p>
-                      <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest border shadow-sm mt-0.5 ${roleColors[u.role] || "bg-white text-slate-400 border-slate-100"}`}>
-                        <Fingerprint size={8} />
-                        {u.role}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div className="flex items-center gap-1.5 text-slate-500 font-medium lowercase text-[9px]">
-                  <Mail size={10} className="text-slate-300 shrink-0" />
-                  <span className="truncate">{u.email}</span>
-                </div>
-
-                {/* Date */}
-                <div className="flex items-center gap-1.5 text-slate-400 text-[8px] font-bold uppercase tracking-widest">
-                  <CalendarDays size={10} className="text-slate-300 shrink-0" />
-                  <SafeDate date={u.createdAt} format={{ day: 'numeric', month: 'numeric', year: 'numeric' }} />
-                </div>
-
-                {/* Actions */}
-                {role === "MANAGER" && u.email !== "manager@propertyops.com" && (
-                  <div className="flex items-center gap-1.5 pt-1.5 border-t border-white/20">
-                    <Link
-                      href={`/dashboard/manager/users/${u.id}/edit`}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-all text-[8px] font-bold"
-                      title={tr.usEditUser}
-                    >
-                      <Pencil size={12} />
-                      Modifica
-                    </Link>
-                    <div className="flex-1">
-                      <DeleteUserButton id={u.id} />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* List — Mobile (raggruppata per ruolo, Proposta A) */}
+        <TeamListMobile
+          users={users}
+          canManage={role === "MANAGER"}
+          protectedEmail="manager@propertyops.com"
+        />
 
       </div>
     </main>
