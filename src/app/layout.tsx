@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import PWARegister from "@/src/components/pwa-register";
-import FastTap from "@/src/components/fast-tap";
 import { ToastProvider } from "@/src/components/toast-provider";
 
 export const metadata: Metadata = {
@@ -38,7 +37,6 @@ export default function RootLayout({
     <html lang="it" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <PWARegister />
-        <FastTap />
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
