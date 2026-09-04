@@ -43,7 +43,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
   const [filters, setFilters] = useState<Record<string, string>>({
     search: "",
     apartmentId: "",
-    status: "",
+    timeframe: "UPCOMING", // default: dal giorno in corso in poi
     startDate: "",
     endDate: "",
   });
@@ -53,23 +53,29 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
   };
 
   const handleReset = () => {
-    setFilters({ search: "", apartmentId: "", status: "", startDate: "", endDate: "" });
+    setFilters({ search: "", apartmentId: "", timeframe: "UPCOMING", startDate: "", endDate: "" });
   };
 
   const filteredBookings = useMemo(() => {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
     return initialBookings.filter((b) => {
       const matchesSearch = !filters.search || (b.guestName || "").toLowerCase().includes(filters.search.toLowerCase());
       const matchesApartment = !filters.apartmentId || b.apartment.id === filters.apartmentId;
-      // "MANUAL" = prenotazione senza status (inserita a mano). Prima il valore
-      // era la stringa "null" che non matchava mai b.status === null → filtro rotto.
-      const matchesStatus = !filters.status
-        || (filters.status === "MANUAL" ? !b.status : b.status === filters.status);
-      
+
+      // Passate = già terminate (check-out < oggi). Prossime = ancora in corso o
+      // future (check-out >= oggi). "ALL" = tutte.
+      const checkOut = new Date(b.checkOutDate);
+      const matchesTimeframe =
+        filters.timeframe === "ALL" ? true :
+        filters.timeframe === "PAST" ? checkOut < todayStart :
+        checkOut >= todayStart; // UPCOMING (default)
+
       const checkIn = new Date(b.checkInDate);
       const matchesStart = !filters.startDate || checkIn >= new Date(filters.startDate);
       const matchesEnd = !filters.endDate || checkIn <= new Date(filters.endDate);
 
-      return matchesSearch && matchesApartment && matchesStatus && matchesStart && matchesEnd;
+      return matchesSearch && matchesApartment && matchesTimeframe && matchesStart && matchesEnd;
     });
   }, [initialBookings, filters]);
 
@@ -82,14 +88,14 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
       options: apartments.map(a => ({ value: a.id, label: a.name })),
       icon: <Building2 size={14} />
     },
-    { 
-      id: "status", 
-      label: t.calStatusWord, 
-      type: "select", 
+    {
+      id: "timeframe",
+      label: t.calStatusWord,
+      type: "select",
       options: [
-        { value: "CONFIRMED", label: t.bkConfirmed },
-        { value: "CANCELLED", label: t.bkCancelled },
-        { value: "MANUAL", label: "Manual" }
+        { value: "UPCOMING", label: "Prossime" },
+        { value: "PAST", label: "Passate" },
+        { value: "ALL", label: "Tutte" },
       ],
       icon: <Filter size={14} />
     },
@@ -123,11 +129,16 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
     }
     g.items.push(b);
   }
+  // Passate: mostra le più recenti in cima (mesi e prenotazioni in ordine inverso)
+  if (filters.timeframe === "PAST") {
+    groupedMobile.reverse();
+    groupedMobile.forEach((g) => g.items.reverse());
+  }
 
-  const statusChips = [
-    { value: "", label: "Tutte" },
-    { value: "CONFIRMED", label: t.bkConfirmed },
-    { value: "MANUAL", label: "Manuali" },
+  const timeframeChips = [
+    { value: "UPCOMING", label: "Prossime" },
+    { value: "PAST", label: "Passate" },
+    { value: "ALL", label: "Tutte" },
   ];
 
   return (
@@ -152,7 +163,7 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
             placeholder={t.bkSearchPlaceholder}
             className="flex-1 min-w-0 bg-transparent outline-none text-[15px] text-slate-700 placeholder:text-slate-400"
           />
-          {(filters.search || filters.apartmentId || filters.status) && (
+          {(filters.search || filters.apartmentId || filters.timeframe !== "UPCOMING") && (
             <button onClick={handleReset} className="text-[10px] font-black uppercase tracking-widest text-violet-500 shrink-0">Reset</button>
           )}
         </div>
@@ -165,12 +176,12 @@ export default function BookingsListTable({ initialBookings, apartments }: Props
           {apartments.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
         </select>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-          {statusChips.map((c) => (
+          {timeframeChips.map((c) => (
             <button
               key={c.value}
-              onClick={() => handleFilterChange("status", c.value)}
+              onClick={() => handleFilterChange("timeframe", c.value)}
               className={`text-[11px] font-bold px-3.5 py-1.5 rounded-full whitespace-nowrap border transition-all ${
-                filters.status === c.value ? "bg-violet-600 text-white border-violet-600" : "bg-white text-slate-500 border-[#ede9f6]"
+                filters.timeframe === c.value ? "bg-violet-600 text-white border-violet-600" : "bg-white text-slate-500 border-[#ede9f6]"
               }`}
             >
               {c.label}
