@@ -826,10 +826,11 @@ export default function MobileDashboard({
             </div>
           )}
 
-          {/* ─ Pulizie oggi ─ */}
+          {/* ─ Pulizie oggi ─ (solo se > 0) */}
+          {cleaningsCount > 0 && (
           <button
             onClick={() => { hapticLight(); setCleaningsSheetOpen(true); fetchAllCleanings(allCleaningsMonth, allCleaningsApt, allCleaningsStatus); }}
-            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 bg-white border-slate-100 shadow-sm ${cleaningsCount > 0 ? "" : "opacity-70"}`}
+            className="w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 bg-white border-slate-100 shadow-sm"
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "bg-emerald-100" : "bg-violet-100"}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={cleaningsDoneCount === cleaningsCount && cleaningsCount > 0 ? "#10b981" : "#7c3aed"} strokeWidth="2.5">
@@ -842,15 +843,13 @@ export default function MobileDashboard({
             )}
             <p className={`text-3xl font-black leading-none shrink-0 ${cleaningsCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{cleaningsCount}</p>
           </button>
+          )}
 
-          {/* ─ Ticket Oggi ─ */}
+          {/* ─ Ticket Oggi ─ (solo se > 0) */}
+          {ticketsTodayCount > 0 && (
           <button
             onClick={() => { hapticLight(); setTicketsSheetOpen(true); fetchAllTickets(allTicketsMonth, allTicketsApt, allTicketsStatus); }}
-            className={`w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 ${
-              ticketsTodayCount > 0
-                ? "bg-orange-50 border-orange-200 shadow-sm shadow-orange-100"
-                : "bg-white border-slate-100 shadow-sm opacity-70"
-            }`}
+            className="w-full min-h-[64px] rounded-2xl px-4 py-3 border flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0 bg-orange-50 border-orange-200 shadow-sm shadow-orange-100"
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${ticketsTodayCount > 0 ? "bg-orange-100" : "bg-slate-100"}`}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={ticketsTodayCount > 0 ? "#f97316" : "#94a3b8"} strokeWidth="2.5">
@@ -863,6 +862,7 @@ export default function MobileDashboard({
             )}
             <p className={`text-3xl font-black leading-none shrink-0 ${ticketsTodayCount > 0 ? "text-slate-900" : "text-slate-400"}`}>{ticketsTodayCount}</p>
           </button>
+          )}
 
           {/* ─ Chiedi a IA ─ */}
           <button
