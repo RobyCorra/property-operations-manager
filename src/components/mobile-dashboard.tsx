@@ -404,6 +404,7 @@ export default function MobileDashboard({
   const [cleaningsSheetOpen, setCleaningsSheetOpen]   = useState(false);
   const [ticketsSheetOpen, setTicketsSheetOpen]       = useState(false);
   const [lateCleanSheetOpen, setLateCleanSheetOpen]   = useState(false);
+  const [lateCheckinsSheetOpen, setLateCheckinsSheetOpen] = useState(false);
   const [inProgressSheetOpen, setInProgressSheetOpen] = useState(false);
 
   // ── Sheet tr.mdAllCleanings ───────────────────────────────────
@@ -713,34 +714,28 @@ export default function MobileDashboard({
             sostituiti da un'unica card rossa col totale, in cima allo stack KPI
             qui sotto (apre la lista completa al tocco). */}
 
-        {lateCheckins.length > 0 && (
-          <div className="px-4 mb-3 space-y-2">
-            {lateCheckins.map((lc, i) => (
-              <div
-                key={lc.id}
-                className="bg-rose-500 rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg shadow-rose-300 animate-pulse"
-                style={{ animationDelay: `${i * 0.3}s` }}
-              >
-                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 text-white text-sm">⚠</div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-black uppercase tracking-wide text-white">⚠ Check-in in ritardo</p>
-                  <p className="text-[10px] text-rose-100 truncate">
-                    {lc.apartmentName} · doveva iniziare {lc.scheduledTime}
-                  </p>
-                </div>
-                <Link href={lc.href} className="px-4 min-h-[44px] inline-flex items-center bg-white text-rose-600 text-[11px] font-black rounded-full shrink-0">
-                  Vedi
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
-
         {/* ── KPI GRID ────────────────────────────────────── */}
         {/* KPI in banner orizzontali (stessa dimensione dell'avviso rosso).
             Ogni banner è un <button> a tutta larghezza → cliccabile su tutta la riga.
             active:scale-[0.93] + hapticLight() = feedback al tocco più marcato. */}
         <div className="px-4 flex flex-col gap-2.5 mb-3">
+          {/* ─ Check-in in ritardo — card rossa col totale, apre la lista (solo se > 0) ─ */}
+          {lateCheckins.length > 0 && (
+            <button
+              onClick={() => { hapticLight(); setLateCheckinsSheetOpen(true); }}
+              className="w-full min-h-[64px] rounded-2xl px-4 py-3 border border-rose-600 bg-rose-600 shadow-lg shadow-rose-300 flex items-center gap-3.5 text-left active:scale-[0.93] transition-transform duration-100 active:duration-0"
+            >
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                </svg>
+              </div>
+              <p className="flex-1 text-[11px] font-black uppercase tracking-widest text-white">{tr.kpiLateCheckinCard}</p>
+              <p className="text-3xl font-black leading-none shrink-0 text-white">{lateCheckins.length}</p>
+              <span className="text-white/80 text-2xl leading-none shrink-0">›</span>
+            </button>
+          )}
+
           {/* ─ Pulizie in ritardo — SOLO se presenti: card rossa col totale, apre la lista ─ */}
           {lateCleanings.length > 0 && (
             <button
@@ -2626,6 +2621,55 @@ export default function MobileDashboard({
                   <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 bg-orange-50 text-orange-700">
                     In ritardo
                   </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          CHECK-IN IN RITARDO SHEET
+          ════════════════════════════════════════════════════ */}
+      {lateCheckinsSheetOpen && (
+        <div className="fixed inset-0 bg-[#f8f7ff] z-40 flex flex-col animate-sheet-in" style={{ paddingTop: "max(calc(env(safe-area-inset-top) + 80px), 140px)" }}>
+          <div className="px-5 pt-3 pb-4 flex items-center gap-3 border-b border-rose-100">
+            <button
+              onClick={() => setLateCheckinsSheetOpen(false)}
+              aria-label="Indietro"
+              className="shrink-0 w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
+              </svg>
+            </button>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-rose-500">Attenzione</p>
+              <h2 className="text-xl font-bold text-slate-900">{lateCheckins.length} {tr.kpiLateCheckinCard}</h2>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
+            {lateCheckins.length === 0 && (
+              <div className="text-center py-12 text-slate-400 text-sm">✓ Nessun check-in in ritardo</div>
+            )}
+            {lateCheckins.map((lc) => (
+              <div
+                key={lc.id}
+                onClick={() => { setLateCheckinsSheetOpen(false); requestAnimationFrame(() => router.push(lc.href)); }}
+                className="block bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[.99] transition-transform cursor-pointer"
+              >
+                <div className="h-1 bg-rose-500" />
+                <div className="px-4 py-3 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center shrink-0">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2.5">
+                      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 truncate">{lc.apartmentName}</p>
+                    <p className="text-[10px] text-slate-400 truncate">doveva iniziare alle {lc.scheduledTime}</p>
+                  </div>
+                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg shrink-0 bg-rose-50 text-rose-700">In ritardo</span>
                 </div>
               </div>
             ))}
