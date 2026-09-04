@@ -671,12 +671,18 @@ export default function MobileDashboard({
   }, []);
 
   return (
-    <div className="relative bg-[#f8f7ff] h-screen flex flex-col overflow-hidden">
+    // NIENTE h-screen + scroll interno: quello creava DUE scroll container
+    // annidati (questo + quello del SidebarLayout). Su Android WebView il gesto
+    // veniva catturato dal container esterno che si muoveva di pochi px → la
+    // home sembrava bloccata. Ora la dashboard scorre in flusso naturale dentro
+    // lo scroll del SidebarLayout, come le pagine-lista (che infatti funzionano).
+    // Calendario e sheet sono `fixed inset-0`, indipendenti dall'altezza qui.
+    <div className="relative bg-[#f8f7ff] overflow-x-hidden">
 
       {/* ════════════════════════════════════════════════════
           DASHBOARD VIEW
           ════════════════════════════════════════════════════ */}
-      <div className="flex-1 overflow-y-auto pb-24" style={{ WebkitOverflowScrolling: "touch" }}>
+      <div className="pb-24">
 
 
         {/* ── ALERT RITARDI — impilati ─────────────────────── */}
