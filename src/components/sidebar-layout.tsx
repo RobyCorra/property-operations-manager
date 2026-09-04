@@ -1,12 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import ManagerNavbar from "./manager-navbar";
 import { logoutAction } from "@/src/app/actions/auth";
-import FloatingManagerChat from "./floating-manager-chat";
-import SettingsDrawer from "./settings-drawer";
 import MobileHeader from "./mobile-header";
 import { useLang } from "@/src/components/lang-context";
+
+// Lazy: react-markdown (chat AI) e il drawer impostazioni non servono al primo
+// paint. Caricati on-demand → bundle iniziale più leggero, main thread Android
+// meno impegnato all'avvio.
+const FloatingManagerChat = dynamic(() => import("./floating-manager-chat"), { ssr: false });
+const SettingsDrawer = dynamic(() => import("./settings-drawer"), { ssr: false });
 
 interface SidebarLayoutProps {
   children: React.ReactNode;

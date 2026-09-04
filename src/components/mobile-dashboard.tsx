@@ -1,18 +1,22 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useLang } from "@/src/components/lang-context";
 import type { T } from "@/src/lib/i18n";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import NotificationBell from "@/src/components/notification-bell";
-import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import { hapticLight } from "@/src/lib/haptics";
 import { ApartmentStatus, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import { logoutAction } from "@/src/app/actions/auth";
-import FloatingManagerChat from "@/src/components/floating-manager-chat";
-import SettingsDrawer from "@/src/components/settings-drawer";
+
+// Lazy-load dei componenti pesanti/on-demand: non pesano sul bundle iniziale
+// della dashboard (critico su CPU Android). Si caricano solo quando aperti.
+const FloatingManagerChat = dynamic(() => import("@/src/components/floating-manager-chat"), { ssr: false });
+const SettingsDrawer = dynamic(() => import("@/src/components/settings-drawer"), { ssr: false });
+const ApartmentMapWrapper = dynamic(() => import("@/src/components/apartment-map-wrapper"), { ssr: false });
 
 // ── Types ─────────────────────────────────────────────────────────────
 export type MobileApartmentData = {
