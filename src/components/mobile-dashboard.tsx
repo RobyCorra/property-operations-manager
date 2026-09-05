@@ -510,13 +510,6 @@ export default function MobileDashboard({
     setCalendarData(calendarDataByApt[apt.id] ?? { bookings: [], cleanings: [], tickets: [] });
   }
 
-  function changeCalMonth(delta: number) {
-    const next = new Date(calMonth.year, calMonth.month + delta, 1);
-    setCalMonth({ year: next.getFullYear(), month: next.getMonth() });
-    setSelectedDay(null);
-    // Data spans all months — no fetch needed
-  }
-
   const pendingCount      = todayPendingEvents.length;
   const pendingCleanings  = todayPendingEvents.filter((e) => e.type === "CLEANING").length;
   const pendingMaintenance = todayPendingEvents.filter((e) => e.type === "MAINTENANCE").length;
@@ -1076,6 +1069,24 @@ export default function MobileDashboard({
               const daysInMonth = new Date(year, month + 1, 0).getDate();
               const todayYMD = isoToYMD(new Date().toISOString());
 
+              // Opzioni mese per il menu a tendina (come nella pagina Pulizie):
+              // mese corrente reale -3 .. +8. Se il mese selezionato cade fuori
+              // da questo range (es. ripristino da sessionStorage), lo aggiungo.
+              const calMonthOptions: { value: string; label: string }[] = [];
+              const calBase = new Date();
+              calBase.setDate(1);
+              for (let i = -3; i <= 8; i++) {
+                const d = new Date(calBase.getFullYear(), calBase.getMonth() + i, 1);
+                const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+                const label = d.toLocaleDateString(dateLocale, { month: "long", year: "numeric" });
+                calMonthOptions.push({ value: val, label: label.charAt(0).toUpperCase() + label.slice(1) });
+              }
+              const calCurVal = `${year}-${String(month + 1).padStart(2, "0")}`;
+              if (!calMonthOptions.some((o) => o.value === calCurVal)) {
+                const lbl = new Date(year, month, 1).toLocaleDateString(dateLocale, { month: "long", year: "numeric" });
+                calMonthOptions.unshift({ value: calCurVal, label: lbl.charAt(0).toUpperCase() + lbl.slice(1) });
+              }
+
               // ── Per-day maps ──────────────────────────────────
               const dayCleaningsMap = new Map<number, CalCleaning[]>();
               const dayTicketsMap   = new Map<number, CalTicket[]>();
@@ -1288,15 +1299,20 @@ export default function MobileDashboard({
 
               return (
                 <div className="px-4 pt-4">
-                  {/* Month nav */}
-                  <div className="flex items-center justify-between mb-3">
-                    <button onClick={() => changeCalMonth(-1)} className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                    </button>
-                    <span className="text-base font-black text-slate-900">{new Date(year, month, 1).toLocaleDateString(dateLocale, { month: "long" })} {year}</span>
-                    <button onClick={() => changeCalMonth(1)} className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
+                  {/* Selettore mese a tendina (come nella pagina Pulizie) */}
+                  <div className="relative mb-3">
+                    <select
+                      value={calCurVal}
+                      onChange={(e) => {
+                        const [y, m] = e.target.value.split("-").map(Number);
+                        setCalMonth({ year: y, month: m - 1 });
+                        setSelectedDay(null);
+                      }}
+                      className="w-full text-[15px] font-bold py-3 pl-4 pr-10 rounded-2xl border border-[#ede9f6] bg-white text-violet-700 appearance-none capitalize"
+                    >
+                      {calMonthOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                    <svg className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-violet-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                   </div>
 
                   {/* Calendar grid — struttura a settimane con pill prenotazione */}
