@@ -1088,6 +1088,56 @@ function compactJsonText(value: unknown, maxLength = 600) {
   return truncateText(JSON.stringify(compactValue), maxLength);
 }
 
+// Scorta reale dalla tabella ApartmentProduct (sezione "Prodotti & Scorte").
+function formatApartmentProductsSection(
+  products: Array<{
+    name: string; emoji?: string; unit: string; stock: number; minStock: number;
+    price: number; vat: number; consumptionType?: string; consumptionValue?: number;
+  }> | undefined | null
+) {
+  if (!products || products.length === 0) {
+    return "- Nessun prodotto in scorta registrato in questo appartamento.";
+  }
+  let totalNet = 0;
+  let totalGross = 0;
+  const lines = products.map((p) => {
+    const vat = p.vat ?? 0;
+    const gross = p.price * (1 + vat / 100);
+    const valueNet = p.price * p.stock;
+    const valueGross = gross * p.stock;
+    totalNet += valueNet;
+    totalGross += valueGross;
+    return `- ${p.name}: scorta ${p.stock} ${p.unit} (minima ${p.minStock}) | prezzo ${p.price.toFixed(2)}€/${p.unit} netto, ${gross.toFixed(2)}€ IVA ${vat}% incl. | valore scorta ${valueNet.toFixed(2)}€ netto / ${valueGross.toFixed(2)}€ IVA incl.`;
+  });
+  lines.push(`- VALORE TOTALE SCORTA APPARTAMENTO: ${totalNet.toFixed(2)}€ netto / ${totalGross.toFixed(2)}€ IVA inclusa`);
+  return lines.join("\n");
+}
+
+// Scorta magazzino (WarehouseProduct) a livello di organizzazione.
+function formatWarehouseSection(
+  products: Array<{
+    name: string; unit: string; stock: number; minStock: number;
+    price: number; vat: number; consumptionType?: string;
+  }> | undefined | null
+) {
+  if (!products || products.length === 0) {
+    return "- Nessun prodotto in magazzino registrato.";
+  }
+  let totalNet = 0;
+  let totalGross = 0;
+  const lines = products.map((p) => {
+    const vat = p.vat ?? 0;
+    const gross = p.price * (1 + vat / 100);
+    const valueNet = p.price * p.stock;
+    const valueGross = gross * p.stock;
+    totalNet += valueNet;
+    totalGross += valueGross;
+    return `- ${p.name}: scorta ${p.stock} ${p.unit} (minima ${p.minStock}) | prezzo ${p.price.toFixed(2)}€/${p.unit} netto, ${gross.toFixed(2)}€ IVA ${vat}% incl. | valore ${valueNet.toFixed(2)}€ netto / ${valueGross.toFixed(2)}€ IVA incl.`;
+  });
+  lines.push(`- VALORE TOTALE MAGAZZINO: ${totalNet.toFixed(2)}€ netto / ${totalGross.toFixed(2)}€ IVA inclusa`);
+  return lines.join("\n");
+}
+
 function formatLegacyProductsSection(technicalProfile: unknown) {
   const products = arraySection(technicalProfile, "products");
 
@@ -1824,6 +1874,10 @@ export async function buildApartmentAIContext(apartmentId: string) {
         take: 80,
         select: { createdAt: true, role: true, userRole: true, content: true },
       },
+      products: {
+        orderBy: { createdAt: "asc" },
+        take: 100,
+      },
     },
   });
 
@@ -2121,6 +2175,9 @@ ${formatAccessInfo((apartment as any).accessInfo, (apartment as any).accessInstr
 SCHEDA TECNICA
 ${formatTechnicalProfile(apartment.technicalProfile)}
 
+PRODOTTI & SCORTE (scorta reale, sezione "Prodotti" dell'appartamento)
+${formatApartmentProductsSection((apartment as any).products)}
+
 PRODOTTI LEGACY / PRESENTI IN CASA
 ${formatLegacyProductsSection(apartment.technicalProfile)}
 
@@ -2157,7 +2214,7 @@ async function buildGeneralManagerContext(now: Date) {
   const recent14Days = addDays(todayStart, -14);
   const orgId = await getCurrentOrg();
 
-  const [org, apartments, bookings, cleanings, tickets, personnel] = await Promise.all([
+  const [org, apartments, bookings, cleanings, tickets, personnel, warehouseProducts] = await Promise.all([
     prisma.organization.findUnique({
       where: { id: orgId! },
       select: { conflictMaxCleaningsPerDay: true, conflictUrgentHours: true, conflictStaleTicketDays: true, conflictOverlapMinutes: true },
@@ -2182,6 +2239,7 @@ async function buildGeneralManagerContext(now: Date) {
             createdAt: true,
           },
         },
+        products: { orderBy: { createdAt: "asc" }, take: 100 },
       },
     }),
     prisma.booking.findMany({
@@ -2261,6 +2319,11 @@ async function buildGeneralManagerContext(now: Date) {
       select: { id: true, name: true, role: true },
       orderBy: { name: "asc" },
     }),
+    prisma.warehouseProduct.findMany({
+      where: { organizationId: orgId ?? undefined },
+      orderBy: { createdAt: "asc" },
+      take: 200,
+    }).catch(() => [] as any[]),
   ]);
 
   const apartmentLines = apartments.map((apartment: ManagerApartmentForAI) => {
@@ -2288,7 +2351,7 @@ async function buildGeneralManagerContext(now: Date) {
       apartment.technicalProfile,
     ).replace(/^- /gm, "").replace(/\n/g, " | ");
 
-    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | accesso: ${accessSummary} | technicalProfile: ${compactJsonText(stripAccessKeysFromTechProfile(apartment.technicalProfile), 900)} | prodotti: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 400)} | allegati: ${attachmentSummary || "nessun allegato"}`;
+    return `- id:${apartment.id} | ${apartment.name} | ${apartment.address} | stato: ${status.label} (${status.reason}) | base: ${apartment.maxGuests} ospiti, ${apartment.bedrooms} camere, ${apartment.bathrooms} bagni, ${apartment.squareMeters} mq | accesso: ${accessSummary} | technicalProfile: ${compactJsonText(stripAccessKeysFromTechProfile(apartment.technicalProfile), 900)} | scorte: ${truncateText(formatApartmentProductsSection((apartment as any).products).replace(/\n/g, " ; "), 700)} | prodotti legacy: ${truncateText(formatLegacyProductsSection(apartment.technicalProfile), 200)} | allegati: ${attachmentSummary || "nessun allegato"}`;
   });
 
   // Usa formatDate (Europe/Rome) come chiave stringa per tutti i filtri — evita mismatch UTC/locale
@@ -2463,6 +2526,9 @@ ${upcomingCheckouts.length > 0 ? upcomingCheckouts.map(bookingLine).join("\n") :
 
 ════ STATO APPARTAMENTI ════
 ${apartmentLines.length > 0 ? apartmentLines.join("\n") : "- Nessun appartamento trovato."}
+
+════ MAGAZZINO (scorta generica organizzazione, sezione "Magazzino") ════
+${formatWarehouseSection(warehouseProducts as any)}
 
 ════ MANUTENZIONI — RAGGRUPPATE PER DATA (fonte autoritativa per range di date) ════
 ISTRUZIONE: Per domande su "quanti ticket ci sono tra X e Y" o "manutenzioni di questa settimana", leggere QUESTA sezione. La data usata è scheduledStart se presente, altrimenti createdAt.
