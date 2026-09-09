@@ -465,6 +465,7 @@ exports.Prisma.ApartmentProductScalarFieldEnum = {
   consumptionType: 'consumptionType',
   consumptionValue: 'consumptionValue',
   price: 'price',
+  vat: 'vat',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -492,6 +493,7 @@ exports.Prisma.WarehouseProductScalarFieldEnum = {
   consumptionBasis: 'consumptionBasis',
   consumptionValue: 'consumptionValue',
   price: 'price',
+  vat: 'vat',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

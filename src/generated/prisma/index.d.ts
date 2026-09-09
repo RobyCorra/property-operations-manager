@@ -35334,6 +35334,7 @@ export namespace Prisma {
     minStock: number | null
     consumptionValue: number | null
     price: number | null
+    vat: number | null
   }
 
   export type ApartmentProductSumAggregateOutputType = {
@@ -35341,6 +35342,7 @@ export namespace Prisma {
     minStock: number | null
     consumptionValue: number | null
     price: number | null
+    vat: number | null
   }
 
   export type ApartmentProductMinAggregateOutputType = {
@@ -35354,6 +35356,7 @@ export namespace Prisma {
     consumptionType: string | null
     consumptionValue: number | null
     price: number | null
+    vat: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -35369,6 +35372,7 @@ export namespace Prisma {
     consumptionType: string | null
     consumptionValue: number | null
     price: number | null
+    vat: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -35384,6 +35388,7 @@ export namespace Prisma {
     consumptionType: number
     consumptionValue: number
     price: number
+    vat: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -35395,6 +35400,7 @@ export namespace Prisma {
     minStock?: true
     consumptionValue?: true
     price?: true
+    vat?: true
   }
 
   export type ApartmentProductSumAggregateInputType = {
@@ -35402,6 +35408,7 @@ export namespace Prisma {
     minStock?: true
     consumptionValue?: true
     price?: true
+    vat?: true
   }
 
   export type ApartmentProductMinAggregateInputType = {
@@ -35415,6 +35422,7 @@ export namespace Prisma {
     consumptionType?: true
     consumptionValue?: true
     price?: true
+    vat?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -35430,6 +35438,7 @@ export namespace Prisma {
     consumptionType?: true
     consumptionValue?: true
     price?: true
+    vat?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -35445,6 +35454,7 @@ export namespace Prisma {
     consumptionType?: true
     consumptionValue?: true
     price?: true
+    vat?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -35547,6 +35557,7 @@ export namespace Prisma {
     consumptionType: string
     consumptionValue: number
     price: number
+    vat: number
     createdAt: Date
     updatedAt: Date
     _count: ApartmentProductCountAggregateOutputType | null
@@ -35581,6 +35592,7 @@ export namespace Prisma {
     consumptionType?: boolean
     consumptionValue?: boolean
     price?: boolean
+    vat?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -35599,6 +35611,7 @@ export namespace Prisma {
     consumptionType?: boolean
     consumptionValue?: boolean
     price?: boolean
+    vat?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -35615,6 +35628,7 @@ export namespace Prisma {
     consumptionType?: boolean
     consumptionValue?: boolean
     price?: boolean
+    vat?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -35631,11 +35645,12 @@ export namespace Prisma {
     consumptionType?: boolean
     consumptionValue?: boolean
     price?: boolean
+    vat?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ApartmentProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "name" | "emoji" | "unit" | "stock" | "minStock" | "consumptionType" | "consumptionValue" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["apartmentProduct"]>
+  export type ApartmentProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "name" | "emoji" | "unit" | "stock" | "minStock" | "consumptionType" | "consumptionValue" | "price" | "vat" | "createdAt" | "updatedAt", ExtArgs["result"]["apartmentProduct"]>
   export type ApartmentProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     movements?: boolean | ApartmentProduct$movementsArgs<ExtArgs>
@@ -35665,6 +35680,7 @@ export namespace Prisma {
       consumptionType: string
       consumptionValue: number
       price: number
+      vat: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["apartmentProduct"]>
@@ -36102,6 +36118,7 @@ export namespace Prisma {
     readonly consumptionType: FieldRef<"ApartmentProduct", 'String'>
     readonly consumptionValue: FieldRef<"ApartmentProduct", 'Float'>
     readonly price: FieldRef<"ApartmentProduct", 'Float'>
+    readonly vat: FieldRef<"ApartmentProduct", 'Float'>
     readonly createdAt: FieldRef<"ApartmentProduct", 'DateTime'>
     readonly updatedAt: FieldRef<"ApartmentProduct", 'DateTime'>
   }
@@ -37704,6 +37721,7 @@ export namespace Prisma {
     minStock: number | null
     consumptionValue: number | null
     price: number | null
+    vat: number | null
   }
 
   export type WarehouseProductSumAggregateOutputType = {
@@ -37711,6 +37729,7 @@ export namespace Prisma {
     minStock: number | null
     consumptionValue: number | null
     price: number | null
+    vat: number | null
   }
 
   export type WarehouseProductMinAggregateOutputType = {
@@ -37725,6 +37744,7 @@ export namespace Prisma {
     consumptionBasis: string | null
     consumptionValue: number | null
     price: number | null
+    vat: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -37741,6 +37761,7 @@ export namespace Prisma {
     consumptionBasis: string | null
     consumptionValue: number | null
     price: number | null
+    vat: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -37757,6 +37778,7 @@ export namespace Prisma {
     consumptionBasis: number
     consumptionValue: number
     price: number
+    vat: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -37768,6 +37790,7 @@ export namespace Prisma {
     minStock?: true
     consumptionValue?: true
     price?: true
+    vat?: true
   }
 
   export type WarehouseProductSumAggregateInputType = {
@@ -37775,6 +37798,7 @@ export namespace Prisma {
     minStock?: true
     consumptionValue?: true
     price?: true
+    vat?: true
   }
 
   export type WarehouseProductMinAggregateInputType = {
@@ -37789,6 +37813,7 @@ export namespace Prisma {
     consumptionBasis?: true
     consumptionValue?: true
     price?: true
+    vat?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -37805,6 +37830,7 @@ export namespace Prisma {
     consumptionBasis?: true
     consumptionValue?: true
     price?: true
+    vat?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -37821,6 +37847,7 @@ export namespace Prisma {
     consumptionBasis?: true
     consumptionValue?: true
     price?: true
+    vat?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -37924,6 +37951,7 @@ export namespace Prisma {
     consumptionBasis: string
     consumptionValue: number
     price: number
+    vat: number
     createdAt: Date
     updatedAt: Date
     _count: WarehouseProductCountAggregateOutputType | null
@@ -37959,6 +37987,7 @@ export namespace Prisma {
     consumptionBasis?: boolean
     consumptionValue?: boolean
     price?: boolean
+    vat?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     movements?: boolean | WarehouseProduct$movementsArgs<ExtArgs>
@@ -37977,6 +38006,7 @@ export namespace Prisma {
     consumptionBasis?: boolean
     consumptionValue?: boolean
     price?: boolean
+    vat?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["warehouseProduct"]>
@@ -37993,6 +38023,7 @@ export namespace Prisma {
     consumptionBasis?: boolean
     consumptionValue?: boolean
     price?: boolean
+    vat?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["warehouseProduct"]>
@@ -38009,11 +38040,12 @@ export namespace Prisma {
     consumptionBasis?: boolean
     consumptionValue?: boolean
     price?: boolean
+    vat?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type WarehouseProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "name" | "emoji" | "unit" | "stock" | "minStock" | "consumptionType" | "consumptionBasis" | "consumptionValue" | "price" | "createdAt" | "updatedAt", ExtArgs["result"]["warehouseProduct"]>
+  export type WarehouseProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "name" | "emoji" | "unit" | "stock" | "minStock" | "consumptionType" | "consumptionBasis" | "consumptionValue" | "price" | "vat" | "createdAt" | "updatedAt", ExtArgs["result"]["warehouseProduct"]>
   export type WarehouseProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     movements?: boolean | WarehouseProduct$movementsArgs<ExtArgs>
     _count?: boolean | WarehouseProductCountOutputTypeDefaultArgs<ExtArgs>
@@ -38038,6 +38070,7 @@ export namespace Prisma {
       consumptionBasis: string
       consumptionValue: number
       price: number
+      vat: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["warehouseProduct"]>
@@ -38475,6 +38508,7 @@ export namespace Prisma {
     readonly consumptionBasis: FieldRef<"WarehouseProduct", 'String'>
     readonly consumptionValue: FieldRef<"WarehouseProduct", 'Float'>
     readonly price: FieldRef<"WarehouseProduct", 'Float'>
+    readonly vat: FieldRef<"WarehouseProduct", 'Float'>
     readonly createdAt: FieldRef<"WarehouseProduct", 'DateTime'>
     readonly updatedAt: FieldRef<"WarehouseProduct", 'DateTime'>
   }
@@ -40489,6 +40523,7 @@ export namespace Prisma {
     consumptionType: 'consumptionType',
     consumptionValue: 'consumptionValue',
     price: 'price',
+    vat: 'vat',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -40522,6 +40557,7 @@ export namespace Prisma {
     consumptionBasis: 'consumptionBasis',
     consumptionValue: 'consumptionValue',
     price: 'price',
+    vat: 'vat',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -42959,6 +42995,7 @@ export namespace Prisma {
     consumptionType?: StringFilter<"ApartmentProduct"> | string
     consumptionValue?: FloatFilter<"ApartmentProduct"> | number
     price?: FloatFilter<"ApartmentProduct"> | number
+    vat?: FloatFilter<"ApartmentProduct"> | number
     createdAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
     updatedAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
@@ -42976,6 +43013,7 @@ export namespace Prisma {
     consumptionType?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     apartment?: ApartmentOrderByWithRelationInput
@@ -42996,6 +43034,7 @@ export namespace Prisma {
     consumptionType?: StringFilter<"ApartmentProduct"> | string
     consumptionValue?: FloatFilter<"ApartmentProduct"> | number
     price?: FloatFilter<"ApartmentProduct"> | number
+    vat?: FloatFilter<"ApartmentProduct"> | number
     createdAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
     updatedAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
@@ -43013,6 +43052,7 @@ export namespace Prisma {
     consumptionType?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ApartmentProductCountOrderByAggregateInput
@@ -43036,6 +43076,7 @@ export namespace Prisma {
     consumptionType?: StringWithAggregatesFilter<"ApartmentProduct"> | string
     consumptionValue?: FloatWithAggregatesFilter<"ApartmentProduct"> | number
     price?: FloatWithAggregatesFilter<"ApartmentProduct"> | number
+    vat?: FloatWithAggregatesFilter<"ApartmentProduct"> | number
     createdAt?: DateTimeWithAggregatesFilter<"ApartmentProduct"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ApartmentProduct"> | Date | string
   }
@@ -43127,6 +43168,7 @@ export namespace Prisma {
     consumptionBasis?: StringFilter<"WarehouseProduct"> | string
     consumptionValue?: FloatFilter<"WarehouseProduct"> | number
     price?: FloatFilter<"WarehouseProduct"> | number
+    vat?: FloatFilter<"WarehouseProduct"> | number
     createdAt?: DateTimeFilter<"WarehouseProduct"> | Date | string
     updatedAt?: DateTimeFilter<"WarehouseProduct"> | Date | string
     movements?: WarehouseStockMovementListRelationFilter
@@ -43144,6 +43186,7 @@ export namespace Prisma {
     consumptionBasis?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     movements?: WarehouseStockMovementOrderByRelationAggregateInput
@@ -43164,6 +43207,7 @@ export namespace Prisma {
     consumptionBasis?: StringFilter<"WarehouseProduct"> | string
     consumptionValue?: FloatFilter<"WarehouseProduct"> | number
     price?: FloatFilter<"WarehouseProduct"> | number
+    vat?: FloatFilter<"WarehouseProduct"> | number
     createdAt?: DateTimeFilter<"WarehouseProduct"> | Date | string
     updatedAt?: DateTimeFilter<"WarehouseProduct"> | Date | string
     movements?: WarehouseStockMovementListRelationFilter
@@ -43181,6 +43225,7 @@ export namespace Prisma {
     consumptionBasis?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: WarehouseProductCountOrderByAggregateInput
@@ -43205,6 +43250,7 @@ export namespace Prisma {
     consumptionBasis?: StringWithAggregatesFilter<"WarehouseProduct"> | string
     consumptionValue?: FloatWithAggregatesFilter<"WarehouseProduct"> | number
     price?: FloatWithAggregatesFilter<"WarehouseProduct"> | number
+    vat?: FloatWithAggregatesFilter<"WarehouseProduct"> | number
     createdAt?: DateTimeWithAggregatesFilter<"WarehouseProduct"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"WarehouseProduct"> | Date | string
   }
@@ -45755,6 +45801,7 @@ export namespace Prisma {
     consumptionType?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     apartment: ApartmentCreateNestedOneWithoutProductsInput
@@ -45772,6 +45819,7 @@ export namespace Prisma {
     consumptionType?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     movements?: StockMovementUncheckedCreateNestedManyWithoutProductInput
@@ -45787,6 +45835,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartment?: ApartmentUpdateOneRequiredWithoutProductsNestedInput
@@ -45804,6 +45853,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     movements?: StockMovementUncheckedUpdateManyWithoutProductNestedInput
@@ -45820,6 +45870,7 @@ export namespace Prisma {
     consumptionType?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -45834,6 +45885,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -45849,6 +45901,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -45941,6 +45994,7 @@ export namespace Prisma {
     consumptionBasis?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     movements?: WarehouseStockMovementCreateNestedManyWithoutProductInput
@@ -45958,6 +46012,7 @@ export namespace Prisma {
     consumptionBasis?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     movements?: WarehouseStockMovementUncheckedCreateNestedManyWithoutProductInput
@@ -45975,6 +46030,7 @@ export namespace Prisma {
     consumptionBasis?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     movements?: WarehouseStockMovementUpdateManyWithoutProductNestedInput
@@ -45992,6 +46048,7 @@ export namespace Prisma {
     consumptionBasis?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     movements?: WarehouseStockMovementUncheckedUpdateManyWithoutProductNestedInput
@@ -46009,6 +46066,7 @@ export namespace Prisma {
     consumptionBasis?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -46025,6 +46083,7 @@ export namespace Prisma {
     consumptionBasis?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -46041,6 +46100,7 @@ export namespace Prisma {
     consumptionBasis?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -47883,6 +47943,7 @@ export namespace Prisma {
     consumptionType?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -47892,6 +47953,7 @@ export namespace Prisma {
     minStock?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
   }
 
   export type ApartmentProductMaxOrderByAggregateInput = {
@@ -47905,6 +47967,7 @@ export namespace Prisma {
     consumptionType?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -47920,6 +47983,7 @@ export namespace Prisma {
     consumptionType?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -47929,6 +47993,7 @@ export namespace Prisma {
     minStock?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
   }
 
   export type ApartmentProductScalarRelationFilter = {
@@ -48001,6 +48066,7 @@ export namespace Prisma {
     consumptionBasis?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -48010,6 +48076,7 @@ export namespace Prisma {
     minStock?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
   }
 
   export type WarehouseProductMaxOrderByAggregateInput = {
@@ -48024,6 +48091,7 @@ export namespace Prisma {
     consumptionBasis?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -48040,6 +48108,7 @@ export namespace Prisma {
     consumptionBasis?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -48049,6 +48118,7 @@ export namespace Prisma {
     minStock?: SortOrder
     consumptionValue?: SortOrder
     price?: SortOrder
+    vat?: SortOrder
   }
 
   export type WarehouseProductScalarRelationFilter = {
@@ -52293,6 +52363,7 @@ export namespace Prisma {
     consumptionType?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     movements?: StockMovementCreateNestedManyWithoutProductInput
@@ -52308,6 +52379,7 @@ export namespace Prisma {
     consumptionType?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     movements?: StockMovementUncheckedCreateNestedManyWithoutProductInput
@@ -52728,6 +52800,7 @@ export namespace Prisma {
     consumptionType?: StringFilter<"ApartmentProduct"> | string
     consumptionValue?: FloatFilter<"ApartmentProduct"> | number
     price?: FloatFilter<"ApartmentProduct"> | number
+    vat?: FloatFilter<"ApartmentProduct"> | number
     createdAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
     updatedAt?: DateTimeFilter<"ApartmentProduct"> | Date | string
   }
@@ -58544,6 +58617,7 @@ export namespace Prisma {
     consumptionType?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     apartment: ApartmentCreateNestedOneWithoutProductsInput
@@ -58560,6 +58634,7 @@ export namespace Prisma {
     consumptionType?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58590,6 +58665,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     apartment?: ApartmentUpdateOneRequiredWithoutProductsNestedInput
@@ -58606,6 +58682,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -58682,6 +58759,7 @@ export namespace Prisma {
     consumptionBasis?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58698,6 +58776,7 @@ export namespace Prisma {
     consumptionBasis?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58730,6 +58809,7 @@ export namespace Prisma {
     consumptionBasis?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -58746,6 +58826,7 @@ export namespace Prisma {
     consumptionBasis?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59481,6 +59562,7 @@ export namespace Prisma {
     consumptionType?: string
     consumptionValue?: number
     price?: number
+    vat?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -59862,6 +59944,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     movements?: StockMovementUpdateManyWithoutProductNestedInput
@@ -59877,6 +59960,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     movements?: StockMovementUncheckedUpdateManyWithoutProductNestedInput
@@ -59892,6 +59976,7 @@ export namespace Prisma {
     consumptionType?: StringFieldUpdateOperationsInput | string
     consumptionValue?: FloatFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

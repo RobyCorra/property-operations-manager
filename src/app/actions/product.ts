@@ -18,6 +18,7 @@ export type ProductFormData = {
   consumptionType: "STATIC" | "DYNAMIC_PER_GUEST";
   consumptionValue: number;
   price: number;
+  vat: number;
 };
 
 // Registra un movimento di scorta senza mai far fallire l'operazione principale:
@@ -72,6 +73,7 @@ export async function createProduct(apartmentId: string, data: ProductFormData) 
         consumptionType: data.consumptionType,
         consumptionValue: Math.max(0, data.consumptionValue),
         price: Math.max(0, data.price),
+        vat: Math.max(0, data.vat),
       },
     });
     // Movimento iniziale: fissa il saldo di partenza per lo storico.
@@ -101,6 +103,7 @@ export async function updateProduct(id: string, apartmentId: string, data: Produ
         consumptionType: data.consumptionType,
         consumptionValue: Math.max(0, data.consumptionValue),
         price: Math.max(0, data.price),
+        vat: Math.max(0, data.vat),
       },
     });
     // Registra una rettifica solo se il valore di scorta è stato cambiato a mano.

@@ -21,6 +21,7 @@ export type WarehouseFormData = {
   consumptionBasis: WarehouseConsumptionBasis;
   consumptionValue: number;
   price: number;
+  vat: number;
 };
 
 const PATH = "/dashboard/manager/magazzino";
@@ -77,6 +78,7 @@ export async function createWarehouseProduct(data: WarehouseFormData) {
         consumptionBasis: data.consumptionBasis,
         consumptionValue: Math.max(0, data.consumptionValue),
         price: Math.max(0, data.price),
+        vat: Math.max(0, data.vat),
       },
     });
     await recordMovement({ productId: created.id, delta: stock, balance: stock, reason: "INITIAL" });
@@ -112,6 +114,7 @@ export async function updateWarehouseProduct(id: string, data: WarehouseFormData
         consumptionBasis: data.consumptionBasis,
         consumptionValue: Math.max(0, data.consumptionValue),
         price: Math.max(0, data.price),
+        vat: Math.max(0, data.vat),
       },
     });
     if (prev.stock !== newStock) {

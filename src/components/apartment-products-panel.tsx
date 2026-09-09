@@ -22,7 +22,13 @@ type Product = {
   consumptionType: string;
   consumptionValue: number;
   price: number;
+  vat: number;
 };
+
+// Prezzo IVA inclusa (imponibile × (1 + IVA%)).
+function grossPrice(p: { price: number; vat: number }) {
+  return p.price * (1 + (p.vat ?? 0) / 100);
+}
 
 function fmtMoney(n: number, lang: string | null) {
   const locale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
@@ -79,6 +85,7 @@ const EMPTY_FORM: ProductFormData = {
   consumptionType: "STATIC",
   consumptionValue: 1,
   price: 0,
+  vat: 22,
 };
 
 function getStatus(stock: number, minStock: number) {
@@ -184,12 +191,12 @@ function ProductCard({
         <div className="mx-5 mb-3 bg-slate-50 rounded-xl px-4 py-2.5 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="text-slate-400">{t.pdStockValue}</span>
-            <span className="font-bold text-slate-700">{fmtMoney(product.price * product.stock, lang)}</span>
+            <span className="font-bold text-slate-700">{fmtMoney(grossPrice(product) * product.stock, lang)}</span>
           </div>
           {costs && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-400">{t.pdCostConsumed}</span>
-              <span className="font-bold text-rose-600">{fmtMoney(product.price * costs.consumed, lang)}</span>
+              <span className="font-bold text-rose-600">{fmtMoney(grossPrice(product) * costs.consumed, lang)}</span>
             </div>
           )}
         </div>
@@ -443,7 +450,7 @@ function ProductHistoryModal({ product, onClose }: { product: Product; onClose: 
             {product.price > 0 && (
               <div className="mx-6 mt-3 flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t.pdCostConsumed}</span>
-                <span className="text-base font-black text-slate-900">{fmtMoney(product.price * data.consumed, lang)}</span>
+                <span className="text-base font-black text-slate-900">{fmtMoney(grossPrice(product) * data.consumed, lang)}</span>
               </div>
             )}
 
@@ -512,6 +519,7 @@ export default function ApartmentProductsPanel({ apartmentId, initialProducts, n
       consumptionType: p.consumptionType as "STATIC" | "DYNAMIC_PER_GUEST",
       consumptionValue: p.consumptionValue,
       price: p.price,
+      vat: p.vat,
     });
     setError("");
     setShowForm(true);
@@ -734,17 +742,31 @@ export default function ApartmentProductsPanel({ apartmentId, initialProducts, n
                 </div>
               </div>
 
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1.5">{t.pdPrice}</label>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-400 text-lg">€</span>
-                  <input
-                    type="number" min="0" step="0.01" inputMode="decimal"
-                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-right font-bold outline-none focus:ring-2 focus:ring-slate-900"
-                    value={form.price}
-                    onChange={e => setForm(f => ({ ...f, price: Math.max(0, parseFloat(e.target.value) || 0) }))}
-                  />
-                  <span className="text-sm text-slate-400 whitespace-nowrap">{t.pdPricePer} {form.unit}</span>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1.5">{t.pdPrice}</label>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-slate-400 text-lg">€</span>
+                    <input
+                      type="number" min="0" step="0.01" inputMode="decimal"
+                      className="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-right font-bold outline-none focus:ring-2 focus:ring-slate-900"
+                      value={form.price}
+                      onChange={e => setForm(f => ({ ...f, price: Math.max(0, parseFloat(e.target.value) || 0) }))}
+                    />
+                    <span className="text-xs text-slate-400 whitespace-nowrap">/ {form.unit}</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1.5">{t.pdVat}</label>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number" min="0" step="1" inputMode="decimal"
+                      className="w-full border border-slate-200 rounded-xl px-2 py-2.5 text-sm text-right font-bold outline-none focus:ring-2 focus:ring-slate-900"
+                      value={form.vat}
+                      onChange={e => setForm(f => ({ ...f, vat: Math.max(0, parseFloat(e.target.value) || 0) }))}
+                    />
+                    <span className="text-sm text-slate-400">%</span>
+                  </div>
                 </div>
               </div>
 
