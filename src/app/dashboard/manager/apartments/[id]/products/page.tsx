@@ -4,6 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import ApartmentProductsPanel from "@/src/components/apartment-products-panel";
+import { getApartmentProductCostTotals } from "@/src/app/actions/product";
 import BackButton from "@/src/components/back-button";
 
 interface ProductsPageProps {
@@ -46,6 +47,7 @@ export default async function ApartmentProductsPage({ params }: ProductsPageProp
     date: b.checkInDate.toISOString(),
     guests: b.totalGuests ?? 1,
   }));
+  const costTotals = await getApartmentProductCostTotals(id);
 
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
@@ -68,6 +70,7 @@ export default async function ApartmentProductsPage({ params }: ProductsPageProp
           initialProducts={apartment.products}
           nextGuestCount={nextBooking?.totalGuests ?? null}
           upcomingBookings={upcomingBookings}
+          costTotals={costTotals}
         />
 
       </div>

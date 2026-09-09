@@ -250,13 +250,13 @@ export type WhStockMovementItem = {
 export type WhStockHistoryResult = {
   initialBalance: number;
   finalBalance: number;
-  consumed: number;   // CHECKIN + USAGE (positivo)
-  restocked: number;
-  adjustments: number;
+  consumed: number;       // tutte le uscite: check-in + preleva + riduzioni manuali
+  added: number;          // tutte le entrate: rifornimenti + aumenti manuali
   checkinCount: number;
   usageCount: number;
+  manualOutCount: number;
   restockCount: number;
-  adjustmentCount: number;
+  manualInCount: number;
   movements: WhStockMovementItem[];
 };
 
@@ -290,25 +290,31 @@ export async function getWarehouseStockHistory(
     });
     const finalBalance = inRange.length > 0 ? inRange[0].balance : initialBalance;
 
-    let consumed = 0, restocked = 0, adjustments = 0;
-    let checkinCount = 0, usageCount = 0, restockCount = 0, adjustmentCount = 0;
+    let consumed = 0, added = 0;
+    let checkinCount = 0, usageCount = 0, manualOutCount = 0, restockCount = 0, manualInCount = 0;
     for (const m of inRange) {
-      if (m.reason === "CHECKIN") { consumed += -m.delta; checkinCount++; }
-      else if (m.reason === "USAGE") { consumed += -m.delta; usageCount++; }
-      else if (m.reason === "RESTOCK") { restocked += m.delta; restockCount++; }
-      else if (m.reason === "ADJUSTMENT") { adjustments += m.delta; adjustmentCount++; }
+      if (m.reason === "INITIAL") continue;
+      if (m.delta < 0) {
+        consumed += -m.delta;
+        if (m.reason === "CHECKIN") checkinCount++;
+        else if (m.reason === "USAGE") usageCount++;
+        else manualOutCount++;
+      } else if (m.delta > 0) {
+        added += m.delta;
+        if (m.reason === "RESTOCK") restockCount++; else manualInCount++;
+      }
     }
 
     return {
       initialBalance,
       finalBalance,
       consumed,
-      restocked,
-      adjustments,
+      added,
       checkinCount,
       usageCount,
+      manualOutCount,
       restockCount,
-      adjustmentCount,
+      manualInCount,
       movements: inRange.map((m) => ({
         id: m.id,
         delta: m.delta,
@@ -321,6 +327,31 @@ export async function getWarehouseStockHistory(
   } catch (error) {
     console.error("getWarehouseStockHistory error:", error);
     return null;
+  }
+}
+
+// Totali storici per il calcolo costi sulla card del magazzino.
+export type WhCostTotals = Record<string, { consumed: number; purchased: number }>;
+
+export async function getWarehouseCostTotals(): Promise<WhCostTotals> {
+  try {
+    const orgId = await getCurrentOrg();
+    if (!orgId) return {};
+    const products = await prisma.warehouseProduct.findMany({ where: { organizationId: orgId }, select: { id: true } });
+    const ids = products.map((p) => p.id);
+    if (ids.length === 0) return {};
+    const [outAgg, inAgg] = await Promise.all([
+      prisma.warehouseStockMovement.groupBy({ by: ["productId"], where: { productId: { in: ids }, delta: { lt: 0 } }, _sum: { delta: true } }),
+      prisma.warehouseStockMovement.groupBy({ by: ["productId"], where: { productId: { in: ids }, delta: { gt: 0 } }, _sum: { delta: true } }),
+    ]);
+    const totals: WhCostTotals = {};
+    for (const id of ids) totals[id] = { consumed: 0, purchased: 0 };
+    for (const r of outAgg) totals[r.productId].consumed = -(r._sum.delta ?? 0);
+    for (const r of inAgg) totals[r.productId].purchased = r._sum.delta ?? 0;
+    return totals;
+  } catch (error) {
+    console.error("getWarehouseCostTotals error:", error);
+    return {};
   }
 }
 

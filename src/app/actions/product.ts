@@ -301,12 +301,12 @@ export type StockMovementItem = {
 export type StockHistoryResult = {
   initialBalance: number;
   finalBalance: number;
-  consumed: number;    // totale sottratto ai check-in (positivo)
-  restocked: number;   // totale rifornito (positivo)
-  adjustments: number; // netto rettifiche manuali (±)
-  checkinCount: number;
-  restockCount: number;
-  adjustmentCount: number;
+  consumed: number;      // tutte le uscite: check-in + riduzioni manuali (positivo)
+  added: number;         // tutte le entrate: rifornimenti + aumenti manuali (positivo)
+  checkinCount: number;  // uscite da check-in
+  manualOutCount: number; // uscite da rettifica manuale in negativo
+  restockCount: number;  // entrate da rifornimento
+  manualInCount: number; // entrate da rettifica manuale in positivo
   movements: StockMovementItem[]; // nel periodo, dal più recente
 };
 
@@ -345,23 +345,30 @@ export async function getProductStockHistory(
 
     const finalBalance = inRange.length > 0 ? inRange[0].balance : initialBalance;
 
-    let consumed = 0, restocked = 0, adjustments = 0;
-    let checkinCount = 0, restockCount = 0, adjustmentCount = 0;
+    // Ogni uscita (delta<0) è consumo, qualunque sia il motivo (check-in o
+    // rettifica manuale in negativo); ogni entrata (delta>0) è un carico.
+    let consumed = 0, added = 0;
+    let checkinCount = 0, manualOutCount = 0, restockCount = 0, manualInCount = 0;
     for (const m of inRange) {
-      if (m.reason === "CHECKIN") { consumed += -m.delta; checkinCount++; }
-      else if (m.reason === "RESTOCK") { restocked += m.delta; restockCount++; }
-      else if (m.reason === "ADJUSTMENT") { adjustments += m.delta; adjustmentCount++; }
+      if (m.reason === "INITIAL") continue;
+      if (m.delta < 0) {
+        consumed += -m.delta;
+        if (m.reason === "CHECKIN") checkinCount++; else manualOutCount++;
+      } else if (m.delta > 0) {
+        added += m.delta;
+        if (m.reason === "RESTOCK") restockCount++; else manualInCount++;
+      }
     }
 
     return {
       initialBalance,
       finalBalance,
       consumed,
-      restocked,
-      adjustments,
+      added,
       checkinCount,
+      manualOutCount,
       restockCount,
-      adjustmentCount,
+      manualInCount,
       movements: inRange.map((m) => ({
         id: m.id,
         delta: m.delta,
@@ -374,5 +381,29 @@ export async function getProductStockHistory(
   } catch (error) {
     console.error("getProductStockHistory error:", error);
     return null;
+  }
+}
+
+// Totali storici (dall'attivazione) per il calcolo costi sulla card:
+// consumed = tutte le uscite; purchased = tutte le entrate (incl. scorta iniziale).
+export type ProductCostTotals = Record<string, { consumed: number; purchased: number }>;
+
+export async function getApartmentProductCostTotals(apartmentId: string): Promise<ProductCostTotals> {
+  try {
+    const products = await prisma.apartmentProduct.findMany({ where: { apartmentId }, select: { id: true } });
+    const ids = products.map((p) => p.id);
+    if (ids.length === 0) return {};
+    const [outAgg, inAgg] = await Promise.all([
+      prisma.stockMovement.groupBy({ by: ["productId"], where: { productId: { in: ids }, delta: { lt: 0 } }, _sum: { delta: true } }),
+      prisma.stockMovement.groupBy({ by: ["productId"], where: { productId: { in: ids }, delta: { gt: 0 } }, _sum: { delta: true } }),
+    ]);
+    const totals: ProductCostTotals = {};
+    for (const id of ids) totals[id] = { consumed: 0, purchased: 0 };
+    for (const r of outAgg) totals[r.productId].consumed = -(r._sum.delta ?? 0);
+    for (const r of inAgg) totals[r.productId].purchased = r._sum.delta ?? 0;
+    return totals;
+  } catch (error) {
+    console.error("getApartmentProductCostTotals error:", error);
+    return {};
   }
 }

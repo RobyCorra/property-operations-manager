@@ -40,6 +40,7 @@ type Props = {
   initialProducts: Product[];
   nextGuestCount?: number | null;
   upcomingBookings?: UpcomingBooking[];
+  costTotals?: Record<string, { consumed: number; purchased: number }>;
 };
 
 // Previsione riordino: simula il consumo sulle prenotazioni future (in ordine di
@@ -103,6 +104,7 @@ function ProductCard({
   product,
   nextGuestCount,
   forecast,
+  costs,
   onEdit,
   onRestock,
   onDelete,
@@ -111,6 +113,7 @@ function ProductCard({
   product: Product;
   nextGuestCount?: number | null;
   forecast: Forecast;
+  costs?: { consumed: number; purchased: number };
   onEdit: (p: Product) => void;
   onRestock: (p: Product) => void;
   onDelete: (id: string) => void;
@@ -176,11 +179,25 @@ function ProductCard({
         </div>
       </div>
 
-      {/* Valore scorta */}
+      {/* Valore scorta + costi */}
       {product.price > 0 && (
-        <div className="mx-5 mb-3 flex items-center justify-between text-xs">
-          <span className="text-slate-400">{t.pdStockValue}</span>
-          <span className="font-bold text-slate-700">{fmtMoney(product.price * product.stock, lang)}</span>
+        <div className="mx-5 mb-3 bg-slate-50 rounded-xl px-4 py-2.5 space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-slate-400">{t.pdStockValue}</span>
+            <span className="font-bold text-slate-700">{fmtMoney(product.price * product.stock, lang)}</span>
+          </div>
+          {costs && (
+            <>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">{t.pdCostConsumed}</span>
+                <span className="font-bold text-rose-600">{fmtMoney(product.price * costs.consumed, lang)}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">{t.pdCostPurchased}</span>
+                <span className="font-bold text-emerald-700">{fmtMoney(product.price * costs.purchased, lang)}</span>
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -414,27 +431,18 @@ function ProductHistoryModal({ product, onClose }: { product: Product; onClose: 
             <div className="mx-6 mt-3">
               <div className="flex items-center justify-between py-2.5 border-b border-slate-50 text-sm">
                 <div className="flex items-center gap-2.5 text-slate-700 font-semibold">
-                  <span className="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center text-sm">🔑</span>
-                  <span>{t.pdHistConsumed}<span className="block text-[11px] text-slate-400 font-normal">{t.pdHistCheckinsN(data.checkinCount)}</span></span>
+                  <span className="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center text-sm">📉</span>
+                  <span>{t.pdHistConsumed}<span className="block text-[11px] text-slate-400 font-normal">{t.pdHistCheckinsN(data.checkinCount)}{data.manualOutCount > 0 ? ` · ${t.pdHistAdjustsN(data.manualOutCount)}` : ""}</span></span>
                 </div>
                 <span className="font-black text-red-500">−{data.consumed}</span>
               </div>
-              <div className="flex items-center justify-between py-2.5 border-b border-slate-50 text-sm">
+              <div className="flex items-center justify-between py-2.5 text-sm">
                 <div className="flex items-center gap-2.5 text-slate-700 font-semibold">
                   <span className="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center text-sm">📦</span>
-                  <span>{t.pdHistRestocked}<span className="block text-[11px] text-slate-400 font-normal">{t.pdHistRestocksN(data.restockCount)}</span></span>
+                  <span>{t.pdHistRestocked}<span className="block text-[11px] text-slate-400 font-normal">{t.pdHistRestocksN(data.restockCount)}{data.manualInCount > 0 ? ` · ${t.pdHistAdjustsN(data.manualInCount)}` : ""}</span></span>
                 </div>
-                <span className="font-black text-emerald-600">+{data.restocked}</span>
+                <span className="font-black text-emerald-600">+{data.added}</span>
               </div>
-              {data.adjustmentCount > 0 && (
-                <div className="flex items-center justify-between py-2.5 text-sm">
-                  <div className="flex items-center gap-2.5 text-slate-700 font-semibold">
-                    <span className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center text-sm">✏️</span>
-                    <span>{t.pdHistAdjust}<span className="block text-[11px] text-slate-400 font-normal">{t.pdHistAdjustsN(data.adjustmentCount)}</span></span>
-                  </div>
-                  <span className="font-black text-slate-400">{data.adjustments >= 0 ? "+" : ""}{data.adjustments}</span>
-                </div>
-              )}
             </div>
 
             {/* Costo consumato nel periodo */}
@@ -478,7 +486,7 @@ function ProductHistoryModal({ product, onClose }: { product: Product; onClose: 
   );
 }
 
-export default function ApartmentProductsPanel({ apartmentId, initialProducts, nextGuestCount, upcomingBookings = [] }: Props) {
+export default function ApartmentProductsPanel({ apartmentId, initialProducts, nextGuestCount, upcomingBookings = [], costTotals = {} }: Props) {
   const { t } = useLang();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [showForm, setShowForm] = useState(false);
@@ -606,6 +614,7 @@ export default function ApartmentProductsPanel({ apartmentId, initialProducts, n
           product={p}
           nextGuestCount={nextGuestCount}
           forecast={computeForecast(p, upcomingBookings)}
+          costs={costTotals[p.id]}
           onEdit={openEdit}
           onRestock={(prod) => { setRestockTarget(prod); setRestockQty(0); }}
           onDelete={handleDelete}

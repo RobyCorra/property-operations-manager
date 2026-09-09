@@ -3,6 +3,7 @@ import { getT } from "@/src/lib/server-lang";
 import { redirect } from "next/navigation";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import { prisma } from "@/src/lib/prisma";
+import { getWarehouseCostTotals } from "@/src/app/actions/warehouse";
 import WarehousePanel from "@/src/components/warehouse-panel";
 import BackButton from "@/src/components/back-button";
 
@@ -21,6 +22,7 @@ export default async function WarehousePage() {
         orderBy: { createdAt: "asc" },
       })
     : [];
+  const costTotals = await getWarehouseCostTotals();
 
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
@@ -32,7 +34,7 @@ export default async function WarehousePage() {
             <p className="text-gray-500 mt-1">{tr.whSubtitle}</p>
           </div>
         </div>
-        <WarehousePanel initialProducts={products} />
+        <WarehousePanel initialProducts={products} costTotals={costTotals} />
       </div>
     </main>
   );
