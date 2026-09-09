@@ -191,12 +191,12 @@ function ProductCard({
         <div className="mx-5 mb-3 bg-slate-50 rounded-xl px-4 py-2.5 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="text-slate-400">{t.pdStockValue}</span>
-            <span className="font-bold text-slate-700">{fmtMoney(grossPrice(product) * product.stock, lang)}{product.vat > 0 && <span className="text-[10px] text-slate-400 font-normal"> {t.pdVatIncl}</span>}</span>
+            <span className="font-bold text-slate-700">{fmtMoney(product.price * product.stock, lang)}{product.vat > 0 && <> · {fmtMoney(grossPrice(product) * product.stock, lang)} <span className="text-[10px] text-slate-400 font-normal">{t.pdVatIncl}</span></>}</span>
           </div>
           {costs && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-400">{t.pdCostConsumed}</span>
-              <span className="font-bold text-rose-600">{fmtMoney(grossPrice(product) * costs.consumed, lang)}{product.vat > 0 && <span className="text-[10px] text-rose-400 font-normal"> {t.pdVatIncl}</span>}</span>
+              <span className="font-bold text-rose-600">{fmtMoney(product.price * costs.consumed, lang)}{product.vat > 0 && <> · {fmtMoney(grossPrice(product) * costs.consumed, lang)} <span className="text-[10px] text-rose-400 font-normal">{t.pdVatIncl}</span></>}</span>
             </div>
           )}
         </div>
@@ -449,8 +449,8 @@ function ProductHistoryModal({ product, onClose }: { product: Product; onClose: 
             {/* Costo consumato nel periodo */}
             {product.price > 0 && (
               <div className="mx-6 mt-3 flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t.pdCostConsumed}{product.vat > 0 && <span className="text-[10px] text-slate-400 normal-case font-normal"> · {t.pdVatIncl}</span>}</span>
-                <span className="text-base font-black text-slate-900">{fmtMoney(grossPrice(product) * data.consumed, lang)}</span>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t.pdCostConsumed}</span>
+                <span className="text-base font-black text-slate-900 text-right">{fmtMoney(product.price * data.consumed, lang)}{product.vat > 0 && <span className="block text-[11px] text-slate-400 font-bold">{fmtMoney(grossPrice(product) * data.consumed, lang)} {t.pdVatIncl}</span>}</span>
               </div>
             )}
 
