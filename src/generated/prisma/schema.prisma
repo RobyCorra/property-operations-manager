@@ -514,3 +514,41 @@ model StockMovement {
 
   @@index([productId, createdAt])
 }
+
+// Prodotto di MAGAZZINO: scorta generica a livello di organizzazione (non legata
+// a un singolo appartamento). Es. impresa di pulizie con materiale di consumo.
+// Consumo: MANUAL (solo "Preleva"), STATIC (fisso per check-in), DYNAMIC
+// (valore × base BATHROOM/GUEST/BEDROOM per ogni check-in del giorno).
+model WarehouseProduct {
+  id               String   @id @default(uuid())
+  organizationId   String
+  name             String
+  emoji            String   @default("📦")
+  unit             String   @default("pz")
+  stock            Int      @default(0)
+  minStock         Int      @default(0)
+  consumptionType  String   @default("MANUAL") // MANUAL | STATIC | DYNAMIC
+  consumptionBasis String   @default("BATHROOM") // usato solo se DYNAMIC: BATHROOM | GUEST | BEDROOM
+  consumptionValue Float    @default(1)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  movements WarehouseStockMovement[]
+
+  @@index([organizationId])
+}
+
+// Registro movimenti del magazzino (analogo a StockMovement per gli appartamenti).
+model WarehouseStockMovement {
+  id        String           @id @default(uuid())
+  productId String
+  product   WarehouseProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  delta     Int
+  balance   Int
+  reason    String // INITIAL | CHECKIN | RESTOCK | ADJUSTMENT | USAGE
+  bookingId String?
+  note      String?
+  createdAt DateTime         @default(now())
+
+  @@index([productId, createdAt])
+}

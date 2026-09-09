@@ -479,6 +479,32 @@ exports.Prisma.StockMovementScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.WarehouseProductScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  emoji: 'emoji',
+  unit: 'unit',
+  stock: 'stock',
+  minStock: 'minStock',
+  consumptionType: 'consumptionType',
+  consumptionBasis: 'consumptionBasis',
+  consumptionValue: 'consumptionValue',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WarehouseStockMovementScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  delta: 'delta',
+  balance: 'balance',
+  reason: 'reason',
+  bookingId: 'bookingId',
+  note: 'note',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -546,7 +572,9 @@ exports.Prisma.ModelName = {
   CleanerLocation: 'CleanerLocation',
   SuperAdminLog: 'SuperAdminLog',
   ApartmentProduct: 'ApartmentProduct',
-  StockMovement: 'StockMovement'
+  StockMovement: 'StockMovement',
+  WarehouseProduct: 'WarehouseProduct',
+  WarehouseStockMovement: 'WarehouseStockMovement'
 };
 
 /**

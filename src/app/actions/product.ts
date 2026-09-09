@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { sendPushToRole } from "@/src/lib/push";
 import { getCurrentOrg } from "@/src/lib/tenant";
+import { consumeWarehouseOnCheckin } from "@/src/app/actions/warehouse";
 import type { Role } from "@/src/generated/prisma/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -177,7 +178,7 @@ export async function consumeProductsOnCheckin(bookingId: string) {
 
     const apartment = await prisma.apartment.findUnique({
       where: { id: apartmentId },
-      select: { name: true, organizationId: true },
+      select: { name: true, organizationId: true, bathrooms: true, bedrooms: true },
     });
 
     const alerts: string[] = [];
@@ -210,6 +211,20 @@ export async function consumeProductsOnCheckin(bookingId: string) {
       if (newStock <= product.minStock) {
         alerts.push(`${product.emoji} ${product.name} (scorta: ${newStock} ${product.unit}, minima: ${product.minStock})`);
       }
+    }
+
+    // Consumo automatico del MAGAZZINO dell'organizzazione per questo check-in
+    // (prodotti STATIC/DYNAMIC). Idempotente perché siamo dentro la guardia
+    // productsConsumedAt: gira una sola volta per prenotazione.
+    if (apartment?.organizationId) {
+      await consumeWarehouseOnCheckin({
+        organizationId: apartment.organizationId,
+        bookingId,
+        guests: guestCount,
+        bathrooms: apartment.bathrooms ?? 0,
+        bedrooms: apartment.bedrooms ?? 0,
+        guestName: booking.guestName ?? null,
+      });
     }
 
     // Crea notifica e push se ci sono prodotti sotto minima
