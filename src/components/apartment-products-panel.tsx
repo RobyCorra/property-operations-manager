@@ -165,7 +165,7 @@ function ProductCard({
             <p className="font-semibold text-slate-900 text-sm">{product.name}</p>
             <p className="text-[10px] text-slate-400 uppercase tracking-widest">
               {product.unit} · {product.consumptionType === "STATIC" ? t.pdConsStaticShort : t.pdConsDynamicShort}
-              {product.price > 0 && <> · {fmtMoney(product.price, lang)}/{product.unit}</>}
+              {product.price > 0 && <> · {fmtMoney(product.price, lang)}/{product.unit}{product.vat > 0 && <> · {fmtMoney(grossPrice(product), lang)} {t.pdVatIncl}</>}</>}
             </p>
           </div>
         </div>
