@@ -490,6 +490,7 @@ model ApartmentProduct {
   minStock         Int       @default(0)
   consumptionType  String    @default("STATIC")
   consumptionValue Float     @default(1)
+  price            Float     @default(0) // prezzo per unità
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -530,6 +531,7 @@ model WarehouseProduct {
   consumptionType  String   @default("MANUAL")   // MANUAL | STATIC | DYNAMIC
   consumptionBasis String   @default("BATHROOM") // usato solo se DYNAMIC: BATHROOM | GUEST | BEDROOM
   consumptionValue Float    @default(1)
+  price            Float    @default(0) // prezzo per unità
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

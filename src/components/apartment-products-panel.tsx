@@ -21,7 +21,17 @@ type Product = {
   minStock: number;
   consumptionType: string;
   consumptionValue: number;
+  price: number;
 };
+
+function fmtMoney(n: number, lang: string | null) {
+  const locale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
+  try {
+    return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(n);
+  } catch {
+    return `€${n.toFixed(2)}`;
+  }
+}
 
 type UpcomingBooking = { date: string; guests: number };
 
@@ -67,6 +77,7 @@ const EMPTY_FORM: ProductFormData = {
   minStock: 0,
   consumptionType: "STATIC",
   consumptionValue: 1,
+  price: 0,
 };
 
 function getStatus(stock: number, minStock: number) {
@@ -144,6 +155,7 @@ function ProductCard({
             <p className="font-semibold text-slate-900 text-sm">{product.name}</p>
             <p className="text-[10px] text-slate-400 uppercase tracking-widest">
               {product.unit} · {product.consumptionType === "STATIC" ? t.pdConsStaticShort : t.pdConsDynamicShort}
+              {product.price > 0 && <> · {fmtMoney(product.price, lang)}/{product.unit}</>}
             </p>
           </div>
         </div>
@@ -163,6 +175,14 @@ function ProductCard({
           <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">{t.pdMin}</p>
         </div>
       </div>
+
+      {/* Valore scorta */}
+      {product.price > 0 && (
+        <div className="mx-5 mb-3 flex items-center justify-between text-xs">
+          <span className="text-slate-400">{t.pdStockValue}</span>
+          <span className="font-bold text-slate-700">{fmtMoney(product.price * product.stock, lang)}</span>
+        </div>
+      )}
 
       {/* Consumo info */}
       <div className="mx-5 mb-4 bg-slate-50 rounded-xl px-4 py-3">
@@ -417,6 +437,14 @@ function ProductHistoryModal({ product, onClose }: { product: Product; onClose: 
               )}
             </div>
 
+            {/* Costo consumato nel periodo */}
+            {product.price > 0 && (
+              <div className="mx-6 mt-3 flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t.pdCostConsumed}</span>
+                <span className="text-base font-black text-slate-900">{fmtMoney(product.price * data.consumed, lang)}</span>
+              </div>
+            )}
+
             {/* Movimenti espandibili */}
             <button onClick={() => setShowMovements((s) => !s)}
               className="w-full text-center text-[11px] font-black uppercase tracking-widest text-violet-600 py-3">
@@ -481,6 +509,7 @@ export default function ApartmentProductsPanel({ apartmentId, initialProducts, n
       minStock: p.minStock,
       consumptionType: p.consumptionType as "STATIC" | "DYNAMIC_PER_GUEST",
       consumptionValue: p.consumptionValue,
+      price: p.price,
     });
     setError("");
     setShowForm(true);
@@ -699,6 +728,20 @@ export default function ApartmentProductsPanel({ apartmentId, initialProducts, n
                     className="w-9 h-9 rounded-full border border-slate-200 bg-white text-slate-700 font-bold text-lg hover:bg-slate-100 transition-colors"
                   >+</button>
                   <span className="text-sm text-slate-400">{form.unit} {form.consumptionType === "STATIC" ? "/ check-in" : "/ ospite"}</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1.5">{t.pdPrice}</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-400 text-lg">€</span>
+                  <input
+                    type="number" min="0" step="0.01" inputMode="decimal"
+                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-right font-bold outline-none focus:ring-2 focus:ring-slate-900"
+                    value={form.price}
+                    onChange={e => setForm(f => ({ ...f, price: Math.max(0, parseFloat(e.target.value) || 0) }))}
+                  />
+                  <span className="text-sm text-slate-400 whitespace-nowrap">{t.pdPricePer} {form.unit}</span>
                 </div>
               </div>
 

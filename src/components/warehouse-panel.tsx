@@ -25,9 +25,19 @@ type Product = {
   consumptionType: string;
   consumptionBasis: string;
   consumptionValue: number;
+  price: number;
 };
 
 type Props = { initialProducts: Product[] };
+
+function fmtMoney(n: number, lang: string | null) {
+  const locale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
+  try {
+    return new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(n);
+  } catch {
+    return `€${n.toFixed(2)}`;
+  }
+}
 
 const UNITS = ["pz", "flaconi", "rotoli", "litri", "gr", "kg", "bustine", "scatole", "confezioni"];
 
@@ -40,6 +50,7 @@ const EMPTY_FORM: WarehouseFormData = {
   consumptionType: "MANUAL",
   consumptionBasis: "BATHROOM",
   consumptionValue: 1,
+  price: 0,
 };
 
 function getStatus(stock: number, minStock: number) {
@@ -205,6 +216,13 @@ function WarehouseHistoryModal({ product, onClose }: { product: Product; onClose
               )}
             </div>
 
+            {product.price > 0 && (
+              <div className="mx-6 mt-3 flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">{t.pdCostConsumed}</span>
+                <span className="text-base font-black text-slate-900">{fmtMoney(product.price * data.consumed, lang)}</span>
+              </div>
+            )}
+
             <button onClick={() => setShowMovements((s) => !s)}
               className="w-full text-center text-[11px] font-black uppercase tracking-widest text-violet-600 py-3">
               {showMovements ? t.pdHistHideMovements : t.pdHistSeeMovements} {showMovements ? "▴" : "▾"}
@@ -246,7 +264,7 @@ function ProductCard({
   onDelete: (id: string) => void;
   onHistory: (p: Product) => void;
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [menuOpen, setMenuOpen] = useState(false);
   const status = getStatus(product.stock, product.minStock);
   const barPct = product.minStock > 0
@@ -275,6 +293,7 @@ function ProductCard({
             <p className="font-semibold text-slate-900 text-sm">{product.name}</p>
             <p className="text-[10px] text-slate-400 uppercase tracking-widest">
               {product.unit} · {consLabel}{product.consumptionType === "DYNAMIC" ? ` (${t.whPerLabel} ${basisLabel})` : ""}
+              {product.price > 0 && <> · {fmtMoney(product.price, lang)}/{product.unit}</>}
             </p>
           </div>
         </div>
@@ -291,6 +310,13 @@ function ProductCard({
           <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">{t.pdMin}</p>
         </div>
       </div>
+
+      {product.price > 0 && (
+        <div className="mx-5 mb-3 flex items-center justify-between text-xs">
+          <span className="text-slate-400">{t.pdStockValue}</span>
+          <span className="font-bold text-slate-700">{fmtMoney(product.price * product.stock, lang)}</span>
+        </div>
+      )}
 
       {product.consumptionType !== "MANUAL" && (
         <div className="mx-5 mb-4 bg-slate-50 rounded-xl px-4 py-3">
@@ -358,6 +384,7 @@ export default function WarehousePanel({ initialProducts }: Props) {
       consumptionType: p.consumptionType as WarehouseConsumptionType,
       consumptionBasis: p.consumptionBasis as WarehouseConsumptionBasis,
       consumptionValue: p.consumptionValue,
+      price: p.price,
     });
     setError(""); setShowForm(true);
   }
@@ -536,6 +563,20 @@ export default function WarehousePanel({ initialProducts }: Props) {
                   </div>
                 </div>
               )}
+
+              <div>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1.5">{t.pdPrice}</label>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-400 text-lg">€</span>
+                  <input
+                    type="number" min="0" step="0.01" inputMode="decimal"
+                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-right font-bold outline-none focus:ring-2 focus:ring-slate-900"
+                    value={form.price}
+                    onChange={(e) => setForm((f) => ({ ...f, price: Math.max(0, parseFloat(e.target.value) || 0) }))}
+                  />
+                  <span className="text-sm text-slate-400 whitespace-nowrap">{t.pdPricePer} {form.unit}</span>
+                </div>
+              </div>
 
               {error && <p className="text-xs text-red-600 font-semibold">{error}</p>}
 

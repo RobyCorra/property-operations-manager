@@ -464,6 +464,7 @@ exports.Prisma.ApartmentProductScalarFieldEnum = {
   minStock: 'minStock',
   consumptionType: 'consumptionType',
   consumptionValue: 'consumptionValue',
+  price: 'price',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -490,6 +491,7 @@ exports.Prisma.WarehouseProductScalarFieldEnum = {
   consumptionType: 'consumptionType',
   consumptionBasis: 'consumptionBasis',
   consumptionValue: 'consumptionValue',
+  price: 'price',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
