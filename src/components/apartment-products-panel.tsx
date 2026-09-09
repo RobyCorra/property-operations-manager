@@ -23,11 +23,39 @@ type Product = {
   consumptionValue: number;
 };
 
+type UpcomingBooking = { date: string; guests: number };
+
 type Props = {
   apartmentId: string;
   initialProducts: Product[];
   nextGuestCount?: number | null;
+  upcomingBookings?: UpcomingBooking[];
 };
+
+// Previsione riordino: simula il consumo sulle prenotazioni future (in ordine di
+// check-in) e trova quando la scorta scende sotto la minima.
+type Forecast =
+  | { level: "now" }
+  | { level: "soon"; date: string; checkins: number }
+  | { level: "ok" }
+  | { level: "none" };
+
+function computeForecast(product: Product, bookings: UpcomingBooking[]): Forecast {
+  if (product.stock <= product.minStock) return { level: "now" };
+  if (bookings.length === 0) return { level: "none" };
+  const perCheckin = (guests: number) =>
+    product.consumptionType === "DYNAMIC_PER_GUEST"
+      ? Math.ceil(product.consumptionValue * Math.max(1, guests))
+      : product.consumptionValue;
+  let stock = product.stock;
+  let checkins = 0;
+  for (const b of bookings) {
+    stock = Math.max(0, stock - perCheckin(b.guests));
+    checkins++;
+    if (stock <= product.minStock) return { level: "soon", date: b.date, checkins };
+  }
+  return { level: "ok" };
+}
 
 const UNITS = ["pz", "flaconi", "rotoli", "litri", "gr", "kg", "bustine"];
 
@@ -63,6 +91,7 @@ function StatusBadge({ stock, minStock }: { stock: number; minStock: number }) {
 function ProductCard({
   product,
   nextGuestCount,
+  forecast,
   onEdit,
   onRestock,
   onDelete,
@@ -70,12 +99,17 @@ function ProductCard({
 }: {
   product: Product;
   nextGuestCount?: number | null;
+  forecast: Forecast;
   onEdit: (p: Product) => void;
   onRestock: (p: Product) => void;
   onDelete: (id: string) => void;
   onHistory: (p: Product) => void;
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const locale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
+  const fcDate = forecast.level === "soon"
+    ? new Date(forecast.date).toLocaleDateString(locale, { day: "numeric", month: "short" })
+    : "";
   const status = getStatus(product.stock, product.minStock);
   const barPct = product.minStock > 0
     ? Math.min(100, Math.round((product.stock / (product.minStock * 2)) * 100))
@@ -173,6 +207,26 @@ function ProductCard({
           />
         </div>
       </div>
+
+      {/* Previsione riordino */}
+      {forecast.level !== "none" && (
+        <div className={`mx-5 mb-4 rounded-xl px-4 py-3 flex items-center gap-2.5 text-xs leading-snug ${
+          forecast.level === "now" ? "bg-red-50 border border-red-200 text-red-700"
+          : forecast.level === "soon" ? "bg-amber-50 border border-amber-200 text-amber-700"
+          : "bg-emerald-50 border border-emerald-200 text-emerald-700"
+        }`}>
+          <span className="text-sm flex-shrink-0">
+            {forecast.level === "now" ? "🔴" : forecast.level === "soon" ? "📦" : "✅"}
+          </span>
+          <span>
+            {forecast.level === "now"
+              ? t.pdFcOrderNow
+              : forecast.level === "soon"
+              ? t.pdFcOrderBy(fcDate, forecast.checkins)
+              : t.pdFcOk}
+          </span>
+        </div>
+      )}
 
       {/* Footer azioni */}
       <div className="border-t border-slate-100 flex items-center">
@@ -396,7 +450,7 @@ function ProductHistoryModal({ product, onClose }: { product: Product; onClose: 
   );
 }
 
-export default function ApartmentProductsPanel({ apartmentId, initialProducts, nextGuestCount }: Props) {
+export default function ApartmentProductsPanel({ apartmentId, initialProducts, nextGuestCount, upcomingBookings = [] }: Props) {
   const { t } = useLang();
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [showForm, setShowForm] = useState(false);
@@ -522,6 +576,7 @@ export default function ApartmentProductsPanel({ apartmentId, initialProducts, n
           key={p.id}
           product={p}
           nextGuestCount={nextGuestCount}
+          forecast={computeForecast(p, upcomingBookings)}
           onEdit={openEdit}
           onRestock={(prod) => { setRestockTarget(prod); setRestockQty(0); }}
           onDelete={handleDelete}

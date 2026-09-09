@@ -29,11 +29,10 @@ export default async function ApartmentProductsPage({ params }: ProductsPageProp
       bookings: {
         where: {
           checkInDate: { gte: new Date() },
-          status: { not: "cancelled" },
+          status: { not: "CANCELLED" },
         },
         orderBy: { checkInDate: "asc" },
-        take: 1,
-        select: { totalGuests: true },
+        select: { checkInDate: true, totalGuests: true },
       },
     },
   });
@@ -43,6 +42,10 @@ export default async function ApartmentProductsPage({ params }: ProductsPageProp
   }
 
   const nextBooking = apartment.bookings[0] ?? null;
+  const upcomingBookings = apartment.bookings.map((b) => ({
+    date: b.checkInDate.toISOString(),
+    guests: b.totalGuests ?? 1,
+  }));
 
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
@@ -64,6 +67,7 @@ export default async function ApartmentProductsPage({ params }: ProductsPageProp
           apartmentId={id}
           initialProducts={apartment.products}
           nextGuestCount={nextBooking?.totalGuests ?? null}
+          upcomingBookings={upcomingBookings}
         />
 
       </div>
