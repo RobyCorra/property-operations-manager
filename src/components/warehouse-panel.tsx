@@ -313,16 +313,10 @@ function ProductCard({
             <span className="font-bold text-slate-700">{fmtMoney(product.price * product.stock, lang)}</span>
           </div>
           {costs && (
-            <>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">{t.pdCostConsumed}</span>
-                <span className="font-bold text-rose-600">{fmtMoney(product.price * costs.consumed, lang)}</span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">{t.pdCostPurchased}</span>
-                <span className="font-bold text-emerald-700">{fmtMoney(product.price * costs.purchased, lang)}</span>
-              </div>
-            </>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">{t.pdCostConsumed}</span>
+              <span className="font-bold text-rose-600">{fmtMoney(product.price * costs.consumed, lang)}</span>
+            </div>
           )}
         </div>
       )}
