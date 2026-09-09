@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useLang } from "@/src/components/lang-context";
 import {
   createProduct,
   updateProduct,
   deleteProduct,
   restockProduct,
+  getProductStockHistory,
   type ProductFormData,
+  type StockHistoryResult,
 } from "@/src/app/actions/product";
 
 type Product = {
@@ -64,12 +66,14 @@ function ProductCard({
   onEdit,
   onRestock,
   onDelete,
+  onHistory,
 }: {
   product: Product;
   nextGuestCount?: number | null;
   onEdit: (p: Product) => void;
   onRestock: (p: Product) => void;
   onDelete: (id: string) => void;
+  onHistory: (p: Product) => void;
 }) {
   const { t } = useLang();
   const status = getStatus(product.stock, product.minStock);
@@ -187,11 +191,206 @@ function ProductCard({
         </button>
         <div className="w-px h-8 bg-slate-100" />
         <button
+          onClick={() => onHistory(product)}
+          className="flex-1 flex items-center justify-center gap-1.5 py-3 text-[11px] font-black uppercase tracking-widest text-violet-600 hover:bg-violet-50 transition-colors"
+        >
+          {t.pdHistoryBtn}
+        </button>
+        <div className="w-px h-8 bg-slate-100" />
+        <button
           onClick={() => onDelete(product.id)}
           className="flex items-center justify-center px-5 py-3 text-[11px] font-black uppercase tracking-widest text-red-500 hover:bg-red-50 transition-colors"
         >
           🗑️
         </button>
+      </div>
+    </div>
+  );
+}
+
+function ymd(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function ProductHistoryModal({ product, onClose }: { product: Product; onClose: () => void }) {
+  const { t, lang } = useLang();
+  const locale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
+
+  const now = new Date();
+  const weekAgo = new Date();
+  weekAgo.setDate(now.getDate() - 6);
+
+  const [from, setFrom] = useState(ymd(weekAgo));
+  const [to, setTo] = useState(ymd(now));
+  const [data, setData] = useState<StockHistoryResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showMovements, setShowMovements] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    getProductStockHistory(product.id, from, to).then((res) => {
+      if (active) {
+        setData(res);
+        setLoading(false);
+      }
+    });
+    return () => { active = false; };
+  }, [product.id, from, to]);
+
+  function applyPreset(kind: "yesterday" | "7" | "month") {
+    const base = new Date();
+    if (kind === "yesterday") {
+      const y = new Date(); y.setDate(base.getDate() - 1);
+      setFrom(ymd(y)); setTo(ymd(y));
+    } else if (kind === "7") {
+      const s = new Date(); s.setDate(base.getDate() - 6);
+      setFrom(ymd(s)); setTo(ymd(base));
+    } else {
+      const s = new Date(base.getFullYear(), base.getMonth(), 1);
+      setFrom(ymd(s)); setTo(ymd(base));
+    }
+  }
+
+  // Rileva quale preset è attivo per evidenziarlo.
+  const yStr = (() => { const y = new Date(); y.setDate(new Date().getDate() - 1); return ymd(y); })();
+  const sevenStart = (() => { const s = new Date(); s.setDate(new Date().getDate() - 6); return ymd(s); })();
+  const monthStart = (() => { const b = new Date(); return ymd(new Date(b.getFullYear(), b.getMonth(), 1)); })();
+  const todayStr = ymd(new Date());
+  const activePreset =
+    from === yStr && to === yStr ? "yesterday"
+    : from === sevenStart && to === todayStr ? "7"
+    : from === monthStart && to === todayStr ? "month"
+    : null;
+
+  const reasonLabel = (r: string) =>
+    r === "CHECKIN" ? t.pdHistReasonCheckin
+    : r === "RESTOCK" ? t.pdHistReasonRestock
+    : r === "ADJUSTMENT" ? t.pdHistReasonAdjust
+    : t.pdHistReasonInitial;
+  const reasonEmoji = (r: string) =>
+    r === "CHECKIN" ? "🔑" : r === "RESTOCK" ? "📦" : r === "ADJUSTMENT" ? "✏️" : "🟣";
+  const reasonBg = (r: string) =>
+    r === "CHECKIN" ? "bg-red-100" : r === "RESTOCK" ? "bg-emerald-100" : "bg-indigo-100";
+  const fmtDate = (iso: string) =>
+    new Date(iso).toLocaleString(locale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  const fmtDay = (s: string) =>
+    new Date(`${s}T12:00:00`).toLocaleDateString(locale, { day: "numeric", month: "short" });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100">
+          <h3 className="font-bold text-slate-900 flex items-center gap-2">
+            <span>{product.emoji}</span> {product.name}
+          </h3>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-lg font-bold transition-colors">×</button>
+        </div>
+
+        {/* Selettori data */}
+        <div className="grid grid-cols-2 gap-3 px-6 pt-4">
+          <div>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1.5">{t.pdHistFrom}</label>
+            <input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)}
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold outline-none focus:ring-2 focus:ring-violet-500" />
+          </div>
+          <div>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1.5">{t.pdHistTo}</label>
+            <input type="date" value={to} min={from} max={todayStr} onChange={(e) => setTo(e.target.value)}
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold outline-none focus:ring-2 focus:ring-violet-500" />
+          </div>
+        </div>
+
+        {/* Preset */}
+        <div className="flex gap-2 px-6 pt-3 flex-wrap">
+          {([["yesterday", t.pdHistPresetYesterday], ["7", t.pdHistPreset7], ["month", t.pdHistPresetMonth]] as const).map(([k, label]) => (
+            <button key={k} onClick={() => applyPreset(k)}
+              className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-colors ${activePreset === k ? "bg-violet-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="px-6 py-10 text-center text-slate-400 text-sm">{t.pdHistLoading}</div>
+        ) : !data ? (
+          <div className="px-6 py-10 text-center text-slate-400 text-sm">{t.pdHistEmpty}</div>
+        ) : (
+          <>
+            {/* Iniziale → Finale */}
+            <div className="mx-6 mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-1 bg-violet-50 border border-violet-100 rounded-2xl px-4 py-4 text-center">
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest">{t.pdHistInitial}</p>
+                <p className="text-[10px] text-violet-300 font-bold mt-0.5">{fmtDay(from)}</p>
+                <p className="text-3xl font-black text-slate-900 mt-1">{data.initialBalance}</p>
+              </div>
+              <div className="text-slate-300 text-xl">→</div>
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest">{t.pdHistFinal}</p>
+                <p className="text-[10px] text-violet-300 font-bold mt-0.5">{fmtDay(to)}</p>
+                <p className="text-3xl font-black text-violet-700 mt-1">{data.finalBalance}</p>
+              </div>
+            </div>
+
+            {/* Breakdown */}
+            <div className="mx-6 mt-3">
+              <div className="flex items-center justify-between py-2.5 border-b border-slate-50 text-sm">
+                <div className="flex items-center gap-2.5 text-slate-700 font-semibold">
+                  <span className="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center text-sm">🔑</span>
+                  <span>{t.pdHistConsumed}<span className="block text-[11px] text-slate-400 font-normal">{t.pdHistCheckinsN(data.checkinCount)}</span></span>
+                </div>
+                <span className="font-black text-red-500">−{data.consumed}</span>
+              </div>
+              <div className="flex items-center justify-between py-2.5 border-b border-slate-50 text-sm">
+                <div className="flex items-center gap-2.5 text-slate-700 font-semibold">
+                  <span className="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center text-sm">📦</span>
+                  <span>{t.pdHistRestocked}<span className="block text-[11px] text-slate-400 font-normal">{t.pdHistRestocksN(data.restockCount)}</span></span>
+                </div>
+                <span className="font-black text-emerald-600">+{data.restocked}</span>
+              </div>
+              {data.adjustmentCount > 0 && (
+                <div className="flex items-center justify-between py-2.5 text-sm">
+                  <div className="flex items-center gap-2.5 text-slate-700 font-semibold">
+                    <span className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center text-sm">✏️</span>
+                    <span>{t.pdHistAdjust}<span className="block text-[11px] text-slate-400 font-normal">{t.pdHistAdjustsN(data.adjustmentCount)}</span></span>
+                  </div>
+                  <span className="font-black text-slate-400">{data.adjustments >= 0 ? "+" : ""}{data.adjustments}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Movimenti espandibili */}
+            <button onClick={() => setShowMovements((s) => !s)}
+              className="w-full text-center text-[11px] font-black uppercase tracking-widest text-violet-600 py-3">
+              {showMovements ? t.pdHistHideMovements : t.pdHistSeeMovements} {showMovements ? "▴" : "▾"}
+            </button>
+            {showMovements && (
+              <div className="mx-6 mb-2">
+                {data.movements.length === 0 ? (
+                  <p className="text-center text-slate-400 text-xs py-4">{t.pdHistEmpty}</p>
+                ) : data.movements.map((m) => (
+                  <div key={m.id} className="flex items-center gap-3 py-2.5 border-b border-slate-50 last:border-0">
+                    <span className={`w-8 h-8 rounded-lg ${reasonBg(m.reason)} flex items-center justify-center text-sm flex-shrink-0`}>{reasonEmoji(m.reason)}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-semibold text-slate-800 truncate">{reasonLabel(m.reason)}{m.note ? ` · ${m.note}` : ""}</p>
+                      <p className="text-[11px] text-slate-400">{fmtDate(m.createdAt)}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className={`text-sm font-black ${m.delta > 0 ? "text-emerald-600" : m.delta < 0 ? "text-red-500" : "text-slate-400"}`}>{m.delta > 0 ? "+" : ""}{m.delta}</p>
+                      <p className="text-[10px] text-slate-400">{product.unit} {m.balance}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="px-6 pb-5 pt-1 text-[11px] text-slate-400 leading-snug">{t.pdHistNote}</p>
+          </>
+        )}
       </div>
     </div>
   );
@@ -204,6 +403,7 @@ export default function ApartmentProductsPanel({ apartmentId, initialProducts, n
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [restockTarget, setRestockTarget] = useState<Product | null>(null);
   const [restockQty, setRestockQty] = useState(0);
+  const [historyTarget, setHistoryTarget] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductFormData>(EMPTY_FORM);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
@@ -325,8 +525,14 @@ export default function ApartmentProductsPanel({ apartmentId, initialProducts, n
           onEdit={openEdit}
           onRestock={(prod) => { setRestockTarget(prod); setRestockQty(0); }}
           onDelete={handleDelete}
+          onHistory={(prod) => setHistoryTarget(prod)}
         />
       ))}
+
+      {/* ── Modal Storico ── */}
+      {historyTarget && (
+        <ProductHistoryModal product={historyTarget} onClose={() => setHistoryTarget(null)} />
+      )}
 
       {/* ── Modal Aggiungi / Modifica ── */}
       {showForm && (

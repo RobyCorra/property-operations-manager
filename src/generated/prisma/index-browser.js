@@ -468,6 +468,17 @@ exports.Prisma.ApartmentProductScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.StockMovementScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  delta: 'delta',
+  balance: 'balance',
+  reason: 'reason',
+  bookingId: 'bookingId',
+  note: 'note',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -534,7 +545,8 @@ exports.Prisma.ModelName = {
   FcmToken: 'FcmToken',
   CleanerLocation: 'CleanerLocation',
   SuperAdminLog: 'SuperAdminLog',
-  ApartmentProduct: 'ApartmentProduct'
+  ApartmentProduct: 'ApartmentProduct',
+  StockMovement: 'StockMovement'
 };
 
 /**

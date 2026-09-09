@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { sendPushToRole } from "@/src/lib/push";
+import { getCurrentOrg } from "@/src/lib/tenant";
 import type { Role } from "@/src/generated/prisma/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -16,6 +17,24 @@ export type ProductFormData = {
   consumptionType: "STATIC" | "DYNAMIC_PER_GUEST";
   consumptionValue: number;
 };
+
+// Registra un movimento di scorta senza mai far fallire l'operazione principale:
+// se la tabella StockMovement non esiste ancora (migrazione non ancora applicata
+// in produzione) logga e prosegue, così restock/consumo/creazione non si rompono.
+async function recordMovement(data: {
+  productId: string;
+  delta: number;
+  balance: number;
+  reason: "INITIAL" | "CHECKIN" | "RESTOCK" | "ADJUSTMENT";
+  bookingId?: string | null;
+  note?: string | null;
+}) {
+  try {
+    await prisma.stockMovement.create({ data });
+  } catch (error) {
+    console.error("recordMovement error:", error);
+  }
+}
 
 // ─── Read ─────────────────────────────────────────────────────────────────────
 
@@ -39,18 +58,21 @@ export async function getApartmentProducts(apartmentId: string) {
 
 export async function createProduct(apartmentId: string, data: ProductFormData) {
   try {
-    await prisma.apartmentProduct.create({
+    const stock = Math.max(0, data.stock);
+    const created = await prisma.apartmentProduct.create({
       data: {
         apartmentId,
         name: data.name.trim(),
         emoji: data.emoji.trim() || "📦",
         unit: data.unit.trim() || "pz",
-        stock: Math.max(0, data.stock),
+        stock,
         minStock: Math.max(0, data.minStock),
         consumptionType: data.consumptionType,
         consumptionValue: Math.max(0, data.consumptionValue),
       },
     });
+    // Movimento iniziale: fissa il saldo di partenza per lo storico.
+    await recordMovement({ productId: created.id, delta: stock, balance: stock, reason: "INITIAL" });
     revalidatePath(`/dashboard/manager/apartments/${apartmentId}/products`);
     return { success: true };
   } catch (error) {
@@ -63,18 +85,24 @@ export async function createProduct(apartmentId: string, data: ProductFormData) 
 
 export async function updateProduct(id: string, apartmentId: string, data: ProductFormData) {
   try {
+    const prev = await prisma.apartmentProduct.findUnique({ where: { id }, select: { stock: true } });
+    const newStock = Math.max(0, data.stock);
     await prisma.apartmentProduct.update({
       where: { id },
       data: {
         name: data.name.trim(),
         emoji: data.emoji.trim() || "📦",
         unit: data.unit.trim() || "pz",
-        stock: Math.max(0, data.stock),
+        stock: newStock,
         minStock: Math.max(0, data.minStock),
         consumptionType: data.consumptionType,
         consumptionValue: Math.max(0, data.consumptionValue),
       },
     });
+    // Registra una rettifica solo se il valore di scorta è stato cambiato a mano.
+    if (prev && prev.stock !== newStock) {
+      await recordMovement({ productId: id, delta: newStock - prev.stock, balance: newStock, reason: "ADJUSTMENT" });
+    }
     revalidatePath(`/dashboard/manager/apartments/${apartmentId}/products`);
     return { success: true };
   } catch (error) {
@@ -100,10 +128,15 @@ export async function deleteProduct(id: string, apartmentId: string) {
 
 export async function restockProduct(id: string, apartmentId: string, addQty: number) {
   try {
-    await prisma.apartmentProduct.update({
+    const qty = Math.max(0, addQty);
+    const updated = await prisma.apartmentProduct.update({
       where: { id },
-      data: { stock: { increment: Math.max(0, addQty) } },
+      data: { stock: { increment: qty } },
+      select: { stock: true },
     });
+    if (qty > 0) {
+      await recordMovement({ productId: id, delta: qty, balance: updated.stock, reason: "RESTOCK" });
+    }
     revalidatePath(`/dashboard/manager/apartments/${apartmentId}/products`);
     return { success: true };
   } catch (error) {
@@ -131,7 +164,7 @@ export async function consumeProductsOnCheckin(bookingId: string) {
 
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      select: { apartmentId: true, totalGuests: true },
+      select: { apartmentId: true, totalGuests: true, guestName: true },
     });
     if (!booking) return { success: true, skipped: true, alerts: [] as string[] };
 
@@ -156,10 +189,21 @@ export async function consumeProductsOnCheckin(bookingId: string) {
           : product.consumptionValue;
 
       const newStock = Math.max(0, product.stock - consumed);
+      const applied = product.stock - newStock; // quantità effettivamente sottratta
 
       await prisma.apartmentProduct.update({
         where: { id: product.id },
         data: { stock: newStock },
+      });
+
+      // Registra il consumo per lo storico (anche 0, così il check-in resta tracciato).
+      await recordMovement({
+        productId: product.id,
+        delta: -applied,
+        balance: newStock,
+        reason: "CHECKIN",
+        bookingId,
+        note: booking.guestName ?? null,
       });
 
       // Allerta se stock scende sotto o uguale alla minima
@@ -220,5 +264,97 @@ export async function getConsumptionPreview(apartmentId: string, guestCount: num
     });
   } catch {
     return [];
+  }
+}
+
+// ─── Storico scorta per intervallo di date ────────────────────────────────────
+
+export type StockReason = "INITIAL" | "CHECKIN" | "RESTOCK" | "ADJUSTMENT";
+
+export type StockMovementItem = {
+  id: string;
+  delta: number;
+  balance: number;
+  reason: StockReason;
+  note: string | null;
+  createdAt: string; // ISO
+};
+
+export type StockHistoryResult = {
+  initialBalance: number;
+  finalBalance: number;
+  consumed: number;    // totale sottratto ai check-in (positivo)
+  restocked: number;   // totale rifornito (positivo)
+  adjustments: number; // netto rettifiche manuali (±)
+  checkinCount: number;
+  restockCount: number;
+  adjustmentCount: number;
+  movements: StockMovementItem[]; // nel periodo, dal più recente
+};
+
+// Ritorna il saldo iniziale/finale e il dettaglio dei movimenti in [from, to].
+// from/to sono date YYYY-MM-DD; i confini di giorno sono trattati in UTC come
+// nel resto dell'app (cron). Restituisce null se il prodotto non è dell'org.
+export async function getProductStockHistory(
+  productId: string,
+  fromYMD: string,
+  toYMD: string
+): Promise<StockHistoryResult | null> {
+  try {
+    const orgId = await getCurrentOrg();
+    if (!orgId) return null;
+    const product = await prisma.apartmentProduct.findFirst({
+      where: { id: productId, apartment: { organizationId: orgId } },
+      select: { id: true },
+    });
+    if (!product) return null;
+
+    const fromStart = new Date(`${fromYMD}T00:00:00.000Z`);
+    const toEnd = new Date(`${toYMD}T23:59:59.999Z`);
+
+    // Saldo iniziale = ultimo movimento prima dell'inizio periodo (0 se nessuno).
+    const before = await prisma.stockMovement.findFirst({
+      where: { productId, createdAt: { lt: fromStart } },
+      orderBy: { createdAt: "desc" },
+      select: { balance: true },
+    });
+    const initialBalance = before?.balance ?? 0;
+
+    const inRange = await prisma.stockMovement.findMany({
+      where: { productId, createdAt: { gte: fromStart, lte: toEnd } },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const finalBalance = inRange.length > 0 ? inRange[0].balance : initialBalance;
+
+    let consumed = 0, restocked = 0, adjustments = 0;
+    let checkinCount = 0, restockCount = 0, adjustmentCount = 0;
+    for (const m of inRange) {
+      if (m.reason === "CHECKIN") { consumed += -m.delta; checkinCount++; }
+      else if (m.reason === "RESTOCK") { restocked += m.delta; restockCount++; }
+      else if (m.reason === "ADJUSTMENT") { adjustments += m.delta; adjustmentCount++; }
+    }
+
+    return {
+      initialBalance,
+      finalBalance,
+      consumed,
+      restocked,
+      adjustments,
+      checkinCount,
+      restockCount,
+      adjustmentCount,
+      movements: inRange.map((m) => ({
+        id: m.id,
+        delta: m.delta,
+        balance: m.balance,
+        reason: m.reason as StockReason,
+        note: m.note,
+        createdAt: m.createdAt.toISOString(),
+      })),
+    };
+  } catch (error) {
+    console.error("getProductStockHistory error:", error);
+    return null;
   }
 }

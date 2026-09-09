@@ -493,5 +493,24 @@ model ApartmentProduct {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
+  movements StockMovement[]
+
   @@index([apartmentId])
+}
+
+// Registro movimenti di scorta: una riga per ogni variazione (consumo al
+// check-in, rifornimento, rettifica manuale, valore iniziale). Consente lo
+// storico per intervallo di date (quantità iniziale/finale + dettaglio).
+model StockMovement {
+  id        String           @id @default(uuid())
+  productId String
+  product   ApartmentProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  delta     Int // variazione (negativa = consumo, positiva = carico)
+  balance   Int // saldo risultante dopo questo movimento
+  reason    String // INITIAL | CHECKIN | RESTOCK | ADJUSTMENT
+  bookingId String? // riferimento prenotazione (per i consumi da check-in)
+  note      String? // etichetta leggibile (es. nome ospite)
+  createdAt DateTime         @default(now())
+
+  @@index([productId, createdAt])
 }
