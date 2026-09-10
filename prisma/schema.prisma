@@ -94,6 +94,8 @@ model Apartment {
   checkinDefaultTime   String?
   autoCheckin          Boolean               @default(false)
   createdAt            DateTime              @default(now())
+  clientId             String?
+  client               Client?               @relation(fields: [clientId], references: [id], onDelete: SetNull)
   bookings             Booking[]
   checklistItems       ChecklistItem[]
   cleaningTasks        CleaningTask[]
@@ -376,6 +378,33 @@ model ApartmentSupervisor {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([apartmentId, userId])
+}
+
+// Anagrafica clienti/proprietari per la fatturazione (privato o impresa).
+// Org-scoped. Un cliente può avere più appartamenti; ogni appartamento ha
+// al massimo un cliente (Apartment.clientId).
+model Client {
+  id             String      @id @default(uuid())
+  organizationId String
+  type           String      @default("PRIVATE") // PRIVATE | COMPANY
+  name           String      // ragione sociale (impresa) o nome e cognome (privato)
+  vatNumber      String?     // partita IVA
+  taxCode        String?     // codice fiscale
+  sdiCode        String?     // codice destinatario SDI
+  pec            String?
+  email          String?
+  phone          String?
+  address        String?
+  city           String?
+  zip            String?
+  province       String?
+  country        String?     @default("Italia")
+  notes          String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  apartments     Apartment[]
+
+  @@index([organizationId])
 }
 
 model ApartmentOwner {

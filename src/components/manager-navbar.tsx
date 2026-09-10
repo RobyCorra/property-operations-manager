@@ -23,6 +23,7 @@ const NAV_ITEMS = [
   { key: "navToday", href: "/dashboard/manager", icon: LayoutDashboard },
   { key: "navApartments", href: "/dashboard/manager/apartments", icon: Building2 },
   { key: "navWarehouse", href: "/dashboard/manager/magazzino", icon: Package },
+  { key: "navClients", href: "/dashboard/manager/clienti", icon: UserCircle },
   { key: "navBookings", href: "/dashboard/manager/bookings", icon: CalendarDays },
   { key: "navMap", href: "/dashboard/manager/mappa", icon: MapPin },
   { key: "navMessages", href: "/dashboard/manager/messages", icon: MessageSquare },

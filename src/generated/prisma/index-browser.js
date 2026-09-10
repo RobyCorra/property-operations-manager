@@ -189,7 +189,8 @@ exports.Prisma.ApartmentScalarFieldEnum = {
   technicalProfile: 'technicalProfile',
   checkinDefaultTime: 'checkinDefaultTime',
   autoCheckin: 'autoCheckin',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  clientId: 'clientId'
 };
 
 exports.Prisma.ChecklistItemScalarFieldEnum = {
@@ -392,6 +393,27 @@ exports.Prisma.ApartmentSupervisorScalarFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.ClientScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  type: 'type',
+  name: 'name',
+  vatNumber: 'vatNumber',
+  taxCode: 'taxCode',
+  sdiCode: 'sdiCode',
+  pec: 'pec',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  city: 'city',
+  zip: 'zip',
+  province: 'province',
+  country: 'country',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ApartmentOwnerScalarFieldEnum = {
   apartmentId: 'apartmentId',
   userId: 'userId'
@@ -567,6 +589,7 @@ exports.Prisma.ModelName = {
   CleaningTaskMessage: 'CleaningTaskMessage',
   SupervisorReview: 'SupervisorReview',
   ApartmentSupervisor: 'ApartmentSupervisor',
+  Client: 'Client',
   ApartmentOwner: 'ApartmentOwner',
   ManagerChatSession: 'ManagerChatSession',
   ManagerChatMessage: 'ManagerChatMessage',
