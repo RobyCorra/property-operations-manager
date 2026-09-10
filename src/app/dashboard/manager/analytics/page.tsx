@@ -1,5 +1,6 @@
-import { getAnalyticsData, getAnalyticsFilters } from "@/src/app/actions/analytics";
+import { getAnalyticsData, getAnalyticsFilters, getProductsAnalytics } from "@/src/app/actions/analytics";
 import AnalyticsDashboard from "@/src/components/analytics/analytics-dashboard";
+import ProductsAnalyticsSection from "@/src/components/analytics/products-analytics-section";
 
 export default async function AnalyticsPage({
   searchParams,
@@ -10,10 +11,16 @@ export default async function AnalyticsPage({
   const year = params.year ? parseInt(params.year) : undefined;
   const month = params.month ? parseInt(params.month) : undefined;
 
-  const [data, filters] = await Promise.all([
+  const [data, filters, productsData] = await Promise.all([
     getAnalyticsData(year, month),
     getAnalyticsFilters(),
+    getProductsAnalytics(year, month),
   ]);
 
-  return <AnalyticsDashboard data={data} filters={filters} selectedYear={year} selectedMonth={month} />;
+  return (
+    <>
+      <AnalyticsDashboard data={data} filters={filters} selectedYear={year} selectedMonth={month} />
+      <ProductsAnalyticsSection data={productsData} />
+    </>
+  );
 }

@@ -422,3 +422,141 @@ export async function getAnalyticsFilters() {
   ]);
   return { cleaners, manutentori, assistenti, apartments };
 }
+
+// ─── Analytics Prodotti & Costi (tutti i valori IVA inclusa) ──────────────────
+
+export type ProductsAnalytics = {
+  months: MonthKey[];
+  selectedMonth: MonthKey;
+  kpi: {
+    totalStockValue: number;      // scorte appartamenti + magazzino (lordo)
+    warehouseStockValue: number;  // solo magazzino (lordo)
+    consumedCostMonth: number;    // costo consumato nel mese selezionato (lordo)
+    lowStockCount: number;
+  };
+  matrix: {
+    rows: { id: string; name: string; isWarehouse: boolean; months: Record<MonthKey, number> }[];
+    totals: Record<MonthKey, number>;
+  };
+  topProducts: { name: string; emoji: string; unit: string; qty: number; cost: number }[];
+  lowStock: { location: string; isWarehouse: boolean; items: { emoji: string; name: string; stock: number; minStock: number; unit: string; value: number }[] }[];
+};
+
+const gross = (price: number, vat: number) => price * (1 + (vat ?? 0) / 100);
+
+export async function getProductsAnalytics(year?: number, month?: number): Promise<ProductsAnalytics> {
+  const orgId = await getCurrentOrg();
+  const now = new Date();
+  const refYear = year ?? now.getFullYear();
+  const refMonth = month ?? now.getMonth() + 1;
+  const refDate = new Date(refYear, refMonth - 1, 1);
+  const sixMonthsAgo = new Date(refYear, refMonth - 6, 1);
+  const months: MonthKey[] = Array.from({ length: 6 }, (_, i) =>
+    monthKey(new Date(refDate.getFullYear(), refDate.getMonth() - (5 - i), 1))
+  );
+  const selectedMonth = monthKey(refDate);
+
+  const emptyRow = (): Record<MonthKey, number> => Object.fromEntries(months.map((m) => [m, 0]));
+
+  const [apartments, aptProducts, whProducts, aptMoves, whMoves] = await Promise.all([
+    prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.apartmentProduct.findMany({
+      where: { apartment: { organizationId: orgId } },
+      select: { apartmentId: true, name: true, emoji: true, unit: true, stock: true, minStock: true, price: true, vat: true },
+    }),
+    prisma.warehouseProduct.findMany({
+      where: { organizationId: orgId ?? undefined },
+      select: { name: true, emoji: true, unit: true, stock: true, minStock: true, price: true, vat: true },
+    }).catch(() => [] as any[]),
+    prisma.stockMovement.findMany({
+      where: { product: { apartment: { organizationId: orgId } }, delta: { lt: 0 }, createdAt: { gte: sixMonthsAgo } },
+      select: { delta: true, createdAt: true, product: { select: { apartmentId: true, name: true, emoji: true, unit: true, price: true, vat: true } } },
+    }).catch(() => [] as any[]),
+    prisma.warehouseStockMovement.findMany({
+      where: { product: { organizationId: orgId ?? undefined }, delta: { lt: 0 }, createdAt: { gte: sixMonthsAgo } },
+      select: { delta: true, createdAt: true, product: { select: { name: true, emoji: true, unit: true, price: true, vat: true } } },
+    }).catch(() => [] as any[]),
+  ]);
+
+  // ── Matrice costo consumato per mese ──
+  const aptName = new Map(apartments.map((a) => [a.id, a.name]));
+  const rowMap = new Map<string, { id: string; name: string; isWarehouse: boolean; months: Record<MonthKey, number> }>();
+  // righe appartamento solo per quelli che hanno prodotti
+  for (const p of aptProducts) {
+    if (!rowMap.has(p.apartmentId)) {
+      rowMap.set(p.apartmentId, { id: p.apartmentId, name: aptName.get(p.apartmentId) ?? "?", isWarehouse: false, months: emptyRow() });
+    }
+  }
+  const whRow = { id: "__warehouse__", name: "Magazzino", isWarehouse: true, months: emptyRow() };
+
+  for (const m of aptMoves as any[]) {
+    const mk = monthKey(new Date(m.createdAt));
+    if (!months.includes(mk)) continue;
+    let row = rowMap.get(m.product.apartmentId);
+    if (!row) { row = { id: m.product.apartmentId, name: aptName.get(m.product.apartmentId) ?? "?", isWarehouse: false, months: emptyRow() }; rowMap.set(m.product.apartmentId, row); }
+    row.months[mk] += (-m.delta) * gross(m.product.price, m.product.vat);
+  }
+  for (const m of whMoves as any[]) {
+    const mk = monthKey(new Date(m.createdAt));
+    if (!months.includes(mk)) continue;
+    whRow.months[mk] += (-m.delta) * gross(m.product.price, m.product.vat);
+  }
+
+  const rows = [...rowMap.values()].sort((a, b) => a.name.localeCompare(b.name));
+  if (whProducts.length > 0 || Object.values(whRow.months).some((v) => v > 0)) rows.push(whRow);
+  const totals = emptyRow();
+  for (const r of rows) for (const mk of months) totals[mk] += r.months[mk];
+
+  // ── KPI ──
+  const aptStockValue = aptProducts.reduce((s, p) => s + gross(p.price, p.vat) * p.stock, 0);
+  const warehouseStockValue = (whProducts as any[]).reduce((s, p) => s + gross(p.price, p.vat) * p.stock, 0);
+  const lowApt = aptProducts.filter((p) => p.stock <= p.minStock);
+  const lowWh = (whProducts as any[]).filter((p) => p.stock <= p.minStock);
+
+  // ── Top prodotti per costo (mese selezionato), aggregati per nome+unità ──
+  const topMap = new Map<string, { name: string; emoji: string; unit: string; qty: number; cost: number }>();
+  const addTop = (m: any) => {
+    const mk = monthKey(new Date(m.createdAt));
+    if (mk !== selectedMonth) return;
+    const key = `${m.product.name}|${m.product.unit}`;
+    const cur = topMap.get(key) ?? { name: m.product.name, emoji: m.product.emoji, unit: m.product.unit, qty: 0, cost: 0 };
+    cur.qty += -m.delta;
+    cur.cost += (-m.delta) * gross(m.product.price, m.product.vat);
+    topMap.set(key, cur);
+  };
+  for (const m of aptMoves as any[]) addTop(m);
+  for (const m of whMoves as any[]) addTop(m);
+  const topProducts = [...topMap.values()].filter((t) => t.cost > 0).sort((a, b) => b.cost - a.cost).slice(0, 8);
+
+  // ── Scorte sotto minima raggruppate per location ──
+  const lowStock: ProductsAnalytics["lowStock"] = [];
+  if (lowWh.length > 0) {
+    lowStock.push({
+      location: "Magazzino", isWarehouse: true,
+      items: lowWh.map((p) => ({ emoji: p.emoji, name: p.name, stock: p.stock, minStock: p.minStock, unit: p.unit, value: gross(p.price, p.vat) * p.stock })),
+    });
+  }
+  const byApt = new Map<string, ProductsAnalytics["lowStock"][number]["items"]>();
+  for (const p of lowApt) {
+    const arr = byApt.get(p.apartmentId) ?? [];
+    arr.push({ emoji: p.emoji, name: p.name, stock: p.stock, minStock: p.minStock, unit: p.unit, value: gross(p.price, p.vat) * p.stock });
+    byApt.set(p.apartmentId, arr);
+  }
+  for (const [aptId, items] of byApt) {
+    lowStock.push({ location: aptName.get(aptId) ?? "?", isWarehouse: false, items });
+  }
+
+  return {
+    months,
+    selectedMonth,
+    kpi: {
+      totalStockValue: aptStockValue + warehouseStockValue,
+      warehouseStockValue,
+      consumedCostMonth: totals[selectedMonth] ?? 0,
+      lowStockCount: lowApt.length + lowWh.length,
+    },
+    matrix: { rows, totals },
+    topProducts,
+    lowStock,
+  };
+}
