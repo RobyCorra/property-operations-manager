@@ -6,6 +6,7 @@ interface LinenResult {
   lenzuola: number;
   federe: number;
   copriPiumino: number;
+  piumino?: number;
 }
 
 interface Props {
@@ -66,6 +67,7 @@ export default function LinenSection({ towels, bathMats, nextGuestCount, linen, 
               { v: linen.lenzuola,     l: t.sheetsLabel },
               { v: linen.federe,       l: t.pillowcasesLabel },
               { v: linen.copriPiumino, l: t.duvetLabel },
+              ...(linen.piumino != null ? [{ v: linen.piumino, l: t.duvetItemLabel }] : []),
             ].map(({ v, l }) => (
               <div key={l} className="bg-slate-800 rounded-xl px-3 py-1.5 text-center">
                 <div className="text-lg font-black text-white">{v}</div>
@@ -87,6 +89,7 @@ export default function LinenSection({ towels, bathMats, nextGuestCount, linen, 
               { v: cullaLinen.lenzuola,     l: t.sheetsLabel },
               { v: cullaLinen.federe,       l: t.pillowcasesLabel },
               { v: cullaLinen.copriPiumino, l: t.duvetLabel },
+              ...(cullaLinen.piumino != null ? [{ v: cullaLinen.piumino, l: t.duvetItemLabel }] : []),
             ].map(({ v, l }) => (
               <div key={l} className="bg-emerald-800 rounded-xl px-3 py-1.5 text-center">
                 <div className="text-lg font-black text-white">{v}</div>

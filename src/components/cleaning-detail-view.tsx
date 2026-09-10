@@ -249,6 +249,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                             { v: bed.linen.lenzuola,     l: "Lenz." },
                             { v: bed.linen.federe,       l: "Fed."  },
                             { v: bed.linen.copriPiumino, l: "Cop."  },
+                            { v: bed.linen.piumino,      l: "Piu."  },
                           ].map(chip => (
                             <div key={chip.l} className="flex-1 bg-white border border-gray-100 rounded-lg py-1.5 text-center">
                               <p className="text-sm font-black text-gray-900 leading-none">{chip.v}</p>
@@ -266,6 +267,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                       { v: linen.adults.lenzuola,     l: "Lenzuola"   },
                       { v: linen.adults.federe,       l: "Federe"     },
                       { v: linen.adults.copriPiumino, l: "Copripium." },
+                      { v: linen.adults.piumino,      l: "Piumino"    },
                     ].map((t, i) => (
                       <div key={t.l} className={`flex-1 text-center ${i > 0 ? "border-l border-white/10" : ""}`}>
                         <p className="text-[8px] font-black uppercase tracking-widest text-white/40">{t.l}</p>

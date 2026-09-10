@@ -232,7 +232,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                             )}
                             {linen.beds.map(bed => (
                               <span key={bed.key} className={`inline-flex items-center rounded-md px-2 py-0.5 text-[9px] font-black uppercase tracking-wide border ${bed.isFixed ? "bg-blue-50 border-blue-200 text-blue-700" : "bg-amber-50 border-amber-200 text-amber-700"}`}>
-                                {bed.label.replace("Letto ", "").replace("Divano letto ", "Div.")} ×{bed.count} · {bed.linen.lenzuola}+{bed.linen.federe}+{bed.linen.copriPiumino}
+                                {bed.label.replace("Letto ", "").replace("Divano letto ", "Div.")} ×{bed.count} · {bed.linen.lenzuola}+{bed.linen.federe}+{bed.linen.copriPiumino}+{bed.linen.piumino}
                               </span>
                             ))}
                             {linen.culla && (

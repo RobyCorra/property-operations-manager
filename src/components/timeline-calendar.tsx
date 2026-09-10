@@ -1155,6 +1155,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                                         { v: bed.linen.lenzuola, l: t.tcLenzShort },
                                                                         { v: bed.linen.federe,   l: t.tcFedShort  },
                                                                         { v: bed.linen.copriPiumino, l: t.tcCopShort },
+                                                                        { v: bed.linen.piumino, l: "Piu." },
                                                                     ].map(chip => (
                                                                         <div key={chip.l} className="bg-white/70 border border-white/40 rounded-lg px-2 py-1 text-center min-w-[32px]">
                                                                             <p className="text-[11px] font-black text-slate-900 leading-none">{chip.v}</p>
@@ -1172,6 +1173,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                             { v: linen.adults.lenzuola,     l: t.sheetsLabel },
                                                             { v: linen.adults.federe,       l: t.pillowcasesLabel   },
                                                             { v: linen.adults.copriPiumino, l: t.tcDuvetFull },
+                                                            { v: linen.adults.piumino, l: t.duvetItemLabel },
                                                         ].map((t, i) => (
                                                             <div key={t.l} className={`flex-1 text-center ${i > 0 ? "border-l border-white/10" : ""}`}>
                                                                 <p className="text-[8px] font-black uppercase tracking-widest text-white/40">{t.l}</p>

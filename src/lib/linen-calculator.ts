@@ -3,6 +3,7 @@ export type BedTypeConfig = {
   lenzuola: number;
   federe: number;
   copriPiumino: number;
+  piumino: number;
 };
 
 export type BedConfig = {
@@ -10,13 +11,14 @@ export type BedConfig = {
   singolo:            BedTypeConfig;
   divanoMatrimoniale: BedTypeConfig;
   divanoSingolo:      BedTypeConfig;
-  culla:              { lenzuola: number; federe: number; copriPiumino: number };
+  culla:              { lenzuola: number; federe: number; copriPiumino: number; piumino: number };
 };
 
 export type LinenResult = {
   lenzuola:     number;
   federe:       number;
   copriPiumino: number;
+  piumino:      number;
 };
 
 export type LinenCalculation = {
@@ -36,11 +38,11 @@ export type LinenCalculation = {
 };
 
 export const DEFAULT_BED_CONFIG: BedConfig = {
-  matrimoniale:       { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2 },
-  singolo:            { count: 0, lenzuola: 1, federe: 1, copriPiumino: 1 },
-  divanoMatrimoniale: { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2 },
-  divanoSingolo:      { count: 0, lenzuola: 2, federe: 1, copriPiumino: 1 },
-  culla:              {           lenzuola: 1, federe: 1, copriPiumino: 1 },
+  matrimoniale:       { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2, piumino: 1 },
+  singolo:            { count: 0, lenzuola: 1, federe: 1, copriPiumino: 1, piumino: 1 },
+  divanoMatrimoniale: { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2, piumino: 1 },
+  divanoSingolo:      { count: 0, lenzuola: 2, federe: 1, copriPiumino: 1, piumino: 1 },
+  culla:              {           lenzuola: 1, federe: 1, copriPiumino: 1, piumino: 1 },
 };
 
 function parseBedConfig(raw: unknown): BedConfig {
@@ -56,6 +58,7 @@ function parseBedConfig(raw: unknown): BedConfig {
       lenzuola:     typeof b.lenzuola === "number"     ? b.lenzuola     : defaults.lenzuola,
       federe:       typeof b.federe === "number"       ? b.federe       : defaults.federe,
       copriPiumino: typeof b.copriPiumino === "number" ? b.copriPiumino : defaults.copriPiumino,
+      piumino:      typeof b.piumino === "number"      ? b.piumino      : defaults.piumino,
     };
   };
 
@@ -66,6 +69,7 @@ function parseBedConfig(raw: unknown): BedConfig {
         lenzuola:     typeof (cRaw as Record<string,unknown>).lenzuola === "number"     ? (cRaw as Record<string,unknown>).lenzuola as number : cDef.lenzuola,
         federe:       typeof (cRaw as Record<string,unknown>).federe === "number"       ? (cRaw as Record<string,unknown>).federe as number   : cDef.federe,
         copriPiumino: typeof (cRaw as Record<string,unknown>).copriPiumino === "number" ? (cRaw as Record<string,unknown>).copriPiumino as number : cDef.copriPiumino,
+        piumino:      typeof (cRaw as Record<string,unknown>).piumino === "number"      ? (cRaw as Record<string,unknown>).piumino as number  : cDef.piumino,
       }
     : cDef;
 
@@ -83,6 +87,7 @@ function addLinen(a: LinenResult, b: LinenResult): LinenResult {
     lenzuola:     a.lenzuola + b.lenzuola,
     federe:       a.federe + b.federe,
     copriPiumino: a.copriPiumino + b.copriPiumino,
+    piumino:      a.piumino + b.piumino,
   };
 }
 
@@ -96,7 +101,7 @@ export function calculateLinen(
 
   const beds: LinenCalculation["beds"] = [];
   let remaining = totalGuests;
-  let adultLinen: LinenResult = { lenzuola: 0, federe: 0, copriPiumino: 0 };
+  let adultLinen: LinenResult = { lenzuola: 0, federe: 0, copriPiumino: 0, piumino: 0 };
 
   // ── LETTI FISSI ──
   const fixed = [
@@ -112,6 +117,7 @@ export function calculateLinen(
       lenzuola:     placed * f.cfg.lenzuola,
       federe:       placed * f.cfg.federe,
       copriPiumino: placed * f.cfg.copriPiumino,
+      piumino:      placed * f.cfg.piumino,
     };
     beds.push({ key: f.key, label: f.label, icon: f.icon, count: placed, capacity: covered, isFixed: true, isActivated: false, linen });
     adultLinen = addLinen(adultLinen, linen);
@@ -135,6 +141,7 @@ export function calculateLinen(
       lenzuola:     activated * o.cfg.lenzuola,
       federe:       activated * o.cfg.federe,
       copriPiumino: activated * o.cfg.copriPiumino,
+      piumino:      activated * o.cfg.piumino,
     };
     beds.push({ key: o.key, label: o.label, icon: o.icon, count: activated, capacity: covered, isFixed: false, isActivated: true, linen });
     adultLinen = addLinen(adultLinen, linen);
@@ -143,7 +150,7 @@ export function calculateLinen(
 
   // ── CULLA ──
   const cullaLinen: LinenResult | null = cullaRequested
-    ? { lenzuola: cfg.culla.lenzuola, federe: cfg.culla.federe, copriPiumino: cfg.culla.copriPiumino }
+    ? { lenzuola: cfg.culla.lenzuola, federe: cfg.culla.federe, copriPiumino: cfg.culla.copriPiumino, piumino: cfg.culla.piumino }
     : null;
 
   return { beds, adults: adultLinen, culla: cullaLinen };

@@ -6,6 +6,7 @@ interface LinenResult {
   lenzuola: number;
   federe: number;
   copriPiumino: number;
+  piumino?: number;
 }
 
 interface Props {

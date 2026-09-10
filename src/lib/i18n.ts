@@ -19,6 +19,7 @@ export const translations = {
     sheetsLabel: "Lenzuola",
     pillowcasesLabel: "Federe",
     duvetLabel: "Copriletto",
+    duvetItemLabel: "Piumino",
     cullaLabel: "🪺 Culla",
     noNextBooking: "Nessuna prenotazione in arrivo",
 
@@ -691,6 +692,7 @@ export const translations = {
     afSheets: "Lenzuola",
     afPillowcases: "Federe",
     afDuvet: "Copri piumino",
+    afDuvetItem: "Piumino",
     afCotWord: "Culla",
     afFromBooking: "da prenotaz.",
     afTechSheet: "Scheda Tecnica Appartamento",
@@ -950,6 +952,7 @@ export const translations = {
     sheetsLabel: "Sheets",
     pillowcasesLabel: "Pillowcases",
     duvetLabel: "Duvet cover",
+    duvetItemLabel: "Duvet",
     cullaLabel: "🪺 Cot",
     noNextBooking: "No upcoming booking",
 
@@ -1617,6 +1620,7 @@ export const translations = {
     afSheets: "Sheets",
     afPillowcases: "Pillowcases",
     afDuvet: "Duvet cover",
+    afDuvetItem: "Duvet",
     afCotWord: "Cot",
     afFromBooking: "from booking",
     afTechSheet: "Apartment Technical Sheet",
@@ -1876,6 +1880,7 @@ export const translations = {
     sheetsLabel: "Sábanas",
     pillowcasesLabel: "Fundas de almohada",
     duvetLabel: "Funda nórdica",
+    duvetItemLabel: "Nórdico",
     cullaLabel: "🪺 Cuna",
     noNextBooking: "Sin reserva próxima",
 
@@ -2543,6 +2548,7 @@ export const translations = {
     afSheets: "Sábanas",
     afPillowcases: "Fundas de almohada",
     afDuvet: "Funda nórdica",
+    afDuvetItem: "Nórdico",
     afCotWord: "Cuna",
     afFromBooking: "de reserva",
     afTechSheet: "Ficha técnica del apartamento",

@@ -21,13 +21,14 @@ function intField(formData: FormData, key: string, fallback = 0): number {
 
 function parseBedConfigFromForm(formData: FormData) {
   const bedTypes = ["matrimoniale", "singolo", "divanoMatrimoniale", "divanoSingolo"] as const;
-  const beds: Record<string, { count: number; lenzuola: number; federe: number; copriPiumino: number }> = {};
+  const beds: Record<string, { count: number; lenzuola: number; federe: number; copriPiumino: number; piumino: number }> = {};
   for (const k of bedTypes) {
     beds[k] = {
       count:        intField(formData, `bedConfig.${k}.count`),
       lenzuola:     intField(formData, `bedConfig.${k}.lenzuola`),
       federe:       intField(formData, `bedConfig.${k}.federe`),
       copriPiumino: intField(formData, `bedConfig.${k}.copriPiumino`),
+      piumino:      intField(formData, `bedConfig.${k}.piumino`),
     };
   }
   return {
@@ -36,6 +37,7 @@ function parseBedConfigFromForm(formData: FormData) {
       lenzuola:     intField(formData, "bedConfig.culla.lenzuola", 1),
       federe:       intField(formData, "bedConfig.culla.federe", 1),
       copriPiumino: intField(formData, "bedConfig.culla.copriPiumino", 1),
+      piumino:      intField(formData, "bedConfig.culla.piumino", 1),
     },
   };
 }

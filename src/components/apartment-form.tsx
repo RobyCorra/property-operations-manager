@@ -33,6 +33,7 @@ type BedTypeData = {
   lenzuola: number;
   federe: number;
   copriPiumino: number;
+  piumino: number;
 };
 
 type BedConfigData = {
@@ -40,16 +41,16 @@ type BedConfigData = {
   singolo:            BedTypeData;
   divanoMatrimoniale: BedTypeData;
   divanoSingolo:      BedTypeData;
-  culla:              { lenzuola: number; federe: number; copriPiumino: number };
+  culla:              { lenzuola: number; federe: number; copriPiumino: number; piumino: number };
 };
 
-const DEFAULT_BED_TYPE: BedTypeData = { count: 0, lenzuola: 0, federe: 0, copriPiumino: 0 };
+const DEFAULT_BED_TYPE: BedTypeData = { count: 0, lenzuola: 0, federe: 0, copriPiumino: 0, piumino: 0 };
 const DEFAULT_BED_CONFIG: BedConfigData = {
-  matrimoniale:       { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2 },
-  singolo:            { count: 0, lenzuola: 1, federe: 1, copriPiumino: 1 },
-  divanoMatrimoniale: { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2 },
-  divanoSingolo:      { count: 0, lenzuola: 2, federe: 1, copriPiumino: 1 },
-  culla:              { lenzuola: 1, federe: 1, copriPiumino: 1 },
+  matrimoniale:       { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2, piumino: 1 },
+  singolo:            { count: 0, lenzuola: 1, federe: 1, copriPiumino: 1, piumino: 1 },
+  divanoMatrimoniale: { count: 0, lenzuola: 2, federe: 2, copriPiumino: 2, piumino: 1 },
+  divanoSingolo:      { count: 0, lenzuola: 2, federe: 1, copriPiumino: 1, piumino: 1 },
+  culla:              { lenzuola: 1, federe: 1, copriPiumino: 1, piumino: 1 },
 };
 
 function parseBedConfigForForm(raw: unknown): BedConfigData {
@@ -64,6 +65,7 @@ function parseBedConfigForForm(raw: unknown): BedConfigData {
       lenzuola:     typeof b.lenzuola === "number"     ? b.lenzuola     : def.lenzuola,
       federe:       typeof b.federe === "number"       ? b.federe       : def.federe,
       copriPiumino: typeof b.copriPiumino === "number" ? b.copriPiumino : def.copriPiumino,
+      piumino:      typeof b.piumino === "number"      ? b.piumino      : def.piumino,
     };
   };
   const cRaw = r["culla"] as Record<string, unknown> | undefined;
@@ -76,6 +78,7 @@ function parseBedConfigForForm(raw: unknown): BedConfigData {
       lenzuola:     typeof cRaw.lenzuola === "number"     ? cRaw.lenzuola     : DEFAULT_BED_CONFIG.culla.lenzuola,
       federe:       typeof cRaw.federe === "number"       ? cRaw.federe       : DEFAULT_BED_CONFIG.culla.federe,
       copriPiumino: typeof cRaw.copriPiumino === "number" ? cRaw.copriPiumino : DEFAULT_BED_CONFIG.culla.copriPiumino,
+      piumino:      typeof cRaw.piumino === "number"      ? cRaw.piumino      : DEFAULT_BED_CONFIG.culla.piumino,
     } : DEFAULT_BED_CONFIG.culla,
   };
 }
@@ -955,11 +958,13 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                     <input type="hidden" name={`bedConfig.${k}.lenzuola`}     value={bedConfig[k].lenzuola} />
                     <input type="hidden" name={`bedConfig.${k}.federe`}       value={bedConfig[k].federe} />
                     <input type="hidden" name={`bedConfig.${k}.copriPiumino`} value={bedConfig[k].copriPiumino} />
+                    <input type="hidden" name={`bedConfig.${k}.piumino`}      value={bedConfig[k].piumino} />
                   </span>
                 ))}
                 <input type="hidden" name="bedConfig.culla.lenzuola"     value={bedConfig.culla.lenzuola} />
                 <input type="hidden" name="bedConfig.culla.federe"       value={bedConfig.culla.federe} />
                 <input type="hidden" name="bedConfig.culla.copriPiumino" value={bedConfig.culla.copriPiumino} />
+                <input type="hidden" name="bedConfig.culla.piumino"      value={bedConfig.culla.piumino} />
 
                 {/* tabella */}
                 <div className="overflow-x-auto">
@@ -972,12 +977,13 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                         <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">{t.afSheets}</th>
                         <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">{t.afPillowcases}</th>
                         <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-28">{t.afDuvet}</th>
+                        <th className="text-center text-[10px] font-bold uppercase tracking-widest text-indigo-400 pb-2 px-2 w-24">{t.afDuvetItem}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
 
                       {/* LETTI FISSI */}
-                      <tr><td colSpan={6} className="pt-3 pb-1">
+                      <tr><td colSpan={7} className="pt-3 pb-1">
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-blue-50 text-blue-700 px-3 py-1 rounded-full">{t.afFixedBeds}</span>
                       </td></tr>
 
@@ -1013,11 +1019,16 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                               onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], copriPiumino: +e.target.value } }))}
                               className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
                           </td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].piumino}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], piumino: +e.target.value } }))}
+                              className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
+                          </td>
                         </tr>
                       ))}
 
                       {/* LETTI AGGIUNTIVI */}
-                      <tr><td colSpan={6} className="pt-4 pb-1">
+                      <tr><td colSpan={7} className="pt-4 pb-1">
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-amber-50 text-amber-700 px-3 py-1 rounded-full">{t.afExtraBeds}</span>
                       </td></tr>
 
@@ -1053,11 +1064,16 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                               onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], copriPiumino: +e.target.value } }))}
                               className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
                           </td>
+                          <td className="py-2 px-2 text-center">
+                            <input type="number" min="0" value={bedConfig[key].piumino}
+                              onChange={(e) => setBedConfig((p) => ({ ...p, [key]: { ...p[key], piumino: +e.target.value } }))}
+                              className="w-16 text-center border border-indigo-200 rounded-lg py-1.5 text-sm font-bold text-indigo-700 bg-indigo-50 outline-none focus:ring-2 focus:ring-indigo-300" />
+                          </td>
                         </tr>
                       ))}
 
                       {/* CULLA */}
-                      <tr><td colSpan={6} className="pt-4 pb-1">
+                      <tr><td colSpan={7} className="pt-4 pb-1">
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full">{t.afCot}</span>
                       </td></tr>
                       <tr className="hover:bg-gray-50/50">
@@ -1081,6 +1097,11 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
                         <td className="py-2 px-2 text-center">
                           <input type="number" min="0" value={bedConfig.culla.copriPiumino}
                             onChange={(e) => setBedConfig((p) => ({ ...p, culla: { ...p.culla, copriPiumino: +e.target.value } }))}
+                            className="w-16 text-center border border-emerald-200 rounded-lg py-1.5 text-sm font-bold text-emerald-700 bg-emerald-50 outline-none focus:ring-2 focus:ring-emerald-300" />
+                        </td>
+                        <td className="py-2 px-2 text-center">
+                          <input type="number" min="0" value={bedConfig.culla.piumino}
+                            onChange={(e) => setBedConfig((p) => ({ ...p, culla: { ...p.culla, piumino: +e.target.value } }))}
                             className="w-16 text-center border border-emerald-200 rounded-lg py-1.5 text-sm font-bold text-emerald-700 bg-emerald-50 outline-none focus:ring-2 focus:ring-emerald-300" />
                         </td>
                       </tr>
