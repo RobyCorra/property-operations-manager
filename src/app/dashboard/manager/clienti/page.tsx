@@ -7,8 +7,9 @@ import BackButton from "@/src/components/back-button";
 
 export const dynamic = "force-dynamic";
 
-export default async function ClientsPage() {
+export default async function ClientsPage({ searchParams }: { searchParams: Promise<{ open?: string }> }) {
   const tr = await getT();
+  const { open } = await searchParams;
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
   if (role !== "MANAGER") redirect("/login");
@@ -28,7 +29,7 @@ export default async function ClientsPage() {
             <p className="text-gray-500 mt-1">{tr.clEmptyHint}</p>
           </div>
         </div>
-        <ClientsPanel initialClients={clients} apartments={apartments} />
+        <ClientsPanel initialClients={clients} apartments={apartments} openClientId={open} />
       </div>
     </main>
   );

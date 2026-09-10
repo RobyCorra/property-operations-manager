@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useTransition } from "react";
+import { useState, useMemo, useEffect, useTransition } from "react";
 import { useLang } from "@/src/components/lang-context";
 import {
   createClient, updateClient, deleteClient,
@@ -28,7 +28,7 @@ type Client = {
 
 type ApartmentOpt = { id: string; name: string; clientId: string | null; client: { name: string } | null };
 
-type Props = { initialClients: Client[]; apartments: ApartmentOpt[] };
+type Props = { initialClients: Client[]; apartments: ApartmentOpt[]; openClientId?: string };
 
 const EMPTY: ClientFormData = {
   type: "PRIVATE", name: "", vatNumber: "", taxCode: "", sdiCode: "", pec: "",
@@ -40,7 +40,7 @@ function initials(name: string) {
   return name.split(" ").filter(Boolean).map((p) => p[0]).join("").toUpperCase().slice(0, 2) || "?";
 }
 
-export default function ClientsPanel({ initialClients, apartments }: Props) {
+export default function ClientsPanel({ initialClients, apartments, openClientId }: Props) {
   const { t } = useLang();
   const [clients, setClients] = useState<Client[]>(initialClients);
   const [query, setQuery] = useState("");
@@ -49,6 +49,14 @@ export default function ClientsPanel({ initialClients, apartments }: Props) {
   const [form, setForm] = useState<ClientFormData>(EMPTY);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  // Apre automaticamente il cliente arrivando da ?open=<id> (link dalla scheda appartamento).
+  useEffect(() => {
+    if (!openClientId) return;
+    const target = initialClients.find((c) => c.id === openClientId);
+    if (target) openEdit(target);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openClientId]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

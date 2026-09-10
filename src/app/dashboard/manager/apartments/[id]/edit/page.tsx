@@ -50,6 +50,7 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
       apartmentAttachments: {
         orderBy: { createdAt: "desc" },
       },
+      client: { select: { id: true, name: true, type: true } },
     },
   });
 
@@ -73,6 +74,35 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
             <p className="text-gray-500 mt-1">{tr.aeEditSub} {apartment.name}</p>
           </div>
         </div>
+
+        {/* Cliente collegato */}
+        {apartment.client ? (
+          <Link
+            href={`/dashboard/manager/clienti?open=${apartment.client.id}`}
+            className="flex items-center gap-3 bg-white rounded-2xl border border-slate-200 px-4 py-3 hover:border-violet-300 hover:shadow-sm transition-colors"
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black flex-shrink-0 ${apartment.client.type === "COMPANY" ? "bg-gradient-to-br from-violet-600 to-fuchsia-500" : "bg-gradient-to-br from-sky-500 to-cyan-400"}`}>
+              {apartment.client.name.split(" ").filter(Boolean).map((p) => p[0]).join("").toUpperCase().slice(0, 2) || "?"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{tr.aptClient}</p>
+              <p className="font-bold text-slate-900 text-sm truncate">{apartment.client.name}</p>
+            </div>
+            <span className="text-violet-400 text-lg">›</span>
+          </Link>
+        ) : (
+          <Link
+            href="/dashboard/manager/clienti"
+            className="flex items-center gap-3 bg-white rounded-2xl border border-dashed border-slate-200 px-4 py-3 text-slate-400 hover:border-violet-300 hover:text-violet-600 transition-colors"
+          >
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg flex-shrink-0">🧾</div>
+            <div className="flex-1">
+              <p className="text-[10px] font-black uppercase tracking-widest">{tr.aptClient}</p>
+              <p className="text-sm font-semibold">{tr.aptNoClient} — {tr.aptAssignClient}</p>
+            </div>
+            <span className="text-lg">›</span>
+          </Link>
+        )}
 
         {/* Allegati */}
         <ApartmentAttachmentsPanel

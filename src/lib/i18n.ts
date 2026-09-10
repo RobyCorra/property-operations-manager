@@ -548,6 +548,9 @@ export const translations = {
     clSave: "Salva cliente",
     clNameRequired: "Il nome è obbligatorio",
     clDeleteConfirm: "Eliminare questo cliente? Gli appartamenti collegati resteranno senza cliente.",
+    aptClient: "Cliente",
+    aptNoClient: "Nessun cliente collegato",
+    aptAssignClient: "Collega un cliente",
 
     anPcTitle: "Prodotti & Costi",
     anPcStockTotal: "Valore scorte totale",
@@ -1471,6 +1474,9 @@ export const translations = {
     clSave: "Save client",
     clNameRequired: "Name is required",
     clDeleteConfirm: "Delete this client? Linked apartments will be left without a client.",
+    aptClient: "Client",
+    aptNoClient: "No client linked",
+    aptAssignClient: "Link a client",
 
     anPcTitle: "Products & Costs",
     anPcStockTotal: "Total stock value",
@@ -2394,6 +2400,9 @@ export const translations = {
     clSave: "Guardar cliente",
     clNameRequired: "El nombre es obligatorio",
     clDeleteConfirm: "¿Eliminar este cliente? Los apartamentos vinculados quedarán sin cliente.",
+    aptClient: "Cliente",
+    aptNoClient: "Sin cliente vinculado",
+    aptAssignClient: "Vincular un cliente",
 
     anPcTitle: "Productos y costes",
     anPcStockTotal: "Valor stock total",
