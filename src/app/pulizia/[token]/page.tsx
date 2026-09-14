@@ -81,6 +81,12 @@ export default async function PublicCleaningPage({
   const isWaiting   = task.status === "AWAITING_REVIEW";
   const isDone      = task.status === "COMPLETED" || task.status === "APPROVED";
 
+  // Correzioni richieste dal supervisor (pulizia rifiutata → IN_PROGRESS con
+  // correctionProgress valorizzato). Passate alla view per il flusso di rifoto.
+  const corrections = Array.isArray(task.correctionProgress) && task.correctionProgress.length > 0
+    ? (task.correctionProgress as { id: string; label: string; note: string; requiresPhoto: boolean; completed: boolean; photoUrl: string | null }[])
+    : [];
+
   return (
     <PublicCleaningView
       taskId={task.id}
@@ -94,6 +100,7 @@ export default async function PublicCleaningPage({
       canComplete={canComplete}
       isWaiting={isWaiting}
       isDone={isDone}
+      corrections={corrections}
       towels={towels}
       bathMats={bathMats}
       nextGuestCount={nextGuests > 0 ? nextGuests : null}

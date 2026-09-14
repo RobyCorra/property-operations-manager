@@ -5,6 +5,7 @@ import LangGate from "@/src/components/lang-gate";
 import LangSwitchPill from "@/src/components/lang-switch-pill";
 import { useLang } from "@/src/components/lang-context";
 import ChecklistInteractive from "@/src/components/checklist-interactive";
+import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
 import PhotoQueueUploader from "@/src/components/photo-queue-uploader";
 import PublicStatusButton from "@/src/components/public-status-button";
 import PublicStatusPoller from "@/src/components/public-status-poller";
@@ -46,6 +47,7 @@ interface Props {
   canComplete: boolean;
   isWaiting: boolean;
   isDone: boolean;
+  corrections?: CorrectionItem[];
   // Biancheria & asciugamani (dalla prenotazione in arrivo)
   towels?: number | null;
   bathMats?: number | null;
@@ -112,6 +114,7 @@ function CleaningContent({
   canComplete,
   isWaiting,
   isDone,
+  corrections,
   towels,
   bathMats,
   nextGuestCount,
@@ -124,6 +127,7 @@ function CleaningContent({
 }: Props) {
   const { t, lang } = useLang();
   const { translatedNote, translating } = useTranslatedNote(taskId, notes, lang);
+  const hasCorrections = (corrections?.length ?? 0) > 0;
 
   return (
     <div className="min-h-screen bg-slate-100 font-sans">
@@ -207,8 +211,21 @@ function CleaningContent({
           </div>
         )}
 
-        {/* Checklist (solo IN_PROGRESS) */}
-        {canComplete && checklistItems.length > 0 && (
+        {/* Correzioni richieste dal supervisor (pulizia rifiutata) — hanno la
+            precedenza sulla checklist normale, così il cleaner vede subito cosa
+            rifare e può ricaricare le foto mancanti. */}
+        {canComplete && hasCorrections && (
+          <>
+            <CleaningCorrectionPanel
+              cleaningTaskId={taskId}
+              initialItems={corrections!}
+              onResolved={() => { try { window.location.reload(); } catch { /* noop */ } }}
+            />
+          </>
+        )}
+
+        {/* Checklist (solo IN_PROGRESS, se non ci sono correzioni da fare) */}
+        {canComplete && !hasCorrections && checklistItems.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
               <p className="font-semibold text-slate-800 text-sm">{t.checklistTitle}</p>
