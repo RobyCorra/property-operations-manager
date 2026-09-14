@@ -126,13 +126,52 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
   return (
     <div className="space-y-4 w-full">
 
-      {/* ── CORREZIONI RICHIESTE ───────────────────────────── */}
+      {/* ── CORREZIONI RICHIESTE (cleaner deve ancora rifarle) ─────────────── */}
       {status === "IN_PROGRESS" && hasCorrections && (
         <CleaningCorrectionPanel
           cleaningTaskId={task.id}
           initialItems={correctionItems}
           onResolved={() => setStatus("AWAITING_REVIEW")}
         />
+      )}
+
+      {/* ── CORREZIONI RISOLTE (sola lettura: il cleaner ha rifatto e reinviato) ── */}
+      {status !== "IN_PROGRESS" && hasCorrections && (
+        <div className="rounded-2xl border-2 border-violet-200 bg-violet-50/50 overflow-hidden">
+          <div className="bg-violet-600 px-5 py-3">
+            <p className="text-[11px] font-black uppercase tracking-widest text-white">{t.cdvCorrTitle}</p>
+          </div>
+          <div className="p-4 space-y-3">
+            {correctionItems.map((c, idx) => {
+              const done = c.completed && (!c.requiresPhoto || !!c.photoUrl);
+              return (
+                <div key={c.id} className={`rounded-xl border bg-white p-3 ${done ? "border-emerald-200" : "border-amber-200"}`}>
+                  <div className="flex items-start gap-2.5">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-100 text-[9px] font-black text-violet-700 mt-0.5">{idx + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-900">{c.label}</p>
+                      {c.note && <p className="text-xs text-slate-500 mt-0.5">{c.note}</p>}
+                    </div>
+                    <span className={`shrink-0 text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full ${done ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}>
+                      {done ? t.cdvCorrDone : t.cdvCorrPending}
+                    </span>
+                  </div>
+                  {c.requiresPhoto && (
+                    <div className="mt-2 pl-7">
+                      {c.photoUrl ? (
+                        <a href={c.photoUrl} target="_blank" rel="noreferrer" className="inline-block">
+                          <img src={c.photoUrl} alt={c.label} className="w-24 h-24 object-cover rounded-lg border border-slate-200 hover:scale-105 transition-transform" />
+                        </a>
+                      ) : (
+                        <span className="text-[11px] text-amber-600 font-semibold">{t.cdvCorrNoPhoto}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {/* Main card */}
