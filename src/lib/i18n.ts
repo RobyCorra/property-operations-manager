@@ -65,6 +65,10 @@ export const translations = {
     // Completion screen
     allDoneTitle: "Checklist completata!",
     allDoneCount: (done: number, tot: number) => `${done} / ${tot} punti verificati`,
+    lastStepTitle: "Ultimo passo: invia",
+    lastStepSub: "La pulizia NON è ancora inviata. Premi il pulsante qui sotto per inviarla.",
+    sentTitle: "Pulizia inviata!",
+    sentSub: "Supervisor e Manager sono stati avvisati.",
     photosAttached: (n: number) => `📸 ${n} foto allegate`,
     completeBtn: "Conferma fine pulizia e invia",
     detailsChat: "💬 Dettagli & Chat",
@@ -92,6 +96,7 @@ export const translations = {
     photoReadySend: "📸 Pronta — verrà inviata in background",
     completing: "Completamento...",
     notifyHint: "Supervisor e Manager riceveranno una notifica immediata.",
+    sendPhotosBg: "Puoi inviare: le foto rimaste continuano a caricarsi da sole.",
 
     // Cleaner dashboard
     dashGreeting: (name: string) => `Ciao, ${name}`,
@@ -993,6 +998,10 @@ export const translations = {
 
     allDoneTitle: "Checklist completed!",
     allDoneCount: (done: number, tot: number) => `${done} / ${tot} items verified`,
+    lastStepTitle: "Last step: send",
+    lastStepSub: "The cleaning is NOT sent yet. Press the button below to send it.",
+    sentTitle: "Cleaning sent!",
+    sentSub: "Supervisor and Manager have been notified.",
     photosAttached: (n: number) => `📸 ${n} photo${n === 1 ? "" : "s"} attached`,
     completeBtn: "Confirm and send cleaning",
     detailsChat: "💬 Details & Chat",
@@ -1020,6 +1029,7 @@ export const translations = {
     photoReadySend: "📸 Ready — will be sent in the background",
     completing: "Submitting...",
     notifyHint: "Supervisor and Manager will receive an immediate notification.",
+    sendPhotosBg: "You can send: remaining photos keep uploading on their own.",
 
     // Cleaner dashboard
     dashGreeting: (name: string) => `Hi, ${name}`,
@@ -1921,6 +1931,10 @@ export const translations = {
 
     allDoneTitle: "¡Lista completada!",
     allDoneCount: (done: number, tot: number) => `${done} / ${tot} puntos verificados`,
+    lastStepTitle: "Último paso: enviar",
+    lastStepSub: "La limpieza AÚN no se ha enviado. Pulsa el botón de abajo para enviarla.",
+    sentTitle: "¡Limpieza enviada!",
+    sentSub: "El supervisor y el manager han sido avisados.",
     photosAttached: (n: number) => `📸 ${n} foto${n === 1 ? "" : "s"} adjuntas`,
     completeBtn: "Confirmar y enviar limpieza",
     detailsChat: "💬 Detalles y Chat",
@@ -1948,6 +1962,7 @@ export const translations = {
     photoReadySend: "📸 Lista — se enviará en segundo plano",
     completing: "Enviando...",
     notifyHint: "El supervisor y el manager recibirán una notificación inmediata.",
+    sendPhotosBg: "Puedes enviar: las fotos restantes se siguen subiendo solas.",
 
     // Cleaner dashboard
     dashGreeting: (name: string) => `Hola, ${name}`,

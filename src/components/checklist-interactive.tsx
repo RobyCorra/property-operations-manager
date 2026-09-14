@@ -93,6 +93,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const [queuedSince, setQueuedSince]   = useState<number | null>(null);
   const [slowNetwork, setSlowNetwork]   = useState(false);
   const [sendBlocked, setSendBlocked]   = useState(0);
+  const [taskSent, setTaskSent]         = useState(false); // FIX 4: 🎉 solo dopo l'invio riuscito
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   // ── Coda foto pendenti ─────────────────────────────────────────────────────
@@ -140,9 +141,10 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       );
       const blobUrl = result.url;
 
-      // Aggiorna items con l'URL reale
+      // Aggiorna items con l'URL reale e azzera l'eventuale flag "in attesa"
+      // (foto marcata photoPending al completamento e poi arrivata).
       const updatedItems = itemsRef.current.map((item) =>
-        item.id === itemId ? { ...item, photoUrl: blobUrl } : item
+        item.id === itemId ? { ...item, photoUrl: blobUrl, photoPending: false } : item
       );
       setItems(updatedItems);
       await updateTaskChecklist(taskId, updatedItems); // se fallisce, il catch esterno mantiene la foto in coda
@@ -398,20 +400,22 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
   // ── Completamento task ────────────────────────────────────────────────────
   const handleComplete = async () => {
-    // Se ci sono ancora foto in coda, tenta upload forzato prima di completare
+    setIsCompletingTask(true);
+
+    // FIX 3 — La pulizia si può SEMPRE chiudere.
+    // Se ci sono foto ancora in coda, tenta di farle salire per pochi secondi,
+    // ma NON bloccare: se restano, si completa lo stesso e partono da sole in
+    // background (la coda non viene svuotata). Il blocco resta SOLO per le foto
+    // obbligatorie mai scattate (controllo più sotto).
     if (pendingRef.current.size > 0) {
       const ids = Array.from(pendingRef.current.keys());
-      setIsCompletingTask(true);
-      await Promise.allSettled(ids.map((id) => uploadOne(id)));
-      // Se dopo il tentativo ci sono ancora pending, spiega e offri l'uscita
-      if (pendingRef.current.size > 0) {
-        setSendBlocked(pendingRef.current.size);
-        setIsCompletingTask(false);
-        return;
-      }
+      const tryUploads = Promise.allSettled(ids.map((id) => uploadOne(id)));
+      const timeout = new Promise((r) => setTimeout(r, 4000));
+      await Promise.race([tryUploads, timeout]);
     }
 
-    // Verifica che tutte le foto obbligatorie siano salvate nel DB
+    // Blocca SOLO se manca una foto obbligatoria mai scattata (non le foto già
+    // fatte e ancora in caricamento, escluse da photoPending/coda).
     const missingPhotos = itemsRef.current.filter(
       (i) =>
         i.photoRequired &&
@@ -427,11 +431,20 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       return;
     }
 
-    setIsCompletingTask(true);
+    // Marca come "in caricamento" (photoPending) le foto ancora in coda, così il
+    // manager sa che arriveranno; poi procede comunque.
+    const stuck = new Set(pendingRef.current.keys());
+    const updated = stuck.size > 0
+      ? itemsRef.current.map((i) => (stuck.has(i.id) ? { ...i, photoPending: true } : i))
+      : itemsRef.current;
+    if (stuck.size > 0) setItems(updated);
+
     try {
       // La coda NON viene svuotata: eventuali foto rimaste partono da sole
       // appena torna il segnale, anche a pulizia già inviata o approvata.
+      if (stuck.size > 0) await updateTaskChecklist(taskId, updated);
       await updateCleaningStatus(taskId, "AWAITING_REVIEW");
+      setTaskSent(true);
       hapticSuccess();
     } catch (err: unknown) {
       hapticError();
@@ -455,6 +468,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     try {
       await updateTaskChecklist(taskId, updated);
       await updateCleaningStatus(taskId, "AWAITING_REVIEW");
+      setTaskSent(true);
       hapticSuccess();
     } catch (err: unknown) {
       hapticError();
@@ -478,6 +492,17 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     .filter((i) => !i.completed && i.phase !== "entry");
   const pendingCount      = pendingPhotos.size;
   const uploadingCount    = uploadingIds.size;
+
+  // ── Schermata "inviata" (FIX 4: i festeggiamenti solo DOPO l'invio) ──────────
+  if (taskSent) {
+    return (
+      <div className="text-center py-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="text-6xl mb-4">🎉</div>
+        <h3 className="text-xl font-bold text-slate-900 mb-1">{t.sentTitle}</h3>
+        <p className="text-sm text-slate-500">{t.sentSub}</p>
+      </div>
+    );
+  }
 
   // ── Schermata completamento ───────────────────────────────────────────────
   if (allDone) {
@@ -541,11 +566,14 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
     return (
       <div className="text-center py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="text-6xl mb-4">🎉</div>
-        <h3 className="text-xl font-bold text-slate-900 mb-1">{t.allDoneTitle}</h3>
-        <p className="text-sm text-slate-500 mb-6">
-          {t.allDoneCount(completedCount, items.length)}
-        </p>
+        <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+          <CheckCircle2 size={30} className="text-green-600" />
+        </div>
+        <h3 className="text-xl font-bold text-slate-900 mb-1">{t.lastStepTitle}</h3>
+        <p className="text-[13px] text-slate-500 mb-1">{t.allDoneCount(completedCount, items.length)}</p>
+        <div className="mx-auto max-w-xs mb-6 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2">
+          <p className="text-[12px] font-semibold text-amber-800 leading-snug">{t.lastStepSub}</p>
+        </div>
 
         {/* Banner foto in attesa di upload */}
         {showUploadBanner && (
@@ -643,20 +671,17 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           </div>
         )}
 
-        {/* Bottone completa — disabilitato se foto ancora in caricamento */}
+        {/* Bottone completa — grande e sticky (FIX 4). Sempre attivo: anche con
+            foto in coda la pulizia si chiude e le foto partono da sole (FIX 3). */}
         <button
           type="button"
           onClick={handleComplete}
-          disabled={isCompletingTask || showUploadBanner}
-          className="w-full py-4 rounded-2xl text-base font-bold bg-green-600 text-white hover:bg-green-700 transition-all shadow-xl shadow-green-600/25 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isCompletingTask}
+          className="sticky bottom-3 z-10 w-full py-5 rounded-2xl text-lg font-black bg-green-600 text-white hover:bg-green-700 transition-all shadow-xl shadow-green-600/30 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isCompletingTask ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 size={16} className="animate-spin" /> {t.completing}
-            </span>
-          ) : showUploadBanner ? (
-            <span className="flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin" /> Caricamento foto...
             </span>
           ) : (
             <span className="flex items-center justify-center gap-2">
@@ -664,7 +689,10 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
             </span>
           )}
         </button>
-        <p className="text-[10px] text-slate-400 mt-3">{t.notifyHint}</p>
+        {showUploadBanner && (
+          <p className="text-[11px] text-blue-600 mt-2 font-medium">{t.sendPhotosBg}</p>
+        )}
+        <p className="text-[10px] text-slate-400 mt-2">{t.notifyHint}</p>
       </div>
     );
   }
