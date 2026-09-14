@@ -132,13 +132,18 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
     setUploadingIds((prev) => new Set(prev).add(itemId));
 
+    // Solution A — timeout sull'upload: su rete morente non resta appeso
+    // all'infinito; scatta l'abort, la foto torna in coda e riparte al giro dopo.
+    const controller = new AbortController();
+    const uploadTimeout = setTimeout(() => controller.abort(), 15000);
     try {
       const file = new File([pending.blob], pending.filename, { type: pending.blob.type });
       const result = await upload(
         `uploads/cleaning/${taskId}/checklist/${itemId}/${Date.now()}-${pending.filename}`,
         file,
-        { access: "public", handleUploadUrl: "/api/blob-upload" },
+        { access: "public", handleUploadUrl: "/api/blob-upload", abortSignal: controller.signal },
       );
+      clearTimeout(uploadTimeout);
       const blobUrl = result.url;
 
       // Aggiorna items con l'URL reale e azzera l'eventuale flag "in attesa"
@@ -160,9 +165,10 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
       setFailedRounds(0);
       setSendBlocked(0);
     } catch {
-      // Lascia in coda, riprova al prossimo giro
+      // Timeout/abort o errore rete: lascia in coda, riprova al prossimo giro
       setFailedRounds((n) => n + 1);
     } finally {
+      clearTimeout(uploadTimeout);
       setUploadingIds((prev) => {
         const next = new Set(prev);
         next.delete(itemId);
@@ -342,8 +348,8 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
         // Avvia upload subito in background (non aspettiamo)
         uploadOne(currentItem.id);
-      } catch {
-        setUploadError("Errore durante la preparazione della foto. Riprova.");
+      } catch (err) {
+        setUploadError((err as Error)?.message || "Errore durante la preparazione della foto. Riprova.");
         setIsCompressing(false);
         setIsSaving(false);
         return;
@@ -366,18 +372,15 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
 
     setItems(updatedItems);
 
-    if (isOnline) {
-      try {
-        await updateTaskChecklist(taskId, updatedItems);
-        await clearChecklistProgress(taskId); // rimuovi eventuale coda offline
-      } catch {
-        // best-effort: salva offline come fallback
-        await saveChecklistProgress(taskId, updatedItems);
-      }
-    } else {
-      // Offline: salva in IndexedDB, sarà sincronizzato al ritorno
-      await saveChecklistProgress(taskId, updatedItems);
-    }
+    // FIX 1 — L'avanzamento non aspetta MAI la rete.
+    // Salva sempre in locale (IndexedDB, istantaneo), poi sincronizza col
+    // server in background SENZA await: la spunta è immediata anche con rete
+    // debole/finta-online. Se il server fallisce, resta in coda locale e viene
+    // sincronizzato automaticamente al ritorno online.
+    await saveChecklistProgress(taskId, updatedItems);
+    updateTaskChecklist(taskId, updatedItems)
+      .then(() => clearChecklistProgress(taskId))
+      .catch(() => { /* resta in coda locale, sync al ritorno online */ });
 
     const completedTranslatedLabel =
       lang && currentItem.labelTranslations?.[lang]
