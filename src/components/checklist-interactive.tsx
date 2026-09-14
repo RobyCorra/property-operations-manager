@@ -16,18 +16,15 @@ import {
   saveChecklistProgress,
   clearChecklistProgress,
 } from "@/src/lib/checklist-queue-db";
-import { Wifi, WifiOff } from "lucide-react";
 import {
   Camera,
-  ChevronRight,
   ChevronLeft,
-  SkipForward,
   CheckCircle2,
   Loader2,
   Send,
   AlertCircle,
   Trash2,
-  Upload,
+  WifiOff,
 } from "lucide-react";
 import { useLang } from "@/src/components/lang-context";
 import { useToast } from "@/src/components/toast-provider";
@@ -72,21 +69,14 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   const isOnline = useOnlineStatus();
   const [items, setItems] = useState<ChecklistItem[]>(initialItems);
 
-  const firstUnprocessed = initialItems.findIndex((i) => !i.completed && !i.skipped);
-  const [currentIndex, setCurrentIndex] = useState(
-    firstUnprocessed === -1 ? initialItems.length : firstUnprocessed
-  );
+  // Modalità lista: nessun indice corrente. Fotocamera per singolo punto +
+  // schermata di revisione finale.
+  const [cameraItemId, setCameraItemId] = useState<string | null>(null);
+  const [reviewOpen, setReviewOpen]     = useState(false);
 
-  const [photoPreview, setPhotoPreview]   = useState<string | null>(null);
-  const [photoFile, setPhotoFile]         = useState<File | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
-  const [isSaving, setIsSaving]           = useState(false);
   const [isCompletingTask, setIsCompletingTask] = useState(false);
   const [uploadError, setUploadError]     = useState<string | null>(null);
-  const [justCompleted, setJustCompleted] = useState<string | null>(null);
-  const [photoRequiredError, setPhotoRequiredError] = useState(false);
-  // Risposta selezionata sul questionario d'ingresso (prima di confermare il passo)
-  const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
   // Diagnostica connessione: quanti giri di invio sono falliti di fila e da
   // quanto la coda non si svuota. Serve a dare consigli progressivi.
   const [failedRounds, setFailedRounds] = useState(0);
@@ -236,169 +226,85 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     return () => clearTimeout(t);
   }, [isOnline, taskId, uploadOne]);
 
-  // ── Foto helpers ──────────────────────────────────────────────────────────
-  const clearPhoto = () => {
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    if (photoInputRef.current) photoInputRef.current.value = "";
-  };
-
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
-    setUploadError(null);
-  };
-
-  /** Restituisce l'URL anteprima per un item: prima reale (blob Vercel), poi locale (pending). */
-  function getPhotoUrl(item: ChecklistItem): string | null {
-    return item.photoUrl ?? pendingRef.current.get(item.id)?.localUrl ?? null;
-  }
-
-  function isPending(itemId: string): boolean {
-    return pendingRef.current.has(itemId) && !uploadingIdsRef.current.has(itemId);
-  }
-
-  function isUploading(itemId: string): boolean {
-    return uploadingIdsRef.current.has(itemId);
-  }
-
-  // ── Navigazione ───────────────────────────────────────────────────────────
-  const goBack = () => {
-    if (currentIndex <= 0) return;
-    clearPhoto();
-    setJustCompleted(null);
-    setCurrentIndex((prev) => prev - 1);
-  };
-
-  const goForward = () => {
-    clearPhoto();
-    setJustCompleted(null);
-    setCurrentIndex((prev) => prev + 1);
-  };
-
-  const goToItem = (idx: number) => {
-    clearPhoto();
-    setPendingAnswer(null);
-    setJustCompleted(null);
-    setCurrentIndex(idx);
-  };
-
-  const resetItem = async (idx: number) => {
-    const itemId = items[idx].id;
-    const updatedItems = items.map((item, i) =>
-      i === idx ? { ...item, completed: false, skipped: false, photoUrl: null } : item
-    );
+  // Persistenza spunte (FIX 1: locale subito, server in background senza await).
+  const persist = (updatedItems: ChecklistItem[]) => {
     setItems(updatedItems);
-    // Rimuovi eventuale foto pending per questo item
+    saveChecklistProgress(taskId, updatedItems).catch(() => {});
+    updateTaskChecklist(taskId, updatedItems)
+      .then(() => clearChecklistProgress(taskId))
+      .catch(() => { /* resta in coda locale, sync al ritorno online */ });
+  };
+
+  // Spunta / de-spunta un punto. Non blocca sulla foto: la verifica è all'invio.
+  const toggleItem = (item: ChecklistItem) => {
+    hapticLight();
+    const next = !item.completed;
+    const updated = itemsRef.current.map((i) =>
+      i.id === item.id ? { ...i, completed: next, skipped: false } : i
+    );
+    persist(updated);
+  };
+
+  // Risposta Sì/No della domanda d'ingresso.
+  const setEntryAnswer = (item: ChecklistItem, answer: "si" | "no") => {
+    hapticLight();
+    const updated = itemsRef.current.map((i) =>
+      i.id === item.id ? { ...i, completed: true, skipped: false, answer } : i
+    );
+    persist(updated);
+  };
+
+  // Apre la fotocamera per uno specifico punto.
+  const openCamera = (itemId: string) => {
+    setCameraItemId(itemId);
+    setUploadError(null);
+    if (photoInputRef.current) {
+      photoInputRef.current.value = "";
+      photoInputRef.current.click();
+    }
+  };
+
+  // Comprime + accoda + upload in background, e segna il punto completato.
+  const attachPhoto = async (itemId: string, file: File) => {
+    setUploadError(null);
+    setIsCompressing(true);
+    try {
+      const compressed = await compressImage(file);
+      const localUrl = URL.createObjectURL(compressed);
+      setPendingPhotos((prev) => new Map(prev).set(itemId, { localUrl, blob: compressed, filename: compressed.name }));
+      await saveToQueue(taskId, itemId, compressed, compressed.name);
+      uploadOne(itemId);
+    } catch (err) {
+      setUploadError((err as Error)?.message || "Errore durante la preparazione della foto. Riprova.");
+      setIsCompressing(false);
+      return;
+    }
+    setIsCompressing(false);
+    hapticLight();
+    // Allegare la foto conferma il punto come fatto.
+    const updated = itemsRef.current.map((i) =>
+      i.id === itemId ? { ...i, completed: true, skipped: false } : i
+    );
+    persist(updated);
+  };
+
+  const onPhotoSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const itemId = cameraItemId;
+    if (file && itemId) await attachPhoto(itemId, file);
+  };
+
+  // Rifai un punto: togli spunta e foto (dalla coda e dall'item).
+  const resetItem = async (itemId: string) => {
+    const updated = itemsRef.current.map((i) =>
+      i.id === itemId ? { ...i, completed: false, skipped: false, photoUrl: null, photoPending: false } : i
+    );
     if (pendingRef.current.has(itemId)) {
       URL.revokeObjectURL(pendingRef.current.get(itemId)!.localUrl);
       setPendingPhotos((prev) => { const next = new Map(prev); next.delete(itemId); return next; });
       await deleteFromQueue(taskId, itemId);
     }
-    try {
-      await updateTaskChecklist(taskId, updatedItems);
-    } catch {
-      // best-effort
-    }
-  };
-
-  // ── Avanza passo ─────────────────────────────────────────────────────────
-  const advance = async (completed: boolean, answer?: string | null) => {
-    const currentItem = items[currentIndex];
-
-    // Foto obbligatoria: serve o photoFile nuovo, o foto già caricata, o già in coda
-    const hasPhoto =
-      !!photoFile ||
-      !!currentItem.photoUrl ||
-      pendingRef.current.has(currentItem.id);
-
-    const photoIsMandatory =
-      currentItem.photoRequired &&
-      (currentItem.answerType !== "yesno" || answer === "si");
-
-    if (completed && photoIsMandatory && !hasPhoto) {
-      setPhotoRequiredError(true);
-      setTimeout(() => setPhotoRequiredError(false), 2500);
-      hapticError();
-      return;
-    }
-    hapticLight();
-
-    setIsSaving(true);
-    setUploadError(null);
-
-    // Se c'è una nuova foto → comprimi e metti in coda (NON upload immediato)
-    if (completed && photoFile) {
-      setIsCompressing(true);
-      try {
-        const compressed = await compressImage(photoFile);
-        const localUrl   = URL.createObjectURL(compressed);
-
-        // Salva in memoria
-        setPendingPhotos((prev) => new Map(prev).set(currentItem.id, {
-          localUrl,
-          blob:     compressed,
-          filename: compressed.name,
-        }));
-
-        // Salva in IndexedDB (persistenza cross-refresh)
-        await saveToQueue(taskId, currentItem.id, compressed, compressed.name);
-
-        // Avvia upload subito in background (non aspettiamo)
-        uploadOne(currentItem.id);
-      } catch (err) {
-        setUploadError((err as Error)?.message || "Errore durante la preparazione della foto. Riprova.");
-        setIsCompressing(false);
-        setIsSaving(false);
-        return;
-      }
-      setIsCompressing(false);
-    }
-
-    // Aggiorna item: completed, photoUrl rimane null finché l'upload non termina
-    const updatedItems = items.map((item, idx) =>
-      idx === currentIndex
-        ? {
-            ...item,
-            completed,
-            skipped: !completed,
-            photoUrl: item.photoUrl ?? null,
-            answer: answer ?? item.answer ?? null,
-          }
-        : item
-    );
-
-    setItems(updatedItems);
-
-    // FIX 1 — L'avanzamento non aspetta MAI la rete.
-    // Salva sempre in locale (IndexedDB, istantaneo), poi sincronizza col
-    // server in background SENZA await: la spunta è immediata anche con rete
-    // debole/finta-online. Se il server fallisce, resta in coda locale e viene
-    // sincronizzato automaticamente al ritorno online.
-    await saveChecklistProgress(taskId, updatedItems);
-    updateTaskChecklist(taskId, updatedItems)
-      .then(() => clearChecklistProgress(taskId))
-      .catch(() => { /* resta in coda locale, sync al ritorno online */ });
-
-    const completedTranslatedLabel =
-      lang && currentItem.labelTranslations?.[lang]
-        ? currentItem.labelTranslations[lang]
-        : currentItem.label;
-    const completedItemLabel =
-      currentItem.type === "dynamic"
-        ? `${completedTranslatedLabel}: ${currentItem.value ?? "N/A"}`
-        : completedTranslatedLabel;
-    setJustCompleted(completed ? completedItemLabel : null);
-    clearPhoto();
-    setPendingAnswer(null);
-
-    const nextIdx = updatedItems.findIndex(
-      (item, idx) => idx > currentIndex && !item.completed && !item.skipped
-    );
-    setCurrentIndex(nextIdx === -1 ? updatedItems.length : nextIdx);
-    setIsSaving(false);
+    persist(updated);
   };
 
   // ── Completamento task ────────────────────────────────────────────────────
@@ -485,16 +391,36 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
   };
 
   // ── Valori derivati ──────────────────────────────────────────────────────
-  const currentItem       = items[currentIndex];
-  const completedCount    = items.filter((i) => i.completed).length;
-  const allDone           = currentIndex >= items.length;
-  // Il questionario d'ingresso è facoltativo: non blocca la chiusura dell'intervento.
-  const allItemsCompleted = items.every((i) => i.completed || i.phase === "entry");
-  const incompleteItems   = items
-    .map((item, idx) => ({ ...item, idx }))
-    .filter((i) => !i.completed && i.phase !== "entry");
-  const pendingCount      = pendingPhotos.size;
-  const uploadingCount    = uploadingIds.size;
+  const entryItems    = items.filter((i) => i.phase === "entry");
+  const cleaningItems = items.filter((i) => i.phase !== "entry");
+  const completedCleaning = cleaningItems.filter((i) => i.completed).length;
+  const totalCleaning = cleaningItems.length;
+  const progress = totalCleaning > 0 ? Math.round((completedCleaning / totalCleaning) * 100) : 0;
+  const completedCount = items.filter((i) => i.completed).length;
+  const pendingCount   = pendingPhotos.size;
+  const uploadingCount = uploadingIds.size;
+
+  // Helper basati sullo STATO (non sui ref) — sicuri da usare in render.
+  const photoUrlOf = (i: ChecklistItem): string | null => i.photoUrl ?? pendingPhotos.get(i.id)?.localUrl ?? null;
+  const isPend = (id: string) => pendingPhotos.has(id) && !uploadingIds.has(id);
+  const isUp   = (id: string) => uploadingIds.has(id);
+
+  // Foto richiesta "adesso" (per le Sì/No conta solo se la risposta è "Sì").
+  const requiresPhotoNow = (i: ChecklistItem) =>
+    !!i.photoRequired && (i.answerType !== "yesno" || i.answer === "si");
+  // Foto obbligatorie davvero mancanti (le foto in coda non contano: stanno salendo).
+  const missingPhotoItems = items.filter(
+    (i) => requiresPhotoNow(i) && i.completed && !i.photoUrl && !i.photoPending && !pendingPhotos.has(i.id)
+  );
+  const incompleteCleaning = cleaningItems.filter((i) => !i.completed);
+  const canSend = incompleteCleaning.length === 0 && missingPhotoItems.length === 0;
+  const labelOf = (i: ChecklistItem) => {
+    const base = (lang && i.labelTranslations?.[lang]) ? i.labelTranslations[lang] : i.label;
+    return i.type === "dynamic" ? `${base}: ${i.value ?? "N/A"}` : base;
+  };
+  const scrollToItem = (id: string) => {
+    try { document.getElementById(`cl-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }); } catch { /* noop */ }
+  };
 
   // ── Schermata "inviata" (FIX 4: i festeggiamenti solo DOPO l'invio) ──────────
   if (taskSent) {
@@ -507,542 +433,203 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
     );
   }
 
-  // ── Schermata completamento ───────────────────────────────────────────────
-  if (allDone) {
-    const photosWithUrls = items.filter((i) => i.photoUrl || pendingPhotos.has(i.id));
 
-    if (!allItemsCompleted) {
-      return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5 mb-4">
+  // ── Schermata di revisione / invio ─────────────────────────────────────────
+  if (reviewOpen) {
+    return (
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <button
+          type="button"
+          onClick={() => setReviewOpen(false)}
+          className="mb-4 inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-700"
+        >
+          <ChevronLeft size={13} /> {t.back}
+        </button>
+
+        {!canSend ? (
+          <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5">
             <div className="flex items-start gap-3 mb-4">
               <AlertCircle size={20} className="text-amber-500 shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-bold text-amber-800">{t.incompleteTitle}</p>
-                <p className="text-xs text-amber-600 mt-0.5">
-                  {t.incompleteText(incompleteItems.length)}
-                </p>
+                <p className="text-xs text-amber-600 mt-0.5">{t.cklReviewMissingSub}</p>
               </div>
             </div>
             <div className="space-y-2">
-              {incompleteItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between gap-3 rounded-xl bg-white border border-amber-100 px-4 py-3"
-                >
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-slate-800 truncate">
-                      {lang && item.labelTranslations?.[lang]
-                        ? item.labelTranslations[lang]
-                        : item.label}
-                      {item.required && <span className="text-rose-500 ml-1">*</span>}
-                    </p>
-                    <p className="text-[10px] text-amber-500 font-bold mt-0.5">
-                      {item.skipped ? t.skipped : t.notCompleted}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => goToItem(item.idx)}
-                    className="shrink-0 flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white hover:bg-gray-800 active:scale-95 transition-all"
-                  >
-                    {t.resolve} <ChevronRight size={11} />
-                  </button>
+              {incompleteCleaning.map((item) => (
+                <div key={item.id} className="flex items-center justify-between gap-3 rounded-xl bg-white border border-amber-100 px-4 py-3">
+                  <p className="text-xs font-semibold text-slate-800 truncate">☐ {labelOf(item)}</p>
+                  <button type="button" onClick={() => { setReviewOpen(false); setTimeout(() => scrollToItem(item.id), 60); }} className="shrink-0 rounded-full bg-black px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">{t.cklReviewGo}</button>
+                </div>
+              ))}
+              {missingPhotoItems.map((item) => (
+                <div key={`p-${item.id}`} className="flex items-center justify-between gap-3 rounded-xl bg-white border border-rose-100 px-4 py-3">
+                  <p className="text-xs font-semibold text-rose-700 truncate">📷 {labelOf(item)}</p>
+                  <button type="button" onClick={() => { setReviewOpen(false); setTimeout(() => scrollToItem(item.id), 60); }} className="shrink-0 rounded-full bg-black px-4 py-2 text-[10px] font-black uppercase tracking-widest text-white">{t.cklReviewGo}</button>
                 </div>
               ))}
             </div>
+            <button type="button" disabled className="mt-4 w-full py-4 rounded-2xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed">{t.cklReviewFixFirst}</button>
           </div>
-          <button
-            type="button"
-            disabled
-            className="w-full py-4 rounded-2xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed"
-          >
-            {t.completeDisabled}
-          </button>
-          <p className="text-[10px] text-slate-400 mt-2 text-center">{t.completeHint}</p>
-        </div>
-      );
-    }
-
-    // ── Banner foto ancora in caricamento ────────────────────────────────────
-    const showUploadBanner = pendingCount > 0 || uploadingCount > 0;
-
-    return (
-      <div className="text-center py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
-          <CheckCircle2 size={30} className="text-green-600" />
-        </div>
-        <h3 className="text-xl font-bold text-slate-900 mb-1">{t.lastStepTitle}</h3>
-        <p className="text-[13px] text-slate-500 mb-1">{t.allDoneCount(completedCount, items.length)}</p>
-        <div className="mx-auto max-w-xs mb-6 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2">
-          <p className="text-[12px] font-semibold text-amber-800 leading-snug">{t.lastStepSub}</p>
-        </div>
-
-        {/* Banner foto in attesa di upload */}
-        {showUploadBanner && (
-          <div className="mb-5 rounded-2xl bg-blue-50 border border-blue-200 px-4 py-4">
-            <div className="flex items-center gap-3 mb-3">
-              <Loader2 size={16} className="text-blue-500 animate-spin shrink-0" />
-              <p className="text-sm font-bold text-blue-800 text-left">
-                {uploadingCount > 0
-                  ? `📤 Caricamento foto in corso... (${uploadingCount} rimaste)`
-                  : `📸 ${pendingCount} foto da caricare`}
-              </p>
+        ) : (
+          <div className="text-center py-4">
+            <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle2 size={30} className="text-green-600" />
             </div>
-            <p className="text-[11px] text-blue-600 text-left mb-3 leading-relaxed">
-              Le foto vengono inviate in background. Puoi aspettare o
-              tentare subito se hai connessione.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                for (const id of pendingRef.current.keys()) {
-                  uploadOne(id);
-                }
-              }}
-              disabled={uploadingCount > 0}
-              className="flex items-center gap-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-full disabled:opacity-50 hover:bg-blue-700 transition-colors"
-            >
-              <Upload size={12} /> Riprova ora
-            </button>
-          </div>
-        )}
-
-        {/* Invio bloccato: la rete non ha portato le foto */}
-        {sendBlocked > 0 && (
-          <div className="mb-5 rounded-2xl bg-rose-50 border border-rose-200 px-4 py-4 text-left">
-            <div className="flex items-start gap-2.5">
-              <AlertCircle size={18} className="text-rose-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-bold text-rose-800">{t.netBlockedTitle(sendBlocked)}</p>
-                <p className="text-[11px] text-rose-700 leading-relaxed mt-1">{t.netBlockedText}</p>
-              </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-1">{t.lastStepTitle}</h3>
+            <div className="mx-auto max-w-xs mb-5 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2">
+              <p className="text-[12px] font-semibold text-amber-800 leading-snug">{t.lastStepSub}</p>
             </div>
+            {(pendingCount > 0 || uploadingCount > 0) && (
+              <p className="text-[11px] text-blue-600 mb-3 font-medium">{t.sendPhotosBg}</p>
+            )}
             <button
               type="button"
-              onClick={retryAllNow}
-              disabled={uploadingCount > 0}
-              className="mt-3 w-full flex items-center justify-center gap-2 rounded-full bg-rose-600 py-3 text-[10px] font-black uppercase tracking-widest text-white disabled:opacity-50 hover:bg-rose-700 transition-colors"
-            >
-              <Upload size={12} /> {t.netRetryNow}
-            </button>
-            <button
-              type="button"
-              onClick={handleCompleteWithoutPhotos}
+              onClick={handleComplete}
               disabled={isCompletingTask}
-              className="mt-2 w-full rounded-full border border-rose-300 bg-white py-3 text-[10px] font-black uppercase tracking-widest text-rose-700 disabled:opacity-50 hover:bg-rose-50 transition-colors"
+              className="w-full py-5 rounded-2xl text-lg font-black bg-green-600 text-white hover:bg-green-700 active:scale-95 disabled:opacity-50 shadow-xl shadow-green-600/30 transition-all"
             >
-              {t.netSendAnyway}
+              {isCompletingTask
+                ? (<span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> {t.completing}</span>)
+                : (<span className="flex items-center justify-center gap-2"><Send size={18} /> {t.completeBtn}</span>)}
             </button>
+            <p className="text-[10px] text-slate-400 mt-3">{t.notifyHint}</p>
           </div>
         )}
-
-        {/* Miniature foto */}
-        {photosWithUrls.length > 0 && (
-          <div className="mb-6">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-              {t.photosAttached(photosWithUrls.length)}
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {photosWithUrls.map((item) => {
-                const url     = item.photoUrl ?? pendingPhotos.get(item.id)?.localUrl;
-                const pending = isPending(item.id);
-                const loading = isUploading(item.id);
-                return (
-                  <div key={item.id} className="relative">
-                    <a href={url} target="_blank" rel="noreferrer">
-                      <img
-                        src={url}
-                        alt={item.label}
-                        className={`w-16 h-16 object-cover rounded-xl border shadow-sm hover:scale-105 transition-transform ${
-                          pending || loading ? "border-blue-300 opacity-75" : "border-slate-100"
-                        }`}
-                      />
-                    </a>
-                    {(pending || loading) && (
-                      <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-blue-500/20">
-                        {loading
-                          ? <Loader2 size={14} className="text-blue-600 animate-spin" />
-                          : <span className="text-[8px] font-black text-blue-700">⏳</span>
-                        }
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Bottone completa — grande e sticky (FIX 4). Sempre attivo: anche con
-            foto in coda la pulizia si chiude e le foto partono da sole (FIX 3). */}
-        <button
-          type="button"
-          onClick={handleComplete}
-          disabled={isCompletingTask}
-          className="sticky bottom-3 z-10 w-full py-5 rounded-2xl text-lg font-black bg-green-600 text-white hover:bg-green-700 transition-all shadow-xl shadow-green-600/30 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isCompletingTask ? (
-            <span className="flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin" /> {t.completing}
-            </span>
-          ) : (
-            <span className="flex items-center justify-center gap-2">
-              <Send size={18} /> {t.completeBtn}
-            </span>
-          )}
-        </button>
-        {showUploadBanner && (
-          <p className="text-[11px] text-blue-600 mt-2 font-medium">{t.sendPhotosBg}</p>
-        )}
-        <p className="text-[10px] text-slate-400 mt-2">{t.notifyHint}</p>
       </div>
     );
   }
 
-  // ── Vista passo ──────────────────────────────────────────────────────────
-  const progress = Math.round((completedCount / items.length) * 100);
-  const translatedLabel =
-    lang && currentItem.labelTranslations?.[lang]
-      ? currentItem.labelTranslations[lang]
-      : currentItem.label;
-
-  const itemLabel =
-    currentItem.type === "dynamic"
-      ? `${translatedLabel}: ${currentItem.value ?? "N/A"}`
-      : translatedLabel;
-
-  const isEntry   = currentItem.phase === "entry";
-  const isYesNo   = currentItem.answerType === "yesno";
-  // Sul questionario d'ingresso la foto è richiesta solo dopo un "Sì"
-  const showPhotoBox = isEntry
-    ? (!isYesNo || pendingAnswer === "si")
-    : currentItem.photoRequired;
-  const photoIsRequiredNow =
-    currentItem.photoRequired && (!isYesNo || pendingAnswer === "si");
-
-  // ── Item già completato ───────────────────────────────────────────────────
-  if (currentItem.completed) {
-    const photoUrl    = getPhotoUrl(currentItem);
-    const photoIsPend = isPending(currentItem.id);
-    const photoIsLoad = isUploading(currentItem.id);
-
-    return (
-      <div className="animate-in fade-in duration-300">
-
-        {/* ── Banner offline ──────────────────────────────────────────── */}
-        {!isOnline && (
-          <div className="mb-4 flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
-            <WifiOff size={16} className="text-amber-500 shrink-0" />
-            <div>
-              <p className="text-sm font-bold text-amber-800">Sei offline</p>
-              <p className="text-xs text-amber-600">Le spunte vengono salvate localmente e sincronizzate appena torni online.</p>
-            </div>
-          </div>
-        )}
-        {justReconnected && (
-          <div className="mb-4 flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-3">
-            <Wifi size={16} className="text-green-500 shrink-0" />
-            <p className="text-xs text-green-700 font-medium">Connesso — spunte sincronizzate ✓</p>
-          </div>
-        )}
-
-        <div className="mb-5">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              {t.stepOf(currentIndex + 1, items.length)}
-            </span>
-            <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
-          </div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-violet-500 rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="rounded-2xl bg-green-50 border border-green-200 p-4 shadow-sm mb-4">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 size={20} className="text-green-600 shrink-0" />
-            <span className="flex-1 text-base font-bold text-green-800 leading-snug">
-              {itemLabel}
-              {currentItem.answer && (
-                <span className="block text-xs font-bold mt-1 text-green-700">
-                  {currentItem.answer === "si" ? t.entryAnswerYes : t.entryAnswerNo}
-                </span>
-              )}
-            </span>
-            <button
-              type="button"
-              onClick={() => resetItem(currentIndex)}
-              className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center text-red-500 hover:bg-red-200 active:scale-95 transition-all shrink-0"
-              title="Annulla e rifai"
-            >
-              <Trash2 size={15} />
-            </button>
-          </div>
-          {photoUrl && (
-            <div className="mt-3 flex items-center gap-3 pl-8">
-              <div className="relative shrink-0">
-                <a href={photoUrl} target="_blank" rel="noreferrer">
-                  <img
-                    src={photoUrl}
-                    alt="foto"
-                    className={`w-12 h-12 object-cover rounded-xl border shadow-sm hover:scale-105 transition-transform ${
-                      photoIsPend || photoIsLoad ? "border-blue-300 opacity-75" : "border-green-200"
-                    }`}
-                  />
-                </a>
-                {(photoIsPend || photoIsLoad) && (
-                  <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-blue-500/20">
-                    {photoIsLoad
-                      ? <Loader2 size={12} className="text-blue-600 animate-spin" />
-                      : <span className="text-[8px]">⏳</span>}
-                  </div>
-                )}
-              </div>
-              <span className={`text-[10px] font-bold uppercase tracking-wider ${
-                photoIsPend ? "text-blue-500" : photoIsLoad ? "text-blue-400" : "text-green-600"
-              }`}>
-                {photoIsLoad ? "Caricamento..." : photoIsPend ? "In coda" : "Foto allegata"}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={goBack}
-            disabled={currentIndex === 0}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft size={13} />
-            {t.back}
-          </button>
-          <button
-            type="button"
-            onClick={goForward}
-            disabled={currentIndex >= items.length - 1}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            Avanti
-            <ChevronRight size={13} />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Item da fare ──────────────────────────────────────────────────────────
+  // ── Vista LISTA ────────────────────────────────────────────────────────────
   return (
     <div className="animate-in fade-in duration-300">
-      <div className="mb-5">
+      <input ref={photoInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPhotoSelected} />
+
+      {!isOnline && (
+        <div className="mb-3 flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3">
+          <WifiOff size={16} className="text-amber-500 shrink-0" />
+          <p className="text-xs text-amber-700 font-medium">{t.cklOffline}</p>
+        </div>
+      )}
+      {isCompressing && (
+        <div className="mb-3 flex items-center gap-2 rounded-xl bg-blue-50 border border-blue-200 px-4 py-2.5">
+          <Loader2 size={15} className="text-blue-500 animate-spin shrink-0" />
+          <p className="text-xs text-blue-700 font-semibold">{t.cklPreparingPhoto}</p>
+        </div>
+      )}
+      {uploadError && (
+        <p className="mb-3 text-xs text-rose-600 bg-rose-50 px-3 py-2 rounded-lg border border-rose-100">⚠️ {uploadError}</p>
+      )}
+
+      <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-            {t.stepOf(currentIndex + 1, items.length)}
-          </span>
+          <span className="text-[11px] font-bold text-slate-500">{completedCleaning} / {totalCleaning}</span>
           <div className="flex items-center gap-2">
             {pendingCount > 0 && (
               <span className={`text-[9px] font-black flex items-center gap-1 ${slowNetwork ? "text-amber-600" : "text-blue-500"}`}>
-                {uploadingCount > 0
-                  ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} foto</>
-                  : slowNetwork
-                    ? <><WifiOff size={9} /> {t.netSlow(pendingCount)}</>
-                    : <>📸 {pendingCount} in coda</>}
+                {uploadingCount > 0 ? <><Loader2 size={9} className="animate-spin" /> {uploadingCount} foto</> : <>📸 {pendingCount} in coda</>}
               </span>
             )}
             <span className="text-[10px] font-bold text-slate-500">{progress}%</span>
           </div>
         </div>
         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-violet-500 rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
+          <div className="h-full bg-violet-500 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
+        {missingPhotoItems.length > 0 && (
+          <p className="text-[11px] text-rose-500 font-bold mt-1.5">⚠ {t.cklMissingPhotosN(missingPhotoItems.length)}</p>
+        )}
       </div>
 
-      {justCompleted && (
-        <div className="mb-3 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 animate-in fade-in slide-in-from-top-2 duration-300">
-          <CheckCircle2 size={13} />
-          <span className="truncate">{t.prevCompleted(justCompleted!)}</span>
-        </div>
-      )}
-
-      {failedRounds >= 2 && pendingCount > 0 && (
-        <div className="mb-3 rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3">
-          <div className="flex items-start gap-2.5">
-            <WifiOff size={16} className="text-amber-600 shrink-0 mt-0.5" />
-            <div className="text-left">
-              <p className="text-xs font-bold text-amber-800">{t.netStuckTitle}</p>
-              <p className="text-[11px] text-amber-700 leading-relaxed mt-0.5">{t.netStuckText}</p>
-            </div>
+      {entryItems.length > 0 && (
+        <>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 mt-1">{t.entryTitle}</p>
+          <div className="space-y-2 mb-4">
+            {entryItems.map((item) => {
+              const isYesNo = item.answerType === "yesno";
+              const needPhoto = requiresPhotoNow(item);
+              const photoUrl = photoUrlOf(item);
+              return (
+                <div key={item.id} id={`cl-${item.id}`} className="rounded-2xl bg-white border border-slate-100 p-3.5 shadow-sm">
+                  <p className="text-sm font-bold text-slate-800 mb-2.5">{labelOf(item)}</p>
+                  {isYesNo ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <button type="button" onClick={() => setEntryAnswer(item, "si")} className={`rounded-xl border-2 py-2.5 text-sm font-bold transition-all ${item.answer === "si" ? "bg-rose-50 border-rose-400 text-rose-700" : "bg-white border-slate-200 text-slate-500"}`}>{t.entryYes}</button>
+                      <button type="button" onClick={() => setEntryAnswer(item, "no")} className={`rounded-xl border-2 py-2.5 text-sm font-bold transition-all ${item.answer === "no" ? "bg-green-50 border-green-400 text-green-700" : "bg-white border-slate-200 text-slate-500"}`}>{t.entryNo}</button>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => toggleItem(item)} className={`w-full rounded-xl border-2 py-2.5 text-sm font-bold ${item.completed ? "bg-green-50 border-green-400 text-green-700" : "bg-white border-slate-200 text-slate-500"}`}>{item.completed ? "✓ " + t.done : t.cklMarkDone}</button>
+                  )}
+                  {needPhoto && (
+                    <div className="mt-2.5">
+                      {photoUrl ? (
+                        <div className="flex items-center gap-2.5">
+                          <button type="button" onClick={() => openCamera(item.id)} className="relative shrink-0">
+                            <img src={photoUrl} alt="" className={`w-12 h-12 object-cover rounded-lg border ${isUp(item.id) || isPend(item.id) ? "border-blue-300 opacity-75" : "border-green-200"}`} />
+                          </button>
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-green-600">{isUp(item.id) ? t.cklPhotoUploading : isPend(item.id) ? t.cklPhotoQueued : t.cklPhotoAttached}</span>
+                          <button type="button" onClick={() => resetItem(item.id)} className="ml-auto w-7 h-7 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center shrink-0"><Trash2 size={13} /></button>
+                        </div>
+                      ) : (
+                        <button type="button" onClick={() => openCamera(item.id)} className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white bg-slate-500 border-2 border-rose-400"><Camera size={16} /> {t.takePhoto}</button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-          <button
-            type="button"
-            onClick={retryAllNow}
-            disabled={uploadingCount > 0}
-            className="mt-2.5 w-full flex items-center justify-center gap-2 rounded-full bg-amber-600 py-2.5 text-[10px] font-black uppercase tracking-widest text-white disabled:opacity-50 hover:bg-amber-700 transition-colors"
-          >
-            <Upload size={12} /> {t.netRetryNow}
-          </button>
-        </div>
+        </>
       )}
 
-      {photoRequiredError && (
-        <div className="mb-3 flex items-center gap-2 rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-xs font-bold text-rose-600 animate-in fade-in slide-in-from-top-2 duration-300">
-          <AlertCircle size={13} />
-          <span>{t.photoRequiredError}</span>
-        </div>
-      )}
-
-      {isEntry && (
-        <div className="mb-3 rounded-2xl bg-violet-50 border border-violet-100 px-4 py-3">
-          <p className="text-sm font-bold text-violet-800">{t.entryTitle}</p>
-          <p className="text-[11px] text-violet-600">{t.entrySub}</p>
-          <p className="text-[10px] text-violet-400 mt-0.5">{t.entryOptional}</p>
-        </div>
-      )}
-
-      <div className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm mb-4 text-center">
-        <h3 className="text-lg font-bold text-slate-900 leading-snug">{itemLabel}</h3>
-      </div>
-
-      {isYesNo && (
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <button
-            type="button"
-            onClick={() => setPendingAnswer("si")}
-            disabled={isSaving}
-            className={`rounded-2xl border-2 py-4 text-sm font-bold transition-all ${
-              pendingAnswer === "si"
-                ? "bg-rose-50 border-rose-400 text-rose-700"
-                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            {t.entryYes}
-          </button>
-          <button
-            type="button"
-            onClick={() => setPendingAnswer("no")}
-            disabled={isSaving}
-            className={`rounded-2xl border-2 py-4 text-sm font-bold transition-all ${
-              pendingAnswer === "no"
-                ? "bg-green-50 border-green-400 text-green-700"
-                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            {t.entryNo}
-          </button>
-        </div>
-      )}
-
-      {/* Sezione foto */}
-      {showPhotoBox && (
-        <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              {t.photoLabel}
-            </p>
-            <span className={`text-[9px] font-black uppercase tracking-wide rounded-full px-2 py-0.5 ${
-              photoIsRequiredNow ? "text-white bg-rose-500" : "text-slate-500 bg-slate-200"
-            }`}>
-              {photoIsRequiredNow
-                ? (isEntry ? t.entryPhotoOnYes : t.required)
-                : t.entryPhotoOptional}
-            </span>
+      {cleaningItems.length > 0 && (
+        <>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{t.checklistTitle}</p>
+          <div className="space-y-2">
+            {cleaningItems.map((item) => {
+              const photoUrl = photoUrlOf(item);
+              const missing = requiresPhotoNow(item) && item.completed && !photoUrl && !item.photoPending;
+              return (
+                <div key={item.id} id={`cl-${item.id}`} className={`flex items-center gap-3 rounded-2xl border p-3 bg-white shadow-sm ${missing ? "border-rose-200 bg-rose-50/40" : item.completed ? "border-emerald-100" : "border-slate-100"}`}>
+                  <button type="button" onClick={() => toggleItem(item)} className={`shrink-0 w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all ${item.completed ? "bg-green-600 border-green-600 text-white" : "border-slate-300 text-transparent"}`}>
+                    <CheckCircle2 size={16} />
+                  </button>
+                  <div className="flex-1 min-w-0" onClick={() => toggleItem(item)}>
+                    <p className={`text-sm font-semibold ${item.completed ? "text-slate-800" : "text-slate-600"}`}>{labelOf(item)}</p>
+                    {item.photoRequired && (
+                      <p className={`text-[10.5px] font-bold mt-0.5 ${missing ? "text-rose-600" : photoUrl ? "text-green-600" : "text-slate-400"}`}>
+                        {missing ? t.cklPhotoMissingWarn : photoUrl ? (isUp(item.id) ? t.cklPhotoUploading : isPend(item.id) ? t.cklPhotoQueued : t.cklPhotoAttached) : t.cklPhotoRequiredLabel}
+                      </p>
+                    )}
+                  </div>
+                  {item.type === "dynamic" && item.value != null && (
+                    <span className="shrink-0 rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-bold text-slate-700">{item.value}</span>
+                  )}
+                  {item.photoRequired && (
+                    photoUrl ? (
+                      <button type="button" onClick={() => openCamera(item.id)} className="shrink-0 relative">
+                        <img src={photoUrl} alt="" className={`w-11 h-11 object-cover rounded-xl border ${isUp(item.id) || isPend(item.id) ? "border-blue-300 opacity-75" : "border-green-200"}`} />
+                        {(isUp(item.id) || isPend(item.id)) && <span className="absolute inset-0 flex items-center justify-center">{isUp(item.id) ? <Loader2 size={13} className="text-blue-600 animate-spin" /> : <span className="text-[9px]">⏳</span>}</span>}
+                      </button>
+                    ) : (
+                      <button type="button" onClick={() => openCamera(item.id)} className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center ${missing ? "bg-rose-100 border border-rose-300" : "bg-violet-50 border border-violet-100"}`}><Camera size={18} className={missing ? "text-rose-500" : "text-violet-500"} /></button>
+                    )
+                  )}
+                </div>
+              );
+            })}
           </div>
-
-          {uploadError && (
-            <p className="text-xs text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mb-3 border border-rose-100">
-              ⚠️ {uploadError}
-            </p>
-          )}
-
-          {photoPreview ? (
-            <div className="flex items-center gap-3">
-              <img
-                src={photoPreview}
-                alt="Anteprima"
-                className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0"
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-slate-700 truncate">{photoFile?.name}</p>
-                <p className="text-[10px] text-blue-600 font-bold mt-0.5">
-                  {t.photoReadySend}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={clearPhoto}
-                className="w-7 h-7 rounded-full bg-rose-100 text-rose-500 text-[10px] flex items-center justify-center hover:bg-rose-200 shrink-0"
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => photoInputRef.current?.click()}
-              className={`w-full flex items-center justify-center gap-2 rounded-xl py-4 text-sm font-bold text-white transition-colors ${
-                photoIsRequiredNow
-                  ? "bg-slate-400 border-2 border-rose-400 hover:bg-slate-500"
-                  : "bg-slate-400 border-2 border-slate-300 hover:bg-slate-500"
-              }`}
-            >
-              <Camera size={18} />
-              {t.takePhoto}
-            </button>
-          )}
-
-          <input
-            ref={photoInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handlePhotoSelect}
-          />
-        </div>
+        </>
       )}
 
-      {/* Azioni */}
-      <div className="flex gap-2">
+      <div className="sticky bottom-3 z-10 mt-5">
         <button
           type="button"
-          onClick={goBack}
-          disabled={currentIndex === 0 || isSaving}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          onClick={() => setReviewOpen(true)}
+          disabled={isCompletingTask}
+          className={`w-full py-5 rounded-2xl text-base font-black uppercase tracking-wide shadow-xl active:scale-95 transition-all disabled:opacity-50 ${canSend ? "bg-green-600 text-white shadow-green-600/30" : "bg-slate-900 text-white shadow-slate-900/20"}`}
         >
-          <ChevronLeft size={13} />
-          {t.back}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => advance(false)}
-          disabled={isSaving}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 disabled:opacity-50 transition-colors"
-        >
-          <SkipForward size={13} />
-          {t.skip}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => advance(true, pendingAnswer)}
-          disabled={isSaving || isCompressing || (isYesNo && !pendingAnswer)}
-          className="flex-1 flex items-center justify-center gap-2 rounded-full bg-green-600 py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-green-700 active:scale-95 disabled:opacity-50 transition-all shadow-lg shadow-green-600/20"
-        >
-          {isCompressing ? (
-            <><Loader2 size={13} className="animate-spin" /> Preparazione...</>
-          ) : isSaving ? (
-            <><Loader2 size={13} className="animate-spin" /> {t.saving}</>
-          ) : (
-            <><CheckCircle2 size={13} /> {isEntry ? t.entryContinue : t.done} <ChevronRight size={13} /></>
-          )}
+          <span className="flex items-center justify-center gap-2"><Send size={18} /> {t.cklReviewAndSend}</span>
         </button>
       </div>
     </div>
