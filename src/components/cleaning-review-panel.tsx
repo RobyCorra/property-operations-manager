@@ -50,7 +50,9 @@ export default function CleaningReviewPanel({
 
       <div className="space-y-2">
         {items.map((item) => {
-          const missingPhoto = !!item.photoRequired && !item.photoUrl;
+          // La foto NON è richiesta se la risposta del cleaner è "no" (es.
+          // domande d'ingresso: "mobili rotti?" → No → nessuna foto di verifica).
+          const missingPhoto = !!item.photoRequired && !item.photoUrl && item.answer !== "no";
           return (
             <div
               key={item.id}
