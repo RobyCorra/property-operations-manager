@@ -71,13 +71,19 @@ export default function StructuresList({ structures }: { structures: Structure[]
               <div className="border-t border-slate-100 px-4 py-4 space-y-5">
                 {s.categories.map((c) => (
                   <div key={c.id}>
-                    <div className="mb-2 flex items-center justify-between">
+                    <div className="mb-2 flex items-center justify-between gap-2">
                       <div>
                         <p className="text-[13px] font-bold text-slate-800">{c.name}</p>
                         <p className="text-[11px] text-slate-400">
                           {c.squareMeters} m² · {c.bedrooms} camere · {c.bathrooms} bagni · {c.maxGuests} ospiti · {c.units.length} unità
                         </p>
                       </div>
+                      <Link
+                        href={`/dashboard/manager/strutture/${s.id}/categoria/${c.id}`}
+                        className="shrink-0 rounded-full bg-violet-500/10 px-3 py-1.5 text-[11px] font-semibold text-violet-600"
+                      >
+                        Modifica master
+                      </Link>
                     </div>
                     <div className="space-y-2">
                       {c.units.map((u) => (
@@ -105,6 +111,13 @@ export default function StructuresList({ structures }: { structures: Structure[]
                     </div>
                   </div>
                 ))}
+                <Link
+                  href={`/dashboard/manager/strutture/${s.id}`}
+                  className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 py-2.5 text-[13px] font-semibold text-slate-600"
+                >
+                  Apri struttura
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </Link>
               </div>
             )}
           </div>

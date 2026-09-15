@@ -175,3 +175,170 @@ export async function createStructure(input: StructureInput): Promise<CreateStru
     return { success: false, error: message };
   }
 }
+
+// ─── Governance del master (categoria) ──────────────────────────────────────
+
+export type MasterChecklistItem = {
+  label: string;
+  required: boolean;
+  photoRequired: boolean;
+};
+
+export type CategoryMasterInput = {
+  name: string;
+  squareMeters: number;
+  bedrooms: number;
+  bathrooms: number;
+  maxGuests: number;
+  bedConfig?: unknown;
+  checklist: MasterChecklistItem[];
+};
+
+// Carica una struttura con categorie e unità, org-scoped.
+export async function getStructure(propertyId: string) {
+  const orgId = await getCurrentOrg();
+  return prisma.property.findFirst({
+    where: { id: propertyId, organizationId: orgId },
+    include: {
+      categories: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          units: {
+            orderBy: { unitNumber: "asc" },
+            select: { id: true, name: true, unitNumber: true },
+          },
+        },
+      },
+    },
+  });
+}
+
+// Carica il master di una categoria + una checklist rappresentativa (presa
+// dalla prima unità, dato che tutte le unità sono identiche al master).
+export async function getCategoryMaster(categoryId: string) {
+  const orgId = await getCurrentOrg();
+  const category = await prisma.unitCategory.findFirst({
+    where: { id: categoryId, property: { organizationId: orgId } },
+    include: {
+      property: { select: { id: true, name: true } },
+      units: {
+        orderBy: { unitNumber: "asc" },
+        select: { id: true, unitNumber: true },
+      },
+    },
+  });
+  if (!category) return null;
+
+  const firstUnitId = category.units[0]?.id;
+  const checklist = firstUnitId
+    ? await prisma.checklistItem.findMany({
+        where: { apartmentId: firstUnitId, phase: "cleaning" },
+        orderBy: { order: "asc" },
+        select: { label: true, required: true, photoRequired: true },
+      })
+    : [];
+
+  return { category, checklist };
+}
+
+// Aggiorna il master e propaga a TUTTE le unità della categoria:
+// caratteristiche + checklist restano identiche al master.
+export async function updateCategoryMaster(
+  categoryId: string,
+  input: CategoryMasterInput,
+): Promise<{ success: true; unitCount: number } | { success: false; error?: string }> {
+  try {
+    const orgId = await getCurrentOrg();
+    const category = await prisma.unitCategory.findFirst({
+      where: { id: categoryId, property: { organizationId: orgId } },
+      include: { units: { select: { id: true } } },
+    });
+    if (!category) return { success: false, error: "Categoria non trovata." };
+
+    const name = (input.name || "").trim();
+    if (!name) return { success: false, error: "Il nome della categoria è obbligatorio." };
+
+    const sqm = Number.isFinite(input.squareMeters) ? input.squareMeters : 0;
+    const bedrooms = Number.isFinite(input.bedrooms) ? input.bedrooms : 0;
+    const bathrooms = Number.isFinite(input.bathrooms) ? input.bathrooms : 0;
+    const maxGuests = Number.isFinite(input.maxGuests) ? input.maxGuests : 1;
+    const bedConfig = (input.bedConfig as object) ?? undefined;
+    const checklist = Array.isArray(input.checklist) ? input.checklist : [];
+    const unitIds = category.units.map((u) => u.id);
+
+    await prisma.$transaction(async (tx) => {
+      // master
+      await tx.unitCategory.update({
+        where: { id: categoryId },
+        data: { name, squareMeters: sqm, bedrooms, bathrooms, maxGuests, bedConfig },
+      });
+
+      // caratteristiche su tutte le unità
+      await tx.apartment.updateMany({
+        where: { id: { in: unitIds } },
+        data: { squareMeters: sqm, bedrooms, bathrooms, maxGuests, bedConfig },
+      });
+
+      // checklist di pulizia: sostituisce quella di ogni unità con quella del master
+      await tx.checklistItem.deleteMany({
+        where: { apartmentId: { in: unitIds }, phase: "cleaning" },
+      });
+      if (checklist.length > 0 && unitIds.length > 0) {
+        await tx.checklistItem.createMany({
+          data: unitIds.flatMap((apartmentId) =>
+            checklist.map((item, index) => ({
+              apartmentId,
+              label: (item.label || "").trim() || "Voce",
+              required: !!item.required,
+              photoRequired: !!item.photoRequired,
+              phase: "cleaning",
+              order: index,
+            })),
+          ),
+        });
+      }
+    });
+
+    revalidatePath("/dashboard/manager/apartments");
+    revalidatePath(`/dashboard/manager/strutture/${category.propertyId}`);
+    return { success: true, unitCount: unitIds.length };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Errore durante il salvataggio del master.";
+    console.error("updateCategoryMaster: errore", error);
+    return { success: false, error: message };
+  }
+}
+
+// Elimina un'intera struttura: le unità (Apartment) e le categorie vengono
+// rimosse in cascata (FK onDelete Cascade). Bloccata se un'unità ha prenotazioni.
+export async function deleteStructure(
+  propertyId: string,
+): Promise<{ success: true } | { success: false; error?: string }> {
+  try {
+    const orgId = await getCurrentOrg();
+    const property = await prisma.property.findFirst({
+      where: { id: propertyId, organizationId: orgId },
+      include: { units: { select: { id: true } } },
+    });
+    if (!property) return { success: false, error: "Struttura non trovata." };
+
+    const unitIds = property.units.map((u) => u.id);
+    const bookingCount = unitIds.length
+      ? await prisma.booking.count({ where: { apartmentId: { in: unitIds } } })
+      : 0;
+    if (bookingCount > 0) {
+      return {
+        success: false,
+        error: `Impossibile eliminare: ci sono ${bookingCount} prenotazioni collegate alle unità. Rimuovile prima.`,
+      };
+    }
+
+    await prisma.property.delete({ where: { id: propertyId } });
+    revalidatePath("/dashboard/manager/apartments");
+    return { success: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Errore durante l'eliminazione della struttura.";
+    console.error("deleteStructure: errore", error);
+    return { success: false, error: message };
+  }
+}

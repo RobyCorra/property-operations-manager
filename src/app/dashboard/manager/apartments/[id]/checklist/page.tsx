@@ -28,10 +28,15 @@ export default async function ApartmentChecklistPage({ params }: { params: { id:
     notFound();
   }
 
+  // Unità di una struttura: la checklist è gestita dal master della categoria.
+  if (apartment.propertyId && apartment.unitCategoryId) {
+    redirect(`/dashboard/manager/strutture/${apartment.propertyId}/categoria/${apartment.unitCategoryId}`);
+  }
+
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <div className="max-w-4xl mx-auto space-y-8">
-        
+
         {/* Header */}
         <div>
           <div className="flex items-center gap-3">
