@@ -86,75 +86,89 @@ export async function createStructure(input: StructureInput): Promise<CreateStru
 
     const orgId = await getCurrentOrg();
 
-    const property = await prisma.property.create({
-      data: {
-        id: randomUUID(),
-        name,
-        type,
-        address,
-        latitude,
-        longitude,
-        organizationId: orgId,
-      },
-    });
+    // Precompute i codici appartamento (leggono il DB per l'unicita') PRIMA
+    // della transazione, cosi' la transazione contiene solo scritture.
+    const propertyId = randomUUID();
+    const plan = [] as Array<{
+      categoryId: string;
+      cat: StructureCategoryInput;
+      units: Array<{ id: string; unitNumber: string; name: string; apartmentCode: string }>;
+    }>;
+    for (const { cat, numbers } of prepared) {
+      const units = [];
+      for (const unitNumber of numbers) {
+        units.push({
+          id: randomUUID(),
+          unitNumber,
+          name: `${name} · ${unitNumber}`,
+          apartmentCode: await generateUniqueApartmentCode(`${name}-${unitNumber}`),
+        });
+      }
+      plan.push({ categoryId: randomUUID(), cat, units });
+    }
 
     let totalUnits = 0;
 
-    for (const { cat, numbers } of prepared) {
-      const master = await prisma.unitCategory.create({
-        data: {
-          id: randomUUID(),
-          propertyId: property.id,
-          name: (cat.name || "Categoria").trim(),
-          squareMeters: Number.isFinite(cat.squareMeters) ? cat.squareMeters : 0,
-          bedrooms: Number.isFinite(cat.bedrooms) ? cat.bedrooms : 0,
-          bathrooms: Number.isFinite(cat.bathrooms) ? cat.bathrooms : 0,
-          maxGuests: Number.isFinite(cat.maxGuests) ? cat.maxGuests : 1,
-          bedConfig: (cat.bedConfig as object) ?? undefined,
-          technicalProfile: (cat.technicalProfile as object) ?? undefined,
-          accessInstructions: cat.accessInstructions ?? null,
-          accessInfo: (cat.accessInfo as object) ?? undefined,
-        },
+    // Tutto atomico: se una scrittura fallisce, niente struttura/categorie/unita' orfane.
+    await prisma.$transaction(async (tx) => {
+      await tx.property.create({
+        data: { id: propertyId, name, type, address, latitude, longitude, organizationId: orgId },
       });
 
-      for (const unitNumber of numbers) {
-        const unitName = `${name} · ${unitNumber}`;
-        const apartmentCode = await generateUniqueApartmentCode(`${name}-${unitNumber}`);
-        await prisma.apartment.create({
+      for (const { categoryId, cat, units } of plan) {
+        await tx.unitCategory.create({
           data: {
-            id: randomUUID(),
-            name: unitName,
-            apartmentCode,
-            address,
-            latitude,
-            longitude,
-            squareMeters: master.squareMeters,
-            bedrooms: master.bedrooms,
-            bathrooms: master.bathrooms,
-            maxGuests: master.maxGuests,
+            id: categoryId,
+            propertyId,
+            name: (cat.name || "Categoria").trim(),
+            squareMeters: Number.isFinite(cat.squareMeters) ? cat.squareMeters : 0,
+            bedrooms: Number.isFinite(cat.bedrooms) ? cat.bedrooms : 0,
+            bathrooms: Number.isFinite(cat.bathrooms) ? cat.bathrooms : 0,
+            maxGuests: Number.isFinite(cat.maxGuests) ? cat.maxGuests : 1,
             bedConfig: (cat.bedConfig as object) ?? undefined,
             technicalProfile: (cat.technicalProfile as object) ?? undefined,
             accessInstructions: cat.accessInstructions ?? null,
             accessInfo: (cat.accessInfo as object) ?? undefined,
-            organizationId: orgId,
-            propertyId: property.id,
-            unitCategoryId: master.id,
-            unitNumber,
-            checklistItems: {
-              create: DEFAULT_CHECKLIST.map((item, index) => ({
-                label: item.label,
-                required: item.required,
-                order: index,
-              })),
-            },
           },
         });
-        totalUnits += 1;
+
+        for (const unit of units) {
+          await tx.apartment.create({
+            data: {
+              id: unit.id,
+              name: unit.name,
+              apartmentCode: unit.apartmentCode,
+              address,
+              latitude,
+              longitude,
+              squareMeters: Number.isFinite(cat.squareMeters) ? cat.squareMeters : 0,
+              bedrooms: Number.isFinite(cat.bedrooms) ? cat.bedrooms : 0,
+              bathrooms: Number.isFinite(cat.bathrooms) ? cat.bathrooms : 0,
+              maxGuests: Number.isFinite(cat.maxGuests) ? cat.maxGuests : 1,
+              bedConfig: (cat.bedConfig as object) ?? undefined,
+              technicalProfile: (cat.technicalProfile as object) ?? undefined,
+              accessInstructions: cat.accessInstructions ?? null,
+              accessInfo: (cat.accessInfo as object) ?? undefined,
+              organizationId: orgId,
+              propertyId,
+              unitCategoryId: categoryId,
+              unitNumber: unit.unitNumber,
+              checklistItems: {
+                create: DEFAULT_CHECKLIST.map((item, index) => ({
+                  label: item.label,
+                  required: item.required,
+                  order: index,
+                })),
+              },
+            },
+          });
+          totalUnits += 1;
+        }
       }
-    }
+    });
 
     revalidatePath("/dashboard/manager/apartments");
-    return { success: true, propertyId: property.id, totalUnits };
+    return { success: true, propertyId, totalUnits };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Errore durante la creazione della struttura.";
     console.error("createStructure: errore", error);
