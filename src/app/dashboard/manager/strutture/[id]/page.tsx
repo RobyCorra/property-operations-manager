@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { getStructure } from "@/src/app/actions/structure";
 import { getPropertyProducts } from "@/src/app/actions/property-product";
+import { getApartmentOperationalStatus, STATUS_UI } from "@/src/lib/apartment-status";
 import DeleteStructureButton from "@/src/components/delete-structure-button";
 import PropertyProductsPanel from "@/src/components/property-products-panel";
 import BackButton from "@/src/components/back-button";
@@ -18,6 +19,7 @@ export default async function StructurePage({ params }: { params: Promise<{ id: 
   if (!structure) notFound();
 
   const products = await getPropertyProducts(id);
+  const now = new Date();
   const unitCount = structure.categories.reduce((sum, c) => sum + c.units.length, 0);
 
   return (
@@ -54,15 +56,19 @@ export default async function StructurePage({ params }: { params: Promise<{ id: 
                 </Link>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                {c.units.map((u) => (
-                  <Link
-                    key={u.id}
-                    href={`/dashboard/manager/apartments/${u.id}/edit`}
-                    className="rounded-lg bg-[#f8f7ff] border border-[#ede9fe] px-3 py-1.5 text-[12px] font-bold text-violet-700"
-                  >
-                    {u.unitNumber || "—"}
-                  </Link>
-                ))}
+                {c.units.map((u) => {
+                  const s = getApartmentOperationalStatus(now, u.bookings, u.cleaningTasks, u.maintenanceTickets, { now });
+                  return (
+                    <Link
+                      key={u.id}
+                      href={`/dashboard/manager/apartments/${u.id}/edit`}
+                      title={s.label}
+                      className={`rounded-lg border px-3 py-1.5 text-[12px] font-bold ${STATUS_UI[s.color].tailwind}`}
+                    >
+                      {u.unitNumber || "—"}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           ))}

@@ -13,6 +13,9 @@ type Unit = {
   squareMeters: number;
   icalUrl: string | null;
   lastSyncAt: Date | null;
+  statusColor?: string;
+  statusLabel?: string;
+  statusTailwind?: string;
 };
 
 type Category = {
@@ -88,10 +91,13 @@ export default function StructuresList({ structures }: { structures: Structure[]
                     <div className="space-y-2">
                       {c.units.map((u) => (
                         <div key={u.id} className="flex items-center gap-2 rounded-2xl bg-[#f8f7ff] border border-[#ede9fe] px-3 py-2">
-                          <span className="flex h-8 min-w-8 items-center justify-center rounded-lg bg-white px-2 text-[12px] font-bold text-violet-700 border border-violet-100">
+                          <span className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-[12px] font-bold border ${u.statusTailwind || "bg-white text-violet-700 border-violet-100"}`}>
                             {u.unitNumber || "—"}
                           </span>
                           <span className="flex-1 truncate text-[12px] font-medium text-slate-600">{u.name}</span>
+                          {u.statusLabel && (
+                            <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold border ${u.statusTailwind || ""}`}>{u.statusLabel}</span>
+                          )}
                           <Link
                             href={`/dashboard/manager/apartments/${u.id}/checklist`}
                             className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/5 text-emerald-600 border border-emerald-500/10"

@@ -205,7 +205,12 @@ export async function getStructure(propertyId: string) {
         include: {
           units: {
             orderBy: { unitNumber: "asc" },
-            select: { id: true, name: true, unitNumber: true },
+            select: {
+              id: true, name: true, unitNumber: true,
+              bookings: { where: { status: { not: "CANCELLED" } }, select: { id: true, apartmentId: true, checkInDate: true, checkOutDate: true, status: true } },
+              cleaningTasks: { select: { id: true, apartmentId: true, date: true, status: true } },
+              maintenanceTickets: { select: { id: true, apartmentId: true, status: true, priority: true, scheduledStart: true, scheduledEnd: true } },
+            },
           },
         },
       },

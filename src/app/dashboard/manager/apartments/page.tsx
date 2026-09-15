@@ -6,6 +6,7 @@ import { getT } from "@/src/lib/server-lang";
 import Link from "next/link";
 import ApartmentsListTable from "@/src/components/apartments-list-table";
 import StructuresList from "@/src/components/structures-list";
+import { getApartmentOperationalStatus, STATUS_UI } from "@/src/lib/apartment-status";
 import BackButton from "@/src/components/back-button";
 import DbErrorState from "@/src/components/db-error-state";
 
@@ -32,7 +33,7 @@ export default async function ApartmentsListPage() {
     return <DbErrorState />;
   }
 
-  const properties = await prisma.property.findMany({
+  const propertiesRaw = await prisma.property.findMany({
     where: { organizationId: orgId },
     orderBy: { createdAt: "desc" },
     include: {
@@ -41,7 +42,12 @@ export default async function ApartmentsListPage() {
         include: {
           units: {
             orderBy: { unitNumber: "asc" },
-            select: { id: true, name: true, unitNumber: true, maxGuests: true, bedrooms: true, bathrooms: true, squareMeters: true, icalUrl: true, lastSyncAt: true },
+            select: {
+              id: true, name: true, unitNumber: true, maxGuests: true, bedrooms: true, bathrooms: true, squareMeters: true, icalUrl: true, lastSyncAt: true,
+              bookings: { where: { status: { not: "CANCELLED" } }, select: { id: true, apartmentId: true, checkInDate: true, checkOutDate: true, status: true } },
+              cleaningTasks: { select: { id: true, apartmentId: true, date: true, status: true } },
+              maintenanceTickets: { select: { id: true, apartmentId: true, status: true, priority: true, scheduledStart: true, scheduledEnd: true } },
+            },
           },
         },
       },
@@ -50,6 +56,23 @@ export default async function ApartmentsListPage() {
     console.error("Strutture: impossibile caricare i dati dal DB", e);
     return [];
   });
+
+  const now = new Date();
+  const properties = propertiesRaw.map((p) => ({
+    ...p,
+    categories: p.categories.map((c) => ({
+      ...c,
+      units: c.units.map((u) => {
+        const s = getApartmentOperationalStatus(now, u.bookings, u.cleaningTasks, u.maintenanceTickets, { now });
+        return {
+          id: u.id, name: u.name, unitNumber: u.unitNumber,
+          maxGuests: u.maxGuests, bedrooms: u.bedrooms, bathrooms: u.bathrooms, squareMeters: u.squareMeters,
+          icalUrl: u.icalUrl, lastSyncAt: u.lastSyncAt,
+          statusColor: s.color, statusLabel: s.label, statusTailwind: STATUS_UI[s.color].tailwind,
+        };
+      }),
+    })),
+  }));
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans overflow-x-hidden">
