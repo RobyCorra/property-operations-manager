@@ -2,7 +2,9 @@ import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { getStructure } from "@/src/app/actions/structure";
+import { getPropertyProducts } from "@/src/app/actions/property-product";
 import DeleteStructureButton from "@/src/components/delete-structure-button";
+import PropertyProductsPanel from "@/src/components/property-products-panel";
 import BackButton from "@/src/components/back-button";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +17,7 @@ export default async function StructurePage({ params }: { params: Promise<{ id: 
   const structure = await getStructure(id);
   if (!structure) notFound();
 
+  const products = await getPropertyProducts(id);
   const unitCount = structure.categories.reduce((sum, c) => sum + c.units.length, 0);
 
   return (
@@ -64,6 +67,8 @@ export default async function StructurePage({ params }: { params: Promise<{ id: 
             </div>
           ))}
         </div>
+
+        <PropertyProductsPanel propertyId={structure.id} initialProducts={products} />
 
         <div className="pt-2">
           <DeleteStructureButton propertyId={structure.id} name={structure.name} />

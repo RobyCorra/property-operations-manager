@@ -160,6 +160,31 @@ exports.Prisma.PropertyScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PropertyProductScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  name: 'name',
+  emoji: 'emoji',
+  unit: 'unit',
+  stock: 'stock',
+  minStock: 'minStock',
+  price: 'price',
+  vat: 'vat',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PropertyStockMovementScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  delta: 'delta',
+  balance: 'balance',
+  reason: 'reason',
+  bookingId: 'bookingId',
+  note: 'note',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.UnitCategoryScalarFieldEnum = {
   id: 'id',
   propertyId: 'propertyId',
@@ -172,6 +197,7 @@ exports.Prisma.UnitCategoryScalarFieldEnum = {
   technicalProfile: 'technicalProfile',
   accessInstructions: 'accessInstructions',
   accessInfo: 'accessInfo',
+  consumption: 'consumption',
   createdAt: 'createdAt'
 };
 
@@ -602,6 +628,8 @@ exports.AIAssistantMessageRole = exports.$Enums.AIAssistantMessageRole = {
 exports.Prisma.ModelName = {
   Organization: 'Organization',
   Property: 'Property',
+  PropertyProduct: 'PropertyProduct',
+  PropertyStockMovement: 'PropertyStockMovement',
   UnitCategory: 'UnitCategory',
   User: 'User',
   Apartment: 'Apartment',

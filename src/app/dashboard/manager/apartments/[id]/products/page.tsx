@@ -42,6 +42,11 @@ export default async function ApartmentProductsPage({ params }: ProductsPageProp
     notFound();
   }
 
+  // Unità di una struttura: i prodotti sono gestiti a livello struttura (stock unico).
+  if (apartment.propertyId) {
+    redirect(`/dashboard/manager/strutture/${apartment.propertyId}`);
+  }
+
   const nextBooking = apartment.bookings[0] ?? null;
   const upcomingBookings = apartment.bookings.map((b) => ({
     date: b.checkInDate.toISOString(),

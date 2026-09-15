@@ -1,7 +1,9 @@
 import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { getCategoryMaster, updateCategoryMaster } from "@/src/app/actions/structure";
+import { getPropertyProducts } from "@/src/app/actions/property-product";
 import CategoryMasterForm from "@/src/components/category-master-form";
+import CategoryConsumptionEditor from "@/src/components/category-consumption-editor";
 import BackButton from "@/src/components/back-button";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +27,8 @@ export default async function CategoryMasterPage({ params }: { params: Promise<{
   const data = await getCategoryMaster(catId);
   if (!data) notFound();
   const { category, checklist } = data;
+  const products = await getPropertyProducts(id);
+  const consumption = (category.consumption as Record<string, number> | null) ?? {};
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans">
@@ -58,6 +62,13 @@ export default async function CategoryMasterPage({ params }: { params: Promise<{
             checklist: checklist.map((c) => ({ label: c.label, required: c.required, photoRequired: c.photoRequired })),
           }}
           action={updateCategoryMaster}
+        />
+
+        <CategoryConsumptionEditor
+          categoryId={category.id}
+          propertyId={id}
+          products={products.map((p) => ({ id: p.id, name: p.name, emoji: p.emoji, unit: p.unit }))}
+          initial={consumption}
         />
       </div>
     </main>

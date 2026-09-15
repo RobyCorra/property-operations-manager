@@ -24,6 +24,16 @@ export type Organization = $Result.DefaultSelection<Prisma.$OrganizationPayload>
  */
 export type Property = $Result.DefaultSelection<Prisma.$PropertyPayload>
 /**
+ * Model PropertyProduct
+ * 
+ */
+export type PropertyProduct = $Result.DefaultSelection<Prisma.$PropertyProductPayload>
+/**
+ * Model PropertyStockMovement
+ * 
+ */
+export type PropertyStockMovement = $Result.DefaultSelection<Prisma.$PropertyStockMovementPayload>
+/**
  * Model UnitCategory
  * 
  */
@@ -352,6 +362,26 @@ export class PrismaClient<
     * ```
     */
   get property(): Prisma.PropertyDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.propertyProduct`: Exposes CRUD operations for the **PropertyProduct** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PropertyProducts
+    * const propertyProducts = await prisma.propertyProduct.findMany()
+    * ```
+    */
+  get propertyProduct(): Prisma.PropertyProductDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.propertyStockMovement`: Exposes CRUD operations for the **PropertyStockMovement** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PropertyStockMovements
+    * const propertyStockMovements = await prisma.propertyStockMovement.findMany()
+    * ```
+    */
+  get propertyStockMovement(): Prisma.PropertyStockMovementDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.unitCategory`: Exposes CRUD operations for the **UnitCategory** model.
@@ -1098,6 +1128,8 @@ export namespace Prisma {
   export const ModelName: {
     Organization: 'Organization',
     Property: 'Property',
+    PropertyProduct: 'PropertyProduct',
+    PropertyStockMovement: 'PropertyStockMovement',
     UnitCategory: 'UnitCategory',
     User: 'User',
     Apartment: 'Apartment',
@@ -1144,7 +1176,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "property" | "unitCategory" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
+      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1293,6 +1325,154 @@ export namespace Prisma {
           count: {
             args: Prisma.PropertyCountArgs<ExtArgs>
             result: $Utils.Optional<PropertyCountAggregateOutputType> | number
+          }
+        }
+      }
+      PropertyProduct: {
+        payload: Prisma.$PropertyProductPayload<ExtArgs>
+        fields: Prisma.PropertyProductFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PropertyProductFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PropertyProductFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>
+          }
+          findFirst: {
+            args: Prisma.PropertyProductFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PropertyProductFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>
+          }
+          findMany: {
+            args: Prisma.PropertyProductFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>[]
+          }
+          create: {
+            args: Prisma.PropertyProductCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>
+          }
+          createMany: {
+            args: Prisma.PropertyProductCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PropertyProductCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>[]
+          }
+          delete: {
+            args: Prisma.PropertyProductDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>
+          }
+          update: {
+            args: Prisma.PropertyProductUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>
+          }
+          deleteMany: {
+            args: Prisma.PropertyProductDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PropertyProductUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PropertyProductUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>[]
+          }
+          upsert: {
+            args: Prisma.PropertyProductUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyProductPayload>
+          }
+          aggregate: {
+            args: Prisma.PropertyProductAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePropertyProduct>
+          }
+          groupBy: {
+            args: Prisma.PropertyProductGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PropertyProductGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PropertyProductCountArgs<ExtArgs>
+            result: $Utils.Optional<PropertyProductCountAggregateOutputType> | number
+          }
+        }
+      }
+      PropertyStockMovement: {
+        payload: Prisma.$PropertyStockMovementPayload<ExtArgs>
+        fields: Prisma.PropertyStockMovementFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PropertyStockMovementFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PropertyStockMovementFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>
+          }
+          findFirst: {
+            args: Prisma.PropertyStockMovementFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PropertyStockMovementFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>
+          }
+          findMany: {
+            args: Prisma.PropertyStockMovementFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>[]
+          }
+          create: {
+            args: Prisma.PropertyStockMovementCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>
+          }
+          createMany: {
+            args: Prisma.PropertyStockMovementCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PropertyStockMovementCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>[]
+          }
+          delete: {
+            args: Prisma.PropertyStockMovementDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>
+          }
+          update: {
+            args: Prisma.PropertyStockMovementUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>
+          }
+          deleteMany: {
+            args: Prisma.PropertyStockMovementDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PropertyStockMovementUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PropertyStockMovementUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>[]
+          }
+          upsert: {
+            args: Prisma.PropertyStockMovementUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PropertyStockMovementPayload>
+          }
+          aggregate: {
+            args: Prisma.PropertyStockMovementAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePropertyStockMovement>
+          }
+          groupBy: {
+            args: Prisma.PropertyStockMovementGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PropertyStockMovementGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PropertyStockMovementCountArgs<ExtArgs>
+            result: $Utils.Optional<PropertyStockMovementCountAggregateOutputType> | number
           }
         }
       }
@@ -3700,6 +3880,8 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     organization?: OrganizationOmit
     property?: PropertyOmit
+    propertyProduct?: PropertyProductOmit
+    propertyStockMovement?: PropertyStockMovementOmit
     unitCategory?: UnitCategoryOmit
     user?: UserOmit
     apartment?: ApartmentOmit
@@ -3871,11 +4053,13 @@ export namespace Prisma {
   export type PropertyCountOutputType = {
     categories: number
     units: number
+    products: number
   }
 
   export type PropertyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     categories?: boolean | PropertyCountOutputTypeCountCategoriesArgs
     units?: boolean | PropertyCountOutputTypeCountUnitsArgs
+    products?: boolean | PropertyCountOutputTypeCountProductsArgs
   }
 
   // Custom InputTypes
@@ -3901,6 +4085,44 @@ export namespace Prisma {
    */
   export type PropertyCountOutputTypeCountUnitsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApartmentWhereInput
+  }
+
+  /**
+   * PropertyCountOutputType without action
+   */
+  export type PropertyCountOutputTypeCountProductsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PropertyProductWhereInput
+  }
+
+
+  /**
+   * Count Type PropertyProductCountOutputType
+   */
+
+  export type PropertyProductCountOutputType = {
+    movements: number
+  }
+
+  export type PropertyProductCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    movements?: boolean | PropertyProductCountOutputTypeCountMovementsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PropertyProductCountOutputType without action
+   */
+  export type PropertyProductCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProductCountOutputType
+     */
+    select?: PropertyProductCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PropertyProductCountOutputType without action
+   */
+  export type PropertyProductCountOutputTypeCountMovementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PropertyStockMovementWhereInput
   }
 
 
@@ -6224,6 +6446,7 @@ export namespace Prisma {
     organization?: boolean | Property$organizationArgs<ExtArgs>
     categories?: boolean | Property$categoriesArgs<ExtArgs>
     units?: boolean | Property$unitsArgs<ExtArgs>
+    products?: boolean | Property$productsArgs<ExtArgs>
     _count?: boolean | PropertyCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["property"]>
 
@@ -6267,6 +6490,7 @@ export namespace Prisma {
     organization?: boolean | Property$organizationArgs<ExtArgs>
     categories?: boolean | Property$categoriesArgs<ExtArgs>
     units?: boolean | Property$unitsArgs<ExtArgs>
+    products?: boolean | Property$productsArgs<ExtArgs>
     _count?: boolean | PropertyCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PropertyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6282,6 +6506,7 @@ export namespace Prisma {
       organization: Prisma.$OrganizationPayload<ExtArgs> | null
       categories: Prisma.$UnitCategoryPayload<ExtArgs>[]
       units: Prisma.$ApartmentPayload<ExtArgs>[]
+      products: Prisma.$PropertyProductPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6689,6 +6914,7 @@ export namespace Prisma {
     organization<T extends Property$organizationArgs<ExtArgs> = {}>(args?: Subset<T, Property$organizationArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     categories<T extends Property$categoriesArgs<ExtArgs> = {}>(args?: Subset<T, Property$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UnitCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     units<T extends Property$unitsArgs<ExtArgs> = {}>(args?: Subset<T, Property$unitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    products<T extends Property$productsArgs<ExtArgs> = {}>(args?: Subset<T, Property$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7194,6 +7420,30 @@ export namespace Prisma {
   }
 
   /**
+   * Property.products
+   */
+  export type Property$productsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    where?: PropertyProductWhereInput
+    orderBy?: PropertyProductOrderByWithRelationInput | PropertyProductOrderByWithRelationInput[]
+    cursor?: PropertyProductWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PropertyProductScalarFieldEnum | PropertyProductScalarFieldEnum[]
+  }
+
+  /**
    * Property without action
    */
   export type PropertyDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7209,6 +7459,2363 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PropertyInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PropertyProduct
+   */
+
+  export type AggregatePropertyProduct = {
+    _count: PropertyProductCountAggregateOutputType | null
+    _avg: PropertyProductAvgAggregateOutputType | null
+    _sum: PropertyProductSumAggregateOutputType | null
+    _min: PropertyProductMinAggregateOutputType | null
+    _max: PropertyProductMaxAggregateOutputType | null
+  }
+
+  export type PropertyProductAvgAggregateOutputType = {
+    stock: number | null
+    minStock: number | null
+    price: number | null
+    vat: number | null
+  }
+
+  export type PropertyProductSumAggregateOutputType = {
+    stock: number | null
+    minStock: number | null
+    price: number | null
+    vat: number | null
+  }
+
+  export type PropertyProductMinAggregateOutputType = {
+    id: string | null
+    propertyId: string | null
+    name: string | null
+    emoji: string | null
+    unit: string | null
+    stock: number | null
+    minStock: number | null
+    price: number | null
+    vat: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PropertyProductMaxAggregateOutputType = {
+    id: string | null
+    propertyId: string | null
+    name: string | null
+    emoji: string | null
+    unit: string | null
+    stock: number | null
+    minStock: number | null
+    price: number | null
+    vat: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PropertyProductCountAggregateOutputType = {
+    id: number
+    propertyId: number
+    name: number
+    emoji: number
+    unit: number
+    stock: number
+    minStock: number
+    price: number
+    vat: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PropertyProductAvgAggregateInputType = {
+    stock?: true
+    minStock?: true
+    price?: true
+    vat?: true
+  }
+
+  export type PropertyProductSumAggregateInputType = {
+    stock?: true
+    minStock?: true
+    price?: true
+    vat?: true
+  }
+
+  export type PropertyProductMinAggregateInputType = {
+    id?: true
+    propertyId?: true
+    name?: true
+    emoji?: true
+    unit?: true
+    stock?: true
+    minStock?: true
+    price?: true
+    vat?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PropertyProductMaxAggregateInputType = {
+    id?: true
+    propertyId?: true
+    name?: true
+    emoji?: true
+    unit?: true
+    stock?: true
+    minStock?: true
+    price?: true
+    vat?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PropertyProductCountAggregateInputType = {
+    id?: true
+    propertyId?: true
+    name?: true
+    emoji?: true
+    unit?: true
+    stock?: true
+    minStock?: true
+    price?: true
+    vat?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PropertyProductAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PropertyProduct to aggregate.
+     */
+    where?: PropertyProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PropertyProducts to fetch.
+     */
+    orderBy?: PropertyProductOrderByWithRelationInput | PropertyProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PropertyProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PropertyProducts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PropertyProducts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PropertyProducts
+    **/
+    _count?: true | PropertyProductCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PropertyProductAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PropertyProductSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PropertyProductMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PropertyProductMaxAggregateInputType
+  }
+
+  export type GetPropertyProductAggregateType<T extends PropertyProductAggregateArgs> = {
+        [P in keyof T & keyof AggregatePropertyProduct]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePropertyProduct[P]>
+      : GetScalarType<T[P], AggregatePropertyProduct[P]>
+  }
+
+
+
+
+  export type PropertyProductGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PropertyProductWhereInput
+    orderBy?: PropertyProductOrderByWithAggregationInput | PropertyProductOrderByWithAggregationInput[]
+    by: PropertyProductScalarFieldEnum[] | PropertyProductScalarFieldEnum
+    having?: PropertyProductScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PropertyProductCountAggregateInputType | true
+    _avg?: PropertyProductAvgAggregateInputType
+    _sum?: PropertyProductSumAggregateInputType
+    _min?: PropertyProductMinAggregateInputType
+    _max?: PropertyProductMaxAggregateInputType
+  }
+
+  export type PropertyProductGroupByOutputType = {
+    id: string
+    propertyId: string
+    name: string
+    emoji: string
+    unit: string
+    stock: number
+    minStock: number
+    price: number
+    vat: number
+    createdAt: Date
+    updatedAt: Date
+    _count: PropertyProductCountAggregateOutputType | null
+    _avg: PropertyProductAvgAggregateOutputType | null
+    _sum: PropertyProductSumAggregateOutputType | null
+    _min: PropertyProductMinAggregateOutputType | null
+    _max: PropertyProductMaxAggregateOutputType | null
+  }
+
+  type GetPropertyProductGroupByPayload<T extends PropertyProductGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PropertyProductGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PropertyProductGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PropertyProductGroupByOutputType[P]>
+            : GetScalarType<T[P], PropertyProductGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PropertyProductSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    propertyId?: boolean
+    name?: boolean
+    emoji?: boolean
+    unit?: boolean
+    stock?: boolean
+    minStock?: boolean
+    price?: boolean
+    vat?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    property?: boolean | PropertyDefaultArgs<ExtArgs>
+    movements?: boolean | PropertyProduct$movementsArgs<ExtArgs>
+    _count?: boolean | PropertyProductCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["propertyProduct"]>
+
+  export type PropertyProductSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    propertyId?: boolean
+    name?: boolean
+    emoji?: boolean
+    unit?: boolean
+    stock?: boolean
+    minStock?: boolean
+    price?: boolean
+    vat?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    property?: boolean | PropertyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["propertyProduct"]>
+
+  export type PropertyProductSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    propertyId?: boolean
+    name?: boolean
+    emoji?: boolean
+    unit?: boolean
+    stock?: boolean
+    minStock?: boolean
+    price?: boolean
+    vat?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    property?: boolean | PropertyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["propertyProduct"]>
+
+  export type PropertyProductSelectScalar = {
+    id?: boolean
+    propertyId?: boolean
+    name?: boolean
+    emoji?: boolean
+    unit?: boolean
+    stock?: boolean
+    minStock?: boolean
+    price?: boolean
+    vat?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PropertyProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "propertyId" | "name" | "emoji" | "unit" | "stock" | "minStock" | "price" | "vat" | "createdAt" | "updatedAt", ExtArgs["result"]["propertyProduct"]>
+  export type PropertyProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    property?: boolean | PropertyDefaultArgs<ExtArgs>
+    movements?: boolean | PropertyProduct$movementsArgs<ExtArgs>
+    _count?: boolean | PropertyProductCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PropertyProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    property?: boolean | PropertyDefaultArgs<ExtArgs>
+  }
+  export type PropertyProductIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    property?: boolean | PropertyDefaultArgs<ExtArgs>
+  }
+
+  export type $PropertyProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PropertyProduct"
+    objects: {
+      property: Prisma.$PropertyPayload<ExtArgs>
+      movements: Prisma.$PropertyStockMovementPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      propertyId: string
+      name: string
+      emoji: string
+      unit: string
+      stock: number
+      minStock: number
+      price: number
+      vat: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["propertyProduct"]>
+    composites: {}
+  }
+
+  type PropertyProductGetPayload<S extends boolean | null | undefined | PropertyProductDefaultArgs> = $Result.GetResult<Prisma.$PropertyProductPayload, S>
+
+  type PropertyProductCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PropertyProductFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PropertyProductCountAggregateInputType | true
+    }
+
+  export interface PropertyProductDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PropertyProduct'], meta: { name: 'PropertyProduct' } }
+    /**
+     * Find zero or one PropertyProduct that matches the filter.
+     * @param {PropertyProductFindUniqueArgs} args - Arguments to find a PropertyProduct
+     * @example
+     * // Get one PropertyProduct
+     * const propertyProduct = await prisma.propertyProduct.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PropertyProductFindUniqueArgs>(args: SelectSubset<T, PropertyProductFindUniqueArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PropertyProduct that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PropertyProductFindUniqueOrThrowArgs} args - Arguments to find a PropertyProduct
+     * @example
+     * // Get one PropertyProduct
+     * const propertyProduct = await prisma.propertyProduct.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PropertyProductFindUniqueOrThrowArgs>(args: SelectSubset<T, PropertyProductFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PropertyProduct that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyProductFindFirstArgs} args - Arguments to find a PropertyProduct
+     * @example
+     * // Get one PropertyProduct
+     * const propertyProduct = await prisma.propertyProduct.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PropertyProductFindFirstArgs>(args?: SelectSubset<T, PropertyProductFindFirstArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PropertyProduct that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyProductFindFirstOrThrowArgs} args - Arguments to find a PropertyProduct
+     * @example
+     * // Get one PropertyProduct
+     * const propertyProduct = await prisma.propertyProduct.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PropertyProductFindFirstOrThrowArgs>(args?: SelectSubset<T, PropertyProductFindFirstOrThrowArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PropertyProducts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyProductFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PropertyProducts
+     * const propertyProducts = await prisma.propertyProduct.findMany()
+     * 
+     * // Get first 10 PropertyProducts
+     * const propertyProducts = await prisma.propertyProduct.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const propertyProductWithIdOnly = await prisma.propertyProduct.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PropertyProductFindManyArgs>(args?: SelectSubset<T, PropertyProductFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PropertyProduct.
+     * @param {PropertyProductCreateArgs} args - Arguments to create a PropertyProduct.
+     * @example
+     * // Create one PropertyProduct
+     * const PropertyProduct = await prisma.propertyProduct.create({
+     *   data: {
+     *     // ... data to create a PropertyProduct
+     *   }
+     * })
+     * 
+     */
+    create<T extends PropertyProductCreateArgs>(args: SelectSubset<T, PropertyProductCreateArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PropertyProducts.
+     * @param {PropertyProductCreateManyArgs} args - Arguments to create many PropertyProducts.
+     * @example
+     * // Create many PropertyProducts
+     * const propertyProduct = await prisma.propertyProduct.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PropertyProductCreateManyArgs>(args?: SelectSubset<T, PropertyProductCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PropertyProducts and returns the data saved in the database.
+     * @param {PropertyProductCreateManyAndReturnArgs} args - Arguments to create many PropertyProducts.
+     * @example
+     * // Create many PropertyProducts
+     * const propertyProduct = await prisma.propertyProduct.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PropertyProducts and only return the `id`
+     * const propertyProductWithIdOnly = await prisma.propertyProduct.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PropertyProductCreateManyAndReturnArgs>(args?: SelectSubset<T, PropertyProductCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PropertyProduct.
+     * @param {PropertyProductDeleteArgs} args - Arguments to delete one PropertyProduct.
+     * @example
+     * // Delete one PropertyProduct
+     * const PropertyProduct = await prisma.propertyProduct.delete({
+     *   where: {
+     *     // ... filter to delete one PropertyProduct
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PropertyProductDeleteArgs>(args: SelectSubset<T, PropertyProductDeleteArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PropertyProduct.
+     * @param {PropertyProductUpdateArgs} args - Arguments to update one PropertyProduct.
+     * @example
+     * // Update one PropertyProduct
+     * const propertyProduct = await prisma.propertyProduct.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PropertyProductUpdateArgs>(args: SelectSubset<T, PropertyProductUpdateArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PropertyProducts.
+     * @param {PropertyProductDeleteManyArgs} args - Arguments to filter PropertyProducts to delete.
+     * @example
+     * // Delete a few PropertyProducts
+     * const { count } = await prisma.propertyProduct.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PropertyProductDeleteManyArgs>(args?: SelectSubset<T, PropertyProductDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PropertyProducts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyProductUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PropertyProducts
+     * const propertyProduct = await prisma.propertyProduct.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PropertyProductUpdateManyArgs>(args: SelectSubset<T, PropertyProductUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PropertyProducts and returns the data updated in the database.
+     * @param {PropertyProductUpdateManyAndReturnArgs} args - Arguments to update many PropertyProducts.
+     * @example
+     * // Update many PropertyProducts
+     * const propertyProduct = await prisma.propertyProduct.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PropertyProducts and only return the `id`
+     * const propertyProductWithIdOnly = await prisma.propertyProduct.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PropertyProductUpdateManyAndReturnArgs>(args: SelectSubset<T, PropertyProductUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PropertyProduct.
+     * @param {PropertyProductUpsertArgs} args - Arguments to update or create a PropertyProduct.
+     * @example
+     * // Update or create a PropertyProduct
+     * const propertyProduct = await prisma.propertyProduct.upsert({
+     *   create: {
+     *     // ... data to create a PropertyProduct
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PropertyProduct we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PropertyProductUpsertArgs>(args: SelectSubset<T, PropertyProductUpsertArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PropertyProducts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyProductCountArgs} args - Arguments to filter PropertyProducts to count.
+     * @example
+     * // Count the number of PropertyProducts
+     * const count = await prisma.propertyProduct.count({
+     *   where: {
+     *     // ... the filter for the PropertyProducts we want to count
+     *   }
+     * })
+    **/
+    count<T extends PropertyProductCountArgs>(
+      args?: Subset<T, PropertyProductCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PropertyProductCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PropertyProduct.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyProductAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PropertyProductAggregateArgs>(args: Subset<T, PropertyProductAggregateArgs>): Prisma.PrismaPromise<GetPropertyProductAggregateType<T>>
+
+    /**
+     * Group by PropertyProduct.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyProductGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PropertyProductGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PropertyProductGroupByArgs['orderBy'] }
+        : { orderBy?: PropertyProductGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PropertyProductGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPropertyProductGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PropertyProduct model
+   */
+  readonly fields: PropertyProductFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PropertyProduct.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PropertyProductClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    property<T extends PropertyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PropertyDefaultArgs<ExtArgs>>): Prisma__PropertyClient<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    movements<T extends PropertyProduct$movementsArgs<ExtArgs> = {}>(args?: Subset<T, PropertyProduct$movementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PropertyProduct model
+   */
+  interface PropertyProductFieldRefs {
+    readonly id: FieldRef<"PropertyProduct", 'String'>
+    readonly propertyId: FieldRef<"PropertyProduct", 'String'>
+    readonly name: FieldRef<"PropertyProduct", 'String'>
+    readonly emoji: FieldRef<"PropertyProduct", 'String'>
+    readonly unit: FieldRef<"PropertyProduct", 'String'>
+    readonly stock: FieldRef<"PropertyProduct", 'Int'>
+    readonly minStock: FieldRef<"PropertyProduct", 'Int'>
+    readonly price: FieldRef<"PropertyProduct", 'Float'>
+    readonly vat: FieldRef<"PropertyProduct", 'Float'>
+    readonly createdAt: FieldRef<"PropertyProduct", 'DateTime'>
+    readonly updatedAt: FieldRef<"PropertyProduct", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PropertyProduct findUnique
+   */
+  export type PropertyProductFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyProduct to fetch.
+     */
+    where: PropertyProductWhereUniqueInput
+  }
+
+  /**
+   * PropertyProduct findUniqueOrThrow
+   */
+  export type PropertyProductFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyProduct to fetch.
+     */
+    where: PropertyProductWhereUniqueInput
+  }
+
+  /**
+   * PropertyProduct findFirst
+   */
+  export type PropertyProductFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyProduct to fetch.
+     */
+    where?: PropertyProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PropertyProducts to fetch.
+     */
+    orderBy?: PropertyProductOrderByWithRelationInput | PropertyProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PropertyProducts.
+     */
+    cursor?: PropertyProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PropertyProducts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PropertyProducts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PropertyProducts.
+     */
+    distinct?: PropertyProductScalarFieldEnum | PropertyProductScalarFieldEnum[]
+  }
+
+  /**
+   * PropertyProduct findFirstOrThrow
+   */
+  export type PropertyProductFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyProduct to fetch.
+     */
+    where?: PropertyProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PropertyProducts to fetch.
+     */
+    orderBy?: PropertyProductOrderByWithRelationInput | PropertyProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PropertyProducts.
+     */
+    cursor?: PropertyProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PropertyProducts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PropertyProducts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PropertyProducts.
+     */
+    distinct?: PropertyProductScalarFieldEnum | PropertyProductScalarFieldEnum[]
+  }
+
+  /**
+   * PropertyProduct findMany
+   */
+  export type PropertyProductFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyProducts to fetch.
+     */
+    where?: PropertyProductWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PropertyProducts to fetch.
+     */
+    orderBy?: PropertyProductOrderByWithRelationInput | PropertyProductOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PropertyProducts.
+     */
+    cursor?: PropertyProductWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PropertyProducts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PropertyProducts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PropertyProducts.
+     */
+    distinct?: PropertyProductScalarFieldEnum | PropertyProductScalarFieldEnum[]
+  }
+
+  /**
+   * PropertyProduct create
+   */
+  export type PropertyProductCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PropertyProduct.
+     */
+    data: XOR<PropertyProductCreateInput, PropertyProductUncheckedCreateInput>
+  }
+
+  /**
+   * PropertyProduct createMany
+   */
+  export type PropertyProductCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PropertyProducts.
+     */
+    data: PropertyProductCreateManyInput | PropertyProductCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PropertyProduct createManyAndReturn
+   */
+  export type PropertyProductCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * The data used to create many PropertyProducts.
+     */
+    data: PropertyProductCreateManyInput | PropertyProductCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PropertyProduct update
+   */
+  export type PropertyProductUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PropertyProduct.
+     */
+    data: XOR<PropertyProductUpdateInput, PropertyProductUncheckedUpdateInput>
+    /**
+     * Choose, which PropertyProduct to update.
+     */
+    where: PropertyProductWhereUniqueInput
+  }
+
+  /**
+   * PropertyProduct updateMany
+   */
+  export type PropertyProductUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PropertyProducts.
+     */
+    data: XOR<PropertyProductUpdateManyMutationInput, PropertyProductUncheckedUpdateManyInput>
+    /**
+     * Filter which PropertyProducts to update
+     */
+    where?: PropertyProductWhereInput
+    /**
+     * Limit how many PropertyProducts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PropertyProduct updateManyAndReturn
+   */
+  export type PropertyProductUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * The data used to update PropertyProducts.
+     */
+    data: XOR<PropertyProductUpdateManyMutationInput, PropertyProductUncheckedUpdateManyInput>
+    /**
+     * Filter which PropertyProducts to update
+     */
+    where?: PropertyProductWhereInput
+    /**
+     * Limit how many PropertyProducts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PropertyProduct upsert
+   */
+  export type PropertyProductUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PropertyProduct to update in case it exists.
+     */
+    where: PropertyProductWhereUniqueInput
+    /**
+     * In case the PropertyProduct found by the `where` argument doesn't exist, create a new PropertyProduct with this data.
+     */
+    create: XOR<PropertyProductCreateInput, PropertyProductUncheckedCreateInput>
+    /**
+     * In case the PropertyProduct was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PropertyProductUpdateInput, PropertyProductUncheckedUpdateInput>
+  }
+
+  /**
+   * PropertyProduct delete
+   */
+  export type PropertyProductDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+    /**
+     * Filter which PropertyProduct to delete.
+     */
+    where: PropertyProductWhereUniqueInput
+  }
+
+  /**
+   * PropertyProduct deleteMany
+   */
+  export type PropertyProductDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PropertyProducts to delete
+     */
+    where?: PropertyProductWhereInput
+    /**
+     * Limit how many PropertyProducts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PropertyProduct.movements
+   */
+  export type PropertyProduct$movementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    where?: PropertyStockMovementWhereInput
+    orderBy?: PropertyStockMovementOrderByWithRelationInput | PropertyStockMovementOrderByWithRelationInput[]
+    cursor?: PropertyStockMovementWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PropertyStockMovementScalarFieldEnum | PropertyStockMovementScalarFieldEnum[]
+  }
+
+  /**
+   * PropertyProduct without action
+   */
+  export type PropertyProductDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyProduct
+     */
+    select?: PropertyProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyProduct
+     */
+    omit?: PropertyProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyProductInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PropertyStockMovement
+   */
+
+  export type AggregatePropertyStockMovement = {
+    _count: PropertyStockMovementCountAggregateOutputType | null
+    _avg: PropertyStockMovementAvgAggregateOutputType | null
+    _sum: PropertyStockMovementSumAggregateOutputType | null
+    _min: PropertyStockMovementMinAggregateOutputType | null
+    _max: PropertyStockMovementMaxAggregateOutputType | null
+  }
+
+  export type PropertyStockMovementAvgAggregateOutputType = {
+    delta: number | null
+    balance: number | null
+  }
+
+  export type PropertyStockMovementSumAggregateOutputType = {
+    delta: number | null
+    balance: number | null
+  }
+
+  export type PropertyStockMovementMinAggregateOutputType = {
+    id: string | null
+    productId: string | null
+    delta: number | null
+    balance: number | null
+    reason: string | null
+    bookingId: string | null
+    note: string | null
+    createdAt: Date | null
+  }
+
+  export type PropertyStockMovementMaxAggregateOutputType = {
+    id: string | null
+    productId: string | null
+    delta: number | null
+    balance: number | null
+    reason: string | null
+    bookingId: string | null
+    note: string | null
+    createdAt: Date | null
+  }
+
+  export type PropertyStockMovementCountAggregateOutputType = {
+    id: number
+    productId: number
+    delta: number
+    balance: number
+    reason: number
+    bookingId: number
+    note: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PropertyStockMovementAvgAggregateInputType = {
+    delta?: true
+    balance?: true
+  }
+
+  export type PropertyStockMovementSumAggregateInputType = {
+    delta?: true
+    balance?: true
+  }
+
+  export type PropertyStockMovementMinAggregateInputType = {
+    id?: true
+    productId?: true
+    delta?: true
+    balance?: true
+    reason?: true
+    bookingId?: true
+    note?: true
+    createdAt?: true
+  }
+
+  export type PropertyStockMovementMaxAggregateInputType = {
+    id?: true
+    productId?: true
+    delta?: true
+    balance?: true
+    reason?: true
+    bookingId?: true
+    note?: true
+    createdAt?: true
+  }
+
+  export type PropertyStockMovementCountAggregateInputType = {
+    id?: true
+    productId?: true
+    delta?: true
+    balance?: true
+    reason?: true
+    bookingId?: true
+    note?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PropertyStockMovementAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PropertyStockMovement to aggregate.
+     */
+    where?: PropertyStockMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PropertyStockMovements to fetch.
+     */
+    orderBy?: PropertyStockMovementOrderByWithRelationInput | PropertyStockMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PropertyStockMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PropertyStockMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PropertyStockMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PropertyStockMovements
+    **/
+    _count?: true | PropertyStockMovementCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PropertyStockMovementAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PropertyStockMovementSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PropertyStockMovementMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PropertyStockMovementMaxAggregateInputType
+  }
+
+  export type GetPropertyStockMovementAggregateType<T extends PropertyStockMovementAggregateArgs> = {
+        [P in keyof T & keyof AggregatePropertyStockMovement]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePropertyStockMovement[P]>
+      : GetScalarType<T[P], AggregatePropertyStockMovement[P]>
+  }
+
+
+
+
+  export type PropertyStockMovementGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PropertyStockMovementWhereInput
+    orderBy?: PropertyStockMovementOrderByWithAggregationInput | PropertyStockMovementOrderByWithAggregationInput[]
+    by: PropertyStockMovementScalarFieldEnum[] | PropertyStockMovementScalarFieldEnum
+    having?: PropertyStockMovementScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PropertyStockMovementCountAggregateInputType | true
+    _avg?: PropertyStockMovementAvgAggregateInputType
+    _sum?: PropertyStockMovementSumAggregateInputType
+    _min?: PropertyStockMovementMinAggregateInputType
+    _max?: PropertyStockMovementMaxAggregateInputType
+  }
+
+  export type PropertyStockMovementGroupByOutputType = {
+    id: string
+    productId: string
+    delta: number
+    balance: number
+    reason: string
+    bookingId: string | null
+    note: string | null
+    createdAt: Date
+    _count: PropertyStockMovementCountAggregateOutputType | null
+    _avg: PropertyStockMovementAvgAggregateOutputType | null
+    _sum: PropertyStockMovementSumAggregateOutputType | null
+    _min: PropertyStockMovementMinAggregateOutputType | null
+    _max: PropertyStockMovementMaxAggregateOutputType | null
+  }
+
+  type GetPropertyStockMovementGroupByPayload<T extends PropertyStockMovementGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PropertyStockMovementGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PropertyStockMovementGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PropertyStockMovementGroupByOutputType[P]>
+            : GetScalarType<T[P], PropertyStockMovementGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PropertyStockMovementSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    delta?: boolean
+    balance?: boolean
+    reason?: boolean
+    bookingId?: boolean
+    note?: boolean
+    createdAt?: boolean
+    product?: boolean | PropertyProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["propertyStockMovement"]>
+
+  export type PropertyStockMovementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    delta?: boolean
+    balance?: boolean
+    reason?: boolean
+    bookingId?: boolean
+    note?: boolean
+    createdAt?: boolean
+    product?: boolean | PropertyProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["propertyStockMovement"]>
+
+  export type PropertyStockMovementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    delta?: boolean
+    balance?: boolean
+    reason?: boolean
+    bookingId?: boolean
+    note?: boolean
+    createdAt?: boolean
+    product?: boolean | PropertyProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["propertyStockMovement"]>
+
+  export type PropertyStockMovementSelectScalar = {
+    id?: boolean
+    productId?: boolean
+    delta?: boolean
+    balance?: boolean
+    reason?: boolean
+    bookingId?: boolean
+    note?: boolean
+    createdAt?: boolean
+  }
+
+  export type PropertyStockMovementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "delta" | "balance" | "reason" | "bookingId" | "note" | "createdAt", ExtArgs["result"]["propertyStockMovement"]>
+  export type PropertyStockMovementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | PropertyProductDefaultArgs<ExtArgs>
+  }
+  export type PropertyStockMovementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | PropertyProductDefaultArgs<ExtArgs>
+  }
+  export type PropertyStockMovementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | PropertyProductDefaultArgs<ExtArgs>
+  }
+
+  export type $PropertyStockMovementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PropertyStockMovement"
+    objects: {
+      product: Prisma.$PropertyProductPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      productId: string
+      delta: number
+      balance: number
+      reason: string
+      bookingId: string | null
+      note: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["propertyStockMovement"]>
+    composites: {}
+  }
+
+  type PropertyStockMovementGetPayload<S extends boolean | null | undefined | PropertyStockMovementDefaultArgs> = $Result.GetResult<Prisma.$PropertyStockMovementPayload, S>
+
+  type PropertyStockMovementCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PropertyStockMovementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PropertyStockMovementCountAggregateInputType | true
+    }
+
+  export interface PropertyStockMovementDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PropertyStockMovement'], meta: { name: 'PropertyStockMovement' } }
+    /**
+     * Find zero or one PropertyStockMovement that matches the filter.
+     * @param {PropertyStockMovementFindUniqueArgs} args - Arguments to find a PropertyStockMovement
+     * @example
+     * // Get one PropertyStockMovement
+     * const propertyStockMovement = await prisma.propertyStockMovement.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PropertyStockMovementFindUniqueArgs>(args: SelectSubset<T, PropertyStockMovementFindUniqueArgs<ExtArgs>>): Prisma__PropertyStockMovementClient<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PropertyStockMovement that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PropertyStockMovementFindUniqueOrThrowArgs} args - Arguments to find a PropertyStockMovement
+     * @example
+     * // Get one PropertyStockMovement
+     * const propertyStockMovement = await prisma.propertyStockMovement.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PropertyStockMovementFindUniqueOrThrowArgs>(args: SelectSubset<T, PropertyStockMovementFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PropertyStockMovementClient<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PropertyStockMovement that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyStockMovementFindFirstArgs} args - Arguments to find a PropertyStockMovement
+     * @example
+     * // Get one PropertyStockMovement
+     * const propertyStockMovement = await prisma.propertyStockMovement.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PropertyStockMovementFindFirstArgs>(args?: SelectSubset<T, PropertyStockMovementFindFirstArgs<ExtArgs>>): Prisma__PropertyStockMovementClient<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PropertyStockMovement that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyStockMovementFindFirstOrThrowArgs} args - Arguments to find a PropertyStockMovement
+     * @example
+     * // Get one PropertyStockMovement
+     * const propertyStockMovement = await prisma.propertyStockMovement.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PropertyStockMovementFindFirstOrThrowArgs>(args?: SelectSubset<T, PropertyStockMovementFindFirstOrThrowArgs<ExtArgs>>): Prisma__PropertyStockMovementClient<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PropertyStockMovements that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyStockMovementFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PropertyStockMovements
+     * const propertyStockMovements = await prisma.propertyStockMovement.findMany()
+     * 
+     * // Get first 10 PropertyStockMovements
+     * const propertyStockMovements = await prisma.propertyStockMovement.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const propertyStockMovementWithIdOnly = await prisma.propertyStockMovement.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PropertyStockMovementFindManyArgs>(args?: SelectSubset<T, PropertyStockMovementFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PropertyStockMovement.
+     * @param {PropertyStockMovementCreateArgs} args - Arguments to create a PropertyStockMovement.
+     * @example
+     * // Create one PropertyStockMovement
+     * const PropertyStockMovement = await prisma.propertyStockMovement.create({
+     *   data: {
+     *     // ... data to create a PropertyStockMovement
+     *   }
+     * })
+     * 
+     */
+    create<T extends PropertyStockMovementCreateArgs>(args: SelectSubset<T, PropertyStockMovementCreateArgs<ExtArgs>>): Prisma__PropertyStockMovementClient<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PropertyStockMovements.
+     * @param {PropertyStockMovementCreateManyArgs} args - Arguments to create many PropertyStockMovements.
+     * @example
+     * // Create many PropertyStockMovements
+     * const propertyStockMovement = await prisma.propertyStockMovement.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PropertyStockMovementCreateManyArgs>(args?: SelectSubset<T, PropertyStockMovementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PropertyStockMovements and returns the data saved in the database.
+     * @param {PropertyStockMovementCreateManyAndReturnArgs} args - Arguments to create many PropertyStockMovements.
+     * @example
+     * // Create many PropertyStockMovements
+     * const propertyStockMovement = await prisma.propertyStockMovement.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PropertyStockMovements and only return the `id`
+     * const propertyStockMovementWithIdOnly = await prisma.propertyStockMovement.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PropertyStockMovementCreateManyAndReturnArgs>(args?: SelectSubset<T, PropertyStockMovementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PropertyStockMovement.
+     * @param {PropertyStockMovementDeleteArgs} args - Arguments to delete one PropertyStockMovement.
+     * @example
+     * // Delete one PropertyStockMovement
+     * const PropertyStockMovement = await prisma.propertyStockMovement.delete({
+     *   where: {
+     *     // ... filter to delete one PropertyStockMovement
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PropertyStockMovementDeleteArgs>(args: SelectSubset<T, PropertyStockMovementDeleteArgs<ExtArgs>>): Prisma__PropertyStockMovementClient<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PropertyStockMovement.
+     * @param {PropertyStockMovementUpdateArgs} args - Arguments to update one PropertyStockMovement.
+     * @example
+     * // Update one PropertyStockMovement
+     * const propertyStockMovement = await prisma.propertyStockMovement.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PropertyStockMovementUpdateArgs>(args: SelectSubset<T, PropertyStockMovementUpdateArgs<ExtArgs>>): Prisma__PropertyStockMovementClient<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PropertyStockMovements.
+     * @param {PropertyStockMovementDeleteManyArgs} args - Arguments to filter PropertyStockMovements to delete.
+     * @example
+     * // Delete a few PropertyStockMovements
+     * const { count } = await prisma.propertyStockMovement.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PropertyStockMovementDeleteManyArgs>(args?: SelectSubset<T, PropertyStockMovementDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PropertyStockMovements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyStockMovementUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PropertyStockMovements
+     * const propertyStockMovement = await prisma.propertyStockMovement.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PropertyStockMovementUpdateManyArgs>(args: SelectSubset<T, PropertyStockMovementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PropertyStockMovements and returns the data updated in the database.
+     * @param {PropertyStockMovementUpdateManyAndReturnArgs} args - Arguments to update many PropertyStockMovements.
+     * @example
+     * // Update many PropertyStockMovements
+     * const propertyStockMovement = await prisma.propertyStockMovement.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PropertyStockMovements and only return the `id`
+     * const propertyStockMovementWithIdOnly = await prisma.propertyStockMovement.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PropertyStockMovementUpdateManyAndReturnArgs>(args: SelectSubset<T, PropertyStockMovementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PropertyStockMovement.
+     * @param {PropertyStockMovementUpsertArgs} args - Arguments to update or create a PropertyStockMovement.
+     * @example
+     * // Update or create a PropertyStockMovement
+     * const propertyStockMovement = await prisma.propertyStockMovement.upsert({
+     *   create: {
+     *     // ... data to create a PropertyStockMovement
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PropertyStockMovement we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PropertyStockMovementUpsertArgs>(args: SelectSubset<T, PropertyStockMovementUpsertArgs<ExtArgs>>): Prisma__PropertyStockMovementClient<$Result.GetResult<Prisma.$PropertyStockMovementPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PropertyStockMovements.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyStockMovementCountArgs} args - Arguments to filter PropertyStockMovements to count.
+     * @example
+     * // Count the number of PropertyStockMovements
+     * const count = await prisma.propertyStockMovement.count({
+     *   where: {
+     *     // ... the filter for the PropertyStockMovements we want to count
+     *   }
+     * })
+    **/
+    count<T extends PropertyStockMovementCountArgs>(
+      args?: Subset<T, PropertyStockMovementCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PropertyStockMovementCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PropertyStockMovement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyStockMovementAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PropertyStockMovementAggregateArgs>(args: Subset<T, PropertyStockMovementAggregateArgs>): Prisma.PrismaPromise<GetPropertyStockMovementAggregateType<T>>
+
+    /**
+     * Group by PropertyStockMovement.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PropertyStockMovementGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PropertyStockMovementGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PropertyStockMovementGroupByArgs['orderBy'] }
+        : { orderBy?: PropertyStockMovementGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PropertyStockMovementGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPropertyStockMovementGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PropertyStockMovement model
+   */
+  readonly fields: PropertyStockMovementFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PropertyStockMovement.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PropertyStockMovementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    product<T extends PropertyProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PropertyProductDefaultArgs<ExtArgs>>): Prisma__PropertyProductClient<$Result.GetResult<Prisma.$PropertyProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PropertyStockMovement model
+   */
+  interface PropertyStockMovementFieldRefs {
+    readonly id: FieldRef<"PropertyStockMovement", 'String'>
+    readonly productId: FieldRef<"PropertyStockMovement", 'String'>
+    readonly delta: FieldRef<"PropertyStockMovement", 'Int'>
+    readonly balance: FieldRef<"PropertyStockMovement", 'Int'>
+    readonly reason: FieldRef<"PropertyStockMovement", 'String'>
+    readonly bookingId: FieldRef<"PropertyStockMovement", 'String'>
+    readonly note: FieldRef<"PropertyStockMovement", 'String'>
+    readonly createdAt: FieldRef<"PropertyStockMovement", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PropertyStockMovement findUnique
+   */
+  export type PropertyStockMovementFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyStockMovement to fetch.
+     */
+    where: PropertyStockMovementWhereUniqueInput
+  }
+
+  /**
+   * PropertyStockMovement findUniqueOrThrow
+   */
+  export type PropertyStockMovementFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyStockMovement to fetch.
+     */
+    where: PropertyStockMovementWhereUniqueInput
+  }
+
+  /**
+   * PropertyStockMovement findFirst
+   */
+  export type PropertyStockMovementFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyStockMovement to fetch.
+     */
+    where?: PropertyStockMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PropertyStockMovements to fetch.
+     */
+    orderBy?: PropertyStockMovementOrderByWithRelationInput | PropertyStockMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PropertyStockMovements.
+     */
+    cursor?: PropertyStockMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PropertyStockMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PropertyStockMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PropertyStockMovements.
+     */
+    distinct?: PropertyStockMovementScalarFieldEnum | PropertyStockMovementScalarFieldEnum[]
+  }
+
+  /**
+   * PropertyStockMovement findFirstOrThrow
+   */
+  export type PropertyStockMovementFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyStockMovement to fetch.
+     */
+    where?: PropertyStockMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PropertyStockMovements to fetch.
+     */
+    orderBy?: PropertyStockMovementOrderByWithRelationInput | PropertyStockMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PropertyStockMovements.
+     */
+    cursor?: PropertyStockMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PropertyStockMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PropertyStockMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PropertyStockMovements.
+     */
+    distinct?: PropertyStockMovementScalarFieldEnum | PropertyStockMovementScalarFieldEnum[]
+  }
+
+  /**
+   * PropertyStockMovement findMany
+   */
+  export type PropertyStockMovementFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * Filter, which PropertyStockMovements to fetch.
+     */
+    where?: PropertyStockMovementWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PropertyStockMovements to fetch.
+     */
+    orderBy?: PropertyStockMovementOrderByWithRelationInput | PropertyStockMovementOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PropertyStockMovements.
+     */
+    cursor?: PropertyStockMovementWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PropertyStockMovements from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PropertyStockMovements.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PropertyStockMovements.
+     */
+    distinct?: PropertyStockMovementScalarFieldEnum | PropertyStockMovementScalarFieldEnum[]
+  }
+
+  /**
+   * PropertyStockMovement create
+   */
+  export type PropertyStockMovementCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PropertyStockMovement.
+     */
+    data: XOR<PropertyStockMovementCreateInput, PropertyStockMovementUncheckedCreateInput>
+  }
+
+  /**
+   * PropertyStockMovement createMany
+   */
+  export type PropertyStockMovementCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PropertyStockMovements.
+     */
+    data: PropertyStockMovementCreateManyInput | PropertyStockMovementCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PropertyStockMovement createManyAndReturn
+   */
+  export type PropertyStockMovementCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * The data used to create many PropertyStockMovements.
+     */
+    data: PropertyStockMovementCreateManyInput | PropertyStockMovementCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PropertyStockMovement update
+   */
+  export type PropertyStockMovementUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PropertyStockMovement.
+     */
+    data: XOR<PropertyStockMovementUpdateInput, PropertyStockMovementUncheckedUpdateInput>
+    /**
+     * Choose, which PropertyStockMovement to update.
+     */
+    where: PropertyStockMovementWhereUniqueInput
+  }
+
+  /**
+   * PropertyStockMovement updateMany
+   */
+  export type PropertyStockMovementUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PropertyStockMovements.
+     */
+    data: XOR<PropertyStockMovementUpdateManyMutationInput, PropertyStockMovementUncheckedUpdateManyInput>
+    /**
+     * Filter which PropertyStockMovements to update
+     */
+    where?: PropertyStockMovementWhereInput
+    /**
+     * Limit how many PropertyStockMovements to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PropertyStockMovement updateManyAndReturn
+   */
+  export type PropertyStockMovementUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * The data used to update PropertyStockMovements.
+     */
+    data: XOR<PropertyStockMovementUpdateManyMutationInput, PropertyStockMovementUncheckedUpdateManyInput>
+    /**
+     * Filter which PropertyStockMovements to update
+     */
+    where?: PropertyStockMovementWhereInput
+    /**
+     * Limit how many PropertyStockMovements to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PropertyStockMovement upsert
+   */
+  export type PropertyStockMovementUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PropertyStockMovement to update in case it exists.
+     */
+    where: PropertyStockMovementWhereUniqueInput
+    /**
+     * In case the PropertyStockMovement found by the `where` argument doesn't exist, create a new PropertyStockMovement with this data.
+     */
+    create: XOR<PropertyStockMovementCreateInput, PropertyStockMovementUncheckedCreateInput>
+    /**
+     * In case the PropertyStockMovement was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PropertyStockMovementUpdateInput, PropertyStockMovementUncheckedUpdateInput>
+  }
+
+  /**
+   * PropertyStockMovement delete
+   */
+  export type PropertyStockMovementDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
+    /**
+     * Filter which PropertyStockMovement to delete.
+     */
+    where: PropertyStockMovementWhereUniqueInput
+  }
+
+  /**
+   * PropertyStockMovement deleteMany
+   */
+  export type PropertyStockMovementDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PropertyStockMovements to delete
+     */
+    where?: PropertyStockMovementWhereInput
+    /**
+     * Limit how many PropertyStockMovements to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PropertyStockMovement without action
+   */
+  export type PropertyStockMovementDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PropertyStockMovement
+     */
+    select?: PropertyStockMovementSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PropertyStockMovement
+     */
+    omit?: PropertyStockMovementOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyStockMovementInclude<ExtArgs> | null
   }
 
 
@@ -7274,6 +9881,7 @@ export namespace Prisma {
     technicalProfile: number
     accessInstructions: number
     accessInfo: number
+    consumption: number
     createdAt: number
     _all: number
   }
@@ -7329,6 +9937,7 @@ export namespace Prisma {
     technicalProfile?: true
     accessInstructions?: true
     accessInfo?: true
+    consumption?: true
     createdAt?: true
     _all?: true
   }
@@ -7431,6 +10040,7 @@ export namespace Prisma {
     technicalProfile: JsonValue | null
     accessInstructions: string | null
     accessInfo: JsonValue | null
+    consumption: JsonValue | null
     createdAt: Date
     _count: UnitCategoryCountAggregateOutputType | null
     _avg: UnitCategoryAvgAggregateOutputType | null
@@ -7465,6 +10075,7 @@ export namespace Prisma {
     technicalProfile?: boolean
     accessInstructions?: boolean
     accessInfo?: boolean
+    consumption?: boolean
     createdAt?: boolean
     property?: boolean | PropertyDefaultArgs<ExtArgs>
     units?: boolean | UnitCategory$unitsArgs<ExtArgs>
@@ -7483,6 +10094,7 @@ export namespace Prisma {
     technicalProfile?: boolean
     accessInstructions?: boolean
     accessInfo?: boolean
+    consumption?: boolean
     createdAt?: boolean
     property?: boolean | PropertyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["unitCategory"]>
@@ -7499,6 +10111,7 @@ export namespace Prisma {
     technicalProfile?: boolean
     accessInstructions?: boolean
     accessInfo?: boolean
+    consumption?: boolean
     createdAt?: boolean
     property?: boolean | PropertyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["unitCategory"]>
@@ -7515,10 +10128,11 @@ export namespace Prisma {
     technicalProfile?: boolean
     accessInstructions?: boolean
     accessInfo?: boolean
+    consumption?: boolean
     createdAt?: boolean
   }
 
-  export type UnitCategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "propertyId" | "name" | "squareMeters" | "bedrooms" | "bathrooms" | "maxGuests" | "bedConfig" | "technicalProfile" | "accessInstructions" | "accessInfo" | "createdAt", ExtArgs["result"]["unitCategory"]>
+  export type UnitCategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "propertyId" | "name" | "squareMeters" | "bedrooms" | "bathrooms" | "maxGuests" | "bedConfig" | "technicalProfile" | "accessInstructions" | "accessInfo" | "consumption" | "createdAt", ExtArgs["result"]["unitCategory"]>
   export type UnitCategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     property?: boolean | PropertyDefaultArgs<ExtArgs>
     units?: boolean | UnitCategory$unitsArgs<ExtArgs>
@@ -7549,6 +10163,7 @@ export namespace Prisma {
       technicalProfile: Prisma.JsonValue | null
       accessInstructions: string | null
       accessInfo: Prisma.JsonValue | null
+      consumption: Prisma.JsonValue | null
       createdAt: Date
     }, ExtArgs["result"]["unitCategory"]>
     composites: {}
@@ -7986,6 +10601,7 @@ export namespace Prisma {
     readonly technicalProfile: FieldRef<"UnitCategory", 'Json'>
     readonly accessInstructions: FieldRef<"UnitCategory", 'String'>
     readonly accessInfo: FieldRef<"UnitCategory", 'Json'>
+    readonly consumption: FieldRef<"UnitCategory", 'Json'>
     readonly createdAt: FieldRef<"UnitCategory", 'DateTime'>
   }
     
@@ -44370,6 +46986,37 @@ export namespace Prisma {
   export type PropertyScalarFieldEnum = (typeof PropertyScalarFieldEnum)[keyof typeof PropertyScalarFieldEnum]
 
 
+  export const PropertyProductScalarFieldEnum: {
+    id: 'id',
+    propertyId: 'propertyId',
+    name: 'name',
+    emoji: 'emoji',
+    unit: 'unit',
+    stock: 'stock',
+    minStock: 'minStock',
+    price: 'price',
+    vat: 'vat',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PropertyProductScalarFieldEnum = (typeof PropertyProductScalarFieldEnum)[keyof typeof PropertyProductScalarFieldEnum]
+
+
+  export const PropertyStockMovementScalarFieldEnum: {
+    id: 'id',
+    productId: 'productId',
+    delta: 'delta',
+    balance: 'balance',
+    reason: 'reason',
+    bookingId: 'bookingId',
+    note: 'note',
+    createdAt: 'createdAt'
+  };
+
+  export type PropertyStockMovementScalarFieldEnum = (typeof PropertyStockMovementScalarFieldEnum)[keyof typeof PropertyStockMovementScalarFieldEnum]
+
+
   export const UnitCategoryScalarFieldEnum: {
     id: 'id',
     propertyId: 'propertyId',
@@ -44382,6 +47029,7 @@ export namespace Prisma {
     technicalProfile: 'technicalProfile',
     accessInstructions: 'accessInstructions',
     accessInfo: 'accessInfo',
+    consumption: 'consumption',
     createdAt: 'createdAt'
   };
 
@@ -45203,6 +47851,7 @@ export namespace Prisma {
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     categories?: UnitCategoryListRelationFilter
     units?: ApartmentListRelationFilter
+    products?: PropertyProductListRelationFilter
   }
 
   export type PropertyOrderByWithRelationInput = {
@@ -45217,6 +47866,7 @@ export namespace Prisma {
     organization?: OrganizationOrderByWithRelationInput
     categories?: UnitCategoryOrderByRelationAggregateInput
     units?: ApartmentOrderByRelationAggregateInput
+    products?: PropertyProductOrderByRelationAggregateInput
   }
 
   export type PropertyWhereUniqueInput = Prisma.AtLeast<{
@@ -45234,6 +47884,7 @@ export namespace Prisma {
     organization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     categories?: UnitCategoryListRelationFilter
     units?: ApartmentListRelationFilter
+    products?: PropertyProductListRelationFilter
   }, "id">
 
   export type PropertyOrderByWithAggregationInput = {
@@ -45266,6 +47917,168 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Property"> | Date | string
   }
 
+  export type PropertyProductWhereInput = {
+    AND?: PropertyProductWhereInput | PropertyProductWhereInput[]
+    OR?: PropertyProductWhereInput[]
+    NOT?: PropertyProductWhereInput | PropertyProductWhereInput[]
+    id?: StringFilter<"PropertyProduct"> | string
+    propertyId?: StringFilter<"PropertyProduct"> | string
+    name?: StringFilter<"PropertyProduct"> | string
+    emoji?: StringFilter<"PropertyProduct"> | string
+    unit?: StringFilter<"PropertyProduct"> | string
+    stock?: IntFilter<"PropertyProduct"> | number
+    minStock?: IntFilter<"PropertyProduct"> | number
+    price?: FloatFilter<"PropertyProduct"> | number
+    vat?: FloatFilter<"PropertyProduct"> | number
+    createdAt?: DateTimeFilter<"PropertyProduct"> | Date | string
+    updatedAt?: DateTimeFilter<"PropertyProduct"> | Date | string
+    property?: XOR<PropertyScalarRelationFilter, PropertyWhereInput>
+    movements?: PropertyStockMovementListRelationFilter
+  }
+
+  export type PropertyProductOrderByWithRelationInput = {
+    id?: SortOrder
+    propertyId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    price?: SortOrder
+    vat?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    property?: PropertyOrderByWithRelationInput
+    movements?: PropertyStockMovementOrderByRelationAggregateInput
+  }
+
+  export type PropertyProductWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PropertyProductWhereInput | PropertyProductWhereInput[]
+    OR?: PropertyProductWhereInput[]
+    NOT?: PropertyProductWhereInput | PropertyProductWhereInput[]
+    propertyId?: StringFilter<"PropertyProduct"> | string
+    name?: StringFilter<"PropertyProduct"> | string
+    emoji?: StringFilter<"PropertyProduct"> | string
+    unit?: StringFilter<"PropertyProduct"> | string
+    stock?: IntFilter<"PropertyProduct"> | number
+    minStock?: IntFilter<"PropertyProduct"> | number
+    price?: FloatFilter<"PropertyProduct"> | number
+    vat?: FloatFilter<"PropertyProduct"> | number
+    createdAt?: DateTimeFilter<"PropertyProduct"> | Date | string
+    updatedAt?: DateTimeFilter<"PropertyProduct"> | Date | string
+    property?: XOR<PropertyScalarRelationFilter, PropertyWhereInput>
+    movements?: PropertyStockMovementListRelationFilter
+  }, "id">
+
+  export type PropertyProductOrderByWithAggregationInput = {
+    id?: SortOrder
+    propertyId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    price?: SortOrder
+    vat?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PropertyProductCountOrderByAggregateInput
+    _avg?: PropertyProductAvgOrderByAggregateInput
+    _max?: PropertyProductMaxOrderByAggregateInput
+    _min?: PropertyProductMinOrderByAggregateInput
+    _sum?: PropertyProductSumOrderByAggregateInput
+  }
+
+  export type PropertyProductScalarWhereWithAggregatesInput = {
+    AND?: PropertyProductScalarWhereWithAggregatesInput | PropertyProductScalarWhereWithAggregatesInput[]
+    OR?: PropertyProductScalarWhereWithAggregatesInput[]
+    NOT?: PropertyProductScalarWhereWithAggregatesInput | PropertyProductScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PropertyProduct"> | string
+    propertyId?: StringWithAggregatesFilter<"PropertyProduct"> | string
+    name?: StringWithAggregatesFilter<"PropertyProduct"> | string
+    emoji?: StringWithAggregatesFilter<"PropertyProduct"> | string
+    unit?: StringWithAggregatesFilter<"PropertyProduct"> | string
+    stock?: IntWithAggregatesFilter<"PropertyProduct"> | number
+    minStock?: IntWithAggregatesFilter<"PropertyProduct"> | number
+    price?: FloatWithAggregatesFilter<"PropertyProduct"> | number
+    vat?: FloatWithAggregatesFilter<"PropertyProduct"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"PropertyProduct"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PropertyProduct"> | Date | string
+  }
+
+  export type PropertyStockMovementWhereInput = {
+    AND?: PropertyStockMovementWhereInput | PropertyStockMovementWhereInput[]
+    OR?: PropertyStockMovementWhereInput[]
+    NOT?: PropertyStockMovementWhereInput | PropertyStockMovementWhereInput[]
+    id?: StringFilter<"PropertyStockMovement"> | string
+    productId?: StringFilter<"PropertyStockMovement"> | string
+    delta?: IntFilter<"PropertyStockMovement"> | number
+    balance?: IntFilter<"PropertyStockMovement"> | number
+    reason?: StringFilter<"PropertyStockMovement"> | string
+    bookingId?: StringNullableFilter<"PropertyStockMovement"> | string | null
+    note?: StringNullableFilter<"PropertyStockMovement"> | string | null
+    createdAt?: DateTimeFilter<"PropertyStockMovement"> | Date | string
+    product?: XOR<PropertyProductScalarRelationFilter, PropertyProductWhereInput>
+  }
+
+  export type PropertyStockMovementOrderByWithRelationInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    delta?: SortOrder
+    balance?: SortOrder
+    reason?: SortOrder
+    bookingId?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    product?: PropertyProductOrderByWithRelationInput
+  }
+
+  export type PropertyStockMovementWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PropertyStockMovementWhereInput | PropertyStockMovementWhereInput[]
+    OR?: PropertyStockMovementWhereInput[]
+    NOT?: PropertyStockMovementWhereInput | PropertyStockMovementWhereInput[]
+    productId?: StringFilter<"PropertyStockMovement"> | string
+    delta?: IntFilter<"PropertyStockMovement"> | number
+    balance?: IntFilter<"PropertyStockMovement"> | number
+    reason?: StringFilter<"PropertyStockMovement"> | string
+    bookingId?: StringNullableFilter<"PropertyStockMovement"> | string | null
+    note?: StringNullableFilter<"PropertyStockMovement"> | string | null
+    createdAt?: DateTimeFilter<"PropertyStockMovement"> | Date | string
+    product?: XOR<PropertyProductScalarRelationFilter, PropertyProductWhereInput>
+  }, "id">
+
+  export type PropertyStockMovementOrderByWithAggregationInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    delta?: SortOrder
+    balance?: SortOrder
+    reason?: SortOrder
+    bookingId?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: PropertyStockMovementCountOrderByAggregateInput
+    _avg?: PropertyStockMovementAvgOrderByAggregateInput
+    _max?: PropertyStockMovementMaxOrderByAggregateInput
+    _min?: PropertyStockMovementMinOrderByAggregateInput
+    _sum?: PropertyStockMovementSumOrderByAggregateInput
+  }
+
+  export type PropertyStockMovementScalarWhereWithAggregatesInput = {
+    AND?: PropertyStockMovementScalarWhereWithAggregatesInput | PropertyStockMovementScalarWhereWithAggregatesInput[]
+    OR?: PropertyStockMovementScalarWhereWithAggregatesInput[]
+    NOT?: PropertyStockMovementScalarWhereWithAggregatesInput | PropertyStockMovementScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PropertyStockMovement"> | string
+    productId?: StringWithAggregatesFilter<"PropertyStockMovement"> | string
+    delta?: IntWithAggregatesFilter<"PropertyStockMovement"> | number
+    balance?: IntWithAggregatesFilter<"PropertyStockMovement"> | number
+    reason?: StringWithAggregatesFilter<"PropertyStockMovement"> | string
+    bookingId?: StringNullableWithAggregatesFilter<"PropertyStockMovement"> | string | null
+    note?: StringNullableWithAggregatesFilter<"PropertyStockMovement"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PropertyStockMovement"> | Date | string
+  }
+
   export type UnitCategoryWhereInput = {
     AND?: UnitCategoryWhereInput | UnitCategoryWhereInput[]
     OR?: UnitCategoryWhereInput[]
@@ -45281,6 +48094,7 @@ export namespace Prisma {
     technicalProfile?: JsonNullableFilter<"UnitCategory">
     accessInstructions?: StringNullableFilter<"UnitCategory"> | string | null
     accessInfo?: JsonNullableFilter<"UnitCategory">
+    consumption?: JsonNullableFilter<"UnitCategory">
     createdAt?: DateTimeFilter<"UnitCategory"> | Date | string
     property?: XOR<PropertyScalarRelationFilter, PropertyWhereInput>
     units?: ApartmentListRelationFilter
@@ -45298,6 +48112,7 @@ export namespace Prisma {
     technicalProfile?: SortOrderInput | SortOrder
     accessInstructions?: SortOrderInput | SortOrder
     accessInfo?: SortOrderInput | SortOrder
+    consumption?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     property?: PropertyOrderByWithRelationInput
     units?: ApartmentOrderByRelationAggregateInput
@@ -45318,6 +48133,7 @@ export namespace Prisma {
     technicalProfile?: JsonNullableFilter<"UnitCategory">
     accessInstructions?: StringNullableFilter<"UnitCategory"> | string | null
     accessInfo?: JsonNullableFilter<"UnitCategory">
+    consumption?: JsonNullableFilter<"UnitCategory">
     createdAt?: DateTimeFilter<"UnitCategory"> | Date | string
     property?: XOR<PropertyScalarRelationFilter, PropertyWhereInput>
     units?: ApartmentListRelationFilter
@@ -45335,6 +48151,7 @@ export namespace Prisma {
     technicalProfile?: SortOrderInput | SortOrder
     accessInstructions?: SortOrderInput | SortOrder
     accessInfo?: SortOrderInput | SortOrder
+    consumption?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: UnitCategoryCountOrderByAggregateInput
     _avg?: UnitCategoryAvgOrderByAggregateInput
@@ -45358,6 +48175,7 @@ export namespace Prisma {
     technicalProfile?: JsonNullableWithAggregatesFilter<"UnitCategory">
     accessInstructions?: StringNullableWithAggregatesFilter<"UnitCategory"> | string | null
     accessInfo?: JsonNullableWithAggregatesFilter<"UnitCategory">
+    consumption?: JsonNullableWithAggregatesFilter<"UnitCategory">
     createdAt?: DateTimeWithAggregatesFilter<"UnitCategory"> | Date | string
   }
 
@@ -48166,6 +50984,7 @@ export namespace Prisma {
     organization?: OrganizationCreateNestedOneWithoutPropertiesInput
     categories?: UnitCategoryCreateNestedManyWithoutPropertyInput
     units?: ApartmentCreateNestedManyWithoutPropertyInput
+    products?: PropertyProductCreateNestedManyWithoutPropertyInput
   }
 
   export type PropertyUncheckedCreateInput = {
@@ -48179,6 +50998,7 @@ export namespace Prisma {
     createdAt?: Date | string
     categories?: UnitCategoryUncheckedCreateNestedManyWithoutPropertyInput
     units?: ApartmentUncheckedCreateNestedManyWithoutPropertyInput
+    products?: PropertyProductUncheckedCreateNestedManyWithoutPropertyInput
   }
 
   export type PropertyUpdateInput = {
@@ -48192,6 +51012,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneWithoutPropertiesNestedInput
     categories?: UnitCategoryUpdateManyWithoutPropertyNestedInput
     units?: ApartmentUpdateManyWithoutPropertyNestedInput
+    products?: PropertyProductUpdateManyWithoutPropertyNestedInput
   }
 
   export type PropertyUncheckedUpdateInput = {
@@ -48205,6 +51026,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categories?: UnitCategoryUncheckedUpdateManyWithoutPropertyNestedInput
     units?: ApartmentUncheckedUpdateManyWithoutPropertyNestedInput
+    products?: PropertyProductUncheckedUpdateManyWithoutPropertyNestedInput
   }
 
   export type PropertyCreateManyInput = {
@@ -48239,6 +51061,183 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PropertyProductCreateInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    price?: number
+    vat?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    property: PropertyCreateNestedOneWithoutProductsInput
+    movements?: PropertyStockMovementCreateNestedManyWithoutProductInput
+  }
+
+  export type PropertyProductUncheckedCreateInput = {
+    id?: string
+    propertyId: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    price?: number
+    vat?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    movements?: PropertyStockMovementUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type PropertyProductUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    property?: PropertyUpdateOneRequiredWithoutProductsNestedInput
+    movements?: PropertyStockMovementUpdateManyWithoutProductNestedInput
+  }
+
+  export type PropertyProductUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    propertyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    movements?: PropertyStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  }
+
+  export type PropertyProductCreateManyInput = {
+    id?: string
+    propertyId: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    price?: number
+    vat?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PropertyProductUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PropertyProductUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    propertyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PropertyStockMovementCreateInput = {
+    id?: string
+    delta: number
+    balance: number
+    reason: string
+    bookingId?: string | null
+    note?: string | null
+    createdAt?: Date | string
+    product: PropertyProductCreateNestedOneWithoutMovementsInput
+  }
+
+  export type PropertyStockMovementUncheckedCreateInput = {
+    id?: string
+    productId: string
+    delta: number
+    balance: number
+    reason: string
+    bookingId?: string | null
+    note?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PropertyStockMovementUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    delta?: IntFieldUpdateOperationsInput | number
+    balance?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    product?: PropertyProductUpdateOneRequiredWithoutMovementsNestedInput
+  }
+
+  export type PropertyStockMovementUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    delta?: IntFieldUpdateOperationsInput | number
+    balance?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PropertyStockMovementCreateManyInput = {
+    id?: string
+    productId: string
+    delta: number
+    balance: number
+    reason: string
+    bookingId?: string | null
+    note?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PropertyStockMovementUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    delta?: IntFieldUpdateOperationsInput | number
+    balance?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PropertyStockMovementUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    delta?: IntFieldUpdateOperationsInput | number
+    balance?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UnitCategoryCreateInput = {
     id?: string
     name: string
@@ -48250,6 +51249,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     property: PropertyCreateNestedOneWithoutCategoriesInput
     units?: ApartmentCreateNestedManyWithoutUnitCategoryInput
@@ -48267,6 +51267,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     units?: ApartmentUncheckedCreateNestedManyWithoutUnitCategoryInput
   }
@@ -48282,6 +51283,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     property?: PropertyUpdateOneRequiredWithoutCategoriesNestedInput
     units?: ApartmentUpdateManyWithoutUnitCategoryNestedInput
@@ -48299,6 +51301,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     units?: ApartmentUncheckedUpdateManyWithoutUnitCategoryNestedInput
   }
@@ -48315,6 +51318,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -48329,6 +51333,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -48344,6 +51349,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -51481,7 +54487,17 @@ export namespace Prisma {
     none?: UnitCategoryWhereInput
   }
 
+  export type PropertyProductListRelationFilter = {
+    every?: PropertyProductWhereInput
+    some?: PropertyProductWhereInput
+    none?: PropertyProductWhereInput
+  }
+
   export type UnitCategoryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PropertyProductOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -51543,6 +54559,125 @@ export namespace Prisma {
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
   }
+
+  export type PropertyScalarRelationFilter = {
+    is?: PropertyWhereInput
+    isNot?: PropertyWhereInput
+  }
+
+  export type PropertyStockMovementListRelationFilter = {
+    every?: PropertyStockMovementWhereInput
+    some?: PropertyStockMovementWhereInput
+    none?: PropertyStockMovementWhereInput
+  }
+
+  export type PropertyStockMovementOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PropertyProductCountOrderByAggregateInput = {
+    id?: SortOrder
+    propertyId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    price?: SortOrder
+    vat?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PropertyProductAvgOrderByAggregateInput = {
+    stock?: SortOrder
+    minStock?: SortOrder
+    price?: SortOrder
+    vat?: SortOrder
+  }
+
+  export type PropertyProductMaxOrderByAggregateInput = {
+    id?: SortOrder
+    propertyId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    price?: SortOrder
+    vat?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PropertyProductMinOrderByAggregateInput = {
+    id?: SortOrder
+    propertyId?: SortOrder
+    name?: SortOrder
+    emoji?: SortOrder
+    unit?: SortOrder
+    stock?: SortOrder
+    minStock?: SortOrder
+    price?: SortOrder
+    vat?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PropertyProductSumOrderByAggregateInput = {
+    stock?: SortOrder
+    minStock?: SortOrder
+    price?: SortOrder
+    vat?: SortOrder
+  }
+
+  export type PropertyProductScalarRelationFilter = {
+    is?: PropertyProductWhereInput
+    isNot?: PropertyProductWhereInput
+  }
+
+  export type PropertyStockMovementCountOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    delta?: SortOrder
+    balance?: SortOrder
+    reason?: SortOrder
+    bookingId?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PropertyStockMovementAvgOrderByAggregateInput = {
+    delta?: SortOrder
+    balance?: SortOrder
+  }
+
+  export type PropertyStockMovementMaxOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    delta?: SortOrder
+    balance?: SortOrder
+    reason?: SortOrder
+    bookingId?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PropertyStockMovementMinOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    delta?: SortOrder
+    balance?: SortOrder
+    reason?: SortOrder
+    bookingId?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PropertyStockMovementSumOrderByAggregateInput = {
+    delta?: SortOrder
+    balance?: SortOrder
+  }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -51567,11 +54702,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type PropertyScalarRelationFilter = {
-    is?: PropertyWhereInput
-    isNot?: PropertyWhereInput
-  }
-
   export type UnitCategoryCountOrderByAggregateInput = {
     id?: SortOrder
     propertyId?: SortOrder
@@ -51584,6 +54714,7 @@ export namespace Prisma {
     technicalProfile?: SortOrder
     accessInstructions?: SortOrder
     accessInfo?: SortOrder
+    consumption?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -53573,6 +56704,13 @@ export namespace Prisma {
     connect?: ApartmentWhereUniqueInput | ApartmentWhereUniqueInput[]
   }
 
+  export type PropertyProductCreateNestedManyWithoutPropertyInput = {
+    create?: XOR<PropertyProductCreateWithoutPropertyInput, PropertyProductUncheckedCreateWithoutPropertyInput> | PropertyProductCreateWithoutPropertyInput[] | PropertyProductUncheckedCreateWithoutPropertyInput[]
+    connectOrCreate?: PropertyProductCreateOrConnectWithoutPropertyInput | PropertyProductCreateOrConnectWithoutPropertyInput[]
+    createMany?: PropertyProductCreateManyPropertyInputEnvelope
+    connect?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+  }
+
   export type UnitCategoryUncheckedCreateNestedManyWithoutPropertyInput = {
     create?: XOR<UnitCategoryCreateWithoutPropertyInput, UnitCategoryUncheckedCreateWithoutPropertyInput> | UnitCategoryCreateWithoutPropertyInput[] | UnitCategoryUncheckedCreateWithoutPropertyInput[]
     connectOrCreate?: UnitCategoryCreateOrConnectWithoutPropertyInput | UnitCategoryCreateOrConnectWithoutPropertyInput[]
@@ -53585,6 +56723,13 @@ export namespace Prisma {
     connectOrCreate?: ApartmentCreateOrConnectWithoutPropertyInput | ApartmentCreateOrConnectWithoutPropertyInput[]
     createMany?: ApartmentCreateManyPropertyInputEnvelope
     connect?: ApartmentWhereUniqueInput | ApartmentWhereUniqueInput[]
+  }
+
+  export type PropertyProductUncheckedCreateNestedManyWithoutPropertyInput = {
+    create?: XOR<PropertyProductCreateWithoutPropertyInput, PropertyProductUncheckedCreateWithoutPropertyInput> | PropertyProductCreateWithoutPropertyInput[] | PropertyProductUncheckedCreateWithoutPropertyInput[]
+    connectOrCreate?: PropertyProductCreateOrConnectWithoutPropertyInput | PropertyProductCreateOrConnectWithoutPropertyInput[]
+    createMany?: PropertyProductCreateManyPropertyInputEnvelope
+    connect?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
   }
 
   export type FloatFieldUpdateOperationsInput = {
@@ -53633,6 +56778,20 @@ export namespace Prisma {
     deleteMany?: ApartmentScalarWhereInput | ApartmentScalarWhereInput[]
   }
 
+  export type PropertyProductUpdateManyWithoutPropertyNestedInput = {
+    create?: XOR<PropertyProductCreateWithoutPropertyInput, PropertyProductUncheckedCreateWithoutPropertyInput> | PropertyProductCreateWithoutPropertyInput[] | PropertyProductUncheckedCreateWithoutPropertyInput[]
+    connectOrCreate?: PropertyProductCreateOrConnectWithoutPropertyInput | PropertyProductCreateOrConnectWithoutPropertyInput[]
+    upsert?: PropertyProductUpsertWithWhereUniqueWithoutPropertyInput | PropertyProductUpsertWithWhereUniqueWithoutPropertyInput[]
+    createMany?: PropertyProductCreateManyPropertyInputEnvelope
+    set?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+    disconnect?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+    delete?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+    connect?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+    update?: PropertyProductUpdateWithWhereUniqueWithoutPropertyInput | PropertyProductUpdateWithWhereUniqueWithoutPropertyInput[]
+    updateMany?: PropertyProductUpdateManyWithWhereWithoutPropertyInput | PropertyProductUpdateManyWithWhereWithoutPropertyInput[]
+    deleteMany?: PropertyProductScalarWhereInput | PropertyProductScalarWhereInput[]
+  }
+
   export type UnitCategoryUncheckedUpdateManyWithoutPropertyNestedInput = {
     create?: XOR<UnitCategoryCreateWithoutPropertyInput, UnitCategoryUncheckedCreateWithoutPropertyInput> | UnitCategoryCreateWithoutPropertyInput[] | UnitCategoryUncheckedCreateWithoutPropertyInput[]
     connectOrCreate?: UnitCategoryCreateOrConnectWithoutPropertyInput | UnitCategoryCreateOrConnectWithoutPropertyInput[]
@@ -53659,6 +56818,90 @@ export namespace Prisma {
     update?: ApartmentUpdateWithWhereUniqueWithoutPropertyInput | ApartmentUpdateWithWhereUniqueWithoutPropertyInput[]
     updateMany?: ApartmentUpdateManyWithWhereWithoutPropertyInput | ApartmentUpdateManyWithWhereWithoutPropertyInput[]
     deleteMany?: ApartmentScalarWhereInput | ApartmentScalarWhereInput[]
+  }
+
+  export type PropertyProductUncheckedUpdateManyWithoutPropertyNestedInput = {
+    create?: XOR<PropertyProductCreateWithoutPropertyInput, PropertyProductUncheckedCreateWithoutPropertyInput> | PropertyProductCreateWithoutPropertyInput[] | PropertyProductUncheckedCreateWithoutPropertyInput[]
+    connectOrCreate?: PropertyProductCreateOrConnectWithoutPropertyInput | PropertyProductCreateOrConnectWithoutPropertyInput[]
+    upsert?: PropertyProductUpsertWithWhereUniqueWithoutPropertyInput | PropertyProductUpsertWithWhereUniqueWithoutPropertyInput[]
+    createMany?: PropertyProductCreateManyPropertyInputEnvelope
+    set?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+    disconnect?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+    delete?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+    connect?: PropertyProductWhereUniqueInput | PropertyProductWhereUniqueInput[]
+    update?: PropertyProductUpdateWithWhereUniqueWithoutPropertyInput | PropertyProductUpdateWithWhereUniqueWithoutPropertyInput[]
+    updateMany?: PropertyProductUpdateManyWithWhereWithoutPropertyInput | PropertyProductUpdateManyWithWhereWithoutPropertyInput[]
+    deleteMany?: PropertyProductScalarWhereInput | PropertyProductScalarWhereInput[]
+  }
+
+  export type PropertyCreateNestedOneWithoutProductsInput = {
+    create?: XOR<PropertyCreateWithoutProductsInput, PropertyUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: PropertyCreateOrConnectWithoutProductsInput
+    connect?: PropertyWhereUniqueInput
+  }
+
+  export type PropertyStockMovementCreateNestedManyWithoutProductInput = {
+    create?: XOR<PropertyStockMovementCreateWithoutProductInput, PropertyStockMovementUncheckedCreateWithoutProductInput> | PropertyStockMovementCreateWithoutProductInput[] | PropertyStockMovementUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: PropertyStockMovementCreateOrConnectWithoutProductInput | PropertyStockMovementCreateOrConnectWithoutProductInput[]
+    createMany?: PropertyStockMovementCreateManyProductInputEnvelope
+    connect?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+  }
+
+  export type PropertyStockMovementUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<PropertyStockMovementCreateWithoutProductInput, PropertyStockMovementUncheckedCreateWithoutProductInput> | PropertyStockMovementCreateWithoutProductInput[] | PropertyStockMovementUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: PropertyStockMovementCreateOrConnectWithoutProductInput | PropertyStockMovementCreateOrConnectWithoutProductInput[]
+    createMany?: PropertyStockMovementCreateManyProductInputEnvelope
+    connect?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+  }
+
+  export type PropertyUpdateOneRequiredWithoutProductsNestedInput = {
+    create?: XOR<PropertyCreateWithoutProductsInput, PropertyUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: PropertyCreateOrConnectWithoutProductsInput
+    upsert?: PropertyUpsertWithoutProductsInput
+    connect?: PropertyWhereUniqueInput
+    update?: XOR<XOR<PropertyUpdateToOneWithWhereWithoutProductsInput, PropertyUpdateWithoutProductsInput>, PropertyUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type PropertyStockMovementUpdateManyWithoutProductNestedInput = {
+    create?: XOR<PropertyStockMovementCreateWithoutProductInput, PropertyStockMovementUncheckedCreateWithoutProductInput> | PropertyStockMovementCreateWithoutProductInput[] | PropertyStockMovementUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: PropertyStockMovementCreateOrConnectWithoutProductInput | PropertyStockMovementCreateOrConnectWithoutProductInput[]
+    upsert?: PropertyStockMovementUpsertWithWhereUniqueWithoutProductInput | PropertyStockMovementUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: PropertyStockMovementCreateManyProductInputEnvelope
+    set?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+    disconnect?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+    delete?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+    connect?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+    update?: PropertyStockMovementUpdateWithWhereUniqueWithoutProductInput | PropertyStockMovementUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: PropertyStockMovementUpdateManyWithWhereWithoutProductInput | PropertyStockMovementUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: PropertyStockMovementScalarWhereInput | PropertyStockMovementScalarWhereInput[]
+  }
+
+  export type PropertyStockMovementUncheckedUpdateManyWithoutProductNestedInput = {
+    create?: XOR<PropertyStockMovementCreateWithoutProductInput, PropertyStockMovementUncheckedCreateWithoutProductInput> | PropertyStockMovementCreateWithoutProductInput[] | PropertyStockMovementUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: PropertyStockMovementCreateOrConnectWithoutProductInput | PropertyStockMovementCreateOrConnectWithoutProductInput[]
+    upsert?: PropertyStockMovementUpsertWithWhereUniqueWithoutProductInput | PropertyStockMovementUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: PropertyStockMovementCreateManyProductInputEnvelope
+    set?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+    disconnect?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+    delete?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+    connect?: PropertyStockMovementWhereUniqueInput | PropertyStockMovementWhereUniqueInput[]
+    update?: PropertyStockMovementUpdateWithWhereUniqueWithoutProductInput | PropertyStockMovementUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: PropertyStockMovementUpdateManyWithWhereWithoutProductInput | PropertyStockMovementUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: PropertyStockMovementScalarWhereInput | PropertyStockMovementScalarWhereInput[]
+  }
+
+  export type PropertyProductCreateNestedOneWithoutMovementsInput = {
+    create?: XOR<PropertyProductCreateWithoutMovementsInput, PropertyProductUncheckedCreateWithoutMovementsInput>
+    connectOrCreate?: PropertyProductCreateOrConnectWithoutMovementsInput
+    connect?: PropertyProductWhereUniqueInput
+  }
+
+  export type PropertyProductUpdateOneRequiredWithoutMovementsNestedInput = {
+    create?: XOR<PropertyProductCreateWithoutMovementsInput, PropertyProductUncheckedCreateWithoutMovementsInput>
+    connectOrCreate?: PropertyProductCreateOrConnectWithoutMovementsInput
+    upsert?: PropertyProductUpsertWithoutMovementsInput
+    connect?: PropertyProductWhereUniqueInput
+    update?: XOR<XOR<PropertyProductUpdateToOneWithWhereWithoutMovementsInput, PropertyProductUpdateWithoutMovementsInput>, PropertyProductUncheckedUpdateWithoutMovementsInput>
   }
 
   export type PropertyCreateNestedOneWithoutCategoriesInput = {
@@ -56581,6 +59824,7 @@ export namespace Prisma {
     createdAt?: Date | string
     categories?: UnitCategoryCreateNestedManyWithoutPropertyInput
     units?: ApartmentCreateNestedManyWithoutPropertyInput
+    products?: PropertyProductCreateNestedManyWithoutPropertyInput
   }
 
   export type PropertyUncheckedCreateWithoutOrganizationInput = {
@@ -56593,6 +59837,7 @@ export namespace Prisma {
     createdAt?: Date | string
     categories?: UnitCategoryUncheckedCreateNestedManyWithoutPropertyInput
     units?: ApartmentUncheckedCreateNestedManyWithoutPropertyInput
+    products?: PropertyProductUncheckedCreateNestedManyWithoutPropertyInput
   }
 
   export type PropertyCreateOrConnectWithoutOrganizationInput = {
@@ -56850,6 +60095,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     units?: ApartmentCreateNestedManyWithoutUnitCategoryInput
   }
@@ -56865,6 +60111,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     units?: ApartmentUncheckedCreateNestedManyWithoutUnitCategoryInput
   }
@@ -56962,6 +60209,44 @@ export namespace Prisma {
 
   export type ApartmentCreateManyPropertyInputEnvelope = {
     data: ApartmentCreateManyPropertyInput | ApartmentCreateManyPropertyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PropertyProductCreateWithoutPropertyInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    price?: number
+    vat?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    movements?: PropertyStockMovementCreateNestedManyWithoutProductInput
+  }
+
+  export type PropertyProductUncheckedCreateWithoutPropertyInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    price?: number
+    vat?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    movements?: PropertyStockMovementUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type PropertyProductCreateOrConnectWithoutPropertyInput = {
+    where: PropertyProductWhereUniqueInput
+    create: XOR<PropertyProductCreateWithoutPropertyInput, PropertyProductUncheckedCreateWithoutPropertyInput>
+  }
+
+  export type PropertyProductCreateManyPropertyInputEnvelope = {
+    data: PropertyProductCreateManyPropertyInput | PropertyProductCreateManyPropertyInput[]
     skipDuplicates?: boolean
   }
 
@@ -57071,6 +60356,7 @@ export namespace Prisma {
     technicalProfile?: JsonNullableFilter<"UnitCategory">
     accessInstructions?: StringNullableFilter<"UnitCategory"> | string | null
     accessInfo?: JsonNullableFilter<"UnitCategory">
+    consumption?: JsonNullableFilter<"UnitCategory">
     createdAt?: DateTimeFilter<"UnitCategory"> | Date | string
   }
 
@@ -57090,6 +60376,239 @@ export namespace Prisma {
     data: XOR<ApartmentUpdateManyMutationInput, ApartmentUncheckedUpdateManyWithoutPropertyInput>
   }
 
+  export type PropertyProductUpsertWithWhereUniqueWithoutPropertyInput = {
+    where: PropertyProductWhereUniqueInput
+    update: XOR<PropertyProductUpdateWithoutPropertyInput, PropertyProductUncheckedUpdateWithoutPropertyInput>
+    create: XOR<PropertyProductCreateWithoutPropertyInput, PropertyProductUncheckedCreateWithoutPropertyInput>
+  }
+
+  export type PropertyProductUpdateWithWhereUniqueWithoutPropertyInput = {
+    where: PropertyProductWhereUniqueInput
+    data: XOR<PropertyProductUpdateWithoutPropertyInput, PropertyProductUncheckedUpdateWithoutPropertyInput>
+  }
+
+  export type PropertyProductUpdateManyWithWhereWithoutPropertyInput = {
+    where: PropertyProductScalarWhereInput
+    data: XOR<PropertyProductUpdateManyMutationInput, PropertyProductUncheckedUpdateManyWithoutPropertyInput>
+  }
+
+  export type PropertyProductScalarWhereInput = {
+    AND?: PropertyProductScalarWhereInput | PropertyProductScalarWhereInput[]
+    OR?: PropertyProductScalarWhereInput[]
+    NOT?: PropertyProductScalarWhereInput | PropertyProductScalarWhereInput[]
+    id?: StringFilter<"PropertyProduct"> | string
+    propertyId?: StringFilter<"PropertyProduct"> | string
+    name?: StringFilter<"PropertyProduct"> | string
+    emoji?: StringFilter<"PropertyProduct"> | string
+    unit?: StringFilter<"PropertyProduct"> | string
+    stock?: IntFilter<"PropertyProduct"> | number
+    minStock?: IntFilter<"PropertyProduct"> | number
+    price?: FloatFilter<"PropertyProduct"> | number
+    vat?: FloatFilter<"PropertyProduct"> | number
+    createdAt?: DateTimeFilter<"PropertyProduct"> | Date | string
+    updatedAt?: DateTimeFilter<"PropertyProduct"> | Date | string
+  }
+
+  export type PropertyCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    address: string
+    latitude: number
+    longitude: number
+    type?: string
+    createdAt?: Date | string
+    organization?: OrganizationCreateNestedOneWithoutPropertiesInput
+    categories?: UnitCategoryCreateNestedManyWithoutPropertyInput
+    units?: ApartmentCreateNestedManyWithoutPropertyInput
+  }
+
+  export type PropertyUncheckedCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    organizationId?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    type?: string
+    createdAt?: Date | string
+    categories?: UnitCategoryUncheckedCreateNestedManyWithoutPropertyInput
+    units?: ApartmentUncheckedCreateNestedManyWithoutPropertyInput
+  }
+
+  export type PropertyCreateOrConnectWithoutProductsInput = {
+    where: PropertyWhereUniqueInput
+    create: XOR<PropertyCreateWithoutProductsInput, PropertyUncheckedCreateWithoutProductsInput>
+  }
+
+  export type PropertyStockMovementCreateWithoutProductInput = {
+    id?: string
+    delta: number
+    balance: number
+    reason: string
+    bookingId?: string | null
+    note?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PropertyStockMovementUncheckedCreateWithoutProductInput = {
+    id?: string
+    delta: number
+    balance: number
+    reason: string
+    bookingId?: string | null
+    note?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PropertyStockMovementCreateOrConnectWithoutProductInput = {
+    where: PropertyStockMovementWhereUniqueInput
+    create: XOR<PropertyStockMovementCreateWithoutProductInput, PropertyStockMovementUncheckedCreateWithoutProductInput>
+  }
+
+  export type PropertyStockMovementCreateManyProductInputEnvelope = {
+    data: PropertyStockMovementCreateManyProductInput | PropertyStockMovementCreateManyProductInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PropertyUpsertWithoutProductsInput = {
+    update: XOR<PropertyUpdateWithoutProductsInput, PropertyUncheckedUpdateWithoutProductsInput>
+    create: XOR<PropertyCreateWithoutProductsInput, PropertyUncheckedCreateWithoutProductsInput>
+    where?: PropertyWhereInput
+  }
+
+  export type PropertyUpdateToOneWithWhereWithoutProductsInput = {
+    where?: PropertyWhereInput
+    data: XOR<PropertyUpdateWithoutProductsInput, PropertyUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type PropertyUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneWithoutPropertiesNestedInput
+    categories?: UnitCategoryUpdateManyWithoutPropertyNestedInput
+    units?: ApartmentUpdateManyWithoutPropertyNestedInput
+  }
+
+  export type PropertyUncheckedUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categories?: UnitCategoryUncheckedUpdateManyWithoutPropertyNestedInput
+    units?: ApartmentUncheckedUpdateManyWithoutPropertyNestedInput
+  }
+
+  export type PropertyStockMovementUpsertWithWhereUniqueWithoutProductInput = {
+    where: PropertyStockMovementWhereUniqueInput
+    update: XOR<PropertyStockMovementUpdateWithoutProductInput, PropertyStockMovementUncheckedUpdateWithoutProductInput>
+    create: XOR<PropertyStockMovementCreateWithoutProductInput, PropertyStockMovementUncheckedCreateWithoutProductInput>
+  }
+
+  export type PropertyStockMovementUpdateWithWhereUniqueWithoutProductInput = {
+    where: PropertyStockMovementWhereUniqueInput
+    data: XOR<PropertyStockMovementUpdateWithoutProductInput, PropertyStockMovementUncheckedUpdateWithoutProductInput>
+  }
+
+  export type PropertyStockMovementUpdateManyWithWhereWithoutProductInput = {
+    where: PropertyStockMovementScalarWhereInput
+    data: XOR<PropertyStockMovementUpdateManyMutationInput, PropertyStockMovementUncheckedUpdateManyWithoutProductInput>
+  }
+
+  export type PropertyStockMovementScalarWhereInput = {
+    AND?: PropertyStockMovementScalarWhereInput | PropertyStockMovementScalarWhereInput[]
+    OR?: PropertyStockMovementScalarWhereInput[]
+    NOT?: PropertyStockMovementScalarWhereInput | PropertyStockMovementScalarWhereInput[]
+    id?: StringFilter<"PropertyStockMovement"> | string
+    productId?: StringFilter<"PropertyStockMovement"> | string
+    delta?: IntFilter<"PropertyStockMovement"> | number
+    balance?: IntFilter<"PropertyStockMovement"> | number
+    reason?: StringFilter<"PropertyStockMovement"> | string
+    bookingId?: StringNullableFilter<"PropertyStockMovement"> | string | null
+    note?: StringNullableFilter<"PropertyStockMovement"> | string | null
+    createdAt?: DateTimeFilter<"PropertyStockMovement"> | Date | string
+  }
+
+  export type PropertyProductCreateWithoutMovementsInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    price?: number
+    vat?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    property: PropertyCreateNestedOneWithoutProductsInput
+  }
+
+  export type PropertyProductUncheckedCreateWithoutMovementsInput = {
+    id?: string
+    propertyId: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    price?: number
+    vat?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PropertyProductCreateOrConnectWithoutMovementsInput = {
+    where: PropertyProductWhereUniqueInput
+    create: XOR<PropertyProductCreateWithoutMovementsInput, PropertyProductUncheckedCreateWithoutMovementsInput>
+  }
+
+  export type PropertyProductUpsertWithoutMovementsInput = {
+    update: XOR<PropertyProductUpdateWithoutMovementsInput, PropertyProductUncheckedUpdateWithoutMovementsInput>
+    create: XOR<PropertyProductCreateWithoutMovementsInput, PropertyProductUncheckedCreateWithoutMovementsInput>
+    where?: PropertyProductWhereInput
+  }
+
+  export type PropertyProductUpdateToOneWithWhereWithoutMovementsInput = {
+    where?: PropertyProductWhereInput
+    data: XOR<PropertyProductUpdateWithoutMovementsInput, PropertyProductUncheckedUpdateWithoutMovementsInput>
+  }
+
+  export type PropertyProductUpdateWithoutMovementsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    property?: PropertyUpdateOneRequiredWithoutProductsNestedInput
+  }
+
+  export type PropertyProductUncheckedUpdateWithoutMovementsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    propertyId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PropertyCreateWithoutCategoriesInput = {
     id?: string
     name: string
@@ -57100,6 +60619,7 @@ export namespace Prisma {
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutPropertiesInput
     units?: ApartmentCreateNestedManyWithoutPropertyInput
+    products?: PropertyProductCreateNestedManyWithoutPropertyInput
   }
 
   export type PropertyUncheckedCreateWithoutCategoriesInput = {
@@ -57112,6 +60632,7 @@ export namespace Prisma {
     type?: string
     createdAt?: Date | string
     units?: ApartmentUncheckedCreateNestedManyWithoutPropertyInput
+    products?: PropertyProductUncheckedCreateNestedManyWithoutPropertyInput
   }
 
   export type PropertyCreateOrConnectWithoutCategoriesInput = {
@@ -57226,6 +60747,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutPropertiesNestedInput
     units?: ApartmentUpdateManyWithoutPropertyNestedInput
+    products?: PropertyProductUpdateManyWithoutPropertyNestedInput
   }
 
   export type PropertyUncheckedUpdateWithoutCategoriesInput = {
@@ -57238,6 +60760,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     units?: ApartmentUncheckedUpdateManyWithoutPropertyNestedInput
+    products?: PropertyProductUncheckedUpdateManyWithoutPropertyNestedInput
   }
 
   export type ApartmentUpsertWithWhereUniqueWithoutUnitCategoryInput = {
@@ -58134,6 +61657,7 @@ export namespace Prisma {
     createdAt?: Date | string
     organization?: OrganizationCreateNestedOneWithoutPropertiesInput
     categories?: UnitCategoryCreateNestedManyWithoutPropertyInput
+    products?: PropertyProductCreateNestedManyWithoutPropertyInput
   }
 
   export type PropertyUncheckedCreateWithoutUnitsInput = {
@@ -58146,6 +61670,7 @@ export namespace Prisma {
     type?: string
     createdAt?: Date | string
     categories?: UnitCategoryUncheckedCreateNestedManyWithoutPropertyInput
+    products?: PropertyProductUncheckedCreateNestedManyWithoutPropertyInput
   }
 
   export type PropertyCreateOrConnectWithoutUnitsInput = {
@@ -58164,6 +61689,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     property: PropertyCreateNestedOneWithoutCategoriesInput
   }
@@ -58180,6 +61706,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -58779,6 +62306,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneWithoutPropertiesNestedInput
     categories?: UnitCategoryUpdateManyWithoutPropertyNestedInput
+    products?: PropertyProductUpdateManyWithoutPropertyNestedInput
   }
 
   export type PropertyUncheckedUpdateWithoutUnitsInput = {
@@ -58791,6 +62319,7 @@ export namespace Prisma {
     type?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categories?: UnitCategoryUncheckedUpdateManyWithoutPropertyNestedInput
+    products?: PropertyProductUncheckedUpdateManyWithoutPropertyNestedInput
   }
 
   export type UnitCategoryUpsertWithoutUnitsInput = {
@@ -58815,6 +62344,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     property?: PropertyUpdateOneRequiredWithoutCategoriesNestedInput
   }
@@ -58831,6 +62361,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -65669,6 +69200,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categories?: UnitCategoryUpdateManyWithoutPropertyNestedInput
     units?: ApartmentUpdateManyWithoutPropertyNestedInput
+    products?: PropertyProductUpdateManyWithoutPropertyNestedInput
   }
 
   export type PropertyUncheckedUpdateWithoutOrganizationInput = {
@@ -65681,6 +69213,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categories?: UnitCategoryUncheckedUpdateManyWithoutPropertyNestedInput
     units?: ApartmentUncheckedUpdateManyWithoutPropertyNestedInput
+    products?: PropertyProductUncheckedUpdateManyWithoutPropertyNestedInput
   }
 
   export type PropertyUncheckedUpdateManyWithoutOrganizationInput = {
@@ -65724,6 +69257,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -65753,6 +69287,19 @@ export namespace Prisma {
     unitNumber?: string | null
   }
 
+  export type PropertyProductCreateManyPropertyInput = {
+    id?: string
+    name: string
+    emoji?: string
+    unit?: string
+    stock?: number
+    minStock?: number
+    price?: number
+    vat?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type UnitCategoryUpdateWithoutPropertyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -65764,6 +69311,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     units?: ApartmentUpdateManyWithoutUnitCategoryNestedInput
   }
@@ -65779,6 +69327,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     units?: ApartmentUncheckedUpdateManyWithoutUnitCategoryNestedInput
   }
@@ -65794,6 +69343,7 @@ export namespace Prisma {
     technicalProfile?: NullableJsonNullValueInput | InputJsonValue
     accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    consumption?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -65897,6 +69447,87 @@ export namespace Prisma {
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     unitCategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PropertyProductUpdateWithoutPropertyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    movements?: PropertyStockMovementUpdateManyWithoutProductNestedInput
+  }
+
+  export type PropertyProductUncheckedUpdateWithoutPropertyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    movements?: PropertyStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  }
+
+  export type PropertyProductUncheckedUpdateManyWithoutPropertyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    unit?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+    minStock?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    vat?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PropertyStockMovementCreateManyProductInput = {
+    id?: string
+    delta: number
+    balance: number
+    reason: string
+    bookingId?: string | null
+    note?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PropertyStockMovementUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    delta?: IntFieldUpdateOperationsInput | number
+    balance?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PropertyStockMovementUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    delta?: IntFieldUpdateOperationsInput | number
+    balance?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PropertyStockMovementUncheckedUpdateManyWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    delta?: IntFieldUpdateOperationsInput | number
+    balance?: IntFieldUpdateOperationsInput | number
+    reason?: StringFieldUpdateOperationsInput | string
+    bookingId?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ApartmentCreateManyUnitCategoryInput = {

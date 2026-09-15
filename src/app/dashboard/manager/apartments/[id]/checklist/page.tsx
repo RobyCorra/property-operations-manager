@@ -5,7 +5,7 @@ import ChecklistManager from "@/src/components/checklist-manager";
 import BackButton from "@/src/components/back-button";
 import { prisma } from "@/src/lib/prisma";
 
-export default async function ApartmentChecklistPage({ params }: { params: { id: string } }) {
+export default async function ApartmentChecklistPage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 

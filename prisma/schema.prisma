@@ -55,8 +55,44 @@ model Property {
   createdAt      DateTime       @default(now())
   categories     UnitCategory[]
   units          Apartment[]
+  products       PropertyProduct[]
 
   @@index([organizationId])
+}
+
+// Prodotto a livello di struttura: stock UNICO condiviso da tutte le unita'.
+// Il consumo al check-in viene definito per categoria (UnitCategory.consumption)
+// e sottratto da questo stock.
+model PropertyProduct {
+  id         String                   @id @default(uuid())
+  propertyId String
+  property   Property                 @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  name       String
+  emoji      String                   @default("📦")
+  unit       String                   @default("pz")
+  stock      Int                      @default(0)
+  minStock   Int                      @default(0)
+  price      Float                    @default(0)
+  vat        Float                    @default(22)
+  createdAt  DateTime                 @default(now())
+  updatedAt  DateTime                 @updatedAt
+  movements  PropertyStockMovement[]
+
+  @@index([propertyId])
+}
+
+model PropertyStockMovement {
+  id                String          @id @default(uuid())
+  productId         String
+  product           PropertyProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  delta             Int
+  balance           Int
+  reason            String          // INITIAL | CHECKIN | RESTOCK | ADJUSTMENT
+  bookingId         String?
+  note              String?
+  createdAt         DateTime        @default(now())
+
+  @@index([productId, createdAt])
 }
 
 // Categoria di unita' = "master": le caratteristiche condivise da tutte le
@@ -76,6 +112,7 @@ model UnitCategory {
   technicalProfile Json?
   accessInstructions String?
   accessInfo       Json?
+  consumption      Json?       // { [propertyProductId]: quantita' consumata al check-in }
   createdAt        DateTime    @default(now())
   units            Apartment[]
 
