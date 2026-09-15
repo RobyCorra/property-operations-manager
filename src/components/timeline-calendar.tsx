@@ -135,6 +135,11 @@ interface Apartment {
   address?: string;
   bathrooms?: number;
   bedConfig?: unknown;
+  propertyId?: string | null;
+  propertyName?: string | null;
+  unitCategoryId?: string | null;
+  categoryName?: string | null;
+  unitNumber?: string | null;
 }
 
 interface CheckinTaskCal {
@@ -216,6 +221,54 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
   // Client-side clock for real-time 15:00 transition
   const [currentClientTime, setCurrentClientTime] = useState(() => new Date(serverDate));
+
+  // ── Raggruppamento unità delle strutture (struttura → categoria → unità) ──
+  const [expandedProps, setExpandedProps] = useState<Set<string>>(new Set());
+  const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
+  const toggleProp = (id: string) => setExpandedProps((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const toggleCat = (id: string) => setExpandedCats((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+
+  type DisplayRow =
+    | { kind: "single"; key: string; apt: Apartment }
+    | { kind: "unit"; key: string; apt: Apartment }
+    | { kind: "structure"; key: string; propertyId: string; name: string; unitCount: number }
+    | { kind: "category"; key: string; categoryId: string; name: string; unitCount: number };
+
+  const displayRows = useMemo<DisplayRow[]>(() => {
+    type Cat = { id: string; name: string; units: Apartment[] };
+    type Group = { type: "single"; apt: Apartment } | { type: "structure"; propertyId: string; name: string; cats: Cat[] };
+    const groups: Group[] = [];
+    const propIndex = new Map<string, number>();
+    for (const apt of apartments) {
+      if (!apt.propertyId) { groups.push({ type: "single", apt }); continue; }
+      let gi = propIndex.get(apt.propertyId);
+      if (gi === undefined) {
+        gi = groups.length;
+        propIndex.set(apt.propertyId, gi);
+        groups.push({ type: "structure", propertyId: apt.propertyId, name: apt.propertyName || apt.name, cats: [] });
+      }
+      const g = groups[gi] as Extract<Group, { type: "structure" }>;
+      const catId = apt.unitCategoryId || "_";
+      let cat = g.cats.find((c) => c.id === catId);
+      if (!cat) { cat = { id: catId, name: apt.categoryName || "—", units: [] }; g.cats.push(cat); }
+      cat.units.push(apt);
+    }
+    const rows: DisplayRow[] = [];
+    for (const g of groups) {
+      if (g.type === "single") { rows.push({ kind: "single", key: g.apt.id, apt: g.apt }); continue; }
+      const unitCount = g.cats.reduce((n, c) => n + c.units.length, 0);
+      rows.push({ kind: "structure", key: `p_${g.propertyId}`, propertyId: g.propertyId, name: g.name, unitCount });
+      if (!expandedProps.has(g.propertyId)) continue;
+      for (const c of g.cats) {
+        rows.push({ kind: "category", key: `c_${c.id}`, categoryId: c.id, name: c.name, unitCount: c.units.length });
+        if (!expandedCats.has(c.id)) continue;
+        for (const u of c.units) rows.push({ kind: "unit", key: u.id, apt: u });
+      }
+    }
+    return rows;
+  }, [apartments, expandedProps, expandedCats]);
+
+  const hasStructures = useMemo(() => apartments.some((a) => a.propertyId), [apartments]);
 
   const bookingEvents = useMemo<CalendarEvent[]>(() => (
     bookings
@@ -607,7 +660,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
           <div className="h-24 border-b-2 border-slate-200/70 flex items-end pb-2 px-8">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t.calApartment}</span>
           </div>
-          {apartments.map((apt) => {
+          {displayRows.map((row) => {
             const dotColor: Record<string, string> = {
               GREEN:  "bg-emerald-500",
               BLUE:   "bg-blue-500",
@@ -622,9 +675,34 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
               YELLOW: t.calInReview,
               RED:    t.calOccupied,
             };
+            if (row.kind === "structure") {
+              const open = expandedProps.has(row.propertyId);
+              return (
+                <button key={row.key} type="button" onClick={() => toggleProp(row.propertyId)}
+                  className="w-full h-14 border-b-2 border-slate-200/70 flex items-center gap-2 px-6 text-left transition-all hover:bg-white/40 bg-white/20">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`text-slate-400 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}><polyline points="9 18 15 12 9 6"/></svg>
+                  <span className="text-base shrink-0">🏢</span>
+                  <span className="flex-1 text-sm font-bold text-slate-900 truncate tracking-tight">{row.name}</span>
+                  <span className="text-[10px] text-slate-500 font-semibold shrink-0">{t.stUnitsBadge(row.unitCount)}</span>
+                </button>
+              );
+            }
+            if (row.kind === "category") {
+              const open = expandedCats.has(row.categoryId);
+              return (
+                <button key={row.key} type="button" onClick={() => toggleCat(row.categoryId)}
+                  className="w-full h-12 border-b-2 border-slate-200/70 flex items-center gap-2 pl-11 pr-6 text-left transition-all hover:bg-white/30">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`text-slate-400 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}><polyline points="9 18 15 12 9 6"/></svg>
+                  <span className="flex-1 text-[13px] font-semibold text-slate-700 truncate">{row.name}</span>
+                  <span className="text-[10px] text-slate-400 font-semibold shrink-0">×{row.unitCount}</span>
+                </button>
+              );
+            }
+            const apt = row.apt;
+            const isUnit = row.kind === "unit";
             return (
-              <div key={apt.id} className="h-36 border-b-2 border-slate-200/70 flex flex-col justify-center px-8 truncate transition-all hover:bg-white/30">
-                <span className="text-base font-semibold text-slate-900 truncate tracking-tight">{apt.name}</span>
+              <div key={row.key} className={`h-36 border-b-2 border-slate-200/70 flex flex-col justify-center truncate transition-all hover:bg-white/30 ${isUnit ? "pl-14 pr-6" : "px-8"}`}>
+                <span className="text-base font-semibold text-slate-900 truncate tracking-tight">{isUnit ? (apt.unitNumber || apt.name) : apt.name}</span>
                 <div className="flex items-center gap-1.5 mt-1.5">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor[apt.status] ?? "bg-slate-400"}`} />
                   <span className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider">{dotLabel[apt.status] ?? apt.status}</span>
@@ -711,8 +789,12 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
               })}
             </div>
 
-            {apartments.map((apt) => (
-              <div key={apt.id} className="h-36 border-b-2 border-slate-200/70 relative group hover:bg-white/10 transition-colors">
+            {displayRows.map((row) => {
+              if (row.kind === "structure") return <div key={row.key} className="h-14 border-b-2 border-slate-200/70 bg-white/5" />;
+              if (row.kind === "category") return <div key={row.key} className="h-12 border-b-2 border-slate-200/70" />;
+              const apt = row.apt;
+              return (
+              <div key={row.key} className="h-36 border-b-2 border-slate-200/70 relative group hover:bg-white/10 transition-colors">
                 {calendarEvents.filter((event) => event.apartmentId === apt.id).map((event) => {
                   if (event.type === "booking") {
                     const booking = event.data as Booking;
@@ -899,7 +981,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                   return null;
                 })}
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

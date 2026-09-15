@@ -5,7 +5,7 @@ import ChecklistManager from "@/src/components/checklist-manager";
 import BackButton from "@/src/components/back-button";
 import { prisma } from "@/src/lib/prisma";
 
-export default async function ApartmentChecklistPage({ params }: { params: { id: string } }) {
+export default async function ApartmentChecklistPage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 
@@ -28,10 +28,15 @@ export default async function ApartmentChecklistPage({ params }: { params: { id:
     notFound();
   }
 
+  // Unità di una struttura: la checklist è gestita dal master della categoria.
+  if (apartment.propertyId && apartment.unitCategoryId) {
+    redirect(`/dashboard/manager/strutture/${apartment.propertyId}/categoria/${apartment.unitCategoryId}`);
+  }
+
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <div className="max-w-4xl mx-auto space-y-8">
-        
+
         {/* Header */}
         <div>
           <div className="flex items-center gap-3">

@@ -3,7 +3,8 @@ import { getT } from "@/src/lib/server-lang";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createApartment } from "@/src/app/actions/apartment";
-import ApartmentCreateWizard from "@/src/components/apartment-create-wizard";
+import { createStructure } from "@/src/app/actions/structure";
+import NewEntrySwitch from "@/src/components/new-entry-switch";
 import BackButton from "@/src/components/back-button";
 export default async function NewApartmentPage() {
   const tr = await getT();
@@ -25,7 +26,7 @@ export default async function NewApartmentPage() {
           <p className="text-gray-500 mt-1">{tr.awPageSub}</p>
         </div>
 
-        <ApartmentCreateWizard action={createApartment} />
+        <NewEntrySwitch createApartment={createApartment} createStructure={createStructure} />
 
       </div>
     </main>

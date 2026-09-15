@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import { sendPushToRole } from "@/src/lib/push";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import { consumeWarehouseOnCheckin } from "@/src/app/actions/warehouse";
+import { consumeStructureOnCheckin } from "@/src/app/actions/property-product";
 import type { Role } from "@/src/generated/prisma/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -184,7 +185,7 @@ export async function consumeProductsOnCheckin(bookingId: string) {
 
     const apartment = await prisma.apartment.findUnique({
       where: { id: apartmentId },
-      select: { name: true, organizationId: true, bathrooms: true, bedrooms: true },
+      select: { name: true, organizationId: true, bathrooms: true, bedrooms: true, propertyId: true, unitCategoryId: true },
     });
 
     const alerts: string[] = [];
@@ -231,6 +232,18 @@ export async function consumeProductsOnCheckin(bookingId: string) {
         bedrooms: apartment.bedrooms ?? 0,
         guestName: booking.guestName ?? null,
       });
+    }
+
+    // Unità di una struttura: consuma dallo stock UNICO della struttura in base
+    // ai consumi definiti dalla categoria dell'unità.
+    if (apartment?.propertyId && apartment?.unitCategoryId) {
+      const structureAlerts = await consumeStructureOnCheckin({
+        propertyId: apartment.propertyId,
+        unitCategoryId: apartment.unitCategoryId,
+        bookingId,
+        guestName: booking.guestName ?? null,
+      });
+      for (const a of structureAlerts) alerts.push(a);
     }
 
     // Crea notifica e push se ci sono prodotti sotto minima

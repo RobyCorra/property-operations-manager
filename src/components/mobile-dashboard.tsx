@@ -28,6 +28,11 @@ export type MobileApartmentData = {
   status: ApartmentStatus;
   statusLabel: string;
   openTickets: number;
+  propertyId?: string | null;
+  propertyName?: string | null;
+  unitCategoryId?: string | null;
+  categoryName?: string | null;
+  unitNumber?: string | null;
 };
 
 export type MobileLateClean = {
@@ -466,6 +471,16 @@ export default function MobileDashboard({
   const [aiChatOpen, setAiChatOpen]         = useState(false);
   const [searchOpen, setSearchOpen]         = useState(false);
   const [searchQuery, setSearchQuery]       = useState("");
+
+  // ── Raggruppamento unità strutture nel calendario ──────────────
+  const [expandedProps, setExpandedProps]   = useState<Set<string>>(new Set());
+  const [expandedCats, setExpandedCats]     = useState<Set<string>>(new Set());
+  const toggleCalProp = (id: string) => setExpandedProps((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const toggleCalCat = (id: string) => setExpandedCats((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const [expandedHomeProps, setExpandedHomeProps] = useState<Set<string>>(new Set());
+  const [expandedHomeCats, setExpandedHomeCats]   = useState<Set<string>>(new Set());
+  const toggleHomeProp = (id: string) => setExpandedHomeProps((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const toggleHomeCat = (id: string) => setExpandedHomeCats((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   // ── Per-apartment calendar ─────────────────────────────────────
   const [selectedApt, setSelectedApt]       = useState<MobileApartmentData | null>(null);
@@ -931,24 +946,73 @@ export default function MobileDashboard({
         <div className="px-4 mb-8">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">{tr.mdApartmentsStatus}</p>
           <div className="space-y-2">
-            {apartments.map((apt) => (
-              <button
-                key={apt.id}
-                onClick={() => { openApartmentCalendar(apt); setActiveTab("calendar"); }}
-                className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100 active:scale-[.98] transition-transform text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{apt.name}</p>
-                    <p className="text-[10px] text-slate-400">{aptStatusLabel(apt.status, tr)}</p>
-                  </div>
-                </div>
-                <div className="w-[38px] h-[38px] rounded-xl bg-[#f0eeff] border border-[#e9d5ff] flex items-center justify-center text-violet-600 shrink-0" aria-label={tr.navCalendar}>
-                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                </div>
-              </button>
-            ))}
+            {(() => {
+              type Cat = { id: string; name: string; units: MobileApartmentData[] };
+              type Group = { type: "single"; apt: MobileApartmentData } | { type: "structure"; propertyId: string; name: string; cats: Cat[] };
+              const groups: Group[] = [];
+              const propIndex = new Map<string, number>();
+              for (const apt of apartments) {
+                if (!apt.propertyId) { groups.push({ type: "single", apt }); continue; }
+                let gi = propIndex.get(apt.propertyId);
+                if (gi === undefined) { gi = groups.length; propIndex.set(apt.propertyId, gi); groups.push({ type: "structure", propertyId: apt.propertyId, name: apt.propertyName || apt.name, cats: [] }); }
+                const g = groups[gi] as Extract<Group, { type: "structure" }>;
+                const catId = apt.unitCategoryId || "_";
+                let cat = g.cats.find((c) => c.id === catId);
+                if (!cat) { cat = { id: catId, name: apt.categoryName || "—", units: [] }; g.cats.push(cat); }
+                cat.units.push(apt);
+              }
+              const calIcon = <div className="w-[38px] h-[38px] rounded-xl bg-[#f0eeff] border border-[#e9d5ff] flex items-center justify-center text-violet-600 shrink-0" aria-label={tr.navCalendar}><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>;
+              const nodes: React.ReactNode[] = [];
+              for (const g of groups) {
+                if (g.type === "single") {
+                  const apt = g.apt;
+                  nodes.push(
+                    <button key={apt.id} onClick={() => { openApartmentCalendar(apt); setActiveTab("calendar"); }} className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100 active:scale-[.98] transition-transform text-left">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
+                        <div><p className="text-sm font-bold text-slate-900">{apt.name}</p><p className="text-[10px] text-slate-400">{aptStatusLabel(apt.status, tr)}</p></div>
+                      </div>
+                      {calIcon}
+                    </button>
+                  );
+                  continue;
+                }
+                const unitCount = g.cats.reduce((n, c) => n + c.units.length, 0);
+                const openP = expandedHomeProps.has(g.propertyId);
+                nodes.push(
+                  <button key={`p_${g.propertyId}`} onClick={() => toggleHomeProp(g.propertyId)} className="w-full bg-white rounded-xl px-4 py-3 flex items-center justify-between shadow-sm border border-slate-100 active:scale-[.98] transition-transform text-left">
+                    <div className="flex items-center gap-3">
+                      <span className="text-base">🏢</span>
+                      <div><p className="text-sm font-bold text-slate-900">{g.name}</p><p className="text-[10px] text-slate-400">{unitCount} unità</p></div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5" className={`transition-transform ${openP ? "rotate-90" : ""}`}><polyline points="9 18 15 12 9 6" /></svg>
+                  </button>
+                );
+                if (!openP) continue;
+                for (const c of g.cats) {
+                  const openC = expandedHomeCats.has(c.id);
+                  nodes.push(
+                    <button key={`c_${c.id}`} onClick={() => toggleHomeCat(c.id)} className="w-full bg-white/70 rounded-lg pl-7 pr-4 py-2.5 ml-3 flex items-center justify-between border border-slate-100 active:scale-[.98] transition-transform text-left">
+                      <span className="text-[12px] font-bold text-slate-700">{c.name} <span className="text-slate-400 font-semibold">×{c.units.length}</span></span>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5" className={`transition-transform ${openC ? "rotate-90" : ""}`}><polyline points="9 18 15 12 9 6" /></svg>
+                    </button>
+                  );
+                  if (!openC) continue;
+                  for (const apt of c.units) {
+                    nodes.push(
+                      <button key={apt.id} onClick={() => { openApartmentCalendar(apt); setActiveTab("calendar"); }} className="w-full bg-white rounded-lg pl-10 pr-4 py-2.5 ml-6 flex items-center justify-between shadow-sm border border-slate-100 active:scale-[.98] transition-transform text-left">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
+                          <div><p className="text-[13px] font-bold text-slate-900">{apt.unitNumber || apt.name}</p><p className="text-[10px] text-slate-400">{aptStatusLabel(apt.status, tr)}</p></div>
+                        </div>
+                        {calIcon}
+                      </button>
+                    );
+                  }
+                }
+              }
+              return nodes;
+            })()}
           </div>
         </div>
       </div>
@@ -980,26 +1044,74 @@ export default function MobileDashboard({
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
               Seleziona per aprire il calendario
             </p>
-            {apartments.map((apt) => (
-              <button
-                key={apt.id}
-                onClick={() => openApartmentCalendar(apt)}
-                className="w-full bg-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm border border-slate-100 active:scale-95 transition-transform text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
-                  <span className="text-base font-bold text-slate-900">{apt.name}</span>
-                  {apt.openTickets > 0 && (
-                    <span className="text-[9px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">
-                      {apt.openTickets} ticket
-                    </span>
-                  )}
-                </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            ))}
+            {(() => {
+              type Cat = { id: string; name: string; units: MobileApartmentData[] };
+              type Group = { type: "single"; apt: MobileApartmentData } | { type: "structure"; propertyId: string; name: string; cats: Cat[] };
+              const groups: Group[] = [];
+              const propIndex = new Map<string, number>();
+              for (const apt of apartments) {
+                if (!apt.propertyId) { groups.push({ type: "single", apt }); continue; }
+                let gi = propIndex.get(apt.propertyId);
+                if (gi === undefined) { gi = groups.length; propIndex.set(apt.propertyId, gi); groups.push({ type: "structure", propertyId: apt.propertyId, name: apt.propertyName || apt.name, cats: [] }); }
+                const g = groups[gi] as Extract<Group, { type: "structure" }>;
+                const catId = apt.unitCategoryId || "_";
+                let cat = g.cats.find((c) => c.id === catId);
+                if (!cat) { cat = { id: catId, name: apt.categoryName || "—", units: [] }; g.cats.push(cat); }
+                cat.units.push(apt);
+              }
+              const nodes: React.ReactNode[] = [];
+              for (const g of groups) {
+                if (g.type === "single") {
+                  const apt = g.apt;
+                  nodes.push(
+                    <button key={apt.id} onClick={() => openApartmentCalendar(apt)} className="w-full bg-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm border border-slate-100 active:scale-95 transition-transform text-left">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
+                        <span className="text-base font-bold text-slate-900">{apt.name}</span>
+                        {apt.openTickets > 0 && <span className="text-[9px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">{apt.openTickets} ticket</span>}
+                      </div>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                    </button>
+                  );
+                  continue;
+                }
+                const unitCount = g.cats.reduce((n, c) => n + c.units.length, 0);
+                const openP = expandedProps.has(g.propertyId);
+                nodes.push(
+                  <button key={`p_${g.propertyId}`} onClick={() => toggleCalProp(g.propertyId)} className="w-full bg-white rounded-2xl px-5 py-4 flex items-center justify-between shadow-sm border border-slate-100 active:scale-95 transition-transform text-left">
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">🏢</span>
+                      <div><div className="text-base font-bold text-slate-900">{g.name}</div><div className="text-[11px] text-slate-400 font-semibold">{unitCount} unità</div></div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5" className={`transition-transform ${openP ? "rotate-90" : ""}`}><polyline points="9 18 15 12 9 6" /></svg>
+                  </button>
+                );
+                if (!openP) continue;
+                for (const c of g.cats) {
+                  const openC = expandedCats.has(c.id);
+                  nodes.push(
+                    <button key={`c_${c.id}`} onClick={() => toggleCalCat(c.id)} className="w-full bg-white/70 rounded-xl pl-8 pr-5 py-3 ml-3 flex items-center justify-between border border-slate-100 active:scale-95 transition-transform text-left">
+                      <span className="text-[13px] font-bold text-slate-700">{c.name} <span className="text-slate-400 font-semibold">×{c.units.length}</span></span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5" className={`transition-transform ${openC ? "rotate-90" : ""}`}><polyline points="9 18 15 12 9 6" /></svg>
+                    </button>
+                  );
+                  if (!openC) continue;
+                  for (const apt of c.units) {
+                    nodes.push(
+                      <button key={apt.id} onClick={() => openApartmentCalendar(apt)} className="w-full bg-white rounded-xl pl-11 pr-5 py-3 ml-6 flex items-center justify-between shadow-sm border border-slate-100 active:scale-95 transition-transform text-left">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(apt.status)}`} />
+                          <span className="text-[14px] font-bold text-slate-900">{apt.unitNumber || apt.name}</span>
+                          {apt.openTickets > 0 && <span className="text-[9px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">{apt.openTickets} ticket</span>}
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                      </button>
+                    );
+                  }
+                }
+              }
+              return nodes;
+            })()}
           </div>
         </div>
       )}
