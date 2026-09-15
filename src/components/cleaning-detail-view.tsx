@@ -11,7 +11,7 @@ import type { CorrectionItem } from "@/src/components/cleaning-correction-panel"
 import { updateCleaningStatus, updateCleaningTask, createCleaningTaskMessage, approveCleaningDirectly } from "@/src/app/actions/operational";
 import { hapticMedium, hapticSuccess } from "@/src/lib/haptics";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
-import { calculateLinen } from "@/src/lib/linen-calculator";
+import { calculateLinen, effectiveGuests } from "@/src/lib/linen-calculator";
 
 interface ChecklistItem {
   id: string;
@@ -87,6 +87,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
   const [photosOpen, setPhotosOpen] = useState(false);
   const [status, setStatus] = useState(task.status);
   const [isPending, startTransition] = useTransition();
+  const guestsForLinen = effectiveGuests(task as { bookingId?: string | null; totalGuests?: number | null }, task.nextBooking);
   const correctionItems = Array.isArray(task.correctionProgress) ? task.correctionProgress as CorrectionItem[] : [];
   const hasCorrections = correctionItems.length > 0;
 
@@ -243,11 +244,11 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             </div>
 
             {/* Biancheria */}
-            {task.nextBooking && (() => {
+            {guestsForLinen > 0 && (() => {
               const linen = calculateLinen(
                 task.apartment.bedConfig,
-                task.nextBooking.totalGuests,
-                !!(task.cullaRequested ?? task.nextBooking.cullaRequested),
+                guestsForLinen,
+                !!(task.cullaRequested ?? task.nextBooking?.cullaRequested),
                 !!(task.sofaBedForced),
               );
               return (
@@ -260,7 +261,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                       <span className="text-sm shrink-0">🛁</span>
                       <div className="min-w-0">
                         <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{t.towelsLabel}</p>
-                        <p className="text-lg font-black text-gray-900 leading-none">{task.nextBooking.totalGuests * 2}</p>
+                        <p className="text-lg font-black text-gray-900 leading-none">{guestsForLinen * 2}</p>
                       </div>
                     </div>
                     <div className="rounded-xl bg-gray-50 border border-gray-100 px-3 py-2 flex items-center gap-2">

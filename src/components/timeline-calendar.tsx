@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useLang } from "@/src/components/lang-context";
 import Link from "next/link";
 import { getApartmentOperationalStatus, type ApartmentStatus } from "@/src/lib/apartment-status";
-import { calculateLinen } from "@/src/lib/linen-calculator";
+import { calculateLinen, effectiveGuests } from "@/src/lib/linen-calculator";
 import { deleteBooking, confirmCheckIn } from "@/src/app/actions/booking";
 import {
   deleteCleaningTask,
@@ -94,6 +94,7 @@ type PrismaCleaningTask = {
   notes: string | null;
   checklistProgress: unknown;
   correctionProgress?: unknown;
+  totalGuests?: number | null;
   createdAt: Date;
   assignedToId: string | null;
 };
@@ -342,6 +343,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
         bookingId: null,
         checklistProgress: item.checklistProgress ?? null,
         correctionProgress: (item as PrismaCleaningTask).correctionProgress ?? null,
+        totalGuests: (item as PrismaCleaningTask).totalGuests ?? null,
       } as PrismaCleaningTask);
     }
     for (const item of maintenanceTickets) {
@@ -1090,11 +1092,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                         .filter(b => b.apartmentId === selectedEvent.data.apartmentId && new Date(b.checkInDate) >= taskDayStart)
                                         .sort((a, b) => new Date(a.checkInDate).getTime() - new Date(b.checkInDate).getTime())[0];
                                     const apt = apartments.find(a => a.id === selectedEvent.data.apartmentId);
-                                    const linen = nextB
+                                    // Pulizia manuale → usa gli ospiti della pulizia; altrimenti la prenotazione.
+                                    const guests = effectiveGuests(selectedEvent.data, nextB);
+                                    const linen = guests > 0
                                         ? calculateLinen(
                                             apt?.bedConfig,
-                                            nextB.totalGuests ?? 0,
-                                            !!(selectedEvent.data.cullaRequested ?? nextB.cullaRequested),
+                                            guests,
+                                            !!(selectedEvent.data.cullaRequested ?? nextB?.cullaRequested),
                                             !!(selectedEvent.data.sofaBedForced),
                                           )
                                         : null;
@@ -1113,13 +1117,13 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                     <SummaryBox
                                                         icon={<Users size={16} />}
                                                         label={t.tcGuestCount}
-                                                        value={nextB ? `${nextB.totalGuests} ${t.tcPersonsCap}` : t.tcNotAvailable}
+                                                        value={guests > 0 ? `${guests} ${t.tcPersonsCap}` : t.tcNotAvailable}
                                                     />
                                                 </div>
                                             </div>
 
                                             {/* Biancheria */}
-                                            {nextB && linen && (
+                                            {guests > 0 && linen && (
                                                 <div>
                                                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{t.tcLinenServices}</h4>
 
@@ -1129,7 +1133,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                                             <span className="text-base">🛁</span>
                                                             <div>
                                                                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{t.towelsLabel}</p>
-                                                                <p className="text-lg font-black text-slate-900 leading-none">{(nextB.totalGuests ?? 0) * 2}</p>
+                                                                <p className="text-lg font-black text-slate-900 leading-none">{guests * 2}</p>
                                                             </div>
                                                         </div>
                                                         <div className="bg-slate-50 rounded-xl border border-slate-100 p-3 flex items-center gap-3">

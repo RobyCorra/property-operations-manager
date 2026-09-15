@@ -45,6 +45,20 @@ export const DEFAULT_BED_CONFIG: BedConfig = {
   culla:              {           lenzuola: 1, federe: 1, copriPiumino: 1, piumino: 1 },
 };
 
+/**
+ * Numero ospiti da usare per il calcolo biancheria/asciugamani.
+ * REGOLA: una pulizia creata MANUALMENTE (senza prenotazione collegata,
+ * bookingId null) usa gli ospiti inseriti nella pulizia stessa; le pulizie
+ * legate a una prenotazione usano la prenotazione successiva.
+ */
+export function effectiveGuests(
+  task: { bookingId?: string | null; totalGuests?: number | null },
+  nextBooking?: { totalGuests?: number | null } | null,
+): number {
+  if (!task.bookingId && task.totalGuests != null) return task.totalGuests;
+  return nextBooking?.totalGuests ?? 0;
+}
+
 function parseBedConfig(raw: unknown): BedConfig {
   if (!raw || typeof raw !== "object") return DEFAULT_BED_CONFIG;
   const r = raw as Record<string, unknown>;

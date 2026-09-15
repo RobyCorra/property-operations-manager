@@ -15,7 +15,7 @@ import { enrichCleaningTasksWithNextBooking, computeChecklistSnapshot } from "@/
 import { formatRomeDateDisplay, formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import LocationTracker from "@/src/components/location-tracker";
 import PhotoQueueUploader from "@/src/components/photo-queue-uploader";
-import { calculateLinen } from "@/src/lib/linen-calculator";
+import { calculateLinen, effectiveGuests } from "@/src/lib/linen-calculator";
 import PushPermissionRequest from "@/src/components/push-permission";
 import ApnsRegister from "@/src/components/apns-register";
 import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
@@ -270,7 +270,7 @@ export default async function CleanerDashboardPage() {
                       {/* Biancheria & asciugamani (tradotti via LinenSection) */}
                       {(() => {
                         const cullaRequested = !!(task.nextBooking?.cullaRequested);
-                        const totalGuests = task.nextBooking?.totalGuests ?? task.totalGuests ?? 0;
+                        const totalGuests = effectiveGuests(task, task.nextBooking);
                         const linen = totalGuests > 0
                           ? calculateLinen(task.apartment.bedConfig, totalGuests, cullaRequested)
                           : null;

@@ -2,7 +2,7 @@ import { getCleaningByToken, getCleaningTokenStatus } from "@/src/app/actions/cl
 import LinkUnavailable from "@/src/components/link-unavailable";
 import PublicCleaningView from "@/src/components/public-cleaning-view";
 import { enrichCleaningTaskWithNextBooking } from "@/src/app/actions/operational";
-import { calculateLinen } from "@/src/lib/linen-calculator";
+import { calculateLinen, effectiveGuests } from "@/src/lib/linen-calculator";
 
 function formatDateFull(date: Date): string {
   const d = new Date(date);
@@ -35,7 +35,8 @@ export default async function PublicCleaningPage({
     date: task.date as Date,
   });
 
-  const nextGuests       = nextBooking?.totalGuests ?? 0;
+  // Pulizia manuale → usa gli ospiti della pulizia; altrimenti la prenotazione.
+  const nextGuests       = effectiveGuests(task as any, nextBooking);
   const cullaRequested   = !!(nextBooking?.cullaRequested);
   const towels           = nextGuests > 0 ? nextGuests * 2 : null;
   const bathMats         = task.apartment.bathrooms ?? null;

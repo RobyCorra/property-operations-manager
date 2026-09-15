@@ -18,13 +18,15 @@ import {
   Clock,
   ArrowRight
 } from "./icons";
-import { calculateLinen } from "@/src/lib/linen-calculator";
+import { calculateLinen, effectiveGuests } from "@/src/lib/linen-calculator";
 
 interface CleaningTask {
   id: string;
   date: Date | string;
   status: string;
   notes: string | null;
+  bookingId?: string | null;
+  totalGuests?: number | null;
   apartment: { id: string; name: string; bathrooms?: number; bedConfig?: unknown };
   assignedTo: { id: string; name: string } | null;
   nextBooking?: {
@@ -208,7 +210,8 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                   <td className="px-10 py-6">
                     {task.nextBooking ? (() => {
                       const nb = task.nextBooking;
-                      const linen = calculateLinen(task.apartment.bedConfig, nb.totalGuests, !!(nb.cullaRequested));
+                      const guests = effectiveGuests(task, nb);
+                      const linen = calculateLinen(task.apartment.bedConfig, guests, !!(nb.cullaRequested));
                       return (
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2">
@@ -223,7 +226,7 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                           </div>
                           <div className="flex flex-wrap gap-1 mt-0.5">
                             <span className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5 text-[9px] font-black text-slate-500 uppercase tracking-wide">
-                              🛁 {nb.totalGuests * 2}
+                              🛁 {guests * 2}
                             </span>
                             {task.apartment.bathrooms != null && (
                               <span className="inline-flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-md px-2 py-0.5 text-[9px] font-black text-slate-500 uppercase tracking-wide">
