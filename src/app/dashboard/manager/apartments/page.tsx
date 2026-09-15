@@ -5,6 +5,7 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import { getT } from "@/src/lib/server-lang";
 import Link from "next/link";
 import ApartmentsListTable from "@/src/components/apartments-list-table";
+import StructuresList from "@/src/components/structures-list";
 import BackButton from "@/src/components/back-button";
 import DbErrorState from "@/src/components/db-error-state";
 
@@ -20,7 +21,7 @@ export default async function ApartmentsListPage() {
   const tr = await getT();
 
   const apartments = await prisma.apartment.findMany({
-    where: { organizationId: orgId },
+    where: { organizationId: orgId, propertyId: null },
     orderBy: { createdAt: "desc" },
   }).catch((e) => {
     console.error("Appartamenti: impossibile caricare i dati dal DB", e);
@@ -30,6 +31,25 @@ export default async function ApartmentsListPage() {
   if (!apartments) {
     return <DbErrorState />;
   }
+
+  const properties = await prisma.property.findMany({
+    where: { organizationId: orgId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      categories: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          units: {
+            orderBy: { unitNumber: "asc" },
+            select: { id: true, name: true, unitNumber: true, maxGuests: true, bedrooms: true, bathrooms: true, squareMeters: true, icalUrl: true, lastSyncAt: true },
+          },
+        },
+      },
+    },
+  }).catch((e) => {
+    console.error("Strutture: impossibile caricare i dati dal DB", e);
+    return [];
+  });
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans overflow-x-hidden">
@@ -50,7 +70,10 @@ export default async function ApartmentsListPage() {
           </div>
         </div>
 
-        {/* List */}
+        {/* Strutture (hotel/residence) */}
+        {properties.length > 0 && <StructuresList structures={properties} />}
+
+        {/* List appartamenti singoli */}
         <ApartmentsListTable initialApartments={apartments} />
 
       </div>

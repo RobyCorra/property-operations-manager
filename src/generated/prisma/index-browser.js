@@ -149,6 +149,32 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PropertyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  organizationId: 'organizationId',
+  address: 'address',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  type: 'type',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.UnitCategoryScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  name: 'name',
+  squareMeters: 'squareMeters',
+  bedrooms: 'bedrooms',
+  bathrooms: 'bathrooms',
+  maxGuests: 'maxGuests',
+  bedConfig: 'bedConfig',
+  technicalProfile: 'technicalProfile',
+  accessInstructions: 'accessInstructions',
+  accessInfo: 'accessInfo',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -190,7 +216,10 @@ exports.Prisma.ApartmentScalarFieldEnum = {
   checkinDefaultTime: 'checkinDefaultTime',
   autoCheckin: 'autoCheckin',
   createdAt: 'createdAt',
-  clientId: 'clientId'
+  clientId: 'clientId',
+  propertyId: 'propertyId',
+  unitCategoryId: 'unitCategoryId',
+  unitNumber: 'unitNumber'
 };
 
 exports.Prisma.ChecklistItemScalarFieldEnum = {
@@ -572,6 +601,8 @@ exports.AIAssistantMessageRole = exports.$Enums.AIAssistantMessageRole = {
 
 exports.Prisma.ModelName = {
   Organization: 'Organization',
+  Property: 'Property',
+  UnitCategory: 'UnitCategory',
   User: 'User',
   Apartment: 'Apartment',
   ChecklistItem: 'ChecklistItem',

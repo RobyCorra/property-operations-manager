@@ -36,7 +36,50 @@ model Organization {
   createdAt                  DateTime             @default(now())
   users                      User[]
   apartments                 Apartment[]
+  properties                 Property[]
   chatSessions               ManagerChatSession[]
+}
+
+// Struttura ricettiva (hotel/residence): indirizzo unico, contiene N unita'
+// raggruppate per categoria. L'appartamento singolo NON usa questo modello
+// (resta un Apartment senza propertyId), cosi' i due tipi convivono.
+model Property {
+  id             String         @id @default(uuid())
+  name           String
+  organizationId String?
+  organization   Organization?  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  address        String
+  latitude       Float
+  longitude      Float
+  type           String         @default("RESIDENCE") // "HOTEL" | "RESIDENCE"
+  createdAt      DateTime       @default(now())
+  categories     UnitCategory[]
+  units          Apartment[]
+
+  @@index([organizationId])
+}
+
+// Categoria di unita' = "master": le caratteristiche condivise da tutte le
+// unita' che vi appartengono (mq, letti/biancheria, elettrodomestici, accessi).
+// Le unita' sono identiche al master; modificando il master si propaga a tutte
+// (con conferma esplicita lato UI).
+model UnitCategory {
+  id                 String      @id @default(uuid())
+  propertyId         String
+  property           Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  name               String
+  squareMeters       Int
+  bedrooms           Int
+  bathrooms          Int
+  maxGuests          Int
+  bedConfig          Json?
+  technicalProfile   Json?
+  accessInstructions String?
+  accessInfo         Json?
+  createdAt          DateTime    @default(now())
+  units              Apartment[]
+
+  @@index([propertyId])
 }
 
 model User {
@@ -96,6 +139,11 @@ model Apartment {
   createdAt             DateTime               @default(now())
   clientId              String?
   client                Client?                @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  propertyId            String?
+  property              Property?              @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  unitCategoryId        String?
+  unitCategory          UnitCategory?          @relation(fields: [unitCategoryId], references: [id], onDelete: SetNull)
+  unitNumber            String?
   bookings              Booking[]
   checklistItems        ChecklistItem[]
   cleaningTasks         CleaningTask[]
@@ -110,6 +158,8 @@ model Apartment {
   checkinTasks          CheckinTask[]
 
   @@index([organizationId])
+  @@index([propertyId])
+  @@index([unitCategoryId])
 }
 
 model ChecklistItem {
