@@ -7,6 +7,7 @@ import { getApartmentOperationalStatus, STATUS_UI } from "@/src/lib/apartment-st
 import DeleteStructureButton from "@/src/components/delete-structure-button";
 import PropertyProductsPanel from "@/src/components/property-products-panel";
 import BackButton from "@/src/components/back-button";
+import { getT } from "@/src/lib/server-lang";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default async function StructurePage({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const cookieStore = await cookies();
   if (cookieStore.get("role")?.value !== "MANAGER") redirect("/login");
+  const tr = await getT();
 
   const structure = await getStructure(id);
   if (!structure) notFound();
@@ -30,10 +32,10 @@ export default async function StructurePage({ params }: { params: Promise<{ id: 
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-blue-500">
-                {structure.type === "HOTEL" ? "Hotel" : "Residence"}
+                {structure.type === "HOTEL" ? tr.stHotel : tr.stResidence}
               </p>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{structure.name}</h1>
-              <p className="mt-1 text-sm text-slate-500">{structure.address} · {unitCount} unità</p>
+              <p className="mt-1 text-sm text-slate-500">{structure.address} · {tr.stUnitsBadge(unitCount)}</p>
             </div>
           </div>
         </div>
@@ -45,14 +47,14 @@ export default async function StructurePage({ params }: { params: Promise<{ id: 
                 <div>
                   <p className="text-sm font-semibold text-slate-900">{c.name}</p>
                   <p className="text-[12px] text-slate-400">
-                    {c.squareMeters} m² · {c.bedrooms} camere · {c.bathrooms} bagni · {c.maxGuests} ospiti · {c.units.length} unità
+                    {tr.stCatSummary(c.squareMeters, c.bedrooms, c.bathrooms, c.maxGuests, c.units.length)}
                   </p>
                 </div>
                 <Link
                   href={`/dashboard/manager/strutture/${id}/categoria/${c.id}`}
                   className="shrink-0 rounded-full bg-violet-500/10 px-4 py-2 text-xs font-semibold text-violet-600"
                 >
-                  Modifica master
+                  {tr.stEditMaster}
                 </Link>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">

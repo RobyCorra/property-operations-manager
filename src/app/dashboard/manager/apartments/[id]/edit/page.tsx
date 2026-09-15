@@ -83,8 +83,8 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
           >
             <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center text-lg flex-shrink-0">🏢</div>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">Unità di una struttura</p>
-              <p className="font-bold text-slate-900 text-sm">Caratteristiche, letti e checklist si modificano nel master della categoria</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-500">{tr.stUnitOfStructure}</p>
+              <p className="font-bold text-slate-900 text-sm">{tr.stUnitBannerBody}</p>
             </div>
             <span className="text-violet-400 text-lg">›</span>
           </Link>

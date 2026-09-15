@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLang } from "@/src/components/lang-context";
 import { updateCategoryConsumption } from "@/src/app/actions/property-product";
 
 type Product = { id: string; name: string; emoji: string; unit: string };
@@ -18,6 +19,7 @@ export default function CategoryConsumptionEditor({
   products: Product[];
   initial: Record<string, number>;
 }) {
+  const { t } = useLang();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [map, setMap] = useState<Record<string, string>>(() => {
@@ -41,13 +43,12 @@ export default function CategoryConsumptionEditor({
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-      <h2 className="mb-1 text-sm font-semibold text-slate-900">Consumi al check-in</h2>
-      <p className="mb-3 text-[12px] text-slate-400">Quanto consuma un&apos;unità di questa categoria dallo stock struttura ad ogni check-in.</p>
+      <h2 className="mb-1 text-sm font-semibold text-slate-900">{t.stConsumption}</h2>
+      <p className="mb-3 text-[12px] text-slate-400">{t.stConsumptionSub}</p>
 
       {products.length === 0 ? (
         <p className="text-xs text-gray-400">
-          Nessun prodotto struttura. Aggiungili nella{" "}
-          <Link href={`/dashboard/manager/strutture/${propertyId}`} className="font-medium text-violet-600">pagina struttura</Link>.
+          <Link href={`/dashboard/manager/strutture/${propertyId}`} className="font-medium text-violet-600">{t.stNoStructureProducts}</Link>
         </p>
       ) : (
         <>
@@ -68,9 +69,9 @@ export default function CategoryConsumptionEditor({
             ))}
           </div>
           <div className="mt-3 flex items-center justify-end gap-3">
-            {saved && <span className="text-xs font-medium text-emerald-600">Salvato ✓</span>}
+            {saved && <span className="text-xs font-medium text-emerald-600">{t.stSaved}</span>}
             <button type="button" onClick={save} disabled={isPending} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-2 text-sm font-semibold text-white disabled:opacity-40">
-              {isPending ? "Salvo…" : "Salva consumi"}
+              {isPending ? t.stSaving : t.stSaveConsumption}
             </button>
           </div>
         </>

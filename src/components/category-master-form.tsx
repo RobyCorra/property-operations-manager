@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLang } from "@/src/components/lang-context";
 import type { CategoryMasterInput, MasterChecklistItem } from "@/src/app/actions/structure";
 
 type BedCounts = {
@@ -50,6 +51,7 @@ function bedsToConfig(beds: BedCounts) {
 }
 
 export default function CategoryMasterForm({ categoryId, propertyId, unitCount, unitNumbers, initial, action }: Props) {
+  const { t } = useLang();
   const router = useRouter();
   const [name, setName] = useState(initial.name);
   const [sqm, setSqm] = useState(initial.squareMeters);
@@ -74,7 +76,7 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
   const save = () => {
     setError(null);
     if (!name.trim()) {
-      setError("Il nome della categoria è obbligatorio.");
+      setError(t.stCatNameMaster);
       setConfirmOpen(false);
       return;
     }
@@ -106,19 +108,19 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
     <div className="space-y-5">
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-4">
         <div>
-          <label className={labelCls}>Nome categoria (master)</label>
+          <label className={labelCls}>{t.stCatNameMaster}</label>
           <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="grid grid-cols-4 gap-2">
-          <div><label className={labelCls}>m²</label><input type="number" min={0} className={numCls} value={sqm || ""} onChange={(e) => setSqm(parseInt(e.target.value) || 0)} /></div>
-          <div><label className={labelCls}>Camere</label><input type="number" min={0} className={numCls} value={bedrooms} onChange={(e) => setBedrooms(parseInt(e.target.value) || 0)} /></div>
-          <div><label className={labelCls}>Bagni</label><input type="number" min={0} className={numCls} value={bathrooms} onChange={(e) => setBathrooms(parseInt(e.target.value) || 0)} /></div>
-          <div><label className={labelCls}>Ospiti</label><input type="number" min={1} className={numCls} value={maxGuests} onChange={(e) => setMaxGuests(parseInt(e.target.value) || 1)} /></div>
+          <div><label className={labelCls}>{t.stSqm}</label><input type="number" min={0} className={numCls} value={sqm || ""} onChange={(e) => setSqm(parseInt(e.target.value) || 0)} /></div>
+          <div><label className={labelCls}>{t.stRooms}</label><input type="number" min={0} className={numCls} value={bedrooms} onChange={(e) => setBedrooms(parseInt(e.target.value) || 0)} /></div>
+          <div><label className={labelCls}>{t.stBaths}</label><input type="number" min={0} className={numCls} value={bathrooms} onChange={(e) => setBathrooms(parseInt(e.target.value) || 0)} /></div>
+          <div><label className={labelCls}>{t.stGuests}</label><input type="number" min={1} className={numCls} value={maxGuests} onChange={(e) => setMaxGuests(parseInt(e.target.value) || 1)} /></div>
         </div>
         <div>
-          <label className={labelCls}>Letti</label>
+          <label className={labelCls}>{t.stBeds}</label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {([["matrimoniale","Matrim."],["singolo","Singolo"],["divanoMatrimoniale","Divano M."],["divanoSingolo","Divano S."]] as const).map(([k, lbl]) => (
+            {([["matrimoniale",t.stBedDouble],["singolo",t.stBedSingle],["divanoMatrimoniale",t.stSofaDouble],["divanoSingolo",t.stSofaSingle]] as const).map(([k, lbl]) => (
               <div key={k}>
                 <span className="mb-1 block text-[11px] text-gray-400">{lbl}</span>
                 <input type="number" min={0} className={numCls} value={beds[k]} onChange={(e) => setBeds((b) => ({ ...b, [k]: parseInt(e.target.value) || 0 }))} />
@@ -130,25 +132,25 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
 
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-gray-900">Checklist pulizia <span className="font-normal text-violet-500">· dal master</span></span>
+          <span className="text-sm font-semibold text-gray-900">{t.stCleaningChecklist} <span className="font-normal text-violet-500">{t.stFromMaster}</span></span>
         </div>
-        {checklist.length === 0 && <p className="text-xs text-gray-400">Nessuna voce. Aggiungine una.</p>}
+        {checklist.length === 0 && <p className="text-xs text-gray-400">{t.stNoChecklistItems}</p>}
         <div className="space-y-2">
           {checklist.map((it, idx) => (
             <div key={idx} className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
               <input
                 className="flex-1 bg-transparent text-sm text-gray-900 focus:outline-none"
                 value={it.label}
-                placeholder="Voce checklist"
+                placeholder={t.stChecklistItem}
                 onChange={(e) => updateItem(idx, { label: e.target.value })}
               />
               <label className="flex items-center gap-1 text-[11px] text-gray-500">
                 <input type="checkbox" checked={it.photoRequired} onChange={(e) => updateItem(idx, { photoRequired: e.target.checked })} />
-                Foto
+                {t.stPhotoShort}
               </label>
               <label className="flex items-center gap-1 text-[11px] text-gray-500">
                 <input type="checkbox" checked={it.required} onChange={(e) => updateItem(idx, { required: e.target.checked })} />
-                Obbl.
+                {t.stRequiredShort}
               </label>
               <button type="button" onClick={() => setChecklist((p) => p.filter((_, i) => i !== idx))} className="text-xs font-medium text-red-500">✕</button>
             </div>
@@ -159,7 +161,7 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
           onClick={() => setChecklist((p) => [...p, { label: "", required: true, photoRequired: false }])}
           className="w-full rounded-xl border border-dashed border-gray-300 py-2 text-sm font-medium text-gray-500"
         >
-          + Aggiungi voce
+          {t.stAddChecklistItem}
         </button>
       </div>
 
@@ -167,7 +169,7 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
 
       <div className="flex items-center justify-between">
         <Link href={`/dashboard/manager/strutture/${propertyId}`} className="rounded-full border border-gray-200 px-6 py-2 text-sm font-medium text-gray-600">
-          Annulla
+          {t.stCancel}
         </Link>
         <button
           type="button"
@@ -175,7 +177,7 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
           disabled={isPending}
           className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-2 text-sm font-semibold text-white disabled:opacity-40"
         >
-          Salva
+          {t.stSave}
         </button>
       </div>
 
@@ -184,18 +186,17 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="mb-3 flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600 text-xl">↗</span>
-              <p className="text-base font-semibold text-gray-900">Applicare a tutte le unità?</p>
+              <p className="text-base font-semibold text-gray-900">{t.stApplyAllTitle}</p>
             </div>
             <p className="mb-5 text-sm leading-relaxed text-gray-500">
-              Le modifiche a caratteristiche e checklist verranno applicate a tutte le <strong>{unitCount} unità</strong>
-              {unitNumbers.length > 0 && <> ({unitNumbers.join(", ")})</>}. Le unità restano identiche al master; prenotazioni e stato restano indipendenti.
+              {t.stApplyAllBody(unitCount, unitNumbers.join(", "))}
             </p>
             <div className="flex gap-2">
               <button type="button" onClick={save} disabled={isPending} className="flex-1 rounded-full bg-gradient-to-r from-violet-500 to-blue-500 py-2.5 text-sm font-semibold text-white disabled:opacity-40">
-                {isPending ? "Applico…" : "Applica a tutte"}
+                {isPending ? t.stApplying : t.stApplyAll}
               </button>
               <button type="button" onClick={() => setConfirmOpen(false)} disabled={isPending} className="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600">
-                Annulla
+                {t.stCancel}
               </button>
             </div>
           </div>

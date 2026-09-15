@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLang } from "@/src/components/lang-context";
 
 type Unit = {
   id: string;
@@ -37,11 +38,12 @@ type Structure = {
 };
 
 export default function StructuresList({ structures }: { structures: Structure[] }) {
+  const { t } = useLang();
   const [openId, setOpenId] = useState<string | null>(null);
 
   return (
     <section className="space-y-4">
-      <h2 className="text-xs font-black uppercase tracking-[0.1em] text-slate-400">Strutture</h2>
+      <h2 className="text-xs font-black uppercase tracking-[0.1em] text-slate-400">{t.stStructures}</h2>
       {structures.map((s) => {
         const unitCount = s.categories.reduce((sum, c) => sum + c.units.length, 0);
         const open = openId === s.id;
@@ -60,7 +62,7 @@ export default function StructuresList({ structures }: { structures: Structure[]
                 <p className="truncate text-[12px] font-medium text-slate-400">{s.address}</p>
               </div>
               <span className="shrink-0 rounded-full bg-[#f0eeff] px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-violet-700">
-                {unitCount} unità
+                {t.stUnitsBadge(unitCount)}
               </span>
               <svg
                 width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
@@ -78,14 +80,14 @@ export default function StructuresList({ structures }: { structures: Structure[]
                       <div>
                         <p className="text-[13px] font-bold text-slate-800">{c.name}</p>
                         <p className="text-[11px] text-slate-400">
-                          {c.squareMeters} m² · {c.bedrooms} camere · {c.bathrooms} bagni · {c.maxGuests} ospiti · {c.units.length} unità
+                          {t.stCatSummary(c.squareMeters, c.bedrooms, c.bathrooms, c.maxGuests, c.units.length)}
                         </p>
                       </div>
                       <Link
                         href={`/dashboard/manager/strutture/${s.id}/categoria/${c.id}`}
                         className="shrink-0 rounded-full bg-violet-500/10 px-3 py-1.5 text-[11px] font-semibold text-violet-600"
                       >
-                        Modifica master
+                        {t.stEditMaster}
                       </Link>
                     </div>
                     <div className="space-y-2">
@@ -121,7 +123,7 @@ export default function StructuresList({ structures }: { structures: Structure[]
                   href={`/dashboard/manager/strutture/${s.id}`}
                   className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 py-2.5 text-[13px] font-semibold text-slate-600"
                 >
-                  Apri struttura
+                  {t.stOpenStructure}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                 </Link>
               </div>

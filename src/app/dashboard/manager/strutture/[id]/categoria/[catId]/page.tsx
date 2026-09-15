@@ -5,6 +5,7 @@ import { getPropertyProducts } from "@/src/app/actions/property-product";
 import CategoryMasterForm from "@/src/components/category-master-form";
 import CategoryConsumptionEditor from "@/src/components/category-consumption-editor";
 import BackButton from "@/src/components/back-button";
+import { getT } from "@/src/lib/server-lang";
 
 export const dynamic = "force-dynamic";
 
@@ -29,16 +30,17 @@ export default async function CategoryMasterPage({ params }: { params: Promise<{
   const { category, checklist } = data;
   const products = await getPropertyProducts(id);
   const consumption = (category.consumption as Record<string, number> | null) ?? {};
+  const tr = await getT();
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans">
       <div className="max-w-2xl mx-auto space-y-6">
         <div>
           <BackButton />
-          <p className="text-xs font-medium uppercase tracking-wide text-violet-500">{category.property.name} · categoria</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-violet-500">{category.property.name} · {tr.stCategory}</p>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{category.name}</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {category.units.length} unità: {category.units.map((u) => u.unitNumber).filter(Boolean).join(", ") || "—"}
+            {tr.stUnitsColon(category.units.length, category.units.map((u) => u.unitNumber).filter(Boolean).join(", "))}
           </p>
         </div>
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ApartmentCreateWizard from "@/src/components/apartment-create-wizard";
 import StructureCreateWizard from "@/src/components/structure-create-wizard";
+import { useLang } from "@/src/components/lang-context";
 import type { StructureInput } from "@/src/app/actions/structure";
 
 type Props = {
@@ -13,13 +14,14 @@ type Props = {
 };
 
 export default function NewEntrySwitch({ createApartment, createStructure }: Props) {
+  const { t } = useLang();
   const [choice, setChoice] = useState<null | "single" | "structure">(null);
 
   if (choice === "single") {
     return (
       <div className="space-y-4">
         <button type="button" onClick={() => setChoice(null)} className="text-sm font-medium text-gray-500">
-          ← Cambia tipo
+          ← {t.stChangeType}
         </button>
         <ApartmentCreateWizard action={createApartment} />
       </div>
@@ -30,7 +32,7 @@ export default function NewEntrySwitch({ createApartment, createStructure }: Pro
     return (
       <div className="space-y-4">
         <button type="button" onClick={() => setChoice(null)} className="text-sm font-medium text-gray-500">
-          ← Cambia tipo
+          ← {t.stChangeType}
         </button>
         <StructureCreateWizard action={createStructure} />
       </div>
@@ -39,7 +41,7 @@ export default function NewEntrySwitch({ createApartment, createStructure }: Pro
 
   return (
     <div className="space-y-3">
-      <p className="text-sm font-medium text-gray-500">Cosa vuoi aggiungere?</p>
+      <p className="text-sm font-medium text-gray-500">{t.stAddWhat}</p>
       <button
         type="button"
         onClick={() => setChoice("single")}
@@ -47,8 +49,8 @@ export default function NewEntrySwitch({ createApartment, createStructure }: Pro
       >
         <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-2xl">🏠</span>
         <span>
-          <span className="block text-base font-semibold text-gray-900">Appartamento singolo</span>
-          <span className="block text-sm text-gray-500">Un indirizzo, un&apos;unità</span>
+          <span className="block text-base font-semibold text-gray-900">{t.stSingleApt}</span>
+          <span className="block text-sm text-gray-500">{t.stSingleAptSub}</span>
         </span>
       </button>
       <button
@@ -58,8 +60,8 @@ export default function NewEntrySwitch({ createApartment, createStructure }: Pro
       >
         <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-2xl">🏨</span>
         <span>
-          <span className="block text-base font-semibold text-gray-900">Struttura</span>
-          <span className="block text-sm text-gray-500">Hotel o residence · più unità per categoria</span>
+          <span className="block text-base font-semibold text-gray-900">{t.stStructure}</span>
+          <span className="block text-sm text-gray-500">{t.stStructureSub}</span>
         </span>
       </button>
     </div>

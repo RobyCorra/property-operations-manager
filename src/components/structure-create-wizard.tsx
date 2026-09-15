@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useLang } from "@/src/components/lang-context";
 import type { StructureInput } from "@/src/app/actions/structure";
 
 type BedCounts = {
@@ -76,6 +77,7 @@ function bedsToConfig(beds: BedCounts) {
 }
 
 export default function StructureCreateWizard({ action }: Props) {
+  const { t } = useLang();
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [name, setName] = useState("");
@@ -117,7 +119,7 @@ export default function StructureCreateWizard({ action }: Props) {
   const submit = () => {
     setError(null);
     if (duplicateNumber) {
-      setError(`Il numero unità "${duplicateNumber}" è ripetuto: devono essere unici nella struttura.`);
+      setError(t.stDupNumber(duplicateNumber));
       return;
     }
     const input: StructureInput = {
@@ -140,7 +142,7 @@ export default function StructureCreateWizard({ action }: Props) {
           router.push("/dashboard/manager/apartments");
           router.refresh();
         } else {
-          setError(result.error || "Errore durante la creazione.");
+          setError(result.error || t.stGenerating);
         }
       });
     });
@@ -166,7 +168,7 @@ export default function StructureCreateWizard({ action }: Props) {
               {s}
             </span>
             <span className={step === s ? "text-gray-900" : "text-gray-400"}>
-              {s === 1 ? "Struttura" : s === 2 ? "Categorie" : "Riepilogo"}
+              {s === 1 ? t.stStepStructure : s === 2 ? t.stStepCategories : t.stStepSummary}
             </span>
             {s < 3 && <span className="mx-1 h-px w-6 bg-gray-200" />}
           </div>
@@ -176,30 +178,30 @@ export default function StructureCreateWizard({ action }: Props) {
       {step === 1 && (
         <div className="space-y-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
           <div>
-            <label className={labelCls}>Nome struttura</label>
+            <label className={labelCls}>{t.stStructureName}</label>
             <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="Residence Sole" />
           </div>
           <div>
-            <label className={labelCls}>Tipo</label>
+            <label className={labelCls}>{t.stType}</label>
             <div className="flex gap-2">
-              {(["RESIDENCE", "HOTEL"] as const).map((t) => (
+              {(["RESIDENCE", "HOTEL"] as const).map((ty) => (
                 <button
-                  key={t}
+                  key={ty}
                   type="button"
-                  onClick={() => setType(t)}
+                  onClick={() => setType(ty)}
                   className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium ${
-                    type === t
+                    type === ty
                       ? "border-violet-400 bg-violet-50 text-violet-700"
                       : "border-gray-200 bg-white text-gray-600"
                   }`}
                 >
-                  {t === "RESIDENCE" ? "Residence" : "Hotel"}
+                  {ty === "RESIDENCE" ? t.stResidence : t.stHotel}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label className={labelCls}>Indirizzo (unico per tutta la struttura)</label>
+            <label className={labelCls}>{t.stAddressUnique}</label>
             <input className={inputCls} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Via Roma 10, Roma" />
           </div>
           <div className="flex justify-end">
@@ -209,7 +211,7 @@ export default function StructureCreateWizard({ action }: Props) {
               onClick={() => setStep(2)}
               className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-2 text-sm font-semibold text-white disabled:opacity-40"
             >
-              Avanti
+              {t.stNext}
             </button>
           </div>
         </div>
@@ -222,47 +224,47 @@ export default function StructureCreateWizard({ action }: Props) {
             return (
               <div key={c.key} className="space-y-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-900">Categoria {idx + 1}</span>
+                  <span className="text-sm font-semibold text-gray-900">{t.stCategoryN(idx + 1)}</span>
                   {categories.length > 1 && (
                     <button
                       type="button"
                       onClick={() => setCategories((prev) => prev.filter((x) => x.key !== c.key))}
                       className="text-xs font-medium text-red-500"
                     >
-                      Rimuovi
+                      {t.stRemove}
                     </button>
                   )}
                 </div>
                 <div>
-                  <label className={labelCls}>Nome categoria (master)</label>
+                  <label className={labelCls}>{t.stCatNameMaster}</label>
                   <input className={inputCls} value={c.name} onChange={(e) => updateCat(c.key, { name: e.target.value })} placeholder="Camera doppia standard" />
                 </div>
                 <div className="grid grid-cols-4 gap-2">
                   <div>
-                    <label className={labelCls}>m²</label>
+                    <label className={labelCls}>{t.stSqm}</label>
                     <input type="number" min={0} className={numCls} value={c.squareMeters || ""} onChange={(e) => updateCat(c.key, { squareMeters: parseInt(e.target.value) || 0 })} />
                   </div>
                   <div>
-                    <label className={labelCls}>Camere</label>
+                    <label className={labelCls}>{t.stRooms}</label>
                     <input type="number" min={0} className={numCls} value={c.bedrooms} onChange={(e) => updateCat(c.key, { bedrooms: parseInt(e.target.value) || 0 })} />
                   </div>
                   <div>
-                    <label className={labelCls}>Bagni</label>
+                    <label className={labelCls}>{t.stBaths}</label>
                     <input type="number" min={0} className={numCls} value={c.bathrooms} onChange={(e) => updateCat(c.key, { bathrooms: parseInt(e.target.value) || 0 })} />
                   </div>
                   <div>
-                    <label className={labelCls}>Ospiti</label>
+                    <label className={labelCls}>{t.stGuests}</label>
                     <input type="number" min={1} className={numCls} value={c.maxGuests} onChange={(e) => updateCat(c.key, { maxGuests: parseInt(e.target.value) || 1 })} />
                   </div>
                 </div>
                 <div>
-                  <label className={labelCls}>Letti</label>
+                  <label className={labelCls}>{t.stBeds}</label>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {([
-                      ["matrimoniale", "Matrim."],
-                      ["singolo", "Singolo"],
-                      ["divanoMatrimoniale", "Divano M."],
-                      ["divanoSingolo", "Divano S."],
+                      ["matrimoniale", t.stBedDouble],
+                      ["singolo", t.stBedSingle],
+                      ["divanoMatrimoniale", t.stSofaDouble],
+                      ["divanoSingolo", t.stSofaSingle],
                     ] as const).map(([k, lbl]) => (
                       <div key={k}>
                         <span className="mb-1 block text-[11px] text-gray-400">{lbl}</span>
@@ -276,12 +278,12 @@ export default function StructureCreateWizard({ action }: Props) {
                       </div>
                     ))}
                   </div>
-                  <p className="mt-1 text-[11px] text-gray-400">Biancheria con valori standard, rifinibile poi sul master.</p>
+                  <p className="mt-1 text-[11px] text-gray-400">{t.stLinenStd}</p>
                 </div>
                 <div>
-                  <label className={labelCls}>Numeri unità (separati da virgola)</label>
+                  <label className={labelCls}>{t.stUnitNumbers}</label>
                   <input className={inputCls} value={c.numbersText} onChange={(e) => updateCat(c.key, { numbersText: e.target.value })} placeholder="101, 102, 103, 104, 105" />
-                  <p className="mt-1 text-[11px] text-gray-500">{nums.length} unità: {nums.join(", ") || "—"}</p>
+                  <p className="mt-1 text-[11px] text-gray-500">{t.stUnitsColon(nums.length, nums.join(", "))}</p>
                 </div>
               </div>
             );
@@ -292,16 +294,16 @@ export default function StructureCreateWizard({ action }: Props) {
             onClick={() => setCategories((prev) => [...prev, newCategory()])}
             className="w-full rounded-2xl border border-dashed border-gray-300 py-3 text-sm font-medium text-gray-500"
           >
-            + Aggiungi categoria
+            {t.stAddCategory}
           </button>
 
           {duplicateNumber && (
-            <p className="text-sm text-red-500">Numero unità "{duplicateNumber}" ripetuto: devono essere unici.</p>
+            <p className="text-sm text-red-500">{t.stDupNumber(duplicateNumber)}</p>
           )}
 
           <div className="flex justify-between">
             <button type="button" onClick={() => setStep(1)} className="rounded-full border border-gray-200 px-6 py-2 text-sm font-medium text-gray-600">
-              Indietro
+              {t.stBack}
             </button>
             <button
               type="button"
@@ -309,7 +311,7 @@ export default function StructureCreateWizard({ action }: Props) {
               onClick={() => setStep(3)}
               className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-2 text-sm font-semibold text-white disabled:opacity-40"
             >
-              Avanti
+              {t.stNext}
             </button>
           </div>
         </div>
@@ -319,30 +321,30 @@ export default function StructureCreateWizard({ action }: Props) {
         <div className="space-y-4">
           <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
             <p className="text-lg font-semibold text-gray-900">{name}</p>
-            <p className="text-sm text-gray-500">{type === "HOTEL" ? "Hotel" : "Residence"} · {address}</p>
+            <p className="text-sm text-gray-500">{type === "HOTEL" ? t.stHotel : t.stResidence} · {address}</p>
             <div className="mt-4 space-y-3">
               {categories.map((c) => {
                 const nums = parseNumbers(c.numbersText);
                 return (
                   <div key={c.key} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-900">{c.name || "Senza nome"}</span>
+                      <span className="text-sm font-medium text-gray-900">{c.name || "—"}</span>
                       <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">×{nums.length}</span>
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">{c.squareMeters} m² · {c.bedrooms} camere · {c.bathrooms} bagni · {c.maxGuests} ospiti</p>
-                    <p className="mt-1 text-xs text-gray-400">Numeri: {nums.join(", ")}</p>
+                    <p className="mt-1 text-xs text-gray-500">{t.stCatSummary(c.squareMeters, c.bedrooms, c.bathrooms, c.maxGuests, nums.length)}</p>
+                    <p className="mt-1 text-xs text-gray-400">{nums.join(", ")}</p>
                   </div>
                 );
               })}
             </div>
-            <p className="mt-4 text-sm font-medium text-gray-700">Verranno create {totalUnits} unità.</p>
+            <p className="mt-4 text-sm font-medium text-gray-700">{t.stWillCreate(totalUnits)}</p>
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="flex justify-between">
             <button type="button" onClick={() => setStep(2)} disabled={isPending} className="rounded-full border border-gray-200 px-6 py-2 text-sm font-medium text-gray-600">
-              Indietro
+              {t.stBack}
             </button>
             <button
               type="button"
@@ -350,7 +352,7 @@ export default function StructureCreateWizard({ action }: Props) {
               disabled={isPending || totalUnits === 0}
               className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-2 text-sm font-semibold text-white disabled:opacity-40"
             >
-              {isPending ? "Creazione…" : `Genera ${totalUnits} unità`}
+              {isPending ? t.stGenerating : t.stGenerate(totalUnits)}
             </button>
           </div>
         </div>
