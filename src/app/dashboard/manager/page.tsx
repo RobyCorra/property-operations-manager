@@ -105,6 +105,9 @@ type ApartmentView = {
   address: string;
   latitude: number;
   longitude: number;
+  propertyId?: string | null;
+  unitCategoryId?: string | null;
+  unitNumber?: string | null;
 };
 
 export default async function ManagerDashboardPage() {
@@ -164,6 +167,14 @@ export default async function ManagerDashboardPage() {
   }
 
   const [org, apartments, bookings, cleanings, tickets, checkins, initialNotifications, unreadMessagesCount] = data;
+
+  // Nomi struttura/categoria per il raggruppamento delle unità nel calendario.
+  const [propertyRows, categoryRows] = await Promise.all([
+    prisma.property.findMany({ where: { organizationId: orgId }, select: { id: true, name: true } }).catch(() => []),
+    prisma.unitCategory.findMany({ where: { property: { organizationId: orgId } }, select: { id: true, name: true } }).catch(() => []),
+  ]);
+  const propertyNameById = new Map(propertyRows.map((p) => [p.id, p.name]));
+  const categoryNameById = new Map(categoryRows.map((c) => [c.id, c.name]));
 
   const now = new Date();
   const serverDate = now.toISOString();
@@ -266,6 +277,11 @@ export default async function ManagerDashboardPage() {
       statusLabel: statusInfo.label,
       statusReason: statusInfo.reason,
       openTickets: aptTickets.filter((t: TicketView) => isMaintenanceActive(t)).length,
+      propertyId: apartment.propertyId ?? null,
+      propertyName: apartment.propertyId ? (propertyNameById.get(apartment.propertyId) ?? null) : null,
+      unitCategoryId: apartment.unitCategoryId ?? null,
+      categoryName: apartment.unitCategoryId ? (categoryNameById.get(apartment.unitCategoryId) ?? null) : null,
+      unitNumber: apartment.unitNumber ?? null,
     };
   });
   // ── Calendar bookings per TimelineCalendar ────────────────────────────
@@ -293,6 +309,11 @@ export default async function ManagerDashboardPage() {
     status: a.status,
     statusLabel: a.statusLabel,
     openTickets: a.openTickets,
+    propertyId: a.propertyId,
+    propertyName: a.propertyName,
+    unitCategoryId: a.unitCategoryId,
+    categoryName: a.categoryName,
+    unitNumber: a.unitNumber,
   }));
 
   const mobileLateCleanings: MobileLateClean[] = lateCleanings.map((c: CleaningView) => {
