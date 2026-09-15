@@ -547,7 +547,11 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
           <div className="space-y-2 mb-4">
             {entryItems.map((item) => {
               const isYesNo = item.answerType === "yesno";
-              const needPhoto = requiresPhotoNow(item);
+              // Sul questionario d'ingresso la fotocamera compare quando la
+              // risposta è "Sì" (o sempre se non è Sì/No), anche se la foto è
+              // facoltativa: es. "Vuoi allegare una foto dello stato?".
+              const showCameraEntry = isYesNo ? item.answer === "si" : true;
+              const photoIsRequiredEntry = requiresPhotoNow(item);
               const photoUrl = photoUrlOf(item);
               return (
                 <div key={item.id} id={`cl-${item.id}`} className="rounded-2xl bg-white border border-slate-100 p-3.5 shadow-sm">
@@ -560,7 +564,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
                   ) : (
                     <button type="button" onClick={() => toggleItem(item)} className={`w-full rounded-xl border-2 py-2.5 text-sm font-bold ${item.completed ? "bg-green-50 border-green-400 text-green-700" : "bg-white border-slate-200 text-slate-500"}`}>{item.completed ? "✓ " + t.done : t.cklMarkDone}</button>
                   )}
-                  {needPhoto && (
+                  {showCameraEntry && (
                     <div className="mt-2.5">
                       {photoUrl ? (
                         <div className="flex items-center gap-2.5">
@@ -571,7 +575,7 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
                           <button type="button" onClick={() => resetItem(item.id)} className="ml-auto w-7 h-7 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center shrink-0"><Trash2 size={13} /></button>
                         </div>
                       ) : (
-                        <button type="button" onClick={() => openCamera(item.id)} className="w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white bg-slate-500 border-2 border-rose-400"><Camera size={16} /> {t.takePhoto}</button>
+                        <button type="button" onClick={() => openCamera(item.id)} className={`w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold text-white bg-slate-500 border-2 ${photoIsRequiredEntry ? "border-rose-400" : "border-slate-300"}`}><Camera size={16} /> {t.takePhoto}</button>
                       )}
                     </div>
                   )}
@@ -622,14 +626,26 @@ export default function ChecklistInteractive({ taskId, initialItems }: Checklist
         </>
       )}
 
-      <div className="sticky bottom-3 z-10 mt-5">
+      {/* Quando tutto è spuntato compare in automatico "pulizia terminata": un
+          solo tap invia al manager. Altrimenti "Rivedi e invia" apre il riepilogo. */}
+      {canSend && (
+        <div className="mt-5 flex items-center gap-2 rounded-2xl bg-green-50 border border-green-200 px-4 py-3">
+          <CheckCircle2 size={18} className="text-green-600 shrink-0" />
+          <p className="text-sm font-bold text-green-800">{t.cklAllDoneBanner}</p>
+        </div>
+      )}
+      <div className="sticky bottom-3 z-10 mt-3">
         <button
           type="button"
-          onClick={() => setReviewOpen(true)}
+          onClick={() => (canSend ? handleComplete() : setReviewOpen(true))}
           disabled={isCompletingTask}
           className={`w-full py-5 rounded-2xl text-base font-black uppercase tracking-wide shadow-xl active:scale-95 transition-all disabled:opacity-50 ${canSend ? "bg-green-600 text-white shadow-green-600/30" : "bg-slate-900 text-white shadow-slate-900/20"}`}
         >
-          <span className="flex items-center justify-center gap-2"><Send size={18} /> {t.cklReviewAndSend}</span>
+          {isCompletingTask ? (
+            <span className="flex items-center justify-center gap-2"><Loader2 size={18} className="animate-spin" /> {t.completing}</span>
+          ) : (
+            <span className="flex items-center justify-center gap-2"><Send size={18} /> {canSend ? t.cklSendToManager : t.cklReviewAndSend}</span>
+          )}
         </button>
       </div>
     </div>

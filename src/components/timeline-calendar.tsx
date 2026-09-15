@@ -93,6 +93,7 @@ type PrismaCleaningTask = {
   status: string;
   notes: string | null;
   checklistProgress: unknown;
+  correctionProgress?: unknown;
   createdAt: Date;
   assignedToId: string | null;
 };
@@ -340,6 +341,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
         notes: item.notes ?? null,
         bookingId: null,
         checklistProgress: item.checklistProgress ?? null,
+        correctionProgress: (item as PrismaCleaningTask).correctionProgress ?? null,
       } as PrismaCleaningTask);
     }
     for (const item of maintenanceTickets) {
@@ -1285,6 +1287,45 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                             })()}
                                         </div>
                                     )}
+                                </div>
+                            )}
+
+                            {/* Correzioni del supervisor (richieste o risolte) */}
+                            {selectedEvent.type === 'cleaning'
+                                && Array.isArray(selectedEvent.data.correctionProgress)
+                                && (selectedEvent.data.correctionProgress as any[]).length > 0 && (
+                                <div className="mt-4 rounded-2xl border-2 border-violet-200 bg-violet-50/50 overflow-hidden">
+                                    <div className="bg-violet-600 px-4 py-2.5">
+                                        <p className="text-[11px] font-black uppercase tracking-widest text-white">
+                                            {selectedEvent.data.status === 'IN_PROGRESS' ? `${t.cdvCorrTitle} · ${t.calInProgress}` : t.cdvCorrTitle}
+                                        </p>
+                                    </div>
+                                    <div className="p-3 space-y-2">
+                                        {(selectedEvent.data.correctionProgress as any[]).map((c: any, idx: number) => {
+                                            const done = c.completed && (!c.requiresPhoto || !!c.photoUrl);
+                                            return (
+                                                <div key={c.id ?? idx} className={`rounded-xl border bg-white p-3 ${done ? 'border-emerald-200' : 'border-amber-200'}`}>
+                                                    <div className="flex items-start gap-2.5">
+                                                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-100 text-[9px] font-black text-violet-700 mt-0.5">{idx + 1}</span>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-semibold text-slate-900">{c.label}</p>
+                                                            {c.note && <p className="text-xs text-slate-500 mt-0.5">{c.note}</p>}
+                                                        </div>
+                                                        <span className={`shrink-0 text-[9px] font-black uppercase tracking-wide px-2 py-1 rounded-full ${done ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{done ? t.cdvCorrDone : t.cdvCorrPending}</span>
+                                                    </div>
+                                                    {c.requiresPhoto && (
+                                                        <div className="mt-2 pl-7">
+                                                            {c.photoUrl ? (
+                                                                <a href={c.photoUrl} target="_blank" rel="noreferrer"><img src={c.photoUrl} alt={c.label} className="w-20 h-20 object-cover rounded-lg border border-slate-200" /></a>
+                                                            ) : (
+                                                                <span className="text-[11px] text-amber-600 font-semibold">{t.cdvCorrNoPhoto}</span>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
 
