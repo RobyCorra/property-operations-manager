@@ -4,6 +4,7 @@ import { useState, useRef, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
 import { updateCheckinChecklist, updateCheckinStatus, createCheckinTaskMessage } from "@/src/app/actions/checkin";
+import { useLang } from "@/src/components/lang-context";
 import TicketConversation from "@/src/components/ticket-conversation";
 import { useToast } from "@/src/components/toast-provider";
 
@@ -50,6 +51,7 @@ export default function CheckinTaskView({
   completeRedirect = "/dashboard/checkin",
   isCompleted,
 }: Props) {
+  const { t } = useLang();
   const toast = useToast();
   const showCompletedFooter = isCompleted ?? readOnly;
   const router = useRouter();
@@ -142,7 +144,7 @@ export default function CheckinTaskView({
         </p>
         <div className="space-y-1">
           {items.length === 0 && (
-            <p className="text-sm text-slate-400 py-4">Nessuna voce configurata per questo appartamento.</p>
+            <p className="text-sm text-slate-400 py-4">{t.cikNoItems}</p>
           )}
           {items.map((item) => (
             <div key={item.id} className="py-2.5 border-b border-slate-50 last:border-0">
@@ -221,8 +223,8 @@ export default function CheckinTaskView({
           {isPending
             ? "..."
             : canComplete
-            ? "Completa check-in"
-            : "Completa voci e foto obbligatorie"}
+            ? t.cikComplete
+            : t.cikCompleteHint}
         </button>
       )}
       {showCompletedFooter && (

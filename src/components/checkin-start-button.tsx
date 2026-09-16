@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateCheckinStatus } from "@/src/app/actions/checkin";
 import { useToast } from "@/src/components/toast-provider";
+import { useLang } from "@/src/components/lang-context";
 
 interface Props {
   taskId: string;
@@ -29,6 +30,7 @@ function dateLabel(isoDate: string): string {
 }
 
 export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked = false, startRedirect }: Props) {
+  const { t } = useLang();
   const toast = useToast();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -86,7 +88,7 @@ export default function CheckinStartButton({ taskId, taskDate, cleaningBlocked =
       }
       className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-violet-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
     >
-      {isPending ? "..." : "Avvia check-in"}
+      {isPending ? "..." : t.cikStart}
     </button>
   );
 }
