@@ -5,6 +5,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import BookingForm from "@/src/components/booking-form";
 import BackButton from "@/src/components/back-button";
+import { getT } from "@/src/lib/server-lang";
 
 export default async function NewBookingPage() {
   const cookieStore = await cookies();
@@ -27,6 +28,7 @@ export default async function NewBookingPage() {
     },
   });
 
+  const tr = await getT();
   const serverDate = new Date().toISOString();
 
   return (
@@ -36,8 +38,8 @@ export default async function NewBookingPage() {
         {/* Header */}
         <div>
           <BackButton />
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Nuova Prenotazione</h1>
-          <p className="text-gray-500 mt-1">Inserisci i dettagli del soggiorno e verifica disponibilità</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{tr.pgNewBooking}</h1>
+          <p className="text-gray-500 mt-1">{tr.pgBookingNewSub}</p>
         </div>
 
         {/* Form Container */}
