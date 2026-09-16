@@ -4,14 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLang } from "@/src/components/lang-context";
+import BedLinenEditor, { type BedConfigData } from "@/src/components/bed-linen-editor";
 import type { CategoryMasterInput, MasterChecklistItem } from "@/src/app/actions/structure";
-
-type BedCounts = {
-  matrimoniale: number;
-  singolo: number;
-  divanoMatrimoniale: number;
-  divanoSingolo: number;
-};
 
 type Props = {
   categoryId: string;
@@ -24,7 +18,7 @@ type Props = {
     bedrooms: number;
     bathrooms: number;
     maxGuests: number;
-    beds: BedCounts;
+    bedConfig: BedConfigData;
     checklist: MasterChecklistItem[];
   };
   action: (
@@ -32,23 +26,6 @@ type Props = {
     input: CategoryMasterInput,
   ) => Promise<{ success: true; unitCount: number } | { success: false; error?: string }>;
 };
-
-function bedsToConfig(beds: BedCounts) {
-  const std = (count: number, federe: number) => ({
-    count,
-    lenzuola: count > 0 ? 1 : 0,
-    federe: count > 0 ? federe : 0,
-    copriPiumino: count > 0 ? 1 : 0,
-    piumino: count > 0 ? 1 : 0,
-  });
-  return {
-    matrimoniale: std(beds.matrimoniale, 2),
-    singolo: std(beds.singolo, 1),
-    divanoMatrimoniale: std(beds.divanoMatrimoniale, 2),
-    divanoSingolo: std(beds.divanoSingolo, 1),
-    culla: { lenzuola: 1, federe: 1, copriPiumino: 1, piumino: 1 },
-  };
-}
 
 export default function CategoryMasterForm({ categoryId, propertyId, unitCount, unitNumbers, initial, action }: Props) {
   const { t } = useLang();
@@ -58,7 +35,7 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
   const [bedrooms, setBedrooms] = useState(initial.bedrooms);
   const [bathrooms, setBathrooms] = useState(initial.bathrooms);
   const [maxGuests, setMaxGuests] = useState(initial.maxGuests);
-  const [beds, setBeds] = useState<BedCounts>(initial.beds);
+  const [bedConfig, setBedConfig] = useState<BedConfigData>(initial.bedConfig);
   const [checklist, setChecklist] = useState<MasterChecklistItem[]>(initial.checklist);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,7 +63,7 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
       bedrooms,
       bathrooms,
       maxGuests,
-      bedConfig: bedsToConfig(beds),
+      bedConfig,
       checklist: checklist
         .map((it) => ({ label: it.label.trim(), required: it.required, photoRequired: it.photoRequired }))
         .filter((it) => it.label),
@@ -117,17 +94,7 @@ export default function CategoryMasterForm({ categoryId, propertyId, unitCount, 
           <div><label className={labelCls}>{t.stBaths}</label><input type="number" min={0} className={numCls} value={bathrooms} onChange={(e) => setBathrooms(parseInt(e.target.value) || 0)} /></div>
           <div><label className={labelCls}>{t.stGuests}</label><input type="number" min={1} className={numCls} value={maxGuests} onChange={(e) => setMaxGuests(parseInt(e.target.value) || 1)} /></div>
         </div>
-        <div>
-          <label className={labelCls}>{t.stBeds}</label>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {([["matrimoniale",t.stBedDouble],["singolo",t.stBedSingle],["divanoMatrimoniale",t.stSofaDouble],["divanoSingolo",t.stSofaSingle]] as const).map(([k, lbl]) => (
-              <div key={k}>
-                <span className="mb-1 block text-[11px] text-gray-400">{lbl}</span>
-                <input type="number" min={0} className={numCls} value={beds[k]} onChange={(e) => setBeds((b) => ({ ...b, [k]: parseInt(e.target.value) || 0 }))} />
-              </div>
-            ))}
-          </div>
-        </div>
+        <BedLinenEditor value={bedConfig} onChange={setBedConfig} />
       </div>
 
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-3">
