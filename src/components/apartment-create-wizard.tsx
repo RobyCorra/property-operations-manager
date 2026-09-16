@@ -618,11 +618,11 @@ function WizardSummary({ formData, onGoTo }: { formData: WizardData; onGoTo: (st
     ["Bagni", String(formData.bathrooms), 3],
     ["Metri quadri", String(formData.squareMeters), 3],
     ["Accesso", [formData.accessType, formData.accessCode].filter(Boolean).join(" — ") || "Da completare dopo", 4],
-    ["Impianti", formData.systems.length > 0 ? `${formData.systems.length} aggiunti` : "Nessuno", 5],
-    ["Elettrodomestici", formData.appliances.length > 0 ? `${formData.appliances.length} aggiunti` : "Nessuno", 6],
-    ["Domotica", formData.smartHomeItems.length > 0 ? `${formData.smartHomeItems.length} aggiunti` : "Nessuna", 7],
-    ["Problemi ricorrenti", formData.recurringIssues.length > 0 ? `${formData.recurringIssues.length} aggiunti` : "Nessuno", 8],
-    ["Note AI", formData.aiNotes || "Nessuna", 9],
+    [t.afSystems, formData.systems.length > 0 ? t.afAddedN(formData.systems.length) : t.afNoneM, 5],
+    [t.afAppliances, formData.appliances.length > 0 ? t.afAddedN(formData.appliances.length) : t.afNoneM, 6],
+    [t.catDomotics, formData.smartHomeItems.length > 0 ? t.afAddedN(formData.smartHomeItems.length) : t.afNoneF, 7],
+    [t.afRecurringIssues, formData.recurringIssues.length > 0 ? t.afAddedN(formData.recurringIssues.length) : t.afNoneM, 8],
+    [t.afAiNotes, formData.aiNotes || t.afNoneF, 9],
   ];
 
   return (

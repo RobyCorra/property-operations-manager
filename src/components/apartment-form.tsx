@@ -1123,9 +1123,9 @@ export default function ApartmentForm({ initialData, action, title, initialAcces
 
             <div hidden={activeSection !== "technical"} className="space-y-4">
               <h2 className="text-lg font-medium text-gray-900 border-b border-gray-100 pb-2">{t.afTechSheet}</h2>
-              <TechnicalItemsSection title="Impianti" addLabel="+ Aggiungi impianto" prefix="systems" items={systems} setItems={setSystems} />
-              <TechnicalItemsSection title="Elettrodomestici" addLabel="+ Aggiungi elettrodomestico" prefix="appliances" items={appliances} setItems={setAppliances} />
-              <TechnicalItemsSection title="Domotica" addLabel="+ Aggiungi dispositivo domotico" prefix="smartHome" items={smartHome} setItems={setSmartHome} />
+              <TechnicalItemsSection title={t.afSystems} addLabel={t.afAddSystem} prefix="systems" items={systems} setItems={setSystems} />
+              <TechnicalItemsSection title={t.afAppliances} addLabel={t.afAddAppliance} prefix="appliances" items={appliances} setItems={setAppliances} />
+              <TechnicalItemsSection title={t.catDomotics} addLabel={t.afAddDomotics} prefix="smartHome" items={smartHome} setItems={setSmartHome} />
               <RecurringIssuesSection issues={recurringIssues} setIssues={setRecurringIssues} />
             </div>
 

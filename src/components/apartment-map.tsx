@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { ApartmentStatus, APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
 import type { CleanerMarker } from "./apartment-map-wrapper";
+import { useLang } from "@/src/components/lang-context";
 
 // Fix Leaflet's default icon paths just in case, though we use custom icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -97,6 +98,7 @@ function MapBounds({ apartments }: { apartments: ApartmentMapProps["apartments"]
 }
 
 export default function ApartmentMap({ apartments, cleaners = [] }: ApartmentMapProps) {
+  const { t } = useLang();
   // Prevent hydration styling mismatch by returning null until client is mounted
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -131,7 +133,7 @@ export default function ApartmentMap({ apartments, cleaners = [] }: ApartmentMap
                 <p className="font-semibold text-slate-900 text-sm">{c.name}</p>
                 <p className="text-xs text-slate-500">{c.role === "MAINTENANCE" ? "Manutentore" : "Cleaner"}</p>
                 <p className="text-[10px] text-slate-400 mt-1">
-                  Aggiornato: {new Date(c.updatedAt).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+                  {t.amUpdated} {new Date(c.updatedAt).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
             </Popup>
