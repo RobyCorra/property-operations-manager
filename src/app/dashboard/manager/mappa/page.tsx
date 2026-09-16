@@ -147,7 +147,7 @@ export default async function CalendarioOperativoPage() {
       type: "CLEANING",
       date: new Date(c.date),
       apartmentName: c.apartment.name,
-      subject: "Intervento di Pulizia",
+      subject: tr.evCleaningJob,
       status: c.status,
       statusLabel: c.status === "PENDING" ? "Da Fare" : c.status === "IN_PROGRESS" ? "In Corso" : "Completata",
       actorName: c.assignedTo?.name || "Non assegnato",
@@ -176,7 +176,7 @@ export default async function CalendarioOperativoPage() {
       type: "CHECKIN",
       date: new Date(b.checkInDate),
       apartmentName: b.apartment.name,
-      subject: `Arrivo di ${b.guestName}`,
+      subject: tr.evArrivalOf(b.guestName ?? ""),
       status: b.status || "ACTIVE",
       actorName: b.guestName ?? undefined
     });
@@ -185,7 +185,7 @@ export default async function CalendarioOperativoPage() {
       type: "CHECKOUT",
       date: new Date(b.checkOutDate),
       apartmentName: b.apartment.name,
-      subject: `Partenza di ${b.guestName}`,
+      subject: tr.evDepartureOf(b.guestName ?? ""),
       status: b.status || "ACTIVE",
       actorName: b.guestName ?? undefined
     });
@@ -242,7 +242,7 @@ export default async function CalendarioOperativoPage() {
               className="flex items-center gap-2 px-3 py-3 bg-gradient-to-r from-violet-600 to-blue-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 shadow-lg shadow-violet-200 hover:shadow-xl hover:scale-[1.03] active:scale-95 whitespace-nowrap"
             >
               <Brush size={14} />
-              Nuova Pulizia
+              {tr.pgNewCleaning}
             </Link>
             <Link
               href="/dashboard/manager/maintenance/new"
@@ -256,7 +256,7 @@ export default async function CalendarioOperativoPage() {
               className="flex items-center gap-2 px-3 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95 whitespace-nowrap"
             >
               <KeyRound size={14} />
-              Nuova Prenotazione
+              {tr.pgNewBooking}
             </Link>
           </div>
         </div>
