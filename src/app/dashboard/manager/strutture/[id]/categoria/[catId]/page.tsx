@@ -5,21 +5,11 @@ import { getPropertyProducts } from "@/src/app/actions/property-product";
 import CategoryMasterForm from "@/src/components/category-master-form";
 import CategoryConsumptionEditor from "@/src/components/category-consumption-editor";
 import CategoryAutoCheckinToggle from "@/src/components/category-auto-checkin-toggle";
+import { parseBedConfig } from "@/src/lib/bed-config";
 import BackButton from "@/src/components/back-button";
 import { getT } from "@/src/lib/server-lang";
 
 export const dynamic = "force-dynamic";
-
-function bedCount(bedConfig: unknown, key: string): number {
-  if (bedConfig && typeof bedConfig === "object") {
-    const entry = (bedConfig as Record<string, unknown>)[key];
-    if (entry && typeof entry === "object" && "count" in entry) {
-      const c = (entry as { count?: unknown }).count;
-      return typeof c === "number" ? c : 0;
-    }
-  }
-  return 0;
-}
 
 export default async function CategoryMasterPage({ params }: { params: Promise<{ id: string; catId: string }> }) {
   const { id, catId } = await params;
@@ -56,12 +46,7 @@ export default async function CategoryMasterPage({ params }: { params: Promise<{
             bedrooms: category.bedrooms,
             bathrooms: category.bathrooms,
             maxGuests: category.maxGuests,
-            beds: {
-              matrimoniale: bedCount(category.bedConfig, "matrimoniale"),
-              singolo: bedCount(category.bedConfig, "singolo"),
-              divanoMatrimoniale: bedCount(category.bedConfig, "divanoMatrimoniale"),
-              divanoSingolo: bedCount(category.bedConfig, "divanoSingolo"),
-            },
+            bedConfig: parseBedConfig(category.bedConfig),
             checklist: checklist.map((c) => ({ label: c.label, required: c.required, photoRequired: c.photoRequired })),
           }}
           action={updateCategoryMaster}
