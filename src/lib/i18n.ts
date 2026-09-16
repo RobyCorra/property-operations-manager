@@ -1046,6 +1046,9 @@ export const translations = {
     stPropertyPage: "pagina struttura",
     stUnitOfStructure: "Unità di una struttura",
     stUnitBannerBody: "Caratteristiche, letti e checklist si modificano nel master della categoria",
+    stAutoCheckin: "Auto check-in",
+    stAutoCheckinSub: "Self check-in: le unità di questa categoria non richiedono check-in (assistente non necessario).",
+    stAutoCheckinOn: (n: number) => `Applicato a tutte le ${n} unità. I check-in non completati vengono annullati; disattiva per riattivarli sulle prenotazioni future.`,
   },
 
   en: {
@@ -2086,6 +2089,9 @@ export const translations = {
     stPropertyPage: "property page",
     stUnitOfStructure: "Unit of a property",
     stUnitBannerBody: "Features, beds and checklist are edited in the category master",
+    stAutoCheckin: "Auto check-in",
+    stAutoCheckinSub: "Self check-in: units of this category don't require a check-in (no assistant needed).",
+    stAutoCheckinOn: (n: number) => `Applied to all ${n} units. Pending check-ins are cancelled; turn off to reactivate them on future bookings.`,
   },
 
   es: {
@@ -3126,6 +3132,9 @@ export const translations = {
     stPropertyPage: "página de la estructura",
     stUnitOfStructure: "Unidad de una estructura",
     stUnitBannerBody: "Características, camas y checklist se editan en el master de la categoría",
+    stAutoCheckin: "Auto check-in",
+    stAutoCheckinSub: "Self check-in: las unidades de esta categoría no requieren check-in (asistente no necesario).",
+    stAutoCheckinOn: (n: number) => `Aplicado a las ${n} unidades. Los check-in pendientes se cancelan; desactiva para reactivarlos en las próximas reservas.`,
   },
 } as const;
 

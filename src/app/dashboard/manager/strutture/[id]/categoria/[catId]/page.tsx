@@ -4,6 +4,7 @@ import { getCategoryMaster, updateCategoryMaster } from "@/src/app/actions/struc
 import { getPropertyProducts } from "@/src/app/actions/property-product";
 import CategoryMasterForm from "@/src/components/category-master-form";
 import CategoryConsumptionEditor from "@/src/components/category-consumption-editor";
+import CategoryAutoCheckinToggle from "@/src/components/category-auto-checkin-toggle";
 import BackButton from "@/src/components/back-button";
 import { getT } from "@/src/lib/server-lang";
 
@@ -27,7 +28,7 @@ export default async function CategoryMasterPage({ params }: { params: Promise<{
 
   const data = await getCategoryMaster(catId);
   if (!data) notFound();
-  const { category, checklist } = data;
+  const { category, checklist, autoCheckin } = data;
   const products = await getPropertyProducts(id);
   const consumption = (category.consumption as Record<string, number> | null) ?? {};
   const tr = await getT();
@@ -64,6 +65,12 @@ export default async function CategoryMasterPage({ params }: { params: Promise<{
             checklist: checklist.map((c) => ({ label: c.label, required: c.required, photoRequired: c.photoRequired })),
           }}
           action={updateCategoryMaster}
+        />
+
+        <CategoryAutoCheckinToggle
+          categoryId={category.id}
+          initialEnabled={autoCheckin}
+          unitCount={category.units.length}
         />
 
         <CategoryConsumptionEditor
