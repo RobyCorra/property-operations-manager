@@ -88,7 +88,7 @@ export default async function CheckinDashboardPage() {
                       : "bg-slate-100 text-slate-500"
                   }`}
                 >
-                  {isDone ? "Completato" : inProgress ? "In corso" : "Da fare"}
+                  {isDone ? tr.staCompleted : inProgress ? tr.staInProgress : tr.staTodo}
                 </span>
                 <span className="text-xs font-bold text-slate-500">
                   {formatRomeDateTimeDisplay(task.date)}

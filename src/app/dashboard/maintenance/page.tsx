@@ -179,7 +179,7 @@ export default async function MaintenanceDashboardPage({
         <section className="space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <h2 className="text-lg font-semibold text-slate-900 tracking-tight uppercase">
-              {isHistoryView ? "Storico Ticket" : "Ticket Aperti"}
+              {isHistoryView ? tr.mntHistoryTickets : tr.mntTabOpenTickets}
             </h2>
             <div className="h-px flex-1 bg-slate-200/50"></div>
             {isHistoryView && (
@@ -263,7 +263,7 @@ export default async function MaintenanceDashboardPage({
                       </div>
                     ) : !isHistoryView && (ticket.status === "RESOLVED" || ticket.status === "AWAITING_REVIEW") ? (
                       <div className="w-full rounded-full bg-yellow-50 border border-yellow-200 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-yellow-700">
-                        ⏳ In attesa di revisione
+                        ⏳ {tr.mntAwaitingReview}
                       </div>
                     ) : isHistoryView ? (
                       <div className="w-full rounded-full bg-emerald-50 px-4 py-4 text-center text-xs font-black uppercase tracking-widest text-emerald-700">
@@ -336,7 +336,7 @@ export default async function MaintenanceDashboardPage({
                           <div className="rounded-2xl bg-slate-50 p-4">
                             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{tr.mntDescNotes}</p>
                             <p className="mt-1 whitespace-pre-wrap text-sm font-medium leading-relaxed text-slate-700">
-                              {ticket.description || "Nessuna descrizione inserita."}
+                              {ticket.description || tr.mntNoDescription}
                             </p>
                           </div>
                         </div>

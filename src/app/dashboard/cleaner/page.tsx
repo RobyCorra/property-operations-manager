@@ -173,7 +173,7 @@ export default async function CleanerDashboardPage() {
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
             >
               <ScrollText size={14} />
-              Mio Storico
+              {tr.clnMyHistory}
             </Link>
             <form action={logoutAction}>
               <button className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-100 transition-all shadow-sm">
@@ -322,7 +322,7 @@ export default async function CleanerDashboardPage() {
                   className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all hover:scale-[1.03] active:scale-95 shadow-xl shadow-slate-200"
                 >
                   <ScrollText size={14} />
-                  Vedi Storico
+                  {tr.mntSeeHistory}
                 </Link>
               </div>
             )}

@@ -149,8 +149,8 @@ export default async function CalendarioOperativoPage() {
       apartmentName: c.apartment.name,
       subject: tr.evCleaningJob,
       status: c.status,
-      statusLabel: c.status === "PENDING" ? "Da Fare" : c.status === "IN_PROGRESS" ? "In Corso" : "Completata",
-      actorName: c.assignedTo?.name || "Non assegnato",
+      statusLabel: c.status === "PENDING" ? tr.staTodo : c.status === "IN_PROGRESS" ? tr.staInProgress : tr.staCompleted,
+      actorName: c.assignedTo?.name || tr.mgUnassigned,
       isLateCleaning: lateCleaningIds.has(c.id)
     });
   });
@@ -164,8 +164,8 @@ export default async function CalendarioOperativoPage() {
         apartmentName: t.apartment.name,
         subject: t.title,
         status: t.status,
-        statusLabel: t.status === "PENDING" ? "In attesa" : t.status === "IN_PROGRESS" ? "In Carico" : "Risolto",
-        actorName: t.assignedTo?.name || "Non assegnato"
+        statusLabel: t.status === "PENDING" ? tr.staPending : t.status === "IN_PROGRESS" ? tr.staInProgress : tr.mntStResolved,
+        actorName: t.assignedTo?.name || tr.mgUnassigned
       });
     }
   });
