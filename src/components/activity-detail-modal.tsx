@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getActivityDetails } from "@/src/app/actions/activity";
 import { createCleaningTaskMessage, createTicketMessage } from "@/src/app/actions/operational";
 import TicketConversation from "./ticket-conversation";
+import { useLang } from "@/src/components/lang-context";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function ActivityDetailModal({ id, type, currentUserRole, currentUserName, serverDate, onClose }: Props) {
+  const { t } = useLang();
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
@@ -31,8 +33,8 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
     return (
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
         <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full text-center shadow-2xl">
-          <p className="text-sm font-bold text-gray-500">Impossibile caricare i dettagli.</p>
-          <button onClick={onClose} className="mt-4 px-6 py-2 bg-black text-white rounded-xl text-xs font-bold">Chiudi</button>
+          <p className="text-sm font-bold text-gray-500">{t.mgCantLoadDetails}</p>
+          <button onClick={onClose} className="mt-4 px-6 py-2 bg-black text-white rounded-xl text-xs font-bold">{t.uiClose}</button>
         </div>
       </div>
     );
@@ -49,7 +51,7 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
           <div>
             <div className="flex items-center gap-3 mb-1">
               <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${type === 'CLEANING' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-orange-50 text-orange-700 border-orange-100'}`}>
-                {type === 'CLEANING' ? 'Pulizia' : 'Manutenzione'}
+                {type === "CLEANING" ? t.mgCleaning : t.mgMaintenance}
               </span>
               <h2 className="text-xl font-black text-gray-900 tracking-tight">
                 {type === 'MAINTENANCE' ? data?.title : data?.apartment.name}
@@ -70,7 +72,7 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
         {isLoading ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-4">
             <div className="w-12 h-12 border-4 border-gray-100 border-t-black rounded-full animate-spin"></div>
-            <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">Caricamento dettagli...</p>
+            <p className="text-xs font-bold text-gray-300 uppercase tracking-widest">{t.mgLoadingDetails}</p>
           </div>
         ) : (
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
@@ -123,7 +125,7 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
                     <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Fine intervento reale</p>
                       <p className="text-sm font-bold text-gray-700">
-                        {data.completedAt ? formatRomeDateTimeDisplay(data.completedAt) : "Non completato"}
+                        {data.completedAt ? formatRomeDateTimeDisplay(data.completedAt) : t.mgNotCompleted}
                       </p>
                     </div>
                   </div>
@@ -146,7 +148,7 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
                     <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Fine intervento reale</p>
                       <p className="text-sm font-bold text-gray-700">
-                        {data.resolvedAt ? formatRomeDateTimeDisplay(data.resolvedAt) : "Non completato"}
+                        {data.resolvedAt ? formatRomeDateTimeDisplay(data.resolvedAt) : t.mgNotCompleted}
                       </p>
                     </div>
                   </div>
@@ -186,7 +188,7 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
                 {/* Attachments */}
                 {data.attachments && data.attachments.length > 0 && (
                   <div>
-                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Allegati ({data.attachments.length})</h3>
+                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">{t.mntAttachments} ({data.attachments.length})</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {data.attachments.map((att: any) => (
                         <a 
@@ -219,7 +221,7 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
               >
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-gray-900">Chat & Storico Messaggi</h3>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-gray-900">{t.mgChatHistory}</h3>
                 </div>
                 <span className={`text-gray-400 text-sm transition-transform ${chatOpen ? "rotate-180" : ""}`}>▼</span>
               </button>

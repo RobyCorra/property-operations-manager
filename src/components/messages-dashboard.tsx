@@ -266,7 +266,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
                     </div>
                     {isFullyCompleted && (
                       <span className="bg-emerald-500/10 text-emerald-600 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide">
-                        ✓ Completa
+                        {t.mgCompleteShort}
                       </span>
                     )}
                   </div>
@@ -558,7 +558,7 @@ export default function MessagesDashboard({
                     <span className="text-[10px] text-slate-400 truncate">· {thread.assignedUser}</span>
                   </div>
                   <p className={`text-xs truncate ${thread.hasUnread ? "font-semibold text-slate-700" : "text-slate-400 font-medium"}`}>
-                    {thread.lastMessage?.text || "Allegato..."}
+                    {thread.lastMessage?.text || tr.mgAttachmentEllipsis}
                   </p>
                 </div>
 
@@ -578,7 +578,7 @@ export default function MessagesDashboard({
             <div className="flex flex-col items-center justify-center py-16 text-center px-6">
               <MessageSquare size={32} className="text-slate-200 mb-3" />
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Nessuna conversazione
+                {tr.mgNoConversation}
               </p>
             </div>
           )}
@@ -687,7 +687,7 @@ export default function MessagesDashboard({
                   <p className="text-sm font-black text-slate-900 truncate">
                     {selectedThread.type === "MAINTENANCE"
                       ? selectedThread.title
-                      : "Pulizia Appartamento"
+                      : tr.msgApartmentCleaning
                     }
                   </p>
                   <p className="text-[10px] text-slate-400 truncate">
@@ -810,7 +810,7 @@ export default function MessagesDashboard({
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-slate-100 text-slate-600 text-[11px] font-black uppercase tracking-widest hover:bg-slate-200 transition-colors"
               >
                 <ChevronLeft size={13} className="-rotate-90" />
-                Chiudi scheda
+                {tr.mgCloseCard}
               </button>
               <p className="text-center text-[9px] text-slate-400 mt-2">
                 La chat rimane aperta in background
