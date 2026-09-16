@@ -4,8 +4,10 @@ import { useState, useTransition } from "react";
 import { Trash2, Loader2 } from "lucide-react";
 import { deleteUser } from "@/src/app/actions/user";
 import { useRouter } from "next/navigation";
+import { useLang } from "@/src/components/lang-context";
 
 export default function DeleteUserButton({ id }: { id: string }) {
+  const { t } = useLang();
   const [confirm, setConfirm] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -45,7 +47,7 @@ export default function DeleteUserButton({ id }: { id: string }) {
       type="button"
       onClick={() => setConfirm(true)}
       className="w-10 h-10 flex items-center justify-center rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all"
-      title="Elimina utente"
+      title={t.uiDeleteUser}
     >
       <Trash2 size={16} />
     </button>

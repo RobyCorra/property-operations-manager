@@ -81,7 +81,7 @@ export default function UnifiedFilters({
             ) : (
               <input
                 type="text"
-                placeholder={field.placeholder || "Cerca..."}
+                placeholder={field.placeholder || t.uiSearchDefault}
                 className="w-full bg-white/40 border border-white/20 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-violet-500/20 transition-all text-slate-700 outline-none"
                 value={values[field.id] || ""}
                 onChange={(e) => onChange(field.id, e.target.value)}

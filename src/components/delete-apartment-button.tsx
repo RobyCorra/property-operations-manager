@@ -4,12 +4,14 @@ import { useState } from "react";
 import { deleteApartment } from "@/src/app/actions/apartment";
 import { Trash2 } from "./icons";
 import { useToast } from "@/src/components/toast-provider";
+import { useLang } from "@/src/components/lang-context";
 
 type DeleteApartmentButtonProps = {
   id: string;
 };
 
 export default function DeleteApartmentButton({ id }: DeleteApartmentButtonProps) {
+  const { t } = useLang();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -62,7 +64,7 @@ export default function DeleteApartmentButton({ id }: DeleteApartmentButtonProps
       onClick={handleDelete}
       disabled={loading}
       className="w-10 h-10 flex items-center justify-center rounded-full text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all disabled:opacity-40"
-      title="Elimina"
+      title={t.mgrDelete}
     >
       <Trash2 size={18} />
     </button>

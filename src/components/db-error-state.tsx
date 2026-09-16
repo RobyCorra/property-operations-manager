@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useLang } from "@/src/components/lang-context";
 
 /**
  * Stato di degradazione morbida mostrato quando il database non è
@@ -14,12 +15,13 @@ import { useRouter } from "next/navigation";
  * altrove nell'app.
  */
 export default function DbErrorState({
-  title = "Impossibile caricare i dati",
-  message = "Problema temporaneo di connessione al server. Di solito si risolve in pochi secondi.",
+  title,
+  message,
 }: {
   title?: string;
   message?: string;
 }) {
+  const { t } = useLang();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -39,15 +41,15 @@ export default function DbErrorState({
         </svg>
       </div>
 
-      <h2 className="text-xl font-bold text-slate-900 mb-2">{title}</h2>
-      <p className="text-slate-500 text-sm max-w-xs mb-7">{message}</p>
+      <h2 className="text-xl font-bold text-slate-900 mb-2">{title ?? t.uiDbError}</h2>
+      <p className="text-slate-500 text-sm max-w-xs mb-7">{message ?? t.uiDbErrorMsg}</p>
 
       <button
         onClick={retry}
         disabled={isPending}
         className="px-8 py-3.5 bg-slate-900 text-white rounded-full text-sm font-semibold disabled:opacity-60 transition-opacity"
       >
-        {isPending ? "Riprovo…" : "Riprova"}
+        {isPending ? t.uiRetrying : t.uiRetry}
       </button>
     </div>
   );
