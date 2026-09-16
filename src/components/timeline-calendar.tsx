@@ -956,7 +956,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                       ? "bg-yellow-500/15 text-yellow-700 border-yellow-500/30 shadow-yellow-100"
                       : "bg-red-500/15 text-red-700 border-red-500/30 shadow-red-100";
                     const checkinLabel = checkin.status === "COMPLETED"
-                      ? "Completato"
+                      ? t.staCompleted
                       : checkin.status === "IN_PROGRESS"
                       ? t.calInProgress
                       : isAssigned ? t.calAssigned : t.calToDo;
@@ -1658,7 +1658,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 href={`/dashboard/manager/maintenance/${selectedEvent.data.id}/edit`}
                                 className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md"
                             >
-                                Modifica ticket
+                                {t.mgEditTicket}
                             </Link>
                         )}
 

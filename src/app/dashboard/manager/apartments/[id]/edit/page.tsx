@@ -130,7 +130,7 @@ export default async function EditApartmentPage({ params }: EditApartmentPagePro
         <ApartmentForm
           initialData={apartment}
           action={updateApartment}
-          title="Modifica Appartamento"
+          title={tr.aeFormTitle}
           initialAccessMedia={accessMedia}
         />
 

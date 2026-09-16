@@ -249,7 +249,7 @@ export default async function ManagerDashboardPage() {
       type: "CHECKIN",
       date: new Date(b.checkInDate),
       apartmentName: b.apartment.name,
-      subject: `Arrivo di ${b.guestName}`,
+      subject: tr.evArrivalOf(b.guestName ?? ""),
       status: b.status || "ACTIVE",
       actorName: b.guestName ?? undefined
     });
@@ -258,7 +258,7 @@ export default async function ManagerDashboardPage() {
       type: "CHECKOUT",
       date: new Date(b.checkOutDate),
       apartmentName: b.apartment.name,
-      subject: `Partenza di ${b.guestName}`,
+      subject: tr.evDepartureOf(b.guestName ?? ""),
       status: b.status || "ACTIVE",
       actorName: b.guestName ?? undefined
     });
@@ -368,7 +368,7 @@ export default async function ManagerDashboardPage() {
         type: "CLEANING",
         time: `${h}:${m}`,
         apartmentName: c.apartment.name,
-        subject: "Pulizia",
+        subject: tr.mgCleaning,
         actorName: c.assignedTo?.name ?? tr.mgrUnassignedF,
         status: c.status,
         href: `/dashboard/manager/cleanings/${c.id}/edit`,

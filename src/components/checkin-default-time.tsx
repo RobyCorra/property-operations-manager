@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { updateCheckinDefaultTime } from "@/src/app/actions/checkin-checklist";
+import { useLang } from "@/src/components/lang-context";
 
 interface Props {
   apartmentId: string;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function CheckinDefaultTime({ apartmentId, initialTime }: Props) {
+  const { t } = useLang();
   const [time, setTime] = useState(initialTime ?? "15:00");
   const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -33,13 +35,13 @@ export default function CheckinDefaultTime({ apartmentId, initialTime }: Props) 
           className="rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:ring-2 focus:ring-black"
         />
         {isPending ? (
-          <span className="text-xs text-gray-400">Salvataggio...</span>
+          <span className="text-xs text-gray-400">{t.saving}</span>
         ) : saved ? (
-          <span className="text-xs text-emerald-600 font-semibold">Salvato ✓</span>
+          <span className="text-xs text-emerald-600 font-semibold">{t.mgrSaved} ✓</span>
         ) : null}
       </div>
       <p className="text-[11px] text-gray-400 mt-2">
-        Usato quando il check-in viene creato dalla prenotazione. Modificabile poi sul singolo check-in.
+        {t.cikDefaultTimeHint}
       </p>
     </div>
   );

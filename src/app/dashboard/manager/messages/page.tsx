@@ -7,6 +7,7 @@ import { createTicketMessage, createCleaningTaskMessage } from "@/src/app/action
 import MarkReadTrigger from "@/src/components/mark-read-trigger";
 import MessagesDashboard from "@/src/components/messages-dashboard";
 import BackButton from "@/src/components/back-button";
+import { getT } from "@/src/lib/server-lang";
 
 export default async function ManagerMessagesPage({
   searchParams,
@@ -22,6 +23,7 @@ export default async function ManagerMessagesPage({
     redirect("/login");
   }
 
+  const tr = await getT();
   const orgId = await getCurrentOrg();
 
   const [maintenanceTickets, cleaningTasks, apartments] = await Promise.all([
@@ -50,7 +52,7 @@ export default async function ManagerMessagesPage({
       type: "MAINTENANCE" as const,
       apartmentName: t.apartment.name,
       apartmentAddress: t.apartment.address ?? "",
-      assignedUser: t.assignedTo?.name || "Non assegnato",
+      assignedUser: t.assignedTo?.name || tr.mgUnassigned,
       title: t.title,
       description: t.description,
       status: t.status,
@@ -67,8 +69,8 @@ export default async function ManagerMessagesPage({
       type: "CLEANING" as const,
       apartmentName: c.apartment.name,
       apartmentAddress: c.apartment.address ?? "",
-      assignedUser: c.assignedTo?.name || "Non assegnato",
-      title: "Pulizia",
+      assignedUser: c.assignedTo?.name || tr.mgUnassigned,
+      title: tr.mgCleaning,
       description: c.notes ?? "",
       status: c.status,
       priority: null,

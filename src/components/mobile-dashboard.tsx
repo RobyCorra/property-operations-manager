@@ -1042,7 +1042,7 @@ export default function MobileDashboard({
           {/* Apartment list */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 pb-24">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">
-              Seleziona per aprire il calendario
+              {tr.mdSelectToOpenCal}
             </p>
             {(() => {
               type Cat = { id: string; name: string; units: MobileApartmentData[] };
@@ -1170,7 +1170,7 @@ export default function MobileDashboard({
             {calendarLoading && (
               <div className="flex flex-col items-center justify-center h-40 gap-3">
                 <div className="w-8 h-8 border-2 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
-                <p className="text-xs text-slate-400 font-semibold">Caricamento…</p>
+                <p className="text-xs text-slate-400 font-semibold">{tr.mdLoading}</p>
               </div>
             )}
 
@@ -1845,7 +1845,7 @@ export default function MobileDashboard({
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-700">{tr.mdSearch}</p>
-                  <p className="text-[10px] text-slate-400">Appartamenti, ospiti…</p>
+                  <p className="text-[10px] text-slate-400">{tr.mdAptGuests}</p>
                 </div>
               </button>
 
@@ -2037,12 +2037,12 @@ export default function MobileDashboard({
                 <p className="text-3xl font-black leading-none mt-1 mb-3">
                   {todayItems.length}
                   <span className="text-sm font-bold opacity-90 ml-2">
-                    {todayItems.length === 1 ? "check-in" : "check-in in arrivo"}
+                    {todayItems.length === 1 ? "check-in" : tr.mdCheckinArriving}
                   </span>
                 </p>
                 {todayItems.length === 0 ? (
                   <div className="rounded-2xl bg-white/15 border border-white/20 py-3 text-center text-xs font-bold">
-                    ✓ Nessun check-in per oggi
+                    {tr.mdNoCheckinToday}
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -2075,7 +2075,7 @@ export default function MobileDashboard({
 
               {/* Divider "Tutti i check-in" */}
               <div className="px-5 pt-2 pb-2 flex items-center gap-3">
-                <p className="text-[11px] font-black uppercase tracking-[.09em] text-slate-400">Tutti i check-in</p>
+                <p className="text-[11px] font-black uppercase tracking-[.09em] text-slate-400">{tr.mdAllCheckins}</p>
                 <div className="flex-1 h-px bg-slate-200"></div>
               </div>
 
@@ -2133,7 +2133,7 @@ export default function MobileDashboard({
                   ))}
                 </div>
               ) : groupKeys.length === 0 ? (
-                <div className="text-center py-10 text-slate-400 text-sm">Nessun altro check-in nel mese</div>
+                <div className="text-center py-10 text-slate-400 text-sm">{tr.mdNoMoreCheckinMonth}</div>
               ) : (
                 <div className="px-5 py-3 space-y-5">
                   {groupKeys.map((dayLabel) => (
@@ -2204,7 +2204,7 @@ export default function MobileDashboard({
           </div>
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2.5 pb-24">
             {s.items.length === 0 && (
-              <div className="text-center py-12 text-slate-400 text-sm">{s.isOut ? "Nessuna partenza oggi" : "Nessun arrivo oggi"}</div>
+              <div className="text-center py-12 text-slate-400 text-sm">{s.isOut ? tr.mdNoDepartureToday : tr.mdNoArrivalToday}</div>
             )}
             {s.items.map((item) => (
               <div
@@ -2316,7 +2316,7 @@ export default function MobileDashboard({
                 </p>
                 {todayItems.length === 0 ? (
                   <div className="rounded-2xl bg-white/15 border border-white/20 py-3 text-center text-xs font-bold">
-                    ✓ Nessuna pulizia per oggi
+                    {tr.mdNoCleaningToday}
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -2410,7 +2410,7 @@ export default function MobileDashboard({
                   ))}
                 </div>
               ) : groupKeys.length === 0 ? (
-                <div className="text-center py-10 text-slate-400 text-sm">Nessun'altra pulizia nel mese</div>
+                <div className="text-center py-10 text-slate-400 text-sm">{tr.mdNoMoreCleaningMonth}</div>
               ) : (
                 <div className="px-5 py-3 space-y-5">
                   {groupKeys.map((dayLabel) => (
@@ -2552,7 +2552,7 @@ export default function MobileDashboard({
                 </p>
                 {todayItems.length === 0 ? (
                   <div className="rounded-2xl bg-white/15 border border-white/20 py-3 text-center text-xs font-bold">
-                    ✓ Nessun ticket per oggi
+                    {tr.mdNoTicketToday}
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -2585,7 +2585,7 @@ export default function MobileDashboard({
 
               {/* Divider */}
               <div className="px-5 pt-2 pb-2 flex items-center gap-3">
-                <p className="text-[11px] font-black uppercase tracking-[.09em] text-slate-400">Tutti i ticket</p>
+                <p className="text-[11px] font-black uppercase tracking-[.09em] text-slate-400">{tr.mdAllTickets}</p>
                 <div className="flex-1 h-px bg-slate-200"></div>
               </div>
 
@@ -2643,7 +2643,7 @@ export default function MobileDashboard({
                   ))}
                 </div>
               ) : groupKeys.length === 0 ? (
-                <div className="text-center py-10 text-slate-400 text-sm">Nessun altro ticket nel mese</div>
+                <div className="text-center py-10 text-slate-400 text-sm">{tr.mdNoMoreTicketMonth}</div>
               ) : (
                 <div className="px-5 py-3 space-y-5">
                   {groupKeys.map((dayLabel) => (
@@ -2725,7 +2725,7 @@ export default function MobileDashboard({
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {lateCleanings.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">
-                ✓ Nessuna pulizia in ritardo
+                {tr.mdNoLateCleaning}
               </div>
             )}
             {lateCleanings.map((c) => (
@@ -2778,7 +2778,7 @@ export default function MobileDashboard({
           </div>
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {lateCheckins.length === 0 && (
-              <div className="text-center py-12 text-slate-400 text-sm">✓ Nessun check-in in ritardo</div>
+              <div className="text-center py-12 text-slate-400 text-sm">{tr.mdNoLateCheckin}</div>
             )}
             {lateCheckins.map((lc) => (
               <div
@@ -2832,7 +2832,7 @@ export default function MobileDashboard({
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 pb-24">
             {cleaningsInProgress.length === 0 && (
               <div className="text-center py-12 text-slate-400 text-sm">
-                Nessuna pulizia in corso
+                {tr.mdNoCleaningInProgress}
               </div>
             )}
             {cleaningsInProgress.map((c) => (
@@ -3009,7 +3009,7 @@ export default function MobileDashboard({
               <input
                 autoFocus
                 type="text"
-                placeholder="Cerca appartamento..."
+                placeholder={tr.mdSearchApt}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-transparent border-none focus:ring-0 text-sm text-slate-900 ml-2 w-full placeholder:text-slate-400"

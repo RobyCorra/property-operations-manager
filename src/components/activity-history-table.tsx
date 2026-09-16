@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect } from "react";
 import { Activity, getTeamActivityHistory } from "@/src/app/actions/activity";
 import ActivityDetailModal from "./activity-detail-modal";
+import { useLang } from "@/src/components/lang-context";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 
 interface Props {
@@ -14,14 +15,6 @@ interface Props {
   serverDate: string;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Da Fare",
-  IN_PROGRESS: "In Corso",
-  COMPLETED: "Completato",
-  OPEN: "Aperto",
-  RESOLVED: "Risolto",
-  CANCELLED: "Annullato",
-};
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: "bg-yellow-50 text-yellow-700 border-yellow-100",
@@ -47,6 +40,11 @@ export default function ActivityHistoryTable({
   currentUserRole,
   serverDate 
 }: Props) {
+  const { t } = useLang();
+  const STATUS_LABELS: Record<string, string> = {
+    PENDING: t.staTodo, IN_PROGRESS: t.staInProgress, COMPLETED: t.staCompleted,
+    OPEN: t.mntStOpen, RESOLVED: t.mntStResolved, CANCELLED: t.staCancelled,
+  };
   const [activities, setActivities] = useState<Activity[]>(initialActivities);
   const [isPending, startTransition] = useTransition();
   const [selectedActivity, setSelectedActivity] = useState<{ id: string, type: 'CLEANING' | 'MAINTENANCE' } | null>(null);
@@ -82,17 +80,17 @@ export default function ActivityHistoryTable({
     <div className="space-y-6">
       {/* Filters Section */}
       <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
-        <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">Filtri Ricerca</h3>
+        <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">{t.mgSearchFilters}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {isManager && (
             <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Collaboratore</label>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{t.mgFilterCollaborator}</label>
               <select 
                 className="w-full bg-gray-50 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-black transition-all"
                 value={filters.collaboratorId}
                 onChange={(e) => handleFilterChange("collaboratorId", e.target.value)}
               >
-                <option value="">Tutti</option>
+                <option value="">{t.mgFilterAll}</option>
                 {collaborators.map(c => (
                   <option key={c.id} value={c.id}>{c.name} ({c.role})</option>
                 ))}
@@ -101,13 +99,13 @@ export default function ActivityHistoryTable({
           )}
           
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Appartamento</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{t.mgFilterApartment}</label>
             <select 
               className="w-full bg-gray-50 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-black transition-all"
               value={filters.apartmentId}
               onChange={(e) => handleFilterChange("apartmentId", e.target.value)}
             >
-              <option value="">Tutti</option>
+              <option value="">{t.mgFilterAll}</option>
               {apartments.map(a => (
                 <option key={a.id} value={a.id}>{a.name}</option>
               ))}
@@ -115,26 +113,26 @@ export default function ActivityHistoryTable({
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Tipo Attività</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{t.mgActivityType}</label>
             <select 
               className="w-full bg-gray-50 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-black transition-all"
               value={filters.type}
               onChange={(e) => handleFilterChange("type", e.target.value)}
             >
-              <option value="">Tutti</option>
-              <option value="CLEANING">Pulizia</option>
-              <option value="MAINTENANCE">Manutenzione</option>
+              <option value="">{t.mgFilterAll}</option>
+              <option value="CLEANING">{t.mgCleaning}</option>
+              <option value="MAINTENANCE">{t.mgMaintenance}</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Stato</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{t.mgFilterStatus}</label>
             <select 
               className="w-full bg-gray-50 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-black transition-all"
               value={filters.status}
               onChange={(e) => handleFilterChange("status", e.target.value)}
             >
-              <option value="">Qualsiasi</option>
+              <option value="">{t.mgFilterAny}</option>
               {Object.entries(STATUS_LABELS).map(([val, label]) => (
                 <option key={val} value={val}>{label}</option>
               ))}
@@ -143,7 +141,7 @@ export default function ActivityHistoryTable({
 
           <div className="flex gap-2 lg:col-span-1">
             <div className="flex-1">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Dal</label>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{t.mgFrom}</label>
               <input 
                 type="date"
                 className="w-full bg-gray-50 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-black transition-all"
@@ -152,7 +150,7 @@ export default function ActivityHistoryTable({
               />
             </div>
             <div className="flex-1">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Al</label>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{t.mgTo}</label>
               <input 
                 type="date"
                 className="w-full bg-gray-50 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-black transition-all"
@@ -169,12 +167,12 @@ export default function ActivityHistoryTable({
         {isPending ? (
           <div className="p-20 text-center space-y-4">
             <div className="w-10 h-10 border-4 border-gray-100 border-t-black rounded-full animate-spin mx-auto"></div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Aggiornamento Storico...</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">{t.mgUpdatingHistory}</p>
           </div>
         ) : activities.length === 0 ? (
           <div className="p-20 text-center space-y-4">
             <span className="text-4xl filter grayscale opacity-20">🔎</span>
-            <p className="text-sm font-semibold text-gray-400">Nessuna attività trovata per i criteri selezionati.</p>
+            <p className="text-sm font-semibold text-gray-400">{t.mgNoActivity}</p>
           </div>
         ) : (
           <>
@@ -203,11 +201,11 @@ export default function ActivityHistoryTable({
               <table className="w-full text-left text-sm text-gray-600 border-collapse">
                 <thead>
                   <tr className="bg-gray-50/50 border-b border-gray-100">
-                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Intervento</th>
-                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Collaboratore</th>
-                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Appartamento</th>
-                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Stato</th>
-                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">Data</th>
+                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{t.mntIntervention}</th>
+                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{t.mgFilterCollaborator}</th>
+                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{t.mgFilterApartment}</th>
+                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{t.mgFilterStatus}</th>
+                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">{t.mgDate}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -217,7 +215,7 @@ export default function ActivityHistoryTable({
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
                             <span className={`text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full border ${activity.type === 'CLEANING' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-orange-50 text-orange-700 border-orange-100'}`}>
-                              {activity.type === 'CLEANING' ? 'Pulizia' : 'Manutenzione'}
+                              {activity.type === "CLEANING" ? t.mgCleaning : t.mgMaintenance}
                             </span>
                             {activity.priority && (
                               <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded ${PRIORITY_COLORS[activity.priority as keyof typeof PRIORITY_COLORS]}`}>
@@ -225,7 +223,7 @@ export default function ActivityHistoryTable({
                               </span>
                             )}
                           </div>
-                          <p className="text-xs font-bold text-gray-900 line-clamp-1">{activity.type === 'MAINTENANCE' ? activity.title : 'Pulizia'}</p>
+                          <p className="text-xs font-bold text-gray-900 line-clamp-1">{activity.type === "MAINTENANCE" ? activity.title : t.mgCleaning}</p>
                         </div>
                       </td>
                       <td className="px-8 py-6">

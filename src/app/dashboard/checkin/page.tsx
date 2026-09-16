@@ -7,6 +7,7 @@ import CheckinStartButton from "@/src/components/checkin-start-button";
 import CheckinCardChat from "@/src/components/checkin-card-chat";
 import { isCheckinBlockedByCleaning } from "@/src/app/actions/checkin";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import { getT } from "@/src/lib/server-lang";
 
 export const revalidate = 0;
 
@@ -18,6 +19,8 @@ export default async function CheckinDashboardPage() {
   if (role !== "CHECKIN" || !userId) {
     redirect("/login");
   }
+
+  const tr = await getT();
 
   const [user, tasks] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
@@ -62,7 +65,7 @@ export default async function CheckinDashboardPage() {
 
       <div className="px-5 space-y-3">
         {tasks.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-16">Nessun check-in assegnato.</p>
+          <p className="text-sm text-slate-400 text-center py-16">{tr.cikNoAssigned}</p>
         )}
 
         {tasks.map((task) => {
@@ -85,7 +88,7 @@ export default async function CheckinDashboardPage() {
                       : "bg-slate-100 text-slate-500"
                   }`}
                 >
-                  {isDone ? "Completato" : inProgress ? "In corso" : "Da fare"}
+                  {isDone ? tr.staCompleted : inProgress ? tr.staInProgress : tr.staTodo}
                 </span>
                 <span className="text-xs font-bold text-slate-500">
                   {formatRomeDateTimeDisplay(task.date)}

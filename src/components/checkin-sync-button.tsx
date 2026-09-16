@@ -4,8 +4,10 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { syncApartmentCheckins } from "@/src/app/actions/checkin-checklist";
 import { RefreshCw } from "lucide-react";
+import { useLang } from "@/src/components/lang-context";
 
 export default function CheckinSyncButton({ apartmentId }: { apartmentId: string }) {
+  const { t } = useLang();
   const router = useRouter();
   const [msg, setMsg] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -17,12 +19,12 @@ export default function CheckinSyncButton({ apartmentId }: { apartmentId: string
         const res = await syncApartmentCheckins(apartmentId);
         setMsg(
           res.created > 0
-            ? `Creati ${res.created} check-in (${res.processed} prenotazioni controllate).`
-            : `Nessun nuovo check-in: erano già tutti presenti (${res.processed} prenotazioni).`
+            ? t.cikSyncCreated(res.created, res.processed)
+            : t.cikSyncNone(res.processed)
         );
         router.refresh();
       } catch (err: unknown) {
-        setMsg((err as Error).message || "Errore durante la sincronizzazione.");
+        setMsg((err as Error).message || t.cikSyncError);
       }
     });
   };

@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/src/components/toast-provider";
+import { useLang } from "@/src/components/lang-context";
 
 interface Props {
   id: string;
@@ -12,7 +13,8 @@ interface Props {
   className?: string;
 }
 
-export default function SubmitForReviewButton({ id, action, label = "Invia per revisione", className }: Props) {
+export default function SubmitForReviewButton({ id, action, label, className }: Props) {
+  const { t } = useLang();
   const toast = useToast();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -37,7 +39,7 @@ export default function SubmitForReviewButton({ id, action, label = "Invia per r
       className={`relative z-10 flex items-center justify-center gap-2 rounded-full transition-all disabled:opacity-50 ${className}`}
     >
       {isPending ? <Loader2 size={13} className="animate-spin" /> : "⏫"}
-      {isPending ? "Invio..." : label}
+      {isPending ? t.uiSending : (label ?? t.uiSubmitForReview)}
     </button>
   );
 }

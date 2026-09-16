@@ -78,7 +78,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
   const checkOutMin = checkInDate ? addDaysToInputDate(checkInDate, 1) : "";
   const rangeSummary = checkInDate && checkOutDate
     ? `Dal giorno ${formatInputDateLabel(checkInDate)} al giorno ${formatInputDateLabel(checkOutDate)}`
-    : "Seleziona check-in e check-out";
+    : t.bfSelectDates;
   const isDateRangeInvalid = !!(checkInDate && checkOutDate && checkOutDate <= checkInDate);
 
   return (
@@ -237,7 +237,7 @@ export default function BookingForm({ apartments, initialData, serverDate }: Boo
 
         <div className="pt-6 flex items-center justify-end gap-4 mt-8 border-t border-gray-50">
           <Link href="/dashboard/manager/bookings" className="px-6 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-            Annulla
+            {t.mgrCancel}
           </Link>
           <button 
             type="submit" 

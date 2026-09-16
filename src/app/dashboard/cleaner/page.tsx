@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getT } from "@/src/lib/server-lang";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
@@ -124,6 +125,7 @@ export default async function CleanerDashboardPage() {
     redirect("/login");
   }
 
+  const tr = await getT();
   const enrichedTasks = await enrichCleaningTasksWithNextBooking(user.cleaningTasks) as CleanerDashboardTask[];
 
   const tasksWithChecklists = await Promise.all(enrichedTasks.map(async (task: CleanerDashboardTask) => {
@@ -171,7 +173,7 @@ export default async function CleanerDashboardPage() {
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
             >
               <ScrollText size={14} />
-              Mio Storico
+              {tr.clnMyHistory}
             </Link>
             <form action={logoutAction}>
               <button className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-100 transition-all shadow-sm">
@@ -281,7 +283,7 @@ export default async function CleanerDashboardPage() {
                             nextGuestCount={totalGuests > 0 ? totalGuests : null}
                             linen={linen?.adults ?? null}
                             cullaLinen={linen?.culla ?? null}
-                            noBookingText="Nessuna prenotazione in arrivo"
+                            noBookingText={tr.noNextBooking}
                           />
                         );
                       })()}
@@ -314,13 +316,13 @@ export default async function CleanerDashboardPage() {
                   <Sparkles size={48} className="text-violet-500" />
                 </div>
                 <h3 className="text-2xl font-semibold text-slate-900 tracking-tight uppercase">Tutto Sotto Controllo</h3>
-                <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal mb-10">Non ci sono interventi di pulizia assegnati a te al momento.</p>
+                <p className="text-slate-500 text-sm mt-2 font-medium tracking-normal mb-10">{tr.clnNoTasksAssigned}</p>
                 <Link
                   href="/dashboard/history"
                   className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all hover:scale-[1.03] active:scale-95 shadow-xl shadow-slate-200"
                 >
                   <ScrollText size={14} />
-                  Vedi Storico
+                  {tr.mntSeeHistory}
                 </Link>
               </div>
             )}
@@ -335,14 +337,14 @@ export default async function CleanerDashboardPage() {
           className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-violet-600"
         >
           <ClipboardList size={20} />
-          <span className="text-[9px] font-black uppercase tracking-widest">Pulizie</span>
+          <span className="text-[9px] font-black uppercase tracking-widest">{tr.clnNavCleanings}</span>
         </Link>
         <Link
           href="/dashboard/history"
           className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-slate-700"
         >
           <ScrollText size={20} />
-          <span className="text-[9px] font-black uppercase tracking-widest">Storico</span>
+          <span className="text-[9px] font-black uppercase tracking-widest">{tr.mntTabHistory}</span>
         </Link>
         <form action={logoutAction} className="flex flex-1">
           <button type="submit" className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-rose-500">

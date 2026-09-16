@@ -6,6 +6,7 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import { createCleaningTask } from "@/src/app/actions/operational";
 import OperationalForm from "@/src/components/operational-form";
 import BackButton from "@/src/components/back-button";
+import { getT } from "@/src/lib/server-lang";
 
 export default async function NewCleaningPage() {
   const cookieStore = await cookies();
@@ -22,13 +23,15 @@ export default async function NewCleaningPage() {
     prisma.user.findMany({ where: { role: "CLEANER", organizationId: orgId }, select: { id: true, name: true } }),
   ]);
 
+  const tr = await getT();
+
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
           <BackButton />
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900 mt-3">Programma Pulizia</h1>
-          <p className="text-gray-500 mt-1">Assegna un intervento di pulizia a un addetto</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900 mt-3">{tr.pgCleaningNewTitle}</h1>
+          <p className="text-gray-500 mt-1">{tr.pgCleaningNewSub}</p>
         </div>
 
         <OperationalForm 

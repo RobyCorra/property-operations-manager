@@ -5,6 +5,7 @@ import { upload } from "@vercel/blob/client";
 import { updateMaintenanceTaskProgress, completeMaintenancePublic } from "@/src/app/actions/maintenance-token";
 import type { MaintenanceTaskItem } from "@/src/app/actions/maintenance-token";
 import { compressImage } from "@/src/lib/compress-image";
+import { useLang } from "@/src/components/lang-context";
 import {
   saveToQueue,
   getQueueForTask,
@@ -28,6 +29,7 @@ interface PendingPhoto {
 const UPLOAD_INTERVAL_MS = 15_000;
 
 export default function MaintenanceChecklistInteractive({ ticketId, initialTasks }: Props) {
+  const { t } = useLang();
   const toast = useToast();
   const [tasks, setTasks] = useState<MaintenanceTaskItem[]>(initialTasks);
 
@@ -251,7 +253,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
             <div className="flex items-start gap-3 mb-4">
               <AlertCircle size={20} className="text-amber-500 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-bold text-amber-800">Task non completate</p>
+                <p className="text-sm font-bold text-amber-800">{t.mntTasksIncomplete}</p>
                 <p className="text-xs text-amber-600 mt-0.5">
                   {incomplete.length} task {incomplete.length === 1 ? "richiede" : "richiedono"} attenzione.
                 </p>
@@ -270,9 +272,9 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
             </div>
           </div>
           <button type="button" disabled className="w-full py-4 rounded-2xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed">
-            ✅ Completa intervento
+            ✅ {t.mntCompleteIntervention}
           </button>
-          <p className="text-[10px] text-slate-400 mt-2 text-center">Completa tutte le task per inviare al manager.</p>
+          <p className="text-[10px] text-slate-400 mt-2 text-center">{t.mntCompleteAllToSend}</p>
         </div>
       );
     }
@@ -282,7 +284,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
     return (
       <div className="text-center py-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="text-6xl mb-3">🎉</div>
-        <h3 className="text-xl font-bold text-slate-900 mb-1">Tutte le task completate!</h3>
+        <h3 className="text-xl font-bold text-slate-900 mb-1">{t.mntAllTasksDone}</h3>
         <p className="text-sm text-slate-500 mb-5">
           {completedCount} di {tasks.length} task {tasks.length === 1 ? "completata" : "completate"}
         </p>
@@ -294,7 +296,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
               <Loader2 size={16} className="text-blue-500 animate-spin shrink-0" />
               <p className="text-sm font-bold text-blue-800 text-left">
                 {uploadingCount > 0
-                  ? `📤 Caricamento foto in corso... (${uploadingCount} rimaste)`
+                  ? t.mntPhotoUploadingN(uploadingCount)
                   : `📸 ${pendingCount} foto da caricare`}
               </p>
             </div>
@@ -346,7 +348,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
             <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> Invio...</span>
           ) : showUploadBanner ? (
             <span className="flex items-center justify-center gap-2"><Loader2 size={16} className="animate-spin" /> Caricamento foto...</span>
-          ) : "✅ Completa intervento"}
+          ) : <>✅ {t.mntCompleteIntervention}</>}
         </button>
         <p className="text-[10px] text-slate-400 mt-3">Il manager riceverà una notifica.</p>
       </div>
@@ -408,7 +410,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
                 )}
               </div>
               <span className={`text-[10px] font-bold uppercase tracking-wider ${photoIsPend ? "text-blue-500" : photoIsLoad ? "text-blue-400" : "text-green-600"}`}>
-                {photoIsLoad ? "Caricamento..." : photoIsPend ? "In coda" : "Foto allegata"}
+                {photoIsLoad ? t.uploading : photoIsPend ? t.mntQueued : t.mntPhotoAttached}
               </span>
             </div>
           )}
@@ -466,8 +468,8 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
         <div className="flex items-center justify-between mb-3">
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Foto</p>
           {currentTask.photoRequired
-            ? <span className="text-[9px] font-black uppercase tracking-wide text-white bg-rose-500 rounded-full px-2 py-0.5">Obbligatoria</span>
-            : <span className="text-[9px] font-black uppercase tracking-wide text-slate-400 bg-slate-200 rounded-full px-2 py-0.5">Facoltativa</span>}
+            ? <span className="text-[9px] font-black uppercase tracking-wide text-white bg-rose-500 rounded-full px-2 py-0.5">{t.mntRequired}</span>
+            : <span className="text-[9px] font-black uppercase tracking-wide text-slate-400 bg-slate-200 rounded-full px-2 py-0.5">{t.mntOptional}</span>}
         </div>
 
         {uploadError && (
@@ -513,7 +515,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
           {isCompressing ? (
             <><Loader2 size={13} className="animate-spin" /> Preparazione...</>
           ) : isSaving ? (
-            <><Loader2 size={13} className="animate-spin" /> Salvataggio...</>
+            <><Loader2 size={13} className="animate-spin" /> {t.saving}</>
           ) : (
             <><CheckCircle2 size={13} /> Fatto <ChevronRight size={13} /></>
           )}

@@ -5,6 +5,7 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import { getTeamActivityHistory } from "@/src/app/actions/activity";
 import Link from "next/link";
 import ActivityHistoryTable from "@/src/components/activity-history-table";
+import { getT } from "@/src/lib/server-lang";
 
 export default async function TeamHistoryPage() {
   const cookieStore = await cookies();
@@ -22,6 +23,7 @@ export default async function TeamHistoryPage() {
     redirect("/dashboard");
   }
 
+  const tr = await getT();
   const orgId = await getCurrentOrg();
 
   const [apartments, collaborators, initialActivities] = await Promise.all([
@@ -42,11 +44,11 @@ export default async function TeamHistoryPage() {
         {/* Header */}
         <div>
           <Link href="/dashboard/manager/users" className="text-gray-400 hover:text-gray-600 transition-colors mb-4 inline-block text-sm">
-            &larr; Torna a Collaboratori
+            &larr; {tr.pgBackToTeam}
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-black tracking-tight text-gray-900">Storico Attività Team</h1>
+              <h1 className="text-3xl font-black tracking-tight text-gray-900">{tr.pgTeamHistory}</h1>
               <p className="text-gray-500 mt-1 font-medium">Archivio completo degli interventi di pulizia e manutenzione</p>
             </div>
             <div className="h-12 w-12 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center text-2xl">

@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import SafeDate from "./safe-date";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
+import { useLang } from "@/src/components/lang-context";
 
 interface Message {
   id: string;
@@ -36,6 +37,7 @@ interface Props {
 }
 
 export default function MessagesListThreads({ initialThreads, apartments, selectedId, selectedType, serverDate }: Props) {
+  const { t } = useLang();
   const [filters, setFilters] = useState<Record<string, string>>({
     search: "",
     type: "",
@@ -97,7 +99,7 @@ export default function MessagesListThreads({ initialThreads, apartments, select
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-black transition-colors">🔍</span>
           <input 
             type="text"
-            placeholder="Cerca nei messaggi..."
+            placeholder={t.mgSearchMessages}
             value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
             className="w-full bg-gray-50 border-none rounded-xl pl-12 pr-4 py-3 text-sm focus:ring-2 focus:ring-black transition-all outline-none font-medium"
@@ -112,8 +114,8 @@ export default function MessagesListThreads({ initialThreads, apartments, select
               onChange={(e) => handleFilterChange("type", e.target.value)}
             >
               <option value="">Tutti Ruoli</option>
-              <option value="MAINTENANCE">Manutenzione</option>
-              <option value="CLEANING">Pulizia</option>
+              <option value="MAINTENANCE">{t.mgMaintenance}</option>
+              <option value="CLEANING">{t.mgCleaning}</option>
             </select>
 
             <select
@@ -166,7 +168,7 @@ export default function MessagesListThreads({ initialThreads, apartments, select
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                   thread.type === "MAINTENANCE" ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-blue-600"
                 }`}>
-                  {thread.type === "MAINTENANCE" ? "Manutenzione" : "Pulizia"}
+                  {thread.type === "MAINTENANCE" ? t.mgMaintenance : t.mgCleaning}
                 </span>
                 {!thread.hasUnread && (
                   <SafeDate 
@@ -187,12 +189,12 @@ export default function MessagesListThreads({ initialThreads, apartments, select
 
               {thread.type === "CLEANING" && thread.date && (
                 <p className="text-[10px] font-bold text-emerald-600 mb-2">
-                  📅 Pulizia: {formatRomeDateTimeDisplay(thread.date)}
+                  📅 {t.mgCleaning}: {formatRomeDateTimeDisplay(thread.date)}
                 </p>
               )}
               
               <p className="text-xs text-gray-600 line-clamp-1">
-                {thread.lastMessage?.senderName}: {thread.lastMessage?.text || "Allegato..."}
+                {thread.lastMessage?.senderName}: {thread.lastMessage?.text || t.mgAttachmentEllipsis}
               </p>
             </Link>
           );
@@ -201,7 +203,7 @@ export default function MessagesListThreads({ initialThreads, apartments, select
         {filteredThreads.length === 0 && (
           <div className="p-8 text-center text-gray-400">
             <span className="text-3xl block mb-2 opacity-20">📥</span>
-            <p className="text-xs font-semibold">Nessun messaggio.</p>
+            <p className="text-xs font-semibold">{t.mgNoMessages}</p>
           </div>
         )}
       </div>

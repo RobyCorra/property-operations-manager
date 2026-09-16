@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/src/components/toast-provider";
+import { useLang } from "@/src/components/lang-context";
 
 interface StatusButtonProps {
   id: string;
@@ -14,6 +15,7 @@ interface StatusButtonProps {
 }
 
 export default function StatusUpdateButton({ id, nextStatus, label, className, disabled, action }: StatusButtonProps) {
+  const { t } = useLang();
   const toast = useToast();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -39,7 +41,7 @@ export default function StatusUpdateButton({ id, nextStatus, label, className, d
       disabled={isPending}
       className={`relative z-10 px-4 py-2 rounded-full text-xs font-bold transition-all disabled:opacity-50 ${className}`}
     >
-      {isPending ? "Aggiornamento..." : label}
+      {isPending ? t.uiUpdating : label}
     </button>
   );
 }

@@ -171,15 +171,15 @@ export default function OperationalForm({ type, apartments, personnel, action, i
       if (isOverlap(start, end, b.checkInDate, b.checkOutDate)) {
         newWarnings.push(`⚠️ Conflitto: Intervento durante il soggiorno di ${b.guestName}`);
       } else {
-        if (isSameDay(start, b.checkInDate)) newWarnings.push(`ℹ️ Nota: Lo stesso giorno c'è un Check-in (${b.guestName})`);
-        if (isSameDay(start, b.checkOutDate)) newWarnings.push(`ℹ️ Nota: Lo stesso giorno c'è un Check-out (${b.guestName})`);
+        if (isSameDay(start, b.checkInDate)) newWarnings.push(t.ofmSameDayCheckin(b.guestName ?? ""));
+        if (isSameDay(start, b.checkOutDate)) newWarnings.push(t.ofmSameDayCheckout(b.guestName ?? ""));
       }
     });
 
     // 2. Check Cleanings
     schedule.cleanings.forEach(c => {
       if (isSameDay(start, c.date) || isSameDay(end, c.date)) {
-        newWarnings.push(`ℹ️ Nota: È prevista una pulizia lo stesso giorno`);
+        newWarnings.push(t.ofmSameDayCleaning);
       }
     });
 

@@ -8,7 +8,9 @@ interface Props {
   ticketId: string;
 }
 
+import { useLang } from "@/src/components/lang-context";
 export default function MaintenanceResolutionForm({ ticketId }: Props) {
+  const { t } = useLang();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -37,7 +39,7 @@ export default function MaintenanceResolutionForm({ ticketId }: Props) {
           <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all">
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <span className="text-2xl mb-2">📸</span>
-              <p className="text-xs font-medium text-gray-500">Clicca per caricare foto</p>
+              <p className="text-xs font-medium text-gray-500">{t.mntClickUploadPhoto}</p>
             </div>
             <input 
               type="file" 
@@ -64,10 +66,10 @@ export default function MaintenanceResolutionForm({ ticketId }: Props) {
         {isPending ? (
           <>
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            Salvataggio...
+
           </>
         ) : (
-          "✓ Completato — Invia per verifica"
+          t.mntCompletedSendReview
         )}
       </button>
     </form>

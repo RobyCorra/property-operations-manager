@@ -7,6 +7,7 @@ import Link from "next/link";
 import { markAllAsRead, markNotificationAsRead } from "@/src/app/actions/notification";
 import { Bell, Brush, Wrench, CircleCheck, MessageSquare } from "./icons";
 import SafeDate from "./safe-date";
+import { useLang } from "@/src/components/lang-context";
 
 interface NotificationItem {
   id: string;
@@ -24,6 +25,7 @@ interface NotificationBellProps {
 }
 
 export default function NotificationBell({ initialNotifications, serverDate, unreadMessagesCount = 0 }: NotificationBellProps) {
+  const { t } = useLang();
   const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
   const [isOpen, setIsOpen] = useState(false);
@@ -185,7 +187,7 @@ export default function NotificationBell({ initialNotifications, serverDate, unr
               ) : (
                 <div className="py-10 text-center text-slate-400">
                   <CircleCheck size={32} className="mx-auto mb-3 opacity-20" />
-                  <p className="text-sm font-medium">Nessuna notifica</p>
+                  <p className="text-sm font-medium">{t.uiNoNotifications}</p>
                   <p className="text-[10px] mt-1 uppercase tracking-widest">Tutto sotto controllo</p>
                 </div>
               )}
