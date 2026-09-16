@@ -4,6 +4,7 @@ import { useState, useTransition, useRef } from "react";
 import { Loader2, Camera, CheckCircle2, AlertTriangle } from "lucide-react";
 import { upload } from "@vercel/blob/client";
 import { resolveCleaningCorrections } from "@/src/app/actions/operational";
+import { useLang } from "@/src/components/lang-context";
 
 export interface CorrectionItem {
   id: string;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export default function CleaningCorrectionPanel({ cleaningTaskId, initialItems, onResolved }: Props) {
+  const { t } = useLang();
   const [corrections, setCorrections] = useState<CorrectionItem[]>(initialItems);
   const [uploadingPhotoId, setUploadingPhotoId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +82,7 @@ export default function CleaningCorrectionPanel({ cleaningTaskId, initialItems, 
       <div className="flex items-center gap-3 bg-rose-500 px-5 py-3">
         <AlertTriangle size={16} className="text-white shrink-0" />
         <p className="text-[11px] font-black uppercase tracking-widest text-white">
-          Il supervisore ha richiesto correzioni
+          {t.clnSupervisorRequested}
         </p>
       </div>
 
@@ -120,7 +122,7 @@ export default function CleaningCorrectionPanel({ cleaningTaskId, initialItems, 
                     </p>
                     {item.requiresPhoto && (
                       <span className="flex items-center gap-1 rounded-full bg-amber-100 border border-amber-200 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-amber-700">
-                        <Camera size={9} /> Foto richiesta
+                        <Camera size={9} /> {t.clnPhotoRequired}
                       </span>
                     )}
                   </div>
@@ -149,9 +151,9 @@ export default function CleaningCorrectionPanel({ cleaningTaskId, initialItems, 
                           : "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
                       }`}>
                         {isUploading ? (
-                          <><Loader2 size={11} className="animate-spin" /> Caricamento...</>
+                          <><Loader2 size={11} className="animate-spin" /> {t.uploading}</>
                         ) : (
-                          <><Camera size={11} /> {item.photoUrl ? "Cambia foto" : "Carica foto"}</>
+                          <><Camera size={11} /> {item.photoUrl ? t.clnChangePhoto : t.clnUploadPhoto}</>
                         )}
                         <input
                           type="file"
@@ -192,7 +194,7 @@ export default function CleaningCorrectionPanel({ cleaningTaskId, initialItems, 
             : "⏫"}
           {allDone
             ? "Re-invia per Revisione"
-            : `Completa tutte le correzioni (${doneCount}/${corrections.length})`}
+            : t.clnCompleteCorrections(doneCount, corrections.length)}
         </button>
       </div>
     </div>

@@ -99,7 +99,7 @@ export default function CleaningShareButton({ cleaningId, existingToken }: Clean
       </div>
 
       <p className="text-xs text-slate-400 break-words">
-        Invia via WhatsApp — non serve login. Scade dopo 7 giorni.{" "}
+        {t.uiShareWhats}{" "}
         <span className="text-amber-600">{t.shRegenWarn}</span>
       </p>
     </div>
