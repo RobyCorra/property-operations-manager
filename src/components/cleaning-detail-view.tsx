@@ -70,16 +70,15 @@ interface Props {
   userName: string;
 }
 
-const statusConfig: Record<string, { label: string; dot: string; badge: string }> = {
-  PENDING:         { label: "In Attesa",   dot: "bg-slate-400",                badge: "bg-slate-100 text-slate-600" },
-  IN_PROGRESS:     { label: "In Corso",    dot: "bg-violet-500 animate-pulse", badge: "bg-violet-500/10 text-violet-600" },
-  COMPLETED:       { label: "Completata",  dot: "bg-emerald-500",              badge: "bg-emerald-500/10 text-emerald-700" },
-  AWAITING_REVIEW: { label: "In Verifica", dot: "bg-yellow-500 animate-pulse", badge: "bg-yellow-500/10 text-yellow-700" },
-  APPROVED:        { label: "Approvata",   dot: "bg-emerald-600",              badge: "bg-emerald-600/10 text-emerald-800" },
-};
-
 export default function CleaningDetailView({ task, apartments, cleaners, messages, userName }: Props) {
   const { t } = useLang();
+  const statusConfig: Record<string, { label: string; dot: string; badge: string }> = {
+    PENDING:         { label: t.staPending,    dot: "bg-slate-400",                badge: "bg-slate-100 text-slate-600" },
+    IN_PROGRESS:     { label: t.staInProgress, dot: "bg-violet-500 animate-pulse", badge: "bg-violet-500/10 text-violet-600" },
+    COMPLETED:       { label: t.staCompleted,  dot: "bg-emerald-500",              badge: "bg-emerald-500/10 text-emerald-700" },
+    AWAITING_REVIEW: { label: t.staInReview,   dot: "bg-yellow-500 animate-pulse", badge: "bg-yellow-500/10 text-yellow-700" },
+    APPROVED:        { label: t.staApproved,   dot: "bg-emerald-600",              badge: "bg-emerald-600/10 text-emerald-800" },
+  };
   const bc = task.apartment.bedConfig as Record<string, { count?: number }> | null;
   const hasSofaBed = !!(bc && ((bc.divanoMatrimoniale?.count ?? 0) > 0 || (bc.divanoSingolo?.count ?? 0) > 0));
 
@@ -529,7 +528,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-blue-500 px-6 py-3.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-violet-200 transition-all active:scale-95 disabled:opacity-50"
             >
               {isPending ? <Loader2 size={13} className="animate-spin" /> : "▶"}
-              Avvia Pulizia
+
             </button>
           )}
           {status === "IN_PROGRESS" && !hasCorrections && (
@@ -540,7 +539,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               className="w-full flex items-center justify-center gap-2 rounded-full bg-amber-500 px-6 py-3.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-amber-200 transition-all active:scale-95 disabled:opacity-50"
             >
               {isPending ? <Loader2 size={13} className="animate-spin" /> : "✓"}
-              Invia per verifica
+
             </button>
           )}
           {status === "IN_PROGRESS" && hasCorrections && (
@@ -556,7 +555,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
               className="w-full flex items-center justify-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-6 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-700 transition-all active:scale-95 disabled:opacity-50"
             >
               {isPending ? <Loader2 size={13} className="animate-spin" /> : "✓"}
-              Approva direttamente (sblocca)
+
             </button>
           )}
           {status === "AWAITING_REVIEW" && (
@@ -579,7 +578,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                 {isPending ? <Loader2 size={13} className="animate-spin" /> : (
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 )}
-                Conferma Pulizia
+
               </button>
               <button
                 type="button"

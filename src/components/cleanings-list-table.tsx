@@ -345,14 +345,14 @@ export default function CleaningsListTable({ initialCleanings, apartments, colla
                     className="flex-1 py-2.5 flex items-center justify-center gap-2 rounded-xl bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-widest border border-slate-100 active:scale-95 transition-all"
                   >
                     <Pencil size={12} />
-                    Modifica
+                    {t.mgrEdit}
                   </Link>
                   <Link
                     href={`/dashboard/manager/cleanings/${task.id}`}
                     className="flex-1 py-2.5 flex items-center justify-center gap-2 rounded-xl bg-violet-50 text-violet-600 text-[10px] font-black uppercase tracking-widest border border-violet-100 active:scale-95 transition-all"
                   >
                     <ArrowRight size={12} />
-                    Dettagli
+                    {t.mgDetails}
                   </Link>
                   <DeleteOperationalButton id={task.id} type="CLEANING" />
                 </div>
