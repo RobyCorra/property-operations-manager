@@ -7,6 +7,7 @@ import { DEFAULT_CHECKLIST } from "@/src/lib/constants";
 import { generateUniqueApartmentCode } from "@/src/lib/apartment-code";
 import { geocodeAddress } from "@/src/lib/geocoding";
 import { getCurrentOrg } from "@/src/lib/tenant";
+import { updateAutoCheckin } from "@/src/app/actions/checkin-checklist";
 
 export type StructureCategoryInput = {
   name: string;
@@ -228,11 +229,14 @@ export async function getCategoryMaster(categoryId: string) {
       property: { select: { id: true, name: true } },
       units: {
         orderBy: { unitNumber: "asc" },
-        select: { id: true, unitNumber: true },
+        select: { id: true, unitNumber: true, autoCheckin: true },
       },
     },
   });
   if (!category) return null;
+
+  // Stato auto check-in rappresentativo: attivo se TUTTE le unità lo sono.
+  const autoCheckin = category.units.length > 0 && category.units.every((u) => u.autoCheckin);
 
   const firstUnitId = category.units[0]?.id;
   const checklist = firstUnitId
@@ -243,7 +247,33 @@ export async function getCategoryMaster(categoryId: string) {
       })
     : [];
 
-  return { category, checklist };
+  return { category, checklist, autoCheckin };
+}
+
+// Attiva/disattiva l'auto check-in su TUTTE le unità della categoria (master).
+export async function updateCategoryAutoCheckin(
+  categoryId: string,
+  enabled: boolean,
+): Promise<{ success: true; unitCount: number } | { success: false; error?: string }> {
+  try {
+    const orgId = await getCurrentOrg();
+    const category = await prisma.unitCategory.findFirst({
+      where: { id: categoryId, property: { organizationId: orgId } },
+      include: { units: { select: { id: true } } },
+    });
+    if (!category) return { success: false, error: "Categoria non trovata." };
+
+    for (const u of category.units) {
+      await updateAutoCheckin(u.id, enabled);
+    }
+
+    revalidatePath(`/dashboard/manager/strutture/${category.propertyId}/categoria/${categoryId}`);
+    return { success: true, unitCount: category.units.length };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Errore durante l'aggiornamento dell'auto check-in.";
+    console.error("updateCategoryAutoCheckin: errore", error);
+    return { success: false, error: message };
+  }
 }
 
 // Aggiorna il master e propaga a TUTTE le unità della categoria:
