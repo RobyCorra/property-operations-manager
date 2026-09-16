@@ -14,6 +14,7 @@ import AccessInstructionsCard from "@/src/components/access-instructions-card";
 import ExpandableMaintenanceCard from "@/src/components/expandable-maintenance-card";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import PushPermissionRequest from "@/src/components/push-permission";
+import { getT } from "@/src/lib/server-lang";
 import {
   LogOut,
   Navigation,
@@ -126,6 +127,8 @@ export default async function MaintenanceDashboardPage({
     redirect("/login");
   }
 
+  const tr = await getT();
+
   const priorityColors: Record<string, string> = {
     LOW: "bg-blue-500/10 text-blue-600 border-blue-200/50",
     MEDIUM: "bg-yellow-500/10 text-yellow-600 border-yellow-200/50",
@@ -152,7 +155,7 @@ export default async function MaintenanceDashboardPage({
               Ciao, {user.name} <span className="text-violet-600">.</span>
             </h1>
             <p className="text-slate-500 text-sm mt-1 font-medium tracking-normal">
-              {isHistoryView ? "Consulta i ticket risolti assegnati a te" : "Ecco i guasti aperti assegnati a te"}
+              {isHistoryView ? tr.mntHeaderHistory : tr.mntHeaderOpen}
             </p>
           </div>
           {/* Desktop-only nav buttons */}
@@ -162,7 +165,7 @@ export default async function MaintenanceDashboardPage({
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
             >
               <ScrollText size={14} />
-              {isHistoryView ? "Ticket Aperti" : "Storico"}
+              {isHistoryView ? tr.mntTabOpenTickets : tr.mntTabHistory}
             </Link>
             <form action={logoutAction}>
               <button className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-100 transition-all shadow-sm">
@@ -184,7 +187,7 @@ export default async function MaintenanceDashboardPage({
                 href="/dashboard/maintenance"
                 className="shrink-0 inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm hover:shadow-md transition-all"
               >
-                Torna ai ticket aperti
+                {tr.mntBackToOpen}
               </Link>
             )}
           </div>
@@ -211,7 +214,7 @@ export default async function MaintenanceDashboardPage({
                         </span>
                         <div className="flex items-center gap-2 rounded-full bg-slate-100/70 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
                           <div className={`h-1.5 w-1.5 rounded-full ${ticket.status === "IN_PROGRESS" ? "bg-orange-500 animate-pulse" : ticket.status === "PENDING" ? "bg-blue-400" : "bg-slate-300"}`} />
-                          {ticket.status === "PENDING" ? "In attesa" : ticket.status === "IN_PROGRESS" ? "In corso" : "Risolto"}
+                          {ticket.status === "PENDING" ? tr.mntStPending : ticket.status === "IN_PROGRESS" ? tr.mntStInProgress : tr.mntStResolved}
                         </div>
                       </div>
                       <h3 className="text-2xl font-semibold uppercase tracking-tight text-slate-900 line-clamp-1">{ticket.title}</h3>
@@ -279,7 +282,7 @@ export default async function MaintenanceDashboardPage({
                       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         {/* Azione / Tempi */}
                         <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
-                          <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Tempi intervento</p>
+                          <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400">{tr.mntTimes}</p>
                           <div className="space-y-2 rounded-2xl bg-slate-50 p-4">
                             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
                               <CalendarDays size={14} />
@@ -323,7 +326,7 @@ export default async function MaintenanceDashboardPage({
                       <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
                         <div className="mb-4 flex items-center gap-2">
                           <span className="text-lg">🛠️</span>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Intervento</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{tr.mntIntervention}</p>
                         </div>
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                           <div className="rounded-2xl bg-slate-50 p-4">
@@ -331,7 +334,7 @@ export default async function MaintenanceDashboardPage({
                             <p className="mt-1 text-sm font-bold text-slate-900">{ticket.title}</p>
                           </div>
                           <div className="rounded-2xl bg-slate-50 p-4">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Descrizione / note</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{tr.mntDescNotes}</p>
                             <p className="mt-1 whitespace-pre-wrap text-sm font-medium leading-relaxed text-slate-700">
                               {ticket.description || "Nessuna descrizione inserita."}
                             </p>
@@ -344,7 +347,7 @@ export default async function MaintenanceDashboardPage({
                         <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
                           <div className="mb-4 flex items-center gap-2">
                             <span className="text-lg">📋</span>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Task intervento</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{tr.mntTasks}</p>
                           </div>
                           <MaintenanceChecklistInteractive
                             ticketId={ticket.id}
@@ -395,7 +398,7 @@ export default async function MaintenanceDashboardPage({
                       <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
                         <div className="mb-3 flex items-center gap-2">
                           <span className="text-lg">📎</span>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Allegati collegati</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{tr.mntLinkedAttach}</p>
                         </div>
                         {ticketAttachments.length > 0 ? (
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -409,7 +412,7 @@ export default async function MaintenanceDashboardPage({
                             ))}
                           </div>
                         ) : (
-                          <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-400">Nessun allegato collegato.</p>
+                          <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-400">{tr.mntNoAttach}</p>
                         )}
                       </div>
                     </>
@@ -433,7 +436,7 @@ export default async function MaintenanceDashboardPage({
                   className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-full transition-all hover:scale-[1.03] active:scale-95 shadow-xl shadow-slate-200"
                 >
                   <ScrollText size={14} />
-                  {isHistoryView ? "Torna ai ticket aperti" : "Vedi Storico"}
+                  {isHistoryView ? tr.mntBackToOpen : tr.mntSeeHistory}
                 </Link>
               </div>
             )}
@@ -448,14 +451,14 @@ export default async function MaintenanceDashboardPage({
           className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 ${!isHistoryView ? "text-violet-600" : "text-slate-400 hover:text-slate-700"}`}
         >
           <Wrench size={20} />
-          <span className="text-[9px] font-black uppercase tracking-widest">Aperti</span>
+          <span className="text-[9px] font-black uppercase tracking-widest">{tr.mntTabOpen}</span>
         </Link>
         <Link
           href="/dashboard/maintenance?view=history"
           className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 ${isHistoryView ? "text-violet-600" : "text-slate-400 hover:text-slate-700"}`}
         >
           <ScrollText size={20} />
-          <span className="text-[9px] font-black uppercase tracking-widest">Storico</span>
+          <span className="text-[9px] font-black uppercase tracking-widest">{tr.mntTabHistory}</span>
         </Link>
         <form action={logoutAction} className="flex flex-1">
           <button type="submit" className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-rose-500">

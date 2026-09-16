@@ -7,6 +7,7 @@ import MaintenanceChecklistInteractive from "@/src/components/maintenance-checkl
 import MaintenanceNoteForm from "@/src/components/maintenance-note-form";
 import { ChevronDown } from "lucide-react";
 import { hapticMedium, hapticSuccess } from "@/src/lib/haptics";
+import { useLang } from "@/src/components/lang-context";
 
 interface Attachment {
   id: string;
@@ -31,16 +32,9 @@ interface Props {
   messages: MaintenancePublicMessage[];
 }
 
-const PRIORITY_LABEL: Record<string, string> = {
-  LOW: "Bassa", MEDIUM: "Media", HIGH: "Alta", URGENT: "Urgente",
-};
 const PRIORITY_COLOR: Record<string, string> = {
   LOW: "bg-slate-100 text-slate-600", MEDIUM: "bg-amber-100 text-amber-700",
   HIGH: "bg-orange-100 text-orange-700", URGENT: "bg-red-100 text-red-700",
-};
-const STATUS_LABEL: Record<string, string> = {
-  PENDING: "In attesa", OPEN: "Aperto", IN_PROGRESS: "In corso",
-  AWAITING_REVIEW: "Completato", RESOLVED: "Risolto", CLOSED: "Chiuso",
 };
 const STATUS_COLOR: Record<string, string> = {
   PENDING: "bg-slate-100 text-slate-600", OPEN: "bg-amber-100 text-amber-700",
@@ -64,6 +58,12 @@ export default function PublicMaintenanceView({
   tasks,
   messages,
 }: Props) {
+  const { t } = useLang();
+  const PRIORITY_LABEL: Record<string, string> = { LOW: t.prLow, MEDIUM: t.prMedium, HIGH: t.prHigh, URGENT: t.prUrgent };
+  const STATUS_LABEL: Record<string, string> = {
+    PENDING: t.mntStPending, OPEN: t.mntStOpen, IN_PROGRESS: t.mntStInProgress,
+    AWAITING_REVIEW: t.mntStCompleted, RESOLVED: t.mntStResolved, CLOSED: t.mntStClosed,
+  };
   const [actionLoading, setActionLoading] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
 
@@ -99,7 +99,7 @@ export default function PublicMaintenanceView({
 
         {/* Stato */}
         <div className="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Stato intervento</p>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{t.mntInterventionStatus}</p>
           <span className={`text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full ${STATUS_COLOR[currentStatus] ?? "bg-slate-100 text-slate-600"}`}>
             {STATUS_LABEL[currentStatus] ?? currentStatus}
           </span>
@@ -123,7 +123,7 @@ export default function PublicMaintenanceView({
               onClick={() => setAccordionOpen(v => !v)}
               className="w-full flex items-center justify-between px-4 py-3 text-left"
             >
-              <span className="text-sm font-bold text-slate-800">📋 Task intervento</span>
+              <span className="text-sm font-bold text-slate-800">📋 {t.mntTasks}</span>
               <ChevronDown size={16} className={`text-slate-400 transition-transform ${accordionOpen ? "rotate-180" : ""}`} />
             </button>
 
@@ -169,7 +169,7 @@ export default function PublicMaintenanceView({
         {/* Pianificazione */}
         {scheduledStart && (
           <div className="bg-white rounded-2xl shadow-sm p-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Orario pianificato</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t.mntScheduledTime}</p>
             <p className="text-base font-bold text-slate-800">{scheduledStart}</p>
           </div>
         )}
@@ -177,7 +177,7 @@ export default function PublicMaintenanceView({
         {/* Assegnato a */}
         {assignedToName && (
           <div className="bg-white rounded-2xl shadow-sm p-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Assegnato a</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">{t.mntAssignedTo}</p>
             <p className="text-base font-bold text-slate-800">👤 {assignedToName}</p>
           </div>
         )}
@@ -185,7 +185,7 @@ export default function PublicMaintenanceView({
         {/* Allegati */}
         {attachments.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm p-4">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Allegati</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">{t.mntAttachments}</p>
             <div className="grid grid-cols-2 gap-2">
               {attachments.map(att => (
                 <a key={att.id} href={att.url} target="_blank" rel="noreferrer"
@@ -221,7 +221,7 @@ export default function PublicMaintenanceView({
           <div className="max-w-lg mx-auto">
             <button onClick={handleStart} disabled={actionLoading}
               className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-2xl text-lg shadow-lg shadow-orange-200 transition-colors disabled:opacity-70">
-              {actionLoading ? "Avvio in corso..." : "▶ Avvia intervento"}
+              {actionLoading ? t.mntStarting : t.mntStartIntervention}
             </button>
           </div>
         </div>

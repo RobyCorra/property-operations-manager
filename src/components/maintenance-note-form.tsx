@@ -6,6 +6,7 @@ import { sendMaintenancePublicNote, fetchMaintenanceMessages } from "@/src/app/a
 import type { MaintenancePublicMessage } from "@/src/app/actions/maintenance-token";
 import { playNotificationSound, setupNotificationAudio } from "@/src/lib/notification-sound";
 import { compressImage } from "@/src/lib/compress-image";
+import { useLang } from "@/src/components/lang-context";
 import { startVoiceRecording, MicPermissionError, type VoiceRecorderHandle } from "@/src/lib/voice-recorder";
 import { Camera, Send, X, Loader2, Mic, Square, Play, Pause, Trash2 } from "lucide-react";
 
@@ -43,6 +44,7 @@ function isImage(fileType?: string | null, url?: string) {
 }
 
 export default function MaintenanceNoteForm({ ticketId, authorName, initialMessages, isDone, title }: Props) {
+  const { t } = useLang();
   const [messages, setMessages]       = useState<MaintenancePublicMessage[]>(initialMessages);
   const [text, setText]               = useState("");
   const [photos, setPhotos]           = useState<File[]>([]);
@@ -265,11 +267,11 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
         <span className="text-base mt-0.5">📝</span>
         <div>
           <p className="text-sm font-bold text-slate-800">
-            {isDone ? "Note inviate" : (title ?? "Note al manager")}
+            {isDone ? t.mntNotesSent : (title ?? t.mntNotesToManager)}
           </p>
           <p className="text-[10px] text-slate-400 mt-0.5">
             {isDone
-              ? "Riepilogo comunicazioni inviate"
+              ? t.mntCommsSummary
               : "Segnala problemi, materiali mancanti o info extra"}
           </p>
         </div>
@@ -281,7 +283,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
         {justSent && (
           <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
             <span>✅</span>
-            <span className="text-xs font-bold text-emerald-700">Messaggio inviato!</span>
+            <span className="text-xs font-bold text-emerald-700">{t.mntMsgSent}</span>
           </div>
         )}
 
@@ -418,7 +420,7 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                   >
                     {sendingVoice
                       ? <><Loader2 size={11} className="animate-spin" /> Invio...</>
-                      : <><Send size={11} /> Invia vocale</>
+                      : <><Send size={11} /> {t.mntSendVoice}</>
                     }
                   </button>
                 </div>
@@ -492,11 +494,11 @@ export default function MaintenanceNoteForm({ ticketId, authorName, initialMessa
                 }`}
               >
                 {sending ? (
-                  <><Loader2 size={15} className="animate-spin" /> Invio in corso...</>
+                  <><Loader2 size={15} className="animate-spin" /> {t.mntSendingLong}</>
                 ) : (
                   <>
                     <Send size={15} />
-                    {photos.length > 0 ? `Invia + ${photos.length} foto` : "Invia"}
+                    {photos.length > 0 ? t.mntSendPhotos(photos.length) : t.uiSend}
                   </>
                 )}
               </button>
