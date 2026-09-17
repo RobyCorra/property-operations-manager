@@ -5,10 +5,12 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { syncCleaningTaskFromBooking } from "./operational";
 import { syncCheckinTaskFromBooking } from "./checkin";
+import { assertOwnerManager } from "@/src/lib/guards";
 
 type PrismaTx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
 export async function createBooking(prevState: any, formData: FormData) {
+  await assertOwnerManager();
   const apartmentId = formData.get("apartmentId") as string;
   const totalGuests = parseInt(formData.get("totalGuests") as string, 10);
   const checkInDate = new Date(formData.get("checkInDate") as string);
@@ -147,6 +149,7 @@ export async function createBooking(prevState: any, formData: FormData) {
 }
 
 export async function updateBooking(id: string, prevState: any, formData: FormData) {
+  await assertOwnerManager();
   const apartmentId = formData.get("apartmentId") as string;
   const totalGuests = parseInt(formData.get("totalGuests") as string, 10);
   const checkInDate = new Date(formData.get("checkInDate") as string);

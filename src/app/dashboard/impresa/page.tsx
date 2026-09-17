@@ -2,7 +2,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
-import { logoutAction } from "@/src/app/actions/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +35,7 @@ export default async function ImpresaDashboard() {
   const access = await getCompanyAccess();
   if (!access) redirect("/dashboard/manager"); // non è un manager d'impresa
 
-  const { companyName, scopes, orgIds } = access;
+  const { scopes, orgIds } = access;
 
   // Mappa organizationId → nome proprietario (etichetta cliente)
   const orgs = orgIds.length
@@ -70,22 +69,13 @@ export default async function ImpresaDashboard() {
     new Date(d).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
   return (
-    <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans">
       <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-violet-500">Impresa</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{companyName}</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              {scopes.length ? scopes.map((s) => SCOPE_META[s]?.label ?? s).join(" · ") : "nessuna funzione delegata"}
-              {orgIds.length > 0 && ` · ${orgIds.length} client${orgIds.length === 1 ? "e" : "i"}`}
-            </p>
-          </div>
-          <form action={logoutAction}>
-            <button type="submit" className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">
-              Esci
-            </button>
-          </form>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Panoramica</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {scopes.length ? scopes.map((s) => SCOPE_META[s]?.label ?? s).join(" · ") : "nessuna funzione delegata"}
+            {orgIds.length > 0 && ` · ${orgIds.length} client${orgIds.length === 1 ? "e" : "i"}`}
+          </p>
         </div>
 
         {scopes.length === 0 && (
@@ -163,6 +153,5 @@ export default async function ImpresaDashboard() {
           </section>
         )}
       </div>
-    </main>
   );
 }

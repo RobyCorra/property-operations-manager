@@ -6,6 +6,7 @@ import { sendPushToRole } from "@/src/lib/push";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import { consumeWarehouseOnCheckin } from "@/src/app/actions/warehouse";
 import { consumeStructureOnCheckin } from "@/src/app/actions/property-product";
+import { assertOwnerManager } from "@/src/lib/guards";
 import type { Role } from "@/src/generated/prisma/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -62,6 +63,7 @@ export async function getApartmentProducts(apartmentId: string) {
 
 export async function createProduct(apartmentId: string, data: ProductFormData) {
   try {
+    await assertOwnerManager();
     const stock = Math.max(0, data.stock);
     const created = await prisma.apartmentProduct.create({
       data: {
@@ -91,6 +93,7 @@ export async function createProduct(apartmentId: string, data: ProductFormData) 
 
 export async function updateProduct(id: string, apartmentId: string, data: ProductFormData) {
   try {
+    await assertOwnerManager();
     const prev = await prisma.apartmentProduct.findUnique({ where: { id }, select: { stock: true } });
     const newStock = Math.max(0, data.stock);
     await prisma.apartmentProduct.update({
@@ -123,6 +126,7 @@ export async function updateProduct(id: string, apartmentId: string, data: Produ
 
 export async function deleteProduct(id: string, apartmentId: string) {
   try {
+    await assertOwnerManager();
     await prisma.apartmentProduct.delete({ where: { id } });
     revalidatePath(`/dashboard/manager/apartments/${apartmentId}/products`);
     return { success: true };
@@ -136,6 +140,7 @@ export async function deleteProduct(id: string, apartmentId: string) {
 
 export async function restockProduct(id: string, apartmentId: string, addQty: number) {
   try {
+    await assertOwnerManager();
     const qty = Math.max(0, addQty);
     const updated = await prisma.apartmentProduct.update({
       where: { id },

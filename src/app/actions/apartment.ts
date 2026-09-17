@@ -9,6 +9,7 @@ import { generateUniqueApartmentCode } from "@/src/lib/apartment-code";
 import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
 import { geocodeAddress } from "@/src/lib/geocoding";
 import { getCurrentOrg } from "@/src/lib/tenant";
+import { assertOwnerManager } from "@/src/lib/guards";
 
 function textValue(formData: FormData, key: string) {
   return (formData.get(key) as string | null) ?? "";
@@ -290,6 +291,7 @@ export async function createApartment(formData: FormData) {
   let apartmentId: string;
 
   try {
+    await assertOwnerManager();
     const id = randomUUID();
     const name = formData.get("name") as string;
     const address = formData.get("address") as string;
@@ -375,6 +377,7 @@ export async function createApartment(formData: FormData) {
 
 export async function updateApartment(formData: FormData) {
   try {
+    await assertOwnerManager();
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
     const address = formData.get("address") as string;
