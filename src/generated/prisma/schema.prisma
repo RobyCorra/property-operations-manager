@@ -254,6 +254,7 @@ model CleaningTask {
   startedAt                    DateTime?
   completedAt                  DateTime?
   productsConsumedAt           DateTime?
+  skipProductConsumption       Boolean               @default(false)
   assignedToId                 String?
   notes                        String?
   bookingId                    String?               @unique
