@@ -153,121 +153,149 @@ export async function restockProduct(id: string, apartmentId: string, addQty: nu
   }
 }
 
-// ─── Consumo per check-in ─────────────────────────────────────────────────────
-// Chiamata ogni volta che un check-in viene registrato/confermato.
-// Sottrae il consumo dalla scorta e crea notifiche se sotto minimo.
+// ─── Consumo prodotti (nucleo condiviso) ──────────────────────────────────────
+// Sottrae il consumo per un turnover: prodotti dell'appartamento + magazzino
+// org + stock struttura, registra i movimenti e notifica le scorte basse.
+// Il chiamante garantisce l'idempotenza (una sola chiamata per pulizia).
+async function applyConsumption(params: {
+  apartmentId: string;
+  guests: number;
+  bookingId: string | null;
+  guestName: string | null;
+}): Promise<string[]> {
+  const { apartmentId, guests, bookingId, guestName } = params;
+  const guestCount = guests > 0 ? guests : 1;
 
-export async function consumeProductsOnCheckin(bookingId: string) {
+  const products = await prisma.apartmentProduct.findMany({ where: { apartmentId } });
+  const apartment = await prisma.apartment.findUnique({
+    where: { id: apartmentId },
+    select: { name: true, organizationId: true, bathrooms: true, bedrooms: true, propertyId: true, unitCategoryId: true },
+  });
+
+  const alerts: string[] = [];
+
+  for (const product of products) {
+    const consumed =
+      product.consumptionType === "DYNAMIC_PER_GUEST"
+        ? Math.ceil(product.consumptionValue * guestCount)
+        : product.consumptionValue;
+
+    const newStock = Math.max(0, product.stock - consumed);
+    const applied = product.stock - newStock; // quantità effettivamente sottratta
+
+    await prisma.apartmentProduct.update({
+      where: { id: product.id },
+      data: { stock: newStock },
+    });
+
+    // Registra il consumo per lo storico (anche 0, così il turnover resta tracciato).
+    await recordMovement({
+      productId: product.id,
+      delta: -applied,
+      balance: newStock,
+      reason: "CHECKIN",
+      bookingId,
+      note: guestName,
+    });
+
+    if (newStock <= product.minStock) {
+      alerts.push(`${product.emoji} ${product.name} (scorta: ${newStock} ${product.unit}, minima: ${product.minStock})`);
+    }
+  }
+
+  // Magazzino dell'organizzazione (prodotti STATIC/DYNAMIC).
+  if (apartment?.organizationId) {
+    await consumeWarehouseOnCheckin({
+      organizationId: apartment.organizationId,
+      bookingId,
+      guests: guestCount,
+      bathrooms: apartment.bathrooms ?? 0,
+      bedrooms: apartment.bedrooms ?? 0,
+      guestName,
+    });
+  }
+
+  // Unità di una struttura: consuma dallo stock UNICO in base ai consumi della categoria.
+  if (apartment?.propertyId && apartment?.unitCategoryId) {
+    const structureAlerts = await consumeStructureOnCheckin({
+      propertyId: apartment.propertyId,
+      unitCategoryId: apartment.unitCategoryId,
+      bookingId,
+      guestName,
+    });
+    for (const a of structureAlerts) alerts.push(a);
+  }
+
+  if (alerts.length > 0 && apartment) {
+    await prisma.notification.create({
+      data: {
+        type: "PRODUCT_LOW_STOCK",
+        title: `⚠️ Scorta bassa — ${apartment.name}`,
+        message: `${alerts.length} prodotto/i sotto la scorta minima:\n${alerts.join("\n")}`,
+        apartmentId,
+      },
+    });
+    await sendPushToRole("MANAGER" as Role, {
+      title: `🔴 Scorta bassa — ${apartment.name}`,
+      body: `${alerts.length} prodotto/i sotto la scorta minima dopo la pulizia.`,
+      url: `/dashboard/manager/apartments/${apartmentId}/products`,
+      tag: `low-stock-${apartmentId}`,
+    }, undefined, apartment.organizationId).catch(console.error);
+  }
+
+  revalidatePath(`/dashboard/manager/apartments/${apartmentId}/products`);
+  return alerts;
+}
+
+// ─── Consumo alla conferma della pulizia ──────────────────────────────────────
+// I prodotti vengono fisicamente messi dal cleaner durante la pulizia, quindi
+// si scalano quando la pulizia (di turnover) viene APPROVATA. Idempotente sulla
+// pulizia (productsConsumedAt): una sola volta per pulizia. Il conteggio ospiti
+// usa la prossima prenotazione in arrivo (l'ospite per cui si rifornisce).
+export async function consumeProductsOnCleaningApproved(cleaningTaskId: string) {
   try {
     // Guardia di idempotenza atomica: consuma solo se non è già stato fatto.
-    // updateMany con productsConsumedAt=null vince la corsa tra pulsante manuale e cron.
-    const claim = await prisma.booking.updateMany({
-      where: { id: bookingId, status: { not: "CANCELLED" }, productsConsumedAt: null },
+    const claim = await prisma.cleaningTask.updateMany({
+      where: { id: cleaningTaskId, productsConsumedAt: null },
       data: { productsConsumedAt: new Date() },
     });
     if (claim.count === 0) {
-      // Già consumato (o prenotazione annullata): non sottrarre di nuovo.
       return { success: true, skipped: true, alerts: [] as string[] };
     }
 
-    const booking = await prisma.booking.findUnique({
-      where: { id: bookingId },
-      select: { apartmentId: true, totalGuests: true, guestName: true },
+    const cleaning = await prisma.cleaningTask.findUnique({
+      where: { id: cleaningTaskId },
+      select: {
+        apartmentId: true,
+        date: true,
+        totalGuests: true,
+        bookingId: true,
+        booking: { select: { totalGuests: true, guestName: true } },
+      },
     });
-    if (!booking) return { success: true, skipped: true, alerts: [] as string[] };
+    if (!cleaning) return { success: true, skipped: true, alerts: [] as string[] };
 
-    const apartmentId = booking.apartmentId;
-    const guestCount = booking.totalGuests ?? 1;
-
-    const products = await prisma.apartmentProduct.findMany({
-      where: { apartmentId },
+    // Prossima prenotazione in arrivo per questo appartamento (l'ospite rifornito).
+    const dayStart = new Date(cleaning.date);
+    dayStart.setUTCHours(0, 0, 0, 0);
+    const nextBooking = await prisma.booking.findFirst({
+      where: {
+        apartmentId: cleaning.apartmentId,
+        checkInDate: { gte: dayStart },
+        status: { in: ["ACTIVE", "CONFIRMED", "CHECKED_IN"] },
+      },
+      orderBy: { checkInDate: "asc" },
+      select: { id: true, totalGuests: true, guestName: true },
     });
 
-    const apartment = await prisma.apartment.findUnique({
-      where: { id: apartmentId },
-      select: { name: true, organizationId: true, bathrooms: true, bedrooms: true, propertyId: true, unitCategoryId: true },
-    });
+    const guests = nextBooking?.totalGuests ?? cleaning.totalGuests ?? cleaning.booking?.totalGuests ?? 1;
+    const bookingId = nextBooking?.id ?? cleaning.bookingId ?? null;
+    const guestName = nextBooking?.guestName ?? cleaning.booking?.guestName ?? null;
 
-    const alerts: string[] = [];
-
-    for (const product of products) {
-      const consumed =
-        product.consumptionType === "DYNAMIC_PER_GUEST"
-          ? Math.ceil(product.consumptionValue * guestCount)
-          : product.consumptionValue;
-
-      const newStock = Math.max(0, product.stock - consumed);
-      const applied = product.stock - newStock; // quantità effettivamente sottratta
-
-      await prisma.apartmentProduct.update({
-        where: { id: product.id },
-        data: { stock: newStock },
-      });
-
-      // Registra il consumo per lo storico (anche 0, così il check-in resta tracciato).
-      await recordMovement({
-        productId: product.id,
-        delta: -applied,
-        balance: newStock,
-        reason: "CHECKIN",
-        bookingId,
-        note: booking.guestName ?? null,
-      });
-
-      // Allerta se stock scende sotto o uguale alla minima
-      if (newStock <= product.minStock) {
-        alerts.push(`${product.emoji} ${product.name} (scorta: ${newStock} ${product.unit}, minima: ${product.minStock})`);
-      }
-    }
-
-    // Consumo automatico del MAGAZZINO dell'organizzazione per questo check-in
-    // (prodotti STATIC/DYNAMIC). Idempotente perché siamo dentro la guardia
-    // productsConsumedAt: gira una sola volta per prenotazione.
-    if (apartment?.organizationId) {
-      await consumeWarehouseOnCheckin({
-        organizationId: apartment.organizationId,
-        bookingId,
-        guests: guestCount,
-        bathrooms: apartment.bathrooms ?? 0,
-        bedrooms: apartment.bedrooms ?? 0,
-        guestName: booking.guestName ?? null,
-      });
-    }
-
-    // Unità di una struttura: consuma dallo stock UNICO della struttura in base
-    // ai consumi definiti dalla categoria dell'unità.
-    if (apartment?.propertyId && apartment?.unitCategoryId) {
-      const structureAlerts = await consumeStructureOnCheckin({
-        propertyId: apartment.propertyId,
-        unitCategoryId: apartment.unitCategoryId,
-        bookingId,
-        guestName: booking.guestName ?? null,
-      });
-      for (const a of structureAlerts) alerts.push(a);
-    }
-
-    // Crea notifica e push se ci sono prodotti sotto minima
-    if (alerts.length > 0 && apartment) {
-      await prisma.notification.create({
-        data: {
-          type: "PRODUCT_LOW_STOCK",
-          title: `⚠️ Scorta bassa — ${apartment.name}`,
-          message: `${alerts.length} prodotto/i sotto la scorta minima:\n${alerts.join("\n")}`,
-          apartmentId,
-        },
-      });
-      await sendPushToRole("MANAGER" as Role, {
-        title: `🔴 Scorta bassa — ${apartment.name}`,
-        body: `${alerts.length} prodotto/i sotto la scorta minima dopo il check-in.`,
-        url: `/dashboard/manager/apartments/${apartmentId}/products`,
-        tag: `low-stock-${apartmentId}`,
-      }, undefined, apartment.organizationId).catch(console.error);
-    }
-
-    revalidatePath(`/dashboard/manager/apartments/${apartmentId}/products`);
+    const alerts = await applyConsumption({ apartmentId: cleaning.apartmentId, guests, bookingId, guestName });
     return { success: true, alerts };
   } catch (error) {
-    console.error("consumeProductsOnCheckin error:", error);
+    console.error("consumeProductsOnCleaningApproved error:", error);
     return { success: false, error: "Errore durante il calcolo del consumo" };
   }
 }

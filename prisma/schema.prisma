@@ -253,6 +253,7 @@ model CleaningTask {
   createdAt           DateTime              @default(now())
   startedAt           DateTime?
   completedAt         DateTime?
+  productsConsumedAt  DateTime?
   assignedToId        String?
   notes               String?
   bookingId           String?               @unique

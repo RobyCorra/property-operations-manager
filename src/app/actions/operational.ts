@@ -10,6 +10,7 @@ import { evaluateChecklistFormula } from "@/src/lib/formulas";
 import { parseRomeDateTime, preserveRomeTimeOnDate, setRomeTimeOnDate } from "@/src/lib/rome-datetime";
 import { sendPushToUser, sendPushToRole, sendPushToRoles } from "@/src/lib/push";
 import { syncCheckinTaskFromBooking } from "./checkin";
+import { consumeProductsOnCleaningApproved } from "./product";
 import type { Role } from "@/src/generated/prisma/client";
 
 /** Distanza in metri tra due coordinate (formula Haversine) */
@@ -822,6 +823,9 @@ export async function approveCleaningDirectly(cleaningTaskId: string) {
     data: { status: "APPROVED", completedAt: task.completedAt || new Date(), correctionProgress: [] },
   });
 
+  // Pulizia approvata = prodotti fisicamente messi: scala le scorte (una volta).
+  await consumeProductsOnCleaningApproved(cleaningTaskId).catch(console.error);
+
   const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true } });
   await prisma.notification.create({
     data: {
@@ -861,6 +865,9 @@ export async function approveCleaningReview(cleaningTaskId: string, supervisorId
       data: { status: "APPROVED", completedAt: task.completedAt || new Date(), correctionProgress: [] },
     }),
   ]);
+
+  // Pulizia approvata = prodotti fisicamente messi: scala le scorte (una volta).
+  await consumeProductsOnCleaningApproved(cleaningTaskId).catch(console.error);
 
   const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true, organizationId: true } });
   await prisma.notification.create({

@@ -17948,6 +17948,7 @@ export namespace Prisma {
     createdAt: Date | null
     startedAt: Date | null
     completedAt: Date | null
+    productsConsumedAt: Date | null
     assignedToId: string | null
     notes: string | null
     bookingId: string | null
@@ -17966,6 +17967,7 @@ export namespace Prisma {
     createdAt: Date | null
     startedAt: Date | null
     completedAt: Date | null
+    productsConsumedAt: Date | null
     assignedToId: string | null
     notes: string | null
     bookingId: string | null
@@ -17984,6 +17986,7 @@ export namespace Prisma {
     createdAt: number
     startedAt: number
     completedAt: number
+    productsConsumedAt: number
     assignedToId: number
     notes: number
     bookingId: number
@@ -18014,6 +18017,7 @@ export namespace Prisma {
     createdAt?: true
     startedAt?: true
     completedAt?: true
+    productsConsumedAt?: true
     assignedToId?: true
     notes?: true
     bookingId?: true
@@ -18032,6 +18036,7 @@ export namespace Prisma {
     createdAt?: true
     startedAt?: true
     completedAt?: true
+    productsConsumedAt?: true
     assignedToId?: true
     notes?: true
     bookingId?: true
@@ -18050,6 +18055,7 @@ export namespace Prisma {
     createdAt?: true
     startedAt?: true
     completedAt?: true
+    productsConsumedAt?: true
     assignedToId?: true
     notes?: true
     bookingId?: true
@@ -18157,6 +18163,7 @@ export namespace Prisma {
     createdAt: Date
     startedAt: Date | null
     completedAt: Date | null
+    productsConsumedAt: Date | null
     assignedToId: string | null
     notes: string | null
     bookingId: string | null
@@ -18196,6 +18203,7 @@ export namespace Prisma {
     createdAt?: boolean
     startedAt?: boolean
     completedAt?: boolean
+    productsConsumedAt?: boolean
     assignedToId?: boolean
     notes?: boolean
     bookingId?: boolean
@@ -18224,6 +18232,7 @@ export namespace Prisma {
     createdAt?: boolean
     startedAt?: boolean
     completedAt?: boolean
+    productsConsumedAt?: boolean
     assignedToId?: boolean
     notes?: boolean
     bookingId?: boolean
@@ -18247,6 +18256,7 @@ export namespace Prisma {
     createdAt?: boolean
     startedAt?: boolean
     completedAt?: boolean
+    productsConsumedAt?: boolean
     assignedToId?: boolean
     notes?: boolean
     bookingId?: boolean
@@ -18270,6 +18280,7 @@ export namespace Prisma {
     createdAt?: boolean
     startedAt?: boolean
     completedAt?: boolean
+    productsConsumedAt?: boolean
     assignedToId?: boolean
     notes?: boolean
     bookingId?: boolean
@@ -18282,7 +18293,7 @@ export namespace Prisma {
     totalGuests?: boolean
   }
 
-  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken" | "cleaningAccessTokenExpiresAt" | "cullaRequested" | "sofaBedForced" | "totalGuests", ExtArgs["result"]["cleaningTask"]>
+  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "productsConsumedAt" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken" | "cleaningAccessTokenExpiresAt" | "cullaRequested" | "sofaBedForced" | "totalGuests", ExtArgs["result"]["cleaningTask"]>
   export type CleaningTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -18323,6 +18334,7 @@ export namespace Prisma {
       createdAt: Date
       startedAt: Date | null
       completedAt: Date | null
+      productsConsumedAt: Date | null
       assignedToId: string | null
       notes: string | null
       bookingId: string | null
@@ -18770,6 +18782,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"CleaningTask", 'DateTime'>
     readonly startedAt: FieldRef<"CleaningTask", 'DateTime'>
     readonly completedAt: FieldRef<"CleaningTask", 'DateTime'>
+    readonly productsConsumedAt: FieldRef<"CleaningTask", 'DateTime'>
     readonly assignedToId: FieldRef<"CleaningTask", 'String'>
     readonly notes: FieldRef<"CleaningTask", 'String'>
     readonly bookingId: FieldRef<"CleaningTask", 'String'>
@@ -47147,6 +47160,7 @@ export namespace Prisma {
     createdAt: 'createdAt',
     startedAt: 'startedAt',
     completedAt: 'completedAt',
+    productsConsumedAt: 'productsConsumedAt',
     assignedToId: 'assignedToId',
     notes: 'notes',
     bookingId: 'bookingId',
@@ -48794,6 +48808,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"CleaningTask"> | Date | string
     startedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     completedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
+    productsConsumedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     assignedToId?: StringNullableFilter<"CleaningTask"> | string | null
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableFilter<"CleaningTask"> | string | null
@@ -48821,6 +48836,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     startedAt?: SortOrderInput | SortOrder
     completedAt?: SortOrderInput | SortOrder
+    productsConsumedAt?: SortOrderInput | SortOrder
     assignedToId?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     bookingId?: SortOrderInput | SortOrder
@@ -48853,6 +48869,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"CleaningTask"> | Date | string
     startedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     completedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
+    productsConsumedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     assignedToId?: StringNullableFilter<"CleaningTask"> | string | null
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     checklistProgress?: JsonNullableFilter<"CleaningTask">
@@ -48878,6 +48895,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     startedAt?: SortOrderInput | SortOrder
     completedAt?: SortOrderInput | SortOrder
+    productsConsumedAt?: SortOrderInput | SortOrder
     assignedToId?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     bookingId?: SortOrderInput | SortOrder
@@ -48906,6 +48924,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"CleaningTask"> | Date | string
     startedAt?: DateTimeNullableWithAggregatesFilter<"CleaningTask"> | Date | string | null
     completedAt?: DateTimeNullableWithAggregatesFilter<"CleaningTask"> | Date | string | null
+    productsConsumedAt?: DateTimeNullableWithAggregatesFilter<"CleaningTask"> | Date | string | null
     assignedToId?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
     notes?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableWithAggregatesFilter<"CleaningTask"> | string | null
@@ -52064,6 +52083,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -52089,6 +52109,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -52112,6 +52133,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -52137,6 +52159,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52161,6 +52184,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -52180,6 +52204,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -52198,6 +52223,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55357,6 +55383,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     startedAt?: SortOrder
     completedAt?: SortOrder
+    productsConsumedAt?: SortOrder
     assignedToId?: SortOrder
     notes?: SortOrder
     bookingId?: SortOrder
@@ -55381,6 +55408,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     startedAt?: SortOrder
     completedAt?: SortOrder
+    productsConsumedAt?: SortOrder
     assignedToId?: SortOrder
     notes?: SortOrder
     bookingId?: SortOrder
@@ -55399,6 +55427,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     startedAt?: SortOrder
     completedAt?: SortOrder
+    productsConsumedAt?: SortOrder
     assignedToId?: SortOrder
     notes?: SortOrder
     bookingId?: SortOrder
@@ -60855,6 +60884,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -60879,6 +60909,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -61261,6 +61292,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"CleaningTask"> | Date | string
     startedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     completedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
+    productsConsumedAt?: DateTimeNullableFilter<"CleaningTask"> | Date | string | null
     assignedToId?: StringNullableFilter<"CleaningTask"> | string | null
     notes?: StringNullableFilter<"CleaningTask"> | string | null
     bookingId?: StringNullableFilter<"CleaningTask"> | string | null
@@ -61802,6 +61834,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -61825,6 +61858,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -63097,6 +63131,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -63121,6 +63156,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -63285,6 +63321,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -63309,6 +63346,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -65413,6 +65451,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -65437,6 +65476,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -65611,6 +65651,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -65635,6 +65676,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65761,6 +65803,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -65785,6 +65828,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -66013,6 +66057,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -66037,6 +66082,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -66504,6 +66550,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -66528,6 +66575,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -66603,6 +66651,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -66627,6 +66676,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -66755,6 +66805,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -66779,6 +66830,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -66935,6 +66987,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -66959,6 +67012,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69666,6 +69720,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     notes?: string | null
     bookingId?: string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -69755,6 +69810,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -69779,6 +69835,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -69802,6 +69859,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -70073,6 +70131,7 @@ export namespace Prisma {
     createdAt?: Date | string
     startedAt?: Date | string | null
     completedAt?: Date | string | null
+    productsConsumedAt?: Date | string | null
     assignedToId?: string | null
     notes?: string | null
     bookingId?: string | null
@@ -70281,6 +70340,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     correctionProgress?: NullableJsonNullValueInput | InputJsonValue
@@ -70304,6 +70364,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70327,6 +70388,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    productsConsumedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     bookingId?: NullableStringFieldUpdateOperationsInput | string | null
