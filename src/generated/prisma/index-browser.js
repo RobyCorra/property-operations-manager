@@ -298,6 +298,7 @@ exports.Prisma.CleaningTaskScalarFieldEnum = {
   startedAt: 'startedAt',
   completedAt: 'completedAt',
   productsConsumedAt: 'productsConsumedAt',
+  skipProductConsumption: 'skipProductConsumption',
   assignedToId: 'assignedToId',
   notes: 'notes',
   bookingId: 'bookingId',

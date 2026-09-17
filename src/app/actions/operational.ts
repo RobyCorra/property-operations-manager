@@ -316,6 +316,7 @@ export async function createCleaningTask(prevState: any, formData: FormData) {
   const notes = formData.get("notes") as string;
   const totalGuestsRaw = formData.get("totalGuests") as string;
   const totalGuests = totalGuestsRaw ? parseInt(totalGuestsRaw, 10) : null;
+  const skipProductConsumption = formData.get("skipProductConsumption") === "true";
 
   const effectiveTimeStr = timeStr || DEFAULT_CLEANING_TIME;
 
@@ -335,6 +336,7 @@ export async function createCleaningTask(prevState: any, formData: FormData) {
       status: "PENDING",
       checklistProgress,
       totalGuests: totalGuests && !isNaN(totalGuests) ? totalGuests : null,
+      skipProductConsumption,
     },
   });
 

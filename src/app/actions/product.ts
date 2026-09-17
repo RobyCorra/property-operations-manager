@@ -270,10 +270,16 @@ export async function consumeProductsOnCleaningApproved(cleaningTaskId: string) 
         date: true,
         totalGuests: true,
         bookingId: true,
+        skipProductConsumption: true,
         booking: { select: { totalGuests: true, guestName: true } },
       },
     });
     if (!cleaning) return { success: true, skipped: true, alerts: [] as string[] };
+
+    // Pulizia esclusa dal conteggio prodotti (scelta alla creazione): non scala nulla.
+    if (cleaning.skipProductConsumption) {
+      return { success: true, skipped: true, alerts: [] as string[] };
+    }
 
     // Prossima prenotazione in arrivo per questo appartamento (l'ospite rifornito).
     const dayStart = new Date(cleaning.date);
