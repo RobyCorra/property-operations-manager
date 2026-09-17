@@ -86,7 +86,9 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) { console.error("[Log] login_ok:", e); }
 
-  const destination = ROLE_REDIRECT[user.role] ?? "/dashboard/manager";
+  // Un MANAGER legato a una Company è un manager d'impresa → dashboard scoped.
+  const isCompanyManager = user.role === "MANAGER" && !!user.companyId;
+  const destination = isCompanyManager ? "/dashboard/impresa" : (ROLE_REDIRECT[user.role] ?? "/dashboard/manager");
   const res = NextResponse.redirect(new URL(destination, req.url), { status: 303 });
   const opts = {
     path: "/",
@@ -98,6 +100,8 @@ export async function POST(req: NextRequest) {
   res.cookies.set("role", user.role, opts);
   res.cookies.set("userId", user.id, opts);
   res.cookies.set("userName", encodeURIComponent(user.name), opts);
-  res.cookies.set("organizationId", user.organization?.id ?? "org_default", opts);
+  // Il manager d'impresa NON eredita org_default (niente accesso ai dati di un owner).
+  res.cookies.set("organizationId", user.companyId ? "" : (user.organization?.id ?? "org_default"), opts);
+  res.cookies.set("companyId", user.companyId ?? "", opts);
   return res;
 }
