@@ -99,7 +99,9 @@ export async function loginAction(prevState: any, formData: FormData) {
   cookieStore.set("role", user.role, cookieOptions);
   cookieStore.set("userId", user.id, cookieOptions);
   cookieStore.set("userName", encodeURIComponent(user.name), cookieOptions);
-  cookieStore.set("organizationId", user.organization?.id ?? "org_default", cookieOptions);
+  // Un manager d'impresa NON appartiene a un'organizzazione proprietaria:
+  // niente fallback org_default, così non può operare sui dati di un owner.
+  cookieStore.set("organizationId", user.companyId ? "" : (user.organization?.id ?? "org_default"), cookieOptions);
   cookieStore.set("companyId", user.companyId ?? "", cookieOptions);
 
   // Redirect based on role

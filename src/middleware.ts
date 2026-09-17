@@ -24,7 +24,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const allowed = ROLE_ALLOWED_PREFIXES[role] ?? [];
+  // Un MANAGER legato a una Company è un manager d'IMPRESA: può accedere solo
+  // alla sua dashboard scoped, NON alle pagine/azioni del proprietario.
+  const isCompanyManager = role === "MANAGER" && !!request.cookies.get("companyId")?.value;
+
+  const allowed = isCompanyManager
+    ? ["/dashboard/impresa", "/dashboard/history"]
+    : (ROLE_ALLOWED_PREFIXES[role] ?? []);
   const isAllowed = allowed.some(prefix => path.startsWith(prefix));
 
   if (!isAllowed) {
