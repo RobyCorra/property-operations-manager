@@ -76,10 +76,36 @@ async function main() {
     create: { id: randomUUID(), organizationId: ORG, companyId: alfa.id, scope: "CLEANING", status: "ACTIVE", acceptedAt: new Date() },
   });
 
+  // 5) Accesso manager d'impresa (login lato impresa)
+  await prisma.user.upsert({
+    where: { email: "cleaning@alfa.com" },
+    update: { role: "MANAGER", companyId: alfa.id, organizationId: null, password: passwordHash },
+    create: {
+      id: randomUUID(),
+      email: "cleaning@alfa.com",
+      name: "Alfa (manager pulizie)",
+      password: passwordHash,
+      role: "MANAGER",
+      companyId: alfa.id,
+    },
+  });
+
+  // 6) Due pulizie di prova (così la dashboard impresa non è vuota)
+  const allApts = await prisma.apartment.findMany({ where: { apartmentCode: { in: ["PREVIA1", "PREVIA2"] } }, select: { id: true, apartmentCode: true } });
+  const today = new Date(); today.setUTCHours(11, 0, 0, 0);
+  for (const a of allApts) {
+    const id = `seed-clean-${a.apartmentCode}`;
+    await prisma.cleaningTask.upsert({
+      where: { id },
+      update: {},
+      create: { id, apartmentId: a.id, date: today, status: "PENDING" },
+    });
+  }
+
   console.log("Seed preview completato:");
-  console.log("  Login proprietario:  test@test.com / 123456");
-  console.log("  Organizzazione:      " + ORG);
-  console.log("  Impresa demo:        Impresa Alfa (delega Pulizie attiva)");
+  console.log("  Proprietario:  test@test.com / 123456   → dashboard organizzazione");
+  console.log("  Impresa Alfa:  cleaning@alfa.com / 123456 → dashboard impresa (Pulizie)");
+  console.log("  Organizzazione: " + ORG + " · Impresa Alfa (delega Pulizie) · 2 pulizie di prova");
 }
 
 main()

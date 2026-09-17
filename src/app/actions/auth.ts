@@ -104,7 +104,8 @@ export async function loginAction(prevState: any, formData: FormData) {
 
   // Redirect based on role
   if (user.role === "MANAGER") {
-    redirect("/dashboard/manager");
+    // Manager d'impresa (legato a una Company) → dashboard impresa scoped.
+    redirect(user.companyId ? "/dashboard/impresa" : "/dashboard/manager");
   } else if (user.role === "CLEANER") {
     redirect("/dashboard/cleaner");
   } else if (user.role === "MAINTENANCE") {

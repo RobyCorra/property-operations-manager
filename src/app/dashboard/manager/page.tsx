@@ -118,6 +118,10 @@ export default async function ManagerDashboardPage() {
   if (role !== "MANAGER") {
     redirect("/login");
   }
+  // Manager d'impresa → la sua dashboard scoped, non quella del proprietario.
+  if (cookieStore.get("companyId")?.value) {
+    redirect("/dashboard/impresa");
+  }
 
   const orgId = await getCurrentOrg();
 

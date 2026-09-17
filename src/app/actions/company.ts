@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "crypto";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview } from "@/src/lib/company-scope";
@@ -38,7 +39,17 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
     }),
     prisma.company.findMany({
       orderBy: { name: "asc" },
-      select: { id: true, name: true, vatNumber: true, scopes: true },
+      select: {
+        id: true,
+        name: true,
+        vatNumber: true,
+        scopes: true,
+        users: {
+          where: { role: "MANAGER" },
+          select: { id: true, name: true, email: true },
+          orderBy: { name: "asc" },
+        },
+      },
     }),
   ]);
 
@@ -52,7 +63,16 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
       status: e.status,
     };
   }
-  return { companies, handlers };
+  return {
+    companies: companies.map((c) => ({
+      id: c.id,
+      name: c.name,
+      vatNumber: c.vatNumber,
+      scopes: c.scopes,
+      managers: c.users,
+    })),
+    handlers,
+  };
 }
 
 export async function createCompany(
@@ -107,6 +127,43 @@ export async function delegateFunction(
       if (company && !company.scopes.includes(scope)) {
         await tx.company.update({ where: { id: companyId }, data: { scopes: { set: [...company.scopes, scope] } } });
       }
+    });
+    revalidatePath("/dashboard/manager/imprese");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// Crea un accesso "manager d'impresa": un utente MANAGER legato alla Company
+// (organizationId null). Potrà loggarsi e vedere solo le funzioni delegate.
+export async function createCompanyManager(
+  companyId: string,
+  name: string,
+  email: string,
+  password: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    await requireOwner();
+    const nm = (name ?? "").trim();
+    const em = (email ?? "").trim().toLowerCase();
+    if (!nm || !em || !password) return { success: false, error: "Nome, email e password obbligatori." };
+    if (password.length < 6) return { success: false, error: "Password troppo corta (min 6)." };
+    const company = await prisma.company.findUnique({ where: { id: companyId }, select: { id: true } });
+    if (!company) return { success: false, error: "Impresa non trovata." };
+    const existing = await prisma.user.findUnique({ where: { email: em }, select: { id: true } });
+    if (existing) return { success: false, error: "Email già in uso." };
+    const passwordHash = await bcrypt.hash(password, 10);
+    await prisma.user.create({
+      data: {
+        id: randomUUID(),
+        name: nm,
+        email: em,
+        password: passwordHash,
+        role: "MANAGER",
+        companyId,
+        organizationId: null,
+      },
     });
     revalidatePath("/dashboard/manager/imprese");
     return { success: true };

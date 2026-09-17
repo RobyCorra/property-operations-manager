@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createCompany, delegateFunction, revokeFunction } from "@/src/app/actions/company";
+import { createCompany, createCompanyManager, delegateFunction, revokeFunction } from "@/src/app/actions/company";
 import type { ImpreseOverview } from "@/src/lib/company-scope";
 
 const SCOPES: { key: string; label: string; emoji: string }[] = [
@@ -20,6 +20,7 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
   const [newName, setNewName] = useState("");
   const [newVat, setNewVat] = useState("");
   const [creating, setCreating] = useState(false);
+  const [mgr, setMgr] = useState<Record<string, { name: string; email: string; password: string; open: boolean }>>({});
 
   const companies = initial.companies;
   const handlers = initial.handlers;
@@ -48,6 +49,29 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
       const r = await revokeFunction(scope);
       if (!r.success) setError(r.error);
       else refresh();
+    });
+  };
+
+  const setMgrField = (id: string, patch: Partial<{ name: string; email: string; password: string; open: boolean }>) =>
+    setMgr((m) => {
+      const base = m[id] ?? { name: "", email: "", password: "", open: true };
+      return { ...m, [id]: { ...base, ...patch } };
+    });
+
+  const onCreateManager = (companyId: string) => {
+    const f = mgr[companyId];
+    if (!f || !f.name.trim() || !f.email.trim() || !f.password) {
+      setError("Nome, email e password obbligatori.");
+      return;
+    }
+    setError(null);
+    startTransition(async () => {
+      const r = await createCompanyManager(companyId, f.name, f.email, f.password);
+      if (!r.success) setError(r.error);
+      else {
+        setMgr((m) => ({ ...m, [companyId]: { name: "", email: "", password: "", open: false } }));
+        refresh();
+      }
     });
   };
 
@@ -169,15 +193,52 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
           <p className="text-xs text-gray-400">Nessuna impresa. Creane una per poterla delegare.</p>
         ) : (
           <div className="space-y-2">
-            {companies.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/70 px-3 py-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-sm">🏢</div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-800 truncate">{c.name}</p>
-                  <p className="text-[11px] text-gray-400">{c.vatNumber ? `P.IVA ${c.vatNumber} · ` : ""}{c.scopes.length ? c.scopes.join(", ") : "nessuna delega"}</p>
+            {companies.map((c) => {
+              const f = mgr[c.id];
+              return (
+                <div key={c.id} className="rounded-xl border border-gray-100 bg-gray-50/70 px-3 py-2.5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-sm">🏢</div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-800">{c.name}</p>
+                      <p className="text-[11px] text-gray-400">{c.vatNumber ? `P.IVA ${c.vatNumber} · ` : ""}{c.scopes.length ? c.scopes.join(", ") : "nessuna delega"}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setMgrField(c.id, { open: !(f?.open) })}
+                      className="rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-semibold text-violet-600"
+                    >
+                      {f?.open ? "Chiudi" : "+ Accesso"}
+                    </button>
+                  </div>
+
+                  {/* Manager d'impresa esistenti */}
+                  {c.managers.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {c.managers.map((m) => (
+                        <span key={m.id} className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] text-gray-600 border border-gray-100">
+                          👤 {m.name} <span className="text-gray-400">· {m.email}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Form nuovo accesso manager */}
+                  {f?.open && (
+                    <div className="mt-2 grid grid-cols-1 gap-2 rounded-lg border border-violet-100 bg-white p-2.5 sm:grid-cols-3">
+                      <input className={inputCls} placeholder="Nome" value={f.name} onChange={(e) => setMgrField(c.id, { name: e.target.value })} />
+                      <input className={inputCls} placeholder="Email" value={f.email} onChange={(e) => setMgrField(c.id, { email: e.target.value })} />
+                      <div className="flex gap-2">
+                        <input className={inputCls} placeholder="Password" value={f.password} onChange={(e) => setMgrField(c.id, { password: e.target.value })} />
+                        <button type="button" onClick={() => onCreateManager(c.id)} disabled={isPending} className="shrink-0 rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-xs font-semibold text-white disabled:opacity-40">
+                          Crea
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

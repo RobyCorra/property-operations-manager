@@ -4,8 +4,16 @@
 export const COMPANY_SCOPES = ["CLEANING", "MAINTENANCE", "CHECKIN", "SUPERVISION"] as const;
 export type CompanyScope = (typeof COMPANY_SCOPES)[number];
 
+export type CompanyManager = { id: string; name: string; email: string };
+
 export type ImpreseOverview = {
-  companies: { id: string; name: string; vatNumber: string | null; scopes: string[] }[];
+  companies: {
+    id: string;
+    name: string;
+    vatNumber: string | null;
+    scopes: string[];
+    managers: CompanyManager[];
+  }[];
   // per ogni scope: chi la gestisce ora (impresa attiva) — null = interno
   handlers: Record<string, { engagementId: string; companyId: string; companyName: string; status: string } | null>;
 };
