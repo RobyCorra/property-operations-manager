@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { assignCleaning, approveCleaningByImpresa } from "@/src/app/actions/company";
 
 type Staff = { id: string; name: string };
@@ -60,11 +61,11 @@ export default function ImpresaCleaningAssign({ cleanings, staff }: { cleanings:
       {cleanings.map((c) => (
         <div key={c.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/70 px-3 py-2.5">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-slate-800">
+            <Link href={`/dashboard/impresa/pulizie/${c.id}`} className="truncate text-sm font-semibold text-slate-800 hover:text-violet-600">
               {c.apartmentName}
               <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-[10px] font-medium text-gray-500">{c.ownerName}</span>
-            </p>
-            <p className="text-[11px] text-gray-500">{c.date}</p>
+            </Link>
+            <p className="text-[11px] text-gray-500">{c.date} · <Link href={`/dashboard/impresa/pulizie/${c.id}`} className="text-violet-600">apri scheda →</Link></p>
           </div>
           <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${statusCls[c.status] ?? "bg-slate-100 text-slate-600"}`}>{c.status}</span>
           {c.status === "AWAITING_REVIEW" && (

@@ -9,6 +9,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
+import { DEFAULT_CHECKLIST } from "../src/lib/constants";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
 const adapter = new PrismaPg(pool);
@@ -45,7 +46,7 @@ async function main() {
     { code: "PREVIA2", name: "Via Verdi 8", address: "Via Verdi 8, 00184 Roma RM" },
   ];
   for (const a of apts) {
-    await prisma.apartment.upsert({
+    const apt = await prisma.apartment.upsert({
       where: { apartmentCode: a.code },
       update: {},
       create: {
@@ -62,6 +63,13 @@ async function main() {
         organizationId: ORG,
       },
     });
+    // Checklist di pulizia (come createApartment): senza, il cleaner non vede nulla.
+    const hasChecklist = await prisma.checklistItem.count({ where: { apartmentId: apt.id } });
+    if (hasChecklist === 0) {
+      await prisma.checklistItem.createMany({
+        data: DEFAULT_CHECKLIST.map((item, index) => ({ apartmentId: apt.id, label: item.label, required: item.required, order: index })),
+      });
+    }
   }
 
   // 4) Impresa demo + delega Pulizie attiva
