@@ -218,7 +218,29 @@ exports.Prisma.UserScalarFieldEnum = {
   notificationPrefs: 'notificationPrefs',
   failedLoginCount: 'failedLoginCount',
   lockedUntil: 'lockedUntil',
-  privacyAcceptedAt: 'privacyAcceptedAt'
+  privacyAcceptedAt: 'privacyAcceptedAt',
+  companyId: 'companyId'
+};
+
+exports.Prisma.CompanyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  legalName: 'legalName',
+  vatNumber: 'vatNumber',
+  scopes: 'scopes',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.EngagementScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  companyId: 'companyId',
+  scope: 'scope',
+  status: 'status',
+  invitedAt: 'invitedAt',
+  acceptedAt: 'acceptedAt',
+  revokedAt: 'revokedAt'
 };
 
 exports.Prisma.ApartmentScalarFieldEnum = {
@@ -563,6 +585,7 @@ exports.Prisma.StockMovementScalarFieldEnum = {
 exports.Prisma.WarehouseProductScalarFieldEnum = {
   id: 'id',
   organizationId: 'organizationId',
+  companyId: 'companyId',
   name: 'name',
   emoji: 'emoji',
   unit: 'unit',
@@ -634,6 +657,8 @@ exports.Prisma.ModelName = {
   PropertyStockMovement: 'PropertyStockMovement',
   UnitCategory: 'UnitCategory',
   User: 'User',
+  Company: 'Company',
+  Engagement: 'Engagement',
   Apartment: 'Apartment',
   ChecklistItem: 'ChecklistItem',
   Notification: 'Notification',

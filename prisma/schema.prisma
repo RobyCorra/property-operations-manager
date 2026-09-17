@@ -38,6 +38,7 @@ model Organization {
   apartments   Apartment[]
   properties   Property[]
   chatSessions ManagerChatSession[]
+  engagements  Engagement[]
 }
 
 // Struttura ricettiva (hotel/residence): indirizzo unico, contiene N unita'
@@ -137,6 +138,8 @@ model User {
   failedLoginCount     Int                   @default(0)
   lockedUntil          DateTime?
   privacyAcceptedAt    DateTime?
+  companyId            String?
+  company              Company?              @relation(fields: [companyId], references: [id], onDelete: SetNull)
   organization         Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   cleaningTasks        CleaningTask[]
   maintenanceTickets   MaintenanceTicket[]
@@ -149,6 +152,42 @@ model User {
   cleanerLocation      CleanerLocation?
   checkinTasks         CheckinTask[]
 
+  @@index([organizationId])
+  @@index([companyId])
+}
+
+// Impresa esterna indipendente (pulizie/manutenzione/check-in/supervisione).
+// Non e' figlia di una singola Organization: viene ingaggiata (Engagement) da
+// una o piu' organizzazioni, e puo' coprire piu' funzioni.
+model Company {
+  id                String             @id @default(uuid())
+  name              String
+  slug              String             @unique
+  legalName         String?
+  vatNumber         String?
+  scopes            String[]           @default([]) // funzioni offerte: CLEANING|MAINTENANCE|CHECKIN|SUPERVISION
+  createdAt         DateTime           @default(now())
+  users             User[]
+  engagements       Engagement[]
+  warehouseProducts WarehouseProduct[]
+}
+
+// Ingaggio: un proprietario (Organization) delega UNA funzione (scope) a una
+// Company. Consenso e revoca sono del proprietario.
+model Engagement {
+  id             String       @id @default(uuid())
+  organizationId String
+  companyId      String
+  scope          String       // CLEANING | MAINTENANCE | CHECKIN | SUPERVISION
+  status         String       @default("PENDING") // PENDING | ACTIVE | REVOKED
+  invitedAt      DateTime     @default(now())
+  acceptedAt     DateTime?
+  revokedAt      DateTime?
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  company        Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, companyId, scope])
+  @@index([companyId])
   @@index([organizationId])
 }
 
@@ -641,7 +680,8 @@ model StockMovement {
 // (valore × base BATHROOM/GUEST/BEDROOM per ogni check-in del giorno).
 model WarehouseProduct {
   id               String   @id @default(uuid())
-  organizationId   String
+  organizationId   String?  // proprietario = Organization OPPURE Company (uno solo)
+  companyId        String?
   name             String
   emoji            String   @default("📦")
   unit             String   @default("pz")
@@ -655,9 +695,11 @@ model WarehouseProduct {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  company          Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   movements        WarehouseStockMovement[]
 
   @@index([organizationId])
+  @@index([companyId])
 }
 
 // Registro movimenti del magazzino (analogo a StockMovement per gli appartamenti).
