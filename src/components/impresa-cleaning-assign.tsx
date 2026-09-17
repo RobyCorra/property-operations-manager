@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { assignCleaning } from "@/src/app/actions/company";
+import { assignCleaning, approveCleaningByImpresa } from "@/src/app/actions/company";
 
 type Staff = { id: string; name: string };
 type Cleaning = {
@@ -39,6 +39,17 @@ export default function ImpresaCleaningAssign({ cleanings, staff }: { cleanings:
     });
   };
 
+  const onApprove = (cleaningTaskId: string) => {
+    setError(null);
+    setPendingId(cleaningTaskId);
+    startTransition(async () => {
+      const r = await approveCleaningByImpresa(cleaningTaskId);
+      setPendingId(null);
+      if (!r.success) setError(r.error);
+      else router.refresh();
+    });
+  };
+
   if (cleanings.length === 0) {
     return <p className="text-xs text-gray-400">Nessuna pulizia da oggi in poi.</p>;
   }
@@ -56,6 +67,16 @@ export default function ImpresaCleaningAssign({ cleanings, staff }: { cleanings:
             <p className="text-[11px] text-gray-500">{c.date}</p>
           </div>
           <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${statusCls[c.status] ?? "bg-slate-100 text-slate-600"}`}>{c.status}</span>
+          {c.status === "AWAITING_REVIEW" && (
+            <button
+              type="button"
+              onClick={() => onApprove(c.id)}
+              disabled={isPending && pendingId === c.id}
+              className="rounded-full bg-emerald-500 px-3 py-1.5 text-[11px] font-semibold text-white disabled:opacity-50"
+            >
+              Approva
+            </button>
+          )}
           <select
             value={c.assignedToId ?? ""}
             disabled={isPending && pendingId === c.id}

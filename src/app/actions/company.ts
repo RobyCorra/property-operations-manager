@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import { getCompanyAccess } from "@/src/lib/company-access";
+import { approveCleaningDirectly } from "@/src/app/actions/operational";
 import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview } from "@/src/lib/company-scope";
 
 // Ruolo operativo dello staff per ciascuna funzione delegata.
@@ -226,6 +227,37 @@ export async function assignCleaning(
     await prisma.cleaningTask.update({ where: { id: cleaningTaskId }, data: { assignedToId: userId } });
     revalidatePath("/dashboard/impresa");
     revalidatePath("/dashboard/impresa/pulizie");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// Il manager d'impresa approva una pulizia dei propri clienti (in attesa di
+// revisione). L'approvazione scala i prodotti dal magazzino del PROPRIETARIO
+// (regola invariata: consumo alla conferma pulizia).
+export async function approveCleaningByImpresa(
+  cleaningTaskId: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("CLEANING")) return { success: false, error: "Pulizie non delegate a questa impresa." };
+
+    const task = await prisma.cleaningTask.findUnique({
+      where: { id: cleaningTaskId },
+      select: { status: true, apartment: { select: { organizationId: true } } },
+    });
+    if (!task || !task.apartment.organizationId || !access.orgIds.includes(task.apartment.organizationId)) {
+      return { success: false, error: "Pulizia non appartenente ai tuoi clienti." };
+    }
+    if (task.status !== "AWAITING_REVIEW") {
+      return { success: false, error: "La pulizia non è in attesa di revisione." };
+    }
+
+    await approveCleaningDirectly(cleaningTaskId);
+    revalidatePath("/dashboard/impresa/pulizie");
+    revalidatePath("/dashboard/impresa");
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
