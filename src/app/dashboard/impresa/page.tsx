@@ -56,6 +56,25 @@ export default async function ImpresaDashboard() {
       })
     : [];
 
+  // Prenotazioni: solo per CONTESTO nel calendario (sola lettura, nessun importo).
+  const bookingsRaw = hasCleaning
+    ? await prisma.booking.findMany({
+        where: { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
+        select: {
+          id: true, apartmentId: true, guestName: true, checkInDate: true, checkOutDate: true,
+          totalGuests: true, cullaRequested: true, status: true, source: true, externalId: true,
+          apartment: { select: { name: true, address: true } },
+        },
+      })
+    : [];
+  const bookings = bookingsRaw.map((b) => ({
+    ...b,
+    guestName: b.guestName ?? "",
+    status: b.status ?? undefined,
+    source: b.source ?? undefined,
+    externalId: b.externalId ?? undefined,
+  }));
+
   const todayKey = localDateKey(now);
   const kpi = {
     oggi: cleanings.filter((c) => localDateKey(c.date) === todayKey).length,
@@ -66,7 +85,8 @@ export default async function ImpresaDashboard() {
 
   const apartmentsData = apts.map((a) => {
     const aptCleanings = cleanings.filter((c) => c.apartmentId === a.id);
-    const s = getApartmentOperationalStatus(serverDate, [], aptCleanings, [], { now });
+    const aptBookings = bookings.filter((b) => b.apartmentId === a.id);
+    const s = getApartmentOperationalStatus(serverDate, aptBookings, aptCleanings, [], { now });
     return {
       id: a.id,
       name: a.name,
@@ -110,11 +130,11 @@ export default async function ImpresaDashboard() {
 
           <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <span>🗓️</span> Calendario pulizie
+              <span>🗓️</span> Calendario operativo <span className="font-normal text-gray-400">· pulizie e prenotazioni (sola lettura)</span>
             </h2>
             <TimelineCalendar
               apartments={apartmentsData}
-              bookings={[]}
+              bookings={bookings}
               cleaningTasks={cleanings}
               maintenanceTickets={[]}
               serverDate={serverDate}
