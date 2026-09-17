@@ -90,6 +90,7 @@ export async function registerAction(prevState: any, formData: FormData) {
   cookieStore.set("userId", user.id, cookieOptions);
   cookieStore.set("userName", encodeURIComponent(user.name), cookieOptions);
   cookieStore.set("organizationId", org.id, cookieOptions);
+  cookieStore.set("companyId", "", cookieOptions);
 
   redirect("/dashboard/manager");
 }

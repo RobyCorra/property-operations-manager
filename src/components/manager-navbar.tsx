@@ -30,6 +30,7 @@ const NAV_ITEMS = [
   { key: "navCleanings", href: "/dashboard/manager/cleanings", icon: Brush },
   { key: "navMaintenance", href: "/dashboard/manager/maintenance", icon: Wrench },
   { key: "navTeam", href: "/dashboard/manager/users", icon: Users },
+  { key: "navCompanies", href: "/dashboard/manager/imprese", icon: Building2 },
   { key: "navAnalytics", href: "/dashboard/manager/analytics", icon: BarChart2 },
 ] as const;
 

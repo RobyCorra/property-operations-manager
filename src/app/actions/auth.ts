@@ -100,6 +100,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   cookieStore.set("userId", user.id, cookieOptions);
   cookieStore.set("userName", encodeURIComponent(user.name), cookieOptions);
   cookieStore.set("organizationId", user.organization?.id ?? "org_default", cookieOptions);
+  cookieStore.set("companyId", user.companyId ?? "", cookieOptions);
 
   // Redirect based on role
   if (user.role === "MANAGER") {
@@ -125,5 +126,6 @@ export async function logoutAction() {
   cookieStore.set("userId", "", { path: "/", maxAge: 0 });
   cookieStore.set("userName", "", { path: "/", maxAge: 0 });
   cookieStore.set("organizationId", "", { path: "/", maxAge: 0 });
+  cookieStore.set("companyId", "", { path: "/", maxAge: 0 });
   redirect("/login");
 }
