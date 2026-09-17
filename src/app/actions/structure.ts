@@ -377,3 +377,66 @@ export async function deleteStructure(
     return { success: false, error: message };
   }
 }
+
+// Geocodifica un indirizzo su richiesta (pulsante "Trova sulla mappa" nella
+// card Posizione della struttura). Restituisce lat/lng o un errore parlante.
+export async function geocodeStructureAddress(
+  address: string,
+): Promise<{ success: true; latitude: number; longitude: number } | { success: false; error?: string }> {
+  const trimmed = (address ?? "").trim();
+  if (!trimmed) return { success: false, error: "Inserisci un indirizzo." };
+  const geocoded = await geocodeAddress(trimmed);
+  if (!geocoded) {
+    return { success: false, error: "Indirizzo non trovato. Controllalo o inserisci le coordinate a mano." };
+  }
+  return { success: true, latitude: geocoded.lat, longitude: geocoded.lng };
+}
+
+// Aggiorna indirizzo + coordinate della struttura e le propaga a TUTTE le
+// unità (un solo indirizzo per struttura). Corregge anche strutture nate a 0,0.
+export async function updateStructureLocation(
+  propertyId: string,
+  input: { address: string; latitude: number; longitude: number },
+): Promise<{ success: true; unitCount: number } | { success: false; error?: string }> {
+  try {
+    const orgId = await getCurrentOrg();
+    const address = (input?.address ?? "").trim();
+    const latitude = Number(input?.latitude);
+    const longitude = Number(input?.longitude);
+
+    if (!address) return { success: false, error: "L'indirizzo è obbligatorio." };
+    if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+      return { success: false, error: "Latitudine non valida (deve essere tra -90 e 90)." };
+    }
+    if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+      return { success: false, error: "Longitudine non valida (deve essere tra -180 e 180)." };
+    }
+
+    const property = await prisma.property.findFirst({
+      where: { id: propertyId, organizationId: orgId },
+      select: { id: true },
+    });
+    if (!property) return { success: false, error: "Struttura non trovata." };
+
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.property.update({
+        where: { id: propertyId },
+        data: { address, latitude, longitude },
+      });
+      const updated = await tx.apartment.updateMany({
+        where: { propertyId, organizationId: orgId },
+        data: { address, latitude, longitude },
+      });
+      return updated.count;
+    });
+
+    revalidatePath(`/dashboard/manager/strutture/${propertyId}`);
+    revalidatePath("/dashboard/manager/apartments");
+    revalidatePath("/dashboard/manager/mappa");
+    return { success: true, unitCount: result };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Errore durante il salvataggio della posizione.";
+    console.error("updateStructureLocation: errore", error);
+    return { success: false, error: message };
+  }
+}

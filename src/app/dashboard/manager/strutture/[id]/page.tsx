@@ -5,6 +5,7 @@ import { getStructure } from "@/src/app/actions/structure";
 import { getPropertyProducts } from "@/src/app/actions/property-product";
 import { getApartmentOperationalStatus, STATUS_UI } from "@/src/lib/apartment-status";
 import DeleteStructureButton from "@/src/components/delete-structure-button";
+import StructureLocationCard from "@/src/components/structure-location-card";
 import PropertyProductsPanel from "@/src/components/property-products-panel";
 import BackButton from "@/src/components/back-button";
 import { getT } from "@/src/lib/server-lang";
@@ -39,6 +40,13 @@ export default async function StructurePage({ params }: { params: Promise<{ id: 
             </div>
           </div>
         </div>
+
+        <StructureLocationCard
+          propertyId={structure.id}
+          unitCount={unitCount}
+          unitNumbers={structure.categories.flatMap((c) => c.units.map((u) => u.unitNumber).filter((n): n is string => !!n))}
+          initial={{ address: structure.address, latitude: structure.latitude, longitude: structure.longitude }}
+        />
 
         <div className="space-y-4">
           {structure.categories.map((c) => (
