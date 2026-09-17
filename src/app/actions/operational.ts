@@ -620,8 +620,10 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
     "PENDING": "IN_PROGRESS",
     "IN_PROGRESS": "AWAITING_REVIEW",
   };
+  // "Rifiuta / rimanda in lavorazione": AWAITING_REVIEW -> IN_PROGRESS.
+  const isRejectBack = task.status === "AWAITING_REVIEW" && nextStatus === "IN_PROGRESS";
 
-  if (transitions[task.status] !== nextStatus) {
+  if (!isRejectBack && transitions[task.status] !== nextStatus) {
     throw new Error(`Transizione non valida: ${task.status} -> ${nextStatus}`);
   }
 
@@ -643,6 +645,10 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
 
   if (nextStatus === "IN_PROGRESS" && !task.startedAt) {
     updateData.startedAt = new Date();
+  }
+  // Rimandata in lavorazione: azzera il completamento.
+  if (isRejectBack) {
+    updateData.completedAt = null;
   }
 
   // Auto-assegna al cleaner corrente se la pulizia non era pre-assegnata

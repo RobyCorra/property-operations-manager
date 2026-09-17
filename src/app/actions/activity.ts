@@ -2,6 +2,7 @@
 
 import { prisma } from "@/src/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { getCurrentOrg } from "@/src/lib/tenant";
 
 export interface Activity {
@@ -63,10 +64,21 @@ export async function getTeamActivityHistory(filters: {
 }) {
   const { collaboratorId, apartmentId, status, type, startDate, endDate, currentUserId, currentUserRole } = filters;
 
-  const orgId = await getCurrentOrg();
-  const whereClause: any = {
-    apartment: { organizationId: orgId },
-  };
+  const c = await cookies();
+  const companyId = c.get("companyId")?.value;
+  const whereClause: any = {};
+
+  if (companyId) {
+    // Utente d'impresa: niente org propria. Il manager vede i clienti ingaggiati;
+    // il cleaner d'impresa è già ristretto ai propri task via assignedToId.
+    if (currentUserRole === "MANAGER") {
+      const engs = await prisma.engagement.findMany({ where: { companyId, status: "ACTIVE" }, select: { organizationId: true } });
+      whereClause.apartment = { organizationId: { in: [...new Set(engs.map((e) => e.organizationId))] } };
+    }
+  } else {
+    const orgId = await getCurrentOrg();
+    whereClause.apartment = { organizationId: orgId };
+  }
 
   // RBAC: If not manager, only see own tasks
   if (currentUserRole !== "MANAGER") {
