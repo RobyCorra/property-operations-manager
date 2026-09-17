@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/src/lib/prisma";
 import { syncCleaningTaskFromBooking } from "./operational";
 import { syncCheckinTaskFromBooking } from "./checkin";
-import { consumeProductsOnCheckin } from "./product";
 
 type PrismaTx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
@@ -293,8 +292,7 @@ export async function confirmCheckIn(bookingId: string) {
     data: { status: "CHECKED_IN" },
   });
 
-  // Sottrai i prodotti consumati per questo check-in (idempotente: una sola volta)
-  await consumeProductsOnCheckin(bookingId);
+  // Il consumo prodotti avviene ora alla conferma della pulizia (non al check-in).
 
   revalidatePath("/dashboard/manager");
   revalidatePath("/dashboard/manager/mappa");

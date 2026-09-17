@@ -194,14 +194,14 @@ export async function consumeWarehouseProduct(id: string, qty: number, note?: st
   }
 }
 
-// ─── Consumo automatico al check-in ───────────────────────────────────────────
-// Chiamata da consumeProductsOnCheckin (product.ts) per ogni check-in confermato.
+// ─── Consumo automatico del magazzino org ─────────────────────────────────────
+// Chiamata dal nucleo di consumo (product.ts) alla conferma della pulizia.
 // Scala i prodotti di magazzino STATIC/DYNAMIC dell'organizzazione in base
-// all'appartamento del check-in. Idempotente perché il chiamante consuma una
-// sola volta per prenotazione (booking.productsConsumedAt).
+// all'appartamento. Idempotente perché il chiamante consuma una sola volta
+// per pulizia (cleaningTask.productsConsumedAt).
 export async function consumeWarehouseOnCheckin(params: {
   organizationId: string;
-  bookingId: string;
+  bookingId: string | null;
   guests: number;
   bathrooms: number;
   bedrooms: number;

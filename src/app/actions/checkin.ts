@@ -5,7 +5,6 @@ import { prisma } from "@/src/lib/prisma";
 import { setRomeTimeOnDate, preserveRomeTimeOnDate } from "@/src/lib/rome-datetime";
 import { getCurrentUserId, getCurrentOrg } from "@/src/lib/tenant";
 import { sendPushToRole, sendPushToUser } from "@/src/lib/push";
-import { consumeProductsOnCheckin } from "@/src/app/actions/product";
 import type { Role } from "@/src/generated/prisma/client";
 
 // Orario di check-in di default (ora di Roma) se non diversamente specificato.
@@ -225,12 +224,7 @@ export async function updateCheckinStatus(id: string, nextStatus: string) {
 
   await prisma.checkinTask.update({ where: { id }, data: updateData });
 
-  // Al completamento del check-in l'appartamento è occupato: sottrai i prodotti
-  // consumati per questa prenotazione (idempotente: il cron/pulsante manuale non
-  // lo rifaranno grazie a booking.productsConsumedAt).
-  if (nextStatus === "COMPLETED" && task.bookingId) {
-    await consumeProductsOnCheckin(task.bookingId).catch(console.error);
-  }
+  // Il consumo prodotti avviene ora alla conferma della pulizia (non al check-in).
 
   // Notifica al manager al completamento.
   if (nextStatus === "COMPLETED") {
