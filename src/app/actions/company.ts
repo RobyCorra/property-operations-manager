@@ -6,7 +6,16 @@ import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
+import { getCompanyAccess } from "@/src/lib/company-access";
 import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview } from "@/src/lib/company-scope";
+
+// Ruolo operativo dello staff per ciascuna funzione delegata.
+const SCOPE_STAFF_ROLE: Record<string, "CLEANER" | "MAINTENANCE" | "CHECKIN" | "SUPERVISOR"> = {
+  CLEANING: "CLEANER",
+  MAINTENANCE: "MAINTENANCE",
+  CHECKIN: "CHECKIN",
+  SUPERVISION: "SUPERVISOR",
+};
 
 // Solo il PROPRIETARIO (manager con companyId vuoto) può gestire le deleghe.
 async function requireOwner(): Promise<string> {
@@ -129,6 +138,94 @@ export async function delegateFunction(
       }
     });
     revalidatePath("/dashboard/manager/imprese");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// ─── Lato MANAGER D'IMPRESA (companyId valorizzato) ───────────────────────────
+
+async function requireCompanyManager(): Promise<string> {
+  const c = await cookies();
+  if (c.get("role")?.value !== "MANAGER") throw new Error("Non autorizzato.");
+  const companyId = c.get("companyId")?.value;
+  if (!companyId) throw new Error("Riservato ai manager d'impresa.");
+  return companyId;
+}
+
+export type CompanyStaff = { id: string; name: string; email: string; role: string };
+
+export async function getMyCompanyStaff(): Promise<CompanyStaff[]> {
+  const companyId = await requireCompanyManager();
+  const users = await prisma.user.findMany({
+    where: { companyId, role: { not: "MANAGER" } },
+    select: { id: true, name: true, email: true, role: true },
+    orderBy: { name: "asc" },
+  });
+  return users;
+}
+
+// Il manager d'impresa crea il proprio staff (ruolo coerente con le funzioni
+// delegate all'impresa). Utente legato alla Company, organizationId null.
+export async function createMyStaff(
+  name: string,
+  email: string,
+  password: string,
+  role: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const nm = (name ?? "").trim();
+    const em = (email ?? "").trim().toLowerCase();
+    if (!nm || !em || !password) return { success: false, error: "Nome, email e password obbligatori." };
+    if (password.length < 6) return { success: false, error: "Password troppo corta (min 6)." };
+
+    const company = await prisma.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
+    const allowedRoles = new Set((company?.scopes ?? []).map((s) => SCOPE_STAFF_ROLE[s]).filter(Boolean));
+    if (!allowedRoles.has(role as never)) return { success: false, error: "Ruolo non consentito per questa impresa." };
+
+    const existing = await prisma.user.findUnique({ where: { email: em }, select: { id: true } });
+    if (existing) return { success: false, error: "Email già in uso." };
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    await prisma.user.create({
+      data: { id: randomUUID(), name: nm, email: em, password: passwordHash, role: role as never, companyId, organizationId: null },
+    });
+    revalidatePath("/dashboard/impresa/staff");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// Assegna (o rimuove: userId null) una pulizia a un operatore dell'impresa.
+// La pulizia deve appartenere a un'organizzazione che ha ingaggiato l'impresa.
+export async function assignCleaning(
+  cleaningTaskId: string,
+  userId: string | null,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("CLEANING")) return { success: false, error: "Pulizie non delegate a questa impresa." };
+
+    const task = await prisma.cleaningTask.findUnique({
+      where: { id: cleaningTaskId },
+      select: { apartment: { select: { organizationId: true } } },
+    });
+    if (!task || !task.apartment.organizationId || !access.orgIds.includes(task.apartment.organizationId)) {
+      return { success: false, error: "Pulizia non appartenente ai tuoi clienti." };
+    }
+
+    if (userId) {
+      const staff = await prisma.user.findFirst({ where: { id: userId, companyId, role: "CLEANER" }, select: { id: true } });
+      if (!staff) return { success: false, error: "Operatore non valido." };
+    }
+
+    await prisma.cleaningTask.update({ where: { id: cleaningTaskId }, data: { assignedToId: userId } });
+    revalidatePath("/dashboard/impresa");
+    revalidatePath("/dashboard/impresa/pulizie");
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };

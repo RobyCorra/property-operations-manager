@@ -11,9 +11,12 @@ export default async function ImpresaLayout({ children }: { children: React.Reac
   if (c.get("role")?.value !== "MANAGER" || !c.get("companyId")?.value) redirect("/login");
   const access = await getCompanyAccess();
   const name = access?.companyName ?? "Impresa";
+  const scopes = access?.scopes ?? [];
 
   const nav = [
     { href: "/dashboard/impresa", label: "Dashboard", emoji: "▦" },
+    ...(scopes.includes("CLEANING") ? [{ href: "/dashboard/impresa/pulizie", label: "Pulizie", emoji: "🧹" }] : []),
+    { href: "/dashboard/impresa/staff", label: "Staff", emoji: "👥" },
     { href: "/dashboard/impresa/clienti", label: "Clienti", emoji: "🏠" },
     { href: "/dashboard/impresa/magazzino", label: "Magazzino", emoji: "📦" },
   ];
