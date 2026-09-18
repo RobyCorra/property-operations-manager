@@ -222,6 +222,17 @@ exports.Prisma.UserScalarFieldEnum = {
   companyId: 'companyId'
 };
 
+exports.Prisma.CompanyChatMessageScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  staffUserId: 'staffUserId',
+  senderIsManager: 'senderIsManager',
+  text: 'text',
+  createdAt: 'createdAt',
+  readByManagerAt: 'readByManagerAt',
+  readByStaffAt: 'readByStaffAt'
+};
+
 exports.Prisma.CompanyScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -657,6 +668,7 @@ exports.Prisma.ModelName = {
   PropertyStockMovement: 'PropertyStockMovement',
   UnitCategory: 'UnitCategory',
   User: 'User',
+  CompanyChatMessage: 'CompanyChatMessage',
   Company: 'Company',
   Engagement: 'Engagement',
   Apartment: 'Apartment',

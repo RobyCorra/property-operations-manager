@@ -44,6 +44,11 @@ export type UnitCategory = $Result.DefaultSelection<Prisma.$UnitCategoryPayload>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model CompanyChatMessage
+ * 
+ */
+export type CompanyChatMessage = $Result.DefaultSelection<Prisma.$CompanyChatMessagePayload>
+/**
  * Model Company
  * 
  */
@@ -412,6 +417,16 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.companyChatMessage`: Exposes CRUD operations for the **CompanyChatMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CompanyChatMessages
+    * const companyChatMessages = await prisma.companyChatMessage.findMany()
+    * ```
+    */
+  get companyChatMessage(): Prisma.CompanyChatMessageDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.company`: Exposes CRUD operations for the **Company** model.
@@ -1162,6 +1177,7 @@ export namespace Prisma {
     PropertyStockMovement: 'PropertyStockMovement',
     UnitCategory: 'UnitCategory',
     User: 'User',
+    CompanyChatMessage: 'CompanyChatMessage',
     Company: 'Company',
     Engagement: 'Engagement',
     Apartment: 'Apartment',
@@ -1208,7 +1224,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "company" | "engagement" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
+      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "companyChatMessage" | "company" | "engagement" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1653,6 +1669,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      CompanyChatMessage: {
+        payload: Prisma.$CompanyChatMessagePayload<ExtArgs>
+        fields: Prisma.CompanyChatMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CompanyChatMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CompanyChatMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.CompanyChatMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CompanyChatMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>
+          }
+          findMany: {
+            args: Prisma.CompanyChatMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>[]
+          }
+          create: {
+            args: Prisma.CompanyChatMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>
+          }
+          createMany: {
+            args: Prisma.CompanyChatMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CompanyChatMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.CompanyChatMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>
+          }
+          update: {
+            args: Prisma.CompanyChatMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.CompanyChatMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CompanyChatMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CompanyChatMessageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>[]
+          }
+          upsert: {
+            args: Prisma.CompanyChatMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CompanyChatMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.CompanyChatMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCompanyChatMessage>
+          }
+          groupBy: {
+            args: Prisma.CompanyChatMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CompanyChatMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CompanyChatMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<CompanyChatMessageCountAggregateOutputType> | number
           }
         }
       }
@@ -4064,6 +4154,7 @@ export namespace Prisma {
     propertyStockMovement?: PropertyStockMovementOmit
     unitCategory?: UnitCategoryOmit
     user?: UserOmit
+    companyChatMessage?: CompanyChatMessageOmit
     company?: CompanyOmit
     engagement?: EngagementOmit
     apartment?: ApartmentOmit
@@ -12896,6 +12987,1045 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CompanyChatMessage
+   */
+
+  export type AggregateCompanyChatMessage = {
+    _count: CompanyChatMessageCountAggregateOutputType | null
+    _min: CompanyChatMessageMinAggregateOutputType | null
+    _max: CompanyChatMessageMaxAggregateOutputType | null
+  }
+
+  export type CompanyChatMessageMinAggregateOutputType = {
+    id: string | null
+    companyId: string | null
+    staffUserId: string | null
+    senderIsManager: boolean | null
+    text: string | null
+    createdAt: Date | null
+    readByManagerAt: Date | null
+    readByStaffAt: Date | null
+  }
+
+  export type CompanyChatMessageMaxAggregateOutputType = {
+    id: string | null
+    companyId: string | null
+    staffUserId: string | null
+    senderIsManager: boolean | null
+    text: string | null
+    createdAt: Date | null
+    readByManagerAt: Date | null
+    readByStaffAt: Date | null
+  }
+
+  export type CompanyChatMessageCountAggregateOutputType = {
+    id: number
+    companyId: number
+    staffUserId: number
+    senderIsManager: number
+    text: number
+    createdAt: number
+    readByManagerAt: number
+    readByStaffAt: number
+    _all: number
+  }
+
+
+  export type CompanyChatMessageMinAggregateInputType = {
+    id?: true
+    companyId?: true
+    staffUserId?: true
+    senderIsManager?: true
+    text?: true
+    createdAt?: true
+    readByManagerAt?: true
+    readByStaffAt?: true
+  }
+
+  export type CompanyChatMessageMaxAggregateInputType = {
+    id?: true
+    companyId?: true
+    staffUserId?: true
+    senderIsManager?: true
+    text?: true
+    createdAt?: true
+    readByManagerAt?: true
+    readByStaffAt?: true
+  }
+
+  export type CompanyChatMessageCountAggregateInputType = {
+    id?: true
+    companyId?: true
+    staffUserId?: true
+    senderIsManager?: true
+    text?: true
+    createdAt?: true
+    readByManagerAt?: true
+    readByStaffAt?: true
+    _all?: true
+  }
+
+  export type CompanyChatMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CompanyChatMessage to aggregate.
+     */
+    where?: CompanyChatMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CompanyChatMessages to fetch.
+     */
+    orderBy?: CompanyChatMessageOrderByWithRelationInput | CompanyChatMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CompanyChatMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CompanyChatMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CompanyChatMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CompanyChatMessages
+    **/
+    _count?: true | CompanyChatMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CompanyChatMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CompanyChatMessageMaxAggregateInputType
+  }
+
+  export type GetCompanyChatMessageAggregateType<T extends CompanyChatMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateCompanyChatMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCompanyChatMessage[P]>
+      : GetScalarType<T[P], AggregateCompanyChatMessage[P]>
+  }
+
+
+
+
+  export type CompanyChatMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CompanyChatMessageWhereInput
+    orderBy?: CompanyChatMessageOrderByWithAggregationInput | CompanyChatMessageOrderByWithAggregationInput[]
+    by: CompanyChatMessageScalarFieldEnum[] | CompanyChatMessageScalarFieldEnum
+    having?: CompanyChatMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CompanyChatMessageCountAggregateInputType | true
+    _min?: CompanyChatMessageMinAggregateInputType
+    _max?: CompanyChatMessageMaxAggregateInputType
+  }
+
+  export type CompanyChatMessageGroupByOutputType = {
+    id: string
+    companyId: string
+    staffUserId: string
+    senderIsManager: boolean
+    text: string
+    createdAt: Date
+    readByManagerAt: Date | null
+    readByStaffAt: Date | null
+    _count: CompanyChatMessageCountAggregateOutputType | null
+    _min: CompanyChatMessageMinAggregateOutputType | null
+    _max: CompanyChatMessageMaxAggregateOutputType | null
+  }
+
+  type GetCompanyChatMessageGroupByPayload<T extends CompanyChatMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CompanyChatMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CompanyChatMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CompanyChatMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], CompanyChatMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CompanyChatMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    staffUserId?: boolean
+    senderIsManager?: boolean
+    text?: boolean
+    createdAt?: boolean
+    readByManagerAt?: boolean
+    readByStaffAt?: boolean
+  }, ExtArgs["result"]["companyChatMessage"]>
+
+  export type CompanyChatMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    staffUserId?: boolean
+    senderIsManager?: boolean
+    text?: boolean
+    createdAt?: boolean
+    readByManagerAt?: boolean
+    readByStaffAt?: boolean
+  }, ExtArgs["result"]["companyChatMessage"]>
+
+  export type CompanyChatMessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    staffUserId?: boolean
+    senderIsManager?: boolean
+    text?: boolean
+    createdAt?: boolean
+    readByManagerAt?: boolean
+    readByStaffAt?: boolean
+  }, ExtArgs["result"]["companyChatMessage"]>
+
+  export type CompanyChatMessageSelectScalar = {
+    id?: boolean
+    companyId?: boolean
+    staffUserId?: boolean
+    senderIsManager?: boolean
+    text?: boolean
+    createdAt?: boolean
+    readByManagerAt?: boolean
+    readByStaffAt?: boolean
+  }
+
+  export type CompanyChatMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "staffUserId" | "senderIsManager" | "text" | "createdAt" | "readByManagerAt" | "readByStaffAt", ExtArgs["result"]["companyChatMessage"]>
+
+  export type $CompanyChatMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CompanyChatMessage"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      companyId: string
+      staffUserId: string
+      senderIsManager: boolean
+      text: string
+      createdAt: Date
+      readByManagerAt: Date | null
+      readByStaffAt: Date | null
+    }, ExtArgs["result"]["companyChatMessage"]>
+    composites: {}
+  }
+
+  type CompanyChatMessageGetPayload<S extends boolean | null | undefined | CompanyChatMessageDefaultArgs> = $Result.GetResult<Prisma.$CompanyChatMessagePayload, S>
+
+  type CompanyChatMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CompanyChatMessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CompanyChatMessageCountAggregateInputType | true
+    }
+
+  export interface CompanyChatMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CompanyChatMessage'], meta: { name: 'CompanyChatMessage' } }
+    /**
+     * Find zero or one CompanyChatMessage that matches the filter.
+     * @param {CompanyChatMessageFindUniqueArgs} args - Arguments to find a CompanyChatMessage
+     * @example
+     * // Get one CompanyChatMessage
+     * const companyChatMessage = await prisma.companyChatMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CompanyChatMessageFindUniqueArgs>(args: SelectSubset<T, CompanyChatMessageFindUniqueArgs<ExtArgs>>): Prisma__CompanyChatMessageClient<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CompanyChatMessage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CompanyChatMessageFindUniqueOrThrowArgs} args - Arguments to find a CompanyChatMessage
+     * @example
+     * // Get one CompanyChatMessage
+     * const companyChatMessage = await prisma.companyChatMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CompanyChatMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, CompanyChatMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CompanyChatMessageClient<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CompanyChatMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CompanyChatMessageFindFirstArgs} args - Arguments to find a CompanyChatMessage
+     * @example
+     * // Get one CompanyChatMessage
+     * const companyChatMessage = await prisma.companyChatMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CompanyChatMessageFindFirstArgs>(args?: SelectSubset<T, CompanyChatMessageFindFirstArgs<ExtArgs>>): Prisma__CompanyChatMessageClient<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CompanyChatMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CompanyChatMessageFindFirstOrThrowArgs} args - Arguments to find a CompanyChatMessage
+     * @example
+     * // Get one CompanyChatMessage
+     * const companyChatMessage = await prisma.companyChatMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CompanyChatMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, CompanyChatMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__CompanyChatMessageClient<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CompanyChatMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CompanyChatMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CompanyChatMessages
+     * const companyChatMessages = await prisma.companyChatMessage.findMany()
+     * 
+     * // Get first 10 CompanyChatMessages
+     * const companyChatMessages = await prisma.companyChatMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const companyChatMessageWithIdOnly = await prisma.companyChatMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CompanyChatMessageFindManyArgs>(args?: SelectSubset<T, CompanyChatMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CompanyChatMessage.
+     * @param {CompanyChatMessageCreateArgs} args - Arguments to create a CompanyChatMessage.
+     * @example
+     * // Create one CompanyChatMessage
+     * const CompanyChatMessage = await prisma.companyChatMessage.create({
+     *   data: {
+     *     // ... data to create a CompanyChatMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends CompanyChatMessageCreateArgs>(args: SelectSubset<T, CompanyChatMessageCreateArgs<ExtArgs>>): Prisma__CompanyChatMessageClient<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CompanyChatMessages.
+     * @param {CompanyChatMessageCreateManyArgs} args - Arguments to create many CompanyChatMessages.
+     * @example
+     * // Create many CompanyChatMessages
+     * const companyChatMessage = await prisma.companyChatMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CompanyChatMessageCreateManyArgs>(args?: SelectSubset<T, CompanyChatMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CompanyChatMessages and returns the data saved in the database.
+     * @param {CompanyChatMessageCreateManyAndReturnArgs} args - Arguments to create many CompanyChatMessages.
+     * @example
+     * // Create many CompanyChatMessages
+     * const companyChatMessage = await prisma.companyChatMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CompanyChatMessages and only return the `id`
+     * const companyChatMessageWithIdOnly = await prisma.companyChatMessage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CompanyChatMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, CompanyChatMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CompanyChatMessage.
+     * @param {CompanyChatMessageDeleteArgs} args - Arguments to delete one CompanyChatMessage.
+     * @example
+     * // Delete one CompanyChatMessage
+     * const CompanyChatMessage = await prisma.companyChatMessage.delete({
+     *   where: {
+     *     // ... filter to delete one CompanyChatMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CompanyChatMessageDeleteArgs>(args: SelectSubset<T, CompanyChatMessageDeleteArgs<ExtArgs>>): Prisma__CompanyChatMessageClient<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CompanyChatMessage.
+     * @param {CompanyChatMessageUpdateArgs} args - Arguments to update one CompanyChatMessage.
+     * @example
+     * // Update one CompanyChatMessage
+     * const companyChatMessage = await prisma.companyChatMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CompanyChatMessageUpdateArgs>(args: SelectSubset<T, CompanyChatMessageUpdateArgs<ExtArgs>>): Prisma__CompanyChatMessageClient<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CompanyChatMessages.
+     * @param {CompanyChatMessageDeleteManyArgs} args - Arguments to filter CompanyChatMessages to delete.
+     * @example
+     * // Delete a few CompanyChatMessages
+     * const { count } = await prisma.companyChatMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CompanyChatMessageDeleteManyArgs>(args?: SelectSubset<T, CompanyChatMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CompanyChatMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CompanyChatMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CompanyChatMessages
+     * const companyChatMessage = await prisma.companyChatMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CompanyChatMessageUpdateManyArgs>(args: SelectSubset<T, CompanyChatMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CompanyChatMessages and returns the data updated in the database.
+     * @param {CompanyChatMessageUpdateManyAndReturnArgs} args - Arguments to update many CompanyChatMessages.
+     * @example
+     * // Update many CompanyChatMessages
+     * const companyChatMessage = await prisma.companyChatMessage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CompanyChatMessages and only return the `id`
+     * const companyChatMessageWithIdOnly = await prisma.companyChatMessage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CompanyChatMessageUpdateManyAndReturnArgs>(args: SelectSubset<T, CompanyChatMessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CompanyChatMessage.
+     * @param {CompanyChatMessageUpsertArgs} args - Arguments to update or create a CompanyChatMessage.
+     * @example
+     * // Update or create a CompanyChatMessage
+     * const companyChatMessage = await prisma.companyChatMessage.upsert({
+     *   create: {
+     *     // ... data to create a CompanyChatMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CompanyChatMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CompanyChatMessageUpsertArgs>(args: SelectSubset<T, CompanyChatMessageUpsertArgs<ExtArgs>>): Prisma__CompanyChatMessageClient<$Result.GetResult<Prisma.$CompanyChatMessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CompanyChatMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CompanyChatMessageCountArgs} args - Arguments to filter CompanyChatMessages to count.
+     * @example
+     * // Count the number of CompanyChatMessages
+     * const count = await prisma.companyChatMessage.count({
+     *   where: {
+     *     // ... the filter for the CompanyChatMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends CompanyChatMessageCountArgs>(
+      args?: Subset<T, CompanyChatMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CompanyChatMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CompanyChatMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CompanyChatMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CompanyChatMessageAggregateArgs>(args: Subset<T, CompanyChatMessageAggregateArgs>): Prisma.PrismaPromise<GetCompanyChatMessageAggregateType<T>>
+
+    /**
+     * Group by CompanyChatMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CompanyChatMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CompanyChatMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CompanyChatMessageGroupByArgs['orderBy'] }
+        : { orderBy?: CompanyChatMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CompanyChatMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCompanyChatMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CompanyChatMessage model
+   */
+  readonly fields: CompanyChatMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CompanyChatMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CompanyChatMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CompanyChatMessage model
+   */
+  interface CompanyChatMessageFieldRefs {
+    readonly id: FieldRef<"CompanyChatMessage", 'String'>
+    readonly companyId: FieldRef<"CompanyChatMessage", 'String'>
+    readonly staffUserId: FieldRef<"CompanyChatMessage", 'String'>
+    readonly senderIsManager: FieldRef<"CompanyChatMessage", 'Boolean'>
+    readonly text: FieldRef<"CompanyChatMessage", 'String'>
+    readonly createdAt: FieldRef<"CompanyChatMessage", 'DateTime'>
+    readonly readByManagerAt: FieldRef<"CompanyChatMessage", 'DateTime'>
+    readonly readByStaffAt: FieldRef<"CompanyChatMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CompanyChatMessage findUnique
+   */
+  export type CompanyChatMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * Filter, which CompanyChatMessage to fetch.
+     */
+    where: CompanyChatMessageWhereUniqueInput
+  }
+
+  /**
+   * CompanyChatMessage findUniqueOrThrow
+   */
+  export type CompanyChatMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * Filter, which CompanyChatMessage to fetch.
+     */
+    where: CompanyChatMessageWhereUniqueInput
+  }
+
+  /**
+   * CompanyChatMessage findFirst
+   */
+  export type CompanyChatMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * Filter, which CompanyChatMessage to fetch.
+     */
+    where?: CompanyChatMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CompanyChatMessages to fetch.
+     */
+    orderBy?: CompanyChatMessageOrderByWithRelationInput | CompanyChatMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CompanyChatMessages.
+     */
+    cursor?: CompanyChatMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CompanyChatMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CompanyChatMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CompanyChatMessages.
+     */
+    distinct?: CompanyChatMessageScalarFieldEnum | CompanyChatMessageScalarFieldEnum[]
+  }
+
+  /**
+   * CompanyChatMessage findFirstOrThrow
+   */
+  export type CompanyChatMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * Filter, which CompanyChatMessage to fetch.
+     */
+    where?: CompanyChatMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CompanyChatMessages to fetch.
+     */
+    orderBy?: CompanyChatMessageOrderByWithRelationInput | CompanyChatMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CompanyChatMessages.
+     */
+    cursor?: CompanyChatMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CompanyChatMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CompanyChatMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CompanyChatMessages.
+     */
+    distinct?: CompanyChatMessageScalarFieldEnum | CompanyChatMessageScalarFieldEnum[]
+  }
+
+  /**
+   * CompanyChatMessage findMany
+   */
+  export type CompanyChatMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * Filter, which CompanyChatMessages to fetch.
+     */
+    where?: CompanyChatMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CompanyChatMessages to fetch.
+     */
+    orderBy?: CompanyChatMessageOrderByWithRelationInput | CompanyChatMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CompanyChatMessages.
+     */
+    cursor?: CompanyChatMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CompanyChatMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CompanyChatMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CompanyChatMessages.
+     */
+    distinct?: CompanyChatMessageScalarFieldEnum | CompanyChatMessageScalarFieldEnum[]
+  }
+
+  /**
+   * CompanyChatMessage create
+   */
+  export type CompanyChatMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * The data needed to create a CompanyChatMessage.
+     */
+    data: XOR<CompanyChatMessageCreateInput, CompanyChatMessageUncheckedCreateInput>
+  }
+
+  /**
+   * CompanyChatMessage createMany
+   */
+  export type CompanyChatMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CompanyChatMessages.
+     */
+    data: CompanyChatMessageCreateManyInput | CompanyChatMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CompanyChatMessage createManyAndReturn
+   */
+  export type CompanyChatMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * The data used to create many CompanyChatMessages.
+     */
+    data: CompanyChatMessageCreateManyInput | CompanyChatMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CompanyChatMessage update
+   */
+  export type CompanyChatMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * The data needed to update a CompanyChatMessage.
+     */
+    data: XOR<CompanyChatMessageUpdateInput, CompanyChatMessageUncheckedUpdateInput>
+    /**
+     * Choose, which CompanyChatMessage to update.
+     */
+    where: CompanyChatMessageWhereUniqueInput
+  }
+
+  /**
+   * CompanyChatMessage updateMany
+   */
+  export type CompanyChatMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CompanyChatMessages.
+     */
+    data: XOR<CompanyChatMessageUpdateManyMutationInput, CompanyChatMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which CompanyChatMessages to update
+     */
+    where?: CompanyChatMessageWhereInput
+    /**
+     * Limit how many CompanyChatMessages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CompanyChatMessage updateManyAndReturn
+   */
+  export type CompanyChatMessageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * The data used to update CompanyChatMessages.
+     */
+    data: XOR<CompanyChatMessageUpdateManyMutationInput, CompanyChatMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which CompanyChatMessages to update
+     */
+    where?: CompanyChatMessageWhereInput
+    /**
+     * Limit how many CompanyChatMessages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CompanyChatMessage upsert
+   */
+  export type CompanyChatMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * The filter to search for the CompanyChatMessage to update in case it exists.
+     */
+    where: CompanyChatMessageWhereUniqueInput
+    /**
+     * In case the CompanyChatMessage found by the `where` argument doesn't exist, create a new CompanyChatMessage with this data.
+     */
+    create: XOR<CompanyChatMessageCreateInput, CompanyChatMessageUncheckedCreateInput>
+    /**
+     * In case the CompanyChatMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CompanyChatMessageUpdateInput, CompanyChatMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * CompanyChatMessage delete
+   */
+  export type CompanyChatMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
+    /**
+     * Filter which CompanyChatMessage to delete.
+     */
+    where: CompanyChatMessageWhereUniqueInput
+  }
+
+  /**
+   * CompanyChatMessage deleteMany
+   */
+  export type CompanyChatMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CompanyChatMessages to delete
+     */
+    where?: CompanyChatMessageWhereInput
+    /**
+     * Limit how many CompanyChatMessages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CompanyChatMessage without action
+   */
+  export type CompanyChatMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CompanyChatMessage
+     */
+    select?: CompanyChatMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CompanyChatMessage
+     */
+    omit?: CompanyChatMessageOmit<ExtArgs> | null
   }
 
 
@@ -49707,6 +50837,20 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const CompanyChatMessageScalarFieldEnum: {
+    id: 'id',
+    companyId: 'companyId',
+    staffUserId: 'staffUserId',
+    senderIsManager: 'senderIsManager',
+    text: 'text',
+    createdAt: 'createdAt',
+    readByManagerAt: 'readByManagerAt',
+    readByStaffAt: 'readByStaffAt'
+  };
+
+  export type CompanyChatMessageScalarFieldEnum = (typeof CompanyChatMessageScalarFieldEnum)[keyof typeof CompanyChatMessageScalarFieldEnum]
+
+
   export const CompanyScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -51013,6 +52157,73 @@ export namespace Prisma {
     lockedUntil?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     privacyAcceptedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     companyId?: StringNullableWithAggregatesFilter<"User"> | string | null
+  }
+
+  export type CompanyChatMessageWhereInput = {
+    AND?: CompanyChatMessageWhereInput | CompanyChatMessageWhereInput[]
+    OR?: CompanyChatMessageWhereInput[]
+    NOT?: CompanyChatMessageWhereInput | CompanyChatMessageWhereInput[]
+    id?: StringFilter<"CompanyChatMessage"> | string
+    companyId?: StringFilter<"CompanyChatMessage"> | string
+    staffUserId?: StringFilter<"CompanyChatMessage"> | string
+    senderIsManager?: BoolFilter<"CompanyChatMessage"> | boolean
+    text?: StringFilter<"CompanyChatMessage"> | string
+    createdAt?: DateTimeFilter<"CompanyChatMessage"> | Date | string
+    readByManagerAt?: DateTimeNullableFilter<"CompanyChatMessage"> | Date | string | null
+    readByStaffAt?: DateTimeNullableFilter<"CompanyChatMessage"> | Date | string | null
+  }
+
+  export type CompanyChatMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    text?: SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrderInput | SortOrder
+    readByStaffAt?: SortOrderInput | SortOrder
+  }
+
+  export type CompanyChatMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CompanyChatMessageWhereInput | CompanyChatMessageWhereInput[]
+    OR?: CompanyChatMessageWhereInput[]
+    NOT?: CompanyChatMessageWhereInput | CompanyChatMessageWhereInput[]
+    companyId?: StringFilter<"CompanyChatMessage"> | string
+    staffUserId?: StringFilter<"CompanyChatMessage"> | string
+    senderIsManager?: BoolFilter<"CompanyChatMessage"> | boolean
+    text?: StringFilter<"CompanyChatMessage"> | string
+    createdAt?: DateTimeFilter<"CompanyChatMessage"> | Date | string
+    readByManagerAt?: DateTimeNullableFilter<"CompanyChatMessage"> | Date | string | null
+    readByStaffAt?: DateTimeNullableFilter<"CompanyChatMessage"> | Date | string | null
+  }, "id">
+
+  export type CompanyChatMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    text?: SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrderInput | SortOrder
+    readByStaffAt?: SortOrderInput | SortOrder
+    _count?: CompanyChatMessageCountOrderByAggregateInput
+    _max?: CompanyChatMessageMaxOrderByAggregateInput
+    _min?: CompanyChatMessageMinOrderByAggregateInput
+  }
+
+  export type CompanyChatMessageScalarWhereWithAggregatesInput = {
+    AND?: CompanyChatMessageScalarWhereWithAggregatesInput | CompanyChatMessageScalarWhereWithAggregatesInput[]
+    OR?: CompanyChatMessageScalarWhereWithAggregatesInput[]
+    NOT?: CompanyChatMessageScalarWhereWithAggregatesInput | CompanyChatMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CompanyChatMessage"> | string
+    companyId?: StringWithAggregatesFilter<"CompanyChatMessage"> | string
+    staffUserId?: StringWithAggregatesFilter<"CompanyChatMessage"> | string
+    senderIsManager?: BoolWithAggregatesFilter<"CompanyChatMessage"> | boolean
+    text?: StringWithAggregatesFilter<"CompanyChatMessage"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CompanyChatMessage"> | Date | string
+    readByManagerAt?: DateTimeNullableWithAggregatesFilter<"CompanyChatMessage"> | Date | string | null
+    readByStaffAt?: DateTimeNullableWithAggregatesFilter<"CompanyChatMessage"> | Date | string | null
   }
 
   export type CompanyWhereInput = {
@@ -54392,6 +55603,83 @@ export namespace Prisma {
     lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CompanyChatMessageCreateInput = {
+    id?: string
+    companyId: string
+    staffUserId: string
+    senderIsManager: boolean
+    text: string
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
+  export type CompanyChatMessageUncheckedCreateInput = {
+    id?: string
+    companyId: string
+    staffUserId: string
+    senderIsManager: boolean
+    text: string
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
+  export type CompanyChatMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    staffUserId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    text?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CompanyChatMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    staffUserId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    text?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CompanyChatMessageCreateManyInput = {
+    id?: string
+    companyId: string
+    staffUserId: string
+    senderIsManager: boolean
+    text: string
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
+  export type CompanyChatMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    staffUserId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    text?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CompanyChatMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    staffUserId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    text?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CompanyCreateInput = {
@@ -58028,6 +59316,39 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type CompanyChatMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    text?: SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrder
+    readByStaffAt?: SortOrder
+  }
+
+  export type CompanyChatMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    text?: SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrder
+    readByStaffAt?: SortOrder
+  }
+
+  export type CompanyChatMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    text?: SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrder
+    readByStaffAt?: SortOrder
   }
 
   export type StringNullableListFilter<$PrismaModel = never> = {

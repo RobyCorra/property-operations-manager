@@ -156,6 +156,21 @@ model User {
   @@index([companyId])
 }
 
+// Chat privata dell'impresa: un thread per (impresa, operatore). Visibile solo
+// al manager d'impresa e all'operatore stesso; MAI al proprietario.
+model CompanyChatMessage {
+  id              String   @id @default(uuid())
+  companyId       String
+  staffUserId     String
+  senderIsManager Boolean
+  text            String
+  createdAt       DateTime @default(now())
+  readByManagerAt DateTime?
+  readByStaffAt   DateTime?
+
+  @@index([companyId, staffUserId, createdAt])
+}
+
 // Impresa esterna indipendente (pulizie/manutenzione/check-in/supervisione).
 // Non e' figlia di una singola Organization: viene ingaggiata (Engagement) da
 // una o piu' organizzazioni, e puo' coprire piu' funzioni.

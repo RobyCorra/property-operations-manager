@@ -95,6 +95,7 @@ export default async function CleanerDashboardPage() {
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
   const userId = cookieStore.get("userId")?.value;
+  const companyId = cookieStore.get("companyId")?.value; // cleaner d'impresa → chat impresa
 
   if (role !== "CLEANER" || !userId) {
     redirect("/login");
@@ -168,6 +169,14 @@ export default async function CleanerDashboardPage() {
           </div>
           {/* Desktop-only nav buttons */}
           <div className="hidden md:flex items-center gap-4">
+            {companyId && (
+              <Link
+                href="/dashboard/messaggi"
+                className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
+              >
+                💬 Messaggi
+              </Link>
+            )}
             <Link
               href="/dashboard/history"
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"

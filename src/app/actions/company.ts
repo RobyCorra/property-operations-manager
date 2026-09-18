@@ -156,7 +156,103 @@ async function requireCompanyManager(): Promise<string> {
   return companyId;
 }
 
+async function requireCompanyStaff(): Promise<{ companyId: string; userId: string }> {
+  const c = await cookies();
+  const companyId = c.get("companyId")?.value;
+  const userId = c.get("userId")?.value;
+  if (!companyId || !userId) throw new Error("Riservato allo staff d'impresa.");
+  return { companyId, userId };
+}
+
 export type CompanyStaff = { id: string; name: string; email: string; role: string };
+export type ChatMsg = { id: string; text: string; mine: boolean; createdAt: string };
+export type ImpresaThreadSummary = { staffUserId: string; name: string; role: string; lastText: string | null; unread: number };
+
+// ── Chat privata impresa (manager <-> operatore) ──────────────────────────────
+
+export async function getImpresaThreads(): Promise<ImpresaThreadSummary[]> {
+  const companyId = await requireCompanyManager();
+  const staff = await prisma.user.findMany({
+    where: { companyId, role: { not: "MANAGER" } },
+    select: { id: true, name: true, role: true },
+    orderBy: { name: "asc" },
+  });
+  const out: ImpresaThreadSummary[] = [];
+  for (const s of staff) {
+    const last = await prisma.companyChatMessage.findFirst({
+      where: { companyId, staffUserId: s.id },
+      orderBy: { createdAt: "desc" },
+      select: { text: true },
+    });
+    const unread = await prisma.companyChatMessage.count({
+      where: { companyId, staffUserId: s.id, senderIsManager: false, readByManagerAt: null },
+    });
+    out.push({ staffUserId: s.id, name: s.name, role: s.role, lastText: last?.text ?? null, unread });
+  }
+  return out;
+}
+
+export async function getImpresaThread(staffUserId: string): Promise<{ name: string; messages: ChatMsg[] } | null> {
+  const companyId = await requireCompanyManager();
+  const staff = await prisma.user.findFirst({ where: { id: staffUserId, companyId }, select: { name: true } });
+  if (!staff) return null;
+  await prisma.companyChatMessage.updateMany({
+    where: { companyId, staffUserId, senderIsManager: false, readByManagerAt: null },
+    data: { readByManagerAt: new Date() },
+  });
+  const msgs = await prisma.companyChatMessage.findMany({
+    where: { companyId, staffUserId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, text: true, senderIsManager: true, createdAt: true },
+  });
+  return { name: staff.name, messages: msgs.map((m) => ({ id: m.id, text: m.text, mine: m.senderIsManager, createdAt: m.createdAt.toISOString() })) };
+}
+
+export async function sendImpresaMessage(staffUserId: string, text: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const t = (text ?? "").trim();
+    if (!t) return { success: false, error: "Messaggio vuoto." };
+    const staff = await prisma.user.findFirst({ where: { id: staffUserId, companyId }, select: { id: true } });
+    if (!staff) return { success: false, error: "Operatore non valido." };
+    await prisma.companyChatMessage.create({
+      data: { id: randomUUID(), companyId, staffUserId, senderIsManager: true, text: t, readByManagerAt: new Date() },
+    });
+    revalidatePath("/dashboard/impresa/messaggi");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+export async function getMyImpresaThread(): Promise<ChatMsg[]> {
+  const { companyId, userId } = await requireCompanyStaff();
+  await prisma.companyChatMessage.updateMany({
+    where: { companyId, staffUserId: userId, senderIsManager: true, readByStaffAt: null },
+    data: { readByStaffAt: new Date() },
+  });
+  const msgs = await prisma.companyChatMessage.findMany({
+    where: { companyId, staffUserId: userId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, text: true, senderIsManager: true, createdAt: true },
+  });
+  return msgs.map((m) => ({ id: m.id, text: m.text, mine: !m.senderIsManager, createdAt: m.createdAt.toISOString() }));
+}
+
+export async function sendMyImpresaMessage(text: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { companyId, userId } = await requireCompanyStaff();
+    const t = (text ?? "").trim();
+    if (!t) return { success: false, error: "Messaggio vuoto." };
+    await prisma.companyChatMessage.create({
+      data: { id: randomUUID(), companyId, staffUserId: userId, senderIsManager: false, text: t, readByStaffAt: new Date() },
+    });
+    revalidatePath("/dashboard/messaggi");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
 
 export async function getMyCompanyStaff(): Promise<CompanyStaff[]> {
   const companyId = await requireCompanyManager();
