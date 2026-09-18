@@ -161,11 +161,59 @@ export type CompanyStaff = { id: string; name: string; email: string; role: stri
 export async function getMyCompanyStaff(): Promise<CompanyStaff[]> {
   const companyId = await requireCompanyManager();
   const users = await prisma.user.findMany({
-    where: { companyId, role: { not: "MANAGER" } },
+    where: { companyId },
     select: { id: true, name: true, email: true, role: true },
-    orderBy: { name: "asc" },
+    orderBy: [{ role: "asc" }, { name: "asc" }],
   });
   return users;
+}
+
+// Ruoli creabili dall'impresa: quelli coerenti con le funzioni delegate + un
+// altro MANAGER e un SUPERVISOR.
+function allowedStaffRoles(scopes: string[]): Set<string> {
+  const set = new Set<string>(scopes.map((s) => SCOPE_STAFF_ROLE[s]).filter(Boolean));
+  set.add("MANAGER");
+  set.add("SUPERVISOR");
+  return set;
+}
+
+export async function getMyStaffMember(id: string) {
+  const companyId = await requireCompanyManager();
+  return prisma.user.findFirst({
+    where: { id, companyId },
+    select: { id: true, name: true, email: true, role: true, phone: true, address: true },
+  });
+}
+
+export async function updateMyStaff(
+  id: string,
+  data: { name: string; phone?: string; address?: string; role: string; password?: string },
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const target = await prisma.user.findFirst({ where: { id, companyId }, select: { id: true } });
+    if (!target) return { success: false, error: "Operatore non trovato." };
+    const nm = (data.name ?? "").trim();
+    if (!nm) return { success: false, error: "Nome obbligatorio." };
+    const company = await prisma.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
+    if (!allowedStaffRoles(company?.scopes ?? []).has(data.role)) return { success: false, error: "Ruolo non consentito." };
+    if (data.password && data.password.length < 6) return { success: false, error: "Password troppo corta (min 6)." };
+
+    await prisma.user.update({
+      where: { id },
+      data: {
+        name: nm,
+        role: data.role as never,
+        phone: data.phone?.trim() || null,
+        address: data.address?.trim() || null,
+        ...(data.password ? { password: await bcrypt.hash(data.password, 10) } : {}),
+      },
+    });
+    revalidatePath("/dashboard/impresa/staff");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
 }
 
 // Il manager d'impresa crea il proprio staff (ruolo coerente con le funzioni
@@ -186,8 +234,7 @@ export async function createMyStaff(
     if (password.length < 6) return { success: false, error: "Password troppo corta (min 6)." };
 
     const company = await prisma.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
-    const allowedRoles = new Set((company?.scopes ?? []).map((s) => SCOPE_STAFF_ROLE[s]).filter(Boolean));
-    if (!allowedRoles.has(role as never)) return { success: false, error: "Ruolo non consentito per questa impresa." };
+    if (!allowedStaffRoles(company?.scopes ?? []).has(role)) return { success: false, error: "Ruolo non consentito per questa impresa." };
 
     const existing = await prisma.user.findUnique({ where: { email: em }, select: { id: true } });
     if (existing) return { success: false, error: "Email già in uso." };

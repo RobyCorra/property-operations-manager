@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createMyStaff, type CompanyStaff } from "@/src/app/actions/company";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -9,6 +10,7 @@ const ROLE_LABEL: Record<string, string> = {
   MAINTENANCE: "Manutentore",
   CHECKIN: "Addetto check-in",
   SUPERVISOR: "Supervisor",
+  MANAGER: "Manager",
 };
 
 export default function ImpresaStaffManager({ staff, roles }: { staff: CompanyStaff[]; roles: string[] }) {
@@ -80,14 +82,19 @@ export default function ImpresaStaffManager({ staff, roles }: { staff: CompanySt
       ) : (
         <div className="space-y-2">
           {staff.map((s) => (
-            <div key={s.id} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/70 px-3 py-2">
+            <Link
+              key={s.id}
+              href={`/dashboard/impresa/staff/${s.id}`}
+              className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/70 px-3 py-2 hover:border-violet-200 hover:bg-white transition-colors"
+            >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-sm">👤</div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-slate-800">{s.name}</p>
                 <p className="text-[11px] text-gray-400">{s.email}</p>
               </div>
               <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-semibold text-violet-600">{ROLE_LABEL[s.role] ?? s.role}</span>
-            </div>
+              <span className="text-violet-300 text-lg">›</span>
+            </Link>
           ))}
         </div>
       )}
