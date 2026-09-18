@@ -13,9 +13,16 @@ const allowedMimeTypes = new Set([
   "image/png",
   "image/webp",
   "text/plain",
+  // Audio (vocali chat)
+  "audio/webm",
+  "audio/ogg",
+  "audio/mp4",
+  "audio/mpeg",
+  "audio/wav",
+  "audio/x-m4a",
 ]);
 
-type UploadType = "apartment" | "apartment-wizard" | "maintenance" | "cleaning";
+type UploadType = "apartment" | "apartment-wizard" | "maintenance" | "cleaning" | "company";
 
 export type StoredAttachmentFile = {
   filename: string;

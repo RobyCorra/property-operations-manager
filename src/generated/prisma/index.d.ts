@@ -13006,6 +13006,9 @@ export namespace Prisma {
     staffUserId: string | null
     senderIsManager: boolean | null
     text: string | null
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
     createdAt: Date | null
     readByManagerAt: Date | null
     readByStaffAt: Date | null
@@ -13017,6 +13020,9 @@ export namespace Prisma {
     staffUserId: string | null
     senderIsManager: boolean | null
     text: string | null
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
     createdAt: Date | null
     readByManagerAt: Date | null
     readByStaffAt: Date | null
@@ -13028,6 +13034,9 @@ export namespace Prisma {
     staffUserId: number
     senderIsManager: number
     text: number
+    mediaUrl: number
+    mediaType: number
+    mediaName: number
     createdAt: number
     readByManagerAt: number
     readByStaffAt: number
@@ -13041,6 +13050,9 @@ export namespace Prisma {
     staffUserId?: true
     senderIsManager?: true
     text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
     createdAt?: true
     readByManagerAt?: true
     readByStaffAt?: true
@@ -13052,6 +13064,9 @@ export namespace Prisma {
     staffUserId?: true
     senderIsManager?: true
     text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
     createdAt?: true
     readByManagerAt?: true
     readByStaffAt?: true
@@ -13063,6 +13078,9 @@ export namespace Prisma {
     staffUserId?: true
     senderIsManager?: true
     text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
     createdAt?: true
     readByManagerAt?: true
     readByStaffAt?: true
@@ -13147,6 +13165,9 @@ export namespace Prisma {
     staffUserId: string
     senderIsManager: boolean
     text: string
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
     createdAt: Date
     readByManagerAt: Date | null
     readByStaffAt: Date | null
@@ -13175,6 +13196,9 @@ export namespace Prisma {
     staffUserId?: boolean
     senderIsManager?: boolean
     text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
     createdAt?: boolean
     readByManagerAt?: boolean
     readByStaffAt?: boolean
@@ -13186,6 +13210,9 @@ export namespace Prisma {
     staffUserId?: boolean
     senderIsManager?: boolean
     text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
     createdAt?: boolean
     readByManagerAt?: boolean
     readByStaffAt?: boolean
@@ -13197,6 +13224,9 @@ export namespace Prisma {
     staffUserId?: boolean
     senderIsManager?: boolean
     text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
     createdAt?: boolean
     readByManagerAt?: boolean
     readByStaffAt?: boolean
@@ -13208,12 +13238,15 @@ export namespace Prisma {
     staffUserId?: boolean
     senderIsManager?: boolean
     text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
     createdAt?: boolean
     readByManagerAt?: boolean
     readByStaffAt?: boolean
   }
 
-  export type CompanyChatMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "staffUserId" | "senderIsManager" | "text" | "createdAt" | "readByManagerAt" | "readByStaffAt", ExtArgs["result"]["companyChatMessage"]>
+  export type CompanyChatMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "staffUserId" | "senderIsManager" | "text" | "mediaUrl" | "mediaType" | "mediaName" | "createdAt" | "readByManagerAt" | "readByStaffAt", ExtArgs["result"]["companyChatMessage"]>
 
   export type $CompanyChatMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "CompanyChatMessage"
@@ -13224,6 +13257,9 @@ export namespace Prisma {
       staffUserId: string
       senderIsManager: boolean
       text: string
+      mediaUrl: string | null
+      mediaType: string | null
+      mediaName: string | null
       createdAt: Date
       readByManagerAt: Date | null
       readByStaffAt: Date | null
@@ -13655,6 +13691,9 @@ export namespace Prisma {
     readonly staffUserId: FieldRef<"CompanyChatMessage", 'String'>
     readonly senderIsManager: FieldRef<"CompanyChatMessage", 'Boolean'>
     readonly text: FieldRef<"CompanyChatMessage", 'String'>
+    readonly mediaUrl: FieldRef<"CompanyChatMessage", 'String'>
+    readonly mediaType: FieldRef<"CompanyChatMessage", 'String'>
+    readonly mediaName: FieldRef<"CompanyChatMessage", 'String'>
     readonly createdAt: FieldRef<"CompanyChatMessage", 'DateTime'>
     readonly readByManagerAt: FieldRef<"CompanyChatMessage", 'DateTime'>
     readonly readByStaffAt: FieldRef<"CompanyChatMessage", 'DateTime'>
@@ -50843,6 +50882,9 @@ export namespace Prisma {
     staffUserId: 'staffUserId',
     senderIsManager: 'senderIsManager',
     text: 'text',
+    mediaUrl: 'mediaUrl',
+    mediaType: 'mediaType',
+    mediaName: 'mediaName',
     createdAt: 'createdAt',
     readByManagerAt: 'readByManagerAt',
     readByStaffAt: 'readByStaffAt'
@@ -52168,6 +52210,9 @@ export namespace Prisma {
     staffUserId?: StringFilter<"CompanyChatMessage"> | string
     senderIsManager?: BoolFilter<"CompanyChatMessage"> | boolean
     text?: StringFilter<"CompanyChatMessage"> | string
+    mediaUrl?: StringNullableFilter<"CompanyChatMessage"> | string | null
+    mediaType?: StringNullableFilter<"CompanyChatMessage"> | string | null
+    mediaName?: StringNullableFilter<"CompanyChatMessage"> | string | null
     createdAt?: DateTimeFilter<"CompanyChatMessage"> | Date | string
     readByManagerAt?: DateTimeNullableFilter<"CompanyChatMessage"> | Date | string | null
     readByStaffAt?: DateTimeNullableFilter<"CompanyChatMessage"> | Date | string | null
@@ -52179,6 +52224,9 @@ export namespace Prisma {
     staffUserId?: SortOrder
     senderIsManager?: SortOrder
     text?: SortOrder
+    mediaUrl?: SortOrderInput | SortOrder
+    mediaType?: SortOrderInput | SortOrder
+    mediaName?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     readByManagerAt?: SortOrderInput | SortOrder
     readByStaffAt?: SortOrderInput | SortOrder
@@ -52193,6 +52241,9 @@ export namespace Prisma {
     staffUserId?: StringFilter<"CompanyChatMessage"> | string
     senderIsManager?: BoolFilter<"CompanyChatMessage"> | boolean
     text?: StringFilter<"CompanyChatMessage"> | string
+    mediaUrl?: StringNullableFilter<"CompanyChatMessage"> | string | null
+    mediaType?: StringNullableFilter<"CompanyChatMessage"> | string | null
+    mediaName?: StringNullableFilter<"CompanyChatMessage"> | string | null
     createdAt?: DateTimeFilter<"CompanyChatMessage"> | Date | string
     readByManagerAt?: DateTimeNullableFilter<"CompanyChatMessage"> | Date | string | null
     readByStaffAt?: DateTimeNullableFilter<"CompanyChatMessage"> | Date | string | null
@@ -52204,6 +52255,9 @@ export namespace Prisma {
     staffUserId?: SortOrder
     senderIsManager?: SortOrder
     text?: SortOrder
+    mediaUrl?: SortOrderInput | SortOrder
+    mediaType?: SortOrderInput | SortOrder
+    mediaName?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     readByManagerAt?: SortOrderInput | SortOrder
     readByStaffAt?: SortOrderInput | SortOrder
@@ -52221,6 +52275,9 @@ export namespace Prisma {
     staffUserId?: StringWithAggregatesFilter<"CompanyChatMessage"> | string
     senderIsManager?: BoolWithAggregatesFilter<"CompanyChatMessage"> | boolean
     text?: StringWithAggregatesFilter<"CompanyChatMessage"> | string
+    mediaUrl?: StringNullableWithAggregatesFilter<"CompanyChatMessage"> | string | null
+    mediaType?: StringNullableWithAggregatesFilter<"CompanyChatMessage"> | string | null
+    mediaName?: StringNullableWithAggregatesFilter<"CompanyChatMessage"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CompanyChatMessage"> | Date | string
     readByManagerAt?: DateTimeNullableWithAggregatesFilter<"CompanyChatMessage"> | Date | string | null
     readByStaffAt?: DateTimeNullableWithAggregatesFilter<"CompanyChatMessage"> | Date | string | null
@@ -55611,6 +55668,9 @@ export namespace Prisma {
     staffUserId: string
     senderIsManager: boolean
     text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
     readByStaffAt?: Date | string | null
@@ -55622,6 +55682,9 @@ export namespace Prisma {
     staffUserId: string
     senderIsManager: boolean
     text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
     readByStaffAt?: Date | string | null
@@ -55633,6 +55696,9 @@ export namespace Prisma {
     staffUserId?: StringFieldUpdateOperationsInput | string
     senderIsManager?: BoolFieldUpdateOperationsInput | boolean
     text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -55644,6 +55710,9 @@ export namespace Prisma {
     staffUserId?: StringFieldUpdateOperationsInput | string
     senderIsManager?: BoolFieldUpdateOperationsInput | boolean
     text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -55655,6 +55724,9 @@ export namespace Prisma {
     staffUserId: string
     senderIsManager: boolean
     text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
     createdAt?: Date | string
     readByManagerAt?: Date | string | null
     readByStaffAt?: Date | string | null
@@ -55666,6 +55738,9 @@ export namespace Prisma {
     staffUserId?: StringFieldUpdateOperationsInput | string
     senderIsManager?: BoolFieldUpdateOperationsInput | boolean
     text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -55677,6 +55752,9 @@ export namespace Prisma {
     staffUserId?: StringFieldUpdateOperationsInput | string
     senderIsManager?: BoolFieldUpdateOperationsInput | boolean
     text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59324,6 +59402,9 @@ export namespace Prisma {
     staffUserId?: SortOrder
     senderIsManager?: SortOrder
     text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
     createdAt?: SortOrder
     readByManagerAt?: SortOrder
     readByStaffAt?: SortOrder
@@ -59335,6 +59416,9 @@ export namespace Prisma {
     staffUserId?: SortOrder
     senderIsManager?: SortOrder
     text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
     createdAt?: SortOrder
     readByManagerAt?: SortOrder
     readByStaffAt?: SortOrder
@@ -59346,6 +59430,9 @@ export namespace Prisma {
     staffUserId?: SortOrder
     senderIsManager?: SortOrder
     text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
     createdAt?: SortOrder
     readByManagerAt?: SortOrder
     readByStaffAt?: SortOrder

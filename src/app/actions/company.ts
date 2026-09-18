@@ -9,7 +9,15 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import { getCompanyAccess } from "@/src/lib/company-access";
 import { approveCleaningDirectly, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { parseRomeDateTime } from "@/src/lib/rome-datetime";
+import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
 import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview } from "@/src/lib/company-scope";
+
+// Categoria media dal mime-type (per il rendering in chat).
+function mediaCategory(mime: string): "image" | "audio" | "file" {
+  if (mime.startsWith("image/")) return "image";
+  if (mime.startsWith("audio/")) return "audio";
+  return "file";
+}
 
 // Ruolo operativo dello staff per ciascuna funzione delegata.
 const SCOPE_STAFF_ROLE: Record<string, "CLEANER" | "MAINTENANCE" | "CHECKIN" | "SUPERVISOR"> = {
@@ -165,7 +173,15 @@ async function requireCompanyStaff(): Promise<{ companyId: string; userId: strin
 }
 
 export type CompanyStaff = { id: string; name: string; email: string; role: string };
-export type ChatMsg = { id: string; text: string; mine: boolean; createdAt: string };
+export type ChatMsg = {
+  id: string;
+  text: string;
+  mine: boolean;
+  createdAt: string;
+  mediaUrl?: string | null;
+  mediaType?: string | null; // image | audio | file
+  mediaName?: string | null;
+};
 export type ImpresaThreadSummary = { staffUserId: string; name: string; role: string; lastText: string | null; unread: number };
 
 // ── Chat privata impresa (manager <-> operatore) ──────────────────────────────
@@ -203,20 +219,44 @@ export async function getImpresaThread(staffUserId: string): Promise<{ name: str
   const msgs = await prisma.companyChatMessage.findMany({
     where: { companyId, staffUserId },
     orderBy: { createdAt: "asc" },
-    select: { id: true, text: true, senderIsManager: true, createdAt: true },
+    select: { id: true, text: true, senderIsManager: true, createdAt: true, mediaUrl: true, mediaType: true, mediaName: true },
   });
-  return { name: staff.name, messages: msgs.map((m) => ({ id: m.id, text: m.text, mine: m.senderIsManager, createdAt: m.createdAt.toISOString() })) };
+  return {
+    name: staff.name,
+    messages: msgs.map((m) => ({ id: m.id, text: m.text, mine: m.senderIsManager, createdAt: m.createdAt.toISOString(), mediaUrl: m.mediaUrl, mediaType: m.mediaType, mediaName: m.mediaName })),
+  };
 }
 
-export async function sendImpresaMessage(staffUserId: string, text: string): Promise<{ success: boolean; error?: string }> {
+// Estrae testo + eventuale file da FormData e prepara i campi media (upload Blob).
+async function extractMessage(
+  formData: FormData,
+  ownerId: string,
+): Promise<{ text: string; media?: { url: string; type: string; name: string }; error?: string; empty?: boolean }> {
+  const text = ((formData.get("text") as string) ?? "").trim();
+  const file = formData.get("file") as File | null;
+  if (file && file instanceof File && file.size > 0) {
+    const res = await storeAttachmentFile(file, "company", ownerId);
+    if (!res.success) return { text, error: res.error };
+    return { text, media: { url: res.file.url, type: mediaCategory(res.file.mimeType), name: res.file.filename } };
+  }
+  if (!text) return { text, empty: true };
+  return { text };
+}
+
+export async function sendImpresaMessage(staffUserId: string, formData: FormData): Promise<{ success: boolean; error?: string }> {
   try {
     const companyId = await requireCompanyManager();
-    const t = (text ?? "").trim();
-    if (!t) return { success: false, error: "Messaggio vuoto." };
     const staff = await prisma.user.findFirst({ where: { id: staffUserId, companyId }, select: { id: true } });
     if (!staff) return { success: false, error: "Operatore non valido." };
+    const m = await extractMessage(formData, companyId);
+    if (m.error) return { success: false, error: m.error };
+    if (m.empty) return { success: false, error: "Messaggio vuoto." };
     await prisma.companyChatMessage.create({
-      data: { id: randomUUID(), companyId, staffUserId, senderIsManager: true, text: t, readByManagerAt: new Date() },
+      data: {
+        id: randomUUID(), companyId, staffUserId, senderIsManager: true, text: m.text,
+        readByManagerAt: new Date(),
+        mediaUrl: m.media?.url ?? null, mediaType: m.media?.type ?? null, mediaName: m.media?.name ?? null,
+      },
     });
     revalidatePath("/dashboard/impresa/messaggi");
     return { success: true };
@@ -234,18 +274,23 @@ export async function getMyImpresaThread(): Promise<ChatMsg[]> {
   const msgs = await prisma.companyChatMessage.findMany({
     where: { companyId, staffUserId: userId },
     orderBy: { createdAt: "asc" },
-    select: { id: true, text: true, senderIsManager: true, createdAt: true },
+    select: { id: true, text: true, senderIsManager: true, createdAt: true, mediaUrl: true, mediaType: true, mediaName: true },
   });
-  return msgs.map((m) => ({ id: m.id, text: m.text, mine: !m.senderIsManager, createdAt: m.createdAt.toISOString() }));
+  return msgs.map((m) => ({ id: m.id, text: m.text, mine: !m.senderIsManager, createdAt: m.createdAt.toISOString(), mediaUrl: m.mediaUrl, mediaType: m.mediaType, mediaName: m.mediaName }));
 }
 
-export async function sendMyImpresaMessage(text: string): Promise<{ success: boolean; error?: string }> {
+export async function sendMyImpresaMessage(formData: FormData): Promise<{ success: boolean; error?: string }> {
   try {
     const { companyId, userId } = await requireCompanyStaff();
-    const t = (text ?? "").trim();
-    if (!t) return { success: false, error: "Messaggio vuoto." };
+    const m = await extractMessage(formData, companyId);
+    if (m.error) return { success: false, error: m.error };
+    if (m.empty) return { success: false, error: "Messaggio vuoto." };
     await prisma.companyChatMessage.create({
-      data: { id: randomUUID(), companyId, staffUserId: userId, senderIsManager: false, text: t, readByStaffAt: new Date() },
+      data: {
+        id: randomUUID(), companyId, staffUserId: userId, senderIsManager: false, text: m.text,
+        readByStaffAt: new Date(),
+        mediaUrl: m.media?.url ?? null, mediaType: m.media?.type ?? null, mediaName: m.media?.name ?? null,
+      },
     });
     revalidatePath("/dashboard/messaggi");
     return { success: true };

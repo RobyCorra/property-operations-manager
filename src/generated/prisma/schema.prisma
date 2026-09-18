@@ -164,6 +164,9 @@ model CompanyChatMessage {
   staffUserId     String
   senderIsManager Boolean
   text            String
+  mediaUrl        String?
+  mediaType       String? // image | audio | file (categoria) o mime
+  mediaName       String?
   createdAt       DateTime  @default(now())
   readByManagerAt DateTime?
   readByStaffAt   DateTime?

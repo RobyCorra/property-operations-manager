@@ -228,6 +228,9 @@ exports.Prisma.CompanyChatMessageScalarFieldEnum = {
   staffUserId: 'staffUserId',
   senderIsManager: 'senderIsManager',
   text: 'text',
+  mediaUrl: 'mediaUrl',
+  mediaType: 'mediaType',
+  mediaName: 'mediaName',
   createdAt: 'createdAt',
   readByManagerAt: 'readByManagerAt',
   readByStaffAt: 'readByStaffAt'
