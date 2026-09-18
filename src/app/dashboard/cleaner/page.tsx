@@ -355,6 +355,15 @@ export default async function CleanerDashboardPage() {
           <ScrollText size={20} />
           <span className="text-[9px] font-black uppercase tracking-widest">{tr.mntTabHistory}</span>
         </Link>
+        {companyId && (
+          <Link
+            href="/dashboard/messaggi"
+            className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-violet-600"
+          >
+            <span className="text-[20px] leading-none">💬</span>
+            <span className="text-[9px] font-black uppercase tracking-widest">Messaggi</span>
+          </Link>
+        )}
         <form action={logoutAction} className="flex flex-1">
           <button type="submit" className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-rose-500">
             <LogOut size={20} />
