@@ -20,6 +20,7 @@ import { calculateLinen, effectiveGuests } from "@/src/lib/linen-calculator";
 import PushPermissionRequest from "@/src/components/push-permission";
 import ApnsRegister from "@/src/components/apns-register";
 import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
+import CleanerMessagesButton from "@/src/components/cleaner-messages-button";
 import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
 import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
 import CleanerLinenSection from "@/src/components/cleaner-linen-section";
@@ -101,6 +102,11 @@ export default async function CleanerDashboardPage() {
     redirect("/login");
   }
 
+  // Non letti della chat impresa (solo per cleaner d'impresa).
+  const impresaUnread = companyId
+    ? await prisma.companyChatMessage.count({ where: { companyId, staffUserId: userId, senderIsManager: true, readByStaffAt: null } })
+    : 0;
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -169,14 +175,7 @@ export default async function CleanerDashboardPage() {
           </div>
           {/* Desktop-only nav buttons */}
           <div className="hidden md:flex items-center gap-4">
-            {companyId && (
-              <Link
-                href="/dashboard/messaggi"
-                className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
-              >
-                💬 Messaggi
-              </Link>
-            )}
+            {companyId && <CleanerMessagesButton initialUnread={impresaUnread} variant="desktop" />}
             <Link
               href="/dashboard/history"
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
@@ -355,15 +354,7 @@ export default async function CleanerDashboardPage() {
           <ScrollText size={20} />
           <span className="text-[9px] font-black uppercase tracking-widest">{tr.mntTabHistory}</span>
         </Link>
-        {companyId && (
-          <Link
-            href="/dashboard/messaggi"
-            className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-violet-600"
-          >
-            <span className="text-[20px] leading-none">💬</span>
-            <span className="text-[9px] font-black uppercase tracking-widest">Messaggi</span>
-          </Link>
-        )}
+        {companyId && <CleanerMessagesButton initialUnread={impresaUnread} variant="mobile" />}
         <form action={logoutAction} className="flex flex-1">
           <button type="submit" className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-rose-500">
             <LogOut size={20} />

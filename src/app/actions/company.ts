@@ -279,6 +279,18 @@ export async function getMyImpresaThread(): Promise<ChatMsg[]> {
   return msgs.map((m) => ({ id: m.id, text: m.text, mine: !m.senderIsManager, createdAt: m.createdAt.toISOString(), mediaUrl: m.mediaUrl, mediaType: m.mediaType, mediaName: m.mediaName }));
 }
 
+// Messaggi non letti dall'operatore (inviati dal manager).
+export async function getMyImpresaUnread(): Promise<number> {
+  try {
+    const { companyId, userId } = await requireCompanyStaff();
+    return await prisma.companyChatMessage.count({
+      where: { companyId, staffUserId: userId, senderIsManager: true, readByStaffAt: null },
+    });
+  } catch {
+    return 0;
+  }
+}
+
 export async function sendMyImpresaMessage(formData: FormData): Promise<{ success: boolean; error?: string }> {
   try {
     const { companyId, userId } = await requireCompanyStaff();
