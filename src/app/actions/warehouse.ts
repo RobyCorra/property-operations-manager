@@ -1,10 +1,22 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { prisma } from "@/src/lib/prisma";
 import { sendPushToRole } from "@/src/lib/push";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import type { Role } from "@/src/generated/prisma/client";
+
+// Proprietario del magazzino: Impresa (companyId) se il manager è d'impresa,
+// altrimenti l'Organizzazione (organizationId). Uno solo dei due.
+async function warehouseScope(): Promise<{ where: Record<string, string> } | null> {
+  const c = await cookies();
+  const companyId = c.get("companyId")?.value;
+  if (companyId) return { where: { companyId } };
+  const orgId = await getCurrentOrg();
+  if (!orgId) return null;
+  return { where: { organizationId: orgId } };
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,10 +59,10 @@ async function recordMovement(data: {
 
 export async function getWarehouseProducts() {
   try {
-    const orgId = await getCurrentOrg();
-    if (!orgId) return [];
+    const scope = await warehouseScope();
+    if (!scope) return [];
     return await prisma.warehouseProduct.findMany({
-      where: { organizationId: orgId },
+      where: scope.where,
       orderBy: { createdAt: "asc" },
     });
   } catch (error) {
@@ -63,12 +75,12 @@ export async function getWarehouseProducts() {
 
 export async function createWarehouseProduct(data: WarehouseFormData) {
   try {
-    const orgId = await getCurrentOrg();
-    if (!orgId) return { success: false, error: "Organizzazione non identificata." };
+    const scope = await warehouseScope();
+    if (!scope) return { success: false, error: "Proprietario magazzino non identificato." };
     const stock = Math.max(0, data.stock);
     const created = await prisma.warehouseProduct.create({
       data: {
-        organizationId: orgId,
+        ...scope.where,
         name: data.name.trim(),
         emoji: data.emoji.trim() || "📦",
         unit: data.unit.trim() || "pz",
@@ -94,10 +106,10 @@ export async function createWarehouseProduct(data: WarehouseFormData) {
 
 export async function updateWarehouseProduct(id: string, data: WarehouseFormData) {
   try {
-    const orgId = await getCurrentOrg();
-    if (!orgId) return { success: false, error: "Organizzazione non identificata." };
+    const scope = await warehouseScope();
+    if (!scope) return { success: false, error: "Proprietario magazzino non identificato." };
     const prev = await prisma.warehouseProduct.findFirst({
-      where: { id, organizationId: orgId },
+      where: { id, ...scope.where },
       select: { stock: true },
     });
     if (!prev) return { success: false, error: "Prodotto non trovato." };
@@ -132,9 +144,9 @@ export async function updateWarehouseProduct(id: string, data: WarehouseFormData
 
 export async function deleteWarehouseProduct(id: string) {
   try {
-    const orgId = await getCurrentOrg();
-    if (!orgId) return { success: false, error: "Organizzazione non identificata." };
-    await prisma.warehouseProduct.deleteMany({ where: { id, organizationId: orgId } });
+    const scope = await warehouseScope();
+    if (!scope) return { success: false, error: "Proprietario magazzino non identificato." };
+    await prisma.warehouseProduct.deleteMany({ where: { id, ...scope.where } });
     revalidatePath(PATH);
     return { success: true };
   } catch (error) {
@@ -147,10 +159,10 @@ export async function deleteWarehouseProduct(id: string) {
 
 export async function restockWarehouseProduct(id: string, addQty: number) {
   try {
-    const orgId = await getCurrentOrg();
-    if (!orgId) return { success: false, error: "Organizzazione non identificata." };
+    const scope = await warehouseScope();
+    if (!scope) return { success: false, error: "Proprietario magazzino non identificato." };
     const qty = Math.max(0, addQty);
-    const target = await prisma.warehouseProduct.findFirst({ where: { id, organizationId: orgId }, select: { id: true } });
+    const target = await prisma.warehouseProduct.findFirst({ where: { id, ...scope.where }, select: { id: true } });
     if (!target) return { success: false, error: "Prodotto non trovato." };
     const updated = await prisma.warehouseProduct.update({
       where: { id },
@@ -172,11 +184,11 @@ export async function restockWarehouseProduct(id: string, addQty: number) {
 
 export async function consumeWarehouseProduct(id: string, qty: number, note?: string) {
   try {
-    const orgId = await getCurrentOrg();
-    if (!orgId) return { success: false, error: "Organizzazione non identificata." };
+    const scope = await warehouseScope();
+    if (!scope) return { success: false, error: "Proprietario magazzino non identificato." };
     const amount = Math.max(0, qty);
     const product = await prisma.warehouseProduct.findFirst({
-      where: { id, organizationId: orgId },
+      where: { id, ...scope.where },
       select: { stock: true },
     });
     if (!product) return { success: false, error: "Prodotto non trovato." };
@@ -269,10 +281,10 @@ export async function getWarehouseStockHistory(
   toYMD: string
 ): Promise<WhStockHistoryResult | null> {
   try {
-    const orgId = await getCurrentOrg();
-    if (!orgId) return null;
+    const scope = await warehouseScope();
+    if (!scope) return null;
     const product = await prisma.warehouseProduct.findFirst({
-      where: { id: productId, organizationId: orgId },
+      where: { id: productId, ...scope.where },
       select: { id: true },
     });
     if (!product) return null;
@@ -338,9 +350,9 @@ export type WhCostTotals = Record<string, { consumed: number; purchased: number 
 
 export async function getWarehouseCostTotals(): Promise<WhCostTotals> {
   try {
-    const orgId = await getCurrentOrg();
-    if (!orgId) return {};
-    const products = await prisma.warehouseProduct.findMany({ where: { organizationId: orgId }, select: { id: true } });
+    const scope = await warehouseScope();
+    if (!scope) return {};
+    const products = await prisma.warehouseProduct.findMany({ where: scope.where, select: { id: true } });
     const ids = products.map((p) => p.id);
     if (ids.length === 0) return {};
     const [outAgg, inAgg] = await Promise.all([
