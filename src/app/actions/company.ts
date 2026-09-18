@@ -175,6 +175,8 @@ export async function createMyStaff(
   email: string,
   password: string,
   role: string,
+  phone?: string,
+  address?: string,
 ): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const companyId = await requireCompanyManager();
@@ -192,7 +194,17 @@ export async function createMyStaff(
 
     const passwordHash = await bcrypt.hash(password, 10);
     await prisma.user.create({
-      data: { id: randomUUID(), name: nm, email: em, password: passwordHash, role: role as never, companyId, organizationId: null },
+      data: {
+        id: randomUUID(),
+        name: nm,
+        email: em,
+        password: passwordHash,
+        role: role as never,
+        companyId,
+        organizationId: null,
+        phone: phone?.trim() || null,
+        address: address?.trim() || null,
+      },
     });
     revalidatePath("/dashboard/impresa/staff");
     return { success: true };

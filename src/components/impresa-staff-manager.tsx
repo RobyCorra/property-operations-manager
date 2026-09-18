@@ -19,6 +19,8 @@ export default function ImpresaStaffManager({ staff, roles }: { staff: CompanySt
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [role, setRole] = useState(roles[0] ?? "CLEANER");
 
   const inputCls =
@@ -31,10 +33,10 @@ export default function ImpresaStaffManager({ staff, roles }: { staff: CompanySt
     }
     setError(null);
     startTransition(async () => {
-      const r = await createMyStaff(name, email, password, role);
+      const r = await createMyStaff(name, email, password, role, phone, address);
       if (!r.success) setError(r.error);
       else {
-        setName(""); setEmail(""); setPassword(""); setOpen(false);
+        setName(""); setEmail(""); setPassword(""); setPhone(""); setAddress(""); setOpen(false);
         router.refresh();
       }
     });
@@ -54,6 +56,8 @@ export default function ImpresaStaffManager({ staff, roles }: { staff: CompanySt
           <input className={inputCls} placeholder="Nome" value={name} onChange={(e) => setName(e.target.value)} />
           <input className={inputCls} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input className={inputCls} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input className={inputCls} placeholder="Telefono" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <input className={inputCls} placeholder="Indirizzo" value={address} onChange={(e) => setAddress(e.target.value)} />
           {roles.length > 1 ? (
             <select className={inputCls} value={role} onChange={(e) => setRole(e.target.value)}>
               {roles.map((r) => (<option key={r} value={r}>{ROLE_LABEL[r] ?? r}</option>))}
