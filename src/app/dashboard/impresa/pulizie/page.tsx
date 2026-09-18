@@ -37,11 +37,17 @@ export default async function ImpresaPuliziePage() {
     getMyCompanyStaff(),
   ]);
 
-  const orgs = access.orgIds.length
-    ? await prisma.organization.findMany({ where: { id: { in: access.orgIds } }, select: { id: true, name: true } })
-    : [];
+  const [orgs, apts] = await Promise.all([
+    access.orgIds.length
+      ? prisma.organization.findMany({ where: { id: { in: access.orgIds } }, select: { id: true, name: true } })
+      : Promise.resolve([]),
+    access.orgIds.length
+      ? prisma.apartment.findMany({ where: { organizationId: { in: access.orgIds } }, select: { id: true, name: true, organizationId: true }, orderBy: { name: "asc" } })
+      : Promise.resolve([]),
+  ]);
   const orgName = new Map(orgs.map((o) => [o.id, o.name]));
   const cleaners = staff.filter((s) => s.role === "CLEANER").map((s) => ({ id: s.id, name: s.name }));
+  const apartments = apts.map((a) => ({ id: a.id, name: a.name, ownerName: orgName.get(a.organizationId ?? "") ?? "—" }));
 
   const fmt = (d: Date | string) =>
     new Date(d).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -69,7 +75,7 @@ export default async function ImpresaPuliziePage() {
       )}
 
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <ImpresaCleaningAssign cleanings={cleanings} staff={cleaners} />
+        <ImpresaCleaningAssign cleanings={cleanings} staff={cleaners} apartments={apartments} />
       </div>
     </div>
   );

@@ -7,7 +7,8 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import { getCompanyAccess } from "@/src/lib/company-access";
-import { approveCleaningDirectly } from "@/src/app/actions/operational";
+import { approveCleaningDirectly, computeChecklistSnapshot } from "@/src/app/actions/operational";
+import { parseRomeDateTime } from "@/src/lib/rome-datetime";
 import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview } from "@/src/lib/company-scope";
 
 // Ruolo operativo dello staff per ciascuna funzione delegata.
@@ -227,6 +228,44 @@ export async function assignCleaning(
     await prisma.cleaningTask.update({ where: { id: cleaningTaskId }, data: { assignedToId: userId } });
     revalidatePath("/dashboard/impresa");
     revalidatePath("/dashboard/impresa/pulizie");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// Il manager d'impresa crea una pulizia manuale su un appartamento di un
+// cliente ingaggiato (senza prenotazione). Appartamenti/prenotazioni restano
+// di competenza del proprietario.
+export async function createImpresaCleaning(input: {
+  apartmentId: string;
+  date: string;
+  time?: string;
+  totalGuests?: number | null;
+}): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("CLEANING")) return { success: false, error: "Pulizie non delegate a questa impresa." };
+
+    const apartmentId = (input?.apartmentId ?? "").trim();
+    const dateStr = (input?.date ?? "").trim();
+    if (!apartmentId || !dateStr) return { success: false, error: "Appartamento e data obbligatori." };
+
+    const apt = await prisma.apartment.findUnique({ where: { id: apartmentId }, select: { organizationId: true } });
+    if (!apt || !apt.organizationId || !access.orgIds.includes(apt.organizationId)) {
+      return { success: false, error: "Appartamento non appartenente ai tuoi clienti." };
+    }
+
+    const taskDate = parseRomeDateTime(dateStr, input.time || "10:00");
+    const checklistProgress = await computeChecklistSnapshot(prisma, apartmentId, taskDate);
+    const totalGuests = input.totalGuests && !isNaN(input.totalGuests) ? input.totalGuests : null;
+
+    await prisma.cleaningTask.create({
+      data: { apartmentId, date: taskDate, status: "PENDING", checklistProgress, totalGuests },
+    });
+    revalidatePath("/dashboard/impresa/pulizie");
+    revalidatePath("/dashboard/impresa");
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
