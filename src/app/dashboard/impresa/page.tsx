@@ -4,6 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import TimelineCalendar from "@/src/components/timeline-calendar";
+import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,7 @@ export default async function ImpresaDashboard() {
           checklistProgress: true, cullaRequested: true, sofaBedForced: true, totalGuests: true,
           assignedToId: true,
           assignedTo: { select: { id: true, name: true } },
-          apartment: { select: { name: true, address: true } },
+          apartment: { select: { name: true, address: true, organizationId: true } },
         },
         orderBy: { date: "asc" },
       })
@@ -75,13 +76,28 @@ export default async function ImpresaDashboard() {
     externalId: b.externalId ?? undefined,
   }));
 
+  // Etichetta cliente (proprietario) per i popup KPI.
+  const orgs = orgIds.length
+    ? await prisma.organization.findMany({ where: { id: { in: orgIds } }, select: { id: true, name: true } })
+    : [];
+  const orgName = new Map(orgs.map((o) => [o.id, o.name]));
+
   const todayKey = localDateKey(now);
-  const kpi = {
-    oggi: cleanings.filter((c) => localDateKey(c.date) === todayKey).length,
-    daAssegnare: cleanings.filter((c) => !c.assignedToId && (c.status === "PENDING")).length,
-    inCorso: cleanings.filter((c) => c.status === "IN_PROGRESS" || c.status === "AWAITING_REVIEW").length,
-    approvate: cleanings.filter((c) => c.status === "APPROVED").length,
-  };
+  const fmtTime = (d: Date | string) => new Date(d).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  const toItem = (c: (typeof cleanings)[number]): KpiPopupItem => ({
+    id: c.id,
+    label: c.apartment.name,
+    sublabel: `${fmtTime(c.date)} · ${orgName.get(c.apartment.organizationId ?? "") ?? ""}`,
+    href: `/dashboard/impresa/pulizie/${c.id}`,
+  });
+
+  const todayCleanings = cleanings.filter((c) => localDateKey(c.date) === todayKey);
+  const cleaningsTodayKpi = todayCleanings.map(toItem);
+  const lateCleaningsKpi = cleanings
+    .filter((c) => c.status === "PENDING" && now.getTime() > new Date(c.date).getTime() + 30 * 60 * 1000)
+    .map(toItem);
+  const inProgressKpi = cleanings.filter((c) => c.status === "IN_PROGRESS").map(toItem);
+  const cleaningsDoneCount = todayCleanings.filter((c) => c.status === "APPROVED").length;
 
   const apartmentsData = apts.map((a) => {
     const aptCleanings = cleanings.filter((c) => c.apartmentId === a.id);
@@ -114,19 +130,16 @@ export default async function ImpresaDashboard() {
 
       {hasCleaning ? (
         <>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {[
-              { v: kpi.oggi, l: "Pulizie oggi", c: "text-slate-900" },
-              { v: kpi.daAssegnare, l: "Da assegnare", c: "text-amber-600" },
-              { v: kpi.inCorso, l: "In corso / revisione", c: "text-violet-600" },
-              { v: kpi.approvate, l: "Approvate", c: "text-emerald-600" },
-            ].map((k, i) => (
-              <div key={i} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <div className={`text-2xl font-semibold ${k.c}`}>{k.v}</div>
-                <div className="mt-1 text-[11px] uppercase tracking-wide text-gray-400">{k.l}</div>
-              </div>
-            ))}
-          </div>
+          <DashboardKpiCards
+            checkinsToday={[]}
+            cleaningsToday={cleaningsTodayKpi}
+            lateCleanings={lateCleaningsKpi}
+            cleaningsInProgress={inProgressKpi}
+            urgentTickets={[]}
+            cleaningsDoneCount={cleaningsDoneCount}
+            ticketsTodayCount={0}
+            ticketsDoneCount={0}
+          />
 
           <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
