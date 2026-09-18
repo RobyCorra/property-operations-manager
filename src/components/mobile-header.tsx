@@ -11,12 +11,15 @@ interface MobileHeaderProps {
   onOpenSettings: () => void;
   onCloseSettings?: () => void;
   orgName?: string;
+  // Variante con menu ridotto e navigazione semplice (es. dashboard impresa).
+  customItems?: { key: string; label: string; icon: React.ReactNode; href: string }[];
+  homeHref?: string;
 }
 
 // Azioni gestite dalla dashboard manager (sheet interni, niente navigazione vera).
 const DASHBOARD_ACTIONS = new Set(["home", "calendar", "cleanings", "tickets", "map"]);
 
-export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseSettings, orgName }: MobileHeaderProps) {
+export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseSettings, orgName, customItems, homeHref }: MobileHeaderProps) {
   const { t, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const router = useRouter();
@@ -32,7 +35,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
   // 5 fetch paralleli al primo paint saturano la banda e rallentano il cold start.
   const prefetchedRef = useRef(false);
   useEffect(() => {
-    if (!menuOpen || prefetchedRef.current) return;
+    if (customItems || !menuOpen || prefetchedRef.current) return;
     prefetchedRef.current = true;
     const routes = [
       "/dashboard/manager/messages",
@@ -78,6 +81,17 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
     { key: "settings", label: t.navSettings, icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>, action: () => { setMenuOpen(false); onOpenSettings(); } },
   ];
 
+  // Variante impresa: navigazione semplice (nessun evento tab della dashboard org).
+  const renderItems = customItems
+    ? customItems.map((it) => ({
+        key: it.key,
+        label: it.label,
+        icon: it.icon,
+        action: () => { setMenuOpen(false); onCloseSettings?.(); router.push(it.href); },
+      }))
+    : items;
+  const onHome = () => (customItems ? router.push(homeHref ?? "/dashboard/manager") : go("home"));
+
   return (
     <>
       <div className="relative shrink-0 z-[100] px-3 pb-2 bg-white border-b border-[#ede9fe] md:hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
@@ -90,7 +104,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
             <span className="text-[16px] font-black text-violet-700 leading-tight">{nowDate.getDate()}</span>
           </div>
           <button
-            onClick={() => go("home")}
+            onClick={onHome}
             aria-label={t.navHome}
             className="w-[48px] h-[48px] flex items-center justify-center rounded-full bg-[#f8f7ff] border border-[#ede9fe] text-violet-700 shrink-0"
           >
@@ -118,7 +132,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
           >
             <div className="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5" />
             <div className="grid grid-cols-4 gap-3">
-              {items.map(item => (
+              {renderItems.map(item => (
                 <button
                   key={item.key}
                   onClick={item.action}

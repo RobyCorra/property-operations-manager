@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import ManagerNavbar from "./manager-navbar";
+import ManagerNavbar, { type NavItem } from "./manager-navbar";
 import { logoutAction } from "@/src/app/actions/auth";
 import MobileHeader from "./mobile-header";
 import { useLang } from "@/src/components/lang-context";
@@ -18,9 +18,14 @@ interface SidebarLayoutProps {
   unreadCount: number;
   orgName?: string;
   orgLogo?: string | null;
+  // Variante scoped (es. dashboard impresa): menu ridotto + link propri.
+  navItems?: NavItem[];
+  mobileItems?: { key: string; label: string; icon: React.ReactNode; href: string }[];
+  homeHref?: string;
+  hideAssistant?: boolean;
 }
 
-export default function SidebarLayout({ children, unreadCount, orgName, orgLogo }: SidebarLayoutProps) {
+export default function SidebarLayout({ children, unreadCount, orgName, orgLogo, navItems, mobileItems, homeHref, hideAssistant }: SidebarLayoutProps) {
   const { t } = useLang();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -68,7 +73,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
 
       {/* Sidebar — nascosta su mobile */}
       <div className="hidden md:block">
-        <ManagerNavbar unreadCount={unreadCount} collapsed={mounted && collapsed} onToggle={toggle} />
+        <ManagerNavbar unreadCount={unreadCount} collapsed={mounted && collapsed} onToggle={toggle} items={navItems} homeHref={homeHref} />
       </div>
 
       <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${sidebarWidth}`}>
@@ -86,23 +91,27 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
           </div>
 
           <div className="flex items-center gap-6">
-            {/* Bottone AI Assistant — apre la chat flottante renderizzata fuori dall'header */}
-            <button
-              type="button"
-              onClick={() => setAiOpen(true)}
-              className="flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-10 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
-              title={t.navAi}
-            >
-              🤖 {t.navAi}
-            </button>
-            <button
-              type="button"
-              onClick={() => setSettingsOpen(true)}
-              className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
-            >
-              <span className="text-xl">⚙️</span>
-              <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">{t.navSettings}</span>
-            </button>
+            {!hideAssistant && (
+              <>
+                {/* Bottone AI Assistant — apre la chat flottante renderizzata fuori dall'header */}
+                <button
+                  type="button"
+                  onClick={() => setAiOpen(true)}
+                  className="flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-10 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
+                  title={t.navAi}
+                >
+                  🤖 {t.navAi}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSettingsOpen(true)}
+                  className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+                >
+                  <span className="text-xl">⚙️</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">{t.navSettings}</span>
+                </button>
+              </>
+            )}
             <form action={logoutAction}>
               <button
                 type="submit"
@@ -130,7 +139,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo 
         </header>
 
         {/* Mobile Header — shrink-0 dentro la gabbia h-screen, sostituisce il vecchio menu basso */}
-        <MobileHeader unreadCount={unreadCount} onOpenSettings={() => setSettingsOpen(true)} onCloseSettings={() => setSettingsOpen(false)} orgName={orgName} />
+        <MobileHeader unreadCount={unreadCount} onOpenSettings={() => setSettingsOpen(true)} onCloseSettings={() => setSettingsOpen(false)} orgName={orgName} customItems={mobileItems} homeHref={homeHref} />
 
         {/* Dashboard Main View */}
         <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden">{children}</div>

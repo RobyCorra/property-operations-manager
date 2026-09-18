@@ -19,7 +19,9 @@ import {
   Package,
 } from "./icons";
 
-const NAV_ITEMS = [
+export type NavItem = { key: string; href: string; icon: typeof LayoutDashboard };
+
+const NAV_ITEMS: NavItem[] = [
   { key: "navToday", href: "/dashboard/manager", icon: LayoutDashboard },
   { key: "navApartments", href: "/dashboard/manager/apartments", icon: Building2 },
   { key: "navWarehouse", href: "/dashboard/manager/magazzino", icon: Package },
@@ -32,15 +34,17 @@ const NAV_ITEMS = [
   { key: "navTeam", href: "/dashboard/manager/users", icon: Users },
   { key: "navCompanies", href: "/dashboard/manager/imprese", icon: Building2 },
   { key: "navAnalytics", href: "/dashboard/manager/analytics", icon: BarChart2 },
-] as const;
+];
 
 interface ManagerNavbarProps {
   unreadCount?: number;
   collapsed: boolean;
   onToggle: () => void;
+  items?: NavItem[];
+  homeHref?: string;
 }
 
-export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle }: ManagerNavbarProps) {
+export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle, items = NAV_ITEMS, homeHref = "/dashboard/manager" }: ManagerNavbarProps) {
   const pathname = usePathname();
   const { t } = useLang();
 
@@ -86,11 +90,11 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle }: 
 
       {/* Navigation Items */}
       <nav className={`flex-1 space-y-1.5 ${collapsed ? "px-2" : "px-4"}`}>
-        {NAV_ITEMS.map((item) => {
+        {items.map((item) => {
           const isActive =
             pathname === item.href ||
-            (item.href !== "/dashboard/manager" && pathname?.startsWith(item.href));
-          const label = t[item.key];
+            (item.href !== homeHref && pathname?.startsWith(item.href));
+          const label = (t as unknown as Record<string, string>)[item.key];
           const isMessages = item.key === "navMessages";
           const Icon = item.icon;
 
