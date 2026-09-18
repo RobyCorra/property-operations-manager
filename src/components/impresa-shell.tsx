@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import SidebarLayout from "@/src/components/sidebar-layout";
 import { type NavItem } from "@/src/components/manager-navbar";
 import { useLang } from "@/src/components/lang-context";
 import { LayoutDashboard, Brush, UserCircle, Users, Package, MessageSquare } from "./icons";
+import { getImpresaThreads } from "@/src/app/actions/company";
 
 const HOME = "/dashboard/impresa";
 
@@ -21,9 +23,44 @@ const svg = (d: React.ReactNode) => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">{d}</svg>
 );
 
+function beep() {
+  try {
+    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = "sine"; o.frequency.value = 880; g.gain.value = 0.12;
+    o.start();
+    setTimeout(() => { try { o.stop(); ctx.close(); } catch {} }, 200);
+  } catch {}
+}
+
 export default function ImpresaShell({ name, children }: { name: string; children: React.ReactNode }) {
   const { t } = useLang();
   const tr = t as unknown as Record<string, string>;
+  const [unread, setUnread] = useState(0);
+  const prevRef = useRef(0);
+
+  useEffect(() => {
+    let alive = true;
+    const tick = async () => {
+      try {
+        const list = await getImpresaThreads();
+        if (!alive) return;
+        const total = list.reduce((s, t) => s + t.unread, 0);
+        if (total > prevRef.current) beep();
+        prevRef.current = total;
+        setUnread(total);
+      } catch {}
+    };
+    tick();
+    const id = setInterval(tick, 15000);
+    const onFocus = () => tick();
+    window.addEventListener("focus", onFocus);
+    return () => { alive = false; clearInterval(id); window.removeEventListener("focus", onFocus); };
+  }, []);
 
   const mobileItems = [
     { key: "dashboard", label: tr.navDashboard, href: HOME, icon: svg(<><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></>) },
@@ -36,7 +73,7 @@ export default function ImpresaShell({ name, children }: { name: string; childre
 
   return (
     <SidebarLayout
-      unreadCount={0}
+      unreadCount={unread}
       orgName={name}
       orgLogo={null}
       navItems={NAV}

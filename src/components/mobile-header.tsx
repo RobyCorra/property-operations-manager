@@ -132,16 +132,26 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
           >
             <div className="w-10 h-1.5 bg-slate-200 rounded-full mx-auto mb-5" />
             <div className="grid grid-cols-4 gap-3">
-              {renderItems.map(item => (
-                <button
-                  key={item.key}
-                  onClick={item.action}
-                  className="flex flex-col items-center gap-1.5 py-3 rounded-2xl text-slate-600 hover:bg-[#f8f7ff] active:scale-95 transition-transform"
-                >
-                  <span className="text-violet-600">{item.icon}</span>
-                  <span className="text-[10px] font-bold text-slate-700">{item.label}</span>
-                </button>
-              ))}
+              {renderItems.map(item => {
+                const isMsg = item.key === "messages";
+                return (
+                  <button
+                    key={item.key}
+                    onClick={item.action}
+                    className="relative flex flex-col items-center gap-1.5 py-3 rounded-2xl text-slate-600 hover:bg-[#f8f7ff] active:scale-95 transition-transform"
+                  >
+                    <span className="relative text-violet-600">
+                      {item.icon}
+                      {isMsg && unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1.5 min-w-[16px] h-[16px] bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1 animate-pulse">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      )}
+                    </span>
+                    <span className={`text-[10px] font-bold ${isMsg && unreadCount > 0 ? "text-rose-600" : "text-slate-700"}`}>{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
             <form action={logoutAction} className="mt-3 pt-3 border-t border-slate-100">
               <button type="submit" className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-rose-500 hover:bg-rose-50">
