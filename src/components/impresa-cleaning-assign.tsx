@@ -280,10 +280,12 @@ export default function ImpresaCleaningAssign({
                             Approva
                           </button>
                         )}
-                        {c.assignedToId && (
-                          <span className="text-[11px] text-gray-500">{staffName.get(c.assignedToId) ?? "—"}</span>
-                        )}
-                        {!isDone(c.status) && !pastItem && (
+                        {c.assignedToId ? (
+                          <span className="flex items-center gap-1 text-[11px] text-gray-500">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                            {staffName.get(c.assignedToId) ?? "—"}
+                          </span>
+                        ) : !isDone(c.status) && !pastItem ? (
                           <select
                             value={assign[c.id] ?? ""}
                             onChange={(e) => setAssign((m) => ({ ...m, [c.id]: e.target.value }))}
@@ -294,7 +296,7 @@ export default function ImpresaCleaningAssign({
                               <option key={s.id} value={s.id}>{s.name}</option>
                             ))}
                           </select>
-                        )}
+                        ) : null}
                       </div>
                     );
                   })}
