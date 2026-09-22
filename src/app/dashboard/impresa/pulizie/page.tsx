@@ -4,6 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
 import { getMyCompanyStaff } from "@/src/app/actions/company";
 import ImpresaCleaningAssign from "@/src/components/impresa-cleaning-assign";
+import ImpresaCleaningsMobile from "@/src/components/impresa-cleanings-mobile";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,12 @@ export default async function ImpresaPuliziePage() {
   if (!access) redirect("/login");
   if (!access.scopes.includes("CLEANING")) redirect("/dashboard/impresa");
 
-  const [rows, staff] = await Promise.all([
+  const now = new Date();
+  const serverDate = now.toISOString();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+  const [rows, staff, monthRows] = await Promise.all([
     prisma.cleaningTask.findMany({
       where: {
         apartment: { organizationId: { in: access.orgIds } },
@@ -36,6 +42,18 @@ export default async function ImpresaPuliziePage() {
       take: 200,
     }),
     getMyCompanyStaff(),
+    prisma.cleaningTask.findMany({
+      where: {
+        apartment: { organizationId: { in: access.orgIds } },
+        status: { not: "CANCELLED" },
+        date: { gte: monthStart, lte: monthEnd },
+      },
+      include: {
+        apartment: { select: { name: true } },
+        assignedTo: { select: { name: true } },
+      },
+      orderBy: { date: "asc" },
+    }),
   ]);
 
   const [orgs, apts] = await Promise.all([
@@ -59,22 +77,46 @@ export default async function ImpresaPuliziePage() {
     assignedToId: r.assignedToId,
   }));
 
+  const mobileInitial = monthRows.map((c) => ({
+    id: c.id,
+    date: c.date.toISOString(),
+    status: c.status,
+    apartmentId: c.apartmentId,
+    apartmentName: c.apartment.name,
+    assignedToName: c.assignedTo?.name ?? null,
+    href: `/dashboard/impresa/pulizie/${c.id}`,
+  }));
+
+  const mobileApts = apts.map((a) => ({ id: a.id, name: a.name }));
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Pulizie</h1>
-        <p className="mt-1 text-sm text-slate-500">Tutte le pulizie dei tuoi clienti — ultime 30 giorni e future.</p>
+    <>
+      {/* ── MOBILE ── */}
+      <div className="block md:hidden -m-4">
+        <ImpresaCleaningsMobile
+          initialCleanings={mobileInitial}
+          apartments={mobileApts}
+          serverDate={serverDate}
+        />
       </div>
 
-      {cleaners.length === 0 && (
-        <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-4 text-sm text-amber-700">
-          Non hai ancora operatori. Aggiungili in <strong>Staff</strong> per poter assegnare le pulizie.
+      {/* ── DESKTOP ── */}
+      <div className="hidden md:block max-w-2xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Pulizie</h1>
+          <p className="mt-1 text-sm text-slate-500">Tutte le pulizie dei tuoi clienti — ultime 30 giorni e future.</p>
         </div>
-      )}
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <ImpresaCleaningAssign cleanings={cleanings} staff={cleaners} apartments={apartments} />
+        {cleaners.length === 0 && (
+          <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-4 text-sm text-amber-700">
+            Non hai ancora operatori. Aggiungili in <strong>Staff</strong> per poter assegnare le pulizie.
+          </div>
+        )}
+
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <ImpresaCleaningAssign cleanings={cleanings} staff={cleaners} apartments={apartments} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
