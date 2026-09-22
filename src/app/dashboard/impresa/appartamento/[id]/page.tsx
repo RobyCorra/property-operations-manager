@@ -53,7 +53,8 @@ export default async function ImpresaAppartamentoPage({ params }: { params: Prom
       where: { apartmentId: id, status: { not: "CANCELLED" } },
       select: {
         id: true, apartmentId: true, title: true, status: true, priority: true,
-        createdAt: true, scheduledDate: true, dueDate: true,
+        createdAt: true, scheduledStart: true, scheduledEnd: true,
+        assignedTo: { select: { id: true, name: true } },
         apartment: { select: { name: true, address: true } },
       },
     }),
