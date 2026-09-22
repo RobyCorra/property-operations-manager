@@ -554,7 +554,7 @@ export default function WarehousePanel({ initialProducts, costTotals = {} }: Pro
 
               {form.consumptionType === "MANUAL" ? (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-amber-600 block mb-2">{t.whQtyPerCheckin}</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-amber-600 block mb-2">{t.whQtyManual}</label>
                   <div className="flex items-center gap-3">
                     <button type="button" onClick={() => setForm((f) => ({ ...f, consumptionValue: Math.max(0.5, f.consumptionValue - (f.consumptionValue > 1 ? 1 : 0.5)) }))} className="w-9 h-9 rounded-full border border-amber-300 bg-white text-amber-700 font-bold text-lg hover:bg-amber-50">−</button>
                     <span className="text-2xl font-black text-amber-800 w-12 text-center">{form.consumptionValue}</span>
