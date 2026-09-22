@@ -7,8 +7,9 @@ import ImpresaCleaningAssign from "@/src/components/impresa-cleaning-assign";
 
 export const dynamic = "force-dynamic";
 
-function startOfTodayUTC(): Date {
+function daysAgoUTC(n: number): Date {
   const d = new Date();
+  d.setUTCDate(d.getUTCDate() - n);
   d.setUTCHours(0, 0, 0, 0);
   return d;
 }
@@ -25,14 +26,14 @@ export default async function ImpresaPuliziePage() {
       where: {
         apartment: { organizationId: { in: access.orgIds } },
         status: { not: "CANCELLED" },
-        date: { gte: startOfTodayUTC() },
+        date: { gte: daysAgoUTC(30) },
       },
       select: {
         id: true, date: true, status: true, assignedToId: true,
         apartment: { select: { name: true, organizationId: true } },
       },
-      orderBy: { date: "asc" },
-      take: 100,
+      orderBy: { date: "desc" },
+      take: 200,
     }),
     getMyCompanyStaff(),
   ]);
@@ -49,14 +50,11 @@ export default async function ImpresaPuliziePage() {
   const cleaners = staff.filter((s) => s.role === "CLEANER").map((s) => ({ id: s.id, name: s.name }));
   const apartments = apts.map((a) => ({ id: a.id, name: a.name, ownerName: orgName.get(a.organizationId ?? "") ?? "—" }));
 
-  const fmt = (d: Date | string) =>
-    new Date(d).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
-
   const cleanings = rows.map((r) => ({
     id: r.id,
     apartmentName: r.apartment.name,
     ownerName: orgName.get(r.apartment.organizationId ?? "") ?? "—",
-    date: fmt(r.date),
+    dateISO: r.date.toISOString(),
     status: r.status,
     assignedToId: r.assignedToId,
   }));
@@ -65,7 +63,7 @@ export default async function ImpresaPuliziePage() {
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Pulizie</h1>
-        <p className="mt-1 text-sm text-slate-500">Assegna le pulizie ai tuoi operatori.</p>
+        <p className="mt-1 text-sm text-slate-500">Tutte le pulizie dei tuoi clienti — ultime 30 giorni e future.</p>
       </div>
 
       {cleaners.length === 0 && (
