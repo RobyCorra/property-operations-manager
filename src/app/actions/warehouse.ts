@@ -20,7 +20,7 @@ async function warehouseScope(): Promise<{ where: Record<string, string> } | nul
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type WarehouseConsumptionType = "MANUAL" | "STATIC" | "DYNAMIC";
+export type WarehouseConsumptionType = "MANUAL" | "STATIC" | "DYNAMIC" | "FIXED";
 export type WarehouseConsumptionBasis = "BATHROOM" | "GUEST" | "BEDROOM";
 
 export type WarehouseFormData = {
@@ -221,7 +221,7 @@ export async function consumeWarehouseOnCheckin(params: {
 }) {
   try {
     const products = await prisma.warehouseProduct.findMany({
-      where: { organizationId: params.organizationId, consumptionType: { in: ["STATIC", "DYNAMIC"] } },
+      where: { organizationId: params.organizationId, consumptionType: { in: ["STATIC", "DYNAMIC", "FIXED"] } },
     });
     for (const p of products) {
       let consumed = p.consumptionValue;

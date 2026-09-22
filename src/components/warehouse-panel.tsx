@@ -274,8 +274,8 @@ function ProductCard({
 
   const consLabel =
     product.consumptionType === "MANUAL" ? t.whConsManualShort
-    : product.consumptionType === "STATIC" ? t.whConsStaticShort
-    : t.whConsDynamicShort;
+    : product.consumptionType === "DYNAMIC" ? t.whConsDynamicShort
+    : t.whConsStaticShort;
   const basisLabel =
     product.consumptionBasis === "GUEST" ? t.whBasisGuest
     : product.consumptionBasis === "BEDROOM" ? t.whBasisBedroom
@@ -337,6 +337,7 @@ function ProductCard({
         </div>
       )}
 
+
       <div className="mx-5 mb-4">
         <div className="flex justify-between text-[10px] text-slate-400 mb-1">
           <span>{t.pdStockWord} {product.stock} {product.unit}</span>
@@ -390,7 +391,7 @@ export default function WarehousePanel({ initialProducts, costTotals = {} }: Pro
     setEditingProduct(p);
     setForm({
       name: p.name, emoji: p.emoji, unit: p.unit, stock: p.stock, minStock: p.minStock,
-      consumptionType: p.consumptionType as WarehouseConsumptionType,
+      consumptionType: (p.consumptionType === "STATIC" ? "FIXED" : p.consumptionType) as WarehouseConsumptionType,
       consumptionBasis: p.consumptionBasis as WarehouseConsumptionBasis,
       consumptionValue: p.consumptionValue,
       price: p.price,
@@ -535,16 +536,19 @@ export default function WarehousePanel({ initialProducts, costTotals = {} }: Pro
                 <div className="grid grid-cols-3 gap-2">
                   {([
                     ["MANUAL", "✋", t.whConsManual, t.whConsManualHint],
-                    ["STATIC", "📦", t.whConsStatic, t.whConsStaticHint],
                     ["DYNAMIC", "📐", t.whConsDynamic, t.whConsDynamicHint],
-                  ] as const).map(([type, ic, label, hint]) => (
-                    <button key={type} type="button" onClick={() => setForm((f) => ({ ...f, consumptionType: type }))}
-                      className={`flex flex-col items-center gap-1 px-2 py-3 border-2 rounded-xl transition-colors ${form.consumptionType === type ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 text-slate-600 hover:border-slate-400"}`}>
-                      <span className="text-base">{ic}</span>
-                      <p className="text-[9.5px] font-black uppercase tracking-wide">{label}</p>
-                      <p className={`text-[8px] leading-tight ${form.consumptionType === type ? "text-slate-300" : "text-slate-400"}`}>{hint}</p>
-                    </button>
-                  ))}
+                    ["FIXED", "📦", t.whConsStatic, t.whConsStaticHint],
+                  ] as [WarehouseConsumptionType, string, string, string][]).map(([type, ic, label, hint]) => {
+                    const isActive = form.consumptionType === type || (type === "FIXED" && form.consumptionType === "STATIC");
+                    return (
+                      <button key={type} type="button" onClick={() => setForm((f) => ({ ...f, consumptionType: type }))}
+                        className={`flex flex-col items-center gap-1 px-2 py-3 border-2 rounded-xl transition-colors ${isActive ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 text-slate-600 hover:border-slate-400"}`}>
+                        <span className="text-base">{ic}</span>
+                        <p className="text-[9.5px] font-black uppercase tracking-wide">{label}</p>
+                        <p className={`text-[8px] leading-tight ${isActive ? "text-slate-300" : "text-slate-400"}`}>{hint}</p>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -569,7 +573,7 @@ export default function WarehousePanel({ initialProducts, costTotals = {} }: Pro
                         </select>
                       </div>
                     ) : (
-                      <span className="text-sm text-slate-400 ml-auto">{form.unit} / check-in</span>
+                      <span className="text-sm text-slate-400 ml-auto">{form.unit} × check-in</span>
                     )}
                   </div>
                 </div>
