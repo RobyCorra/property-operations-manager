@@ -232,6 +232,15 @@ export default function ImpresaMobileDashboard({
                       <p className="text-[14px] font-bold text-slate-900 truncate">{g.apt.name}</p>
                       <p className="text-[11px] text-slate-400">{statusLabel(g.apt.status)}</p>
                     </div>
+                    <Link
+                      href={`/dashboard/impresa/appartamento/${g.apt.id}`}
+                      onClick={() => hapticLight()}
+                      className="w-11 h-11 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center shrink-0 active:scale-90 transition-transform"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                      </svg>
+                    </Link>
                   </div>
                 );
               }
@@ -250,10 +259,19 @@ export default function ImpresaMobileDashboard({
                       {cat.name && <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">{cat.name}</p>}
                       <div className="space-y-1">
                         {cat.units.map((u) => (
-                          <div key={u.id} className="flex items-center gap-2 py-0.5">
+                          <div key={u.id} className="flex items-center gap-2 py-1">
                             <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${statusDotClass(u.status)}`} />
-                            <span className="text-[12px] text-slate-700 truncate">{u.unitNumber ? `#${u.unitNumber}` : u.name}</span>
-                            <span className="text-[10px] text-slate-400 ml-auto">{statusLabel(u.status)}</span>
+                            <span className="text-[12px] text-slate-700 truncate flex-1">{u.unitNumber ? `#${u.unitNumber}` : u.name}</span>
+                            <span className="text-[10px] text-slate-400">{statusLabel(u.status)}</span>
+                            <Link
+                              href={`/dashboard/impresa/appartamento/${u.id}`}
+                              onClick={(e) => { e.stopPropagation(); hapticLight(); }}
+                              className="w-8 h-8 rounded-lg bg-violet-50 border border-violet-100 flex items-center justify-center shrink-0 active:scale-90 transition-transform"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                              </svg>
+                            </Link>
                           </div>
                         ))}
                       </div>
