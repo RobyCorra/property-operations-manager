@@ -59,6 +59,11 @@ export type Company = $Result.DefaultSelection<Prisma.$CompanyPayload>
  */
 export type Engagement = $Result.DefaultSelection<Prisma.$EngagementPayload>
 /**
+ * Model EngagementApartment
+ * 
+ */
+export type EngagementApartment = $Result.DefaultSelection<Prisma.$EngagementApartmentPayload>
+/**
  * Model Apartment
  * 
  */
@@ -447,6 +452,16 @@ export class PrismaClient<
     * ```
     */
   get engagement(): Prisma.EngagementDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.engagementApartment`: Exposes CRUD operations for the **EngagementApartment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EngagementApartments
+    * const engagementApartments = await prisma.engagementApartment.findMany()
+    * ```
+    */
+  get engagementApartment(): Prisma.EngagementApartmentDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.apartment`: Exposes CRUD operations for the **Apartment** model.
@@ -1180,6 +1195,7 @@ export namespace Prisma {
     CompanyChatMessage: 'CompanyChatMessage',
     Company: 'Company',
     Engagement: 'Engagement',
+    EngagementApartment: 'EngagementApartment',
     Apartment: 'Apartment',
     ChecklistItem: 'ChecklistItem',
     Notification: 'Notification',
@@ -1224,7 +1240,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "companyChatMessage" | "company" | "engagement" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
+      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "companyChatMessage" | "company" | "engagement" | "engagementApartment" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1891,6 +1907,80 @@ export namespace Prisma {
           count: {
             args: Prisma.EngagementCountArgs<ExtArgs>
             result: $Utils.Optional<EngagementCountAggregateOutputType> | number
+          }
+        }
+      }
+      EngagementApartment: {
+        payload: Prisma.$EngagementApartmentPayload<ExtArgs>
+        fields: Prisma.EngagementApartmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EngagementApartmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EngagementApartmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>
+          }
+          findFirst: {
+            args: Prisma.EngagementApartmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EngagementApartmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>
+          }
+          findMany: {
+            args: Prisma.EngagementApartmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>[]
+          }
+          create: {
+            args: Prisma.EngagementApartmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>
+          }
+          createMany: {
+            args: Prisma.EngagementApartmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EngagementApartmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>[]
+          }
+          delete: {
+            args: Prisma.EngagementApartmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>
+          }
+          update: {
+            args: Prisma.EngagementApartmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.EngagementApartmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EngagementApartmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EngagementApartmentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>[]
+          }
+          upsert: {
+            args: Prisma.EngagementApartmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EngagementApartmentPayload>
+          }
+          aggregate: {
+            args: Prisma.EngagementApartmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEngagementApartment>
+          }
+          groupBy: {
+            args: Prisma.EngagementApartmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EngagementApartmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EngagementApartmentCountArgs<ExtArgs>
+            result: $Utils.Optional<EngagementApartmentCountAggregateOutputType> | number
           }
         }
       }
@@ -4157,6 +4247,7 @@ export namespace Prisma {
     companyChatMessage?: CompanyChatMessageOmit
     company?: CompanyOmit
     engagement?: EngagementOmit
+    engagementApartment?: EngagementApartmentOmit
     apartment?: ApartmentOmit
     checklistItem?: ChecklistItemOmit
     notification?: NotificationOmit
@@ -4592,6 +4683,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type EngagementCountOutputType
+   */
+
+  export type EngagementCountOutputType = {
+    apartments: number
+  }
+
+  export type EngagementCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    apartments?: boolean | EngagementCountOutputTypeCountApartmentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * EngagementCountOutputType without action
+   */
+  export type EngagementCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementCountOutputType
+     */
+    select?: EngagementCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * EngagementCountOutputType without action
+   */
+  export type EngagementCountOutputTypeCountApartmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EngagementApartmentWhereInput
+  }
+
+
+  /**
    * Count Type ApartmentCountOutputType
    */
 
@@ -4608,6 +4730,7 @@ export namespace Prisma {
     products: number
     checkinChecklistItems: number
     checkinTasks: number
+    engagements: number
   }
 
   export type ApartmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4623,6 +4746,7 @@ export namespace Prisma {
     products?: boolean | ApartmentCountOutputTypeCountProductsArgs
     checkinChecklistItems?: boolean | ApartmentCountOutputTypeCountCheckinChecklistItemsArgs
     checkinTasks?: boolean | ApartmentCountOutputTypeCountCheckinTasksArgs
+    engagements?: boolean | ApartmentCountOutputTypeCountEngagementsArgs
   }
 
   // Custom InputTypes
@@ -4718,6 +4842,13 @@ export namespace Prisma {
    */
   export type ApartmentCountOutputTypeCountCheckinTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CheckinTaskWhereInput
+  }
+
+  /**
+   * ApartmentCountOutputType without action
+   */
+  export type ApartmentCountOutputTypeCountEngagementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EngagementApartmentWhereInput
   }
 
 
@@ -15411,6 +15542,8 @@ export namespace Prisma {
     revokedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     company?: boolean | CompanyDefaultArgs<ExtArgs>
+    apartments?: boolean | Engagement$apartmentsArgs<ExtArgs>
+    _count?: boolean | EngagementCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["engagement"]>
 
   export type EngagementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15454,6 +15587,8 @@ export namespace Prisma {
   export type EngagementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     company?: boolean | CompanyDefaultArgs<ExtArgs>
+    apartments?: boolean | Engagement$apartmentsArgs<ExtArgs>
+    _count?: boolean | EngagementCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EngagementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -15469,6 +15604,7 @@ export namespace Prisma {
     objects: {
       organization: Prisma.$OrganizationPayload<ExtArgs>
       company: Prisma.$CompanyPayload<ExtArgs>
+      apartments: Prisma.$EngagementApartmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15875,6 +16011,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    apartments<T extends Engagement$apartmentsArgs<ExtArgs> = {}>(args?: Subset<T, Engagement$apartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16313,6 +16450,30 @@ export namespace Prisma {
   }
 
   /**
+   * Engagement.apartments
+   */
+  export type Engagement$apartmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    where?: EngagementApartmentWhereInput
+    orderBy?: EngagementApartmentOrderByWithRelationInput | EngagementApartmentOrderByWithRelationInput[]
+    cursor?: EngagementApartmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EngagementApartmentScalarFieldEnum | EngagementApartmentScalarFieldEnum[]
+  }
+
+  /**
    * Engagement without action
    */
   export type EngagementDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16328,6 +16489,1038 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: EngagementInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model EngagementApartment
+   */
+
+  export type AggregateEngagementApartment = {
+    _count: EngagementApartmentCountAggregateOutputType | null
+    _min: EngagementApartmentMinAggregateOutputType | null
+    _max: EngagementApartmentMaxAggregateOutputType | null
+  }
+
+  export type EngagementApartmentMinAggregateOutputType = {
+    engagementId: string | null
+    apartmentId: string | null
+  }
+
+  export type EngagementApartmentMaxAggregateOutputType = {
+    engagementId: string | null
+    apartmentId: string | null
+  }
+
+  export type EngagementApartmentCountAggregateOutputType = {
+    engagementId: number
+    apartmentId: number
+    _all: number
+  }
+
+
+  export type EngagementApartmentMinAggregateInputType = {
+    engagementId?: true
+    apartmentId?: true
+  }
+
+  export type EngagementApartmentMaxAggregateInputType = {
+    engagementId?: true
+    apartmentId?: true
+  }
+
+  export type EngagementApartmentCountAggregateInputType = {
+    engagementId?: true
+    apartmentId?: true
+    _all?: true
+  }
+
+  export type EngagementApartmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EngagementApartment to aggregate.
+     */
+    where?: EngagementApartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EngagementApartments to fetch.
+     */
+    orderBy?: EngagementApartmentOrderByWithRelationInput | EngagementApartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EngagementApartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EngagementApartments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EngagementApartments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EngagementApartments
+    **/
+    _count?: true | EngagementApartmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EngagementApartmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EngagementApartmentMaxAggregateInputType
+  }
+
+  export type GetEngagementApartmentAggregateType<T extends EngagementApartmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateEngagementApartment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEngagementApartment[P]>
+      : GetScalarType<T[P], AggregateEngagementApartment[P]>
+  }
+
+
+
+
+  export type EngagementApartmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EngagementApartmentWhereInput
+    orderBy?: EngagementApartmentOrderByWithAggregationInput | EngagementApartmentOrderByWithAggregationInput[]
+    by: EngagementApartmentScalarFieldEnum[] | EngagementApartmentScalarFieldEnum
+    having?: EngagementApartmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EngagementApartmentCountAggregateInputType | true
+    _min?: EngagementApartmentMinAggregateInputType
+    _max?: EngagementApartmentMaxAggregateInputType
+  }
+
+  export type EngagementApartmentGroupByOutputType = {
+    engagementId: string
+    apartmentId: string
+    _count: EngagementApartmentCountAggregateOutputType | null
+    _min: EngagementApartmentMinAggregateOutputType | null
+    _max: EngagementApartmentMaxAggregateOutputType | null
+  }
+
+  type GetEngagementApartmentGroupByPayload<T extends EngagementApartmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EngagementApartmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EngagementApartmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EngagementApartmentGroupByOutputType[P]>
+            : GetScalarType<T[P], EngagementApartmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EngagementApartmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    engagementId?: boolean
+    apartmentId?: boolean
+    engagement?: boolean | EngagementDefaultArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["engagementApartment"]>
+
+  export type EngagementApartmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    engagementId?: boolean
+    apartmentId?: boolean
+    engagement?: boolean | EngagementDefaultArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["engagementApartment"]>
+
+  export type EngagementApartmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    engagementId?: boolean
+    apartmentId?: boolean
+    engagement?: boolean | EngagementDefaultArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["engagementApartment"]>
+
+  export type EngagementApartmentSelectScalar = {
+    engagementId?: boolean
+    apartmentId?: boolean
+  }
+
+  export type EngagementApartmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"engagementId" | "apartmentId", ExtArgs["result"]["engagementApartment"]>
+  export type EngagementApartmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    engagement?: boolean | EngagementDefaultArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+  export type EngagementApartmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    engagement?: boolean | EngagementDefaultArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+  export type EngagementApartmentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    engagement?: boolean | EngagementDefaultArgs<ExtArgs>
+    apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
+  }
+
+  export type $EngagementApartmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EngagementApartment"
+    objects: {
+      engagement: Prisma.$EngagementPayload<ExtArgs>
+      apartment: Prisma.$ApartmentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      engagementId: string
+      apartmentId: string
+    }, ExtArgs["result"]["engagementApartment"]>
+    composites: {}
+  }
+
+  type EngagementApartmentGetPayload<S extends boolean | null | undefined | EngagementApartmentDefaultArgs> = $Result.GetResult<Prisma.$EngagementApartmentPayload, S>
+
+  type EngagementApartmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EngagementApartmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EngagementApartmentCountAggregateInputType | true
+    }
+
+  export interface EngagementApartmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EngagementApartment'], meta: { name: 'EngagementApartment' } }
+    /**
+     * Find zero or one EngagementApartment that matches the filter.
+     * @param {EngagementApartmentFindUniqueArgs} args - Arguments to find a EngagementApartment
+     * @example
+     * // Get one EngagementApartment
+     * const engagementApartment = await prisma.engagementApartment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EngagementApartmentFindUniqueArgs>(args: SelectSubset<T, EngagementApartmentFindUniqueArgs<ExtArgs>>): Prisma__EngagementApartmentClient<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EngagementApartment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EngagementApartmentFindUniqueOrThrowArgs} args - Arguments to find a EngagementApartment
+     * @example
+     * // Get one EngagementApartment
+     * const engagementApartment = await prisma.engagementApartment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EngagementApartmentFindUniqueOrThrowArgs>(args: SelectSubset<T, EngagementApartmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EngagementApartmentClient<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EngagementApartment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EngagementApartmentFindFirstArgs} args - Arguments to find a EngagementApartment
+     * @example
+     * // Get one EngagementApartment
+     * const engagementApartment = await prisma.engagementApartment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EngagementApartmentFindFirstArgs>(args?: SelectSubset<T, EngagementApartmentFindFirstArgs<ExtArgs>>): Prisma__EngagementApartmentClient<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EngagementApartment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EngagementApartmentFindFirstOrThrowArgs} args - Arguments to find a EngagementApartment
+     * @example
+     * // Get one EngagementApartment
+     * const engagementApartment = await prisma.engagementApartment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EngagementApartmentFindFirstOrThrowArgs>(args?: SelectSubset<T, EngagementApartmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__EngagementApartmentClient<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EngagementApartments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EngagementApartmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EngagementApartments
+     * const engagementApartments = await prisma.engagementApartment.findMany()
+     * 
+     * // Get first 10 EngagementApartments
+     * const engagementApartments = await prisma.engagementApartment.findMany({ take: 10 })
+     * 
+     * // Only select the `engagementId`
+     * const engagementApartmentWithEngagementIdOnly = await prisma.engagementApartment.findMany({ select: { engagementId: true } })
+     * 
+     */
+    findMany<T extends EngagementApartmentFindManyArgs>(args?: SelectSubset<T, EngagementApartmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EngagementApartment.
+     * @param {EngagementApartmentCreateArgs} args - Arguments to create a EngagementApartment.
+     * @example
+     * // Create one EngagementApartment
+     * const EngagementApartment = await prisma.engagementApartment.create({
+     *   data: {
+     *     // ... data to create a EngagementApartment
+     *   }
+     * })
+     * 
+     */
+    create<T extends EngagementApartmentCreateArgs>(args: SelectSubset<T, EngagementApartmentCreateArgs<ExtArgs>>): Prisma__EngagementApartmentClient<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EngagementApartments.
+     * @param {EngagementApartmentCreateManyArgs} args - Arguments to create many EngagementApartments.
+     * @example
+     * // Create many EngagementApartments
+     * const engagementApartment = await prisma.engagementApartment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EngagementApartmentCreateManyArgs>(args?: SelectSubset<T, EngagementApartmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EngagementApartments and returns the data saved in the database.
+     * @param {EngagementApartmentCreateManyAndReturnArgs} args - Arguments to create many EngagementApartments.
+     * @example
+     * // Create many EngagementApartments
+     * const engagementApartment = await prisma.engagementApartment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EngagementApartments and only return the `engagementId`
+     * const engagementApartmentWithEngagementIdOnly = await prisma.engagementApartment.createManyAndReturn({
+     *   select: { engagementId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EngagementApartmentCreateManyAndReturnArgs>(args?: SelectSubset<T, EngagementApartmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EngagementApartment.
+     * @param {EngagementApartmentDeleteArgs} args - Arguments to delete one EngagementApartment.
+     * @example
+     * // Delete one EngagementApartment
+     * const EngagementApartment = await prisma.engagementApartment.delete({
+     *   where: {
+     *     // ... filter to delete one EngagementApartment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EngagementApartmentDeleteArgs>(args: SelectSubset<T, EngagementApartmentDeleteArgs<ExtArgs>>): Prisma__EngagementApartmentClient<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EngagementApartment.
+     * @param {EngagementApartmentUpdateArgs} args - Arguments to update one EngagementApartment.
+     * @example
+     * // Update one EngagementApartment
+     * const engagementApartment = await prisma.engagementApartment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EngagementApartmentUpdateArgs>(args: SelectSubset<T, EngagementApartmentUpdateArgs<ExtArgs>>): Prisma__EngagementApartmentClient<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EngagementApartments.
+     * @param {EngagementApartmentDeleteManyArgs} args - Arguments to filter EngagementApartments to delete.
+     * @example
+     * // Delete a few EngagementApartments
+     * const { count } = await prisma.engagementApartment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EngagementApartmentDeleteManyArgs>(args?: SelectSubset<T, EngagementApartmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EngagementApartments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EngagementApartmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EngagementApartments
+     * const engagementApartment = await prisma.engagementApartment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EngagementApartmentUpdateManyArgs>(args: SelectSubset<T, EngagementApartmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EngagementApartments and returns the data updated in the database.
+     * @param {EngagementApartmentUpdateManyAndReturnArgs} args - Arguments to update many EngagementApartments.
+     * @example
+     * // Update many EngagementApartments
+     * const engagementApartment = await prisma.engagementApartment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EngagementApartments and only return the `engagementId`
+     * const engagementApartmentWithEngagementIdOnly = await prisma.engagementApartment.updateManyAndReturn({
+     *   select: { engagementId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EngagementApartmentUpdateManyAndReturnArgs>(args: SelectSubset<T, EngagementApartmentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EngagementApartment.
+     * @param {EngagementApartmentUpsertArgs} args - Arguments to update or create a EngagementApartment.
+     * @example
+     * // Update or create a EngagementApartment
+     * const engagementApartment = await prisma.engagementApartment.upsert({
+     *   create: {
+     *     // ... data to create a EngagementApartment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EngagementApartment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EngagementApartmentUpsertArgs>(args: SelectSubset<T, EngagementApartmentUpsertArgs<ExtArgs>>): Prisma__EngagementApartmentClient<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EngagementApartments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EngagementApartmentCountArgs} args - Arguments to filter EngagementApartments to count.
+     * @example
+     * // Count the number of EngagementApartments
+     * const count = await prisma.engagementApartment.count({
+     *   where: {
+     *     // ... the filter for the EngagementApartments we want to count
+     *   }
+     * })
+    **/
+    count<T extends EngagementApartmentCountArgs>(
+      args?: Subset<T, EngagementApartmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EngagementApartmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EngagementApartment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EngagementApartmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EngagementApartmentAggregateArgs>(args: Subset<T, EngagementApartmentAggregateArgs>): Prisma.PrismaPromise<GetEngagementApartmentAggregateType<T>>
+
+    /**
+     * Group by EngagementApartment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EngagementApartmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EngagementApartmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EngagementApartmentGroupByArgs['orderBy'] }
+        : { orderBy?: EngagementApartmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EngagementApartmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEngagementApartmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EngagementApartment model
+   */
+  readonly fields: EngagementApartmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EngagementApartment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EngagementApartmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    engagement<T extends EngagementDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EngagementDefaultArgs<ExtArgs>>): Prisma__EngagementClient<$Result.GetResult<Prisma.$EngagementPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    apartment<T extends ApartmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApartmentDefaultArgs<ExtArgs>>): Prisma__ApartmentClient<$Result.GetResult<Prisma.$ApartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EngagementApartment model
+   */
+  interface EngagementApartmentFieldRefs {
+    readonly engagementId: FieldRef<"EngagementApartment", 'String'>
+    readonly apartmentId: FieldRef<"EngagementApartment", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EngagementApartment findUnique
+   */
+  export type EngagementApartmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which EngagementApartment to fetch.
+     */
+    where: EngagementApartmentWhereUniqueInput
+  }
+
+  /**
+   * EngagementApartment findUniqueOrThrow
+   */
+  export type EngagementApartmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which EngagementApartment to fetch.
+     */
+    where: EngagementApartmentWhereUniqueInput
+  }
+
+  /**
+   * EngagementApartment findFirst
+   */
+  export type EngagementApartmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which EngagementApartment to fetch.
+     */
+    where?: EngagementApartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EngagementApartments to fetch.
+     */
+    orderBy?: EngagementApartmentOrderByWithRelationInput | EngagementApartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EngagementApartments.
+     */
+    cursor?: EngagementApartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EngagementApartments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EngagementApartments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EngagementApartments.
+     */
+    distinct?: EngagementApartmentScalarFieldEnum | EngagementApartmentScalarFieldEnum[]
+  }
+
+  /**
+   * EngagementApartment findFirstOrThrow
+   */
+  export type EngagementApartmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which EngagementApartment to fetch.
+     */
+    where?: EngagementApartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EngagementApartments to fetch.
+     */
+    orderBy?: EngagementApartmentOrderByWithRelationInput | EngagementApartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EngagementApartments.
+     */
+    cursor?: EngagementApartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EngagementApartments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EngagementApartments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EngagementApartments.
+     */
+    distinct?: EngagementApartmentScalarFieldEnum | EngagementApartmentScalarFieldEnum[]
+  }
+
+  /**
+   * EngagementApartment findMany
+   */
+  export type EngagementApartmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which EngagementApartments to fetch.
+     */
+    where?: EngagementApartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EngagementApartments to fetch.
+     */
+    orderBy?: EngagementApartmentOrderByWithRelationInput | EngagementApartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EngagementApartments.
+     */
+    cursor?: EngagementApartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EngagementApartments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EngagementApartments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EngagementApartments.
+     */
+    distinct?: EngagementApartmentScalarFieldEnum | EngagementApartmentScalarFieldEnum[]
+  }
+
+  /**
+   * EngagementApartment create
+   */
+  export type EngagementApartmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a EngagementApartment.
+     */
+    data: XOR<EngagementApartmentCreateInput, EngagementApartmentUncheckedCreateInput>
+  }
+
+  /**
+   * EngagementApartment createMany
+   */
+  export type EngagementApartmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EngagementApartments.
+     */
+    data: EngagementApartmentCreateManyInput | EngagementApartmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EngagementApartment createManyAndReturn
+   */
+  export type EngagementApartmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * The data used to create many EngagementApartments.
+     */
+    data: EngagementApartmentCreateManyInput | EngagementApartmentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EngagementApartment update
+   */
+  export type EngagementApartmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a EngagementApartment.
+     */
+    data: XOR<EngagementApartmentUpdateInput, EngagementApartmentUncheckedUpdateInput>
+    /**
+     * Choose, which EngagementApartment to update.
+     */
+    where: EngagementApartmentWhereUniqueInput
+  }
+
+  /**
+   * EngagementApartment updateMany
+   */
+  export type EngagementApartmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EngagementApartments.
+     */
+    data: XOR<EngagementApartmentUpdateManyMutationInput, EngagementApartmentUncheckedUpdateManyInput>
+    /**
+     * Filter which EngagementApartments to update
+     */
+    where?: EngagementApartmentWhereInput
+    /**
+     * Limit how many EngagementApartments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EngagementApartment updateManyAndReturn
+   */
+  export type EngagementApartmentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * The data used to update EngagementApartments.
+     */
+    data: XOR<EngagementApartmentUpdateManyMutationInput, EngagementApartmentUncheckedUpdateManyInput>
+    /**
+     * Filter which EngagementApartments to update
+     */
+    where?: EngagementApartmentWhereInput
+    /**
+     * Limit how many EngagementApartments to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EngagementApartment upsert
+   */
+  export type EngagementApartmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the EngagementApartment to update in case it exists.
+     */
+    where: EngagementApartmentWhereUniqueInput
+    /**
+     * In case the EngagementApartment found by the `where` argument doesn't exist, create a new EngagementApartment with this data.
+     */
+    create: XOR<EngagementApartmentCreateInput, EngagementApartmentUncheckedCreateInput>
+    /**
+     * In case the EngagementApartment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EngagementApartmentUpdateInput, EngagementApartmentUncheckedUpdateInput>
+  }
+
+  /**
+   * EngagementApartment delete
+   */
+  export type EngagementApartmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    /**
+     * Filter which EngagementApartment to delete.
+     */
+    where: EngagementApartmentWhereUniqueInput
+  }
+
+  /**
+   * EngagementApartment deleteMany
+   */
+  export type EngagementApartmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EngagementApartments to delete
+     */
+    where?: EngagementApartmentWhereInput
+    /**
+     * Limit how many EngagementApartments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EngagementApartment without action
+   */
+  export type EngagementApartmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
   }
 
 
@@ -16705,6 +17898,7 @@ export namespace Prisma {
     products?: boolean | Apartment$productsArgs<ExtArgs>
     checkinChecklistItems?: boolean | Apartment$checkinChecklistItemsArgs<ExtArgs>
     checkinTasks?: boolean | Apartment$checkinTasksArgs<ExtArgs>
+    engagements?: boolean | Apartment$engagementsArgs<ExtArgs>
     _count?: boolean | ApartmentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["apartment"]>
 
@@ -16815,6 +18009,7 @@ export namespace Prisma {
     products?: boolean | Apartment$productsArgs<ExtArgs>
     checkinChecklistItems?: boolean | Apartment$checkinChecklistItemsArgs<ExtArgs>
     checkinTasks?: boolean | Apartment$checkinTasksArgs<ExtArgs>
+    engagements?: boolean | Apartment$engagementsArgs<ExtArgs>
     _count?: boolean | ApartmentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApartmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16849,6 +18044,7 @@ export namespace Prisma {
       products: Prisma.$ApartmentProductPayload<ExtArgs>[]
       checkinChecklistItems: Prisma.$CheckinChecklistItemPayload<ExtArgs>[]
       checkinTasks: Prisma.$CheckinTaskPayload<ExtArgs>[]
+      engagements: Prisma.$EngagementApartmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -17285,6 +18481,7 @@ export namespace Prisma {
     products<T extends Apartment$productsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApartmentProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     checkinChecklistItems<T extends Apartment$checkinChecklistItemsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$checkinChecklistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinChecklistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     checkinTasks<T extends Apartment$checkinTasksArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$checkinTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    engagements<T extends Apartment$engagementsArgs<ExtArgs> = {}>(args?: Subset<T, Apartment$engagementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -18100,6 +19297,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CheckinTaskScalarFieldEnum | CheckinTaskScalarFieldEnum[]
+  }
+
+  /**
+   * Apartment.engagements
+   */
+  export type Apartment$engagementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EngagementApartment
+     */
+    select?: EngagementApartmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EngagementApartment
+     */
+    omit?: EngagementApartmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EngagementApartmentInclude<ExtArgs> | null
+    where?: EngagementApartmentWhereInput
+    orderBy?: EngagementApartmentOrderByWithRelationInput | EngagementApartmentOrderByWithRelationInput[]
+    cursor?: EngagementApartmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EngagementApartmentScalarFieldEnum | EngagementApartmentScalarFieldEnum[]
   }
 
   /**
@@ -50920,6 +52141,14 @@ export namespace Prisma {
   export type EngagementScalarFieldEnum = (typeof EngagementScalarFieldEnum)[keyof typeof EngagementScalarFieldEnum]
 
 
+  export const EngagementApartmentScalarFieldEnum: {
+    engagementId: 'engagementId',
+    apartmentId: 'apartmentId'
+  };
+
+  export type EngagementApartmentScalarFieldEnum = (typeof EngagementApartmentScalarFieldEnum)[keyof typeof EngagementApartmentScalarFieldEnum]
+
+
   export const ApartmentScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -52368,6 +53597,7 @@ export namespace Prisma {
     revokedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+    apartments?: EngagementApartmentListRelationFilter
   }
 
   export type EngagementOrderByWithRelationInput = {
@@ -52381,6 +53611,7 @@ export namespace Prisma {
     revokedAt?: SortOrderInput | SortOrder
     organization?: OrganizationOrderByWithRelationInput
     company?: CompanyOrderByWithRelationInput
+    apartments?: EngagementApartmentOrderByRelationAggregateInput
   }
 
   export type EngagementWhereUniqueInput = Prisma.AtLeast<{
@@ -52398,6 +53629,7 @@ export namespace Prisma {
     revokedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+    apartments?: EngagementApartmentListRelationFilter
   }, "id" | "organizationId_companyId_scope">
 
   export type EngagementOrderByWithAggregationInput = {
@@ -52426,6 +53658,50 @@ export namespace Prisma {
     invitedAt?: DateTimeWithAggregatesFilter<"Engagement"> | Date | string
     acceptedAt?: DateTimeNullableWithAggregatesFilter<"Engagement"> | Date | string | null
     revokedAt?: DateTimeNullableWithAggregatesFilter<"Engagement"> | Date | string | null
+  }
+
+  export type EngagementApartmentWhereInput = {
+    AND?: EngagementApartmentWhereInput | EngagementApartmentWhereInput[]
+    OR?: EngagementApartmentWhereInput[]
+    NOT?: EngagementApartmentWhereInput | EngagementApartmentWhereInput[]
+    engagementId?: StringFilter<"EngagementApartment"> | string
+    apartmentId?: StringFilter<"EngagementApartment"> | string
+    engagement?: XOR<EngagementScalarRelationFilter, EngagementWhereInput>
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+  }
+
+  export type EngagementApartmentOrderByWithRelationInput = {
+    engagementId?: SortOrder
+    apartmentId?: SortOrder
+    engagement?: EngagementOrderByWithRelationInput
+    apartment?: ApartmentOrderByWithRelationInput
+  }
+
+  export type EngagementApartmentWhereUniqueInput = Prisma.AtLeast<{
+    engagementId_apartmentId?: EngagementApartmentEngagementIdApartmentIdCompoundUniqueInput
+    AND?: EngagementApartmentWhereInput | EngagementApartmentWhereInput[]
+    OR?: EngagementApartmentWhereInput[]
+    NOT?: EngagementApartmentWhereInput | EngagementApartmentWhereInput[]
+    engagementId?: StringFilter<"EngagementApartment"> | string
+    apartmentId?: StringFilter<"EngagementApartment"> | string
+    engagement?: XOR<EngagementScalarRelationFilter, EngagementWhereInput>
+    apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
+  }, "engagementId_apartmentId">
+
+  export type EngagementApartmentOrderByWithAggregationInput = {
+    engagementId?: SortOrder
+    apartmentId?: SortOrder
+    _count?: EngagementApartmentCountOrderByAggregateInput
+    _max?: EngagementApartmentMaxOrderByAggregateInput
+    _min?: EngagementApartmentMinOrderByAggregateInput
+  }
+
+  export type EngagementApartmentScalarWhereWithAggregatesInput = {
+    AND?: EngagementApartmentScalarWhereWithAggregatesInput | EngagementApartmentScalarWhereWithAggregatesInput[]
+    OR?: EngagementApartmentScalarWhereWithAggregatesInput[]
+    NOT?: EngagementApartmentScalarWhereWithAggregatesInput | EngagementApartmentScalarWhereWithAggregatesInput[]
+    engagementId?: StringWithAggregatesFilter<"EngagementApartment"> | string
+    apartmentId?: StringWithAggregatesFilter<"EngagementApartment"> | string
   }
 
   export type ApartmentWhereInput = {
@@ -52472,6 +53748,7 @@ export namespace Prisma {
     products?: ApartmentProductListRelationFilter
     checkinChecklistItems?: CheckinChecklistItemListRelationFilter
     checkinTasks?: CheckinTaskListRelationFilter
+    engagements?: EngagementApartmentListRelationFilter
   }
 
   export type ApartmentOrderByWithRelationInput = {
@@ -52515,6 +53792,7 @@ export namespace Prisma {
     products?: ApartmentProductOrderByRelationAggregateInput
     checkinChecklistItems?: CheckinChecklistItemOrderByRelationAggregateInput
     checkinTasks?: CheckinTaskOrderByRelationAggregateInput
+    engagements?: EngagementApartmentOrderByRelationAggregateInput
   }
 
   export type ApartmentWhereUniqueInput = Prisma.AtLeast<{
@@ -52561,6 +53839,7 @@ export namespace Prisma {
     products?: ApartmentProductListRelationFilter
     checkinChecklistItems?: CheckinChecklistItemListRelationFilter
     checkinTasks?: CheckinTaskListRelationFilter
+    engagements?: EngagementApartmentListRelationFilter
   }, "id" | "apartmentCode">
 
   export type ApartmentOrderByWithAggregationInput = {
@@ -55851,6 +57130,7 @@ export namespace Prisma {
     revokedAt?: Date | string | null
     organization: OrganizationCreateNestedOneWithoutEngagementsInput
     company: CompanyCreateNestedOneWithoutEngagementsInput
+    apartments?: EngagementApartmentCreateNestedManyWithoutEngagementInput
   }
 
   export type EngagementUncheckedCreateInput = {
@@ -55862,6 +57142,7 @@ export namespace Prisma {
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
+    apartments?: EngagementApartmentUncheckedCreateNestedManyWithoutEngagementInput
   }
 
   export type EngagementUpdateInput = {
@@ -55873,6 +57154,7 @@ export namespace Prisma {
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneRequiredWithoutEngagementsNestedInput
     company?: CompanyUpdateOneRequiredWithoutEngagementsNestedInput
+    apartments?: EngagementApartmentUpdateManyWithoutEngagementNestedInput
   }
 
   export type EngagementUncheckedUpdateInput = {
@@ -55884,6 +57166,7 @@ export namespace Prisma {
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    apartments?: EngagementApartmentUncheckedUpdateManyWithoutEngagementNestedInput
   }
 
   export type EngagementCreateManyInput = {
@@ -55915,6 +57198,40 @@ export namespace Prisma {
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type EngagementApartmentCreateInput = {
+    engagement: EngagementCreateNestedOneWithoutApartmentsInput
+    apartment: ApartmentCreateNestedOneWithoutEngagementsInput
+  }
+
+  export type EngagementApartmentUncheckedCreateInput = {
+    engagementId: string
+    apartmentId: string
+  }
+
+  export type EngagementApartmentUpdateInput = {
+    engagement?: EngagementUpdateOneRequiredWithoutApartmentsNestedInput
+    apartment?: ApartmentUpdateOneRequiredWithoutEngagementsNestedInput
+  }
+
+  export type EngagementApartmentUncheckedUpdateInput = {
+    engagementId?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type EngagementApartmentCreateManyInput = {
+    engagementId: string
+    apartmentId: string
+  }
+
+  export type EngagementApartmentUpdateManyMutationInput = {
+
+  }
+
+  export type EngagementApartmentUncheckedUpdateManyInput = {
+    engagementId?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ApartmentCreateInput = {
@@ -55954,6 +57271,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateInput = {
@@ -55993,6 +57311,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUpdateInput = {
@@ -56032,6 +57351,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateInput = {
@@ -56071,6 +57391,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateManyInput = {
@@ -59494,6 +60815,16 @@ export namespace Prisma {
     isNot?: CompanyWhereInput
   }
 
+  export type EngagementApartmentListRelationFilter = {
+    every?: EngagementApartmentWhereInput
+    some?: EngagementApartmentWhereInput
+    none?: EngagementApartmentWhereInput
+  }
+
+  export type EngagementApartmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type EngagementOrganizationIdCompanyIdScopeCompoundUniqueInput = {
     organizationId: string
     companyId: string
@@ -59531,6 +60862,36 @@ export namespace Prisma {
     invitedAt?: SortOrder
     acceptedAt?: SortOrder
     revokedAt?: SortOrder
+  }
+
+  export type EngagementScalarRelationFilter = {
+    is?: EngagementWhereInput
+    isNot?: EngagementWhereInput
+  }
+
+  export type ApartmentScalarRelationFilter = {
+    is?: ApartmentWhereInput
+    isNot?: ApartmentWhereInput
+  }
+
+  export type EngagementApartmentEngagementIdApartmentIdCompoundUniqueInput = {
+    engagementId: string
+    apartmentId: string
+  }
+
+  export type EngagementApartmentCountOrderByAggregateInput = {
+    engagementId?: SortOrder
+    apartmentId?: SortOrder
+  }
+
+  export type EngagementApartmentMaxOrderByAggregateInput = {
+    engagementId?: SortOrder
+    apartmentId?: SortOrder
+  }
+
+  export type EngagementApartmentMinOrderByAggregateInput = {
+    engagementId?: SortOrder
+    apartmentId?: SortOrder
   }
 
   export type ClientNullableScalarRelationFilter = {
@@ -59709,11 +61070,6 @@ export namespace Prisma {
     bedrooms?: SortOrder
     bathrooms?: SortOrder
     maxGuests?: SortOrder
-  }
-
-  export type ApartmentScalarRelationFilter = {
-    is?: ApartmentWhereInput
-    isNot?: ApartmentWhereInput
   }
 
   export type ChecklistItemCountOrderByAggregateInput = {
@@ -62168,6 +63524,20 @@ export namespace Prisma {
     connect?: CompanyWhereUniqueInput
   }
 
+  export type EngagementApartmentCreateNestedManyWithoutEngagementInput = {
+    create?: XOR<EngagementApartmentCreateWithoutEngagementInput, EngagementApartmentUncheckedCreateWithoutEngagementInput> | EngagementApartmentCreateWithoutEngagementInput[] | EngagementApartmentUncheckedCreateWithoutEngagementInput[]
+    connectOrCreate?: EngagementApartmentCreateOrConnectWithoutEngagementInput | EngagementApartmentCreateOrConnectWithoutEngagementInput[]
+    createMany?: EngagementApartmentCreateManyEngagementInputEnvelope
+    connect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+  }
+
+  export type EngagementApartmentUncheckedCreateNestedManyWithoutEngagementInput = {
+    create?: XOR<EngagementApartmentCreateWithoutEngagementInput, EngagementApartmentUncheckedCreateWithoutEngagementInput> | EngagementApartmentCreateWithoutEngagementInput[] | EngagementApartmentUncheckedCreateWithoutEngagementInput[]
+    connectOrCreate?: EngagementApartmentCreateOrConnectWithoutEngagementInput | EngagementApartmentCreateOrConnectWithoutEngagementInput[]
+    createMany?: EngagementApartmentCreateManyEngagementInputEnvelope
+    connect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+  }
+
   export type OrganizationUpdateOneRequiredWithoutEngagementsNestedInput = {
     create?: XOR<OrganizationCreateWithoutEngagementsInput, OrganizationUncheckedCreateWithoutEngagementsInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutEngagementsInput
@@ -62182,6 +63552,62 @@ export namespace Prisma {
     upsert?: CompanyUpsertWithoutEngagementsInput
     connect?: CompanyWhereUniqueInput
     update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutEngagementsInput, CompanyUpdateWithoutEngagementsInput>, CompanyUncheckedUpdateWithoutEngagementsInput>
+  }
+
+  export type EngagementApartmentUpdateManyWithoutEngagementNestedInput = {
+    create?: XOR<EngagementApartmentCreateWithoutEngagementInput, EngagementApartmentUncheckedCreateWithoutEngagementInput> | EngagementApartmentCreateWithoutEngagementInput[] | EngagementApartmentUncheckedCreateWithoutEngagementInput[]
+    connectOrCreate?: EngagementApartmentCreateOrConnectWithoutEngagementInput | EngagementApartmentCreateOrConnectWithoutEngagementInput[]
+    upsert?: EngagementApartmentUpsertWithWhereUniqueWithoutEngagementInput | EngagementApartmentUpsertWithWhereUniqueWithoutEngagementInput[]
+    createMany?: EngagementApartmentCreateManyEngagementInputEnvelope
+    set?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    disconnect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    delete?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    connect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    update?: EngagementApartmentUpdateWithWhereUniqueWithoutEngagementInput | EngagementApartmentUpdateWithWhereUniqueWithoutEngagementInput[]
+    updateMany?: EngagementApartmentUpdateManyWithWhereWithoutEngagementInput | EngagementApartmentUpdateManyWithWhereWithoutEngagementInput[]
+    deleteMany?: EngagementApartmentScalarWhereInput | EngagementApartmentScalarWhereInput[]
+  }
+
+  export type EngagementApartmentUncheckedUpdateManyWithoutEngagementNestedInput = {
+    create?: XOR<EngagementApartmentCreateWithoutEngagementInput, EngagementApartmentUncheckedCreateWithoutEngagementInput> | EngagementApartmentCreateWithoutEngagementInput[] | EngagementApartmentUncheckedCreateWithoutEngagementInput[]
+    connectOrCreate?: EngagementApartmentCreateOrConnectWithoutEngagementInput | EngagementApartmentCreateOrConnectWithoutEngagementInput[]
+    upsert?: EngagementApartmentUpsertWithWhereUniqueWithoutEngagementInput | EngagementApartmentUpsertWithWhereUniqueWithoutEngagementInput[]
+    createMany?: EngagementApartmentCreateManyEngagementInputEnvelope
+    set?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    disconnect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    delete?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    connect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    update?: EngagementApartmentUpdateWithWhereUniqueWithoutEngagementInput | EngagementApartmentUpdateWithWhereUniqueWithoutEngagementInput[]
+    updateMany?: EngagementApartmentUpdateManyWithWhereWithoutEngagementInput | EngagementApartmentUpdateManyWithWhereWithoutEngagementInput[]
+    deleteMany?: EngagementApartmentScalarWhereInput | EngagementApartmentScalarWhereInput[]
+  }
+
+  export type EngagementCreateNestedOneWithoutApartmentsInput = {
+    create?: XOR<EngagementCreateWithoutApartmentsInput, EngagementUncheckedCreateWithoutApartmentsInput>
+    connectOrCreate?: EngagementCreateOrConnectWithoutApartmentsInput
+    connect?: EngagementWhereUniqueInput
+  }
+
+  export type ApartmentCreateNestedOneWithoutEngagementsInput = {
+    create?: XOR<ApartmentCreateWithoutEngagementsInput, ApartmentUncheckedCreateWithoutEngagementsInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutEngagementsInput
+    connect?: ApartmentWhereUniqueInput
+  }
+
+  export type EngagementUpdateOneRequiredWithoutApartmentsNestedInput = {
+    create?: XOR<EngagementCreateWithoutApartmentsInput, EngagementUncheckedCreateWithoutApartmentsInput>
+    connectOrCreate?: EngagementCreateOrConnectWithoutApartmentsInput
+    upsert?: EngagementUpsertWithoutApartmentsInput
+    connect?: EngagementWhereUniqueInput
+    update?: XOR<XOR<EngagementUpdateToOneWithWhereWithoutApartmentsInput, EngagementUpdateWithoutApartmentsInput>, EngagementUncheckedUpdateWithoutApartmentsInput>
+  }
+
+  export type ApartmentUpdateOneRequiredWithoutEngagementsNestedInput = {
+    create?: XOR<ApartmentCreateWithoutEngagementsInput, ApartmentUncheckedCreateWithoutEngagementsInput>
+    connectOrCreate?: ApartmentCreateOrConnectWithoutEngagementsInput
+    upsert?: ApartmentUpsertWithoutEngagementsInput
+    connect?: ApartmentWhereUniqueInput
+    update?: XOR<XOR<ApartmentUpdateToOneWithWhereWithoutEngagementsInput, ApartmentUpdateWithoutEngagementsInput>, ApartmentUncheckedUpdateWithoutEngagementsInput>
   }
 
   export type OrganizationCreateNestedOneWithoutApartmentsInput = {
@@ -62292,6 +63718,13 @@ export namespace Prisma {
     connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
   }
 
+  export type EngagementApartmentCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<EngagementApartmentCreateWithoutApartmentInput, EngagementApartmentUncheckedCreateWithoutApartmentInput> | EngagementApartmentCreateWithoutApartmentInput[] | EngagementApartmentUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: EngagementApartmentCreateOrConnectWithoutApartmentInput | EngagementApartmentCreateOrConnectWithoutApartmentInput[]
+    createMany?: EngagementApartmentCreateManyApartmentInputEnvelope
+    connect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+  }
+
   export type BookingUncheckedCreateNestedManyWithoutApartmentInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -62374,6 +63807,13 @@ export namespace Prisma {
     connectOrCreate?: CheckinTaskCreateOrConnectWithoutApartmentInput | CheckinTaskCreateOrConnectWithoutApartmentInput[]
     createMany?: CheckinTaskCreateManyApartmentInputEnvelope
     connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+  }
+
+  export type EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput = {
+    create?: XOR<EngagementApartmentCreateWithoutApartmentInput, EngagementApartmentUncheckedCreateWithoutApartmentInput> | EngagementApartmentCreateWithoutApartmentInput[] | EngagementApartmentUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: EngagementApartmentCreateOrConnectWithoutApartmentInput | EngagementApartmentCreateOrConnectWithoutApartmentInput[]
+    createMany?: EngagementApartmentCreateManyApartmentInputEnvelope
+    connect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
   }
 
   export type OrganizationUpdateOneWithoutApartmentsNestedInput = {
@@ -62584,6 +64024,20 @@ export namespace Prisma {
     deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
   }
 
+  export type EngagementApartmentUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<EngagementApartmentCreateWithoutApartmentInput, EngagementApartmentUncheckedCreateWithoutApartmentInput> | EngagementApartmentCreateWithoutApartmentInput[] | EngagementApartmentUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: EngagementApartmentCreateOrConnectWithoutApartmentInput | EngagementApartmentCreateOrConnectWithoutApartmentInput[]
+    upsert?: EngagementApartmentUpsertWithWhereUniqueWithoutApartmentInput | EngagementApartmentUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: EngagementApartmentCreateManyApartmentInputEnvelope
+    set?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    disconnect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    delete?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    connect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    update?: EngagementApartmentUpdateWithWhereUniqueWithoutApartmentInput | EngagementApartmentUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: EngagementApartmentUpdateManyWithWhereWithoutApartmentInput | EngagementApartmentUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: EngagementApartmentScalarWhereInput | EngagementApartmentScalarWhereInput[]
+  }
+
   export type BookingUncheckedUpdateManyWithoutApartmentNestedInput = {
     create?: XOR<BookingCreateWithoutApartmentInput, BookingUncheckedCreateWithoutApartmentInput> | BookingCreateWithoutApartmentInput[] | BookingUncheckedCreateWithoutApartmentInput[]
     connectOrCreate?: BookingCreateOrConnectWithoutApartmentInput | BookingCreateOrConnectWithoutApartmentInput[]
@@ -62750,6 +64204,20 @@ export namespace Prisma {
     update?: CheckinTaskUpdateWithWhereUniqueWithoutApartmentInput | CheckinTaskUpdateWithWhereUniqueWithoutApartmentInput[]
     updateMany?: CheckinTaskUpdateManyWithWhereWithoutApartmentInput | CheckinTaskUpdateManyWithWhereWithoutApartmentInput[]
     deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
+  }
+
+  export type EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput = {
+    create?: XOR<EngagementApartmentCreateWithoutApartmentInput, EngagementApartmentUncheckedCreateWithoutApartmentInput> | EngagementApartmentCreateWithoutApartmentInput[] | EngagementApartmentUncheckedCreateWithoutApartmentInput[]
+    connectOrCreate?: EngagementApartmentCreateOrConnectWithoutApartmentInput | EngagementApartmentCreateOrConnectWithoutApartmentInput[]
+    upsert?: EngagementApartmentUpsertWithWhereUniqueWithoutApartmentInput | EngagementApartmentUpsertWithWhereUniqueWithoutApartmentInput[]
+    createMany?: EngagementApartmentCreateManyApartmentInputEnvelope
+    set?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    disconnect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    delete?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    connect?: EngagementApartmentWhereUniqueInput | EngagementApartmentWhereUniqueInput[]
+    update?: EngagementApartmentUpdateWithWhereUniqueWithoutApartmentInput | EngagementApartmentUpdateWithWhereUniqueWithoutApartmentInput[]
+    updateMany?: EngagementApartmentUpdateManyWithWhereWithoutApartmentInput | EngagementApartmentUpdateManyWithWhereWithoutApartmentInput[]
+    deleteMany?: EngagementApartmentScalarWhereInput | EngagementApartmentScalarWhereInput[]
   }
 
   export type ApartmentCreateNestedOneWithoutChecklistItemsInput = {
@@ -64572,6 +66040,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutOrganizationInput = {
@@ -64610,6 +66079,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutOrganizationInput = {
@@ -64690,6 +66160,7 @@ export namespace Prisma {
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
     company: CompanyCreateNestedOneWithoutEngagementsInput
+    apartments?: EngagementApartmentCreateNestedManyWithoutEngagementInput
   }
 
   export type EngagementUncheckedCreateWithoutOrganizationInput = {
@@ -64700,6 +66171,7 @@ export namespace Prisma {
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
+    apartments?: EngagementApartmentUncheckedCreateNestedManyWithoutEngagementInput
   }
 
   export type EngagementCreateOrConnectWithoutOrganizationInput = {
@@ -65033,6 +66505,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutPropertyInput = {
@@ -65071,6 +66544,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutPropertyInput = {
@@ -65549,6 +67023,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutUnitCategoryInput = {
@@ -65587,6 +67062,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutUnitCategoryInput = {
@@ -66556,6 +68032,7 @@ export namespace Prisma {
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
     organization: OrganizationCreateNestedOneWithoutEngagementsInput
+    apartments?: EngagementApartmentCreateNestedManyWithoutEngagementInput
   }
 
   export type EngagementUncheckedCreateWithoutCompanyInput = {
@@ -66566,6 +68043,7 @@ export namespace Prisma {
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
+    apartments?: EngagementApartmentUncheckedCreateNestedManyWithoutEngagementInput
   }
 
   export type EngagementCreateOrConnectWithoutCompanyInput = {
@@ -66793,6 +68271,24 @@ export namespace Prisma {
     create: XOR<CompanyCreateWithoutEngagementsInput, CompanyUncheckedCreateWithoutEngagementsInput>
   }
 
+  export type EngagementApartmentCreateWithoutEngagementInput = {
+    apartment: ApartmentCreateNestedOneWithoutEngagementsInput
+  }
+
+  export type EngagementApartmentUncheckedCreateWithoutEngagementInput = {
+    apartmentId: string
+  }
+
+  export type EngagementApartmentCreateOrConnectWithoutEngagementInput = {
+    where: EngagementApartmentWhereUniqueInput
+    create: XOR<EngagementApartmentCreateWithoutEngagementInput, EngagementApartmentUncheckedCreateWithoutEngagementInput>
+  }
+
+  export type EngagementApartmentCreateManyEngagementInputEnvelope = {
+    data: EngagementApartmentCreateManyEngagementInput | EngagementApartmentCreateManyEngagementInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutEngagementsInput = {
     update: XOR<OrganizationUpdateWithoutEngagementsInput, OrganizationUncheckedUpdateWithoutEngagementsInput>
     create: XOR<OrganizationCreateWithoutEngagementsInput, OrganizationUncheckedCreateWithoutEngagementsInput>
@@ -66903,6 +68399,262 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type EngagementApartmentUpsertWithWhereUniqueWithoutEngagementInput = {
+    where: EngagementApartmentWhereUniqueInput
+    update: XOR<EngagementApartmentUpdateWithoutEngagementInput, EngagementApartmentUncheckedUpdateWithoutEngagementInput>
+    create: XOR<EngagementApartmentCreateWithoutEngagementInput, EngagementApartmentUncheckedCreateWithoutEngagementInput>
+  }
+
+  export type EngagementApartmentUpdateWithWhereUniqueWithoutEngagementInput = {
+    where: EngagementApartmentWhereUniqueInput
+    data: XOR<EngagementApartmentUpdateWithoutEngagementInput, EngagementApartmentUncheckedUpdateWithoutEngagementInput>
+  }
+
+  export type EngagementApartmentUpdateManyWithWhereWithoutEngagementInput = {
+    where: EngagementApartmentScalarWhereInput
+    data: XOR<EngagementApartmentUpdateManyMutationInput, EngagementApartmentUncheckedUpdateManyWithoutEngagementInput>
+  }
+
+  export type EngagementApartmentScalarWhereInput = {
+    AND?: EngagementApartmentScalarWhereInput | EngagementApartmentScalarWhereInput[]
+    OR?: EngagementApartmentScalarWhereInput[]
+    NOT?: EngagementApartmentScalarWhereInput | EngagementApartmentScalarWhereInput[]
+    engagementId?: StringFilter<"EngagementApartment"> | string
+    apartmentId?: StringFilter<"EngagementApartment"> | string
+  }
+
+  export type EngagementCreateWithoutApartmentsInput = {
+    id?: string
+    scope: string
+    status?: string
+    invitedAt?: Date | string
+    acceptedAt?: Date | string | null
+    revokedAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutEngagementsInput
+    company: CompanyCreateNestedOneWithoutEngagementsInput
+  }
+
+  export type EngagementUncheckedCreateWithoutApartmentsInput = {
+    id?: string
+    organizationId: string
+    companyId: string
+    scope: string
+    status?: string
+    invitedAt?: Date | string
+    acceptedAt?: Date | string | null
+    revokedAt?: Date | string | null
+  }
+
+  export type EngagementCreateOrConnectWithoutApartmentsInput = {
+    where: EngagementWhereUniqueInput
+    create: XOR<EngagementCreateWithoutApartmentsInput, EngagementUncheckedCreateWithoutApartmentsInput>
+  }
+
+  export type ApartmentCreateWithoutEngagementsInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    checkinDefaultTime?: string | null
+    autoCheckin?: boolean
+    createdAt?: Date | string
+    unitNumber?: string | null
+    organization?: OrganizationCreateNestedOneWithoutApartmentsInput
+    client?: ClientCreateNestedOneWithoutApartmentsInput
+    property?: PropertyCreateNestedOneWithoutUnitsInput
+    unitCategory?: UnitCategoryCreateNestedOneWithoutUnitsInput
+    bookings?: BookingCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentUncheckedCreateWithoutEngagementsInput = {
+    id?: string
+    name: string
+    apartmentCode?: string | null
+    organizationId?: string | null
+    address: string
+    latitude: number
+    longitude: number
+    squareMeters: number
+    bedrooms: number
+    bathrooms: number
+    maxGuests: number
+    accessInstructions?: string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: string | null
+    lastSyncAt?: Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    checkinDefaultTime?: string | null
+    autoCheckin?: boolean
+    createdAt?: Date | string
+    clientId?: string | null
+    propertyId?: string | null
+    unitCategoryId?: string | null
+    unitNumber?: string | null
+    bookings?: BookingUncheckedCreateNestedManyWithoutApartmentInput
+    checklistItems?: ChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutApartmentInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutApartmentInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApartmentInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutApartmentInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedCreateNestedManyWithoutApartmentInput
+    supervisors?: ApartmentSupervisorUncheckedCreateNestedManyWithoutApartmentInput
+    owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
+    products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+  }
+
+  export type ApartmentCreateOrConnectWithoutEngagementsInput = {
+    where: ApartmentWhereUniqueInput
+    create: XOR<ApartmentCreateWithoutEngagementsInput, ApartmentUncheckedCreateWithoutEngagementsInput>
+  }
+
+  export type EngagementUpsertWithoutApartmentsInput = {
+    update: XOR<EngagementUpdateWithoutApartmentsInput, EngagementUncheckedUpdateWithoutApartmentsInput>
+    create: XOR<EngagementCreateWithoutApartmentsInput, EngagementUncheckedCreateWithoutApartmentsInput>
+    where?: EngagementWhereInput
+  }
+
+  export type EngagementUpdateToOneWithWhereWithoutApartmentsInput = {
+    where?: EngagementWhereInput
+    data: XOR<EngagementUpdateWithoutApartmentsInput, EngagementUncheckedUpdateWithoutApartmentsInput>
+  }
+
+  export type EngagementUpdateWithoutApartmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutEngagementsNestedInput
+    company?: CompanyUpdateOneRequiredWithoutEngagementsNestedInput
+  }
+
+  export type EngagementUncheckedUpdateWithoutApartmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ApartmentUpsertWithoutEngagementsInput = {
+    update: XOR<ApartmentUpdateWithoutEngagementsInput, ApartmentUncheckedUpdateWithoutEngagementsInput>
+    create: XOR<ApartmentCreateWithoutEngagementsInput, ApartmentUncheckedCreateWithoutEngagementsInput>
+    where?: ApartmentWhereInput
+  }
+
+  export type ApartmentUpdateToOneWithWhereWithoutEngagementsInput = {
+    where?: ApartmentWhereInput
+    data: XOR<ApartmentUpdateWithoutEngagementsInput, ApartmentUncheckedUpdateWithoutEngagementsInput>
+  }
+
+  export type ApartmentUpdateWithoutEngagementsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    unitNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    organization?: OrganizationUpdateOneWithoutApartmentsNestedInput
+    client?: ClientUpdateOneWithoutApartmentsNestedInput
+    property?: PropertyUpdateOneWithoutUnitsNestedInput
+    unitCategory?: UnitCategoryUpdateOneWithoutUnitsNestedInput
+    bookings?: BookingUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+  }
+
+  export type ApartmentUncheckedUpdateWithoutEngagementsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    apartmentCode?: NullableStringFieldUpdateOperationsInput | string | null
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
+    squareMeters?: IntFieldUpdateOperationsInput | number
+    bedrooms?: IntFieldUpdateOperationsInput | number
+    bathrooms?: IntFieldUpdateOperationsInput | number
+    maxGuests?: IntFieldUpdateOperationsInput | number
+    accessInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    accessInfo?: NullableJsonNullValueInput | InputJsonValue
+    bedConfig?: NullableJsonNullValueInput | InputJsonValue
+    icalUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    technicalProfile?: NullableJsonNullValueInput | InputJsonValue
+    checkinDefaultTime?: NullableStringFieldUpdateOperationsInput | string | null
+    autoCheckin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    unitCategoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    unitNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bookings?: BookingUncheckedUpdateManyWithoutApartmentNestedInput
+    checklistItems?: ChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutApartmentNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApartmentNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutApartmentNestedInput
+    apartmentAttachments?: ApartmentAttachmentUncheckedUpdateManyWithoutApartmentNestedInput
+    supervisors?: ApartmentSupervisorUncheckedUpdateManyWithoutApartmentNestedInput
+    owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
+    products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type OrganizationCreateWithoutApartmentsInput = {
@@ -67537,6 +69289,24 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type EngagementApartmentCreateWithoutApartmentInput = {
+    engagement: EngagementCreateNestedOneWithoutApartmentsInput
+  }
+
+  export type EngagementApartmentUncheckedCreateWithoutApartmentInput = {
+    engagementId: string
+  }
+
+  export type EngagementApartmentCreateOrConnectWithoutApartmentInput = {
+    where: EngagementApartmentWhereUniqueInput
+    create: XOR<EngagementApartmentCreateWithoutApartmentInput, EngagementApartmentUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type EngagementApartmentCreateManyApartmentInputEnvelope = {
+    data: EngagementApartmentCreateManyApartmentInput | EngagementApartmentCreateManyApartmentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutApartmentsInput = {
     update: XOR<OrganizationUpdateWithoutApartmentsInput, OrganizationUncheckedUpdateWithoutApartmentsInput>
     create: XOR<OrganizationCreateWithoutApartmentsInput, OrganizationUncheckedCreateWithoutApartmentsInput>
@@ -68055,6 +69825,22 @@ export namespace Prisma {
     data: XOR<CheckinTaskUpdateManyMutationInput, CheckinTaskUncheckedUpdateManyWithoutApartmentInput>
   }
 
+  export type EngagementApartmentUpsertWithWhereUniqueWithoutApartmentInput = {
+    where: EngagementApartmentWhereUniqueInput
+    update: XOR<EngagementApartmentUpdateWithoutApartmentInput, EngagementApartmentUncheckedUpdateWithoutApartmentInput>
+    create: XOR<EngagementApartmentCreateWithoutApartmentInput, EngagementApartmentUncheckedCreateWithoutApartmentInput>
+  }
+
+  export type EngagementApartmentUpdateWithWhereUniqueWithoutApartmentInput = {
+    where: EngagementApartmentWhereUniqueInput
+    data: XOR<EngagementApartmentUpdateWithoutApartmentInput, EngagementApartmentUncheckedUpdateWithoutApartmentInput>
+  }
+
+  export type EngagementApartmentUpdateManyWithWhereWithoutApartmentInput = {
+    where: EngagementApartmentScalarWhereInput
+    data: XOR<EngagementApartmentUpdateManyMutationInput, EngagementApartmentUncheckedUpdateManyWithoutApartmentInput>
+  }
+
   export type ApartmentCreateWithoutChecklistItemsInput = {
     id?: string
     name: string
@@ -68091,6 +69877,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutChecklistItemsInput = {
@@ -68129,6 +69916,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutChecklistItemsInput = {
@@ -68183,6 +69971,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutChecklistItemsInput = {
@@ -68221,6 +70010,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateWithoutNotificationsInput = {
@@ -68259,6 +70049,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutNotificationsInput = {
@@ -68297,6 +70088,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutNotificationsInput = {
@@ -68351,6 +70143,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutNotificationsInput = {
@@ -68389,6 +70182,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentCreateWithoutBookingsInput = {
@@ -68427,6 +70221,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutBookingsInput = {
@@ -68465,6 +70260,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutBookingsInput = {
@@ -68613,6 +70409,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutBookingsInput = {
@@ -68651,6 +70448,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type CleaningTaskUpsertWithoutBookingInput = {
@@ -68832,6 +70630,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutCleaningTasksInput = {
@@ -68870,6 +70669,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutCleaningTasksInput = {
@@ -69166,6 +70966,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutCleaningTasksInput = {
@@ -69204,6 +71005,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutCleaningTasksInput = {
@@ -69409,6 +71211,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutCheckinChecklistItemsInput = {
@@ -69447,6 +71250,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutCheckinChecklistItemsInput = {
@@ -69501,6 +71305,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutCheckinChecklistItemsInput = {
@@ -69539,6 +71344,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type BookingCreateWithoutCheckinTaskInput = {
@@ -69614,6 +71420,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutCheckinTasksInput = {
@@ -69652,6 +71459,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutCheckinTasksInput = {
@@ -69888,6 +71696,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutCheckinTasksInput = {
@@ -69926,6 +71735,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutCheckinTasksInput = {
@@ -70246,6 +72056,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -70284,6 +72095,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -70537,6 +72349,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -70575,6 +72388,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutMaintenanceTicketsInput = {
@@ -70763,6 +72577,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutAiAssistantMessagesInput = {
@@ -70801,6 +72616,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutAiAssistantMessagesInput = {
@@ -70959,6 +72775,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutAiAssistantMessagesInput = {
@@ -70997,6 +72814,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type CleaningTaskUpsertWithoutAiAssistantMessagesInput = {
@@ -71599,6 +73417,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutApartmentAttachmentsInput = {
@@ -71637,6 +73456,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutApartmentAttachmentsInput = {
@@ -71691,6 +73511,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutApartmentAttachmentsInput = {
@@ -71729,6 +73550,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type MaintenanceTicketCreateWithoutMessagesInput = {
@@ -72503,6 +74325,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutSupervisorsInput = {
@@ -72541,6 +74364,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutSupervisorsInput = {
@@ -72660,6 +74484,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutSupervisorsInput = {
@@ -72698,6 +74523,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutSupervisedApartmentsInput = {
@@ -72807,6 +74633,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutClientInput = {
@@ -72845,6 +74672,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutClientInput = {
@@ -72909,6 +74737,7 @@ export namespace Prisma {
     products?: ApartmentProductCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutOwnersInput = {
@@ -72947,6 +74776,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutOwnersInput = {
@@ -73066,6 +74896,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutOwnersInput = {
@@ -73104,6 +74935,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type UserUpsertWithoutOwnedApartmentsInput = {
@@ -74000,6 +75832,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentUncheckedCreateWithoutProductsInput = {
@@ -74038,6 +75871,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUncheckedCreateNestedManyWithoutApartmentInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedCreateNestedManyWithoutApartmentInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutApartmentInput
+    engagements?: EngagementApartmentUncheckedCreateNestedManyWithoutApartmentInput
   }
 
   export type ApartmentCreateOrConnectWithoutProductsInput = {
@@ -74122,6 +75956,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutProductsInput = {
@@ -74160,6 +75995,7 @@ export namespace Prisma {
     owners?: ApartmentOwnerUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type StockMovementUpsertWithWhereUniqueWithoutProductInput = {
@@ -74672,6 +76508,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutOrganizationInput = {
@@ -74710,6 +76547,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateManyWithoutOrganizationInput = {
@@ -74802,6 +76640,7 @@ export namespace Prisma {
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: CompanyUpdateOneRequiredWithoutEngagementsNestedInput
+    apartments?: EngagementApartmentUpdateManyWithoutEngagementNestedInput
   }
 
   export type EngagementUncheckedUpdateWithoutOrganizationInput = {
@@ -74812,6 +76651,7 @@ export namespace Prisma {
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    apartments?: EngagementApartmentUncheckedUpdateManyWithoutEngagementNestedInput
   }
 
   export type EngagementUncheckedUpdateManyWithoutOrganizationInput = {
@@ -74961,6 +76801,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutPropertyInput = {
@@ -74999,6 +76840,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateManyWithoutPropertyInput = {
@@ -75170,6 +77012,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutUnitCategoryInput = {
@@ -75208,6 +77051,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateManyWithoutUnitCategoryInput = {
@@ -75759,6 +77603,7 @@ export namespace Prisma {
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneRequiredWithoutEngagementsNestedInput
+    apartments?: EngagementApartmentUpdateManyWithoutEngagementNestedInput
   }
 
   export type EngagementUncheckedUpdateWithoutCompanyInput = {
@@ -75769,6 +77614,7 @@ export namespace Prisma {
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    apartments?: EngagementApartmentUncheckedUpdateManyWithoutEngagementNestedInput
   }
 
   export type EngagementUncheckedUpdateManyWithoutCompanyInput = {
@@ -75832,6 +77678,22 @@ export namespace Prisma {
     vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EngagementApartmentCreateManyEngagementInput = {
+    apartmentId: string
+  }
+
+  export type EngagementApartmentUpdateWithoutEngagementInput = {
+    apartment?: ApartmentUpdateOneRequiredWithoutEngagementsNestedInput
+  }
+
+  export type EngagementApartmentUncheckedUpdateWithoutEngagementInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type EngagementApartmentUncheckedUpdateManyWithoutEngagementInput = {
+    apartmentId?: StringFieldUpdateOperationsInput | string
   }
 
   export type BookingCreateManyApartmentInput = {
@@ -75982,6 +77844,10 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: string | null
     checkinAccessTokenExpiresAt?: Date | string | null
+  }
+
+  export type EngagementApartmentCreateManyApartmentInput = {
+    engagementId: string
   }
 
   export type BookingUpdateWithoutApartmentInput = {
@@ -76458,6 +78324,18 @@ export namespace Prisma {
     checklistProgress?: NullableJsonNullValueInput | InputJsonValue
     checkinAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type EngagementApartmentUpdateWithoutApartmentInput = {
+    engagement?: EngagementUpdateOneRequiredWithoutApartmentsNestedInput
+  }
+
+  export type EngagementApartmentUncheckedUpdateWithoutApartmentInput = {
+    engagementId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type EngagementApartmentUncheckedUpdateManyWithoutApartmentInput = {
+    engagementId?: StringFieldUpdateOperationsInput | string
   }
 
   export type CleaningTaskMessageCreateManyCleaningTaskInput = {
@@ -77120,6 +78998,7 @@ export namespace Prisma {
     products?: ApartmentProductUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateWithoutClientInput = {
@@ -77158,6 +79037,7 @@ export namespace Prisma {
     products?: ApartmentProductUncheckedUpdateManyWithoutApartmentNestedInput
     checkinChecklistItems?: CheckinChecklistItemUncheckedUpdateManyWithoutApartmentNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutApartmentNestedInput
+    engagements?: EngagementApartmentUncheckedUpdateManyWithoutApartmentNestedInput
   }
 
   export type ApartmentUncheckedUpdateManyWithoutClientInput = {

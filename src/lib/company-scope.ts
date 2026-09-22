@@ -6,6 +6,14 @@ export type CompanyScope = (typeof COMPANY_SCOPES)[number];
 
 export type CompanyManager = { id: string; name: string; email: string };
 
+export type EngagementHandler = {
+  engagementId: string;
+  companyId: string;
+  companyName: string;
+  status: string;
+  apartmentIds: string[]; // vuoto = tutti gli appartamenti dell'org
+};
+
 export type ImpreseOverview = {
   companies: {
     id: string;
@@ -14,6 +22,7 @@ export type ImpreseOverview = {
     scopes: string[];
     managers: CompanyManager[];
   }[];
-  // per ogni scope: chi la gestisce ora (impresa attiva) — null = interno
-  handlers: Record<string, { engagementId: string; companyId: string; companyName: string; status: string } | null>;
+  apartments: { id: string; name: string }[];
+  // per ogni scope: lista delle deleghe attive (vuota = interno)
+  handlers: Record<string, EngagementHandler[]>;
 };

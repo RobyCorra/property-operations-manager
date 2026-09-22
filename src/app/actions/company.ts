@@ -10,7 +10,7 @@ import { getCompanyAccess } from "@/src/lib/company-access";
 import { approveCleaningDirectly, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { parseRomeDateTime } from "@/src/lib/rome-datetime";
 import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
-import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview } from "@/src/lib/company-scope";
+import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview, type EngagementHandler } from "@/src/lib/company-scope";
 
 // Categoria media dal mime-type (per il rendering in chat).
 function mediaCategory(mime: string): "image" | "audio" | "file" {
@@ -51,10 +51,13 @@ function slugify(s: string): string {
 
 export async function getImpreseOverview(): Promise<ImpreseOverview> {
   const orgId = await requireOwner();
-  const [engagements, companies] = await Promise.all([
+  const [engagements, companies, apartments] = await Promise.all([
     prisma.engagement.findMany({
       where: { organizationId: orgId, status: { not: "REVOKED" } },
-      include: { company: { select: { id: true, name: true } } },
+      include: {
+        company: { select: { id: true, name: true } },
+        apartments: { select: { apartmentId: true } },
+      },
     }),
     prisma.company.findMany({
       orderBy: { name: "asc" },
@@ -70,17 +73,24 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
         },
       },
     }),
+    prisma.apartment.findMany({
+      where: { organizationId: orgId },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   const handlers: ImpreseOverview["handlers"] = {};
-  for (const s of COMPANY_SCOPES) handlers[s] = null;
+  for (const s of COMPANY_SCOPES) handlers[s] = [];
   for (const e of engagements) {
-    handlers[e.scope] = {
+    if (!handlers[e.scope]) handlers[e.scope] = [];
+    handlers[e.scope].push({
       engagementId: e.id,
       companyId: e.companyId,
       companyName: e.company.name,
       status: e.status,
-    };
+      apartmentIds: e.apartments.map((a) => a.apartmentId),
+    });
   }
   return {
     companies: companies.map((c) => ({
@@ -90,6 +100,7 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
       scopes: c.scopes,
       managers: c.users,
     })),
+    apartments: apartments.map((a) => ({ id: a.id, name: a.name })),
     handlers,
   };
 }
@@ -115,21 +126,18 @@ export async function createCompany(
   }
 }
 
-// Delega una funzione a un'impresa (regola: una impresa per funzione → revoca
-// eventuale delega attiva su un'altra impresa per lo stesso scope).
+// Delega una funzione a un'impresa con opzionale selezione appartamenti.
+// apartmentIds vuoto = tutti gli appartamenti dell'org.
 export async function delegateFunction(
   companyId: string,
   scope: string,
+  apartmentIds?: string[],
 ): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const orgId = await requireOwner();
     if (!COMPANY_SCOPES.includes(scope as CompanyScope)) return { success: false, error: "Funzione non valida." };
     await prisma.$transaction(async (tx) => {
-      await tx.engagement.updateMany({
-        where: { organizationId: orgId, scope, status: { not: "REVOKED" }, companyId: { not: companyId } },
-        data: { status: "REVOKED", revokedAt: new Date() },
-      });
-      await tx.engagement.upsert({
+      const engagement = await tx.engagement.upsert({
         where: { organizationId_companyId_scope: { organizationId: orgId, companyId, scope } },
         update: { status: "ACTIVE", acceptedAt: new Date(), revokedAt: null },
         create: {
@@ -141,10 +149,43 @@ export async function delegateFunction(
           acceptedAt: new Date(),
         },
       });
+      // Aggiorna appartamenti assegnati
+      await tx.engagementApartment.deleteMany({ where: { engagementId: engagement.id } });
+      if (apartmentIds && apartmentIds.length > 0) {
+        await tx.engagementApartment.createMany({
+          data: apartmentIds.map((aid) => ({ engagementId: engagement.id, apartmentId: aid })),
+        });
+      }
       // aggiorna l'elenco funzioni offerte dall'impresa (comodità UI)
       const company = await tx.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
       if (company && !company.scopes.includes(scope)) {
         await tx.company.update({ where: { id: companyId }, data: { scopes: { set: [...company.scopes, scope] } } });
+      }
+    });
+    revalidatePath("/dashboard/manager/imprese");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// Aggiorna gli appartamenti assegnati a un engagement esistente.
+export async function updateEngagementApartments(
+  engagementId: string,
+  apartmentIds: string[],
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const orgId = await requireOwner();
+    const eng = await prisma.engagement.findFirst({
+      where: { id: engagementId, organizationId: orgId, status: "ACTIVE" },
+    });
+    if (!eng) return { success: false, error: "Delega non trovata." };
+    await prisma.$transaction(async (tx) => {
+      await tx.engagementApartment.deleteMany({ where: { engagementId } });
+      if (apartmentIds.length > 0) {
+        await tx.engagementApartment.createMany({
+          data: apartmentIds.map((aid) => ({ engagementId, apartmentId: aid })),
+        });
       }
     });
     revalidatePath("/dashboard/manager/imprese");
@@ -552,14 +593,24 @@ export async function createCompanyManager(
   }
 }
 
-// Revoca la delega di una funzione (torna a gestione interna).
-export async function revokeFunction(scope: string): Promise<{ success: true } | { success: false; error: string }> {
+// Revoca una specifica delega (engagement) — oppure tutte le deleghe di uno scope.
+export async function revokeFunction(
+  scopeOrEngagementId: string,
+  byEngagementId?: boolean,
+): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const orgId = await requireOwner();
-    await prisma.engagement.updateMany({
-      where: { organizationId: orgId, scope, status: { not: "REVOKED" } },
-      data: { status: "REVOKED", revokedAt: new Date() },
-    });
+    if (byEngagementId) {
+      await prisma.engagement.updateMany({
+        where: { id: scopeOrEngagementId, organizationId: orgId, status: { not: "REVOKED" } },
+        data: { status: "REVOKED", revokedAt: new Date() },
+      });
+    } else {
+      await prisma.engagement.updateMany({
+        where: { organizationId: orgId, scope: scopeOrEngagementId, status: { not: "REVOKED" } },
+        data: { status: "REVOKED", revokedAt: new Date() },
+      });
+    }
     revalidatePath("/dashboard/manager/imprese");
     return { success: true };
   } catch (e) {

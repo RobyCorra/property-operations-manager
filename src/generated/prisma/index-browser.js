@@ -257,6 +257,11 @@ exports.Prisma.EngagementScalarFieldEnum = {
   revokedAt: 'revokedAt'
 };
 
+exports.Prisma.EngagementApartmentScalarFieldEnum = {
+  engagementId: 'engagementId',
+  apartmentId: 'apartmentId'
+};
+
 exports.Prisma.ApartmentScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -674,6 +679,7 @@ exports.Prisma.ModelName = {
   CompanyChatMessage: 'CompanyChatMessage',
   Company: 'Company',
   Engagement: 'Engagement',
+  EngagementApartment: 'EngagementApartment',
   Apartment: 'Apartment',
   ChecklistItem: 'ChecklistItem',
   Notification: 'Notification',

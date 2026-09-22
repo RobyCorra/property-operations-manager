@@ -193,20 +193,31 @@ model Company {
 // Ingaggio: un proprietario (Organization) delega UNA funzione (scope) a una
 // Company. Consenso e revoca sono del proprietario.
 model Engagement {
-  id             String       @id @default(uuid())
+  id             String                @id @default(uuid())
   organizationId String
   companyId      String
   scope          String // CLEANING | MAINTENANCE | CHECKIN | SUPERVISION
-  status         String       @default("PENDING") // PENDING | ACTIVE | REVOKED
-  invitedAt      DateTime     @default(now())
+  status         String                @default("PENDING") // PENDING | ACTIVE | REVOKED
+  invitedAt      DateTime              @default(now())
   acceptedAt     DateTime?
   revokedAt      DateTime?
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  company        Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  company        Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  apartments     EngagementApartment[]
 
   @@unique([organizationId, companyId, scope])
   @@index([companyId])
   @@index([organizationId])
+}
+
+model EngagementApartment {
+  engagementId String
+  apartmentId  String
+  engagement   Engagement @relation(fields: [engagementId], references: [id], onDelete: Cascade)
+  apartment    Apartment  @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@id([engagementId, apartmentId])
+  @@index([apartmentId])
 }
 
 model Apartment {
@@ -250,6 +261,7 @@ model Apartment {
   products              ApartmentProduct[]
   checkinChecklistItems CheckinChecklistItem[]
   checkinTasks          CheckinTask[]
+  engagements           EngagementApartment[]
 
   @@index([organizationId])
   @@index([propertyId])
