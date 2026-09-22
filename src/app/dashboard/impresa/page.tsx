@@ -5,6 +5,7 @@ import { getCompanyAccess } from "@/src/lib/company-access";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
+import ImpresaMobileDashboard from "@/src/components/impresa-mobile-dashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -118,54 +119,117 @@ export default async function ImpresaDashboard() {
     };
   });
 
+  const lateCleanings = cleanings
+    .filter((c) => c.status === "PENDING" && now.getTime() > new Date(c.date).getTime() + 30 * 60 * 1000)
+    .map((c) => ({
+      id: c.id,
+      apartmentName: c.apartment.name,
+      assignedToName: c.assignedTo?.name ?? "—",
+      scheduledTime: fmtTime(c.date),
+    }));
+
+  const cleaningsInProgress = cleanings
+    .filter((c) => c.status === "IN_PROGRESS")
+    .map((c) => ({
+      id: c.id,
+      apartmentName: c.apartment.name,
+      assignedToName: c.assignedTo?.name ?? "—",
+    }));
+
+  const cleaningsTodayItems = todayCleanings.map((c) => ({
+    id: c.id,
+    apartmentName: c.apartment.name,
+    assignedToName: c.assignedTo?.name ?? "—",
+    isAssigned: !!c.assignedToId,
+    status: c.status,
+  }));
+
+  const todayBookingsCount = bookings.filter((b) => localDateKey(b.checkInDate) === todayKey).length;
+
+  const mobileApts = apartmentsData.map((a) => ({
+    id: a.id,
+    name: a.name,
+    status: a.status,
+    propertyId: a.propertyId,
+    propertyName: a.propertyName,
+    unitCategoryId: a.unitCategoryId,
+    categoryName: a.categoryName,
+    unitNumber: a.unitNumber,
+  }));
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Panoramica</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          {scopes.length ? scopes.map((s) => SCOPE_META[s]?.label ?? s).join(" · ") : "nessuna funzione delegata"}
-          {orgIds.length > 0 && ` · ${orgIds.length} client${orgIds.length === 1 ? "e" : "i"}`}
-        </p>
+    <>
+      {/* ── MOBILE ── */}
+      <div className="block md:hidden -m-4">
+        {hasCleaning ? (
+          <ImpresaMobileDashboard
+            apartments={mobileApts}
+            lateCleanings={lateCleanings}
+            cleaningsInProgress={cleaningsInProgress}
+            cleaningsCount={todayCleanings.length}
+            cleaningsDoneCount={cleaningsDoneCount}
+            cleaningsTodayItems={cleaningsTodayItems}
+            checkinsCount={todayBookingsCount}
+            serverDate={serverDate}
+          />
+        ) : (
+          <div className="px-4 pt-4">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-500 shadow-sm">
+              Nessuna funzione di pulizia attiva. Attendi che un proprietario ti deleghi le Pulizie.
+            </div>
+          </div>
+        )}
       </div>
 
-      {hasCleaning ? (
-        <>
-          <DashboardKpiCards
-            checkinsToday={[]}
-            cleaningsToday={cleaningsTodayKpi}
-            lateCleanings={lateCleaningsKpi}
-            cleaningsInProgress={inProgressKpi}
-            urgentTickets={[]}
-            cleaningsDoneCount={cleaningsDoneCount}
-            ticketsTodayCount={0}
-            ticketsDoneCount={0}
-          />
+      {/* ── DESKTOP ── */}
+      <div className="hidden md:block max-w-5xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Panoramica</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {scopes.length ? scopes.map((s) => SCOPE_META[s]?.label ?? s).join(" · ") : "nessuna funzione delegata"}
+            {orgIds.length > 0 && ` · ${orgIds.length} client${orgIds.length === 1 ? "e" : "i"}`}
+          </p>
+        </div>
 
-          <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <span>🗓️</span> Calendario operativo <span className="font-normal text-gray-400">· pulizie e prenotazioni (sola lettura)</span>
-            </h2>
-            <TimelineCalendar
-              apartments={apartmentsData}
-              bookings={bookings}
-              cleaningTasks={cleanings}
-              maintenanceTickets={[]}
-              serverDate={serverDate}
-              readOnly
+        {hasCleaning ? (
+          <>
+            <DashboardKpiCards
+              checkinsToday={[]}
+              cleaningsToday={cleaningsTodayKpi}
+              lateCleanings={lateCleaningsKpi}
+              cleaningsInProgress={inProgressKpi}
+              urgentTickets={[]}
+              cleaningsDoneCount={cleaningsDoneCount}
+              ticketsTodayCount={0}
+              ticketsDoneCount={0}
             />
-          </section>
-        </>
-      ) : (
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-500 shadow-sm">
-          Nessuna funzione di pulizia attiva. Attendi che un proprietario ti deleghi le Pulizie.
-        </div>
-      )}
 
-      {(scopes.includes("MAINTENANCE") || scopes.includes("CHECKIN") || scopes.includes("SUPERVISION")) && (
-        <div className="rounded-2xl border border-dashed border-gray-200 bg-white/50 p-5 text-center text-xs text-gray-400">
-          {scopes.filter((s) => s !== "CLEANING").map((s) => SCOPE_META[s]?.label).join(" · ")}: vista in arrivo.
-        </div>
-      )}
-    </div>
+            <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <span>🗓️</span> Calendario operativo <span className="font-normal text-gray-400">· pulizie e prenotazioni (sola lettura)</span>
+              </h2>
+              <TimelineCalendar
+                apartments={apartmentsData}
+                bookings={bookings}
+                cleaningTasks={cleanings}
+                maintenanceTickets={[]}
+                serverDate={serverDate}
+                readOnly
+              />
+            </section>
+          </>
+        ) : (
+          <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-500 shadow-sm">
+            Nessuna funzione di pulizia attiva. Attendi che un proprietario ti deleghi le Pulizie.
+          </div>
+        )}
+
+        {(scopes.includes("MAINTENANCE") || scopes.includes("CHECKIN") || scopes.includes("SUPERVISION")) && (
+          <div className="rounded-2xl border border-dashed border-gray-200 bg-white/50 p-5 text-center text-xs text-gray-400">
+            {scopes.filter((s) => s !== "CLEANING").map((s) => SCOPE_META[s]?.label).join(" · ")}: vista in arrivo.
+          </div>
+        )}
+      </div>
+    </>
   );
 }
