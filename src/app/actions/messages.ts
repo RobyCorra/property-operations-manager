@@ -31,6 +31,7 @@ export const getUnreadMessagesCount = async () => {
           maintenanceTicket: {
             apartment: { organizationId: orgId },
             ...(delegatedMaintenanceApts.length ? { apartmentId: { notIn: delegatedMaintenanceApts } } : {}),
+            OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
           },
         },
       }),
@@ -41,6 +42,7 @@ export const getUnreadMessagesCount = async () => {
           cleaningTask: {
             apartment: { organizationId: orgId },
             ...(delegatedCleaningApts.length ? { apartmentId: { notIn: delegatedCleaningApts } } : {}),
+            OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
           },
         },
       }),

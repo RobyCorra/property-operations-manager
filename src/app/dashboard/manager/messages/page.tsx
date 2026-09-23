@@ -50,6 +50,7 @@ export default async function ManagerMessagesPage({
         messages: { some: {} },
         apartment: { organizationId: orgId },
         ...(delegatedMaintenanceApts?.size ? { apartmentId: { notIn: [...delegatedMaintenanceApts] } } : {}),
+        OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
       },
       include: {
         apartment: { select: { name: true, address: true } },
@@ -62,6 +63,7 @@ export default async function ManagerMessagesPage({
         messages: { some: {} },
         apartment: { organizationId: orgId },
         ...(delegatedCleaningApts?.size ? { apartmentId: { notIn: [...delegatedCleaningApts] } } : {}),
+        OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
       },
       include: {
         apartment: { select: { name: true, address: true } },
