@@ -11,7 +11,7 @@ import { ManagerLangProvider } from "@/src/components/lang-context";
 import { getServerLang } from "@/src/lib/server-lang";
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
-  const [taskUnread, companyUnread, staffUnread] = await Promise.all([getUnreadMessagesCount(), getOrgCompanyUnread(), getOrgStaffUnread()]);
+  const [taskUnread, companyUnread, staffUnread] = await Promise.all([getUnreadMessagesCount(), getOrgCompanyUnread(), getOrgStaffUnread().catch(() => 0)]);
   const unreadCount = taskUnread + companyUnread + staffUnread;
   const lang = await getServerLang();
   const cookieStore = await cookies();

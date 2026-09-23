@@ -33,7 +33,7 @@ export default async function ManagerMessagesPage({
 
   const [companyThreads, staffThreads] = await Promise.all([
     getOrgCompanyThreads(),
-    getOrgStaffThreads(),
+    getOrgStaffThreads().catch(() => []),
   ]);
 
   // Appartamenti delegati per scope: l'org NON vede i thread intervento per questi
