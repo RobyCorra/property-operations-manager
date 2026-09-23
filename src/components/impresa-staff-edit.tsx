@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateMyStaff } from "@/src/app/actions/company";
+import { updateMyStaff, deleteMyStaff } from "@/src/app/actions/company";
 
 const ROLE_LABEL: Record<string, string> = {
   CLEANER: "Addetto pulizie",
@@ -60,9 +60,27 @@ export default function ImpresaStaffEdit({ member, roles }: { member: Member; ro
       {error && <p className="text-sm text-red-500">{error}</p>}
       {ok && <p className="text-sm font-semibold text-emerald-600">✓ Modifiche salvate.</p>}
 
-      <button type="button" onClick={onSave} disabled={isPending} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-2 text-sm font-semibold text-white disabled:opacity-40">
-        Salva
-      </button>
+      <div className="flex items-center gap-3">
+        <button type="button" onClick={onSave} disabled={isPending} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-2 text-sm font-semibold text-white disabled:opacity-40">
+          Salva
+        </button>
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => {
+            if (!confirm(`Eliminare ${member.name}? L'operazione non è reversibile.`)) return;
+            setError(null); setOk(false);
+            startTransition(async () => {
+              const r = await deleteMyStaff(member.id);
+              if (!r.success) setError(r.error);
+              else router.push("/dashboard/impresa/staff");
+            });
+          }}
+          className="rounded-full border border-red-200 px-6 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-40"
+        >
+          Elimina
+        </button>
+      </div>
     </div>
   );
 }

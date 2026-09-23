@@ -841,6 +841,19 @@ export async function updateMyStaff(
   }
 }
 
+export async function deleteMyStaff(id: string): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const target = await prisma.user.findFirst({ where: { id, companyId }, select: { id: true } });
+    if (!target) return { success: false, error: "Operatore non trovato." };
+    await prisma.user.delete({ where: { id } });
+    revalidatePath("/dashboard/impresa/staff");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
 // Il manager d'impresa crea il proprio staff (ruolo coerente con le funzioni
 // delegate all'impresa). Utente legato alla Company, organizationId null.
 export async function createMyStaff(
