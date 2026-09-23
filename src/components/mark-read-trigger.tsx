@@ -5,7 +5,7 @@ import { markConversationAsRead } from "@/src/app/actions/messages";
 
 interface Props {
   id: string;
-  type: "MAINTENANCE" | "CLEANING";
+  type: "MAINTENANCE" | "CLEANING" | "CHECKIN";
 }
 
 export default function MarkReadTrigger({ id, type }: Props) {

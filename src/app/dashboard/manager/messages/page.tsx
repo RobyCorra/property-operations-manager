@@ -4,6 +4,7 @@ import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import TicketConversation from "@/src/components/ticket-conversation";
 import { createTicketMessage, createCleaningTaskMessage } from "@/src/app/actions/operational";
+import { createCheckinTaskMessage } from "@/src/app/actions/checkin";
 import MarkReadTrigger from "@/src/components/mark-read-trigger";
 import MessagesDashboard from "@/src/components/messages-dashboard";
 import BackButton from "@/src/components/back-button";
@@ -43,8 +44,10 @@ export default async function ManagerMessagesPage({
   }
   const delegatedCleaningApts = delegatedAptsByScope.get("CLEANING");
   const delegatedMaintenanceApts = delegatedAptsByScope.get("MAINTENANCE");
+  const delegatedCheckinApts = delegatedAptsByScope.get("CHECKIN");
+  const delegatedScopes = [...delegatedAptsByScope.keys()];
 
-  const [maintenanceTickets, cleaningTasks, apartments] = await Promise.all([
+  const [maintenanceTickets, cleaningTasks, checkinTasks, apartments] = await Promise.all([
     prisma.maintenanceTicket.findMany({
       where: {
         messages: { some: {} },
@@ -63,6 +66,19 @@ export default async function ManagerMessagesPage({
         messages: { some: {} },
         apartment: { organizationId: orgId },
         ...(delegatedCleaningApts?.size ? { apartmentId: { notIn: [...delegatedCleaningApts] } } : {}),
+        OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
+      },
+      include: {
+        apartment: { select: { name: true, address: true } },
+        assignedTo: { select: { name: true } },
+        messages: { orderBy: { createdAt: "asc" }, include: { attachment: true } },
+      },
+    }),
+    prisma.checkinTask.findMany({
+      where: {
+        messages: { some: {} },
+        apartment: { organizationId: orgId },
+        ...(delegatedCheckinApts?.size ? { apartmentId: { notIn: [...delegatedCheckinApts] } } : {}),
         OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
       },
       include: {
@@ -111,6 +127,25 @@ export default async function ManagerMessagesPage({
       updatedAt: c.messages[c.messages.length - 1]?.createdAt || c.createdAt,
       hasUnread: c.messages.some((m) => m.role !== "MANAGER" && m.readByManagerAt === null),
     })),
+    ...checkinTasks.map((ci) => ({
+      id: ci.id,
+      type: "CHECKIN" as const,
+      apartmentName: ci.apartment.name,
+      apartmentAddress: ci.apartment.address ?? "",
+      assignedUser: ci.assignedTo?.name || tr.mgUnassigned,
+      title: "Check-in",
+      description: ci.notes ?? "",
+      status: ci.status,
+      priority: null,
+      scheduledStart: null,
+      scheduledEnd: null,
+      date: ci.date.toISOString(),
+      checklistProgress: ci.checklistProgress as { completed: boolean }[] | null,
+      lastMessage: ci.messages[ci.messages.length - 1],
+      messages: ci.messages,
+      updatedAt: ci.messages[ci.messages.length - 1]?.createdAt || ci.createdAt,
+      hasUnread: ci.messages.some((m) => m.role !== "MANAGER" && m.readByManagerAt === null),
+    })),
   ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
   const selectedThread = threads.find((t) => t.id === sp.id && t.type === sp.type);
@@ -135,9 +170,12 @@ export default async function ManagerMessagesPage({
         selectedType={sp.type}
         serverDate={new Date().toISOString()}
         userName={userName}
+        delegatedScopes={delegatedScopes}
         submitAction={
           selectedThread?.type === "MAINTENANCE"
             ? createTicketMessage
+            : selectedThread?.type === "CHECKIN"
+            ? createCheckinTaskMessage
             : createCleaningTaskMessage
         }
       />

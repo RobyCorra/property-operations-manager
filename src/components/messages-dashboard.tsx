@@ -19,6 +19,7 @@ import {
   Info,
   X,
   MapPin,
+  DoorOpen,
 } from "./icons";
 import {
   updateCleaningStatus,
@@ -38,7 +39,7 @@ interface Message {
 
 interface Thread {
   id: string;
-  type: "MAINTENANCE" | "CLEANING";
+  type: "MAINTENANCE" | "CLEANING" | "CHECKIN";
   apartmentName: string;
   apartmentAddress: string;
   assignedUser: string;
@@ -64,6 +65,7 @@ interface Props {
   serverDate: string;
   userName: string;
   submitAction: any;
+  delegatedScopes?: string[];
 }
 
 function relativeTime(date: Date, locale: string, tr: T): string {
@@ -103,7 +105,7 @@ const PRIORITY_LABELS: Record<string, { label: string; color: string }> = {
   URGENT:   { label: "Urgente", color: "bg-rose-50 text-rose-600" },
 };
 
-type FilterType = "ALL" | "MAINTENANCE" | "CLEANING" | "UNREAD";
+type FilterType = "ALL" | "MAINTENANCE" | "CLEANING" | "CHECKIN" | "UNREAD";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // InfoPanelContent — calendar-style detail panel (top-level component)
@@ -125,13 +127,17 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
           <div className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide flex items-center gap-1.5 ${
             thread.type === "CLEANING"
               ? "bg-violet-500/10 text-violet-600"
+              : thread.type === "CHECKIN"
+              ? "bg-teal-500/10 text-teal-600"
               : "bg-amber-500/10 text-amber-600"
           }`}>
             {thread.type === "CLEANING"
               ? <Brush size={10} />
+              : thread.type === "CHECKIN"
+              ? <DoorOpen size={10} />
               : <Wrench size={10} />
             }
-            {thread.type === "CLEANING" ? t.mdSingleCleaning : t.navMaintenance}
+            {thread.type === "CLEANING" ? t.mdSingleCleaning : thread.type === "CHECKIN" ? "Check-in" : t.navMaintenance}
           </div>
           {STATUS_LABELS[thread.status] && (
             <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_LABELS[thread.status].color}`}>
@@ -142,7 +148,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
 
         {/* Title */}
         <h2 className="text-xl font-bold text-slate-900 tracking-tight leading-snug mb-1">
-          {thread.type === "MAINTENANCE" ? thread.title : t.msgApartmentCleaning}
+          {thread.type === "MAINTENANCE" ? thread.title : thread.type === "CHECKIN" ? "Check-in" : t.msgApartmentCleaning}
         </h2>
 
         {/* Apartment subtitle */}
@@ -161,13 +167,13 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
           </h4>
           <div className="space-y-3">
             {/* Quando */}
-            {(thread.type === "CLEANING" ? thread.date : thread.scheduledStart) && (
+            {(thread.type === "CLEANING" || thread.type === "CHECKIN" ? thread.date : thread.scheduledStart) && (
               <div className="flex items-start gap-3">
                 <CalendarDays size={15} className="text-violet-500 mt-0.5 shrink-0" />
                 <div>
                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">{t.msgWhen}</p>
                   <p className="text-xs font-semibold text-slate-800 mt-0.5">
-                    {thread.type === "CLEANING" && thread.date
+                    {(thread.type === "CLEANING" || thread.type === "CHECKIN") && thread.date
                       ? new Date(thread.date).toLocaleDateString("it-IT", {
                           weekday: "long", day: "numeric", month: "long",
                         })
@@ -206,7 +212,7 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
               <User size={15} className="text-violet-500 mt-0.5 shrink-0" />
               <div>
                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                  {thread.type === "CLEANING" ? t.msgCleaner : t.msgTechnician}
+                  {thread.type === "CLEANING" ? t.msgCleaner : thread.type === "CHECKIN" ? "Addetto" : t.msgTechnician}
                 </p>
                 <p className="text-xs font-semibold text-slate-800 mt-0.5">{thread.assignedUser}</p>
               </div>
@@ -392,6 +398,8 @@ function InfoPanelContent({ thread, isActing, onAction }: InfoPanelProps) {
           href={
             thread.type === "MAINTENANCE"
               ? `/dashboard/manager/maintenance/${thread.id}/edit`
+              : thread.type === "CHECKIN"
+              ? `/dashboard/manager/checkin/${thread.id}/edit`
               : `/dashboard/manager/cleanings/${thread.id}/edit`
           }
           className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-2xl border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-colors"
@@ -411,6 +419,7 @@ export default function MessagesDashboard({
   selectedType,
   userName,
   submitAction,
+  delegatedScopes = [],
 }: Props) {
   const { t: tr, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
@@ -438,7 +447,8 @@ export default function MessagesDashboard({
         filter === "ALL" ||
         (filter === "UNREAD" && t.hasUnread) ||
         (filter === "MAINTENANCE" && t.type === "MAINTENANCE") ||
-        (filter === "CLEANING" && t.type === "CLEANING");
+        (filter === "CLEANING" && t.type === "CLEANING") ||
+        (filter === "CHECKIN" && t.type === "CHECKIN");
       return matchesSearch && matchesFilter;
     });
   }, [initialThreads, search, filter]);
@@ -484,9 +494,16 @@ export default function MessagesDashboard({
 
           {/* Filter pills — scrollabili orizzontalmente su mobile */}
           <div className="flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {(["ALL", "MAINTENANCE", "CLEANING", "UNREAD"] as FilterType[]).map((f) => {
+            {(["ALL", "MAINTENANCE", "CLEANING", "CHECKIN", "UNREAD"] as FilterType[])
+              .filter((f) => {
+                if (f === "CLEANING" && delegatedScopes.includes("CLEANING")) return false;
+                if (f === "MAINTENANCE" && delegatedScopes.includes("MAINTENANCE")) return false;
+                if (f === "CHECKIN" && delegatedScopes.includes("CHECKIN")) return false;
+                return true;
+              })
+              .map((f) => {
               const labels: Record<FilterType, string> = {
-                ALL: tr.ufAll, MAINTENANCE: tr.msgMaintenancePlural, CLEANING: tr.navCleanings, UNREAD: tr.msgUnread,
+                ALL: tr.ufAll, MAINTENANCE: tr.msgMaintenancePlural, CLEANING: tr.navCleanings, CHECKIN: "Check-in", UNREAD: tr.msgUnread,
               };
               const isActive = filter === f;
               return (
@@ -514,6 +531,20 @@ export default function MessagesDashboard({
           {filteredThreads.map((thread) => {
             const isActive = selectedId === thread.id && selectedType === thread.type;
             const isMaintenance = thread.type === "MAINTENANCE";
+            const isCheckin = thread.type === "CHECKIN";
+            const avatarColors = isMaintenance
+              ? { active: "bg-amber-500 shadow-lg shadow-amber-200", idle: "bg-amber-100" }
+              : isCheckin
+              ? { active: "bg-teal-500 shadow-lg shadow-teal-200", idle: "bg-teal-100" }
+              : { active: "bg-violet-600 shadow-lg shadow-violet-200", idle: "bg-violet-100" };
+            const AvatarIcon = isMaintenance ? Wrench : isCheckin ? DoorOpen : Brush;
+            const iconColor = isMaintenance ? (isActive ? "text-white" : "text-amber-600")
+              : isCheckin ? (isActive ? "text-white" : "text-teal-600")
+              : (isActive ? "text-white" : "text-violet-600");
+            const badgeColor = isMaintenance ? "text-amber-600 bg-amber-50"
+              : isCheckin ? "text-teal-600 bg-teal-50"
+              : "text-violet-600 bg-violet-50";
+            const badgeLabel = isMaintenance ? tr.navMaintenance : isCheckin ? "Check-in" : tr.mdSingleCleaning;
             return (
               <Link
                 key={`${thread.type}-${thread.id}`}
@@ -529,15 +560,10 @@ export default function MessagesDashboard({
                 {/* Avatar */}
                 <div
                   className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 mt-0.5 ${
-                    isActive
-                      ? isMaintenance ? "bg-amber-500 shadow-lg shadow-amber-200" : "bg-violet-600 shadow-lg shadow-violet-200"
-                      : isMaintenance ? "bg-amber-100" : "bg-violet-100"
+                    isActive ? avatarColors.active : avatarColors.idle
                   }`}
                 >
-                  {isMaintenance
-                    ? <Wrench size={16} className={isActive ? "text-white" : "text-amber-600"} />
-                    : <Brush size={16} className={isActive ? "text-white" : "text-violet-600"} />
-                  }
+                  <AvatarIcon size={16} className={iconColor} />
                 </div>
 
                 {/* Content */}
@@ -551,10 +577,8 @@ export default function MessagesDashboard({
                     </span>
                   </div>
                   <div className="flex items-center gap-1 mb-1">
-                    <span className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full ${
-                      isMaintenance ? "text-amber-600 bg-amber-50" : "text-violet-600 bg-violet-50"
-                    }`}>
-                      {isMaintenance ? tr.navMaintenance : tr.mdSingleCleaning}
+                    <span className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full ${badgeColor}`}>
+                      {badgeLabel}
                     </span>
                     <span className="text-[10px] text-slate-400 truncate">· {thread.assignedUser}</span>
                   </div>
@@ -607,11 +631,15 @@ export default function MessagesDashboard({
                 className={`w-9 h-9 rounded-2xl flex items-center justify-center shadow-md shrink-0 ${
                   selectedThread.type === "MAINTENANCE"
                     ? "bg-amber-500 shadow-amber-200"
+                    : selectedThread.type === "CHECKIN"
+                    ? "bg-teal-500 shadow-teal-200"
                     : "bg-violet-600 shadow-violet-200"
                 }`}
               >
                 {selectedThread.type === "MAINTENANCE"
                   ? <Wrench size={15} className="text-white" />
+                  : selectedThread.type === "CHECKIN"
+                  ? <DoorOpen size={15} className="text-white" />
                   : <Brush size={15} className="text-white" />
                 }
               </div>
@@ -623,8 +651,8 @@ export default function MessagesDashboard({
                 </span>
                 {/* Subtitle — su mobile mostra tipo + assegnato + stato (come nel mockup) */}
                 <p className="text-[10px] font-medium truncate flex items-center gap-1">
-                  <span className={selectedThread.type === "MAINTENANCE" ? "text-amber-500" : "text-violet-500"}>
-                    {selectedThread.type === "MAINTENANCE" ? "🔧" : "🧹"}
+                  <span className={selectedThread.type === "MAINTENANCE" ? "text-amber-500" : selectedThread.type === "CHECKIN" ? "text-teal-500" : "text-violet-500"}>
+                    {selectedThread.type === "MAINTENANCE" ? "🔧" : selectedThread.type === "CHECKIN" ? "🚪" : "🧹"}
                   </span>
                   <span className="text-slate-500">{selectedThread.assignedUser}</span>
                   {STATUS_LABELS[selectedThread.status] && (

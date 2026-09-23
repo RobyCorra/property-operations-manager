@@ -23,7 +23,9 @@ export const getUnreadMessagesCount = async () => {
     const delegatedMaintenanceApts = [...(delegatedAptsByScope.get("MAINTENANCE") ?? [])];
     const delegatedCleaningApts = [...(delegatedAptsByScope.get("CLEANING") ?? [])];
 
-    const [maintenanceUnread, cleaningUnread] = await Promise.all([
+    const delegatedCheckinApts = [...(delegatedAptsByScope.get("CHECKIN") ?? [])];
+
+    const [maintenanceUnread, cleaningUnread, checkinUnread] = await Promise.all([
       prisma.message.count({
         where: {
           role: { not: "MANAGER" },
@@ -46,21 +48,43 @@ export const getUnreadMessagesCount = async () => {
           },
         },
       }),
+      prisma.checkinTaskMessage.count({
+        where: {
+          role: { not: "MANAGER" },
+          readByManagerAt: null,
+          checkinTask: {
+            apartment: { organizationId: orgId },
+            ...(delegatedCheckinApts.length ? { apartmentId: { notIn: delegatedCheckinApts } } : {}),
+            OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
+          },
+        },
+      }),
     ]);
 
-    return maintenanceUnread + cleaningUnread;
+    return maintenanceUnread + cleaningUnread + checkinUnread;
   } catch (error) {
     console.error("Error fetching unread messages count:", error);
     return 0;
   }
 }
 
-export async function markConversationAsRead(id: string, type: "MAINTENANCE" | "CLEANING") {
+export async function markConversationAsRead(id: string, type: "MAINTENANCE" | "CLEANING" | "CHECKIN") {
   try {
     if (type === "MAINTENANCE") {
       await prisma.message.updateMany({
         where: {
           maintenanceTicketId: id,
+          role: { not: "MANAGER" },
+          readByManagerAt: null,
+        },
+        data: {
+          readByManagerAt: new Date(),
+        },
+      });
+    } else if (type === "CHECKIN") {
+      await prisma.checkinTaskMessage.updateMany({
+        where: {
+          checkinTaskId: id,
           role: { not: "MANAGER" },
           readByManagerAt: null,
         },

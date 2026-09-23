@@ -31,7 +31,7 @@ interface Props {
   currentUserName: string;
   submitAction: (id: string, prevState: any, formData: FormData) => Promise<any>;
   heightClass?: string;
-  conversationType?: "MAINTENANCE" | "CLEANING";
+  conversationType?: "MAINTENANCE" | "CLEANING" | "CHECKIN";
 }
 
 type RecordingState = "idle" | "recording" | "preview";
