@@ -237,6 +237,21 @@ exports.Prisma.OrgCompanyMessageScalarFieldEnum = {
   readByCompanyAt: 'readByCompanyAt'
 };
 
+exports.Prisma.OrgStaffMessageScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  staffUserId: 'staffUserId',
+  senderIsManager: 'senderIsManager',
+  senderName: 'senderName',
+  text: 'text',
+  mediaUrl: 'mediaUrl',
+  mediaType: 'mediaType',
+  mediaName: 'mediaName',
+  createdAt: 'createdAt',
+  readByManagerAt: 'readByManagerAt',
+  readByStaffAt: 'readByStaffAt'
+};
+
 exports.Prisma.CompanyChatMessageScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
@@ -692,6 +707,7 @@ exports.Prisma.ModelName = {
   UnitCategory: 'UnitCategory',
   User: 'User',
   OrgCompanyMessage: 'OrgCompanyMessage',
+  OrgStaffMessage: 'OrgStaffMessage',
   CompanyChatMessage: 'CompanyChatMessage',
   Company: 'Company',
   Engagement: 'Engagement',

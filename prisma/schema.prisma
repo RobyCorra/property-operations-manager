@@ -40,6 +40,7 @@ model Organization {
   chatSessions   ManagerChatSession[]
   engagements    Engagement[]
   companyMessages OrgCompanyMessage[]
+  staffMessages  OrgStaffMessage[]
 }
 
 // Struttura ricettiva (hotel/residence): indirizzo unico, contiene N unita'
@@ -152,6 +153,7 @@ model User {
   fcmTokens            FcmToken[]
   cleanerLocation      CleanerLocation?
   checkinTasks         CheckinTask[]
+  orgStaffMessages     OrgStaffMessage[] @relation("orgStaffMessages")
 
   @@index([organizationId])
   @@index([companyId])
@@ -176,6 +178,27 @@ model OrgCompanyMessage {
   company          Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([organizationId, companyId, createdAt])
+}
+
+// Chat generica org ↔ staff diretto: un thread per (org, operatore).
+// Visibile solo al manager dell'organizzazione e all'operatore stesso.
+model OrgStaffMessage {
+  id              String       @id @default(uuid())
+  organizationId  String
+  staffUserId     String
+  senderIsManager Boolean
+  senderName      String
+  text            String?
+  mediaUrl        String?
+  mediaType       String?
+  mediaName       String?
+  createdAt       DateTime     @default(now())
+  readByManagerAt DateTime?
+  readByStaffAt   DateTime?
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staffUser       User         @relation("orgStaffMessages", fields: [staffUserId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, staffUserId, createdAt])
 }
 
 // Chat privata dell'impresa: un thread per (impresa, operatore). Visibile solo

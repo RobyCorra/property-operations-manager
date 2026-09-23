@@ -49,6 +49,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type OrgCompanyMessage = $Result.DefaultSelection<Prisma.$OrgCompanyMessagePayload>
 /**
+ * Model OrgStaffMessage
+ * 
+ */
+export type OrgStaffMessage = $Result.DefaultSelection<Prisma.$OrgStaffMessagePayload>
+/**
  * Model CompanyChatMessage
  * 
  */
@@ -437,6 +442,16 @@ export class PrismaClient<
     * ```
     */
   get orgCompanyMessage(): Prisma.OrgCompanyMessageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.orgStaffMessage`: Exposes CRUD operations for the **OrgStaffMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrgStaffMessages
+    * const orgStaffMessages = await prisma.orgStaffMessage.findMany()
+    * ```
+    */
+  get orgStaffMessage(): Prisma.OrgStaffMessageDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.companyChatMessage`: Exposes CRUD operations for the **CompanyChatMessage** model.
@@ -1208,6 +1223,7 @@ export namespace Prisma {
     UnitCategory: 'UnitCategory',
     User: 'User',
     OrgCompanyMessage: 'OrgCompanyMessage',
+    OrgStaffMessage: 'OrgStaffMessage',
     CompanyChatMessage: 'CompanyChatMessage',
     Company: 'Company',
     Engagement: 'Engagement',
@@ -1256,7 +1272,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "orgCompanyMessage" | "companyChatMessage" | "company" | "engagement" | "engagementApartment" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
+      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "orgCompanyMessage" | "orgStaffMessage" | "companyChatMessage" | "company" | "engagement" | "engagementApartment" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1775,6 +1791,80 @@ export namespace Prisma {
           count: {
             args: Prisma.OrgCompanyMessageCountArgs<ExtArgs>
             result: $Utils.Optional<OrgCompanyMessageCountAggregateOutputType> | number
+          }
+        }
+      }
+      OrgStaffMessage: {
+        payload: Prisma.$OrgStaffMessagePayload<ExtArgs>
+        fields: Prisma.OrgStaffMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrgStaffMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrgStaffMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.OrgStaffMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrgStaffMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>
+          }
+          findMany: {
+            args: Prisma.OrgStaffMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>[]
+          }
+          create: {
+            args: Prisma.OrgStaffMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>
+          }
+          createMany: {
+            args: Prisma.OrgStaffMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrgStaffMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.OrgStaffMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>
+          }
+          update: {
+            args: Prisma.OrgStaffMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.OrgStaffMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrgStaffMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrgStaffMessageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>[]
+          }
+          upsert: {
+            args: Prisma.OrgStaffMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgStaffMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.OrgStaffMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrgStaffMessage>
+          }
+          groupBy: {
+            args: Prisma.OrgStaffMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrgStaffMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrgStaffMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<OrgStaffMessageCountAggregateOutputType> | number
           }
         }
       }
@@ -4335,6 +4425,7 @@ export namespace Prisma {
     unitCategory?: UnitCategoryOmit
     user?: UserOmit
     orgCompanyMessage?: OrgCompanyMessageOmit
+    orgStaffMessage?: OrgStaffMessageOmit
     companyChatMessage?: CompanyChatMessageOmit
     company?: CompanyOmit
     engagement?: EngagementOmit
@@ -4454,6 +4545,7 @@ export namespace Prisma {
     chatSessions: number
     engagements: number
     companyMessages: number
+    staffMessages: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4463,6 +4555,7 @@ export namespace Prisma {
     chatSessions?: boolean | OrganizationCountOutputTypeCountChatSessionsArgs
     engagements?: boolean | OrganizationCountOutputTypeCountEngagementsArgs
     companyMessages?: boolean | OrganizationCountOutputTypeCountCompanyMessagesArgs
+    staffMessages?: boolean | OrganizationCountOutputTypeCountStaffMessagesArgs
   }
 
   // Custom InputTypes
@@ -4516,6 +4609,13 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountCompanyMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrgCompanyMessageWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountStaffMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrgStaffMessageWhereInput
   }
 
 
@@ -4644,6 +4744,7 @@ export namespace Prisma {
     apnsTokens: number
     fcmTokens: number
     checkinTasks: number
+    orgStaffMessages: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4656,6 +4757,7 @@ export namespace Prisma {
     apnsTokens?: boolean | UserCountOutputTypeCountApnsTokensArgs
     fcmTokens?: boolean | UserCountOutputTypeCountFcmTokensArgs
     checkinTasks?: boolean | UserCountOutputTypeCountCheckinTasksArgs
+    orgStaffMessages?: boolean | UserCountOutputTypeCountOrgStaffMessagesArgs
   }
 
   // Custom InputTypes
@@ -4730,6 +4832,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountCheckinTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CheckinTaskWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOrgStaffMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrgStaffMessageWhereInput
   }
 
 
@@ -5694,6 +5803,7 @@ export namespace Prisma {
     chatSessions?: boolean | Organization$chatSessionsArgs<ExtArgs>
     engagements?: boolean | Organization$engagementsArgs<ExtArgs>
     companyMessages?: boolean | Organization$companyMessagesArgs<ExtArgs>
+    staffMessages?: boolean | Organization$staffMessagesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -5792,6 +5902,7 @@ export namespace Prisma {
     chatSessions?: boolean | Organization$chatSessionsArgs<ExtArgs>
     engagements?: boolean | Organization$engagementsArgs<ExtArgs>
     companyMessages?: boolean | Organization$companyMessagesArgs<ExtArgs>
+    staffMessages?: boolean | Organization$staffMessagesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5806,6 +5917,7 @@ export namespace Prisma {
       chatSessions: Prisma.$ManagerChatSessionPayload<ExtArgs>[]
       engagements: Prisma.$EngagementPayload<ExtArgs>[]
       companyMessages: Prisma.$OrgCompanyMessagePayload<ExtArgs>[]
+      staffMessages: Prisma.$OrgStaffMessagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6234,6 +6346,7 @@ export namespace Prisma {
     chatSessions<T extends Organization$chatSessionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$chatSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     engagements<T extends Organization$engagementsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$engagementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     companyMessages<T extends Organization$companyMessagesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$companyMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    staffMessages<T extends Organization$staffMessagesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$staffMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6823,6 +6936,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrgCompanyMessageScalarFieldEnum | OrgCompanyMessageScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.staffMessages
+   */
+  export type Organization$staffMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    where?: OrgStaffMessageWhereInput
+    orderBy?: OrgStaffMessageOrderByWithRelationInput | OrgStaffMessageOrderByWithRelationInput[]
+    cursor?: OrgStaffMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrgStaffMessageScalarFieldEnum | OrgStaffMessageScalarFieldEnum[]
   }
 
   /**
@@ -11983,6 +12120,7 @@ export namespace Prisma {
     fcmTokens?: boolean | User$fcmTokensArgs<ExtArgs>
     cleanerLocation?: boolean | User$cleanerLocationArgs<ExtArgs>
     checkinTasks?: boolean | User$checkinTasksArgs<ExtArgs>
+    orgStaffMessages?: boolean | User$orgStaffMessagesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -12067,6 +12205,7 @@ export namespace Prisma {
     fcmTokens?: boolean | User$fcmTokensArgs<ExtArgs>
     cleanerLocation?: boolean | User$cleanerLocationArgs<ExtArgs>
     checkinTasks?: boolean | User$checkinTasksArgs<ExtArgs>
+    orgStaffMessages?: boolean | User$orgStaffMessagesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12093,6 +12232,7 @@ export namespace Prisma {
       fcmTokens: Prisma.$FcmTokenPayload<ExtArgs>[]
       cleanerLocation: Prisma.$CleanerLocationPayload<ExtArgs> | null
       checkinTasks: Prisma.$CheckinTaskPayload<ExtArgs>[]
+      orgStaffMessages: Prisma.$OrgStaffMessagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12519,6 +12659,7 @@ export namespace Prisma {
     fcmTokens<T extends User$fcmTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$fcmTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FcmTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     cleanerLocation<T extends User$cleanerLocationArgs<ExtArgs> = {}>(args?: Subset<T, User$cleanerLocationArgs<ExtArgs>>): Prisma__CleanerLocationClient<$Result.GetResult<Prisma.$CleanerLocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     checkinTasks<T extends User$checkinTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$checkinTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckinTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    orgStaffMessages<T extends User$orgStaffMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$orgStaffMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13237,6 +13378,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CheckinTaskScalarFieldEnum | CheckinTaskScalarFieldEnum[]
+  }
+
+  /**
+   * User.orgStaffMessages
+   */
+  export type User$orgStaffMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    where?: OrgStaffMessageWhereInput
+    orderBy?: OrgStaffMessageOrderByWithRelationInput | OrgStaffMessageOrderByWithRelationInput[]
+    cursor?: OrgStaffMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrgStaffMessageScalarFieldEnum | OrgStaffMessageScalarFieldEnum[]
   }
 
   /**
@@ -14417,6 +14582,1168 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrgCompanyMessageInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model OrgStaffMessage
+   */
+
+  export type AggregateOrgStaffMessage = {
+    _count: OrgStaffMessageCountAggregateOutputType | null
+    _min: OrgStaffMessageMinAggregateOutputType | null
+    _max: OrgStaffMessageMaxAggregateOutputType | null
+  }
+
+  export type OrgStaffMessageMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    staffUserId: string | null
+    senderIsManager: boolean | null
+    senderName: string | null
+    text: string | null
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
+    createdAt: Date | null
+    readByManagerAt: Date | null
+    readByStaffAt: Date | null
+  }
+
+  export type OrgStaffMessageMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    staffUserId: string | null
+    senderIsManager: boolean | null
+    senderName: string | null
+    text: string | null
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
+    createdAt: Date | null
+    readByManagerAt: Date | null
+    readByStaffAt: Date | null
+  }
+
+  export type OrgStaffMessageCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    staffUserId: number
+    senderIsManager: number
+    senderName: number
+    text: number
+    mediaUrl: number
+    mediaType: number
+    mediaName: number
+    createdAt: number
+    readByManagerAt: number
+    readByStaffAt: number
+    _all: number
+  }
+
+
+  export type OrgStaffMessageMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    staffUserId?: true
+    senderIsManager?: true
+    senderName?: true
+    text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
+    createdAt?: true
+    readByManagerAt?: true
+    readByStaffAt?: true
+  }
+
+  export type OrgStaffMessageMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    staffUserId?: true
+    senderIsManager?: true
+    senderName?: true
+    text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
+    createdAt?: true
+    readByManagerAt?: true
+    readByStaffAt?: true
+  }
+
+  export type OrgStaffMessageCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    staffUserId?: true
+    senderIsManager?: true
+    senderName?: true
+    text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
+    createdAt?: true
+    readByManagerAt?: true
+    readByStaffAt?: true
+    _all?: true
+  }
+
+  export type OrgStaffMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrgStaffMessage to aggregate.
+     */
+    where?: OrgStaffMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrgStaffMessages to fetch.
+     */
+    orderBy?: OrgStaffMessageOrderByWithRelationInput | OrgStaffMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OrgStaffMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrgStaffMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrgStaffMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned OrgStaffMessages
+    **/
+    _count?: true | OrgStaffMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrgStaffMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrgStaffMessageMaxAggregateInputType
+  }
+
+  export type GetOrgStaffMessageAggregateType<T extends OrgStaffMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrgStaffMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrgStaffMessage[P]>
+      : GetScalarType<T[P], AggregateOrgStaffMessage[P]>
+  }
+
+
+
+
+  export type OrgStaffMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrgStaffMessageWhereInput
+    orderBy?: OrgStaffMessageOrderByWithAggregationInput | OrgStaffMessageOrderByWithAggregationInput[]
+    by: OrgStaffMessageScalarFieldEnum[] | OrgStaffMessageScalarFieldEnum
+    having?: OrgStaffMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrgStaffMessageCountAggregateInputType | true
+    _min?: OrgStaffMessageMinAggregateInputType
+    _max?: OrgStaffMessageMaxAggregateInputType
+  }
+
+  export type OrgStaffMessageGroupByOutputType = {
+    id: string
+    organizationId: string
+    staffUserId: string
+    senderIsManager: boolean
+    senderName: string
+    text: string | null
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
+    createdAt: Date
+    readByManagerAt: Date | null
+    readByStaffAt: Date | null
+    _count: OrgStaffMessageCountAggregateOutputType | null
+    _min: OrgStaffMessageMinAggregateOutputType | null
+    _max: OrgStaffMessageMaxAggregateOutputType | null
+  }
+
+  type GetOrgStaffMessageGroupByPayload<T extends OrgStaffMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrgStaffMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrgStaffMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrgStaffMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], OrgStaffMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrgStaffMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    staffUserId?: boolean
+    senderIsManager?: boolean
+    senderName?: boolean
+    text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
+    createdAt?: boolean
+    readByManagerAt?: boolean
+    readByStaffAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    staffUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orgStaffMessage"]>
+
+  export type OrgStaffMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    staffUserId?: boolean
+    senderIsManager?: boolean
+    senderName?: boolean
+    text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
+    createdAt?: boolean
+    readByManagerAt?: boolean
+    readByStaffAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    staffUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orgStaffMessage"]>
+
+  export type OrgStaffMessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    staffUserId?: boolean
+    senderIsManager?: boolean
+    senderName?: boolean
+    text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
+    createdAt?: boolean
+    readByManagerAt?: boolean
+    readByStaffAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    staffUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orgStaffMessage"]>
+
+  export type OrgStaffMessageSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    staffUserId?: boolean
+    senderIsManager?: boolean
+    senderName?: boolean
+    text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
+    createdAt?: boolean
+    readByManagerAt?: boolean
+    readByStaffAt?: boolean
+  }
+
+  export type OrgStaffMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "staffUserId" | "senderIsManager" | "senderName" | "text" | "mediaUrl" | "mediaType" | "mediaName" | "createdAt" | "readByManagerAt" | "readByStaffAt", ExtArgs["result"]["orgStaffMessage"]>
+  export type OrgStaffMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    staffUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type OrgStaffMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    staffUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type OrgStaffMessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    staffUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $OrgStaffMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrgStaffMessage"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      staffUser: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      staffUserId: string
+      senderIsManager: boolean
+      senderName: string
+      text: string | null
+      mediaUrl: string | null
+      mediaType: string | null
+      mediaName: string | null
+      createdAt: Date
+      readByManagerAt: Date | null
+      readByStaffAt: Date | null
+    }, ExtArgs["result"]["orgStaffMessage"]>
+    composites: {}
+  }
+
+  type OrgStaffMessageGetPayload<S extends boolean | null | undefined | OrgStaffMessageDefaultArgs> = $Result.GetResult<Prisma.$OrgStaffMessagePayload, S>
+
+  type OrgStaffMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrgStaffMessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrgStaffMessageCountAggregateInputType | true
+    }
+
+  export interface OrgStaffMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrgStaffMessage'], meta: { name: 'OrgStaffMessage' } }
+    /**
+     * Find zero or one OrgStaffMessage that matches the filter.
+     * @param {OrgStaffMessageFindUniqueArgs} args - Arguments to find a OrgStaffMessage
+     * @example
+     * // Get one OrgStaffMessage
+     * const orgStaffMessage = await prisma.orgStaffMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrgStaffMessageFindUniqueArgs>(args: SelectSubset<T, OrgStaffMessageFindUniqueArgs<ExtArgs>>): Prisma__OrgStaffMessageClient<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OrgStaffMessage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrgStaffMessageFindUniqueOrThrowArgs} args - Arguments to find a OrgStaffMessage
+     * @example
+     * // Get one OrgStaffMessage
+     * const orgStaffMessage = await prisma.orgStaffMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrgStaffMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, OrgStaffMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrgStaffMessageClient<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrgStaffMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgStaffMessageFindFirstArgs} args - Arguments to find a OrgStaffMessage
+     * @example
+     * // Get one OrgStaffMessage
+     * const orgStaffMessage = await prisma.orgStaffMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrgStaffMessageFindFirstArgs>(args?: SelectSubset<T, OrgStaffMessageFindFirstArgs<ExtArgs>>): Prisma__OrgStaffMessageClient<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrgStaffMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgStaffMessageFindFirstOrThrowArgs} args - Arguments to find a OrgStaffMessage
+     * @example
+     * // Get one OrgStaffMessage
+     * const orgStaffMessage = await prisma.orgStaffMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrgStaffMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, OrgStaffMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrgStaffMessageClient<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OrgStaffMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgStaffMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrgStaffMessages
+     * const orgStaffMessages = await prisma.orgStaffMessage.findMany()
+     * 
+     * // Get first 10 OrgStaffMessages
+     * const orgStaffMessages = await prisma.orgStaffMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const orgStaffMessageWithIdOnly = await prisma.orgStaffMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OrgStaffMessageFindManyArgs>(args?: SelectSubset<T, OrgStaffMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OrgStaffMessage.
+     * @param {OrgStaffMessageCreateArgs} args - Arguments to create a OrgStaffMessage.
+     * @example
+     * // Create one OrgStaffMessage
+     * const OrgStaffMessage = await prisma.orgStaffMessage.create({
+     *   data: {
+     *     // ... data to create a OrgStaffMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends OrgStaffMessageCreateArgs>(args: SelectSubset<T, OrgStaffMessageCreateArgs<ExtArgs>>): Prisma__OrgStaffMessageClient<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OrgStaffMessages.
+     * @param {OrgStaffMessageCreateManyArgs} args - Arguments to create many OrgStaffMessages.
+     * @example
+     * // Create many OrgStaffMessages
+     * const orgStaffMessage = await prisma.orgStaffMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OrgStaffMessageCreateManyArgs>(args?: SelectSubset<T, OrgStaffMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrgStaffMessages and returns the data saved in the database.
+     * @param {OrgStaffMessageCreateManyAndReturnArgs} args - Arguments to create many OrgStaffMessages.
+     * @example
+     * // Create many OrgStaffMessages
+     * const orgStaffMessage = await prisma.orgStaffMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many OrgStaffMessages and only return the `id`
+     * const orgStaffMessageWithIdOnly = await prisma.orgStaffMessage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OrgStaffMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, OrgStaffMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OrgStaffMessage.
+     * @param {OrgStaffMessageDeleteArgs} args - Arguments to delete one OrgStaffMessage.
+     * @example
+     * // Delete one OrgStaffMessage
+     * const OrgStaffMessage = await prisma.orgStaffMessage.delete({
+     *   where: {
+     *     // ... filter to delete one OrgStaffMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OrgStaffMessageDeleteArgs>(args: SelectSubset<T, OrgStaffMessageDeleteArgs<ExtArgs>>): Prisma__OrgStaffMessageClient<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OrgStaffMessage.
+     * @param {OrgStaffMessageUpdateArgs} args - Arguments to update one OrgStaffMessage.
+     * @example
+     * // Update one OrgStaffMessage
+     * const orgStaffMessage = await prisma.orgStaffMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OrgStaffMessageUpdateArgs>(args: SelectSubset<T, OrgStaffMessageUpdateArgs<ExtArgs>>): Prisma__OrgStaffMessageClient<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OrgStaffMessages.
+     * @param {OrgStaffMessageDeleteManyArgs} args - Arguments to filter OrgStaffMessages to delete.
+     * @example
+     * // Delete a few OrgStaffMessages
+     * const { count } = await prisma.orgStaffMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OrgStaffMessageDeleteManyArgs>(args?: SelectSubset<T, OrgStaffMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrgStaffMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgStaffMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrgStaffMessages
+     * const orgStaffMessage = await prisma.orgStaffMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OrgStaffMessageUpdateManyArgs>(args: SelectSubset<T, OrgStaffMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrgStaffMessages and returns the data updated in the database.
+     * @param {OrgStaffMessageUpdateManyAndReturnArgs} args - Arguments to update many OrgStaffMessages.
+     * @example
+     * // Update many OrgStaffMessages
+     * const orgStaffMessage = await prisma.orgStaffMessage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more OrgStaffMessages and only return the `id`
+     * const orgStaffMessageWithIdOnly = await prisma.orgStaffMessage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OrgStaffMessageUpdateManyAndReturnArgs>(args: SelectSubset<T, OrgStaffMessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OrgStaffMessage.
+     * @param {OrgStaffMessageUpsertArgs} args - Arguments to update or create a OrgStaffMessage.
+     * @example
+     * // Update or create a OrgStaffMessage
+     * const orgStaffMessage = await prisma.orgStaffMessage.upsert({
+     *   create: {
+     *     // ... data to create a OrgStaffMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrgStaffMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrgStaffMessageUpsertArgs>(args: SelectSubset<T, OrgStaffMessageUpsertArgs<ExtArgs>>): Prisma__OrgStaffMessageClient<$Result.GetResult<Prisma.$OrgStaffMessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OrgStaffMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgStaffMessageCountArgs} args - Arguments to filter OrgStaffMessages to count.
+     * @example
+     * // Count the number of OrgStaffMessages
+     * const count = await prisma.orgStaffMessage.count({
+     *   where: {
+     *     // ... the filter for the OrgStaffMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrgStaffMessageCountArgs>(
+      args?: Subset<T, OrgStaffMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrgStaffMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrgStaffMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgStaffMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrgStaffMessageAggregateArgs>(args: Subset<T, OrgStaffMessageAggregateArgs>): Prisma.PrismaPromise<GetOrgStaffMessageAggregateType<T>>
+
+    /**
+     * Group by OrgStaffMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgStaffMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OrgStaffMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrgStaffMessageGroupByArgs['orderBy'] }
+        : { orderBy?: OrgStaffMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrgStaffMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrgStaffMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrgStaffMessage model
+   */
+  readonly fields: OrgStaffMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrgStaffMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrgStaffMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    staffUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrgStaffMessage model
+   */
+  interface OrgStaffMessageFieldRefs {
+    readonly id: FieldRef<"OrgStaffMessage", 'String'>
+    readonly organizationId: FieldRef<"OrgStaffMessage", 'String'>
+    readonly staffUserId: FieldRef<"OrgStaffMessage", 'String'>
+    readonly senderIsManager: FieldRef<"OrgStaffMessage", 'Boolean'>
+    readonly senderName: FieldRef<"OrgStaffMessage", 'String'>
+    readonly text: FieldRef<"OrgStaffMessage", 'String'>
+    readonly mediaUrl: FieldRef<"OrgStaffMessage", 'String'>
+    readonly mediaType: FieldRef<"OrgStaffMessage", 'String'>
+    readonly mediaName: FieldRef<"OrgStaffMessage", 'String'>
+    readonly createdAt: FieldRef<"OrgStaffMessage", 'DateTime'>
+    readonly readByManagerAt: FieldRef<"OrgStaffMessage", 'DateTime'>
+    readonly readByStaffAt: FieldRef<"OrgStaffMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * OrgStaffMessage findUnique
+   */
+  export type OrgStaffMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgStaffMessage to fetch.
+     */
+    where: OrgStaffMessageWhereUniqueInput
+  }
+
+  /**
+   * OrgStaffMessage findUniqueOrThrow
+   */
+  export type OrgStaffMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgStaffMessage to fetch.
+     */
+    where: OrgStaffMessageWhereUniqueInput
+  }
+
+  /**
+   * OrgStaffMessage findFirst
+   */
+  export type OrgStaffMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgStaffMessage to fetch.
+     */
+    where?: OrgStaffMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrgStaffMessages to fetch.
+     */
+    orderBy?: OrgStaffMessageOrderByWithRelationInput | OrgStaffMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrgStaffMessages.
+     */
+    cursor?: OrgStaffMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrgStaffMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrgStaffMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrgStaffMessages.
+     */
+    distinct?: OrgStaffMessageScalarFieldEnum | OrgStaffMessageScalarFieldEnum[]
+  }
+
+  /**
+   * OrgStaffMessage findFirstOrThrow
+   */
+  export type OrgStaffMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgStaffMessage to fetch.
+     */
+    where?: OrgStaffMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrgStaffMessages to fetch.
+     */
+    orderBy?: OrgStaffMessageOrderByWithRelationInput | OrgStaffMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrgStaffMessages.
+     */
+    cursor?: OrgStaffMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrgStaffMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrgStaffMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrgStaffMessages.
+     */
+    distinct?: OrgStaffMessageScalarFieldEnum | OrgStaffMessageScalarFieldEnum[]
+  }
+
+  /**
+   * OrgStaffMessage findMany
+   */
+  export type OrgStaffMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgStaffMessages to fetch.
+     */
+    where?: OrgStaffMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrgStaffMessages to fetch.
+     */
+    orderBy?: OrgStaffMessageOrderByWithRelationInput | OrgStaffMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing OrgStaffMessages.
+     */
+    cursor?: OrgStaffMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrgStaffMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrgStaffMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrgStaffMessages.
+     */
+    distinct?: OrgStaffMessageScalarFieldEnum | OrgStaffMessageScalarFieldEnum[]
+  }
+
+  /**
+   * OrgStaffMessage create
+   */
+  export type OrgStaffMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a OrgStaffMessage.
+     */
+    data: XOR<OrgStaffMessageCreateInput, OrgStaffMessageUncheckedCreateInput>
+  }
+
+  /**
+   * OrgStaffMessage createMany
+   */
+  export type OrgStaffMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrgStaffMessages.
+     */
+    data: OrgStaffMessageCreateManyInput | OrgStaffMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrgStaffMessage createManyAndReturn
+   */
+  export type OrgStaffMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * The data used to create many OrgStaffMessages.
+     */
+    data: OrgStaffMessageCreateManyInput | OrgStaffMessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrgStaffMessage update
+   */
+  export type OrgStaffMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a OrgStaffMessage.
+     */
+    data: XOR<OrgStaffMessageUpdateInput, OrgStaffMessageUncheckedUpdateInput>
+    /**
+     * Choose, which OrgStaffMessage to update.
+     */
+    where: OrgStaffMessageWhereUniqueInput
+  }
+
+  /**
+   * OrgStaffMessage updateMany
+   */
+  export type OrgStaffMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrgStaffMessages.
+     */
+    data: XOR<OrgStaffMessageUpdateManyMutationInput, OrgStaffMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which OrgStaffMessages to update
+     */
+    where?: OrgStaffMessageWhereInput
+    /**
+     * Limit how many OrgStaffMessages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrgStaffMessage updateManyAndReturn
+   */
+  export type OrgStaffMessageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * The data used to update OrgStaffMessages.
+     */
+    data: XOR<OrgStaffMessageUpdateManyMutationInput, OrgStaffMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which OrgStaffMessages to update
+     */
+    where?: OrgStaffMessageWhereInput
+    /**
+     * Limit how many OrgStaffMessages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrgStaffMessage upsert
+   */
+  export type OrgStaffMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the OrgStaffMessage to update in case it exists.
+     */
+    where: OrgStaffMessageWhereUniqueInput
+    /**
+     * In case the OrgStaffMessage found by the `where` argument doesn't exist, create a new OrgStaffMessage with this data.
+     */
+    create: XOR<OrgStaffMessageCreateInput, OrgStaffMessageUncheckedCreateInput>
+    /**
+     * In case the OrgStaffMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrgStaffMessageUpdateInput, OrgStaffMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * OrgStaffMessage delete
+   */
+  export type OrgStaffMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
+    /**
+     * Filter which OrgStaffMessage to delete.
+     */
+    where: OrgStaffMessageWhereUniqueInput
+  }
+
+  /**
+   * OrgStaffMessage deleteMany
+   */
+  export type OrgStaffMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrgStaffMessages to delete
+     */
+    where?: OrgStaffMessageWhereInput
+    /**
+     * Limit how many OrgStaffMessages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrgStaffMessage without action
+   */
+  export type OrgStaffMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgStaffMessage
+     */
+    select?: OrgStaffMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgStaffMessage
+     */
+    omit?: OrgStaffMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgStaffMessageInclude<ExtArgs> | null
   }
 
 
@@ -53442,6 +54769,24 @@ export namespace Prisma {
   export type OrgCompanyMessageScalarFieldEnum = (typeof OrgCompanyMessageScalarFieldEnum)[keyof typeof OrgCompanyMessageScalarFieldEnum]
 
 
+  export const OrgStaffMessageScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    staffUserId: 'staffUserId',
+    senderIsManager: 'senderIsManager',
+    senderName: 'senderName',
+    text: 'text',
+    mediaUrl: 'mediaUrl',
+    mediaType: 'mediaType',
+    mediaName: 'mediaName',
+    createdAt: 'createdAt',
+    readByManagerAt: 'readByManagerAt',
+    readByStaffAt: 'readByStaffAt'
+  };
+
+  export type OrgStaffMessageScalarFieldEnum = (typeof OrgStaffMessageScalarFieldEnum)[keyof typeof OrgStaffMessageScalarFieldEnum]
+
+
   export const CompanyChatMessageScalarFieldEnum: {
     id: 'id',
     companyId: 'companyId',
@@ -54139,6 +55484,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionListRelationFilter
     engagements?: EngagementListRelationFilter
     companyMessages?: OrgCompanyMessageListRelationFilter
+    staffMessages?: OrgStaffMessageListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -54174,6 +55520,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionOrderByRelationAggregateInput
     engagements?: EngagementOrderByRelationAggregateInput
     companyMessages?: OrgCompanyMessageOrderByRelationAggregateInput
+    staffMessages?: OrgStaffMessageOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -54212,6 +55559,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionListRelationFilter
     engagements?: EngagementListRelationFilter
     companyMessages?: OrgCompanyMessageListRelationFilter
+    staffMessages?: OrgStaffMessageListRelationFilter
   }, "id" | "slug">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -54657,6 +56005,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenListRelationFilter
     cleanerLocation?: XOR<CleanerLocationNullableScalarRelationFilter, CleanerLocationWhereInput> | null
     checkinTasks?: CheckinTaskListRelationFilter
+    orgStaffMessages?: OrgStaffMessageListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -54690,6 +56039,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenOrderByRelationAggregateInput
     cleanerLocation?: CleanerLocationOrderByWithRelationInput
     checkinTasks?: CheckinTaskOrderByRelationAggregateInput
+    orgStaffMessages?: OrgStaffMessageOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -54726,6 +56076,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenListRelationFilter
     cleanerLocation?: XOR<CleanerLocationNullableScalarRelationFilter, CleanerLocationWhereInput> | null
     checkinTasks?: CheckinTaskListRelationFilter
+    orgStaffMessages?: OrgStaffMessageListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -54869,6 +56220,99 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"OrgCompanyMessage"> | Date | string
     readByOrgAt?: DateTimeNullableWithAggregatesFilter<"OrgCompanyMessage"> | Date | string | null
     readByCompanyAt?: DateTimeNullableWithAggregatesFilter<"OrgCompanyMessage"> | Date | string | null
+  }
+
+  export type OrgStaffMessageWhereInput = {
+    AND?: OrgStaffMessageWhereInput | OrgStaffMessageWhereInput[]
+    OR?: OrgStaffMessageWhereInput[]
+    NOT?: OrgStaffMessageWhereInput | OrgStaffMessageWhereInput[]
+    id?: StringFilter<"OrgStaffMessage"> | string
+    organizationId?: StringFilter<"OrgStaffMessage"> | string
+    staffUserId?: StringFilter<"OrgStaffMessage"> | string
+    senderIsManager?: BoolFilter<"OrgStaffMessage"> | boolean
+    senderName?: StringFilter<"OrgStaffMessage"> | string
+    text?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaUrl?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaType?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaName?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    createdAt?: DateTimeFilter<"OrgStaffMessage"> | Date | string
+    readByManagerAt?: DateTimeNullableFilter<"OrgStaffMessage"> | Date | string | null
+    readByStaffAt?: DateTimeNullableFilter<"OrgStaffMessage"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    staffUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type OrgStaffMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrderInput | SortOrder
+    mediaUrl?: SortOrderInput | SortOrder
+    mediaType?: SortOrderInput | SortOrder
+    mediaName?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrderInput | SortOrder
+    readByStaffAt?: SortOrderInput | SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    staffUser?: UserOrderByWithRelationInput
+  }
+
+  export type OrgStaffMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: OrgStaffMessageWhereInput | OrgStaffMessageWhereInput[]
+    OR?: OrgStaffMessageWhereInput[]
+    NOT?: OrgStaffMessageWhereInput | OrgStaffMessageWhereInput[]
+    organizationId?: StringFilter<"OrgStaffMessage"> | string
+    staffUserId?: StringFilter<"OrgStaffMessage"> | string
+    senderIsManager?: BoolFilter<"OrgStaffMessage"> | boolean
+    senderName?: StringFilter<"OrgStaffMessage"> | string
+    text?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaUrl?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaType?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaName?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    createdAt?: DateTimeFilter<"OrgStaffMessage"> | Date | string
+    readByManagerAt?: DateTimeNullableFilter<"OrgStaffMessage"> | Date | string | null
+    readByStaffAt?: DateTimeNullableFilter<"OrgStaffMessage"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    staffUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type OrgStaffMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrderInput | SortOrder
+    mediaUrl?: SortOrderInput | SortOrder
+    mediaType?: SortOrderInput | SortOrder
+    mediaName?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrderInput | SortOrder
+    readByStaffAt?: SortOrderInput | SortOrder
+    _count?: OrgStaffMessageCountOrderByAggregateInput
+    _max?: OrgStaffMessageMaxOrderByAggregateInput
+    _min?: OrgStaffMessageMinOrderByAggregateInput
+  }
+
+  export type OrgStaffMessageScalarWhereWithAggregatesInput = {
+    AND?: OrgStaffMessageScalarWhereWithAggregatesInput | OrgStaffMessageScalarWhereWithAggregatesInput[]
+    OR?: OrgStaffMessageScalarWhereWithAggregatesInput[]
+    NOT?: OrgStaffMessageScalarWhereWithAggregatesInput | OrgStaffMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"OrgStaffMessage"> | string
+    organizationId?: StringWithAggregatesFilter<"OrgStaffMessage"> | string
+    staffUserId?: StringWithAggregatesFilter<"OrgStaffMessage"> | string
+    senderIsManager?: BoolWithAggregatesFilter<"OrgStaffMessage"> | boolean
+    senderName?: StringWithAggregatesFilter<"OrgStaffMessage"> | string
+    text?: StringNullableWithAggregatesFilter<"OrgStaffMessage"> | string | null
+    mediaUrl?: StringNullableWithAggregatesFilter<"OrgStaffMessage"> | string | null
+    mediaType?: StringNullableWithAggregatesFilter<"OrgStaffMessage"> | string | null
+    mediaName?: StringNullableWithAggregatesFilter<"OrgStaffMessage"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"OrgStaffMessage"> | Date | string
+    readByManagerAt?: DateTimeNullableWithAggregatesFilter<"OrgStaffMessage"> | Date | string | null
+    readByStaffAt?: DateTimeNullableWithAggregatesFilter<"OrgStaffMessage"> | Date | string | null
   }
 
   export type CompanyChatMessageWhereInput = {
@@ -57630,6 +59074,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -57665,6 +59110,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -57700,6 +59146,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -57735,6 +59182,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -58233,6 +59681,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -58264,6 +59713,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUpdateInput = {
@@ -58295,6 +59745,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -58326,6 +59777,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -58490,6 +59942,109 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgStaffMessageCreateInput = {
+    id?: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutStaffMessagesInput
+    staffUser: UserCreateNestedOneWithoutOrgStaffMessagesInput
+  }
+
+  export type OrgStaffMessageUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    staffUserId: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
+  export type OrgStaffMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutStaffMessagesNestedInput
+    staffUser?: UserUpdateOneRequiredWithoutOrgStaffMessagesNestedInput
+  }
+
+  export type OrgStaffMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    staffUserId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgStaffMessageCreateManyInput = {
+    id?: string
+    organizationId: string
+    staffUserId: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
+  export type OrgStaffMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgStaffMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    staffUserId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type CompanyChatMessageCreateInput = {
@@ -61548,6 +63103,12 @@ export namespace Prisma {
     none?: OrgCompanyMessageWhereInput
   }
 
+  export type OrgStaffMessageListRelationFilter = {
+    every?: OrgStaffMessageWhereInput
+    some?: OrgStaffMessageWhereInput
+    none?: OrgStaffMessageWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -61574,6 +63135,10 @@ export namespace Prisma {
   }
 
   export type OrgCompanyMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrgStaffMessageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -62335,6 +63900,56 @@ export namespace Prisma {
     createdAt?: SortOrder
     readByOrgAt?: SortOrder
     readByCompanyAt?: SortOrder
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type OrgStaffMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrder
+    readByStaffAt?: SortOrder
+  }
+
+  export type OrgStaffMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrder
+    readByStaffAt?: SortOrder
+  }
+
+  export type OrgStaffMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    staffUserId?: SortOrder
+    senderIsManager?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
+    createdAt?: SortOrder
+    readByManagerAt?: SortOrder
+    readByStaffAt?: SortOrder
   }
 
   export type CompanyChatMessageCountOrderByAggregateInput = {
@@ -63408,11 +65023,6 @@ export namespace Prisma {
     readByWorkerAt?: SortOrder
   }
 
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
-  }
-
   export type SupervisorReviewCountOrderByAggregateInput = {
     id?: SortOrder
     supervisorId?: SortOrder
@@ -64069,6 +65679,13 @@ export namespace Prisma {
     connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
   }
 
+  export type OrgStaffMessageCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<OrgStaffMessageCreateWithoutOrganizationInput, OrgStaffMessageUncheckedCreateWithoutOrganizationInput> | OrgStaffMessageCreateWithoutOrganizationInput[] | OrgStaffMessageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrgStaffMessageCreateOrConnectWithoutOrganizationInput | OrgStaffMessageCreateOrConnectWithoutOrganizationInput[]
+    createMany?: OrgStaffMessageCreateManyOrganizationInputEnvelope
+    connect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<UserCreateWithoutOrganizationInput, UserUncheckedCreateWithoutOrganizationInput> | UserCreateWithoutOrganizationInput[] | UserUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: UserCreateOrConnectWithoutOrganizationInput | UserCreateOrConnectWithoutOrganizationInput[]
@@ -64109,6 +65726,13 @@ export namespace Prisma {
     connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutOrganizationInput | OrgCompanyMessageCreateOrConnectWithoutOrganizationInput[]
     createMany?: OrgCompanyMessageCreateManyOrganizationInputEnvelope
     connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+  }
+
+  export type OrgStaffMessageUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<OrgStaffMessageCreateWithoutOrganizationInput, OrgStaffMessageUncheckedCreateWithoutOrganizationInput> | OrgStaffMessageCreateWithoutOrganizationInput[] | OrgStaffMessageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrgStaffMessageCreateOrConnectWithoutOrganizationInput | OrgStaffMessageCreateOrConnectWithoutOrganizationInput[]
+    createMany?: OrgStaffMessageCreateManyOrganizationInputEnvelope
+    connect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -64219,6 +65843,20 @@ export namespace Prisma {
     deleteMany?: OrgCompanyMessageScalarWhereInput | OrgCompanyMessageScalarWhereInput[]
   }
 
+  export type OrgStaffMessageUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<OrgStaffMessageCreateWithoutOrganizationInput, OrgStaffMessageUncheckedCreateWithoutOrganizationInput> | OrgStaffMessageCreateWithoutOrganizationInput[] | OrgStaffMessageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrgStaffMessageCreateOrConnectWithoutOrganizationInput | OrgStaffMessageCreateOrConnectWithoutOrganizationInput[]
+    upsert?: OrgStaffMessageUpsertWithWhereUniqueWithoutOrganizationInput | OrgStaffMessageUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: OrgStaffMessageCreateManyOrganizationInputEnvelope
+    set?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    disconnect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    delete?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    connect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    update?: OrgStaffMessageUpdateWithWhereUniqueWithoutOrganizationInput | OrgStaffMessageUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: OrgStaffMessageUpdateManyWithWhereWithoutOrganizationInput | OrgStaffMessageUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: OrgStaffMessageScalarWhereInput | OrgStaffMessageScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<UserCreateWithoutOrganizationInput, UserUncheckedCreateWithoutOrganizationInput> | UserCreateWithoutOrganizationInput[] | UserUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: UserCreateOrConnectWithoutOrganizationInput | UserCreateOrConnectWithoutOrganizationInput[]
@@ -64301,6 +65939,20 @@ export namespace Prisma {
     update?: OrgCompanyMessageUpdateWithWhereUniqueWithoutOrganizationInput | OrgCompanyMessageUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: OrgCompanyMessageUpdateManyWithWhereWithoutOrganizationInput | OrgCompanyMessageUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: OrgCompanyMessageScalarWhereInput | OrgCompanyMessageScalarWhereInput[]
+  }
+
+  export type OrgStaffMessageUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<OrgStaffMessageCreateWithoutOrganizationInput, OrgStaffMessageUncheckedCreateWithoutOrganizationInput> | OrgStaffMessageCreateWithoutOrganizationInput[] | OrgStaffMessageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrgStaffMessageCreateOrConnectWithoutOrganizationInput | OrgStaffMessageCreateOrConnectWithoutOrganizationInput[]
+    upsert?: OrgStaffMessageUpsertWithWhereUniqueWithoutOrganizationInput | OrgStaffMessageUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: OrgStaffMessageCreateManyOrganizationInputEnvelope
+    set?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    disconnect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    delete?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    connect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    update?: OrgStaffMessageUpdateWithWhereUniqueWithoutOrganizationInput | OrgStaffMessageUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: OrgStaffMessageUpdateManyWithWhereWithoutOrganizationInput | OrgStaffMessageUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: OrgStaffMessageScalarWhereInput | OrgStaffMessageScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutPropertiesInput = {
@@ -64660,6 +66312,13 @@ export namespace Prisma {
     connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
   }
 
+  export type OrgStaffMessageCreateNestedManyWithoutStaffUserInput = {
+    create?: XOR<OrgStaffMessageCreateWithoutStaffUserInput, OrgStaffMessageUncheckedCreateWithoutStaffUserInput> | OrgStaffMessageCreateWithoutStaffUserInput[] | OrgStaffMessageUncheckedCreateWithoutStaffUserInput[]
+    connectOrCreate?: OrgStaffMessageCreateOrConnectWithoutStaffUserInput | OrgStaffMessageCreateOrConnectWithoutStaffUserInput[]
+    createMany?: OrgStaffMessageCreateManyStaffUserInputEnvelope
+    connect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+  }
+
   export type CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -64727,6 +66386,13 @@ export namespace Prisma {
     connectOrCreate?: CheckinTaskCreateOrConnectWithoutAssignedToInput | CheckinTaskCreateOrConnectWithoutAssignedToInput[]
     createMany?: CheckinTaskCreateManyAssignedToInputEnvelope
     connect?: CheckinTaskWhereUniqueInput | CheckinTaskWhereUniqueInput[]
+  }
+
+  export type OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput = {
+    create?: XOR<OrgStaffMessageCreateWithoutStaffUserInput, OrgStaffMessageUncheckedCreateWithoutStaffUserInput> | OrgStaffMessageCreateWithoutStaffUserInput[] | OrgStaffMessageUncheckedCreateWithoutStaffUserInput[]
+    connectOrCreate?: OrgStaffMessageCreateOrConnectWithoutStaffUserInput | OrgStaffMessageCreateOrConnectWithoutStaffUserInput[]
+    createMany?: OrgStaffMessageCreateManyStaffUserInputEnvelope
+    connect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
   }
 
   export type EnumRoleFieldUpdateOperationsInput = {
@@ -64893,6 +66559,20 @@ export namespace Prisma {
     deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
   }
 
+  export type OrgStaffMessageUpdateManyWithoutStaffUserNestedInput = {
+    create?: XOR<OrgStaffMessageCreateWithoutStaffUserInput, OrgStaffMessageUncheckedCreateWithoutStaffUserInput> | OrgStaffMessageCreateWithoutStaffUserInput[] | OrgStaffMessageUncheckedCreateWithoutStaffUserInput[]
+    connectOrCreate?: OrgStaffMessageCreateOrConnectWithoutStaffUserInput | OrgStaffMessageCreateOrConnectWithoutStaffUserInput[]
+    upsert?: OrgStaffMessageUpsertWithWhereUniqueWithoutStaffUserInput | OrgStaffMessageUpsertWithWhereUniqueWithoutStaffUserInput[]
+    createMany?: OrgStaffMessageCreateManyStaffUserInputEnvelope
+    set?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    disconnect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    delete?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    connect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    update?: OrgStaffMessageUpdateWithWhereUniqueWithoutStaffUserInput | OrgStaffMessageUpdateWithWhereUniqueWithoutStaffUserInput[]
+    updateMany?: OrgStaffMessageUpdateManyWithWhereWithoutStaffUserInput | OrgStaffMessageUpdateManyWithWhereWithoutStaffUserInput[]
+    deleteMany?: OrgStaffMessageScalarWhereInput | OrgStaffMessageScalarWhereInput[]
+  }
+
   export type CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput = {
     create?: XOR<CleaningTaskCreateWithoutAssignedToInput, CleaningTaskUncheckedCreateWithoutAssignedToInput> | CleaningTaskCreateWithoutAssignedToInput[] | CleaningTaskUncheckedCreateWithoutAssignedToInput[]
     connectOrCreate?: CleaningTaskCreateOrConnectWithoutAssignedToInput | CleaningTaskCreateOrConnectWithoutAssignedToInput[]
@@ -65029,6 +66709,20 @@ export namespace Prisma {
     deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
   }
 
+  export type OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput = {
+    create?: XOR<OrgStaffMessageCreateWithoutStaffUserInput, OrgStaffMessageUncheckedCreateWithoutStaffUserInput> | OrgStaffMessageCreateWithoutStaffUserInput[] | OrgStaffMessageUncheckedCreateWithoutStaffUserInput[]
+    connectOrCreate?: OrgStaffMessageCreateOrConnectWithoutStaffUserInput | OrgStaffMessageCreateOrConnectWithoutStaffUserInput[]
+    upsert?: OrgStaffMessageUpsertWithWhereUniqueWithoutStaffUserInput | OrgStaffMessageUpsertWithWhereUniqueWithoutStaffUserInput[]
+    createMany?: OrgStaffMessageCreateManyStaffUserInputEnvelope
+    set?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    disconnect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    delete?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    connect?: OrgStaffMessageWhereUniqueInput | OrgStaffMessageWhereUniqueInput[]
+    update?: OrgStaffMessageUpdateWithWhereUniqueWithoutStaffUserInput | OrgStaffMessageUpdateWithWhereUniqueWithoutStaffUserInput[]
+    updateMany?: OrgStaffMessageUpdateManyWithWhereWithoutStaffUserInput | OrgStaffMessageUpdateManyWithWhereWithoutStaffUserInput[]
+    deleteMany?: OrgStaffMessageScalarWhereInput | OrgStaffMessageScalarWhereInput[]
+  }
+
   export type OrganizationCreateNestedOneWithoutCompanyMessagesInput = {
     create?: XOR<OrganizationCreateWithoutCompanyMessagesInput, OrganizationUncheckedCreateWithoutCompanyMessagesInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutCompanyMessagesInput
@@ -65055,6 +66749,34 @@ export namespace Prisma {
     upsert?: CompanyUpsertWithoutOrgMessagesInput
     connect?: CompanyWhereUniqueInput
     update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutOrgMessagesInput, CompanyUpdateWithoutOrgMessagesInput>, CompanyUncheckedUpdateWithoutOrgMessagesInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutStaffMessagesInput = {
+    create?: XOR<OrganizationCreateWithoutStaffMessagesInput, OrganizationUncheckedCreateWithoutStaffMessagesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutStaffMessagesInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutOrgStaffMessagesInput = {
+    create?: XOR<UserCreateWithoutOrgStaffMessagesInput, UserUncheckedCreateWithoutOrgStaffMessagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOrgStaffMessagesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutStaffMessagesNestedInput = {
+    create?: XOR<OrganizationCreateWithoutStaffMessagesInput, OrganizationUncheckedCreateWithoutStaffMessagesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutStaffMessagesInput
+    upsert?: OrganizationUpsertWithoutStaffMessagesInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutStaffMessagesInput, OrganizationUpdateWithoutStaffMessagesInput>, OrganizationUncheckedUpdateWithoutStaffMessagesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutOrgStaffMessagesNestedInput = {
+    create?: XOR<UserCreateWithoutOrgStaffMessagesInput, UserUncheckedCreateWithoutOrgStaffMessagesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOrgStaffMessagesInput
+    upsert?: UserUpsertWithoutOrgStaffMessagesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrgStaffMessagesInput, UserUpdateWithoutOrgStaffMessagesInput>, UserUncheckedUpdateWithoutOrgStaffMessagesInput>
   }
 
   export type CompanyCreatescopesInput = {
@@ -67684,6 +69406,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -67714,6 +69437,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -67944,6 +69668,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type OrgStaffMessageCreateWithoutOrganizationInput = {
+    id?: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+    staffUser: UserCreateNestedOneWithoutOrgStaffMessagesInput
+  }
+
+  export type OrgStaffMessageUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    staffUserId: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
+  export type OrgStaffMessageCreateOrConnectWithoutOrganizationInput = {
+    where: OrgStaffMessageWhereUniqueInput
+    create: XOR<OrgStaffMessageCreateWithoutOrganizationInput, OrgStaffMessageUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type OrgStaffMessageCreateManyOrganizationInputEnvelope = {
+    data: OrgStaffMessageCreateManyOrganizationInput | OrgStaffMessageCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutOrganizationInput, UserUncheckedUpdateWithoutOrganizationInput>
@@ -68150,6 +69912,40 @@ export namespace Prisma {
     readByCompanyAt?: DateTimeNullableFilter<"OrgCompanyMessage"> | Date | string | null
   }
 
+  export type OrgStaffMessageUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: OrgStaffMessageWhereUniqueInput
+    update: XOR<OrgStaffMessageUpdateWithoutOrganizationInput, OrgStaffMessageUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<OrgStaffMessageCreateWithoutOrganizationInput, OrgStaffMessageUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type OrgStaffMessageUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: OrgStaffMessageWhereUniqueInput
+    data: XOR<OrgStaffMessageUpdateWithoutOrganizationInput, OrgStaffMessageUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type OrgStaffMessageUpdateManyWithWhereWithoutOrganizationInput = {
+    where: OrgStaffMessageScalarWhereInput
+    data: XOR<OrgStaffMessageUpdateManyMutationInput, OrgStaffMessageUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type OrgStaffMessageScalarWhereInput = {
+    AND?: OrgStaffMessageScalarWhereInput | OrgStaffMessageScalarWhereInput[]
+    OR?: OrgStaffMessageScalarWhereInput[]
+    NOT?: OrgStaffMessageScalarWhereInput | OrgStaffMessageScalarWhereInput[]
+    id?: StringFilter<"OrgStaffMessage"> | string
+    organizationId?: StringFilter<"OrgStaffMessage"> | string
+    staffUserId?: StringFilter<"OrgStaffMessage"> | string
+    senderIsManager?: BoolFilter<"OrgStaffMessage"> | boolean
+    senderName?: StringFilter<"OrgStaffMessage"> | string
+    text?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaUrl?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaType?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    mediaName?: StringNullableFilter<"OrgStaffMessage"> | string | null
+    createdAt?: DateTimeFilter<"OrgStaffMessage"> | Date | string
+    readByManagerAt?: DateTimeNullableFilter<"OrgStaffMessage"> | Date | string | null
+    readByStaffAt?: DateTimeNullableFilter<"OrgStaffMessage"> | Date | string | null
+  }
+
   export type OrganizationCreateWithoutPropertiesInput = {
     id?: string
     name: string
@@ -68182,6 +69978,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutPropertiesInput = {
@@ -68216,6 +70013,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutPropertiesInput = {
@@ -68434,6 +70232,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutPropertiesInput = {
@@ -68468,6 +70267,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UnitCategoryUpsertWithWhereUniqueWithoutPropertyInput = {
@@ -68989,6 +70789,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -69023,6 +70824,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -69345,6 +71147,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type OrgStaffMessageCreateWithoutStaffUserInput = {
+    id?: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutStaffMessagesInput
+  }
+
+  export type OrgStaffMessageUncheckedCreateWithoutStaffUserInput = {
+    id?: string
+    organizationId: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
+  export type OrgStaffMessageCreateOrConnectWithoutStaffUserInput = {
+    where: OrgStaffMessageWhereUniqueInput
+    create: XOR<OrgStaffMessageCreateWithoutStaffUserInput, OrgStaffMessageUncheckedCreateWithoutStaffUserInput>
+  }
+
+  export type OrgStaffMessageCreateManyStaffUserInputEnvelope = {
+    data: OrgStaffMessageCreateManyStaffUserInput | OrgStaffMessageCreateManyStaffUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CompanyUpsertWithoutUsersInput = {
     update: XOR<CompanyUpdateWithoutUsersInput, CompanyUncheckedUpdateWithoutUsersInput>
     create: XOR<CompanyCreateWithoutUsersInput, CompanyUncheckedCreateWithoutUsersInput>
@@ -69425,6 +71265,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -69459,6 +71300,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type CleaningTaskUpsertWithWhereUniqueWithoutAssignedToInput = {
@@ -69760,6 +71602,22 @@ export namespace Prisma {
     checkinAccessTokenExpiresAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
   }
 
+  export type OrgStaffMessageUpsertWithWhereUniqueWithoutStaffUserInput = {
+    where: OrgStaffMessageWhereUniqueInput
+    update: XOR<OrgStaffMessageUpdateWithoutStaffUserInput, OrgStaffMessageUncheckedUpdateWithoutStaffUserInput>
+    create: XOR<OrgStaffMessageCreateWithoutStaffUserInput, OrgStaffMessageUncheckedCreateWithoutStaffUserInput>
+  }
+
+  export type OrgStaffMessageUpdateWithWhereUniqueWithoutStaffUserInput = {
+    where: OrgStaffMessageWhereUniqueInput
+    data: XOR<OrgStaffMessageUpdateWithoutStaffUserInput, OrgStaffMessageUncheckedUpdateWithoutStaffUserInput>
+  }
+
+  export type OrgStaffMessageUpdateManyWithWhereWithoutStaffUserInput = {
+    where: OrgStaffMessageScalarWhereInput
+    data: XOR<OrgStaffMessageUpdateManyMutationInput, OrgStaffMessageUncheckedUpdateManyWithoutStaffUserInput>
+  }
+
   export type OrganizationCreateWithoutCompanyMessagesInput = {
     id?: string
     name: string
@@ -69792,6 +71650,7 @@ export namespace Prisma {
     properties?: PropertyCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutCompanyMessagesInput = {
@@ -69826,6 +71685,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutCompanyMessagesInput = {
@@ -69907,6 +71767,7 @@ export namespace Prisma {
     properties?: PropertyUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutCompanyMessagesInput = {
@@ -69941,6 +71802,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type CompanyUpsertWithoutOrgMessagesInput = {
@@ -69980,6 +71842,302 @@ export namespace Prisma {
     warehouseProducts?: WarehouseProductUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
+  export type OrganizationCreateWithoutStaffMessagesInput = {
+    id?: string
+    name: string
+    slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
+    createdAt?: Date | string
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
+    properties?: PropertyCreateNestedManyWithoutOrganizationInput
+    chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
+    engagements?: EngagementCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutStaffMessagesInput = {
+    id?: string
+    name: string
+    slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
+    createdAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
+    chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
+    engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutStaffMessagesInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutStaffMessagesInput, OrganizationUncheckedCreateWithoutStaffMessagesInput>
+  }
+
+  export type UserCreateWithoutOrgStaffMessagesInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutUsersInput
+    organization?: OrganizationCreateNestedOneWithoutUsersInput
+    cleaningTasks?: CleaningTaskCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+  }
+
+  export type UserUncheckedCreateWithoutOrgStaffMessagesInput = {
+    id?: string
+    email: string
+    password: string
+    role: $Enums.Role
+    createdAt?: Date | string
+    name: string
+    phone?: string | null
+    address?: string | null
+    isExternal?: boolean
+    companyName?: string | null
+    vatNumber?: string | null
+    iban?: string | null
+    organizationId?: string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: number
+    lockedUntil?: Date | string | null
+    privacyAcceptedAt?: Date | string | null
+    companyId?: string | null
+    cleaningTasks?: CleaningTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    maintenanceTickets?: MaintenanceTicketUncheckedCreateNestedManyWithoutAssignedToInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutSupervisorInput
+    supervisedApartments?: ApartmentSupervisorUncheckedCreateNestedManyWithoutUserInput
+    ownedApartments?: ApartmentOwnerUncheckedCreateNestedManyWithoutUserInput
+    pushSubscriptions?: PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
+    fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
+    cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+  }
+
+  export type UserCreateOrConnectWithoutOrgStaffMessagesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOrgStaffMessagesInput, UserUncheckedCreateWithoutOrgStaffMessagesInput>
+  }
+
+  export type OrganizationUpsertWithoutStaffMessagesInput = {
+    update: XOR<OrganizationUpdateWithoutStaffMessagesInput, OrganizationUncheckedUpdateWithoutStaffMessagesInput>
+    create: XOR<OrganizationCreateWithoutStaffMessagesInput, OrganizationUncheckedCreateWithoutStaffMessagesInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutStaffMessagesInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutStaffMessagesInput, OrganizationUncheckedUpdateWithoutStaffMessagesInput>
+  }
+
+  export type OrganizationUpdateWithoutStaffMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
+    properties?: PropertyUpdateManyWithoutOrganizationNestedInput
+    chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
+    engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutStaffMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
+    chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+    engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type UserUpsertWithoutOrgStaffMessagesInput = {
+    update: XOR<UserUpdateWithoutOrgStaffMessagesInput, UserUncheckedUpdateWithoutOrgStaffMessagesInput>
+    create: XOR<UserCreateWithoutOrgStaffMessagesInput, UserUncheckedCreateWithoutOrgStaffMessagesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOrgStaffMessagesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOrgStaffMessagesInput, UserUncheckedUpdateWithoutOrgStaffMessagesInput>
+  }
+
+  export type UserUpdateWithoutOrgStaffMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutUsersNestedInput
+    organization?: OrganizationUpdateOneWithoutUsersNestedInput
+    cleaningTasks?: CleaningTaskUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOrgStaffMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    isExternal?: BoolFieldUpdateOperationsInput | boolean
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    iban?: NullableStringFieldUpdateOperationsInput | string | null
+    organizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationPrefs?: NullableJsonNullValueInput | InputJsonValue
+    failedLoginCount?: IntFieldUpdateOperationsInput | number
+    lockedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    privacyAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    cleaningTasks?: CleaningTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    maintenanceTickets?: MaintenanceTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutSupervisorNestedInput
+    supervisedApartments?: ApartmentSupervisorUncheckedUpdateManyWithoutUserNestedInput
+    ownedApartments?: ApartmentOwnerUncheckedUpdateManyWithoutUserNestedInput
+    pushSubscriptions?: PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
+    cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+  }
+
   export type UserCreateWithoutCompanyInput = {
     id?: string
     email: string
@@ -70008,6 +72166,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutCompanyInput = {
@@ -70038,6 +72197,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutCompanyInput = {
@@ -70283,6 +72443,7 @@ export namespace Prisma {
     properties?: PropertyCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutEngagementsInput = {
@@ -70317,6 +72478,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutEngagementsInput = {
@@ -70416,6 +72578,7 @@ export namespace Prisma {
     properties?: PropertyUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutEngagementsInput = {
@@ -70450,6 +72613,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type CompanyUpsertWithoutEngagementsInput = {
@@ -70777,6 +72941,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutApartmentsInput = {
@@ -70811,6 +72976,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutApartmentsInput = {
@@ -71440,6 +73606,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutApartmentsInput = {
@@ -71474,6 +73641,7 @@ export namespace Prisma {
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ClientUpsertWithoutApartmentsInput = {
@@ -72797,6 +74965,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutCleaningTasksInput = {
@@ -72827,6 +74996,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutCleaningTasksInput = {
@@ -73139,6 +75309,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleaningTasksInput = {
@@ -73169,6 +75340,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type CleaningTaskMessageUpsertWithWhereUniqueWithoutCleaningTaskInput = {
@@ -73587,6 +75759,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutCheckinTasksInput = {
@@ -73617,6 +75790,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutCheckinTasksInput = {
@@ -73869,6 +76043,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCheckinTasksInput = {
@@ -73899,6 +76074,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type CheckinTaskMessageUpsertWithWhereUniqueWithoutCheckinTaskInput = {
@@ -74223,6 +76399,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutMaintenanceTicketsInput = {
@@ -74253,6 +76430,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutMaintenanceTicketsInput = {
@@ -74522,6 +76700,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMaintenanceTicketsInput = {
@@ -74552,6 +76731,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type AttachmentUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
@@ -76053,6 +78233,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutSupervisorReviewsInput = {
@@ -76083,6 +78264,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutSupervisorReviewsInput = {
@@ -76233,6 +78415,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisorReviewsInput = {
@@ -76263,6 +78446,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type CleaningTaskUpsertWithoutSupervisorReviewsInput = {
@@ -76492,6 +78676,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutSupervisedApartmentsInput = {
@@ -76522,6 +78707,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutSupervisedApartmentsInput = {
@@ -76657,6 +78843,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSupervisedApartmentsInput = {
@@ -76687,6 +78874,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type ApartmentCreateWithoutClientInput = {
@@ -76904,6 +79092,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedApartmentsInput = {
@@ -76934,6 +79123,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedApartmentsInput = {
@@ -77069,6 +79259,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedApartmentsInput = {
@@ -77099,6 +79290,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type OrganizationCreateWithoutChatSessionsInput = {
@@ -77133,6 +79325,7 @@ export namespace Prisma {
     properties?: PropertyCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutChatSessionsInput = {
@@ -77167,6 +79360,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
     companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
+    staffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutChatSessionsInput = {
@@ -77241,6 +79435,7 @@ export namespace Prisma {
     properties?: PropertyUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutChatSessionsInput = {
@@ -77275,6 +79470,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
     companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
+    staffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ManagerChatMessageUpsertWithWhereUniqueWithoutSessionInput = {
@@ -77376,6 +79572,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
@@ -77406,6 +79603,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
@@ -77452,6 +79650,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
@@ -77482,6 +79681,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserCreateWithoutApnsTokensInput = {
@@ -77512,6 +79712,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutApnsTokensInput = {
@@ -77542,6 +79743,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutApnsTokensInput = {
@@ -77588,6 +79790,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApnsTokensInput = {
@@ -77618,6 +79821,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserCreateWithoutFcmTokensInput = {
@@ -77648,6 +79852,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutFcmTokensInput = {
@@ -77678,6 +79883,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     cleanerLocation?: CleanerLocationUncheckedCreateNestedOneWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutFcmTokensInput = {
@@ -77724,6 +79930,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFcmTokensInput = {
@@ -77754,6 +79961,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserCreateWithoutCleanerLocationInput = {
@@ -77784,6 +79992,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenCreateNestedManyWithoutUserInput
     checkinTasks?: CheckinTaskCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserUncheckedCreateWithoutCleanerLocationInput = {
@@ -77814,6 +80023,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: FcmTokenUncheckedCreateNestedManyWithoutUserInput
     checkinTasks?: CheckinTaskUncheckedCreateNestedManyWithoutAssignedToInput
+    orgStaffMessages?: OrgStaffMessageUncheckedCreateNestedManyWithoutStaffUserInput
   }
 
   export type UserCreateOrConnectWithoutCleanerLocationInput = {
@@ -77860,6 +80070,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCleanerLocationInput = {
@@ -77890,6 +80101,7 @@ export namespace Prisma {
     apnsTokens?: ApnsTokenUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type ApartmentCreateWithoutProductsInput = {
@@ -78506,6 +80718,20 @@ export namespace Prisma {
     readByCompanyAt?: Date | string | null
   }
 
+  export type OrgStaffMessageCreateManyOrganizationInput = {
+    id?: string
+    staffUserId: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
   export type UserUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
@@ -78534,6 +80760,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -78564,6 +80791,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -78818,6 +81046,48 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgStaffMessageUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffUser?: UserUpdateOneRequiredWithoutOrgStaffMessagesNestedInput
+  }
+
+  export type OrgStaffMessageUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    staffUserId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgStaffMessageUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    staffUserId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UnitCategoryCreateManyPropertyInput = {
@@ -79328,6 +81598,20 @@ export namespace Prisma {
     checkinAccessTokenExpiresAt?: Date | string | null
   }
 
+  export type OrgStaffMessageCreateManyStaffUserInput = {
+    id?: string
+    organizationId: string
+    senderIsManager: boolean
+    senderName: string
+    text?: string | null
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByManagerAt?: Date | string | null
+    readByStaffAt?: Date | string | null
+  }
+
   export type CleaningTaskUpdateWithoutAssignedToInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79624,6 +81908,48 @@ export namespace Prisma {
     checkinAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type OrgStaffMessageUpdateWithoutStaffUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutStaffMessagesNestedInput
+  }
+
+  export type OrgStaffMessageUncheckedUpdateWithoutStaffUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgStaffMessageUncheckedUpdateManyWithoutStaffUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    senderIsManager?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByManagerAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByStaffAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type UserCreateManyCompanyInput = {
     id?: string
     email: string
@@ -79713,6 +82039,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -79743,6 +82070,7 @@ export namespace Prisma {
     fcmTokens?: FcmTokenUncheckedUpdateManyWithoutUserNestedInput
     cleanerLocation?: CleanerLocationUncheckedUpdateOneWithoutUserNestedInput
     checkinTasks?: CheckinTaskUncheckedUpdateManyWithoutAssignedToNestedInput
+    orgStaffMessages?: OrgStaffMessageUncheckedUpdateManyWithoutStaffUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutCompanyInput = {

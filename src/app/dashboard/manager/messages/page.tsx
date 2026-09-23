@@ -11,6 +11,8 @@ import BackButton from "@/src/components/back-button";
 import { getT } from "@/src/lib/server-lang";
 import { getOrgCompanyThreads } from "@/src/app/actions/company";
 import OrgCompanyChat from "@/src/components/org-company-chat";
+import { getOrgStaffThreads } from "@/src/app/actions/messages";
+import OrgStaffChat from "@/src/components/org-staff-chat";
 
 export default async function ManagerMessagesPage({
   searchParams,
@@ -29,7 +31,10 @@ export default async function ManagerMessagesPage({
   const tr = await getT();
   const orgId = await getCurrentOrg();
 
-  const companyThreads = await getOrgCompanyThreads();
+  const [companyThreads, staffThreads] = await Promise.all([
+    getOrgCompanyThreads(),
+    getOrgStaffThreads(),
+  ]);
 
   // Appartamenti delegati per scope: l'org NON vede i thread intervento per questi
   const delegatedEngagements = orgId ? await prisma.engagement.findMany({
@@ -50,7 +55,6 @@ export default async function ManagerMessagesPage({
   const [maintenanceTickets, cleaningTasks, checkinTasks, apartments] = await Promise.all([
     prisma.maintenanceTicket.findMany({
       where: {
-        messages: { some: {} },
         apartment: { organizationId: orgId },
         ...(delegatedMaintenanceApts?.size ? { apartmentId: { notIn: [...delegatedMaintenanceApts] } } : {}),
         OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
@@ -63,7 +67,6 @@ export default async function ManagerMessagesPage({
     }),
     prisma.cleaningTask.findMany({
       where: {
-        messages: { some: {} },
         apartment: { organizationId: orgId },
         ...(delegatedCleaningApts?.size ? { apartmentId: { notIn: [...delegatedCleaningApts] } } : {}),
         OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
@@ -76,7 +79,6 @@ export default async function ManagerMessagesPage({
     }),
     prisma.checkinTask.findMany({
       where: {
-        messages: { some: {} },
         apartment: { organizationId: orgId },
         ...(delegatedCheckinApts?.size ? { apartmentId: { notIn: [...delegatedCheckinApts] } } : {}),
         OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
@@ -158,6 +160,11 @@ export default async function ManagerMessagesPage({
       {companyThreads.length > 0 && (
         <div className="px-4 md:px-6 pb-2">
           <OrgCompanyChat threads={companyThreads} />
+        </div>
+      )}
+      {staffThreads.length > 0 && (
+        <div className="px-4 md:px-6 pb-2">
+          <OrgStaffChat threads={staffThreads} />
         </div>
       )}
       {selectedThread && (
