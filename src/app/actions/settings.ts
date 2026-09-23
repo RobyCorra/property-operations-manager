@@ -2,6 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { put } from "@vercel/blob";
+import { cookies } from "next/headers";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentUserId } from "@/src/lib/tenant";
 import { revalidatePath } from "next/cache";
@@ -201,5 +202,70 @@ export async function updateConflictSettings(formData: FormData) {
     return { error: `Errore DB: ${e instanceof Error ? e.message : String(e)}` };
   }
   revalidatePath("/dashboard/manager");
+  return { success: true };
+}
+
+// ── Company (impresa) settings ───────────────────────────────────────────────
+
+async function getCompanyId(): Promise<string | null> {
+  const c = await cookies();
+  return c.get("companyId")?.value || null;
+}
+
+export async function getCompanySettingsData() {
+  const userId = await getCurrentUserId();
+  if (!userId) throw new Error("Non autenticato");
+  const companyId = await getCompanyId();
+  if (!companyId) throw new Error("Non sei un manager di impresa");
+
+  const [user, company] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, notificationPrefs: true },
+    }),
+    prisma.company.findUnique({
+      where: { id: companyId },
+      select: { id: true, name: true, legalName: true, vatNumber: true },
+    }),
+  ]);
+  if (!user) throw new Error("Utente non trovato");
+  return {
+    ...user,
+    notificationPrefs: {
+      ...DEFAULT_PREFS,
+      ...((user.notificationPrefs as Partial<NotificationPrefs>) ?? {}),
+    } as NotificationPrefs,
+    company,
+  };
+}
+
+export async function updateCompanyName(formData: FormData) {
+  const userId = await getCurrentUserId();
+  if (!userId) return { error: "Non autenticato." };
+  const companyId = await getCompanyId();
+  if (!companyId) return { error: "Non sei un manager di impresa." };
+
+  const name = (formData.get("name") as string)?.trim();
+  if (!name) return { error: "Il nome non può essere vuoto." };
+
+  await prisma.company.update({ where: { id: companyId }, data: { name } });
+  revalidatePath("/dashboard/impresa");
+  return { success: true };
+}
+
+export async function updateCompanyFiscal(formData: FormData) {
+  const userId = await getCurrentUserId();
+  if (!userId) return { error: "Non autenticato." };
+  const companyId = await getCompanyId();
+  if (!companyId) return { error: "Non sei un manager di impresa." };
+
+  await prisma.company.update({
+    where: { id: companyId },
+    data: {
+      legalName:  (formData.get("legalName") as string)?.trim() || null,
+      vatNumber:  (formData.get("vatNumber") as string)?.trim() || null,
+    },
+  });
+  revalidatePath("/dashboard/impresa");
   return { success: true };
 }

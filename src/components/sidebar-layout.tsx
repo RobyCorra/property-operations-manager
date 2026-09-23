@@ -23,9 +23,10 @@ interface SidebarLayoutProps {
   mobileItems?: { key: string; label: string; icon: React.ReactNode; href: string }[];
   homeHref?: string;
   hideAssistant?: boolean;
+  settingsMode?: "org" | "impresa";
 }
 
-export default function SidebarLayout({ children, unreadCount, orgName, orgLogo, navItems, mobileItems, homeHref, hideAssistant }: SidebarLayoutProps) {
+export default function SidebarLayout({ children, unreadCount, orgName, orgLogo, navItems, mobileItems, homeHref, hideAssistant, settingsMode = "org" }: SidebarLayoutProps) {
   const { t } = useLang();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -69,7 +70,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo,
       {/* FloatingManagerChat fuori dall'header per evitare problemi di stacking context
           causati da backdrop-filter: blur sull'header sticky */}
       <FloatingManagerChat externalOpen={aiOpen} onExternalClose={() => setAiOpen(false)} />
-      <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} mode={settingsMode} />
 
       {/* Sidebar — nascosta su mobile */}
       <div className="hidden md:block">
@@ -92,26 +93,23 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo,
 
           <div className="flex items-center gap-6">
             {!hideAssistant && (
-              <>
-                {/* Bottone AI Assistant — apre la chat flottante renderizzata fuori dall'header */}
-                <button
-                  type="button"
-                  onClick={() => setAiOpen(true)}
-                  className="flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-10 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
-                  title={t.navAi}
-                >
-                  🤖 {t.navAi}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSettingsOpen(true)}
-                  className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
-                >
-                  <span className="text-xl">⚙️</span>
-                  <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">{t.navSettings}</span>
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={() => setAiOpen(true)}
+                className="flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 h-10 shadow-sm text-xs font-bold uppercase tracking-widest text-violet-700 transition hover:bg-violet-50 hover:shadow-md whitespace-nowrap"
+                title={t.navAi}
+              >
+                🤖 {t.navAi}
+              </button>
             )}
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+            >
+              <span className="text-xl">⚙️</span>
+              <span className="text-xs font-semibold uppercase tracking-wider hidden lg:block">{t.navSettings}</span>
+            </button>
             <form action={async () => { try { await logoutAction(); } catch { /* redirect throws */ } window.location.href = "/login"; }}>
               <button
                 type="submit"

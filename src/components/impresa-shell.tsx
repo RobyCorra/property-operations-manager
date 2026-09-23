@@ -80,6 +80,7 @@ export default function ImpresaShell({ name, children }: { name: string; childre
       mobileItems={mobileItems}
       homeHref={HOME}
       hideAssistant
+      settingsMode="impresa"
     >
       <div className="p-4 md:p-6">{children}</div>
     </SidebarLayout>

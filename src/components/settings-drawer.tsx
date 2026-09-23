@@ -4,9 +4,12 @@ import { useState, useEffect, useTransition } from "react";
 import { ArrowLeft, User, Building2, Bell, ChevronRight, ExternalLink, Check, Loader2 } from "lucide-react";
 import {
   getSettingsData,
+  getCompanySettingsData,
   updateProfile,
   updatePassword,
   updateOrgName,
+  updateCompanyName,
+  updateCompanyFiscal,
   updateNotificationPrefs,
   uploadOrgLogo,
   updateOrgFiscal,
@@ -145,11 +148,13 @@ function PushDiagnostics() {
 }
 
 // ── Main drawer ───────────────────────────────────────────────────────────────
-export default function SettingsDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function SettingsDrawer({ open, onClose, mode = "org" }: { open: boolean; onClose: () => void; mode?: "org" | "impresa" }) {
   const { t } = useLang();
   const [data, setData] = useState<SettingsData | null>(null);
+  const [companyData, setCompanyData] = useState<Awaited<ReturnType<typeof getCompanySettingsData>> | null>(null);
   const [section, setSection] = useState<Section>("profilo");
   const [isPending, startTransition] = useTransition();
+  const isImpresa = mode === "impresa";
 
   // profile form
   const [profileResult, setProfileResult] = useState<{ success?: boolean; error?: string } | null>(null);
@@ -166,7 +171,18 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
   const [prefsSaved, setPrefsSaved] = useState(false);
 
   useEffect(() => {
-    if (open && !data) {
+    if (!open) return;
+    if (isImpresa && !companyData) {
+      getCompanySettingsData()
+        .then(d => {
+          setCompanyData(d);
+          setPrefs(d.notificationPrefs);
+        })
+        .catch(err => {
+          console.error("[SettingsDrawer] getCompanySettingsData error:", err);
+          setCompanyData({ id: "", name: "", email: "", notificationPrefs: { cleaningStarted: true, cleaningCompleted: true, maintenanceNew: true, chatCleaner: true, chatMaintenance: true }, company: null } as any);
+        });
+    } else if (!isImpresa && !data) {
       getSettingsData()
         .then(d => {
           setData(d);
@@ -174,11 +190,10 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
         })
         .catch(err => {
           console.error("[SettingsDrawer] getSettingsData error:", err);
-          // Imposta un oggetto vuoto per uscire dal loop di loading
           setData({ id: "", name: "", email: "", notificationPrefs: { cleaningStarted: true, cleaningCompleted: true, maintenanceNew: true, chatCleaner: true, chatMaintenance: true }, organization: null } as any);
         });
     }
-  }, [open, data]);
+  }, [open, data, companyData, isImpresa]);
 
   const handlePrefChange = (key: keyof NotificationPrefs, value: boolean) => {
     const next = { ...prefs, [key]: value };
@@ -197,7 +212,7 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
 
   const sections: { id: Section; label: string; icon: React.ReactNode }[] = [
     { id: "profilo", label: "Profilo", icon: <User size={15} strokeWidth={2} /> },
-    { id: "org", label: "Organizzazione", icon: <Building2 size={15} strokeWidth={2} /> },
+    { id: "org", label: isImpresa ? "Impresa" : "Organizzazione", icon: <Building2 size={15} strokeWidth={2} /> },
     { id: "notifiche", label: "Notifiche", icon: <Bell size={15} strokeWidth={2} /> },
   ];
 
@@ -244,14 +259,14 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
           style={{ WebkitOverflowScrolling: "touch" }}
         >
 
-          {!data && (
+          {(isImpresa ? !companyData : !data) && (
             <div className="flex items-center justify-center py-16">
               <Loader2 size={24} className="animate-spin text-[#8e8e93]" />
             </div>
           )}
 
           {/* ── PROFILO ── */}
-          {data && section === "profilo" && (
+          {(isImpresa ? companyData : data) && section === "profilo" && (
             <>
               <div className="bg-white rounded-[14px] p-4 flex flex-col gap-3" style={{ border: ".5px solid #e5e5ea" }}>
                 <p className="text-[13px] font-[700] text-[#1c1c1e]">{t.settingsLanguage}</p>
@@ -261,14 +276,14 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
               <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
                 <p className="text-[13px] font-[700] text-[#1c1c1e]">Dati personali</p>
                 <form
-                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setProfileResult(null); const res = await updateProfile(fd); setProfileResult(res ?? { success: true }); if (res?.success) setData(d => d ? { ...d, name: fd.get("name") as string, email: fd.get("email") as string } : d); } catch { setProfileResult({ error: "Errore durante il salvataggio." }); } }); }}
+                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setProfileResult(null); const res = await updateProfile(fd); setProfileResult(res ?? { success: true }); if (res?.success) { const upd = { name: fd.get("name") as string, email: fd.get("email") as string }; if (isImpresa) setCompanyData(d => d ? { ...d, ...upd } : d); else setData(d => d ? { ...d, ...upd } : d); } } catch { setProfileResult({ error: "Errore durante il salvataggio." }); } }); }}
                   className="flex flex-col gap-3"
                 >
                   <Field label="Nome">
-                    <input name="name" defaultValue={data.name} className={inputCls} required />
+                    <input name="name" defaultValue={(isImpresa ? companyData : data)?.name ?? ""} className={inputCls} required />
                   </Field>
                   <Field label="Email">
-                    <input name="email" type="email" defaultValue={data.email} className={inputCls} required />
+                    <input name="email" type="email" defaultValue={(isImpresa ? companyData : data)?.email ?? ""} className={inputCls} required />
                   </Field>
                   <div className="flex items-center justify-between pt-1">
                     <StatusMsg result={profileResult} />
@@ -301,8 +316,8 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
             </>
           )}
 
-          {/* ── ORGANIZZAZIONE ── */}
-          {data && section === "org" && (
+          {/* ── ORGANIZZAZIONE / IMPRESA ── */}
+          {!isImpresa && data && section === "org" && (
             <>
               <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
                 <p className="text-[13px] font-[700] text-[#1c1c1e]">Nome organizzazione</p>
@@ -471,8 +486,65 @@ export default function SettingsDrawer({ open, onClose }: { open: boolean; onClo
             </>
           )}
 
+          {/* ── IMPRESA ── */}
+          {isImpresa && companyData && section === "org" && (
+            <>
+              <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
+                <p className="text-[13px] font-[700] text-[#1c1c1e]">Nome impresa</p>
+                <form
+                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setOrgResult(null); const res = await updateCompanyName(fd); setOrgResult(res ?? { success: true }); if (res?.success) setCompanyData(d => d ? { ...d, company: d.company ? { ...d.company, name: fd.get("name") as string } : null } : d); } catch { setOrgResult({ error: "Errore durante il salvataggio." }); } }); }}
+                  className="flex flex-col gap-3"
+                >
+                  <Field label="Nome">
+                    <input name="name" defaultValue={companyData.company?.name ?? ""} className={inputCls} required />
+                  </Field>
+                  <div className="flex items-center justify-between pt-1">
+                    <StatusMsg result={orgResult} />
+                    <button type="submit" className={btnCls}>Salva</button>
+                  </div>
+                </form>
+              </div>
+
+              <div className="bg-white rounded-[14px] p-4 flex flex-col gap-4" style={{ border: ".5px solid #e5e5ea" }}>
+                <p className="text-[13px] font-[700] text-[#1c1c1e]">Dati fiscali</p>
+                <form
+                  onSubmit={e => { e.preventDefault(); const fd = new FormData(e.currentTarget); startTransition(async () => { try { setFiscalResult(null); const res = await updateCompanyFiscal(fd); setFiscalResult(res ?? { success: true }); if (res?.success) setCompanyData(d => d ? { ...d, company: d.company ? { ...d.company, legalName: (fd.get("legalName") as string) || null, vatNumber: (fd.get("vatNumber") as string) || null } : null } : d); } catch { setFiscalResult({ error: "Errore durante il salvataggio." }); } }); }}
+                  className="flex flex-col gap-3"
+                >
+                  <Field label="Ragione sociale">
+                    <input name="legalName" defaultValue={companyData.company?.legalName ?? ""} className={inputCls} placeholder="Es. Impresa Pulizie S.r.l." />
+                  </Field>
+                  <Field label="Partita IVA">
+                    <input name="vatNumber" defaultValue={companyData.company?.vatNumber ?? ""} className={inputCls} placeholder="IT12345678901" />
+                  </Field>
+                  <div className="flex items-center justify-between pt-1">
+                    <StatusMsg result={fiscalResult} />
+                    <button type="submit" className={btnCls}>Salva</button>
+                  </div>
+                </form>
+              </div>
+
+              <a
+                href="/dashboard/impresa/staff"
+                className="bg-white rounded-[14px] p-4 flex items-center justify-between group hover:bg-[#f9f9fb] transition-colors"
+                style={{ border: ".5px solid #e5e5ea" }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-[34px] h-[34px] rounded-[10px] bg-blue-50 flex items-center justify-center">
+                    <User size={16} strokeWidth={2} className="text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-[600] text-[#1c1c1e]">Gestione staff</p>
+                    <p className="text-[12px] text-[#8e8e93]">Cleaner e operatori</p>
+                  </div>
+                </div>
+                <ExternalLink size={15} strokeWidth={2} className="text-[#8e8e93] group-hover:text-[#1c1c1e] transition-colors" />
+              </a>
+            </>
+          )}
+
           {/* ── NOTIFICHE ── */}
-          {data && section === "notifiche" && (
+          {(isImpresa ? companyData : data) && section === "notifiche" && (
             <>
               {/* Gruppo: Attività */}
               <div>
