@@ -3,11 +3,11 @@ import type { NextRequest } from "next/server";
 
 const ROLE_ALLOWED_PREFIXES: Record<string, string[]> = {
   MANAGER:     ["/dashboard/manager", "/dashboard/history"],
-  CLEANER:     ["/dashboard/cleaner", "/dashboard/history"],
-  MAINTENANCE: ["/dashboard/maintenance", "/dashboard/history"],
-  SUPERVISOR:  ["/dashboard/supervisor"],
+  CLEANER:     ["/dashboard/cleaner", "/dashboard/history", "/dashboard/messaggi"],
+  MAINTENANCE: ["/dashboard/maintenance", "/dashboard/history", "/dashboard/messaggi"],
+  SUPERVISOR:  ["/dashboard/supervisor", "/dashboard/messaggi"],
   OWNER:       ["/dashboard/owner"],
-  CHECKIN:     ["/dashboard/checkin"],
+  CHECKIN:     ["/dashboard/checkin", "/dashboard/messaggi"],
 };
 
 export function middleware(request: NextRequest) {

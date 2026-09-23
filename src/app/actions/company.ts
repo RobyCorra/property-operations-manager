@@ -346,6 +346,7 @@ export async function sendMyImpresaMessage(formData: FormData): Promise<{ succes
       },
     });
     revalidatePath("/dashboard/impresa/messaggi");
+    revalidatePath("/dashboard/messaggi");
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };

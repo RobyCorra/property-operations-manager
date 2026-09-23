@@ -20,6 +20,7 @@ import { calculateLinen, effectiveGuests } from "@/src/lib/linen-calculator";
 import PushPermissionRequest from "@/src/components/push-permission";
 import ApnsRegister from "@/src/components/apns-register";
 import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
+import CleanerMessagesButton from "@/src/components/cleaner-messages-button";
 import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
 import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
 import CleanerLinenSection from "@/src/components/cleaner-linen-section";
@@ -101,6 +102,9 @@ export default async function CleanerDashboardPage() {
     redirect("/login");
   }
 
+  const impresaUnread = companyId
+    ? await prisma.companyChatMessage.count({ where: { companyId, staffUserId: userId, senderIsManager: true, readByStaffAt: null } })
+    : 0;
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -170,6 +174,7 @@ export default async function CleanerDashboardPage() {
           </div>
           {/* Desktop-only nav buttons */}
           <div className="hidden md:flex items-center gap-4">
+            {companyId && <CleanerMessagesButton initialUnread={impresaUnread} variant="desktop" />}
             <Link
               href="/dashboard/history"
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
@@ -341,6 +346,7 @@ export default async function CleanerDashboardPage() {
           <ClipboardList size={20} />
           <span className="text-[9px] font-black uppercase tracking-widest">{tr.clnNavCleanings}</span>
         </Link>
+        {companyId && <CleanerMessagesButton initialUnread={impresaUnread} variant="mobile" />}
         <Link
           href="/dashboard/history"
           className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-slate-700"
