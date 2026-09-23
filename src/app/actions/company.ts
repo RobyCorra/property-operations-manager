@@ -568,7 +568,8 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
 
   if (cleaningAptIds && cleaningAptIds.length > 0) {
     const tasks = await prisma.cleaningTask.findMany({
-      where: { apartmentId: { in: cleaningAptIds }, messages: { some: {} } },
+      where: { apartmentId: { in: cleaningAptIds } },
+      orderBy: { date: "desc" },
       include: {
         apartment: { select: { name: true } },
         assignedTo: { select: { name: true } },
@@ -596,7 +597,7 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
 
   if (maintenanceAptIds && maintenanceAptIds.length > 0) {
     const tickets = await prisma.maintenanceTicket.findMany({
-      where: { apartmentId: { in: maintenanceAptIds }, messages: { some: {} } },
+      where: { apartmentId: { in: maintenanceAptIds } },
       include: {
         apartment: { select: { name: true } },
         assignedTo: { select: { name: true } },
