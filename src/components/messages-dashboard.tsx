@@ -581,9 +581,16 @@ export default function MessagesDashboard({
                       {badgeLabel}
                     </span>
                     <span className="text-[10px] text-slate-400 truncate">· {thread.assignedUser}</span>
+                    {(thread.date || thread.scheduledStart) && (
+                      <span className="text-[10px] text-slate-400 truncate">· {new Date(thread.date || thread.scheduledStart!).toLocaleDateString("it-IT", { day: "2-digit", month: "short" })}</span>
+                    )}
                   </div>
                   <p className={`text-xs truncate ${thread.hasUnread ? "font-semibold text-slate-700" : "text-slate-400 font-medium"}`}>
-                    {thread.lastMessage?.text || tr.mgAttachmentEllipsis}
+                    {thread.lastMessage?.text
+                      || (thread.lastMessage ? tr.mgAttachmentEllipsis : (() => {
+                          const d = thread.date || thread.scheduledStart;
+                          return d ? new Date(d).toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" }) : "Nessun messaggio";
+                        })())}
                   </p>
                 </div>
 

@@ -55,6 +55,7 @@ export default async function ManagerMessagesPage({
   const [maintenanceTickets, cleaningTasks, checkinTasks, apartments] = await Promise.all([
     prisma.maintenanceTicket.findMany({
       where: {
+        status: { not: "CANCELLED" },
         apartment: { organizationId: orgId },
         ...(delegatedMaintenanceApts?.size ? { apartmentId: { notIn: [...delegatedMaintenanceApts] } } : {}),
         OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
@@ -67,6 +68,7 @@ export default async function ManagerMessagesPage({
     }),
     prisma.cleaningTask.findMany({
       where: {
+        status: { not: "CANCELLED" },
         apartment: { organizationId: orgId },
         ...(delegatedCleaningApts?.size ? { apartmentId: { notIn: [...delegatedCleaningApts] } } : {}),
         OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
@@ -79,6 +81,7 @@ export default async function ManagerMessagesPage({
     }),
     prisma.checkinTask.findMany({
       where: {
+        status: { not: "CANCELLED" },
         apartment: { organizationId: orgId },
         ...(delegatedCheckinApts?.size ? { apartmentId: { notIn: [...delegatedCheckinApts] } } : {}),
         OR: [{ assignedToId: null }, { assignedTo: { companyId: null } }],
