@@ -459,8 +459,9 @@ export default function MessagesDashboard({
         {/* Header */}
         <div className="px-4 pt-5 pb-3 border-b border-slate-100">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-black text-slate-900 tracking-tight">{tr.navMessages}</span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-base font-black text-slate-900 tracking-tight">Chat interventi</span>
+              <span className="text-[10px] text-slate-400 font-medium">Gestione diretta</span>
             </div>
             {unreadCount > 0 && (
               <span className="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
