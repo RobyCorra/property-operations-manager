@@ -216,3 +216,67 @@ export async function getOrgStaffUnread(): Promise<number> {
     return 0;
   }
 }
+
+// ── Lato WORKER: chat generica org ↔ staff ─────────────────────────────────
+
+async function requireOrgStaffWorker(): Promise<{ orgId: string; userId: string; userName: string }> {
+  const ck = await cookies();
+  const userId = ck.get("userId")?.value;
+  const role = ck.get("role")?.value;
+  if (!userId || !role || role === "MANAGER") throw new Error("Not authorized");
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, organizationId: true, companyId: true } });
+  if (!user || !user.organizationId || user.companyId) throw new Error("Not an org staff worker");
+  return { orgId: user.organizationId, userId, userName: user.name };
+}
+
+export async function getMyOrgStaffThread(): Promise<ChatMsg[]> {
+  const { orgId, userId } = await requireOrgStaffWorker();
+  await prisma.orgStaffMessage.updateMany({
+    where: { organizationId: orgId, staffUserId: userId, senderIsManager: true, readByStaffAt: null },
+    data: { readByStaffAt: new Date() },
+  });
+  const msgs = await prisma.orgStaffMessage.findMany({
+    where: { organizationId: orgId, staffUserId: userId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, text: true, senderIsManager: true, createdAt: true, mediaUrl: true, mediaType: true, mediaName: true },
+  });
+  return msgs.map((m) => ({ id: m.id, text: m.text ?? "", mine: !m.senderIsManager, createdAt: m.createdAt.toISOString(), mediaUrl: m.mediaUrl, mediaType: m.mediaType, mediaName: m.mediaName }));
+}
+
+export async function getMyOrgStaffUnread(): Promise<number> {
+  try {
+    const { orgId, userId } = await requireOrgStaffWorker();
+    return await prisma.orgStaffMessage.count({
+      where: { organizationId: orgId, staffUserId: userId, senderIsManager: true, readByStaffAt: null },
+    });
+  } catch {
+    return 0;
+  }
+}
+
+export async function sendMyOrgStaffMessage(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { orgId, userId, userName } = await requireOrgStaffWorker();
+    const text = ((formData.get("text") as string) ?? "").trim();
+    const file = formData.get("file") as File | null;
+    let media: { url: string; type: string; name: string } | undefined;
+    if (file && file instanceof File && file.size > 0) {
+      const res = await storeAttachmentFile(file, "company", orgId);
+      if (!res.success) return { success: false, error: res.error };
+      media = { url: res.file.url, type: mediaCategory(res.file.mimeType), name: res.file.filename };
+    }
+    if (!text && !media) return { success: false, error: "Messaggio vuoto." };
+    await prisma.orgStaffMessage.create({
+      data: {
+        id: randomUUID(), organizationId: orgId, staffUserId: userId, senderIsManager: false, senderName: userName, text: text || null,
+        readByStaffAt: new Date(),
+        mediaUrl: media?.url ?? null, mediaType: media?.type ?? null, mediaName: media?.name ?? null,
+      },
+    });
+    revalidatePath("/dashboard/manager/messages");
+    revalidatePath("/dashboard/messaggi-org");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}

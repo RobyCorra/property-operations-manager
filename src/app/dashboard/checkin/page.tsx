@@ -8,6 +8,9 @@ import CheckinCardChat from "@/src/components/checkin-card-chat";
 import { isCheckinBlockedByCleaning } from "@/src/app/actions/checkin";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import { getT } from "@/src/lib/server-lang";
+import OrgStaffMessagesButton from "@/src/components/org-staff-messages-button";
+import { LogOut } from "@/src/components/icons";
+import { DoorOpen } from "lucide-react";
 
 export const revalidate = 0;
 
@@ -23,7 +26,7 @@ export default async function CheckinDashboardPage() {
   const tr = await getT();
 
   const [user, tasks] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
+    prisma.user.findUnique({ where: { id: userId }, select: { name: true, companyId: true, organizationId: true } }),
     prisma.checkinTask.findMany({
       where: {
         // Solo i check-in assegnati all'assistente corrente.
@@ -49,18 +52,32 @@ export default async function CheckinDashboardPage() {
       })
   );
 
+  const isOrgWorker = user && !user.companyId && user.organizationId;
+  const orgStaffUnread = isOrgWorker
+    ? await prisma.orgStaffMessage.count({
+        where: { organizationId: user.organizationId!, staffUserId: userId, senderIsManager: true, readByStaffAt: null },
+      }).catch(() => 0)
+    : 0;
+
   return (
-    <main className="min-h-screen bg-[#faf8ff] pb-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+    <main className="min-h-screen bg-[#faf8ff] pb-24 md:pb-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
       <header className="px-5 pt-5 pb-3 flex items-center justify-between">
         <div>
           <p className="text-lg font-semibold text-slate-900">Ciao, {user?.name ?? "Assistente"}</p>
           <p className="text-sm text-slate-500">I tuoi check-in</p>
         </div>
-        <form action={logoutAction}>
-          <button className="text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-4 py-2 bg-white">
-            Esci
-          </button>
-        </form>
+        <div className="flex items-center gap-2">
+          {isOrgWorker && (
+            <div className="hidden md:block">
+              <OrgStaffMessagesButton initialUnread={orgStaffUnread} variant="desktop" />
+            </div>
+          )}
+          <form action={logoutAction}>
+            <button className="text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-4 py-2 bg-white">
+              Esci
+            </button>
+          </form>
+        </div>
       </header>
 
       <div className="px-5 space-y-3">
@@ -136,6 +153,25 @@ export default async function CheckinDashboardPage() {
           );
         })}
       </div>
+
+      {isOrgWorker && (
+        <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-stretch border-t border-slate-200 bg-white/95 backdrop-blur-md md:hidden safe-bottom">
+          <Link
+            href="/dashboard/checkin"
+            className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-violet-600"
+          >
+            <DoorOpen size={20} />
+            <span className="text-[9px] font-black uppercase tracking-widest">Check-in</span>
+          </Link>
+          <OrgStaffMessagesButton initialUnread={orgStaffUnread} variant="mobile" />
+          <form action={logoutAction} className="flex flex-1">
+            <button type="submit" className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-rose-500">
+              <LogOut size={20} />
+              <span className="text-[9px] font-black uppercase tracking-widest">Esci</span>
+            </button>
+          </form>
+        </nav>
+      )}
     </main>
   );
 }
