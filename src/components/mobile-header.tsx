@@ -153,7 +153,7 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
                 );
               })}
             </div>
-            <form action={logoutAction} className="mt-3 pt-3 border-t border-slate-100">
+            <form action={async () => { try { await logoutAction(); } catch { /* redirect throws */ } window.location.href = "/login"; }} className="mt-3 pt-3 border-t border-slate-100">
               <button type="submit" className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-rose-500 hover:bg-rose-50">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 <span className="text-[13px] font-bold">{t.navSignOut}</span>

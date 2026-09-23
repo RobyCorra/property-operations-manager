@@ -27,14 +27,23 @@ export default async function ImpresaDashboard() {
   const access = await getCompanyAccess();
   if (!access) redirect("/dashboard/manager");
 
-  const { scopes, orgIds } = access;
+  const { scopes, orgIds, scopeApartments } = access;
   const now = new Date();
   const serverDate = now.toISOString();
   const hasCleaning = scopes.includes("CLEANING") && orgIds.length > 0;
 
+  // Filtro appartamenti: se la delega specifica degli appartamenti, usa quelli
+  const cleaningAptFilter = scopeApartments?.CLEANING;
+  const aptWhere = cleaningAptFilter
+    ? { id: { in: cleaningAptFilter }, organizationId: { in: orgIds } }
+    : { organizationId: { in: orgIds } };
+  const cleaningTaskWhere = cleaningAptFilter
+    ? { apartmentId: { in: cleaningAptFilter }, status: { not: "CANCELLED" as const } }
+    : { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" as const } };
+
   const apts = hasCleaning
     ? await prisma.apartment.findMany({
-        where: { organizationId: { in: orgIds } },
+        where: aptWhere,
         select: {
           id: true, name: true, address: true, bathrooms: true, bedConfig: true,
           propertyId: true, unitCategoryId: true, unitNumber: true,
@@ -44,9 +53,13 @@ export default async function ImpresaDashboard() {
       })
     : [];
 
+  const aptIds = apts.map((a) => a.id);
+
   const cleanings = hasCleaning
     ? await prisma.cleaningTask.findMany({
-        where: { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
+        where: cleaningAptFilter
+          ? { apartmentId: { in: cleaningAptFilter }, status: { not: "CANCELLED" } }
+          : { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
         select: {
           id: true, apartmentId: true, date: true, status: true, notes: true,
           checklistProgress: true, cullaRequested: true, sofaBedForced: true, totalGuests: true,
@@ -61,7 +74,9 @@ export default async function ImpresaDashboard() {
   // Prenotazioni: solo per CONTESTO nel calendario (sola lettura, nessun importo).
   const bookingsRaw = hasCleaning
     ? await prisma.booking.findMany({
-        where: { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
+        where: cleaningAptFilter
+          ? { apartmentId: { in: cleaningAptFilter }, status: { not: "CANCELLED" } }
+          : { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
         select: {
           id: true, apartmentId: true, guestName: true, checkInDate: true, checkOutDate: true,
           totalGuests: true, cullaRequested: true, status: true, source: true, externalId: true,

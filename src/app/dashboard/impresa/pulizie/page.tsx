@@ -27,10 +27,16 @@ export default async function ImpresaPuliziePage() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
+  // Filtro appartamenti assegnati per CLEANING
+  const cleaningAptIds = access.scopeApartments?.CLEANING;
+  const aptFilter = cleaningAptIds
+    ? { apartmentId: { in: cleaningAptIds } }
+    : { apartment: { organizationId: { in: access.orgIds } } };
+
   const [rows, staff, monthRows] = await Promise.all([
     prisma.cleaningTask.findMany({
       where: {
-        apartment: { organizationId: { in: access.orgIds } },
+        ...aptFilter,
         status: { not: "CANCELLED" },
         date: { gte: daysAgoUTC(30) },
       },
@@ -44,7 +50,7 @@ export default async function ImpresaPuliziePage() {
     getMyCompanyStaff(),
     prisma.cleaningTask.findMany({
       where: {
-        apartment: { organizationId: { in: access.orgIds } },
+        ...aptFilter,
         status: { not: "CANCELLED" },
         date: { gte: monthStart, lte: monthEnd },
       },
@@ -60,9 +66,11 @@ export default async function ImpresaPuliziePage() {
     access.orgIds.length
       ? prisma.organization.findMany({ where: { id: { in: access.orgIds } }, select: { id: true, name: true } })
       : Promise.resolve([]),
-    access.orgIds.length
-      ? prisma.apartment.findMany({ where: { organizationId: { in: access.orgIds } }, select: { id: true, name: true, organizationId: true }, orderBy: { name: "asc" } })
-      : Promise.resolve([]),
+    cleaningAptIds
+      ? prisma.apartment.findMany({ where: { id: { in: cleaningAptIds } }, select: { id: true, name: true, organizationId: true }, orderBy: { name: "asc" } })
+      : access.orgIds.length
+        ? prisma.apartment.findMany({ where: { organizationId: { in: access.orgIds } }, select: { id: true, name: true, organizationId: true }, orderBy: { name: "asc" } })
+        : Promise.resolve([]),
   ]);
   const orgName = new Map(orgs.map((o) => [o.id, o.name]));
   const cleaners = staff.filter((s) => s.role === "CLEANER").map((s) => ({ id: s.id, name: s.name }));

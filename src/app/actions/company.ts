@@ -467,10 +467,14 @@ export async function assignCleaning(
 
     const task = await prisma.cleaningTask.findUnique({
       where: { id: cleaningTaskId },
-      select: { apartment: { select: { organizationId: true } } },
+      select: { apartmentId: true, apartment: { select: { organizationId: true } } },
     });
     if (!task || !task.apartment.organizationId || !access.orgIds.includes(task.apartment.organizationId)) {
       return { success: false, error: "Pulizia non appartenente ai tuoi clienti." };
+    }
+    const cApts = access.scopeApartments?.CLEANING;
+    if (cApts && !cApts.includes(task.apartmentId)) {
+      return { success: false, error: "Appartamento non assegnato alla tua impresa." };
     }
 
     if (userId) {
@@ -509,6 +513,10 @@ export async function createImpresaCleaning(input: {
     if (!apt || !apt.organizationId || !access.orgIds.includes(apt.organizationId)) {
       return { success: false, error: "Appartamento non appartenente ai tuoi clienti." };
     }
+    const cApts2 = access.scopeApartments?.CLEANING;
+    if (cApts2 && !cApts2.includes(apartmentId)) {
+      return { success: false, error: "Appartamento non assegnato alla tua impresa." };
+    }
 
     const taskDate = parseRomeDateTime(dateStr, input.time || "10:00");
     const checklistProgress = await computeChecklistSnapshot(prisma, apartmentId, taskDate);
@@ -538,10 +546,14 @@ export async function approveCleaningByImpresa(
 
     const task = await prisma.cleaningTask.findUnique({
       where: { id: cleaningTaskId },
-      select: { status: true, apartment: { select: { organizationId: true } } },
+      select: { status: true, apartmentId: true, apartment: { select: { organizationId: true } } },
     });
     if (!task || !task.apartment.organizationId || !access.orgIds.includes(task.apartment.organizationId)) {
       return { success: false, error: "Pulizia non appartenente ai tuoi clienti." };
+    }
+    const cApts3 = access.scopeApartments?.CLEANING;
+    if (cApts3 && !cApts3.includes(task.apartmentId)) {
+      return { success: false, error: "Appartamento non assegnato alla tua impresa." };
     }
     if (task.status !== "AWAITING_REVIEW") {
       return { success: false, error: "La pulizia non è in attesa di revisione." };

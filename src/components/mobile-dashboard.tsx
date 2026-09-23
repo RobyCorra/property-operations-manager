@@ -1940,7 +1940,7 @@ export default function MobileDashboard({
 
             {/* Chiudi + Logout */}
             <div className="px-4 pb-8 pt-3 border-t border-slate-100 space-y-2">
-              <form action={logoutAction} className="w-full">
+              <form action={async () => { try { await logoutAction(); } catch { /* redirect throws */ } window.location.href = "/login"; }} className="w-full">
                 <button
                   type="submit"
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-rose-50 text-rose-600 text-sm font-bold active:bg-rose-100 transition-colors border border-rose-100"

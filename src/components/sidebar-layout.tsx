@@ -112,7 +112,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo,
                 </button>
               </>
             )}
-            <form action={logoutAction}>
+            <form action={async () => { try { await logoutAction(); } catch { /* redirect throws */ } window.location.href = "/login"; }}>
               <button
                 type="submit"
                 className="rounded-full border border-slate-200 bg-white px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600 shadow-sm transition-colors hover:border-rose-100 hover:text-rose-600"

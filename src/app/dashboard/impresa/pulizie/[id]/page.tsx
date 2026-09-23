@@ -30,8 +30,12 @@ export default async function ImpresaCleaningDetailPage({ params }: { params: Pr
     },
   });
   if (!task) notFound();
-  // Sicurezza: solo pulizie di un cliente ingaggiato.
+  // Sicurezza: solo pulizie di un cliente ingaggiato e appartamento assegnato.
   if (!task.apartment.organizationId || !access.orgIds.includes(task.apartment.organizationId)) {
+    redirect("/dashboard/impresa/pulizie");
+  }
+  const cleaningAptIds = access.scopeApartments?.CLEANING;
+  if (cleaningAptIds && !cleaningAptIds.includes(task.apartmentId)) {
     redirect("/dashboard/impresa/pulizie");
   }
 

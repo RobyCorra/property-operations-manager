@@ -125,10 +125,10 @@ export async function loginAction(prevState: any, formData: FormData) {
 
 export async function logoutAction() {
   const cookieStore = await cookies();
-  cookieStore.set("role", "", { path: "/", maxAge: 0 });
-  cookieStore.set("userId", "", { path: "/", maxAge: 0 });
-  cookieStore.set("userName", "", { path: "/", maxAge: 0 });
-  cookieStore.set("organizationId", "", { path: "/", maxAge: 0 });
-  cookieStore.set("companyId", "", { path: "/", maxAge: 0 });
+  cookieStore.delete("role");
+  cookieStore.delete("userId");
+  cookieStore.delete("userName");
+  cookieStore.delete("organizationId");
+  cookieStore.delete("companyId");
   redirect("/login");
 }

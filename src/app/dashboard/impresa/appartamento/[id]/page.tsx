@@ -27,6 +27,13 @@ export default async function ImpresaAppartamentoPage({ params }: { params: Prom
     },
   });
   if (!apt || !access.orgIds.includes(apt.organizationId ?? "")) redirect("/dashboard/impresa");
+  // Se la delega specifica appartamenti, verifica che questo sia incluso
+  const allScopeApts = Object.values(access.scopeApartments ?? {});
+  const hasAptFilter = allScopeApts.some((v) => v !== null);
+  if (hasAptFilter) {
+    const allowedApts = new Set(allScopeApts.filter((v): v is string[] => v !== null).flat());
+    if (!allowedApts.has(id)) redirect("/dashboard/impresa");
+  }
 
   const serverDate = new Date().toISOString();
   const now = new Date();

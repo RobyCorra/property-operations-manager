@@ -21,8 +21,13 @@ export async function GET(req: NextRequest) {
   const from = new Date(year, mon - 1, 1);
   const to = new Date(year, mon, 0, 23, 59, 59, 999);
 
+  const cleaningAptIds = access.scopeApartments?.CLEANING;
+  const aptScope = cleaningAptIds
+    ? { apartmentId: { in: cleaningAptIds } }
+    : { apartment: { organizationId: { in: access.orgIds } } };
+
   const where = {
-    apartment: { organizationId: { in: access.orgIds } },
+    ...aptScope,
     date: { gte: from, lte: to },
     ...(apartmentId ? { apartmentId } : {}),
     ...(status && status !== "ALL" ? { status } : { status: { not: "CANCELLED" } }),
