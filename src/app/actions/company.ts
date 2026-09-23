@@ -345,11 +345,440 @@ export async function sendMyImpresaMessage(formData: FormData): Promise<{ succes
         mediaUrl: m.media?.url ?? null, mediaType: m.media?.type ?? null, mediaName: m.media?.name ?? null,
       },
     });
-    revalidatePath("/dashboard/messaggi");
+    revalidatePath("/dashboard/impresa/messaggi");
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
   }
+}
+
+// ── Chat org ↔ impresa (manager-to-manager) ──────────────────────────────────
+
+export type OrgCompanyThreadSummary = {
+  organizationId: string;
+  companyId: string;
+  counterpartName: string;
+  scopes: string[];
+  lastText: string | null;
+  lastAt: string | null;
+  unread: number;
+};
+
+// Lato ORG: lista thread con le imprese delegate
+export async function getOrgCompanyThreads(): Promise<OrgCompanyThreadSummary[]> {
+  const orgId = await getCurrentOrg();
+  if (!orgId) return [];
+  const engagements = await prisma.engagement.findMany({
+    where: { organizationId: orgId, status: "ACTIVE" },
+    select: { companyId: true, scope: true, company: { select: { name: true } } },
+  });
+  const companyMap = new Map<string, { name: string; scopes: string[] }>();
+  for (const e of engagements) {
+    const cur = companyMap.get(e.companyId);
+    if (cur) { cur.scopes.push(e.scope); } else { companyMap.set(e.companyId, { name: e.company.name, scopes: [e.scope] }); }
+  }
+  const out: OrgCompanyThreadSummary[] = [];
+  for (const [companyId, info] of companyMap) {
+    const last = await prisma.orgCompanyMessage.findFirst({
+      where: { organizationId: orgId, companyId },
+      orderBy: { createdAt: "desc" },
+      select: { text: true, createdAt: true },
+    });
+    const unread = await prisma.orgCompanyMessage.count({
+      where: { organizationId: orgId, companyId, senderIsOrg: false, readByOrgAt: null },
+    });
+    out.push({ organizationId: orgId, companyId, counterpartName: info.name, scopes: info.scopes, lastText: last?.text ?? null, lastAt: last?.createdAt?.toISOString() ?? null, unread });
+  }
+  out.sort((a, b) => (b.lastAt ?? "").localeCompare(a.lastAt ?? ""));
+  return out;
+}
+
+// Lato ORG: leggi thread con una impresa
+export async function getOrgCompanyThread(companyId: string): Promise<{ name: string; messages: ChatMsg[] } | null> {
+  const orgId = await getCurrentOrg();
+  if (!orgId) return null;
+  const eng = await prisma.engagement.findFirst({
+    where: { organizationId: orgId, companyId, status: "ACTIVE" },
+    select: { company: { select: { name: true } } },
+  });
+  if (!eng) return null;
+  await prisma.orgCompanyMessage.updateMany({
+    where: { organizationId: orgId, companyId, senderIsOrg: false, readByOrgAt: null },
+    data: { readByOrgAt: new Date() },
+  });
+  const msgs = await prisma.orgCompanyMessage.findMany({
+    where: { organizationId: orgId, companyId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, text: true, senderIsOrg: true, createdAt: true, mediaUrl: true, mediaType: true, mediaName: true },
+  });
+  return {
+    name: eng.company.name,
+    messages: msgs.map((m) => ({ id: m.id, text: m.text, mine: m.senderIsOrg, createdAt: m.createdAt.toISOString(), mediaUrl: m.mediaUrl, mediaType: m.mediaType, mediaName: m.mediaName })),
+  };
+}
+
+// Lato ORG: invia messaggio a una impresa
+export async function sendOrgCompanyMessage(companyId: string, formData: FormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const orgId = await getCurrentOrg();
+    if (!orgId) return { success: false, error: "Non autenticato." };
+    const eng = await prisma.engagement.findFirst({ where: { organizationId: orgId, companyId, status: "ACTIVE" }, select: { id: true } });
+    if (!eng) return { success: false, error: "Impresa non delegata." };
+    const cookieStore = await cookies();
+    const senderName = (() => { try { return decodeURIComponent(cookieStore.get("userName")?.value || ""); } catch { return cookieStore.get("userName")?.value || "Manager"; } })();
+    const m = await extractMessage(formData, orgId);
+    if (m.error) return { success: false, error: m.error };
+    if (m.empty) return { success: false, error: "Messaggio vuoto." };
+    await prisma.orgCompanyMessage.create({
+      data: {
+        id: randomUUID(), organizationId: orgId, companyId, senderIsOrg: true, senderName, text: m.text,
+        readByOrgAt: new Date(),
+        mediaUrl: m.media?.url ?? null, mediaType: m.media?.type ?? null, mediaName: m.media?.name ?? null,
+      },
+    });
+    revalidatePath("/dashboard/manager/messages");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// Lato ORG: conteggio non letti da tutte le imprese
+export async function getOrgCompanyUnread(): Promise<number> {
+  try {
+    const orgId = await getCurrentOrg();
+    if (!orgId) return 0;
+    return await prisma.orgCompanyMessage.count({
+      where: { organizationId: orgId, senderIsOrg: false, readByOrgAt: null },
+    });
+  } catch { return 0; }
+}
+
+// Lato IMPRESA: lista thread con le organizzazioni clienti
+export async function getImpresaOrgThreads(): Promise<OrgCompanyThreadSummary[]> {
+  const companyId = await requireCompanyManager();
+  const engagements = await prisma.engagement.findMany({
+    where: { companyId, status: "ACTIVE" },
+    select: { organizationId: true, scope: true, organization: { select: { name: true } } },
+  });
+  const orgMap = new Map<string, { name: string; scopes: string[] }>();
+  for (const e of engagements) {
+    const cur = orgMap.get(e.organizationId);
+    if (cur) { cur.scopes.push(e.scope); } else { orgMap.set(e.organizationId, { name: e.organization.name, scopes: [e.scope] }); }
+  }
+  const out: OrgCompanyThreadSummary[] = [];
+  for (const [organizationId, info] of orgMap) {
+    const last = await prisma.orgCompanyMessage.findFirst({
+      where: { organizationId, companyId },
+      orderBy: { createdAt: "desc" },
+      select: { text: true, createdAt: true },
+    });
+    const unread = await prisma.orgCompanyMessage.count({
+      where: { organizationId, companyId, senderIsOrg: true, readByCompanyAt: null },
+    });
+    out.push({ organizationId, companyId, counterpartName: info.name, scopes: info.scopes, lastText: last?.text ?? null, lastAt: last?.createdAt?.toISOString() ?? null, unread });
+  }
+  out.sort((a, b) => (b.lastAt ?? "").localeCompare(a.lastAt ?? ""));
+  return out;
+}
+
+// Lato IMPRESA: leggi thread con una organizzazione
+export async function getImpresaOrgThread(organizationId: string): Promise<{ name: string; messages: ChatMsg[] } | null> {
+  const companyId = await requireCompanyManager();
+  const eng = await prisma.engagement.findFirst({
+    where: { organizationId, companyId, status: "ACTIVE" },
+    select: { organization: { select: { name: true } } },
+  });
+  if (!eng) return null;
+  await prisma.orgCompanyMessage.updateMany({
+    where: { organizationId, companyId, senderIsOrg: true, readByCompanyAt: null },
+    data: { readByCompanyAt: new Date() },
+  });
+  const msgs = await prisma.orgCompanyMessage.findMany({
+    where: { organizationId, companyId },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, text: true, senderIsOrg: true, createdAt: true, mediaUrl: true, mediaType: true, mediaName: true },
+  });
+  return {
+    name: eng.organization.name,
+    messages: msgs.map((m) => ({ id: m.id, text: m.text, mine: !m.senderIsOrg, createdAt: m.createdAt.toISOString(), mediaUrl: m.mediaUrl, mediaType: m.mediaType, mediaName: m.mediaName })),
+  };
+}
+
+// Lato IMPRESA: invia messaggio a una organizzazione
+export async function sendImpresaOrgMessage(organizationId: string, formData: FormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const eng = await prisma.engagement.findFirst({ where: { organizationId, companyId, status: "ACTIVE" }, select: { id: true } });
+    if (!eng) return { success: false, error: "Organizzazione non cliente." };
+    const cookieStore = await cookies();
+    const senderName = (() => { try { return decodeURIComponent(cookieStore.get("userName")?.value || ""); } catch { return cookieStore.get("userName")?.value || "Manager"; } })();
+    const m = await extractMessage(formData, companyId);
+    if (m.error) return { success: false, error: m.error };
+    if (m.empty) return { success: false, error: "Messaggio vuoto." };
+    await prisma.orgCompanyMessage.create({
+      data: {
+        id: randomUUID(), organizationId, companyId, senderIsOrg: false, senderName, text: m.text,
+        readByCompanyAt: new Date(),
+        mediaUrl: m.media?.url ?? null, mediaType: m.media?.type ?? null, mediaName: m.media?.name ?? null,
+      },
+    });
+    revalidatePath("/dashboard/impresa/messaggi");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// Lato IMPRESA: conteggio non letti da tutte le organizzazioni
+export async function getImpresaOrgUnread(): Promise<number> {
+  try {
+    const companyId = await requireCompanyManager();
+    return await prisma.orgCompanyMessage.count({
+      where: { companyId, senderIsOrg: true, readByCompanyAt: null },
+    });
+  } catch { return 0; }
+}
+
+// ── Thread intervento delegato (impresa ↔ addetto) ──────────────────────────
+
+export type DelegatedInterventionThread = {
+  id: string;
+  type: "CLEANING" | "MAINTENANCE";
+  apartmentName: string;
+  assignedUser: string;
+  title: string;
+  date: string | null;
+  status: string;
+  lastText: string | null;
+  lastAt: string | null;
+  unread: number;
+};
+
+export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventionThread[]> {
+  const companyId = await requireCompanyManager();
+  const access = await getCompanyAccess();
+  if (!access) return [];
+
+  const cleaningAptIds = access.scopeApartments?.CLEANING;
+  const maintenanceAptIds = access.scopeApartments?.MAINTENANCE;
+
+  const out: DelegatedInterventionThread[] = [];
+
+  if (cleaningAptIds && cleaningAptIds.length > 0) {
+    const tasks = await prisma.cleaningTask.findMany({
+      where: { apartmentId: { in: cleaningAptIds }, messages: { some: {} } },
+      include: {
+        apartment: { select: { name: true } },
+        assignedTo: { select: { name: true } },
+        messages: { orderBy: { createdAt: "desc" }, take: 1 },
+      },
+    });
+    for (const t of tasks) {
+      const unread = await prisma.cleaningTaskMessage.count({
+        where: { cleaningTaskId: t.id, role: { not: "MANAGER" }, readByManagerAt: null },
+      });
+      const last = t.messages[0];
+      out.push({
+        id: t.id, type: "CLEANING",
+        apartmentName: t.apartment.name,
+        assignedUser: t.assignedTo?.name ?? "Non assegnato",
+        title: "Pulizia",
+        date: t.date.toISOString(),
+        status: t.status,
+        lastText: last?.text ?? null,
+        lastAt: last?.createdAt?.toISOString() ?? null,
+        unread,
+      });
+    }
+  }
+
+  if (maintenanceAptIds && maintenanceAptIds.length > 0) {
+    const tickets = await prisma.maintenanceTicket.findMany({
+      where: { apartmentId: { in: maintenanceAptIds }, messages: { some: {} } },
+      include: {
+        apartment: { select: { name: true } },
+        assignedTo: { select: { name: true } },
+        messages: { orderBy: { createdAt: "desc" }, take: 1 },
+      },
+    });
+    for (const t of tickets) {
+      const unread = await prisma.message.count({
+        where: { maintenanceTicketId: t.id, role: { not: "MANAGER" }, readByManagerAt: null },
+      });
+      const last = t.messages[0];
+      out.push({
+        id: t.id, type: "MAINTENANCE",
+        apartmentName: t.apartment.name,
+        assignedUser: t.assignedTo?.name ?? "Non assegnato",
+        title: t.title,
+        date: null,
+        status: t.status,
+        lastText: last?.text ?? null,
+        lastAt: last?.createdAt?.toISOString() ?? null,
+        unread,
+      });
+    }
+  }
+
+  out.sort((a, b) => (b.lastAt ?? "").localeCompare(a.lastAt ?? ""));
+  return out;
+}
+
+export async function getImpresaDelegatedThread(
+  id: string,
+  type: "CLEANING" | "MAINTENANCE",
+): Promise<{ title: string; messages: ChatMsg[] } | null> {
+  const companyId = await requireCompanyManager();
+  const access = await getCompanyAccess();
+  if (!access) return null;
+
+  if (type === "CLEANING") {
+    const aptIds = access.scopeApartments?.CLEANING;
+    const task = await prisma.cleaningTask.findFirst({
+      where: { id, ...(aptIds ? { apartmentId: { in: aptIds } } : {}) },
+      include: {
+        apartment: { select: { name: true } },
+        messages: { orderBy: { createdAt: "asc" }, include: { attachment: true } },
+      },
+    });
+    if (!task) return null;
+    await prisma.cleaningTaskMessage.updateMany({
+      where: { cleaningTaskId: id, role: { not: "MANAGER" }, readByManagerAt: null },
+      data: { readByManagerAt: new Date() },
+    });
+    return {
+      title: `Pulizia – ${task.apartment.name}`,
+      messages: task.messages.map((m) => ({
+        id: m.id,
+        text: m.text ?? "",
+        mine: m.role === "MANAGER",
+        createdAt: m.createdAt.toISOString(),
+        mediaUrl: m.attachment?.url ?? undefined,
+        mediaType: m.attachment?.fileType ? mediaCategory(m.attachment.fileType) : undefined,
+        mediaName: m.attachment?.fileName ?? undefined,
+      })),
+    };
+  }
+
+  // MAINTENANCE
+  const aptIds = access.scopeApartments?.MAINTENANCE;
+  const ticket = await prisma.maintenanceTicket.findFirst({
+    where: { id, ...(aptIds ? { apartmentId: { in: aptIds } } : {}) },
+    include: {
+      apartment: { select: { name: true } },
+      messages: { orderBy: { createdAt: "asc" }, include: { attachment: true } },
+    },
+  });
+  if (!ticket) return null;
+  await prisma.message.updateMany({
+    where: { maintenanceTicketId: id, role: { not: "MANAGER" }, readByManagerAt: null },
+    data: { readByManagerAt: new Date() },
+  });
+  return {
+    title: `${ticket.title} – ${ticket.apartment.name}`,
+    messages: ticket.messages.map((m) => ({
+      id: m.id,
+      text: m.text ?? "",
+      mine: m.role === "MANAGER",
+      createdAt: m.createdAt.toISOString(),
+      mediaUrl: m.attachment?.url ?? undefined,
+      mediaType: m.attachment?.fileType ? mediaCategory(m.attachment.fileType) : undefined,
+      mediaName: m.attachment?.fileName ?? undefined,
+    })),
+  };
+}
+
+export async function sendImpresaDelegatedMessage(
+  id: string,
+  type: "CLEANING" | "MAINTENANCE",
+  formData: FormData,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access) return { success: false, error: "Non autorizzato." };
+
+    const cookieStore = await cookies();
+    const senderName = (() => { try { return decodeURIComponent(cookieStore.get("userName")?.value || ""); } catch { return cookieStore.get("userName")?.value || "Manager"; } })();
+
+    const m = await extractMessage(formData, companyId);
+    if (m.error) return { success: false, error: m.error };
+    if (m.empty) return { success: false, error: "Messaggio vuoto." };
+
+    if (type === "CLEANING") {
+      const aptIds = access.scopeApartments?.CLEANING;
+      const task = await prisma.cleaningTask.findFirst({
+        where: { id, ...(aptIds ? { apartmentId: { in: aptIds } } : {}) },
+        select: { id: true },
+      });
+      if (!task) return { success: false, error: "Intervento non trovato." };
+
+      let attachmentId: string | undefined;
+      if (m.media) {
+        const att = await prisma.attachment.create({
+          data: { id: randomUUID(), url: m.media.url, fileType: m.media.type, fileName: m.media.name },
+        });
+        attachmentId = att.id;
+      }
+      await prisma.cleaningTaskMessage.create({
+        data: {
+          id: randomUUID(), cleaningTaskId: id, role: "MANAGER", senderName, text: m.text || "",
+          readByManagerAt: new Date(),
+          ...(attachmentId ? { attachmentId } : {}),
+        },
+      });
+    } else {
+      const aptIds = access.scopeApartments?.MAINTENANCE;
+      const ticket = await prisma.maintenanceTicket.findFirst({
+        where: { id, ...(aptIds ? { apartmentId: { in: aptIds } } : {}) },
+        select: { id: true },
+      });
+      if (!ticket) return { success: false, error: "Intervento non trovato." };
+
+      let attachmentId: string | undefined;
+      if (m.media) {
+        const att = await prisma.attachment.create({
+          data: { id: randomUUID(), url: m.media.url, fileType: m.media.type, fileName: m.media.name },
+        });
+        attachmentId = att.id;
+      }
+      await prisma.message.create({
+        data: {
+          id: randomUUID(), maintenanceTicketId: id, role: "MANAGER", senderName, text: m.text || "",
+          readByManagerAt: new Date(),
+          ...(attachmentId ? { attachmentId } : {}),
+        },
+      });
+    }
+
+    revalidatePath("/dashboard/impresa/messaggi");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+export async function getImpresaDelegatedUnread(): Promise<number> {
+  try {
+    const companyId = await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access) return 0;
+    let total = 0;
+    const cleaningAptIds = access.scopeApartments?.CLEANING;
+    if (cleaningAptIds?.length) {
+      total += await prisma.cleaningTaskMessage.count({
+        where: { role: { not: "MANAGER" }, readByManagerAt: null, cleaningTask: { apartmentId: { in: cleaningAptIds } } },
+      });
+    }
+    const maintenanceAptIds = access.scopeApartments?.MAINTENANCE;
+    if (maintenanceAptIds?.length) {
+      total += await prisma.message.count({
+        where: { role: { not: "MANAGER" }, readByManagerAt: null, maintenanceTicket: { apartmentId: { in: maintenanceAptIds } } },
+      });
+    }
+    return total;
+  } catch { return 0; }
 }
 
 export async function getMyCompanyStaff(): Promise<CompanyStaff[]> {

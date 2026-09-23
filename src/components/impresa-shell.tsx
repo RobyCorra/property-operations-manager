@@ -5,7 +5,7 @@ import SidebarLayout from "@/src/components/sidebar-layout";
 import { type NavItem } from "@/src/components/manager-navbar";
 import { useLang } from "@/src/components/lang-context";
 import { LayoutDashboard, Brush, UserCircle, Users, Package, MessageSquare } from "./icons";
-import { getImpresaThreads } from "@/src/app/actions/company";
+import { getImpresaThreads, getImpresaOrgUnread, getImpresaDelegatedUnread } from "@/src/app/actions/company";
 
 const HOME = "/dashboard/impresa";
 
@@ -47,9 +47,9 @@ export default function ImpresaShell({ name, children }: { name: string; childre
     let alive = true;
     const tick = async () => {
       try {
-        const list = await getImpresaThreads();
+        const [list, orgUn, delUn] = await Promise.all([getImpresaThreads(), getImpresaOrgUnread(), getImpresaDelegatedUnread()]);
         if (!alive) return;
-        const total = list.reduce((s, t) => s + t.unread, 0);
+        const total = list.reduce((s, t) => s + t.unread, 0) + orgUn + delUn;
         if (total > prevRef.current) beep();
         prevRef.current = total;
         setUnread(total);

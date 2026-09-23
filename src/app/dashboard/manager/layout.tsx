@@ -5,12 +5,14 @@ import PushPermissionRequest from "@/src/components/push-permission";
 import ApnsRegister from "@/src/components/apns-register";
 import ImpersonateBanner from "@/src/components/superadmin/impersonate-banner";
 import { getUnreadMessagesCount } from "../../actions/messages";
+import { getOrgCompanyUnread } from "../../actions/company";
 import { prisma } from "@/src/lib/prisma";
 import { ManagerLangProvider } from "@/src/components/lang-context";
 import { getServerLang } from "@/src/lib/server-lang";
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
-  const unreadCount = await getUnreadMessagesCount();
+  const [taskUnread, companyUnread] = await Promise.all([getUnreadMessagesCount(), getOrgCompanyUnread()]);
+  const unreadCount = taskUnread + companyUnread;
   const lang = await getServerLang();
   const cookieStore = await cookies();
   const impersonatingOrgId = cookieStore.get("impersonating")?.value;

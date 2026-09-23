@@ -8,6 +8,8 @@ import MarkReadTrigger from "@/src/components/mark-read-trigger";
 import MessagesDashboard from "@/src/components/messages-dashboard";
 import BackButton from "@/src/components/back-button";
 import { getT } from "@/src/lib/server-lang";
+import { getOrgCompanyThreads } from "@/src/app/actions/company";
+import OrgCompanyChat from "@/src/components/org-company-chat";
 
 export default async function ManagerMessagesPage({
   searchParams,
@@ -26,9 +28,29 @@ export default async function ManagerMessagesPage({
   const tr = await getT();
   const orgId = await getCurrentOrg();
 
+  const companyThreads = await getOrgCompanyThreads();
+
+  // Appartamenti delegati per scope: l'org NON vede i thread intervento per questi
+  const delegatedEngagements = orgId ? await prisma.engagement.findMany({
+    where: { organizationId: orgId, status: "ACTIVE" },
+    include: { apartments: { select: { apartmentId: true } } },
+  }) : [];
+  const delegatedAptsByScope = new Map<string, Set<string>>();
+  for (const e of delegatedEngagements) {
+    const set = delegatedAptsByScope.get(e.scope) ?? new Set();
+    for (const a of e.apartments) set.add(a.apartmentId);
+    delegatedAptsByScope.set(e.scope, set);
+  }
+  const delegatedCleaningApts = delegatedAptsByScope.get("CLEANING");
+  const delegatedMaintenanceApts = delegatedAptsByScope.get("MAINTENANCE");
+
   const [maintenanceTickets, cleaningTasks, apartments] = await Promise.all([
     prisma.maintenanceTicket.findMany({
-      where: { messages: { some: {} }, apartment: { organizationId: orgId } },
+      where: {
+        messages: { some: {} },
+        apartment: { organizationId: orgId },
+        ...(delegatedMaintenanceApts?.size ? { apartmentId: { notIn: [...delegatedMaintenanceApts] } } : {}),
+      },
       include: {
         apartment: { select: { name: true, address: true } },
         assignedTo: { select: { name: true } },
@@ -36,7 +58,11 @@ export default async function ManagerMessagesPage({
       },
     }),
     prisma.cleaningTask.findMany({
-      where: { messages: { some: {} }, apartment: { organizationId: orgId } },
+      where: {
+        messages: { some: {} },
+        apartment: { organizationId: orgId },
+        ...(delegatedCleaningApts?.size ? { apartmentId: { notIn: [...delegatedCleaningApts] } } : {}),
+      },
       include: {
         apartment: { select: { name: true, address: true } },
         assignedTo: { select: { name: true } },
@@ -92,6 +118,11 @@ export default async function ManagerMessagesPage({
       <div className="hidden md:block p-4">
         <BackButton />
       </div>
+      {companyThreads.length > 0 && (
+        <div className="px-4 md:px-6 pb-2">
+          <OrgCompanyChat threads={companyThreads} />
+        </div>
+      )}
       {selectedThread && (
         <MarkReadTrigger id={selectedThread.id} type={selectedThread.type} />
       )}

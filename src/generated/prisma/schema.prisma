@@ -39,6 +39,7 @@ model Organization {
   properties                 Property[]
   chatSessions               ManagerChatSession[]
   engagements                Engagement[]
+  companyMessages            OrgCompanyMessage[]
 }
 
 // Struttura ricettiva (hotel/residence): indirizzo unico, contiene N unita'
@@ -156,6 +157,27 @@ model User {
   @@index([companyId])
 }
 
+// Chat org ↔ impresa: un thread per (org, company). Visibile solo ai manager
+// dell'organizzazione e al manager dell'impresa. Manager-to-manager.
+model OrgCompanyMessage {
+  id              String       @id @default(uuid())
+  organizationId  String
+  companyId       String
+  senderIsOrg     Boolean
+  senderName      String
+  text            String
+  mediaUrl        String?
+  mediaType       String?
+  mediaName       String?
+  createdAt       DateTime     @default(now())
+  readByOrgAt     DateTime?
+  readByCompanyAt DateTime?
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  company         Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, companyId, createdAt])
+}
+
 // Chat privata dell'impresa: un thread per (impresa, operatore). Visibile solo
 // al manager d'impresa e all'operatore stesso; MAI al proprietario.
 model CompanyChatMessage {
@@ -178,16 +200,17 @@ model CompanyChatMessage {
 // Non e' figlia di una singola Organization: viene ingaggiata (Engagement) da
 // una o piu' organizzazioni, e puo' coprire piu' funzioni.
 model Company {
-  id                String             @id @default(uuid())
+  id                String              @id @default(uuid())
   name              String
-  slug              String             @unique
+  slug              String              @unique
   legalName         String?
   vatNumber         String?
-  scopes            String[]           @default([]) // funzioni offerte: CLEANING|MAINTENANCE|CHECKIN|SUPERVISION
-  createdAt         DateTime           @default(now())
+  scopes            String[]            @default([]) // funzioni offerte: CLEANING|MAINTENANCE|CHECKIN|SUPERVISION
+  createdAt         DateTime            @default(now())
   users             User[]
   engagements       Engagement[]
   warehouseProducts WarehouseProduct[]
+  orgMessages       OrgCompanyMessage[]
 }
 
 // Ingaggio: un proprietario (Organization) delega UNA funzione (scope) a una

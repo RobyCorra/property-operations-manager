@@ -44,6 +44,11 @@ export type UnitCategory = $Result.DefaultSelection<Prisma.$UnitCategoryPayload>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model OrgCompanyMessage
+ * 
+ */
+export type OrgCompanyMessage = $Result.DefaultSelection<Prisma.$OrgCompanyMessagePayload>
+/**
  * Model CompanyChatMessage
  * 
  */
@@ -422,6 +427,16 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.orgCompanyMessage`: Exposes CRUD operations for the **OrgCompanyMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OrgCompanyMessages
+    * const orgCompanyMessages = await prisma.orgCompanyMessage.findMany()
+    * ```
+    */
+  get orgCompanyMessage(): Prisma.OrgCompanyMessageDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.companyChatMessage`: Exposes CRUD operations for the **CompanyChatMessage** model.
@@ -1192,6 +1207,7 @@ export namespace Prisma {
     PropertyStockMovement: 'PropertyStockMovement',
     UnitCategory: 'UnitCategory',
     User: 'User',
+    OrgCompanyMessage: 'OrgCompanyMessage',
     CompanyChatMessage: 'CompanyChatMessage',
     Company: 'Company',
     Engagement: 'Engagement',
@@ -1240,7 +1256,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "companyChatMessage" | "company" | "engagement" | "engagementApartment" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
+      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "orgCompanyMessage" | "companyChatMessage" | "company" | "engagement" | "engagementApartment" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1685,6 +1701,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      OrgCompanyMessage: {
+        payload: Prisma.$OrgCompanyMessagePayload<ExtArgs>
+        fields: Prisma.OrgCompanyMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OrgCompanyMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OrgCompanyMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.OrgCompanyMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OrgCompanyMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>
+          }
+          findMany: {
+            args: Prisma.OrgCompanyMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>[]
+          }
+          create: {
+            args: Prisma.OrgCompanyMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>
+          }
+          createMany: {
+            args: Prisma.OrgCompanyMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OrgCompanyMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.OrgCompanyMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>
+          }
+          update: {
+            args: Prisma.OrgCompanyMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.OrgCompanyMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OrgCompanyMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OrgCompanyMessageUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>[]
+          }
+          upsert: {
+            args: Prisma.OrgCompanyMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OrgCompanyMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.OrgCompanyMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOrgCompanyMessage>
+          }
+          groupBy: {
+            args: Prisma.OrgCompanyMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OrgCompanyMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OrgCompanyMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<OrgCompanyMessageCountAggregateOutputType> | number
           }
         }
       }
@@ -4244,6 +4334,7 @@ export namespace Prisma {
     propertyStockMovement?: PropertyStockMovementOmit
     unitCategory?: UnitCategoryOmit
     user?: UserOmit
+    orgCompanyMessage?: OrgCompanyMessageOmit
     companyChatMessage?: CompanyChatMessageOmit
     company?: CompanyOmit
     engagement?: EngagementOmit
@@ -4362,6 +4453,7 @@ export namespace Prisma {
     properties: number
     chatSessions: number
     engagements: number
+    companyMessages: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4370,6 +4462,7 @@ export namespace Prisma {
     properties?: boolean | OrganizationCountOutputTypeCountPropertiesArgs
     chatSessions?: boolean | OrganizationCountOutputTypeCountChatSessionsArgs
     engagements?: boolean | OrganizationCountOutputTypeCountEngagementsArgs
+    companyMessages?: boolean | OrganizationCountOutputTypeCountCompanyMessagesArgs
   }
 
   // Custom InputTypes
@@ -4416,6 +4509,13 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountEngagementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: EngagementWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountCompanyMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrgCompanyMessageWhereInput
   }
 
 
@@ -4641,12 +4741,14 @@ export namespace Prisma {
     users: number
     engagements: number
     warehouseProducts: number
+    orgMessages: number
   }
 
   export type CompanyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | CompanyCountOutputTypeCountUsersArgs
     engagements?: boolean | CompanyCountOutputTypeCountEngagementsArgs
     warehouseProducts?: boolean | CompanyCountOutputTypeCountWarehouseProductsArgs
+    orgMessages?: boolean | CompanyCountOutputTypeCountOrgMessagesArgs
   }
 
   // Custom InputTypes
@@ -4679,6 +4781,13 @@ export namespace Prisma {
    */
   export type CompanyCountOutputTypeCountWarehouseProductsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WarehouseProductWhereInput
+  }
+
+  /**
+   * CompanyCountOutputType without action
+   */
+  export type CompanyCountOutputTypeCountOrgMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrgCompanyMessageWhereInput
   }
 
 
@@ -5584,6 +5693,7 @@ export namespace Prisma {
     properties?: boolean | Organization$propertiesArgs<ExtArgs>
     chatSessions?: boolean | Organization$chatSessionsArgs<ExtArgs>
     engagements?: boolean | Organization$engagementsArgs<ExtArgs>
+    companyMessages?: boolean | Organization$companyMessagesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -5681,6 +5791,7 @@ export namespace Prisma {
     properties?: boolean | Organization$propertiesArgs<ExtArgs>
     chatSessions?: boolean | Organization$chatSessionsArgs<ExtArgs>
     engagements?: boolean | Organization$engagementsArgs<ExtArgs>
+    companyMessages?: boolean | Organization$companyMessagesArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5694,6 +5805,7 @@ export namespace Prisma {
       properties: Prisma.$PropertyPayload<ExtArgs>[]
       chatSessions: Prisma.$ManagerChatSessionPayload<ExtArgs>[]
       engagements: Prisma.$EngagementPayload<ExtArgs>[]
+      companyMessages: Prisma.$OrgCompanyMessagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6121,6 +6233,7 @@ export namespace Prisma {
     properties<T extends Organization$propertiesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$propertiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     chatSessions<T extends Organization$chatSessionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$chatSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ManagerChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     engagements<T extends Organization$engagementsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$engagementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    companyMessages<T extends Organization$companyMessagesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$companyMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6686,6 +6799,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EngagementScalarFieldEnum | EngagementScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.companyMessages
+   */
+  export type Organization$companyMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    where?: OrgCompanyMessageWhereInput
+    orderBy?: OrgCompanyMessageOrderByWithRelationInput | OrgCompanyMessageOrderByWithRelationInput[]
+    cursor?: OrgCompanyMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrgCompanyMessageScalarFieldEnum | OrgCompanyMessageScalarFieldEnum[]
   }
 
   /**
@@ -13122,6 +13259,1168 @@ export namespace Prisma {
 
 
   /**
+   * Model OrgCompanyMessage
+   */
+
+  export type AggregateOrgCompanyMessage = {
+    _count: OrgCompanyMessageCountAggregateOutputType | null
+    _min: OrgCompanyMessageMinAggregateOutputType | null
+    _max: OrgCompanyMessageMaxAggregateOutputType | null
+  }
+
+  export type OrgCompanyMessageMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    companyId: string | null
+    senderIsOrg: boolean | null
+    senderName: string | null
+    text: string | null
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
+    createdAt: Date | null
+    readByOrgAt: Date | null
+    readByCompanyAt: Date | null
+  }
+
+  export type OrgCompanyMessageMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    companyId: string | null
+    senderIsOrg: boolean | null
+    senderName: string | null
+    text: string | null
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
+    createdAt: Date | null
+    readByOrgAt: Date | null
+    readByCompanyAt: Date | null
+  }
+
+  export type OrgCompanyMessageCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    companyId: number
+    senderIsOrg: number
+    senderName: number
+    text: number
+    mediaUrl: number
+    mediaType: number
+    mediaName: number
+    createdAt: number
+    readByOrgAt: number
+    readByCompanyAt: number
+    _all: number
+  }
+
+
+  export type OrgCompanyMessageMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    companyId?: true
+    senderIsOrg?: true
+    senderName?: true
+    text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
+    createdAt?: true
+    readByOrgAt?: true
+    readByCompanyAt?: true
+  }
+
+  export type OrgCompanyMessageMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    companyId?: true
+    senderIsOrg?: true
+    senderName?: true
+    text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
+    createdAt?: true
+    readByOrgAt?: true
+    readByCompanyAt?: true
+  }
+
+  export type OrgCompanyMessageCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    companyId?: true
+    senderIsOrg?: true
+    senderName?: true
+    text?: true
+    mediaUrl?: true
+    mediaType?: true
+    mediaName?: true
+    createdAt?: true
+    readByOrgAt?: true
+    readByCompanyAt?: true
+    _all?: true
+  }
+
+  export type OrgCompanyMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrgCompanyMessage to aggregate.
+     */
+    where?: OrgCompanyMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrgCompanyMessages to fetch.
+     */
+    orderBy?: OrgCompanyMessageOrderByWithRelationInput | OrgCompanyMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OrgCompanyMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrgCompanyMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrgCompanyMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned OrgCompanyMessages
+    **/
+    _count?: true | OrgCompanyMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OrgCompanyMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OrgCompanyMessageMaxAggregateInputType
+  }
+
+  export type GetOrgCompanyMessageAggregateType<T extends OrgCompanyMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateOrgCompanyMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOrgCompanyMessage[P]>
+      : GetScalarType<T[P], AggregateOrgCompanyMessage[P]>
+  }
+
+
+
+
+  export type OrgCompanyMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrgCompanyMessageWhereInput
+    orderBy?: OrgCompanyMessageOrderByWithAggregationInput | OrgCompanyMessageOrderByWithAggregationInput[]
+    by: OrgCompanyMessageScalarFieldEnum[] | OrgCompanyMessageScalarFieldEnum
+    having?: OrgCompanyMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OrgCompanyMessageCountAggregateInputType | true
+    _min?: OrgCompanyMessageMinAggregateInputType
+    _max?: OrgCompanyMessageMaxAggregateInputType
+  }
+
+  export type OrgCompanyMessageGroupByOutputType = {
+    id: string
+    organizationId: string
+    companyId: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl: string | null
+    mediaType: string | null
+    mediaName: string | null
+    createdAt: Date
+    readByOrgAt: Date | null
+    readByCompanyAt: Date | null
+    _count: OrgCompanyMessageCountAggregateOutputType | null
+    _min: OrgCompanyMessageMinAggregateOutputType | null
+    _max: OrgCompanyMessageMaxAggregateOutputType | null
+  }
+
+  type GetOrgCompanyMessageGroupByPayload<T extends OrgCompanyMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OrgCompanyMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OrgCompanyMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OrgCompanyMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], OrgCompanyMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OrgCompanyMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    companyId?: boolean
+    senderIsOrg?: boolean
+    senderName?: boolean
+    text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
+    createdAt?: boolean
+    readByOrgAt?: boolean
+    readByCompanyAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orgCompanyMessage"]>
+
+  export type OrgCompanyMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    companyId?: boolean
+    senderIsOrg?: boolean
+    senderName?: boolean
+    text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
+    createdAt?: boolean
+    readByOrgAt?: boolean
+    readByCompanyAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orgCompanyMessage"]>
+
+  export type OrgCompanyMessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    companyId?: boolean
+    senderIsOrg?: boolean
+    senderName?: boolean
+    text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
+    createdAt?: boolean
+    readByOrgAt?: boolean
+    readByCompanyAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["orgCompanyMessage"]>
+
+  export type OrgCompanyMessageSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    companyId?: boolean
+    senderIsOrg?: boolean
+    senderName?: boolean
+    text?: boolean
+    mediaUrl?: boolean
+    mediaType?: boolean
+    mediaName?: boolean
+    createdAt?: boolean
+    readByOrgAt?: boolean
+    readByCompanyAt?: boolean
+  }
+
+  export type OrgCompanyMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "companyId" | "senderIsOrg" | "senderName" | "text" | "mediaUrl" | "mediaType" | "mediaName" | "createdAt" | "readByOrgAt" | "readByCompanyAt", ExtArgs["result"]["orgCompanyMessage"]>
+  export type OrgCompanyMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+  export type OrgCompanyMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+  export type OrgCompanyMessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    company?: boolean | CompanyDefaultArgs<ExtArgs>
+  }
+
+  export type $OrgCompanyMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OrgCompanyMessage"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      company: Prisma.$CompanyPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      companyId: string
+      senderIsOrg: boolean
+      senderName: string
+      text: string
+      mediaUrl: string | null
+      mediaType: string | null
+      mediaName: string | null
+      createdAt: Date
+      readByOrgAt: Date | null
+      readByCompanyAt: Date | null
+    }, ExtArgs["result"]["orgCompanyMessage"]>
+    composites: {}
+  }
+
+  type OrgCompanyMessageGetPayload<S extends boolean | null | undefined | OrgCompanyMessageDefaultArgs> = $Result.GetResult<Prisma.$OrgCompanyMessagePayload, S>
+
+  type OrgCompanyMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<OrgCompanyMessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: OrgCompanyMessageCountAggregateInputType | true
+    }
+
+  export interface OrgCompanyMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OrgCompanyMessage'], meta: { name: 'OrgCompanyMessage' } }
+    /**
+     * Find zero or one OrgCompanyMessage that matches the filter.
+     * @param {OrgCompanyMessageFindUniqueArgs} args - Arguments to find a OrgCompanyMessage
+     * @example
+     * // Get one OrgCompanyMessage
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OrgCompanyMessageFindUniqueArgs>(args: SelectSubset<T, OrgCompanyMessageFindUniqueArgs<ExtArgs>>): Prisma__OrgCompanyMessageClient<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one OrgCompanyMessage that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {OrgCompanyMessageFindUniqueOrThrowArgs} args - Arguments to find a OrgCompanyMessage
+     * @example
+     * // Get one OrgCompanyMessage
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OrgCompanyMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, OrgCompanyMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OrgCompanyMessageClient<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrgCompanyMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgCompanyMessageFindFirstArgs} args - Arguments to find a OrgCompanyMessage
+     * @example
+     * // Get one OrgCompanyMessage
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OrgCompanyMessageFindFirstArgs>(args?: SelectSubset<T, OrgCompanyMessageFindFirstArgs<ExtArgs>>): Prisma__OrgCompanyMessageClient<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first OrgCompanyMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgCompanyMessageFindFirstOrThrowArgs} args - Arguments to find a OrgCompanyMessage
+     * @example
+     * // Get one OrgCompanyMessage
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OrgCompanyMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, OrgCompanyMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__OrgCompanyMessageClient<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more OrgCompanyMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgCompanyMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OrgCompanyMessages
+     * const orgCompanyMessages = await prisma.orgCompanyMessage.findMany()
+     * 
+     * // Get first 10 OrgCompanyMessages
+     * const orgCompanyMessages = await prisma.orgCompanyMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const orgCompanyMessageWithIdOnly = await prisma.orgCompanyMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OrgCompanyMessageFindManyArgs>(args?: SelectSubset<T, OrgCompanyMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a OrgCompanyMessage.
+     * @param {OrgCompanyMessageCreateArgs} args - Arguments to create a OrgCompanyMessage.
+     * @example
+     * // Create one OrgCompanyMessage
+     * const OrgCompanyMessage = await prisma.orgCompanyMessage.create({
+     *   data: {
+     *     // ... data to create a OrgCompanyMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends OrgCompanyMessageCreateArgs>(args: SelectSubset<T, OrgCompanyMessageCreateArgs<ExtArgs>>): Prisma__OrgCompanyMessageClient<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many OrgCompanyMessages.
+     * @param {OrgCompanyMessageCreateManyArgs} args - Arguments to create many OrgCompanyMessages.
+     * @example
+     * // Create many OrgCompanyMessages
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OrgCompanyMessageCreateManyArgs>(args?: SelectSubset<T, OrgCompanyMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OrgCompanyMessages and returns the data saved in the database.
+     * @param {OrgCompanyMessageCreateManyAndReturnArgs} args - Arguments to create many OrgCompanyMessages.
+     * @example
+     * // Create many OrgCompanyMessages
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many OrgCompanyMessages and only return the `id`
+     * const orgCompanyMessageWithIdOnly = await prisma.orgCompanyMessage.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OrgCompanyMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, OrgCompanyMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a OrgCompanyMessage.
+     * @param {OrgCompanyMessageDeleteArgs} args - Arguments to delete one OrgCompanyMessage.
+     * @example
+     * // Delete one OrgCompanyMessage
+     * const OrgCompanyMessage = await prisma.orgCompanyMessage.delete({
+     *   where: {
+     *     // ... filter to delete one OrgCompanyMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OrgCompanyMessageDeleteArgs>(args: SelectSubset<T, OrgCompanyMessageDeleteArgs<ExtArgs>>): Prisma__OrgCompanyMessageClient<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one OrgCompanyMessage.
+     * @param {OrgCompanyMessageUpdateArgs} args - Arguments to update one OrgCompanyMessage.
+     * @example
+     * // Update one OrgCompanyMessage
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OrgCompanyMessageUpdateArgs>(args: SelectSubset<T, OrgCompanyMessageUpdateArgs<ExtArgs>>): Prisma__OrgCompanyMessageClient<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more OrgCompanyMessages.
+     * @param {OrgCompanyMessageDeleteManyArgs} args - Arguments to filter OrgCompanyMessages to delete.
+     * @example
+     * // Delete a few OrgCompanyMessages
+     * const { count } = await prisma.orgCompanyMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OrgCompanyMessageDeleteManyArgs>(args?: SelectSubset<T, OrgCompanyMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrgCompanyMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgCompanyMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OrgCompanyMessages
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OrgCompanyMessageUpdateManyArgs>(args: SelectSubset<T, OrgCompanyMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OrgCompanyMessages and returns the data updated in the database.
+     * @param {OrgCompanyMessageUpdateManyAndReturnArgs} args - Arguments to update many OrgCompanyMessages.
+     * @example
+     * // Update many OrgCompanyMessages
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more OrgCompanyMessages and only return the `id`
+     * const orgCompanyMessageWithIdOnly = await prisma.orgCompanyMessage.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OrgCompanyMessageUpdateManyAndReturnArgs>(args: SelectSubset<T, OrgCompanyMessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one OrgCompanyMessage.
+     * @param {OrgCompanyMessageUpsertArgs} args - Arguments to update or create a OrgCompanyMessage.
+     * @example
+     * // Update or create a OrgCompanyMessage
+     * const orgCompanyMessage = await prisma.orgCompanyMessage.upsert({
+     *   create: {
+     *     // ... data to create a OrgCompanyMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OrgCompanyMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OrgCompanyMessageUpsertArgs>(args: SelectSubset<T, OrgCompanyMessageUpsertArgs<ExtArgs>>): Prisma__OrgCompanyMessageClient<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of OrgCompanyMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgCompanyMessageCountArgs} args - Arguments to filter OrgCompanyMessages to count.
+     * @example
+     * // Count the number of OrgCompanyMessages
+     * const count = await prisma.orgCompanyMessage.count({
+     *   where: {
+     *     // ... the filter for the OrgCompanyMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends OrgCompanyMessageCountArgs>(
+      args?: Subset<T, OrgCompanyMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OrgCompanyMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OrgCompanyMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgCompanyMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OrgCompanyMessageAggregateArgs>(args: Subset<T, OrgCompanyMessageAggregateArgs>): Prisma.PrismaPromise<GetOrgCompanyMessageAggregateType<T>>
+
+    /**
+     * Group by OrgCompanyMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OrgCompanyMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OrgCompanyMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OrgCompanyMessageGroupByArgs['orderBy'] }
+        : { orderBy?: OrgCompanyMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OrgCompanyMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOrgCompanyMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OrgCompanyMessage model
+   */
+  readonly fields: OrgCompanyMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OrgCompanyMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OrgCompanyMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OrgCompanyMessage model
+   */
+  interface OrgCompanyMessageFieldRefs {
+    readonly id: FieldRef<"OrgCompanyMessage", 'String'>
+    readonly organizationId: FieldRef<"OrgCompanyMessage", 'String'>
+    readonly companyId: FieldRef<"OrgCompanyMessage", 'String'>
+    readonly senderIsOrg: FieldRef<"OrgCompanyMessage", 'Boolean'>
+    readonly senderName: FieldRef<"OrgCompanyMessage", 'String'>
+    readonly text: FieldRef<"OrgCompanyMessage", 'String'>
+    readonly mediaUrl: FieldRef<"OrgCompanyMessage", 'String'>
+    readonly mediaType: FieldRef<"OrgCompanyMessage", 'String'>
+    readonly mediaName: FieldRef<"OrgCompanyMessage", 'String'>
+    readonly createdAt: FieldRef<"OrgCompanyMessage", 'DateTime'>
+    readonly readByOrgAt: FieldRef<"OrgCompanyMessage", 'DateTime'>
+    readonly readByCompanyAt: FieldRef<"OrgCompanyMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * OrgCompanyMessage findUnique
+   */
+  export type OrgCompanyMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgCompanyMessage to fetch.
+     */
+    where: OrgCompanyMessageWhereUniqueInput
+  }
+
+  /**
+   * OrgCompanyMessage findUniqueOrThrow
+   */
+  export type OrgCompanyMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgCompanyMessage to fetch.
+     */
+    where: OrgCompanyMessageWhereUniqueInput
+  }
+
+  /**
+   * OrgCompanyMessage findFirst
+   */
+  export type OrgCompanyMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgCompanyMessage to fetch.
+     */
+    where?: OrgCompanyMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrgCompanyMessages to fetch.
+     */
+    orderBy?: OrgCompanyMessageOrderByWithRelationInput | OrgCompanyMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrgCompanyMessages.
+     */
+    cursor?: OrgCompanyMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrgCompanyMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrgCompanyMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrgCompanyMessages.
+     */
+    distinct?: OrgCompanyMessageScalarFieldEnum | OrgCompanyMessageScalarFieldEnum[]
+  }
+
+  /**
+   * OrgCompanyMessage findFirstOrThrow
+   */
+  export type OrgCompanyMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgCompanyMessage to fetch.
+     */
+    where?: OrgCompanyMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrgCompanyMessages to fetch.
+     */
+    orderBy?: OrgCompanyMessageOrderByWithRelationInput | OrgCompanyMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OrgCompanyMessages.
+     */
+    cursor?: OrgCompanyMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrgCompanyMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrgCompanyMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrgCompanyMessages.
+     */
+    distinct?: OrgCompanyMessageScalarFieldEnum | OrgCompanyMessageScalarFieldEnum[]
+  }
+
+  /**
+   * OrgCompanyMessage findMany
+   */
+  export type OrgCompanyMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which OrgCompanyMessages to fetch.
+     */
+    where?: OrgCompanyMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OrgCompanyMessages to fetch.
+     */
+    orderBy?: OrgCompanyMessageOrderByWithRelationInput | OrgCompanyMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing OrgCompanyMessages.
+     */
+    cursor?: OrgCompanyMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OrgCompanyMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OrgCompanyMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OrgCompanyMessages.
+     */
+    distinct?: OrgCompanyMessageScalarFieldEnum | OrgCompanyMessageScalarFieldEnum[]
+  }
+
+  /**
+   * OrgCompanyMessage create
+   */
+  export type OrgCompanyMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a OrgCompanyMessage.
+     */
+    data: XOR<OrgCompanyMessageCreateInput, OrgCompanyMessageUncheckedCreateInput>
+  }
+
+  /**
+   * OrgCompanyMessage createMany
+   */
+  export type OrgCompanyMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OrgCompanyMessages.
+     */
+    data: OrgCompanyMessageCreateManyInput | OrgCompanyMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OrgCompanyMessage createManyAndReturn
+   */
+  export type OrgCompanyMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * The data used to create many OrgCompanyMessages.
+     */
+    data: OrgCompanyMessageCreateManyInput | OrgCompanyMessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrgCompanyMessage update
+   */
+  export type OrgCompanyMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a OrgCompanyMessage.
+     */
+    data: XOR<OrgCompanyMessageUpdateInput, OrgCompanyMessageUncheckedUpdateInput>
+    /**
+     * Choose, which OrgCompanyMessage to update.
+     */
+    where: OrgCompanyMessageWhereUniqueInput
+  }
+
+  /**
+   * OrgCompanyMessage updateMany
+   */
+  export type OrgCompanyMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OrgCompanyMessages.
+     */
+    data: XOR<OrgCompanyMessageUpdateManyMutationInput, OrgCompanyMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which OrgCompanyMessages to update
+     */
+    where?: OrgCompanyMessageWhereInput
+    /**
+     * Limit how many OrgCompanyMessages to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrgCompanyMessage updateManyAndReturn
+   */
+  export type OrgCompanyMessageUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * The data used to update OrgCompanyMessages.
+     */
+    data: XOR<OrgCompanyMessageUpdateManyMutationInput, OrgCompanyMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which OrgCompanyMessages to update
+     */
+    where?: OrgCompanyMessageWhereInput
+    /**
+     * Limit how many OrgCompanyMessages to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * OrgCompanyMessage upsert
+   */
+  export type OrgCompanyMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the OrgCompanyMessage to update in case it exists.
+     */
+    where: OrgCompanyMessageWhereUniqueInput
+    /**
+     * In case the OrgCompanyMessage found by the `where` argument doesn't exist, create a new OrgCompanyMessage with this data.
+     */
+    create: XOR<OrgCompanyMessageCreateInput, OrgCompanyMessageUncheckedCreateInput>
+    /**
+     * In case the OrgCompanyMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OrgCompanyMessageUpdateInput, OrgCompanyMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * OrgCompanyMessage delete
+   */
+  export type OrgCompanyMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    /**
+     * Filter which OrgCompanyMessage to delete.
+     */
+    where: OrgCompanyMessageWhereUniqueInput
+  }
+
+  /**
+   * OrgCompanyMessage deleteMany
+   */
+  export type OrgCompanyMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OrgCompanyMessages to delete
+     */
+    where?: OrgCompanyMessageWhereInput
+    /**
+     * Limit how many OrgCompanyMessages to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * OrgCompanyMessage without action
+   */
+  export type OrgCompanyMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model CompanyChatMessage
    */
 
@@ -14378,6 +15677,7 @@ export namespace Prisma {
     users?: boolean | Company$usersArgs<ExtArgs>
     engagements?: boolean | Company$engagementsArgs<ExtArgs>
     warehouseProducts?: boolean | Company$warehouseProductsArgs<ExtArgs>
+    orgMessages?: boolean | Company$orgMessagesArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["company"]>
 
@@ -14416,6 +15716,7 @@ export namespace Prisma {
     users?: boolean | Company$usersArgs<ExtArgs>
     engagements?: boolean | Company$engagementsArgs<ExtArgs>
     warehouseProducts?: boolean | Company$warehouseProductsArgs<ExtArgs>
+    orgMessages?: boolean | Company$orgMessagesArgs<ExtArgs>
     _count?: boolean | CompanyCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CompanyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -14427,6 +15728,7 @@ export namespace Prisma {
       users: Prisma.$UserPayload<ExtArgs>[]
       engagements: Prisma.$EngagementPayload<ExtArgs>[]
       warehouseProducts: Prisma.$WarehouseProductPayload<ExtArgs>[]
+      orgMessages: Prisma.$OrgCompanyMessagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -14833,6 +16135,7 @@ export namespace Prisma {
     users<T extends Company$usersArgs<ExtArgs> = {}>(args?: Subset<T, Company$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     engagements<T extends Company$engagementsArgs<ExtArgs> = {}>(args?: Subset<T, Company$engagementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     warehouseProducts<T extends Company$warehouseProductsArgs<ExtArgs> = {}>(args?: Subset<T, Company$warehouseProductsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WarehouseProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    orgMessages<T extends Company$orgMessagesArgs<ExtArgs> = {}>(args?: Subset<T, Company$orgMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrgCompanyMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15331,6 +16634,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WarehouseProductScalarFieldEnum | WarehouseProductScalarFieldEnum[]
+  }
+
+  /**
+   * Company.orgMessages
+   */
+  export type Company$orgMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrgCompanyMessage
+     */
+    select?: OrgCompanyMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrgCompanyMessage
+     */
+    omit?: OrgCompanyMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrgCompanyMessageInclude<ExtArgs> | null
+    where?: OrgCompanyMessageWhereInput
+    orderBy?: OrgCompanyMessageOrderByWithRelationInput | OrgCompanyMessageOrderByWithRelationInput[]
+    cursor?: OrgCompanyMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrgCompanyMessageScalarFieldEnum | OrgCompanyMessageScalarFieldEnum[]
   }
 
   /**
@@ -52097,6 +53424,24 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const OrgCompanyMessageScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    companyId: 'companyId',
+    senderIsOrg: 'senderIsOrg',
+    senderName: 'senderName',
+    text: 'text',
+    mediaUrl: 'mediaUrl',
+    mediaType: 'mediaType',
+    mediaName: 'mediaName',
+    createdAt: 'createdAt',
+    readByOrgAt: 'readByOrgAt',
+    readByCompanyAt: 'readByCompanyAt'
+  };
+
+  export type OrgCompanyMessageScalarFieldEnum = (typeof OrgCompanyMessageScalarFieldEnum)[keyof typeof OrgCompanyMessageScalarFieldEnum]
+
+
   export const CompanyChatMessageScalarFieldEnum: {
     id: 'id',
     companyId: 'companyId',
@@ -52793,6 +54138,7 @@ export namespace Prisma {
     properties?: PropertyListRelationFilter
     chatSessions?: ManagerChatSessionListRelationFilter
     engagements?: EngagementListRelationFilter
+    companyMessages?: OrgCompanyMessageListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -52827,6 +54173,7 @@ export namespace Prisma {
     properties?: PropertyOrderByRelationAggregateInput
     chatSessions?: ManagerChatSessionOrderByRelationAggregateInput
     engagements?: EngagementOrderByRelationAggregateInput
+    companyMessages?: OrgCompanyMessageOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -52864,6 +54211,7 @@ export namespace Prisma {
     properties?: PropertyListRelationFilter
     chatSessions?: ManagerChatSessionListRelationFilter
     engagements?: EngagementListRelationFilter
+    companyMessages?: OrgCompanyMessageListRelationFilter
   }, "id" | "slug">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -53430,6 +54778,99 @@ export namespace Prisma {
     companyId?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
+  export type OrgCompanyMessageWhereInput = {
+    AND?: OrgCompanyMessageWhereInput | OrgCompanyMessageWhereInput[]
+    OR?: OrgCompanyMessageWhereInput[]
+    NOT?: OrgCompanyMessageWhereInput | OrgCompanyMessageWhereInput[]
+    id?: StringFilter<"OrgCompanyMessage"> | string
+    organizationId?: StringFilter<"OrgCompanyMessage"> | string
+    companyId?: StringFilter<"OrgCompanyMessage"> | string
+    senderIsOrg?: BoolFilter<"OrgCompanyMessage"> | boolean
+    senderName?: StringFilter<"OrgCompanyMessage"> | string
+    text?: StringFilter<"OrgCompanyMessage"> | string
+    mediaUrl?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    mediaType?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    mediaName?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    createdAt?: DateTimeFilter<"OrgCompanyMessage"> | Date | string
+    readByOrgAt?: DateTimeNullableFilter<"OrgCompanyMessage"> | Date | string | null
+    readByCompanyAt?: DateTimeNullableFilter<"OrgCompanyMessage"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+  }
+
+  export type OrgCompanyMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    companyId?: SortOrder
+    senderIsOrg?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrder
+    mediaUrl?: SortOrderInput | SortOrder
+    mediaType?: SortOrderInput | SortOrder
+    mediaName?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    readByOrgAt?: SortOrderInput | SortOrder
+    readByCompanyAt?: SortOrderInput | SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    company?: CompanyOrderByWithRelationInput
+  }
+
+  export type OrgCompanyMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: OrgCompanyMessageWhereInput | OrgCompanyMessageWhereInput[]
+    OR?: OrgCompanyMessageWhereInput[]
+    NOT?: OrgCompanyMessageWhereInput | OrgCompanyMessageWhereInput[]
+    organizationId?: StringFilter<"OrgCompanyMessage"> | string
+    companyId?: StringFilter<"OrgCompanyMessage"> | string
+    senderIsOrg?: BoolFilter<"OrgCompanyMessage"> | boolean
+    senderName?: StringFilter<"OrgCompanyMessage"> | string
+    text?: StringFilter<"OrgCompanyMessage"> | string
+    mediaUrl?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    mediaType?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    mediaName?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    createdAt?: DateTimeFilter<"OrgCompanyMessage"> | Date | string
+    readByOrgAt?: DateTimeNullableFilter<"OrgCompanyMessage"> | Date | string | null
+    readByCompanyAt?: DateTimeNullableFilter<"OrgCompanyMessage"> | Date | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+  }, "id">
+
+  export type OrgCompanyMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    companyId?: SortOrder
+    senderIsOrg?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrder
+    mediaUrl?: SortOrderInput | SortOrder
+    mediaType?: SortOrderInput | SortOrder
+    mediaName?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    readByOrgAt?: SortOrderInput | SortOrder
+    readByCompanyAt?: SortOrderInput | SortOrder
+    _count?: OrgCompanyMessageCountOrderByAggregateInput
+    _max?: OrgCompanyMessageMaxOrderByAggregateInput
+    _min?: OrgCompanyMessageMinOrderByAggregateInput
+  }
+
+  export type OrgCompanyMessageScalarWhereWithAggregatesInput = {
+    AND?: OrgCompanyMessageScalarWhereWithAggregatesInput | OrgCompanyMessageScalarWhereWithAggregatesInput[]
+    OR?: OrgCompanyMessageScalarWhereWithAggregatesInput[]
+    NOT?: OrgCompanyMessageScalarWhereWithAggregatesInput | OrgCompanyMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"OrgCompanyMessage"> | string
+    organizationId?: StringWithAggregatesFilter<"OrgCompanyMessage"> | string
+    companyId?: StringWithAggregatesFilter<"OrgCompanyMessage"> | string
+    senderIsOrg?: BoolWithAggregatesFilter<"OrgCompanyMessage"> | boolean
+    senderName?: StringWithAggregatesFilter<"OrgCompanyMessage"> | string
+    text?: StringWithAggregatesFilter<"OrgCompanyMessage"> | string
+    mediaUrl?: StringNullableWithAggregatesFilter<"OrgCompanyMessage"> | string | null
+    mediaType?: StringNullableWithAggregatesFilter<"OrgCompanyMessage"> | string | null
+    mediaName?: StringNullableWithAggregatesFilter<"OrgCompanyMessage"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"OrgCompanyMessage"> | Date | string
+    readByOrgAt?: DateTimeNullableWithAggregatesFilter<"OrgCompanyMessage"> | Date | string | null
+    readByCompanyAt?: DateTimeNullableWithAggregatesFilter<"OrgCompanyMessage"> | Date | string | null
+  }
+
   export type CompanyChatMessageWhereInput = {
     AND?: CompanyChatMessageWhereInput | CompanyChatMessageWhereInput[]
     OR?: CompanyChatMessageWhereInput[]
@@ -53526,6 +54967,7 @@ export namespace Prisma {
     users?: UserListRelationFilter
     engagements?: EngagementListRelationFilter
     warehouseProducts?: WarehouseProductListRelationFilter
+    orgMessages?: OrgCompanyMessageListRelationFilter
   }
 
   export type CompanyOrderByWithRelationInput = {
@@ -53539,6 +54981,7 @@ export namespace Prisma {
     users?: UserOrderByRelationAggregateInput
     engagements?: EngagementOrderByRelationAggregateInput
     warehouseProducts?: WarehouseProductOrderByRelationAggregateInput
+    orgMessages?: OrgCompanyMessageOrderByRelationAggregateInput
   }
 
   export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -53555,6 +54998,7 @@ export namespace Prisma {
     users?: UserListRelationFilter
     engagements?: EngagementListRelationFilter
     warehouseProducts?: WarehouseProductListRelationFilter
+    orgMessages?: OrgCompanyMessageListRelationFilter
   }, "id" | "slug">
 
   export type CompanyOrderByWithAggregationInput = {
@@ -56185,6 +57629,7 @@ export namespace Prisma {
     properties?: PropertyCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -56219,6 +57664,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -56253,6 +57699,7 @@ export namespace Prisma {
     properties?: PropertyUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -56287,6 +57734,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -56941,6 +58389,109 @@ export namespace Prisma {
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type OrgCompanyMessageCreateInput = {
+    id?: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutCompanyMessagesInput
+    company: CompanyCreateNestedOneWithoutOrgMessagesInput
+  }
+
+  export type OrgCompanyMessageUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    companyId: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
+  }
+
+  export type OrgCompanyMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutCompanyMessagesNestedInput
+    company?: CompanyUpdateOneRequiredWithoutOrgMessagesNestedInput
+  }
+
+  export type OrgCompanyMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgCompanyMessageCreateManyInput = {
+    id?: string
+    organizationId: string
+    companyId: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
+  }
+
+  export type OrgCompanyMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgCompanyMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type CompanyChatMessageCreateInput = {
     id?: string
     companyId: string
@@ -57050,6 +58601,7 @@ export namespace Prisma {
     users?: UserCreateNestedManyWithoutCompanyInput
     engagements?: EngagementCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductCreateNestedManyWithoutCompanyInput
+    orgMessages?: OrgCompanyMessageCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateInput = {
@@ -57063,6 +58615,7 @@ export namespace Prisma {
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductUncheckedCreateNestedManyWithoutCompanyInput
+    orgMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUpdateInput = {
@@ -57076,6 +58629,7 @@ export namespace Prisma {
     users?: UserUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUpdateManyWithoutCompanyNestedInput
+    orgMessages?: OrgCompanyMessageUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateInput = {
@@ -57089,6 +58643,7 @@ export namespace Prisma {
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUncheckedUpdateManyWithoutCompanyNestedInput
+    orgMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyCreateManyInput = {
@@ -59987,6 +61542,12 @@ export namespace Prisma {
     none?: EngagementWhereInput
   }
 
+  export type OrgCompanyMessageListRelationFilter = {
+    every?: OrgCompanyMessageWhereInput
+    some?: OrgCompanyMessageWhereInput
+    none?: OrgCompanyMessageWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -60009,6 +61570,10 @@ export namespace Prisma {
   }
 
   export type EngagementOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrgCompanyMessageOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -60717,6 +62282,61 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type OrganizationScalarRelationFilter = {
+    is?: OrganizationWhereInput
+    isNot?: OrganizationWhereInput
+  }
+
+  export type CompanyScalarRelationFilter = {
+    is?: CompanyWhereInput
+    isNot?: CompanyWhereInput
+  }
+
+  export type OrgCompanyMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    companyId?: SortOrder
+    senderIsOrg?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
+    createdAt?: SortOrder
+    readByOrgAt?: SortOrder
+    readByCompanyAt?: SortOrder
+  }
+
+  export type OrgCompanyMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    companyId?: SortOrder
+    senderIsOrg?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
+    createdAt?: SortOrder
+    readByOrgAt?: SortOrder
+    readByCompanyAt?: SortOrder
+  }
+
+  export type OrgCompanyMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    companyId?: SortOrder
+    senderIsOrg?: SortOrder
+    senderName?: SortOrder
+    text?: SortOrder
+    mediaUrl?: SortOrder
+    mediaType?: SortOrder
+    mediaName?: SortOrder
+    createdAt?: SortOrder
+    readByOrgAt?: SortOrder
+    readByCompanyAt?: SortOrder
+  }
+
   export type CompanyChatMessageCountOrderByAggregateInput = {
     id?: SortOrder
     companyId?: SortOrder
@@ -60803,16 +62423,6 @@ export namespace Prisma {
     legalName?: SortOrder
     vatNumber?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type OrganizationScalarRelationFilter = {
-    is?: OrganizationWhereInput
-    isNot?: OrganizationWhereInput
-  }
-
-  export type CompanyScalarRelationFilter = {
-    is?: CompanyWhereInput
-    isNot?: CompanyWhereInput
   }
 
   export type EngagementApartmentListRelationFilter = {
@@ -62452,6 +64062,13 @@ export namespace Prisma {
     connect?: EngagementWhereUniqueInput | EngagementWhereUniqueInput[]
   }
 
+  export type OrgCompanyMessageCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<OrgCompanyMessageCreateWithoutOrganizationInput, OrgCompanyMessageUncheckedCreateWithoutOrganizationInput> | OrgCompanyMessageCreateWithoutOrganizationInput[] | OrgCompanyMessageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutOrganizationInput | OrgCompanyMessageCreateOrConnectWithoutOrganizationInput[]
+    createMany?: OrgCompanyMessageCreateManyOrganizationInputEnvelope
+    connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<UserCreateWithoutOrganizationInput, UserUncheckedCreateWithoutOrganizationInput> | UserCreateWithoutOrganizationInput[] | UserUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: UserCreateOrConnectWithoutOrganizationInput | UserCreateOrConnectWithoutOrganizationInput[]
@@ -62485,6 +64102,13 @@ export namespace Prisma {
     connectOrCreate?: EngagementCreateOrConnectWithoutOrganizationInput | EngagementCreateOrConnectWithoutOrganizationInput[]
     createMany?: EngagementCreateManyOrganizationInputEnvelope
     connect?: EngagementWhereUniqueInput | EngagementWhereUniqueInput[]
+  }
+
+  export type OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<OrgCompanyMessageCreateWithoutOrganizationInput, OrgCompanyMessageUncheckedCreateWithoutOrganizationInput> | OrgCompanyMessageCreateWithoutOrganizationInput[] | OrgCompanyMessageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutOrganizationInput | OrgCompanyMessageCreateOrConnectWithoutOrganizationInput[]
+    createMany?: OrgCompanyMessageCreateManyOrganizationInputEnvelope
+    connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -62581,6 +64205,20 @@ export namespace Prisma {
     deleteMany?: EngagementScalarWhereInput | EngagementScalarWhereInput[]
   }
 
+  export type OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<OrgCompanyMessageCreateWithoutOrganizationInput, OrgCompanyMessageUncheckedCreateWithoutOrganizationInput> | OrgCompanyMessageCreateWithoutOrganizationInput[] | OrgCompanyMessageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutOrganizationInput | OrgCompanyMessageCreateOrConnectWithoutOrganizationInput[]
+    upsert?: OrgCompanyMessageUpsertWithWhereUniqueWithoutOrganizationInput | OrgCompanyMessageUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: OrgCompanyMessageCreateManyOrganizationInputEnvelope
+    set?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    disconnect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    delete?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    update?: OrgCompanyMessageUpdateWithWhereUniqueWithoutOrganizationInput | OrgCompanyMessageUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: OrgCompanyMessageUpdateManyWithWhereWithoutOrganizationInput | OrgCompanyMessageUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: OrgCompanyMessageScalarWhereInput | OrgCompanyMessageScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<UserCreateWithoutOrganizationInput, UserUncheckedCreateWithoutOrganizationInput> | UserCreateWithoutOrganizationInput[] | UserUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: UserCreateOrConnectWithoutOrganizationInput | UserCreateOrConnectWithoutOrganizationInput[]
@@ -62649,6 +64287,20 @@ export namespace Prisma {
     update?: EngagementUpdateWithWhereUniqueWithoutOrganizationInput | EngagementUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: EngagementUpdateManyWithWhereWithoutOrganizationInput | EngagementUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: EngagementScalarWhereInput | EngagementScalarWhereInput[]
+  }
+
+  export type OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<OrgCompanyMessageCreateWithoutOrganizationInput, OrgCompanyMessageUncheckedCreateWithoutOrganizationInput> | OrgCompanyMessageCreateWithoutOrganizationInput[] | OrgCompanyMessageUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutOrganizationInput | OrgCompanyMessageCreateOrConnectWithoutOrganizationInput[]
+    upsert?: OrgCompanyMessageUpsertWithWhereUniqueWithoutOrganizationInput | OrgCompanyMessageUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: OrgCompanyMessageCreateManyOrganizationInputEnvelope
+    set?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    disconnect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    delete?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    update?: OrgCompanyMessageUpdateWithWhereUniqueWithoutOrganizationInput | OrgCompanyMessageUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: OrgCompanyMessageUpdateManyWithWhereWithoutOrganizationInput | OrgCompanyMessageUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: OrgCompanyMessageScalarWhereInput | OrgCompanyMessageScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutPropertiesInput = {
@@ -63377,6 +65029,34 @@ export namespace Prisma {
     deleteMany?: CheckinTaskScalarWhereInput | CheckinTaskScalarWhereInput[]
   }
 
+  export type OrganizationCreateNestedOneWithoutCompanyMessagesInput = {
+    create?: XOR<OrganizationCreateWithoutCompanyMessagesInput, OrganizationUncheckedCreateWithoutCompanyMessagesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutCompanyMessagesInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type CompanyCreateNestedOneWithoutOrgMessagesInput = {
+    create?: XOR<CompanyCreateWithoutOrgMessagesInput, CompanyUncheckedCreateWithoutOrgMessagesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutOrgMessagesInput
+    connect?: CompanyWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutCompanyMessagesNestedInput = {
+    create?: XOR<OrganizationCreateWithoutCompanyMessagesInput, OrganizationUncheckedCreateWithoutCompanyMessagesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutCompanyMessagesInput
+    upsert?: OrganizationUpsertWithoutCompanyMessagesInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutCompanyMessagesInput, OrganizationUpdateWithoutCompanyMessagesInput>, OrganizationUncheckedUpdateWithoutCompanyMessagesInput>
+  }
+
+  export type CompanyUpdateOneRequiredWithoutOrgMessagesNestedInput = {
+    create?: XOR<CompanyCreateWithoutOrgMessagesInput, CompanyUncheckedCreateWithoutOrgMessagesInput>
+    connectOrCreate?: CompanyCreateOrConnectWithoutOrgMessagesInput
+    upsert?: CompanyUpsertWithoutOrgMessagesInput
+    connect?: CompanyWhereUniqueInput
+    update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutOrgMessagesInput, CompanyUpdateWithoutOrgMessagesInput>, CompanyUncheckedUpdateWithoutOrgMessagesInput>
+  }
+
   export type CompanyCreatescopesInput = {
     set: string[]
   }
@@ -63402,6 +65082,13 @@ export namespace Prisma {
     connect?: WarehouseProductWhereUniqueInput | WarehouseProductWhereUniqueInput[]
   }
 
+  export type OrgCompanyMessageCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<OrgCompanyMessageCreateWithoutCompanyInput, OrgCompanyMessageUncheckedCreateWithoutCompanyInput> | OrgCompanyMessageCreateWithoutCompanyInput[] | OrgCompanyMessageUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutCompanyInput | OrgCompanyMessageCreateOrConnectWithoutCompanyInput[]
+    createMany?: OrgCompanyMessageCreateManyCompanyInputEnvelope
+    connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutCompanyInput = {
     create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
@@ -63421,6 +65108,13 @@ export namespace Prisma {
     connectOrCreate?: WarehouseProductCreateOrConnectWithoutCompanyInput | WarehouseProductCreateOrConnectWithoutCompanyInput[]
     createMany?: WarehouseProductCreateManyCompanyInputEnvelope
     connect?: WarehouseProductWhereUniqueInput | WarehouseProductWhereUniqueInput[]
+  }
+
+  export type OrgCompanyMessageUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<OrgCompanyMessageCreateWithoutCompanyInput, OrgCompanyMessageUncheckedCreateWithoutCompanyInput> | OrgCompanyMessageCreateWithoutCompanyInput[] | OrgCompanyMessageUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutCompanyInput | OrgCompanyMessageCreateOrConnectWithoutCompanyInput[]
+    createMany?: OrgCompanyMessageCreateManyCompanyInputEnvelope
+    connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
   }
 
   export type CompanyUpdatescopesInput = {
@@ -63470,6 +65164,20 @@ export namespace Prisma {
     deleteMany?: WarehouseProductScalarWhereInput | WarehouseProductScalarWhereInput[]
   }
 
+  export type OrgCompanyMessageUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<OrgCompanyMessageCreateWithoutCompanyInput, OrgCompanyMessageUncheckedCreateWithoutCompanyInput> | OrgCompanyMessageCreateWithoutCompanyInput[] | OrgCompanyMessageUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutCompanyInput | OrgCompanyMessageCreateOrConnectWithoutCompanyInput[]
+    upsert?: OrgCompanyMessageUpsertWithWhereUniqueWithoutCompanyInput | OrgCompanyMessageUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: OrgCompanyMessageCreateManyCompanyInputEnvelope
+    set?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    disconnect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    delete?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    update?: OrgCompanyMessageUpdateWithWhereUniqueWithoutCompanyInput | OrgCompanyMessageUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: OrgCompanyMessageUpdateManyWithWhereWithoutCompanyInput | OrgCompanyMessageUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: OrgCompanyMessageScalarWhereInput | OrgCompanyMessageScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutCompanyNestedInput = {
     create?: XOR<UserCreateWithoutCompanyInput, UserUncheckedCreateWithoutCompanyInput> | UserCreateWithoutCompanyInput[] | UserUncheckedCreateWithoutCompanyInput[]
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
@@ -63510,6 +65218,20 @@ export namespace Prisma {
     update?: WarehouseProductUpdateWithWhereUniqueWithoutCompanyInput | WarehouseProductUpdateWithWhereUniqueWithoutCompanyInput[]
     updateMany?: WarehouseProductUpdateManyWithWhereWithoutCompanyInput | WarehouseProductUpdateManyWithWhereWithoutCompanyInput[]
     deleteMany?: WarehouseProductScalarWhereInput | WarehouseProductScalarWhereInput[]
+  }
+
+  export type OrgCompanyMessageUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<OrgCompanyMessageCreateWithoutCompanyInput, OrgCompanyMessageUncheckedCreateWithoutCompanyInput> | OrgCompanyMessageCreateWithoutCompanyInput[] | OrgCompanyMessageUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: OrgCompanyMessageCreateOrConnectWithoutCompanyInput | OrgCompanyMessageCreateOrConnectWithoutCompanyInput[]
+    upsert?: OrgCompanyMessageUpsertWithWhereUniqueWithoutCompanyInput | OrgCompanyMessageUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: OrgCompanyMessageCreateManyCompanyInputEnvelope
+    set?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    disconnect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    delete?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    connect?: OrgCompanyMessageWhereUniqueInput | OrgCompanyMessageWhereUniqueInput[]
+    update?: OrgCompanyMessageUpdateWithWhereUniqueWithoutCompanyInput | OrgCompanyMessageUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: OrgCompanyMessageUpdateManyWithWhereWithoutCompanyInput | OrgCompanyMessageUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: OrgCompanyMessageScalarWhereInput | OrgCompanyMessageScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutEngagementsInput = {
@@ -66184,6 +67906,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type OrgCompanyMessageCreateWithoutOrganizationInput = {
+    id?: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
+    company: CompanyCreateNestedOneWithoutOrgMessagesInput
+  }
+
+  export type OrgCompanyMessageUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    companyId: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
+  }
+
+  export type OrgCompanyMessageCreateOrConnectWithoutOrganizationInput = {
+    where: OrgCompanyMessageWhereUniqueInput
+    create: XOR<OrgCompanyMessageCreateWithoutOrganizationInput, OrgCompanyMessageUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type OrgCompanyMessageCreateManyOrganizationInputEnvelope = {
+    data: OrgCompanyMessageCreateManyOrganizationInput | OrgCompanyMessageCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutOrganizationInput, UserUncheckedUpdateWithoutOrganizationInput>
@@ -66356,6 +68116,40 @@ export namespace Prisma {
     revokedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
   }
 
+  export type OrgCompanyMessageUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: OrgCompanyMessageWhereUniqueInput
+    update: XOR<OrgCompanyMessageUpdateWithoutOrganizationInput, OrgCompanyMessageUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<OrgCompanyMessageCreateWithoutOrganizationInput, OrgCompanyMessageUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type OrgCompanyMessageUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: OrgCompanyMessageWhereUniqueInput
+    data: XOR<OrgCompanyMessageUpdateWithoutOrganizationInput, OrgCompanyMessageUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type OrgCompanyMessageUpdateManyWithWhereWithoutOrganizationInput = {
+    where: OrgCompanyMessageScalarWhereInput
+    data: XOR<OrgCompanyMessageUpdateManyMutationInput, OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type OrgCompanyMessageScalarWhereInput = {
+    AND?: OrgCompanyMessageScalarWhereInput | OrgCompanyMessageScalarWhereInput[]
+    OR?: OrgCompanyMessageScalarWhereInput[]
+    NOT?: OrgCompanyMessageScalarWhereInput | OrgCompanyMessageScalarWhereInput[]
+    id?: StringFilter<"OrgCompanyMessage"> | string
+    organizationId?: StringFilter<"OrgCompanyMessage"> | string
+    companyId?: StringFilter<"OrgCompanyMessage"> | string
+    senderIsOrg?: BoolFilter<"OrgCompanyMessage"> | boolean
+    senderName?: StringFilter<"OrgCompanyMessage"> | string
+    text?: StringFilter<"OrgCompanyMessage"> | string
+    mediaUrl?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    mediaType?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    mediaName?: StringNullableFilter<"OrgCompanyMessage"> | string | null
+    createdAt?: DateTimeFilter<"OrgCompanyMessage"> | Date | string
+    readByOrgAt?: DateTimeNullableFilter<"OrgCompanyMessage"> | Date | string | null
+    readByCompanyAt?: DateTimeNullableFilter<"OrgCompanyMessage"> | Date | string | null
+  }
+
   export type OrganizationCreateWithoutPropertiesInput = {
     id?: string
     name: string
@@ -66387,6 +68181,7 @@ export namespace Prisma {
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutPropertiesInput = {
@@ -66420,6 +68215,7 @@ export namespace Prisma {
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutPropertiesInput = {
@@ -66637,6 +68433,7 @@ export namespace Prisma {
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutPropertiesInput = {
@@ -66670,6 +68467,7 @@ export namespace Prisma {
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UnitCategoryUpsertWithWhereUniqueWithoutPropertyInput = {
@@ -67138,6 +68936,7 @@ export namespace Prisma {
     createdAt?: Date | string
     engagements?: EngagementCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductCreateNestedManyWithoutCompanyInput
+    orgMessages?: OrgCompanyMessageCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutUsersInput = {
@@ -67150,6 +68949,7 @@ export namespace Prisma {
     createdAt?: Date | string
     engagements?: EngagementUncheckedCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductUncheckedCreateNestedManyWithoutCompanyInput
+    orgMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutUsersInput = {
@@ -67188,6 +68988,7 @@ export namespace Prisma {
     properties?: PropertyCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -67221,6 +69022,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -67564,6 +69366,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     engagements?: EngagementUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUpdateManyWithoutCompanyNestedInput
+    orgMessages?: OrgCompanyMessageUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutUsersInput = {
@@ -67576,6 +69379,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     engagements?: EngagementUncheckedUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUncheckedUpdateManyWithoutCompanyNestedInput
+    orgMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type OrganizationUpsertWithoutUsersInput = {
@@ -67620,6 +69424,7 @@ export namespace Prisma {
     properties?: PropertyUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -67653,6 +69458,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type CleaningTaskUpsertWithWhereUniqueWithoutAssignedToInput = {
@@ -67954,6 +69760,226 @@ export namespace Prisma {
     checkinAccessTokenExpiresAt?: DateTimeNullableFilter<"CheckinTask"> | Date | string | null
   }
 
+  export type OrganizationCreateWithoutCompanyMessagesInput = {
+    id?: string
+    name: string
+    slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
+    createdAt?: Date | string
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
+    properties?: PropertyCreateNestedManyWithoutOrganizationInput
+    chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
+    engagements?: EngagementCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutCompanyMessagesInput = {
+    id?: string
+    name: string
+    slug: string
+    logoUrl?: string | null
+    legalName?: string | null
+    vatNumber?: string | null
+    fiscalCode?: string | null
+    address?: string | null
+    city?: string | null
+    zip?: string | null
+    country?: string | null
+    phone?: string | null
+    email?: string | null
+    pec?: string | null
+    sdiCode?: string | null
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
+    conflictMaxCleaningsPerDay?: number
+    conflictUrgentHours?: number
+    conflictStaleTicketDays?: number
+    conflictOverlapMinutes?: number
+    createdAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
+    chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
+    engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutCompanyMessagesInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutCompanyMessagesInput, OrganizationUncheckedCreateWithoutCompanyMessagesInput>
+  }
+
+  export type CompanyCreateWithoutOrgMessagesInput = {
+    id?: string
+    name: string
+    slug: string
+    legalName?: string | null
+    vatNumber?: string | null
+    scopes?: CompanyCreatescopesInput | string[]
+    createdAt?: Date | string
+    users?: UserCreateNestedManyWithoutCompanyInput
+    engagements?: EngagementCreateNestedManyWithoutCompanyInput
+    warehouseProducts?: WarehouseProductCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyUncheckedCreateWithoutOrgMessagesInput = {
+    id?: string
+    name: string
+    slug: string
+    legalName?: string | null
+    vatNumber?: string | null
+    scopes?: CompanyCreatescopesInput | string[]
+    createdAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutCompanyInput
+    engagements?: EngagementUncheckedCreateNestedManyWithoutCompanyInput
+    warehouseProducts?: WarehouseProductUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type CompanyCreateOrConnectWithoutOrgMessagesInput = {
+    where: CompanyWhereUniqueInput
+    create: XOR<CompanyCreateWithoutOrgMessagesInput, CompanyUncheckedCreateWithoutOrgMessagesInput>
+  }
+
+  export type OrganizationUpsertWithoutCompanyMessagesInput = {
+    update: XOR<OrganizationUpdateWithoutCompanyMessagesInput, OrganizationUncheckedUpdateWithoutCompanyMessagesInput>
+    create: XOR<OrganizationCreateWithoutCompanyMessagesInput, OrganizationUncheckedCreateWithoutCompanyMessagesInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutCompanyMessagesInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutCompanyMessagesInput, OrganizationUncheckedUpdateWithoutCompanyMessagesInput>
+  }
+
+  export type OrganizationUpdateWithoutCompanyMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
+    properties?: PropertyUpdateManyWithoutOrganizationNestedInput
+    chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
+    engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutCompanyMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    fiscalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    pec?: NullableStringFieldUpdateOperationsInput | string | null
+    sdiCode?: NullableStringFieldUpdateOperationsInput | string | null
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conflictMaxCleaningsPerDay?: IntFieldUpdateOperationsInput | number
+    conflictUrgentHours?: IntFieldUpdateOperationsInput | number
+    conflictStaleTicketDays?: IntFieldUpdateOperationsInput | number
+    conflictOverlapMinutes?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
+    chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+    engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type CompanyUpsertWithoutOrgMessagesInput = {
+    update: XOR<CompanyUpdateWithoutOrgMessagesInput, CompanyUncheckedUpdateWithoutOrgMessagesInput>
+    create: XOR<CompanyCreateWithoutOrgMessagesInput, CompanyUncheckedCreateWithoutOrgMessagesInput>
+    where?: CompanyWhereInput
+  }
+
+  export type CompanyUpdateToOneWithWhereWithoutOrgMessagesInput = {
+    where?: CompanyWhereInput
+    data: XOR<CompanyUpdateWithoutOrgMessagesInput, CompanyUncheckedUpdateWithoutOrgMessagesInput>
+  }
+
+  export type CompanyUpdateWithoutOrgMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    scopes?: CompanyUpdatescopesInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutCompanyNestedInput
+    engagements?: EngagementUpdateManyWithoutCompanyNestedInput
+    warehouseProducts?: WarehouseProductUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type CompanyUncheckedUpdateWithoutOrgMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    legalName?: NullableStringFieldUpdateOperationsInput | string | null
+    vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    scopes?: CompanyUpdatescopesInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
+    engagements?: EngagementUncheckedUpdateManyWithoutCompanyNestedInput
+    warehouseProducts?: WarehouseProductUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
   export type UserCreateWithoutCompanyInput = {
     id?: string
     email: string
@@ -68102,6 +70128,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type OrgCompanyMessageCreateWithoutCompanyInput = {
+    id?: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
+    organization: OrganizationCreateNestedOneWithoutCompanyMessagesInput
+  }
+
+  export type OrgCompanyMessageUncheckedCreateWithoutCompanyInput = {
+    id?: string
+    organizationId: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
+  }
+
+  export type OrgCompanyMessageCreateOrConnectWithoutCompanyInput = {
+    where: OrgCompanyMessageWhereUniqueInput
+    create: XOR<OrgCompanyMessageCreateWithoutCompanyInput, OrgCompanyMessageUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type OrgCompanyMessageCreateManyCompanyInputEnvelope = {
+    data: OrgCompanyMessageCreateManyCompanyInput | OrgCompanyMessageCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutCompanyInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutCompanyInput, UserUncheckedUpdateWithoutCompanyInput>
@@ -68171,6 +70235,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"WarehouseProduct"> | Date | string
   }
 
+  export type OrgCompanyMessageUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: OrgCompanyMessageWhereUniqueInput
+    update: XOR<OrgCompanyMessageUpdateWithoutCompanyInput, OrgCompanyMessageUncheckedUpdateWithoutCompanyInput>
+    create: XOR<OrgCompanyMessageCreateWithoutCompanyInput, OrgCompanyMessageUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type OrgCompanyMessageUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: OrgCompanyMessageWhereUniqueInput
+    data: XOR<OrgCompanyMessageUpdateWithoutCompanyInput, OrgCompanyMessageUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type OrgCompanyMessageUpdateManyWithWhereWithoutCompanyInput = {
+    where: OrgCompanyMessageScalarWhereInput
+    data: XOR<OrgCompanyMessageUpdateManyMutationInput, OrgCompanyMessageUncheckedUpdateManyWithoutCompanyInput>
+  }
+
   export type OrganizationCreateWithoutEngagementsInput = {
     id?: string
     name: string
@@ -68202,6 +70282,7 @@ export namespace Prisma {
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
     properties?: PropertyCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutEngagementsInput = {
@@ -68235,6 +70316,7 @@ export namespace Prisma {
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutEngagementsInput = {
@@ -68252,6 +70334,7 @@ export namespace Prisma {
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductCreateNestedManyWithoutCompanyInput
+    orgMessages?: OrgCompanyMessageCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutEngagementsInput = {
@@ -68264,6 +70347,7 @@ export namespace Prisma {
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductUncheckedCreateNestedManyWithoutCompanyInput
+    orgMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutEngagementsInput = {
@@ -68331,6 +70415,7 @@ export namespace Prisma {
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
     properties?: PropertyUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutEngagementsInput = {
@@ -68364,6 +70449,7 @@ export namespace Prisma {
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type CompanyUpsertWithoutEngagementsInput = {
@@ -68387,6 +70473,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUpdateManyWithoutCompanyNestedInput
+    orgMessages?: OrgCompanyMessageUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutEngagementsInput = {
@@ -68399,6 +70486,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUncheckedUpdateManyWithoutCompanyNestedInput
+    orgMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type EngagementApartmentUpsertWithWhereUniqueWithoutEngagementInput = {
@@ -68688,6 +70776,7 @@ export namespace Prisma {
     properties?: PropertyCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutApartmentsInput = {
@@ -68721,6 +70810,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
     chatSessions?: ManagerChatSessionUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutApartmentsInput = {
@@ -69349,6 +71439,7 @@ export namespace Prisma {
     properties?: PropertyUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutApartmentsInput = {
@@ -69382,6 +71473,7 @@ export namespace Prisma {
     properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
     chatSessions?: ManagerChatSessionUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ClientUpsertWithoutApartmentsInput = {
@@ -75040,6 +77132,7 @@ export namespace Prisma {
     apartments?: ApartmentCreateNestedManyWithoutOrganizationInput
     properties?: PropertyCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutChatSessionsInput = {
@@ -75073,6 +77166,7 @@ export namespace Prisma {
     apartments?: ApartmentUncheckedCreateNestedManyWithoutOrganizationInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOrganizationInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutOrganizationInput
+    companyMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutChatSessionsInput = {
@@ -75146,6 +77240,7 @@ export namespace Prisma {
     apartments?: ApartmentUpdateManyWithoutOrganizationNestedInput
     properties?: PropertyUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutChatSessionsInput = {
@@ -75179,6 +77274,7 @@ export namespace Prisma {
     apartments?: ApartmentUncheckedUpdateManyWithoutOrganizationNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOrganizationNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutOrganizationNestedInput
+    companyMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ManagerChatMessageUpsertWithWhereUniqueWithoutSessionInput = {
@@ -76118,6 +78214,7 @@ export namespace Prisma {
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutCompanyInput
     engagements?: EngagementCreateNestedManyWithoutCompanyInput
+    orgMessages?: OrgCompanyMessageCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyUncheckedCreateWithoutWarehouseProductsInput = {
@@ -76130,6 +78227,7 @@ export namespace Prisma {
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutCompanyInput
+    orgMessages?: OrgCompanyMessageUncheckedCreateNestedManyWithoutCompanyInput
   }
 
   export type CompanyCreateOrConnectWithoutWarehouseProductsInput = {
@@ -76188,6 +78286,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUpdateManyWithoutCompanyNestedInput
+    orgMessages?: OrgCompanyMessageUpdateManyWithoutCompanyNestedInput
   }
 
   export type CompanyUncheckedUpdateWithoutWarehouseProductsInput = {
@@ -76200,6 +78299,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutCompanyNestedInput
+    orgMessages?: OrgCompanyMessageUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type WarehouseStockMovementUpsertWithWhereUniqueWithoutProductInput = {
@@ -76390,6 +78490,20 @@ export namespace Prisma {
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
+  }
+
+  export type OrgCompanyMessageCreateManyOrganizationInput = {
+    id?: string
+    companyId: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
   }
 
   export type UserUpdateWithoutOrganizationInput = {
@@ -76662,6 +78776,48 @@ export namespace Prisma {
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgCompanyMessageUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneRequiredWithoutOrgMessagesNestedInput
+  }
+
+  export type OrgCompanyMessageUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgCompanyMessageUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UnitCategoryCreateManyPropertyInput = {
@@ -77515,6 +79671,20 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type OrgCompanyMessageCreateManyCompanyInput = {
+    id?: string
+    organizationId: string
+    senderIsOrg: boolean
+    senderName: string
+    text: string
+    mediaUrl?: string | null
+    mediaType?: string | null
+    mediaName?: string | null
+    createdAt?: Date | string
+    readByOrgAt?: Date | string | null
+    readByCompanyAt?: Date | string | null
+  }
+
   export type UserUpdateWithoutCompanyInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
@@ -77678,6 +79848,48 @@ export namespace Prisma {
     vat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrgCompanyMessageUpdateWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    organization?: OrganizationUpdateOneRequiredWithoutCompanyMessagesNestedInput
+  }
+
+  export type OrgCompanyMessageUncheckedUpdateWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type OrgCompanyMessageUncheckedUpdateManyWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    senderIsOrg?: BoolFieldUpdateOperationsInput | boolean
+    senderName?: StringFieldUpdateOperationsInput | string
+    text?: StringFieldUpdateOperationsInput | string
+    mediaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaName?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readByOrgAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    readByCompanyAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type EngagementApartmentCreateManyEngagementInput = {
