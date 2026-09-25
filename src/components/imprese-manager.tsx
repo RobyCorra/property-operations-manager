@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createCompany, createCompanyManager, delegateFunction, revokeFunction, updateEngagementApartments } from "@/src/app/actions/company";
+import { createCompany, createCompanyManager, delegateFunction, revokeFunction, updateEngagementApartments, deleteCompany } from "@/src/app/actions/company";
 import type { ImpreseOverview, EngagementHandler } from "@/src/lib/company-scope";
 
 const SCOPES: { key: string; label: string; emoji: string }[] = [
@@ -20,6 +20,7 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
   const [newVat, setNewVat] = useState("");
   const [creating, setCreating] = useState(false);
   const [mgr, setMgr] = useState<Record<string, { name: string; email: string; password: string; open: boolean }>>({});
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // State for new delegation (adding a new engagement to a scope)
   const [addingScope, setAddingScope] = useState<string | null>(null);
@@ -112,6 +113,16 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
       const r = await revokeFunction(engagementId, true);
       if (!r.success) setError(r.error);
       else refresh();
+    });
+  }
+
+  // ── Delete company ──
+  function onDeleteCompany(companyId: string) {
+    setError(null);
+    startTransition(async () => {
+      const r = await deleteCompany(companyId);
+      if (!r.success) setError(r.error);
+      else { setConfirmDeleteId(null); refresh(); }
     });
   }
 
@@ -425,10 +436,29 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                       <p className="truncate text-sm font-semibold text-slate-800">{c.name}</p>
                       <p className="text-[11px] text-gray-400">{c.vatNumber ? `P.IVA ${c.vatNumber} · ` : ""}{c.scopes.length ? c.scopes.join(", ") : "nessuna delega"}</p>
                     </div>
-                    <button type="button" onClick={() => setMgrField(c.id, { open: !(f?.open) })} className="rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-semibold text-violet-600">
-                      {f?.open ? "Chiudi" : "+ Accesso"}
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button type="button" onClick={() => setMgrField(c.id, { open: !(f?.open) })} className="rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-semibold text-violet-600">
+                        {f?.open ? "Chiudi" : "+ Accesso"}
+                      </button>
+                      <button type="button" onClick={() => setConfirmDeleteId(confirmDeleteId === c.id ? null : c.id)} className="rounded-full border border-gray-200 bg-white p-1.5 text-[11px] text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+                        🗑️
+                      </button>
+                    </div>
                   </div>
+
+                  {confirmDeleteId === c.id && (
+                    <div className="mt-2 rounded-lg border border-red-200 bg-red-50 p-3">
+                      <p className="text-xs text-red-700 mb-2">Eliminare <strong>{c.name}</strong>? Verranno rimossi tutti i manager, le deleghe e i messaggi associati.</p>
+                      <div className="flex gap-2">
+                        <button type="button" onClick={() => onDeleteCompany(c.id)} disabled={isPending} className="rounded-full bg-red-500 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40">
+                          Conferma eliminazione
+                        </button>
+                        <button type="button" onClick={() => setConfirmDeleteId(null)} className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-xs font-semibold text-gray-600">
+                          Annulla
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {c.managers.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">

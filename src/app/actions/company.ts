@@ -128,6 +128,27 @@ export async function createCompany(
   }
 }
 
+export async function deleteCompany(
+  companyId: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const orgId = await requireOwner();
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+      include: { engagements: { where: { organizationId: orgId }, select: { id: true } } },
+    });
+    if (!company) return { success: false, error: "Impresa non trovata." };
+    await prisma.$transaction([
+      prisma.user.deleteMany({ where: { companyId } }),
+      prisma.company.delete({ where: { id: companyId } }),
+    ]);
+    revalidatePath("/dashboard/manager/imprese");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
 // Delega una funzione a un'impresa. Crea sempre PENDING + inviteToken:
 // l'impresa deve accettare aprendo il link.
 export async function delegateFunction(
