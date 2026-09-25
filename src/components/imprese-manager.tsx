@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { createCompany, createCompanyManager, delegateFunction, revokeFunction, updateEngagementApartments, deleteCompany } from "@/src/app/actions/company";
+import { createCompany, createCompanyManager, delegateFunction, revokeFunction, updateEngagementApartments, removeCompanyFromOrg } from "@/src/app/actions/company";
 import type { ImpreseOverview, EngagementHandler } from "@/src/lib/company-scope";
 
 const SCOPES: { key: string; label: string; emoji: string }[] = [
@@ -116,11 +116,11 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
     });
   }
 
-  // ── Delete company ──
-  function onDeleteCompany(companyId: string) {
+  // ── Remove company from org ──
+  function onRemoveCompany(companyId: string) {
     setError(null);
     startTransition(async () => {
-      const r = await deleteCompany(companyId);
+      const r = await removeCompanyFromOrg(companyId);
       if (!r.success) setError(r.error);
       else { setConfirmDeleteId(null); refresh(); }
     });
@@ -448,10 +448,10 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
 
                   {confirmDeleteId === c.id && (
                     <div className="mt-2 rounded-lg border border-red-200 bg-red-50 p-3">
-                      <p className="text-xs text-red-700 mb-2">Eliminare <strong>{c.name}</strong>? Verranno rimossi tutti i manager, le deleghe e i messaggi associati.</p>
+                      <p className="text-xs text-red-700 mb-2">Rimuovere <strong>{c.name}</strong> dalla tua organizzazione? Verranno revocate tutte le deleghe e cancellati i messaggi. L'impresa continuerà ad esistere per altre organizzazioni.</p>
                       <div className="flex gap-2">
-                        <button type="button" onClick={() => onDeleteCompany(c.id)} disabled={isPending} className="rounded-full bg-red-500 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40">
-                          Conferma eliminazione
+                        <button type="button" onClick={() => onRemoveCompany(c.id)} disabled={isPending} className="rounded-full bg-red-500 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40">
+                          Conferma rimozione
                         </button>
                         <button type="button" onClick={() => setConfirmDeleteId(null)} className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-xs font-semibold text-gray-600">
                           Annulla

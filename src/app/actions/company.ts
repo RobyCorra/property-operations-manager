@@ -128,23 +128,21 @@ export async function createCompany(
   }
 }
 
-export async function deleteCompany(
+export async function removeCompanyFromOrg(
   companyId: string,
 ): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const orgId = await requireOwner();
-    const company = await prisma.company.findUnique({
-      where: { id: companyId },
-      include: { engagements: { where: { organizationId: orgId }, select: { id: true } } },
+    const engagements = await prisma.engagement.findMany({
+      where: { organizationId: orgId, companyId },
+      select: { id: true },
     });
-    if (!company) return { success: false, error: "Impresa non trovata." };
-    const userIds = (await prisma.user.findMany({ where: { companyId }, select: { id: true } })).map((u) => u.id);
+    if (engagements.length === 0) return { success: false, error: "Nessuna delega trovata per questa impresa." };
+    const engIds = engagements.map((e) => e.id);
     await prisma.$transaction([
-      prisma.cleaningTask.updateMany({ where: { assignedToId: { in: userIds } }, data: { assignedToId: null } }),
-      prisma.maintenanceTicket.updateMany({ where: { assignedToId: { in: userIds } }, data: { assignedToId: null } }),
-      prisma.checkinTask.updateMany({ where: { assignedToId: { in: userIds } }, data: { assignedToId: null } }),
-      prisma.user.deleteMany({ where: { companyId } }),
-      prisma.company.delete({ where: { id: companyId } }),
+      prisma.engagementApartment.deleteMany({ where: { engagementId: { in: engIds } } }),
+      prisma.engagement.deleteMany({ where: { id: { in: engIds } } }),
+      prisma.orgCompanyMessage.deleteMany({ where: { organizationId: orgId, companyId } }),
     ]);
     revalidatePath("/dashboard/manager/imprese");
     return { success: true };
