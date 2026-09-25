@@ -37,17 +37,6 @@ async function requireOwner(): Promise<string> {
   return orgId;
 }
 
-function slugify(s: string): string {
-  return (
-    s
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "")
-      .slice(0, 40) || "impresa"
-  );
-}
 
 export async function getImpreseOverview(): Promise<ImpreseOverview> {
   const orgId = await requireOwner();
@@ -105,27 +94,6 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
     apartments: apartments.map((a) => ({ id: a.id, name: a.name })),
     handlers,
   };
-}
-
-export async function createCompany(
-  name: string,
-  vatNumber?: string,
-): Promise<{ success: true; company: { id: string; name: string } } | { success: false; error: string }> {
-  try {
-    await requireOwner();
-    const n = (name ?? "").trim();
-    if (!n) return { success: false, error: "Nome impresa obbligatorio." };
-    let slug = slugify(n);
-    let i = 1;
-    while (await prisma.company.findUnique({ where: { slug } })) slug = `${slugify(n)}-${++i}`;
-    const company = await prisma.company.create({
-      data: { id: randomUUID(), name: n, slug, vatNumber: vatNumber?.trim() || null, scopes: [] },
-    });
-    revalidatePath("/dashboard/manager/imprese");
-    return { success: true, company: { id: company.id, name: company.name } };
-  } catch (e) {
-    return { success: false, error: e instanceof Error ? e.message : "Errore." };
-  }
 }
 
 export async function removeCompanyFromOrg(
@@ -1167,43 +1135,6 @@ export async function approveCleaningByImpresa(
     await approveCleaningDirectly(cleaningTaskId);
     revalidatePath("/dashboard/impresa/pulizie");
     revalidatePath("/dashboard/impresa");
-    return { success: true };
-  } catch (e) {
-    return { success: false, error: e instanceof Error ? e.message : "Errore." };
-  }
-}
-
-// Crea un accesso "manager d'impresa": un utente MANAGER legato alla Company
-// (organizationId null). Potrà loggarsi e vedere solo le funzioni delegate.
-export async function createCompanyManager(
-  companyId: string,
-  name: string,
-  email: string,
-  password: string,
-): Promise<{ success: true } | { success: false; error: string }> {
-  try {
-    await requireOwner();
-    const nm = (name ?? "").trim();
-    const em = (email ?? "").trim().toLowerCase();
-    if (!nm || !em || !password) return { success: false, error: "Nome, email e password obbligatori." };
-    if (password.length < 6) return { success: false, error: "Password troppo corta (min 6)." };
-    const company = await prisma.company.findUnique({ where: { id: companyId }, select: { id: true } });
-    if (!company) return { success: false, error: "Impresa non trovata." };
-    const existing = await prisma.user.findUnique({ where: { email: em }, select: { id: true } });
-    if (existing) return { success: false, error: "Email già in uso." };
-    const passwordHash = await bcrypt.hash(password, 10);
-    await prisma.user.create({
-      data: {
-        id: randomUUID(),
-        name: nm,
-        email: em,
-        password: passwordHash,
-        role: "MANAGER",
-        companyId,
-        organizationId: null,
-      },
-    });
-    revalidatePath("/dashboard/manager/imprese");
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
