@@ -232,6 +232,36 @@ export async function acceptInvite(token: string): Promise<{ success: boolean; e
   }
 }
 
+// ── Deleghe pendenti lato impresa ───────────────────────────────────────────
+
+export type PendingInvite = {
+  id: string;
+  scope: string;
+  organizationName: string;
+  apartments: string[];
+  inviteToken: string;
+};
+
+export async function getPendingInvites(): Promise<PendingInvite[]> {
+  const ck = await cookies();
+  const companyId = ck.get("companyId")?.value;
+  if (!companyId) return [];
+  const engagements = await prisma.engagement.findMany({
+    where: { companyId, status: "PENDING", inviteToken: { not: null } },
+    include: {
+      organization: { select: { name: true } },
+      apartments: { select: { apartment: { select: { name: true } } } },
+    },
+  });
+  return engagements.map((e) => ({
+    id: e.id,
+    scope: e.scope,
+    organizationName: e.organization.name,
+    apartments: e.apartments.map((a) => a.apartment.name),
+    inviteToken: e.inviteToken!,
+  }));
+}
+
 // Aggiorna gli appartamenti assegnati a un engagement esistente.
 export async function updateEngagementApartments(
   engagementId: string,
