@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { acceptInvite, type PendingInvite } from "@/src/app/actions/company";
+import { acceptInvite, acceptEngagement, type PendingInvite } from "@/src/app/actions/company";
 
 const SCOPE_LABEL: Record<string, string> = {
   CLEANING: "Pulizie",
@@ -19,12 +19,14 @@ export default function PendingInviteBanner({ invites: initial }: { invites: Pen
 
   if (invites.length === 0) return null;
 
-  function handleAccept(token: string) {
+  function handleAccept(inv: PendingInvite) {
     setError(null);
     startTransition(async () => {
-      const r = await acceptInvite(token);
+      const r = inv.inviteToken
+        ? await acceptInvite(inv.inviteToken)
+        : await acceptEngagement(inv.id);
       if (r.success) {
-        setInvites((prev) => prev.filter((i) => i.inviteToken !== token));
+        setInvites((prev) => prev.filter((i) => i.id !== inv.id));
         router.refresh();
       } else {
         setError(r.error ?? "Errore.");
@@ -52,7 +54,7 @@ export default function PendingInviteBanner({ invites: initial }: { invites: Pen
               {error && <p className="text-xs text-rose-600 mb-2">{error}</p>}
               <button
                 type="button"
-                onClick={() => handleAccept(inv.inviteToken)}
+                onClick={() => handleAccept(inv)}
                 disabled={isPending}
                 className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:shadow-lg transition-all disabled:opacity-50"
               >

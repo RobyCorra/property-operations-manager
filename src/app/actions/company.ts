@@ -152,17 +152,17 @@ export async function removeCompanyFromOrg(
 }
 
 // Delega una funzione a un'impresa. Crea sempre PENDING + inviteToken:
-// l'impresa deve accettare aprendo il link.
+// Se l'impresa ha già manager → richiesta diretta (no token, il banner la mostra).
+// Se non ha manager → genera inviteToken per link esterno.
 export async function delegateFunction(
   companyId: string | null,
   scope: string,
   apartmentIds?: string[],
-): Promise<{ success: true; inviteToken: string } | { success: false; error: string }> {
+): Promise<{ success: true; inviteToken: string | null } | { success: false; error: string }> {
   try {
     const orgId = await requireOwner();
     if (!COMPANY_SCOPES.includes(scope as CompanyScope)) return { success: false, error: "Funzione non valida." };
 
-    // Se companyId presente, verifica che non esista già un engagement attivo/pending
     if (companyId) {
       const existing = await prisma.engagement.findFirst({
         where: { organizationId: orgId, companyId, scope, status: { in: ["ACTIVE", "PENDING"] } },
@@ -170,7 +170,11 @@ export async function delegateFunction(
       if (existing) return { success: false, error: "Esiste già una delega per questa funzione con questa impresa." };
     }
 
-    const inviteToken = randomUUID();
+    const hasManagers = companyId
+      ? (await prisma.user.count({ where: { companyId, role: "MANAGER" } })) > 0
+      : false;
+    const inviteToken = hasManagers ? null : randomUUID();
+
     const engagement = await prisma.engagement.create({
       data: {
         id: randomUUID(),
@@ -262,7 +266,7 @@ export type PendingInvite = {
   scope: string;
   organizationName: string;
   apartments: string[];
-  inviteToken: string;
+  inviteToken: string | null;
 };
 
 export async function getPendingInvites(): Promise<PendingInvite[]> {
@@ -270,7 +274,7 @@ export async function getPendingInvites(): Promise<PendingInvite[]> {
   const companyId = ck.get("companyId")?.value;
   if (!companyId) return [];
   const engagements = await prisma.engagement.findMany({
-    where: { companyId, status: "PENDING", inviteToken: { not: null } },
+    where: { companyId, status: "PENDING" },
     include: {
       organization: { select: { name: true } },
       apartments: { select: { apartment: { select: { name: true } } } },
@@ -281,8 +285,44 @@ export async function getPendingInvites(): Promise<PendingInvite[]> {
     scope: e.scope,
     organizationName: e.organization.name,
     apartments: e.apartments.map((a) => a.apartment.name),
-    inviteToken: e.inviteToken!,
+    inviteToken: e.inviteToken,
   }));
+}
+
+export async function acceptEngagement(engagementId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const ck = await cookies();
+    const role = ck.get("role")?.value;
+    const companyId = ck.get("companyId")?.value;
+    if (role !== "MANAGER" || !companyId) return { success: false, error: "Devi accedere come manager di un'impresa." };
+
+    const eng = await prisma.engagement.findUnique({ where: { id: engagementId } });
+    if (!eng) return { success: false, error: "Delega non trovata." };
+    if (eng.status !== "PENDING") return { success: false, error: "Questa delega è già stata gestita." };
+    if (eng.companyId !== companyId) return { success: false, error: "Questa delega non è destinata alla tua impresa." };
+
+    const existing = await prisma.engagement.findFirst({
+      where: { organizationId: eng.organizationId, companyId, scope: eng.scope, status: "ACTIVE", id: { not: eng.id } },
+    });
+    if (existing) return { success: false, error: "Hai già una delega attiva per questa funzione con questa organizzazione." };
+
+    await prisma.$transaction(async (tx) => {
+      await tx.engagement.update({
+        where: { id: eng.id },
+        data: { status: "ACTIVE", acceptedAt: new Date(), inviteToken: null },
+      });
+      const company = await tx.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
+      if (company && !company.scopes.includes(eng.scope)) {
+        await tx.company.update({ where: { id: companyId }, data: { scopes: { set: [...company.scopes, eng.scope] } } });
+      }
+    });
+
+    revalidatePath("/dashboard/manager/imprese");
+    revalidatePath("/dashboard/impresa");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
 }
 
 // Aggiorna gli appartamenti assegnati a un engagement esistente.

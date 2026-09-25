@@ -27,6 +27,7 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
   const [addCompanyId, setAddCompanyId] = useState("");
   const [addAptIds, setAddAptIds] = useState<Set<string>>(new Set());
   const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [requestSent, setRequestSent] = useState(false);
   const [copied, setCopied] = useState(false);
 
   // State for editing an existing engagement's apartments
@@ -62,6 +63,7 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
     setAddAptIds(new Set());
     setEditingEngId(null);
     setInviteLink(null);
+    setRequestSent(false);
     setCopied(false);
     setError(null);
   }
@@ -73,9 +75,12 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
     startTransition(async () => {
       const r = await delegateFunction(addCompanyId, addingScope!, aptArray.length > 0 ? aptArray : undefined);
       if (!r.success) setError(r.error);
-      else {
+      else if (r.inviteToken) {
         const link = `${window.location.origin}/invito/${r.inviteToken}`;
         setInviteLink(link);
+        refresh();
+      } else {
+        setRequestSent(true);
         refresh();
       }
     });
@@ -356,6 +361,14 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                         Chiudi
                       </button>
                     </div>
+                  ) : requestSent ? (
+                    <div className="space-y-3">
+                      <p className="text-sm font-semibold text-slate-800">Richiesta inviata!</p>
+                      <p className="text-xs text-slate-500">L&apos;impresa vedrà la richiesta di collaborazione nella sua dashboard e potrà accettarla.</p>
+                      <button type="button" onClick={() => { setAddingScope(null); setRequestSent(false); }} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">
+                        Chiudi
+                      </button>
+                    </div>
                   ) : (
                     <>
                       <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -390,7 +403,9 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                           disabled={isPending || !addCompanyId}
                           className="rounded-full bg-violet-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
                         >
-                          Genera link invito
+                          {companies.find((c) => c.id === addCompanyId)?.managers.length
+                            ? "Invia richiesta"
+                            : "Genera link invito"}
                         </button>
                       </div>
                     </>
