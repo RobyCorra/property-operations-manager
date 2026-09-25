@@ -168,6 +168,10 @@ export async function delegateFunction(
         where: { organizationId: orgId, companyId, scope, status: { in: ["ACTIVE", "PENDING"] } },
       });
       if (existing) return { success: false, error: "Esiste già una delega per questa funzione con questa impresa." };
+      // Rimuovi eventuali engagement REVOKED per liberare il vincolo unique
+      await prisma.engagement.deleteMany({
+        where: { organizationId: orgId, companyId, scope, status: "REVOKED" },
+      });
     }
 
     const hasManagers = companyId
