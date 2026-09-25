@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { updateAILimits } from "@/src/app/actions/superadmin";
+import { updateAILimits, updateCompanyAILimits } from "@/src/app/actions/superadmin";
 
 type OrgUsage = {
   id: string;
   name: string;
+  kind?: "org" | "company";
   tokens: { used: number; limit: number };
   perplexity: { used: number; limit: number };
 };
@@ -36,11 +37,13 @@ function EditLimitsModal({ org, onClose }: { org: OrgUsage; onClose: () => void 
         <form
           action={async (fd) => {
             setSaving(true);
-            await updateAILimits(
-              org.id,
-              parseInt(fd.get("tokenLimit") as string),
-              parseInt(fd.get("perplexityLimit") as string),
-            );
+            const tokenLimit = parseInt(fd.get("tokenLimit") as string);
+            const perplexityLimit = parseInt(fd.get("perplexityLimit") as string);
+            if (org.kind === "company") {
+              await updateCompanyAILimits(org.id, tokenLimit, perplexityLimit);
+            } else {
+              await updateAILimits(org.id, tokenLimit, perplexityLimit);
+            }
             setSaving(false);
             setDone(true);
             setTimeout(onClose, 800);
@@ -125,7 +128,10 @@ export default function AIUsageTable({ orgs }: { orgs: OrgUsage[] }) {
             className="grid grid-cols-[1fr_1fr_1fr_80px] gap-4 items-center px-4 py-3"
             style={{ borderBottom: i < orgs.length - 1 ? "1px solid #f1f5f9" : "none" }}
           >
-            <div>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className={`shrink-0 text-[9px] font-[700] px-1.5 py-0.5 rounded-full ${org.kind === "company" ? "bg-emerald-100 text-emerald-700" : "bg-violet-100 text-violet-700"}`}>
+                {org.kind === "company" ? "Impresa" : "Org"}
+              </span>
               <p className="text-[13px] font-[600] text-slate-900 truncate">{org.name}</p>
             </div>
             <div>
@@ -153,7 +159,7 @@ export default function AIUsageTable({ orgs }: { orgs: OrgUsage[] }) {
           </div>
         ))}
         {orgs.length === 0 && (
-          <div className="px-4 py-8 text-center text-[13px] text-slate-400">Nessuna organizzazione</div>
+          <div className="px-4 py-8 text-center text-[13px] text-slate-400">Nessuna organizzazione o impresa</div>
         )}
       </div>
     </div>

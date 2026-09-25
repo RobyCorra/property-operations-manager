@@ -95,6 +95,135 @@ export async function createOrganization(prevState: any, formData: FormData) {
   return { success: true, orgId: org.id, orgName };
 }
 
+function slugifyName(s: string): string {
+  return (
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "impresa"
+  );
+}
+
+export async function createCompanyWithManager(prevState: any, formData: FormData) {
+  const companyName = (formData.get("companyName") as string)?.trim();
+  const vatNumber = (formData.get("vatNumber") as string)?.trim() || null;
+  const managerName = (formData.get("managerName") as string)?.trim();
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
+  const password = formData.get("password") as string;
+
+  if (!companyName || !managerName || !email || !password || password.length < 8) {
+    return { error: "Tutti i campi sono obbligatori (password min 8 caratteri)." };
+  }
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) return { error: "Email già in uso." };
+
+  let slug = slugifyName(companyName);
+  let i = 1;
+  while (await prisma.company.findUnique({ where: { slug } })) slug = `${slugifyName(companyName)}-${++i}`;
+  const hashed = await bcrypt.hash(password, 10);
+
+  const { company } = await prisma.$transaction(async (tx) => {
+    const company = await tx.company.create({ data: { name: companyName, slug, vatNumber, scopes: [] } });
+    await tx.user.create({
+      data: { name: managerName, email, password: hashed, role: "MANAGER", companyId: company.id },
+    });
+    return { company };
+  });
+
+  await logAction("CREA_IMPRESA", `Impresa: ${companyName} · Manager: ${managerName} (${email})`);
+  revalidatePath("/superadmin");
+  return { success: true, companyId: company.id, companyName };
+}
+
+export async function createCompanyFirstManager(prevState: any, formData: FormData) {
+  const companyId = formData.get("companyId") as string;
+  const name = (formData.get("name") as string)?.trim();
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
+  const password = formData.get("password") as string;
+  if (!companyId || !name || !email || !password || password.length < 8) {
+    return { error: "Tutti i campi obbligatori (password min 8 caratteri)." };
+  }
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) return { error: "Email già in uso." };
+  const hashed = await bcrypt.hash(password, 10);
+  const company = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } });
+  await prisma.user.create({
+    data: { name, email, password: hashed, role: "MANAGER", companyId },
+  });
+  await logAction("CREA_MANAGER_IMPRESA", `${name} (${email}) · Impresa: ${company?.name ?? companyId}`);
+  revalidatePath("/superadmin");
+  revalidatePath(`/superadmin/company/${companyId}`);
+  return { success: true };
+}
+
+export async function getAllCompaniesWithMetrics() {
+  const companies = await prisma.company.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      users: { select: { id: true, role: true } },
+      engagements: { select: { id: true, status: true, scope: true } },
+    },
+  });
+  return companies.map((c) => {
+    const hasManager = c.users.some((u) => u.role === "MANAGER");
+    const activeEngagements = c.engagements.filter((e) => e.status === "ACTIVE").length;
+    const pendingEngagements = c.engagements.filter((e) => e.status === "PENDING").length;
+    const alerts: string[] = [];
+    if (!hasManager) alerts.push("Nessun manager");
+    return {
+      id: c.id, name: c.name, slug: c.slug, vatNumber: c.vatNumber, createdAt: c.createdAt,
+      scopes: c.scopes,
+      userCount: c.users.length,
+      activeEngagements, pendingEngagements,
+      hasManager, alerts,
+    };
+  });
+}
+
+export async function getCompanyDetail(companyId: string) {
+  return prisma.company.findUnique({
+    where: { id: companyId },
+    include: {
+      users: { orderBy: { createdAt: "asc" }, select: { id: true, name: true, email: true, role: true, createdAt: true, phone: true } },
+      engagements: {
+        orderBy: { invitedAt: "desc" },
+        include: {
+          organization: { select: { id: true, name: true } },
+          apartments: { select: { apartment: { select: { name: true } } } },
+        },
+      },
+    },
+  });
+}
+
+export async function getAIUsageAllCompanies() {
+  const companies = await prisma.company.findMany({
+    orderBy: { name: "asc" },
+    select: {
+      id: true, name: true,
+      aiMonthlyTokenLimit: true, aiTokensUsed: true, aiTokensResetAt: true,
+      perplexityMonthlyLimit: true, perplexityRequestsUsed: true, perplexityRequestsResetAt: true,
+    },
+  });
+  const now = new Date();
+  const isNewMonth = (d: Date | null) => {
+    if (!d) return true;
+    return now.getFullYear() !== d.getFullYear() || now.getMonth() !== d.getMonth();
+  };
+  return companies.map((c) => ({
+    id: c.id,
+    name: c.name,
+    kind: "company" as const,
+    tokens: { used: isNewMonth(c.aiTokensResetAt) ? 0 : c.aiTokensUsed, limit: c.aiMonthlyTokenLimit },
+    perplexity: { used: isNewMonth(c.perplexityRequestsResetAt) ? 0 : c.perplexityRequestsUsed, limit: c.perplexityMonthlyLimit },
+  }));
+}
+
+export async function updateCompanyAILimits(companyId: string, aiMonthlyTokenLimit: number, perplexityMonthlyLimit: number) {
+  await prisma.company.update({
+    where: { id: companyId },
+    data: { aiMonthlyTokenLimit, perplexityMonthlyLimit },
+  });
+  revalidatePath("/superadmin");
+}
+
 export async function resetUserPassword(prevState: any, formData: FormData) {
   const userId = formData.get("userId") as string;
   const newPassword = formData.get("newPassword") as string;
@@ -300,6 +429,7 @@ export async function getAIUsageAllOrgs() {
   return orgs.map(org => ({
     id: org.id,
     name: org.name,
+    kind: "org" as const,
     tokens: {
       used: isNewMonth(org.aiTokensResetAt) ? 0 : org.aiTokensUsed,
       limit: org.aiMonthlyTokenLimit,

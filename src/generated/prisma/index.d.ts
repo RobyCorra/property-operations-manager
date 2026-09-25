@@ -16831,8 +16831,24 @@ export namespace Prisma {
 
   export type AggregateCompany = {
     _count: CompanyCountAggregateOutputType | null
+    _avg: CompanyAvgAggregateOutputType | null
+    _sum: CompanySumAggregateOutputType | null
     _min: CompanyMinAggregateOutputType | null
     _max: CompanyMaxAggregateOutputType | null
+  }
+
+  export type CompanyAvgAggregateOutputType = {
+    aiMonthlyTokenLimit: number | null
+    aiTokensUsed: number | null
+    perplexityMonthlyLimit: number | null
+    perplexityRequestsUsed: number | null
+  }
+
+  export type CompanySumAggregateOutputType = {
+    aiMonthlyTokenLimit: number | null
+    aiTokensUsed: number | null
+    perplexityMonthlyLimit: number | null
+    perplexityRequestsUsed: number | null
   }
 
   export type CompanyMinAggregateOutputType = {
@@ -16841,6 +16857,12 @@ export namespace Prisma {
     slug: string | null
     legalName: string | null
     vatNumber: string | null
+    aiMonthlyTokenLimit: number | null
+    aiTokensUsed: number | null
+    aiTokensResetAt: Date | null
+    perplexityMonthlyLimit: number | null
+    perplexityRequestsUsed: number | null
+    perplexityRequestsResetAt: Date | null
     createdAt: Date | null
   }
 
@@ -16850,6 +16872,12 @@ export namespace Prisma {
     slug: string | null
     legalName: string | null
     vatNumber: string | null
+    aiMonthlyTokenLimit: number | null
+    aiTokensUsed: number | null
+    aiTokensResetAt: Date | null
+    perplexityMonthlyLimit: number | null
+    perplexityRequestsUsed: number | null
+    perplexityRequestsResetAt: Date | null
     createdAt: Date | null
   }
 
@@ -16860,10 +16888,30 @@ export namespace Prisma {
     legalName: number
     vatNumber: number
     scopes: number
+    aiMonthlyTokenLimit: number
+    aiTokensUsed: number
+    aiTokensResetAt: number
+    perplexityMonthlyLimit: number
+    perplexityRequestsUsed: number
+    perplexityRequestsResetAt: number
     createdAt: number
     _all: number
   }
 
+
+  export type CompanyAvgAggregateInputType = {
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+  }
+
+  export type CompanySumAggregateInputType = {
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+  }
 
   export type CompanyMinAggregateInputType = {
     id?: true
@@ -16871,6 +16919,12 @@ export namespace Prisma {
     slug?: true
     legalName?: true
     vatNumber?: true
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    aiTokensResetAt?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+    perplexityRequestsResetAt?: true
     createdAt?: true
   }
 
@@ -16880,6 +16934,12 @@ export namespace Prisma {
     slug?: true
     legalName?: true
     vatNumber?: true
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    aiTokensResetAt?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+    perplexityRequestsResetAt?: true
     createdAt?: true
   }
 
@@ -16890,6 +16950,12 @@ export namespace Prisma {
     legalName?: true
     vatNumber?: true
     scopes?: true
+    aiMonthlyTokenLimit?: true
+    aiTokensUsed?: true
+    aiTokensResetAt?: true
+    perplexityMonthlyLimit?: true
+    perplexityRequestsUsed?: true
+    perplexityRequestsResetAt?: true
     createdAt?: true
     _all?: true
   }
@@ -16932,6 +16998,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: CompanyAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CompanySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: CompanyMinAggregateInputType
@@ -16962,6 +17040,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: CompanyCountAggregateInputType | true
+    _avg?: CompanyAvgAggregateInputType
+    _sum?: CompanySumAggregateInputType
     _min?: CompanyMinAggregateInputType
     _max?: CompanyMaxAggregateInputType
   }
@@ -16973,8 +17053,16 @@ export namespace Prisma {
     legalName: string | null
     vatNumber: string | null
     scopes: string[]
+    aiMonthlyTokenLimit: number
+    aiTokensUsed: number
+    aiTokensResetAt: Date | null
+    perplexityMonthlyLimit: number
+    perplexityRequestsUsed: number
+    perplexityRequestsResetAt: Date | null
     createdAt: Date
     _count: CompanyCountAggregateOutputType | null
+    _avg: CompanyAvgAggregateOutputType | null
+    _sum: CompanySumAggregateOutputType | null
     _min: CompanyMinAggregateOutputType | null
     _max: CompanyMaxAggregateOutputType | null
   }
@@ -17000,6 +17088,12 @@ export namespace Prisma {
     legalName?: boolean
     vatNumber?: boolean
     scopes?: boolean
+    aiMonthlyTokenLimit?: boolean
+    aiTokensUsed?: boolean
+    aiTokensResetAt?: boolean
+    perplexityMonthlyLimit?: boolean
+    perplexityRequestsUsed?: boolean
+    perplexityRequestsResetAt?: boolean
     createdAt?: boolean
     users?: boolean | Company$usersArgs<ExtArgs>
     engagements?: boolean | Company$engagementsArgs<ExtArgs>
@@ -17015,6 +17109,12 @@ export namespace Prisma {
     legalName?: boolean
     vatNumber?: boolean
     scopes?: boolean
+    aiMonthlyTokenLimit?: boolean
+    aiTokensUsed?: boolean
+    aiTokensResetAt?: boolean
+    perplexityMonthlyLimit?: boolean
+    perplexityRequestsUsed?: boolean
+    perplexityRequestsResetAt?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["company"]>
 
@@ -17025,6 +17125,12 @@ export namespace Prisma {
     legalName?: boolean
     vatNumber?: boolean
     scopes?: boolean
+    aiMonthlyTokenLimit?: boolean
+    aiTokensUsed?: boolean
+    aiTokensResetAt?: boolean
+    perplexityMonthlyLimit?: boolean
+    perplexityRequestsUsed?: boolean
+    perplexityRequestsResetAt?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["company"]>
 
@@ -17035,10 +17141,16 @@ export namespace Prisma {
     legalName?: boolean
     vatNumber?: boolean
     scopes?: boolean
+    aiMonthlyTokenLimit?: boolean
+    aiTokensUsed?: boolean
+    aiTokensResetAt?: boolean
+    perplexityMonthlyLimit?: boolean
+    perplexityRequestsUsed?: boolean
+    perplexityRequestsResetAt?: boolean
     createdAt?: boolean
   }
 
-  export type CompanyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "legalName" | "vatNumber" | "scopes" | "createdAt", ExtArgs["result"]["company"]>
+  export type CompanyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "legalName" | "vatNumber" | "scopes" | "aiMonthlyTokenLimit" | "aiTokensUsed" | "aiTokensResetAt" | "perplexityMonthlyLimit" | "perplexityRequestsUsed" | "perplexityRequestsResetAt" | "createdAt", ExtArgs["result"]["company"]>
   export type CompanyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Company$usersArgs<ExtArgs>
     engagements?: boolean | Company$engagementsArgs<ExtArgs>
@@ -17064,6 +17176,12 @@ export namespace Prisma {
       legalName: string | null
       vatNumber: string | null
       scopes: string[]
+      aiMonthlyTokenLimit: number
+      aiTokensUsed: number
+      aiTokensResetAt: Date | null
+      perplexityMonthlyLimit: number
+      perplexityRequestsUsed: number
+      perplexityRequestsResetAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["company"]>
     composites: {}
@@ -17498,6 +17616,12 @@ export namespace Prisma {
     readonly legalName: FieldRef<"Company", 'String'>
     readonly vatNumber: FieldRef<"Company", 'String'>
     readonly scopes: FieldRef<"Company", 'String[]'>
+    readonly aiMonthlyTokenLimit: FieldRef<"Company", 'Int'>
+    readonly aiTokensUsed: FieldRef<"Company", 'Int'>
+    readonly aiTokensResetAt: FieldRef<"Company", 'DateTime'>
+    readonly perplexityMonthlyLimit: FieldRef<"Company", 'Int'>
+    readonly perplexityRequestsUsed: FieldRef<"Company", 'Int'>
+    readonly perplexityRequestsResetAt: FieldRef<"Company", 'DateTime'>
     readonly createdAt: FieldRef<"Company", 'DateTime'>
   }
     
@@ -54843,6 +54967,12 @@ export namespace Prisma {
     legalName: 'legalName',
     vatNumber: 'vatNumber',
     scopes: 'scopes',
+    aiMonthlyTokenLimit: 'aiMonthlyTokenLimit',
+    aiTokensUsed: 'aiTokensUsed',
+    aiTokensResetAt: 'aiTokensResetAt',
+    perplexityMonthlyLimit: 'perplexityMonthlyLimit',
+    perplexityRequestsUsed: 'perplexityRequestsUsed',
+    perplexityRequestsResetAt: 'perplexityRequestsResetAt',
     createdAt: 'createdAt'
   };
 
@@ -56440,6 +56570,12 @@ export namespace Prisma {
     legalName?: StringNullableFilter<"Company"> | string | null
     vatNumber?: StringNullableFilter<"Company"> | string | null
     scopes?: StringNullableListFilter<"Company">
+    aiMonthlyTokenLimit?: IntFilter<"Company"> | number
+    aiTokensUsed?: IntFilter<"Company"> | number
+    aiTokensResetAt?: DateTimeNullableFilter<"Company"> | Date | string | null
+    perplexityMonthlyLimit?: IntFilter<"Company"> | number
+    perplexityRequestsUsed?: IntFilter<"Company"> | number
+    perplexityRequestsResetAt?: DateTimeNullableFilter<"Company"> | Date | string | null
     createdAt?: DateTimeFilter<"Company"> | Date | string
     users?: UserListRelationFilter
     engagements?: EngagementListRelationFilter
@@ -56454,6 +56590,12 @@ export namespace Prisma {
     legalName?: SortOrderInput | SortOrder
     vatNumber?: SortOrderInput | SortOrder
     scopes?: SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrderInput | SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     users?: UserOrderByRelationAggregateInput
     engagements?: EngagementOrderByRelationAggregateInput
@@ -56471,6 +56613,12 @@ export namespace Prisma {
     legalName?: StringNullableFilter<"Company"> | string | null
     vatNumber?: StringNullableFilter<"Company"> | string | null
     scopes?: StringNullableListFilter<"Company">
+    aiMonthlyTokenLimit?: IntFilter<"Company"> | number
+    aiTokensUsed?: IntFilter<"Company"> | number
+    aiTokensResetAt?: DateTimeNullableFilter<"Company"> | Date | string | null
+    perplexityMonthlyLimit?: IntFilter<"Company"> | number
+    perplexityRequestsUsed?: IntFilter<"Company"> | number
+    perplexityRequestsResetAt?: DateTimeNullableFilter<"Company"> | Date | string | null
     createdAt?: DateTimeFilter<"Company"> | Date | string
     users?: UserListRelationFilter
     engagements?: EngagementListRelationFilter
@@ -56485,10 +56633,18 @@ export namespace Prisma {
     legalName?: SortOrderInput | SortOrder
     vatNumber?: SortOrderInput | SortOrder
     scopes?: SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrderInput | SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: CompanyCountOrderByAggregateInput
+    _avg?: CompanyAvgOrderByAggregateInput
     _max?: CompanyMaxOrderByAggregateInput
     _min?: CompanyMinOrderByAggregateInput
+    _sum?: CompanySumOrderByAggregateInput
   }
 
   export type CompanyScalarWhereWithAggregatesInput = {
@@ -56501,6 +56657,12 @@ export namespace Prisma {
     legalName?: StringNullableWithAggregatesFilter<"Company"> | string | null
     vatNumber?: StringNullableWithAggregatesFilter<"Company"> | string | null
     scopes?: StringNullableListFilter<"Company">
+    aiMonthlyTokenLimit?: IntWithAggregatesFilter<"Company"> | number
+    aiTokensUsed?: IntWithAggregatesFilter<"Company"> | number
+    aiTokensResetAt?: DateTimeNullableWithAggregatesFilter<"Company"> | Date | string | null
+    perplexityMonthlyLimit?: IntWithAggregatesFilter<"Company"> | number
+    perplexityRequestsUsed?: IntWithAggregatesFilter<"Company"> | number
+    perplexityRequestsResetAt?: DateTimeNullableWithAggregatesFilter<"Company"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Company"> | Date | string
   }
 
@@ -60190,6 +60352,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutCompanyInput
     engagements?: EngagementCreateNestedManyWithoutCompanyInput
@@ -60204,6 +60372,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutCompanyInput
@@ -60218,6 +60392,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUpdateManyWithoutCompanyNestedInput
@@ -60232,6 +60412,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutCompanyNestedInput
@@ -60246,6 +60432,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -60256,6 +60448,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -60266,6 +60464,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -64064,7 +64268,20 @@ export namespace Prisma {
     legalName?: SortOrder
     vatNumber?: SortOrder
     scopes?: SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type CompanyAvgOrderByAggregateInput = {
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
   }
 
   export type CompanyMaxOrderByAggregateInput = {
@@ -64073,6 +64290,12 @@ export namespace Prisma {
     slug?: SortOrder
     legalName?: SortOrder
     vatNumber?: SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -64082,7 +64305,20 @@ export namespace Prisma {
     slug?: SortOrder
     legalName?: SortOrder
     vatNumber?: SortOrder
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    aiTokensResetAt?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
+    perplexityRequestsResetAt?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type CompanySumOrderByAggregateInput = {
+    aiMonthlyTokenLimit?: SortOrder
+    aiTokensUsed?: SortOrder
+    perplexityMonthlyLimit?: SortOrder
+    perplexityRequestsUsed?: SortOrder
   }
 
   export type EngagementApartmentListRelationFilter = {
@@ -70786,6 +71022,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     engagements?: EngagementCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductCreateNestedManyWithoutCompanyInput
@@ -70799,6 +71041,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     engagements?: EngagementUncheckedCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductUncheckedCreateNestedManyWithoutCompanyInput
@@ -71256,6 +71504,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     engagements?: EngagementUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUpdateManyWithoutCompanyNestedInput
@@ -71269,6 +71523,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     engagements?: EngagementUncheckedUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUncheckedUpdateManyWithoutCompanyNestedInput
@@ -71753,6 +72013,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutCompanyInput
     engagements?: EngagementCreateNestedManyWithoutCompanyInput
@@ -71766,6 +72032,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutCompanyInput
@@ -71876,6 +72148,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUpdateManyWithoutCompanyNestedInput
@@ -71889,6 +72167,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutCompanyNestedInput
@@ -72548,6 +72832,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductCreateNestedManyWithoutCompanyInput
@@ -72561,6 +72851,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     warehouseProducts?: WarehouseProductUncheckedCreateNestedManyWithoutCompanyInput
@@ -72689,6 +72985,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUpdateManyWithoutCompanyNestedInput
@@ -72702,6 +73004,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     warehouseProducts?: WarehouseProductUncheckedUpdateManyWithoutCompanyNestedInput
@@ -80482,6 +80790,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutCompanyInput
     engagements?: EngagementCreateNestedManyWithoutCompanyInput
@@ -80495,6 +80809,12 @@ export namespace Prisma {
     legalName?: string | null
     vatNumber?: string | null
     scopes?: CompanyCreatescopesInput | string[]
+    aiMonthlyTokenLimit?: number
+    aiTokensUsed?: number
+    aiTokensResetAt?: Date | string | null
+    perplexityMonthlyLimit?: number
+    perplexityRequestsUsed?: number
+    perplexityRequestsResetAt?: Date | string | null
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutCompanyInput
     engagements?: EngagementUncheckedCreateNestedManyWithoutCompanyInput
@@ -80554,6 +80874,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUpdateManyWithoutCompanyNestedInput
@@ -80567,6 +80893,12 @@ export namespace Prisma {
     legalName?: NullableStringFieldUpdateOperationsInput | string | null
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     scopes?: CompanyUpdatescopesInput | string[]
+    aiMonthlyTokenLimit?: IntFieldUpdateOperationsInput | number
+    aiTokensUsed?: IntFieldUpdateOperationsInput | number
+    aiTokensResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    perplexityMonthlyLimit?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsUsed?: IntFieldUpdateOperationsInput | number
+    perplexityRequestsResetAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutCompanyNestedInput
     engagements?: EngagementUncheckedUpdateManyWithoutCompanyNestedInput

@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getDbStats, getBlobStats, getSuperAdminLogs, getAIUsageAllOrgs } from "@/src/app/actions/superadmin";
+import { isSuperAdminAuthenticated, getAllOrgsWithMetrics, getAllCompaniesWithMetrics, getDbStats, getBlobStats, getSuperAdminLogs, getAIUsageAllOrgs, getAIUsageAllCompanies } from "@/src/app/actions/superadmin";
 import CreateOrgForm from "@/src/components/superadmin/create-org-form";
+import CreateCompanyForm from "@/src/components/superadmin/create-company-form";
 import AIUsageTable from "@/src/components/superadmin/ai-usage-table";
 import SuperAdminLoginForm from "@/src/components/superadmin/login-form";
 
@@ -33,19 +34,24 @@ export default async function SuperAdminPage() {
   const auth = await isSuperAdminAuthenticated();
   if (!auth) return <SuperAdminLoginForm />;
 
-  const [orgsResult, dbStatsResult, blobStats, logs, aiUsage] = await Promise.allSettled([getAllOrgsWithMetrics(), getDbStats(), getBlobStats(), getSuperAdminLogs(100), getAIUsageAllOrgs()]);
+  const [orgsResult, companiesResult, dbStatsResult, blobStats, logs, aiUsage, aiUsageCompanies] = await Promise.allSettled([getAllOrgsWithMetrics(), getAllCompaniesWithMetrics(), getDbStats(), getBlobStats(), getSuperAdminLogs(100), getAIUsageAllOrgs(), getAIUsageAllCompanies()]);
 
   const orgsError = orgsResult.status === "rejected" ? String((orgsResult as PromiseRejectedResult).reason) : null;
   if (orgsError) console.error("[SuperAdmin] getAllOrgsWithMetrics error:", orgsError);
+  if (companiesResult.status === "rejected") { console.error("[SuperAdmin] getAllCompaniesWithMetrics error:", (companiesResult as any).reason); }
   if (dbStatsResult.status === "rejected") { console.error("[SuperAdmin] getDbStats error:", dbStatsResult.reason); }
   if (logs.status === "rejected") { console.error("[SuperAdmin] getSuperAdminLogs error:", (logs as any).reason); }
   if (aiUsage.status === "rejected") { console.error("[SuperAdmin] getAIUsageAllOrgs error:", (aiUsage as any).reason); }
 
   const orgs = orgsResult.status === "fulfilled" ? orgsResult.value : [];
+  const companies = companiesResult.status === "fulfilled" ? companiesResult.value : [];
   const dbStats = dbStatsResult.status === "fulfilled" ? dbStatsResult.value : { totalSize: "—", totalBytes: 0, usedPercent: 0, limitBytes: 10737418240, tables: [] };
   const blobStatsData = blobStats.status === "fulfilled" ? blobStats.value : null;
   const logsData = logs.status === "fulfilled" ? (logs as any).value : [];
-  const aiUsageData = aiUsage.status === "fulfilled" ? (aiUsage as any).value : [];
+  const aiUsageData = [
+    ...(aiUsage.status === "fulfilled" ? (aiUsage as any).value : []),
+    ...(aiUsageCompanies.status === "fulfilled" ? (aiUsageCompanies as any).value : []),
+  ];
 
   const now = new Date();
   const monthlyGrowth = Array.from({ length: 6 }, (_, i) => {
@@ -107,6 +113,7 @@ export default async function SuperAdminPage() {
         </div>
         <div className="flex items-center gap-3">
           <CreateOrgForm />
+          <CreateCompanyForm />
           <form action="/api/superadmin/logout" method="POST">
             <button className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
               Esci
@@ -254,11 +261,11 @@ export default async function SuperAdminPage() {
         </div>
       </div>
 
-      {/* Tabella org */}
+      {/* Tabella org + imprese */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Organizzazioni</h2>
-          <span className="text-xs text-slate-500">{orgs.length} totali</span>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Organizzazioni e Imprese</h2>
+          <span className="text-xs text-slate-500">{orgs.length} org · {companies.length} imprese</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -310,11 +317,64 @@ export default async function SuperAdminPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Tabella imprese */}
+        <div className="px-6 py-3 border-y border-slate-800 bg-slate-950/40">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-emerald-400/80">Imprese</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-800">
+                {["Impresa", "P.IVA", "Utenti", "Deleghe attive", "In attesa", "Creata", "Alert", "Azioni"].map(h => (
+                  <th key={h} className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-slate-500">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {companies.length === 0 ? (
+                <tr><td colSpan={8} className="px-4 py-6 text-center text-xs text-slate-500">Nessuna impresa. Creane una con &quot;+ Nuova Impresa&quot;.</td></tr>
+              ) : companies.map(c => (
+                <tr key={c.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                  <td className="px-4 py-3">
+                    <Link href={`/superadmin/company/${c.id}`} className="font-bold text-white hover:text-emerald-400 transition-colors">{c.name}</Link>
+                    <p className="text-[10px] text-slate-500">{c.slug}</p>
+                  </td>
+                  <td className="px-4 py-3 text-slate-400 text-xs">{c.vatNumber ?? "—"}</td>
+                  <td className="px-4 py-3 text-slate-300">{c.userCount}</td>
+                  <td className="px-4 py-3 text-slate-300">{c.activeEngagements}</td>
+                  <td className="px-4 py-3 text-slate-300">{c.pendingEngagements}</td>
+                  <td className="px-4 py-3 text-slate-500 text-xs">{formatDate(c.createdAt)}</td>
+                  <td className="px-4 py-3">
+                    {c.alerts.length > 0
+                      ? c.alerts.map(a => <p key={a} className="text-[10px] font-medium text-red-400">⚠ {a}</p>)
+                      : <span className="text-[10px] text-emerald-400 font-medium">✓ Ok</span>}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Link href={`/superadmin/company/${c.id}`} className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-[10px] font-bold transition-all">
+                        Dettaglio
+                      </Link>
+                      {c.hasManager && (
+                        <form action="/api/superadmin/impersonate" method="POST">
+                          <input type="hidden" name="companyId" value={c.id} />
+                          <button className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold transition-all">
+                            Impersona
+                          </button>
+                        </form>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       {/* AI Usage */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">🤖 Consumo AI per organizzazione</h2>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">🤖 Consumo AI per organizzazione e impresa</h2>
           <span className="text-xs text-slate-500">reset il 1° del mese</span>
         </div>
         <div className="p-4">
@@ -351,8 +411,11 @@ export default async function SuperAdminPage() {
                     LOGIN_SUPERVISOR: "text-emerald-300",
                     LOGIN_OWNER: "text-emerald-300",
                     IMPERSONA: "text-violet-400",
+                    IMPERSONA_IMPRESA: "text-emerald-400",
                     CREA_ORG: "text-sky-400",
+                    CREA_IMPRESA: "text-emerald-400",
                     CREA_MANAGER: "text-sky-400",
+                    CREA_MANAGER_IMPRESA: "text-emerald-300",
                     RESET_PASSWORD: "text-amber-400",
                     ELIMINA_DATI_TEST: "text-red-400",
                   };

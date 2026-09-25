@@ -273,6 +273,12 @@ exports.Prisma.CompanyScalarFieldEnum = {
   legalName: 'legalName',
   vatNumber: 'vatNumber',
   scopes: 'scopes',
+  aiMonthlyTokenLimit: 'aiMonthlyTokenLimit',
+  aiTokensUsed: 'aiTokensUsed',
+  aiTokensResetAt: 'aiTokensResetAt',
+  perplexityMonthlyLimit: 'perplexityMonthlyLimit',
+  perplexityRequestsUsed: 'perplexityRequestsUsed',
+  perplexityRequestsResetAt: 'perplexityRequestsResetAt',
   createdAt: 'createdAt'
 };
 
