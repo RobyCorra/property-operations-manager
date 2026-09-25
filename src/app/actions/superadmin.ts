@@ -280,6 +280,62 @@ export async function deleteTestData(formData: FormData) {
   redirect(`/superadmin/${orgId}`);
 }
 
+export async function deleteOrganization(formData: FormData) {
+  const orgId = formData.get("orgId") as string;
+  if (!orgId) return;
+  const org = await prisma.organization.findUnique({ where: { id: orgId }, select: { name: true } });
+  if (!org) return;
+  const apartments = await prisma.apartment.findMany({ where: { organizationId: orgId }, select: { id: true } });
+  const aptIds = apartments.map(a => a.id);
+
+  await prisma.$transaction([
+    // Task sugli appartamenti (FK Restrict verso Apartment): eliminarli prima.
+    // I loro figli (messaggi, allegati, review) cascano.
+    prisma.maintenanceTicket.deleteMany({ where: { apartmentId: { in: aptIds } } }),
+    prisma.cleaningTask.deleteMany({ where: { apartmentId: { in: aptIds } } }),
+    prisma.checkinTask.deleteMany({ where: { apartmentId: { in: aptIds } } }),
+    prisma.booking.deleteMany({ where: { apartmentId: { in: aptIds } } }),
+    // Appartamenti (i figli con FK Cascade cascano).
+    prisma.apartment.deleteMany({ where: { organizationId: orgId } }),
+    // Modelli org-scoped senza FK relazionale (pulizia orfani).
+    prisma.client.deleteMany({ where: { organizationId: orgId } }),
+    prisma.warehouseProduct.deleteMany({ where: { organizationId: orgId } }),
+    // Org: cascano users, engagements, messaggi, properties, chat sessions.
+    prisma.organization.delete({ where: { id: orgId } }),
+  ]);
+
+  await logAction("ELIMINA_ORG", `Org: ${org.name} (${apartments.length} appartamenti)`, undefined, org.name);
+  revalidatePath("/superadmin");
+  redirect("/superadmin");
+}
+
+export async function deleteCompanyPlatform(formData: FormData) {
+  const companyId = formData.get("companyId") as string;
+  if (!companyId) return;
+  const company = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } });
+  if (!company) return;
+  const userIds = (await prisma.user.findMany({ where: { companyId }, select: { id: true } })).map(u => u.id);
+
+  await prisma.$transaction([
+    // Sganciamento task assegnati allo staff dell'impresa (FK Restrict).
+    prisma.cleaningTask.updateMany({ where: { assignedToId: { in: userIds } }, data: { assignedToId: null } }),
+    prisma.maintenanceTicket.updateMany({ where: { assignedToId: { in: userIds } }, data: { assignedToId: null } }),
+    prisma.checkinTask.updateMany({ where: { assignedToId: { in: userIds } }, data: { assignedToId: null } }),
+    // Review autorate dallo staff impresa su task di altre org (FK Restrict): rimuoverle.
+    prisma.supervisorReview.deleteMany({ where: { supervisorId: { in: userIds } } }),
+    // Chat DM impresa (nessuna FK relazionale): pulizia orfani.
+    prisma.companyChatMessage.deleteMany({ where: { companyId } }),
+    // Utenti dell'impresa (i loro token/posizioni cascano).
+    prisma.user.deleteMany({ where: { companyId } }),
+    // Impresa: cascano engagements (+ engagementApartment), orgMessages, warehouseProducts.
+    prisma.company.delete({ where: { id: companyId } }),
+  ]);
+
+  await logAction("ELIMINA_IMPRESA", `Impresa: ${company.name}`);
+  revalidatePath("/superadmin");
+  redirect("/superadmin");
+}
+
 export async function getDbStats() {
   const [sizeResult, tablesResult] = await Promise.all([
     prisma.$queryRaw<{ size: string; bytes: bigint }[]>`

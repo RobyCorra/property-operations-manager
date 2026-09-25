@@ -418,6 +418,8 @@ export default async function SuperAdminPage() {
                     CREA_MANAGER_IMPRESA: "text-emerald-300",
                     RESET_PASSWORD: "text-amber-400",
                     ELIMINA_DATI_TEST: "text-red-400",
+                    ELIMINA_ORG: "text-red-500",
+                    ELIMINA_IMPRESA: "text-red-500",
                   };
                   const color = actionColor[log.action] ?? "text-slate-300";
                   const dt = new Date(log.createdAt);

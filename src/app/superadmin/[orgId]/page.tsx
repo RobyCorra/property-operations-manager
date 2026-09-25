@@ -3,6 +3,7 @@ import Link from "next/link";
 import { isSuperAdminAuthenticated, getOrgDetail, deleteTestData } from "@/src/app/actions/superadmin";
 import ResetPasswordForm from "@/src/components/superadmin/reset-password-form";
 import CreateManagerForm from "@/src/components/superadmin/create-manager-form";
+import DeleteEntityButton from "@/src/components/superadmin/delete-entity-button";
 import SuperAdminLoginForm from "@/src/components/superadmin/login-form";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -209,6 +210,11 @@ export default async function OrgDetailPage({ params }: { params: Promise<{ orgI
               🗑 Cancella dati di test
             </button>
           </form>
+        </div>
+        <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4">
+          <h3 className="text-sm font-bold text-red-300 mb-1">Elimina organizzazione</h3>
+          <p className="text-xs text-slate-500 mb-3">Elimina l&apos;organizzazione e <strong>tutti</strong> i suoi dati in modo permanente.</p>
+          <DeleteEntityButton kind="org" id={orgId} name={org.name} />
         </div>
       </div>
     </main>
