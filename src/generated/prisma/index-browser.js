@@ -282,6 +282,7 @@ exports.Prisma.EngagementScalarFieldEnum = {
   companyId: 'companyId',
   scope: 'scope',
   status: 'status',
+  inviteToken: 'inviteToken',
   invitedAt: 'invitedAt',
   acceptedAt: 'acceptedAt',
   revokedAt: 'revokedAt'

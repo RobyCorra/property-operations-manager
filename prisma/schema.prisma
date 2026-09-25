@@ -241,14 +241,15 @@ model Company {
 model Engagement {
   id             String                @id @default(uuid())
   organizationId String
-  companyId      String
+  companyId      String?
   scope          String                // CLEANING | MAINTENANCE | CHECKIN | SUPERVISION
   status         String                @default("PENDING") // PENDING | ACTIVE | REVOKED
+  inviteToken    String?               @unique
   invitedAt      DateTime              @default(now())
   acceptedAt     DateTime?
   revokedAt      DateTime?
   organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  company        Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company        Company?              @relation(fields: [companyId], references: [id], onDelete: Cascade)
   apartments     EngagementApartment[]
 
   @@unique([organizationId, companyId, scope])

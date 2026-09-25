@@ -18022,6 +18022,7 @@ export namespace Prisma {
     companyId: string | null
     scope: string | null
     status: string | null
+    inviteToken: string | null
     invitedAt: Date | null
     acceptedAt: Date | null
     revokedAt: Date | null
@@ -18033,6 +18034,7 @@ export namespace Prisma {
     companyId: string | null
     scope: string | null
     status: string | null
+    inviteToken: string | null
     invitedAt: Date | null
     acceptedAt: Date | null
     revokedAt: Date | null
@@ -18044,6 +18046,7 @@ export namespace Prisma {
     companyId: number
     scope: number
     status: number
+    inviteToken: number
     invitedAt: number
     acceptedAt: number
     revokedAt: number
@@ -18057,6 +18060,7 @@ export namespace Prisma {
     companyId?: true
     scope?: true
     status?: true
+    inviteToken?: true
     invitedAt?: true
     acceptedAt?: true
     revokedAt?: true
@@ -18068,6 +18072,7 @@ export namespace Prisma {
     companyId?: true
     scope?: true
     status?: true
+    inviteToken?: true
     invitedAt?: true
     acceptedAt?: true
     revokedAt?: true
@@ -18079,6 +18084,7 @@ export namespace Prisma {
     companyId?: true
     scope?: true
     status?: true
+    inviteToken?: true
     invitedAt?: true
     acceptedAt?: true
     revokedAt?: true
@@ -18160,9 +18166,10 @@ export namespace Prisma {
   export type EngagementGroupByOutputType = {
     id: string
     organizationId: string
-    companyId: string
+    companyId: string | null
     scope: string
     status: string
+    inviteToken: string | null
     invitedAt: Date
     acceptedAt: Date | null
     revokedAt: Date | null
@@ -18191,11 +18198,12 @@ export namespace Prisma {
     companyId?: boolean
     scope?: boolean
     status?: boolean
+    inviteToken?: boolean
     invitedAt?: boolean
     acceptedAt?: boolean
     revokedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    company?: boolean | Engagement$companyArgs<ExtArgs>
     apartments?: boolean | Engagement$apartmentsArgs<ExtArgs>
     _count?: boolean | EngagementCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["engagement"]>
@@ -18206,11 +18214,12 @@ export namespace Prisma {
     companyId?: boolean
     scope?: boolean
     status?: boolean
+    inviteToken?: boolean
     invitedAt?: boolean
     acceptedAt?: boolean
     revokedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    company?: boolean | Engagement$companyArgs<ExtArgs>
   }, ExtArgs["result"]["engagement"]>
 
   export type EngagementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -18219,11 +18228,12 @@ export namespace Prisma {
     companyId?: boolean
     scope?: boolean
     status?: boolean
+    inviteToken?: boolean
     invitedAt?: boolean
     acceptedAt?: boolean
     revokedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    company?: boolean | Engagement$companyArgs<ExtArgs>
   }, ExtArgs["result"]["engagement"]>
 
   export type EngagementSelectScalar = {
@@ -18232,40 +18242,42 @@ export namespace Prisma {
     companyId?: boolean
     scope?: boolean
     status?: boolean
+    inviteToken?: boolean
     invitedAt?: boolean
     acceptedAt?: boolean
     revokedAt?: boolean
   }
 
-  export type EngagementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "companyId" | "scope" | "status" | "invitedAt" | "acceptedAt" | "revokedAt", ExtArgs["result"]["engagement"]>
+  export type EngagementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "companyId" | "scope" | "status" | "inviteToken" | "invitedAt" | "acceptedAt" | "revokedAt", ExtArgs["result"]["engagement"]>
   export type EngagementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    company?: boolean | Engagement$companyArgs<ExtArgs>
     apartments?: boolean | Engagement$apartmentsArgs<ExtArgs>
     _count?: boolean | EngagementCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EngagementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    company?: boolean | Engagement$companyArgs<ExtArgs>
   }
   export type EngagementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    company?: boolean | CompanyDefaultArgs<ExtArgs>
+    company?: boolean | Engagement$companyArgs<ExtArgs>
   }
 
   export type $EngagementPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Engagement"
     objects: {
       organization: Prisma.$OrganizationPayload<ExtArgs>
-      company: Prisma.$CompanyPayload<ExtArgs>
+      company: Prisma.$CompanyPayload<ExtArgs> | null
       apartments: Prisma.$EngagementApartmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       organizationId: string
-      companyId: string
+      companyId: string | null
       scope: string
       status: string
+      inviteToken: string | null
       invitedAt: Date
       acceptedAt: Date | null
       revokedAt: Date | null
@@ -18664,7 +18676,7 @@ export namespace Prisma {
   export interface Prisma__EngagementClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    company<T extends Engagement$companyArgs<ExtArgs> = {}>(args?: Subset<T, Engagement$companyArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     apartments<T extends Engagement$apartmentsArgs<ExtArgs> = {}>(args?: Subset<T, Engagement$apartmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EngagementApartmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -18700,6 +18712,7 @@ export namespace Prisma {
     readonly companyId: FieldRef<"Engagement", 'String'>
     readonly scope: FieldRef<"Engagement", 'String'>
     readonly status: FieldRef<"Engagement", 'String'>
+    readonly inviteToken: FieldRef<"Engagement", 'String'>
     readonly invitedAt: FieldRef<"Engagement", 'DateTime'>
     readonly acceptedAt: FieldRef<"Engagement", 'DateTime'>
     readonly revokedAt: FieldRef<"Engagement", 'DateTime'>
@@ -19101,6 +19114,25 @@ export namespace Prisma {
      * Limit how many Engagements to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Engagement.company
+   */
+  export type Engagement$companyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Company
+     */
+    select?: CompanySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Company
+     */
+    omit?: CompanyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CompanyInclude<ExtArgs> | null
+    where?: CompanyWhereInput
   }
 
   /**
@@ -54823,6 +54855,7 @@ export namespace Prisma {
     companyId: 'companyId',
     scope: 'scope',
     status: 'status',
+    inviteToken: 'inviteToken',
     invitedAt: 'invitedAt',
     acceptedAt: 'acceptedAt',
     revokedAt: 'revokedAt'
@@ -56477,23 +56510,25 @@ export namespace Prisma {
     NOT?: EngagementWhereInput | EngagementWhereInput[]
     id?: StringFilter<"Engagement"> | string
     organizationId?: StringFilter<"Engagement"> | string
-    companyId?: StringFilter<"Engagement"> | string
+    companyId?: StringNullableFilter<"Engagement"> | string | null
     scope?: StringFilter<"Engagement"> | string
     status?: StringFilter<"Engagement"> | string
+    inviteToken?: StringNullableFilter<"Engagement"> | string | null
     invitedAt?: DateTimeFilter<"Engagement"> | Date | string
     acceptedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
     revokedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
-    company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+    company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     apartments?: EngagementApartmentListRelationFilter
   }
 
   export type EngagementOrderByWithRelationInput = {
     id?: SortOrder
     organizationId?: SortOrder
-    companyId?: SortOrder
+    companyId?: SortOrderInput | SortOrder
     scope?: SortOrder
     status?: SortOrder
+    inviteToken?: SortOrderInput | SortOrder
     invitedAt?: SortOrder
     acceptedAt?: SortOrderInput | SortOrder
     revokedAt?: SortOrderInput | SortOrder
@@ -56504,28 +56539,30 @@ export namespace Prisma {
 
   export type EngagementWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    inviteToken?: string
     organizationId_companyId_scope?: EngagementOrganizationIdCompanyIdScopeCompoundUniqueInput
     AND?: EngagementWhereInput | EngagementWhereInput[]
     OR?: EngagementWhereInput[]
     NOT?: EngagementWhereInput | EngagementWhereInput[]
     organizationId?: StringFilter<"Engagement"> | string
-    companyId?: StringFilter<"Engagement"> | string
+    companyId?: StringNullableFilter<"Engagement"> | string | null
     scope?: StringFilter<"Engagement"> | string
     status?: StringFilter<"Engagement"> | string
     invitedAt?: DateTimeFilter<"Engagement"> | Date | string
     acceptedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
     revokedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
-    company?: XOR<CompanyScalarRelationFilter, CompanyWhereInput>
+    company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     apartments?: EngagementApartmentListRelationFilter
-  }, "id" | "organizationId_companyId_scope">
+  }, "id" | "inviteToken" | "organizationId_companyId_scope">
 
   export type EngagementOrderByWithAggregationInput = {
     id?: SortOrder
     organizationId?: SortOrder
-    companyId?: SortOrder
+    companyId?: SortOrderInput | SortOrder
     scope?: SortOrder
     status?: SortOrder
+    inviteToken?: SortOrderInput | SortOrder
     invitedAt?: SortOrder
     acceptedAt?: SortOrderInput | SortOrder
     revokedAt?: SortOrderInput | SortOrder
@@ -56540,9 +56577,10 @@ export namespace Prisma {
     NOT?: EngagementScalarWhereWithAggregatesInput | EngagementScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Engagement"> | string
     organizationId?: StringWithAggregatesFilter<"Engagement"> | string
-    companyId?: StringWithAggregatesFilter<"Engagement"> | string
+    companyId?: StringNullableWithAggregatesFilter<"Engagement"> | string | null
     scope?: StringWithAggregatesFilter<"Engagement"> | string
     status?: StringWithAggregatesFilter<"Engagement"> | string
+    inviteToken?: StringNullableWithAggregatesFilter<"Engagement"> | string | null
     invitedAt?: DateTimeWithAggregatesFilter<"Engagement"> | Date | string
     acceptedAt?: DateTimeNullableWithAggregatesFilter<"Engagement"> | Date | string | null
     revokedAt?: DateTimeNullableWithAggregatesFilter<"Engagement"> | Date | string | null
@@ -60235,20 +60273,22 @@ export namespace Prisma {
     id?: string
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
     organization: OrganizationCreateNestedOneWithoutEngagementsInput
-    company: CompanyCreateNestedOneWithoutEngagementsInput
+    company?: CompanyCreateNestedOneWithoutEngagementsInput
     apartments?: EngagementApartmentCreateNestedManyWithoutEngagementInput
   }
 
   export type EngagementUncheckedCreateInput = {
     id?: string
     organizationId: string
-    companyId: string
+    companyId?: string | null
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
@@ -60259,20 +60299,22 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneRequiredWithoutEngagementsNestedInput
-    company?: CompanyUpdateOneRequiredWithoutEngagementsNestedInput
+    company?: CompanyUpdateOneWithoutEngagementsNestedInput
     apartments?: EngagementApartmentUpdateManyWithoutEngagementNestedInput
   }
 
   export type EngagementUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
-    companyId?: StringFieldUpdateOperationsInput | string
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60282,9 +60324,10 @@ export namespace Prisma {
   export type EngagementCreateManyInput = {
     id?: string
     organizationId: string
-    companyId: string
+    companyId?: string | null
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
@@ -60294,6 +60337,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60302,9 +60346,10 @@ export namespace Prisma {
   export type EngagementUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
-    companyId?: StringFieldUpdateOperationsInput | string
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -64062,6 +64107,7 @@ export namespace Prisma {
     companyId?: SortOrder
     scope?: SortOrder
     status?: SortOrder
+    inviteToken?: SortOrder
     invitedAt?: SortOrder
     acceptedAt?: SortOrder
     revokedAt?: SortOrder
@@ -64073,6 +64119,7 @@ export namespace Prisma {
     companyId?: SortOrder
     scope?: SortOrder
     status?: SortOrder
+    inviteToken?: SortOrder
     invitedAt?: SortOrder
     acceptedAt?: SortOrder
     revokedAt?: SortOrder
@@ -64084,6 +64131,7 @@ export namespace Prisma {
     companyId?: SortOrder
     scope?: SortOrder
     status?: SortOrder
+    inviteToken?: SortOrder
     invitedAt?: SortOrder
     acceptedAt?: SortOrder
     revokedAt?: SortOrder
@@ -66990,10 +67038,12 @@ export namespace Prisma {
     update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutEngagementsInput, OrganizationUpdateWithoutEngagementsInput>, OrganizationUncheckedUpdateWithoutEngagementsInput>
   }
 
-  export type CompanyUpdateOneRequiredWithoutEngagementsNestedInput = {
+  export type CompanyUpdateOneWithoutEngagementsNestedInput = {
     create?: XOR<CompanyCreateWithoutEngagementsInput, CompanyUncheckedCreateWithoutEngagementsInput>
     connectOrCreate?: CompanyCreateOrConnectWithoutEngagementsInput
     upsert?: CompanyUpsertWithoutEngagementsInput
+    disconnect?: CompanyWhereInput | boolean
+    delete?: CompanyWhereInput | boolean
     connect?: CompanyWhereUniqueInput
     update?: XOR<XOR<CompanyUpdateToOneWithWhereWithoutEngagementsInput, CompanyUpdateWithoutEngagementsInput>, CompanyUncheckedUpdateWithoutEngagementsInput>
   }
@@ -69602,18 +69652,20 @@ export namespace Prisma {
     id?: string
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
-    company: CompanyCreateNestedOneWithoutEngagementsInput
+    company?: CompanyCreateNestedOneWithoutEngagementsInput
     apartments?: EngagementApartmentCreateNestedManyWithoutEngagementInput
   }
 
   export type EngagementUncheckedCreateWithoutOrganizationInput = {
     id?: string
-    companyId: string
+    companyId?: string | null
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
@@ -69870,9 +69922,10 @@ export namespace Prisma {
     NOT?: EngagementScalarWhereInput | EngagementScalarWhereInput[]
     id?: StringFilter<"Engagement"> | string
     organizationId?: StringFilter<"Engagement"> | string
-    companyId?: StringFilter<"Engagement"> | string
+    companyId?: StringNullableFilter<"Engagement"> | string | null
     scope?: StringFilter<"Engagement"> | string
     status?: StringFilter<"Engagement"> | string
+    inviteToken?: StringNullableFilter<"Engagement"> | string | null
     invitedAt?: DateTimeFilter<"Engagement"> | Date | string
     acceptedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
     revokedAt?: DateTimeNullableFilter<"Engagement"> | Date | string | null
@@ -72214,6 +72267,7 @@ export namespace Prisma {
     id?: string
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
@@ -72226,6 +72280,7 @@ export namespace Prisma {
     organizationId: string
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
@@ -72681,19 +72736,21 @@ export namespace Prisma {
     id?: string
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
     organization: OrganizationCreateNestedOneWithoutEngagementsInput
-    company: CompanyCreateNestedOneWithoutEngagementsInput
+    company?: CompanyCreateNestedOneWithoutEngagementsInput
   }
 
   export type EngagementUncheckedCreateWithoutApartmentsInput = {
     id?: string
     organizationId: string
-    companyId: string
+    companyId?: string | null
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
@@ -72802,19 +72859,21 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     organization?: OrganizationUpdateOneRequiredWithoutEngagementsNestedInput
-    company?: CompanyUpdateOneRequiredWithoutEngagementsNestedInput
+    company?: CompanyUpdateOneWithoutEngagementsNestedInput
   }
 
   export type EngagementUncheckedUpdateWithoutApartmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
-    companyId?: StringFieldUpdateOperationsInput | string
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80696,9 +80755,10 @@ export namespace Prisma {
 
   export type EngagementCreateManyOrganizationInput = {
     id?: string
-    companyId: string
+    companyId?: string | null
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
@@ -80978,18 +81038,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    company?: CompanyUpdateOneRequiredWithoutEngagementsNestedInput
+    company?: CompanyUpdateOneWithoutEngagementsNestedInput
     apartments?: EngagementApartmentUpdateManyWithoutEngagementNestedInput
   }
 
   export type EngagementUncheckedUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    companyId?: StringFieldUpdateOperationsInput | string
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80998,9 +81060,10 @@ export namespace Prisma {
 
   export type EngagementUncheckedUpdateManyWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    companyId?: StringFieldUpdateOperationsInput | string
+    companyId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -81975,6 +82038,7 @@ export namespace Prisma {
     organizationId: string
     scope: string
     status?: string
+    inviteToken?: string | null
     invitedAt?: Date | string
     acceptedAt?: Date | string | null
     revokedAt?: Date | string | null
@@ -82097,6 +82161,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -82109,6 +82174,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -82120,6 +82186,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     scope?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    inviteToken?: NullableStringFieldUpdateOperationsInput | string | null
     invitedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

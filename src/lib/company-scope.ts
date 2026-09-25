@@ -8,9 +8,10 @@ export type CompanyManager = { id: string; name: string; email: string };
 
 export type EngagementHandler = {
   engagementId: string;
-  companyId: string;
+  companyId: string | null;
   companyName: string;
   status: string;
+  inviteToken?: string | null;
   apartmentIds: string[]; // vuoto = tutti gli appartamenti dell'org
 };
 

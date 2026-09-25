@@ -58,6 +58,7 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
         company: { select: { id: true, name: true } },
         apartments: { select: { apartmentId: true } },
       },
+      orderBy: { invitedAt: "desc" },
     }),
     prisma.company.findMany({
       orderBy: { name: "asc" },
@@ -87,8 +88,9 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
     handlers[e.scope].push({
       engagementId: e.id,
       companyId: e.companyId,
-      companyName: e.company.name,
+      companyName: e.company?.name ?? "In attesa di accettazione",
       status: e.status,
+      inviteToken: e.inviteToken,
       apartmentIds: e.apartments.map((a) => a.apartmentId),
     });
   }
@@ -129,13 +131,37 @@ export async function createCompany(
 // Delega una funzione a un'impresa con opzionale selezione appartamenti.
 // apartmentIds vuoto = tutti gli appartamenti dell'org.
 export async function delegateFunction(
-  companyId: string,
+  companyId: string | null,
   scope: string,
   apartmentIds?: string[],
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<{ success: true; inviteToken?: string } | { success: false; error: string }> {
   try {
     const orgId = await requireOwner();
     if (!COMPANY_SCOPES.includes(scope as CompanyScope)) return { success: false, error: "Funzione non valida." };
+
+    // Flusso invito: nessuna companyId → crea engagement PENDING con token
+    if (!companyId) {
+      const inviteToken = randomUUID();
+      const engagement = await prisma.engagement.create({
+        data: {
+          id: randomUUID(),
+          organizationId: orgId,
+          companyId: null,
+          scope,
+          status: "PENDING",
+          inviteToken,
+        },
+      });
+      if (apartmentIds && apartmentIds.length > 0) {
+        await prisma.engagementApartment.createMany({
+          data: apartmentIds.map((aid) => ({ engagementId: engagement.id, apartmentId: aid })),
+        });
+      }
+      revalidatePath("/dashboard/manager/imprese");
+      return { success: true, inviteToken };
+    }
+
+    // Flusso diretto: companyId presente → ACTIVE subito (retrocompatibilità)
     await prisma.$transaction(async (tx) => {
       const engagement = await tx.engagement.upsert({
         where: { organizationId_companyId_scope: { organizationId: orgId, companyId, scope } },
@@ -149,20 +175,75 @@ export async function delegateFunction(
           acceptedAt: new Date(),
         },
       });
-      // Aggiorna appartamenti assegnati
       await tx.engagementApartment.deleteMany({ where: { engagementId: engagement.id } });
       if (apartmentIds && apartmentIds.length > 0) {
         await tx.engagementApartment.createMany({
           data: apartmentIds.map((aid) => ({ engagementId: engagement.id, apartmentId: aid })),
         });
       }
-      // aggiorna l'elenco funzioni offerte dall'impresa (comodità UI)
       const company = await tx.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
       if (company && !company.scopes.includes(scope)) {
         await tx.company.update({ where: { id: companyId }, data: { scopes: { set: [...company.scopes, scope] } } });
       }
     });
     revalidatePath("/dashboard/manager/imprese");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// ── Invito: dettagli pubblici + accettazione ────────────────────────────────
+
+export async function getInviteDetails(token: string) {
+  const eng = await prisma.engagement.findUnique({
+    where: { inviteToken: token },
+    select: {
+      id: true, scope: true, status: true,
+      organization: { select: { name: true } },
+      apartments: { select: { apartment: { select: { name: true } } } },
+    },
+  });
+  if (!eng) return null;
+  return {
+    id: eng.id,
+    scope: eng.scope,
+    status: eng.status,
+    organizationName: eng.organization.name,
+    apartments: eng.apartments.map((a) => a.apartment.name),
+  };
+}
+
+export async function acceptInvite(token: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const ck = await cookies();
+    const role = ck.get("role")?.value;
+    const companyId = ck.get("companyId")?.value;
+    if (role !== "MANAGER" || !companyId) return { success: false, error: "Devi accedere come manager di un'impresa." };
+
+    const eng = await prisma.engagement.findUnique({ where: { inviteToken: token } });
+    if (!eng) return { success: false, error: "Invito non trovato." };
+    if (eng.status !== "PENDING") return { success: false, error: "Questo invito è già stato utilizzato." };
+
+    // Verifica che non esista già un engagement attivo con stessa org+company+scope
+    const existing = await prisma.engagement.findFirst({
+      where: { organizationId: eng.organizationId, companyId, scope: eng.scope, status: "ACTIVE" },
+    });
+    if (existing) return { success: false, error: "Hai già una delega attiva per questa funzione con questa organizzazione." };
+
+    await prisma.$transaction(async (tx) => {
+      await tx.engagement.update({
+        where: { id: eng.id },
+        data: { companyId, status: "ACTIVE", acceptedAt: new Date(), inviteToken: null },
+      });
+      const company = await tx.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
+      if (company && !company.scopes.includes(eng.scope)) {
+        await tx.company.update({ where: { id: companyId }, data: { scopes: { set: [...company.scopes, eng.scope] } } });
+      }
+    });
+
+    revalidatePath("/dashboard/manager/imprese");
+    revalidatePath("/dashboard/impresa");
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
@@ -370,11 +451,12 @@ export async function getOrgCompanyThreads(): Promise<OrgCompanyThreadSummary[]>
   const orgId = await getCurrentOrg();
   if (!orgId) return [];
   const engagements = await prisma.engagement.findMany({
-    where: { organizationId: orgId, status: "ACTIVE" },
+    where: { organizationId: orgId, status: "ACTIVE", companyId: { not: null } },
     select: { companyId: true, scope: true, company: { select: { name: true } } },
   });
   const companyMap = new Map<string, { name: string; scopes: string[] }>();
   for (const e of engagements) {
+    if (!e.companyId || !e.company) continue;
     const cur = companyMap.get(e.companyId);
     if (cur) { cur.scopes.push(e.scope); } else { companyMap.set(e.companyId, { name: e.company.name, scopes: [e.scope] }); }
   }
@@ -402,7 +484,7 @@ export async function getOrgCompanyThread(companyId: string): Promise<{ name: st
     where: { organizationId: orgId, companyId, status: "ACTIVE" },
     select: { company: { select: { name: true } } },
   });
-  if (!eng) return null;
+  if (!eng || !eng.company) return null;
   await prisma.orgCompanyMessage.updateMany({
     where: { organizationId: orgId, companyId, senderIsOrg: false, readByOrgAt: null },
     data: { readByOrgAt: new Date() },

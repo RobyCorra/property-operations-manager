@@ -23,8 +23,11 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
 
   // State for new delegation (adding a new engagement to a scope)
   const [addingScope, setAddingScope] = useState<string | null>(null);
+  const [addMode, setAddMode] = useState<"direct" | "invite">("invite");
   const [addCompanyId, setAddCompanyId] = useState("");
   const [addAptIds, setAddAptIds] = useState<Set<string>>(new Set());
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   // State for editing an existing engagement's apartments
   const [editingEngId, setEditingEngId] = useState<string | null>(null);
@@ -55,21 +58,39 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
   // ── New delegation ──
   function startAdd(scope: string) {
     setAddingScope(scope);
-    setAddCompanyId(companies[0]?.id ?? "");
+    setAddMode("invite");
+    setAddCompanyId("");
     setAddAptIds(new Set());
     setEditingEngId(null);
+    setInviteLink(null);
+    setCopied(false);
     setError(null);
   }
 
   function confirmAdd() {
-    if (!addingScope || !addCompanyId) return;
+    if (!addingScope) return;
+    if (addMode === "direct" && !addCompanyId) return;
     setError(null);
     const aptArray = [...addAptIds];
+    const cId = addMode === "invite" ? null : addCompanyId;
     startTransition(async () => {
-      const r = await delegateFunction(addCompanyId, addingScope!, aptArray.length > 0 ? aptArray : undefined);
+      const r = await delegateFunction(cId, addingScope!, aptArray.length > 0 ? aptArray : undefined);
       if (!r.success) setError(r.error);
-      else { setAddingScope(null); refresh(); }
+      else if (r.inviteToken) {
+        const link = `${window.location.origin}/invito/${r.inviteToken}`;
+        setInviteLink(link);
+      } else {
+        setAddingScope(null);
+        refresh();
+      }
     });
+  }
+
+  function copyInviteLink() {
+    if (!inviteLink) return;
+    navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   // ── Edit existing engagement apartments ──
@@ -193,17 +214,24 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
             <div key={s.key} className="space-y-2">
               {/* Existing engagements for this scope */}
               {scopeHandlers.map((h) => {
+                const isPendingInvite = h.status === "PENDING";
                 const isEditing = editingEngId === h.engagementId;
                 const taken = takenApts(s.key, h.engagementId);
                 return (
-                  <div key={h.engagementId} className={`rounded-xl border ${isEditing ? "border-violet-400 bg-violet-50/30" : "border-gray-100 bg-gray-50/70"} px-3 py-2.5`}>
+                  <div key={h.engagementId} className={`rounded-xl border ${isEditing ? "border-violet-400 bg-violet-50/30" : isPendingInvite ? "border-amber-200 bg-amber-50/30" : "border-gray-100 bg-gray-50/70"} px-3 py-2.5`}>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="flex items-center gap-2 text-sm font-medium text-slate-800 min-w-[110px] shrink-0">
                         <span>{s.emoji}</span> {s.label}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 shrink-0">
-                        {h.companyName}
-                      </span>
+                      {isPendingInvite ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 shrink-0">
+                          ⏳ In attesa
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 shrink-0">
+                          {h.companyName}
+                        </span>
+                      )}
                       <div className="flex flex-wrap gap-1 flex-1 min-w-0">
                         {h.apartmentIds.length === 0 ? (
                           <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">Tutti gli appartamenti</span>
@@ -217,7 +245,24 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                         )}
                       </div>
                       <div className="ml-auto flex items-center gap-1.5 shrink-0">
-                        {isEditing ? (
+                        {isPendingInvite ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (h.inviteToken) {
+                                  navigator.clipboard.writeText(`${window.location.origin}/invito/${h.inviteToken}`);
+                                  setCopied(true);
+                                  setTimeout(() => setCopied(false), 2000);
+                                }
+                              }}
+                              className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700"
+                            >
+                              {copied ? "Copiato!" : "Copia link"}
+                            </button>
+                            <button type="button" onClick={() => onRevoke(h.engagementId)} disabled={isPending} className="rounded-full border border-red-200 px-3 py-1 text-xs font-medium text-red-500 disabled:opacity-40">Annulla</button>
+                          </>
+                        ) : isEditing ? (
                           <>
                             <button type="button" onClick={() => setEditingEngId(null)} disabled={isPending} className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-gray-600 disabled:opacity-40">Annulla</button>
                             <button type="button" onClick={confirmEdit} disabled={isPending} className="rounded-full bg-violet-600 px-3 py-1 text-xs font-semibold text-white disabled:opacity-40">Salva</button>
@@ -278,35 +323,94 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
               {/* New delegation panel */}
               {isAdding && (
                 <div className="rounded-xl border-2 border-violet-400 bg-violet-50/30 px-3 py-3">
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="flex items-center gap-2 text-sm font-medium text-slate-800">
-                      <span>{s.emoji}</span> {s.label}
-                    </span>
-                    <select
-                      value={addCompanyId}
-                      onChange={(e) => setAddCompanyId(e.target.value)}
-                      className="rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-800 focus:outline-none"
-                    >
-                      <option value="">Scegli impresa…</option>
-                      {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
-                  </div>
+                  {inviteLink ? (
+                    <div className="space-y-3">
+                      <p className="text-sm font-semibold text-slate-800">Invito creato!</p>
+                      <p className="text-xs text-slate-500">Condividi questo link con l&apos;impresa che vuoi invitare:</p>
+                      <div className="flex items-center gap-2">
+                        <input
+                          readOnly
+                          value={inviteLink}
+                          className="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs text-gray-800 select-all"
+                          onClick={(e) => (e.target as HTMLInputElement).select()}
+                        />
+                        <button type="button" onClick={copyInviteLink} className="shrink-0 rounded-full bg-violet-600 px-4 py-2 text-xs font-semibold text-white">
+                          {copied ? "Copiato!" : "Copia"}
+                        </button>
+                      </div>
+                      <button type="button" onClick={() => { setAddingScope(null); setInviteLink(null); refresh(); }} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">
+                        Chiudi
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <span className="flex items-center gap-2 text-sm font-medium text-slate-800">
+                          <span>{s.emoji}</span> {s.label}
+                        </span>
+                        <div className="flex rounded-full border border-gray-200 bg-white p-0.5 text-xs">
+                          <button
+                            type="button"
+                            onClick={() => setAddMode("invite")}
+                            className={`rounded-full px-3 py-1 font-medium transition-colors ${addMode === "invite" ? "bg-violet-600 text-white" : "text-gray-500"}`}
+                          >
+                            Invito via link
+                          </button>
+                          {companies.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => { setAddMode("direct"); setAddCompanyId(companies[0]?.id ?? ""); }}
+                              className={`rounded-full px-3 py-1 font-medium transition-colors ${addMode === "direct" ? "bg-violet-600 text-white" : "text-gray-500"}`}
+                            >
+                              Impresa esistente
+                            </button>
+                          )}
+                        </div>
+                      </div>
 
-                  <AptCheckboxPanel
-                    scope={s.key}
-                    selectedIds={addAptIds}
-                    onToggle={(id) => setAddAptIds((prev) => {
-                      const next = new Set(prev);
-                      next.has(id) ? next.delete(id) : next.add(id);
-                      return next;
-                    })}
-                    taken={takenApts(s.key)}
-                  />
+                      {addMode === "direct" && (
+                        <div className="mb-2">
+                          <select
+                            value={addCompanyId}
+                            onChange={(e) => setAddCompanyId(e.target.value)}
+                            className="rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-800 focus:outline-none"
+                          >
+                            <option value="">Scegli impresa…</option>
+                            {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                          </select>
+                        </div>
+                      )}
 
-                  <div className="flex gap-2 justify-end pt-2 border-t border-violet-200">
-                    <button type="button" onClick={() => setAddingScope(null)} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">Annulla</button>
-                    <button type="button" onClick={confirmAdd} disabled={isPending || !addCompanyId} className="rounded-full bg-violet-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40">Conferma delega</button>
-                  </div>
+                      {addMode === "invite" && (
+                        <p className="text-xs text-slate-500 mb-2">
+                          Verrà generato un link da condividere. L&apos;impresa potrà accettare accedendo con il proprio account.
+                        </p>
+                      )}
+
+                      <AptCheckboxPanel
+                        scope={s.key}
+                        selectedIds={addAptIds}
+                        onToggle={(id) => setAddAptIds((prev) => {
+                          const next = new Set(prev);
+                          next.has(id) ? next.delete(id) : next.add(id);
+                          return next;
+                        })}
+                        taken={takenApts(s.key)}
+                      />
+
+                      <div className="flex gap-2 justify-end pt-2 border-t border-violet-200">
+                        <button type="button" onClick={() => setAddingScope(null)} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">Annulla</button>
+                        <button
+                          type="button"
+                          onClick={confirmAdd}
+                          disabled={isPending || (addMode === "direct" && !addCompanyId)}
+                          className="rounded-full bg-violet-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
+                        >
+                          {addMode === "invite" ? "Genera invito" : "Conferma delega"}
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
