@@ -128,66 +128,43 @@ export async function createCompany(
   }
 }
 
-// Delega una funzione a un'impresa con opzionale selezione appartamenti.
-// apartmentIds vuoto = tutti gli appartamenti dell'org.
+// Delega una funzione a un'impresa. Crea sempre PENDING + inviteToken:
+// l'impresa deve accettare aprendo il link.
 export async function delegateFunction(
   companyId: string | null,
   scope: string,
   apartmentIds?: string[],
-): Promise<{ success: true; inviteToken?: string } | { success: false; error: string }> {
+): Promise<{ success: true; inviteToken: string } | { success: false; error: string }> {
   try {
     const orgId = await requireOwner();
     if (!COMPANY_SCOPES.includes(scope as CompanyScope)) return { success: false, error: "Funzione non valida." };
 
-    // Flusso invito: nessuna companyId → crea engagement PENDING con token
-    if (!companyId) {
-      const inviteToken = randomUUID();
-      const engagement = await prisma.engagement.create({
-        data: {
-          id: randomUUID(),
-          organizationId: orgId,
-          companyId: null,
-          scope,
-          status: "PENDING",
-          inviteToken,
-        },
+    // Se companyId presente, verifica che non esista già un engagement attivo/pending
+    if (companyId) {
+      const existing = await prisma.engagement.findFirst({
+        where: { organizationId: orgId, companyId, scope, status: { in: ["ACTIVE", "PENDING"] } },
       });
-      if (apartmentIds && apartmentIds.length > 0) {
-        await prisma.engagementApartment.createMany({
-          data: apartmentIds.map((aid) => ({ engagementId: engagement.id, apartmentId: aid })),
-        });
-      }
-      revalidatePath("/dashboard/manager/imprese");
-      return { success: true, inviteToken };
+      if (existing) return { success: false, error: "Esiste già una delega per questa funzione con questa impresa." };
     }
 
-    // Flusso diretto: companyId presente → ACTIVE subito (retrocompatibilità)
-    await prisma.$transaction(async (tx) => {
-      const engagement = await tx.engagement.upsert({
-        where: { organizationId_companyId_scope: { organizationId: orgId, companyId, scope } },
-        update: { status: "ACTIVE", acceptedAt: new Date(), revokedAt: null },
-        create: {
-          id: randomUUID(),
-          organizationId: orgId,
-          companyId,
-          scope,
-          status: "ACTIVE",
-          acceptedAt: new Date(),
-        },
-      });
-      await tx.engagementApartment.deleteMany({ where: { engagementId: engagement.id } });
-      if (apartmentIds && apartmentIds.length > 0) {
-        await tx.engagementApartment.createMany({
-          data: apartmentIds.map((aid) => ({ engagementId: engagement.id, apartmentId: aid })),
-        });
-      }
-      const company = await tx.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
-      if (company && !company.scopes.includes(scope)) {
-        await tx.company.update({ where: { id: companyId }, data: { scopes: { set: [...company.scopes, scope] } } });
-      }
+    const inviteToken = randomUUID();
+    const engagement = await prisma.engagement.create({
+      data: {
+        id: randomUUID(),
+        organizationId: orgId,
+        companyId,
+        scope,
+        status: "PENDING",
+        inviteToken,
+      },
     });
+    if (apartmentIds && apartmentIds.length > 0) {
+      await prisma.engagementApartment.createMany({
+        data: apartmentIds.map((aid) => ({ engagementId: engagement.id, apartmentId: aid })),
+      });
+    }
     revalidatePath("/dashboard/manager/imprese");
-    return { success: true };
+    return { success: true, inviteToken };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
   }
@@ -225,9 +202,14 @@ export async function acceptInvite(token: string): Promise<{ success: boolean; e
     if (!eng) return { success: false, error: "Invito non trovato." };
     if (eng.status !== "PENDING") return { success: false, error: "Questo invito è già stato utilizzato." };
 
+    // Se l'engagement ha già un companyId, verifica che corrisponda
+    if (eng.companyId && eng.companyId !== companyId) {
+      return { success: false, error: "Questo invito è destinato a un'altra impresa." };
+    }
+
     // Verifica che non esista già un engagement attivo con stessa org+company+scope
     const existing = await prisma.engagement.findFirst({
-      where: { organizationId: eng.organizationId, companyId, scope: eng.scope, status: "ACTIVE" },
+      where: { organizationId: eng.organizationId, companyId, scope: eng.scope, status: "ACTIVE", id: { not: eng.id } },
     });
     if (existing) return { success: false, error: "Hai già una delega attiva per questa funzione con questa organizzazione." };
 

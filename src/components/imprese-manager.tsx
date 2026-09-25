@@ -23,7 +23,6 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
 
   // State for new delegation (adding a new engagement to a scope)
   const [addingScope, setAddingScope] = useState<string | null>(null);
-  const [addMode, setAddMode] = useState<"direct" | "invite">("invite");
   const [addCompanyId, setAddCompanyId] = useState("");
   const [addAptIds, setAddAptIds] = useState<Set<string>>(new Set());
   const [inviteLink, setInviteLink] = useState<string | null>(null);
@@ -58,8 +57,7 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
   // ── New delegation ──
   function startAdd(scope: string) {
     setAddingScope(scope);
-    setAddMode("invite");
-    setAddCompanyId("");
+    setAddCompanyId(companies[0]?.id ?? "");
     setAddAptIds(new Set());
     setEditingEngId(null);
     setInviteLink(null);
@@ -68,19 +66,15 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
   }
 
   function confirmAdd() {
-    if (!addingScope) return;
-    if (addMode === "direct" && !addCompanyId) return;
+    if (!addingScope || !addCompanyId) return;
     setError(null);
     const aptArray = [...addAptIds];
-    const cId = addMode === "invite" ? null : addCompanyId;
     startTransition(async () => {
-      const r = await delegateFunction(cId, addingScope!, aptArray.length > 0 ? aptArray : undefined);
+      const r = await delegateFunction(addCompanyId, addingScope!, aptArray.length > 0 ? aptArray : undefined);
       if (!r.success) setError(r.error);
-      else if (r.inviteToken) {
+      else {
         const link = `${window.location.origin}/invito/${r.inviteToken}`;
         setInviteLink(link);
-      } else {
-        setAddingScope(null);
         refresh();
       }
     });
@@ -224,9 +218,17 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                         <span>{s.emoji}</span> {s.label}
                       </span>
                       {isPendingInvite ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 shrink-0">
-                          ⏳ In attesa
-                        </span>
+                        <>
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 shrink-0">
+                            ⏳ In attesa
+                          </span>
+                          {h.companyId && (
+                            <span className="text-[10px] text-slate-400 truncate">{(() => {
+                              const c = companies.find((co) => co.id === h.companyId);
+                              return c ? `${c.name}${c.managers[0] ? ` · ${c.managers[0].email}` : ""}` : "";
+                            })()}</span>
+                          )}
+                        </>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 shrink-0">
                           {h.companyName}
@@ -326,7 +328,7 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                   {inviteLink ? (
                     <div className="space-y-3">
                       <p className="text-sm font-semibold text-slate-800">Invito creato!</p>
-                      <p className="text-xs text-slate-500">Condividi questo link con l&apos;impresa che vuoi invitare:</p>
+                      <p className="text-xs text-slate-500">Invia questo link insieme alle credenziali del manager dell&apos;impresa:</p>
                       <div className="flex items-center gap-2">
                         <input
                           readOnly
@@ -338,7 +340,8 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                           {copied ? "Copiato!" : "Copia"}
                         </button>
                       </div>
-                      <button type="button" onClick={() => { setAddingScope(null); setInviteLink(null); refresh(); }} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">
+                      <p className="text-[10px] text-slate-400">Il manager dell&apos;impresa dovrà effettuare il login e aprire questo link per accettare la delega.</p>
+                      <button type="button" onClick={() => { setAddingScope(null); setInviteLink(null); }} className="rounded-full border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-600">
                         Chiudi
                       </button>
                     </div>
@@ -348,44 +351,14 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                         <span className="flex items-center gap-2 text-sm font-medium text-slate-800">
                           <span>{s.emoji}</span> {s.label}
                         </span>
-                        <div className="flex rounded-full border border-gray-200 bg-white p-0.5 text-xs">
-                          <button
-                            type="button"
-                            onClick={() => setAddMode("invite")}
-                            className={`rounded-full px-3 py-1 font-medium transition-colors ${addMode === "invite" ? "bg-violet-600 text-white" : "text-gray-500"}`}
-                          >
-                            Invito via link
-                          </button>
-                          {companies.length > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => { setAddMode("direct"); setAddCompanyId(companies[0]?.id ?? ""); }}
-                              className={`rounded-full px-3 py-1 font-medium transition-colors ${addMode === "direct" ? "bg-violet-600 text-white" : "text-gray-500"}`}
-                            >
-                              Impresa esistente
-                            </button>
-                          )}
-                        </div>
+                        <select
+                          value={addCompanyId}
+                          onChange={(e) => setAddCompanyId(e.target.value)}
+                          className="rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-800 focus:outline-none"
+                        >
+                          {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
                       </div>
-
-                      {addMode === "direct" && (
-                        <div className="mb-2">
-                          <select
-                            value={addCompanyId}
-                            onChange={(e) => setAddCompanyId(e.target.value)}
-                            className="rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-800 focus:outline-none"
-                          >
-                            <option value="">Scegli impresa…</option>
-                            {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                          </select>
-                        </div>
-                      )}
-
-                      {addMode === "invite" && (
-                        <p className="text-xs text-slate-500 mb-2">
-                          Verrà generato un link da condividere. L&apos;impresa potrà accettare accedendo con il proprio account.
-                        </p>
-                      )}
 
                       <AptCheckboxPanel
                         scope={s.key}
@@ -403,10 +376,10 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                         <button
                           type="button"
                           onClick={confirmAdd}
-                          disabled={isPending || (addMode === "direct" && !addCompanyId)}
+                          disabled={isPending || !addCompanyId}
                           className="rounded-full bg-violet-600 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
                         >
-                          {addMode === "invite" ? "Genera invito" : "Conferma delega"}
+                          Genera link invito
                         </button>
                       </div>
                     </>
