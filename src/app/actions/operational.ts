@@ -1081,6 +1081,37 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
       url: `/dashboard/manager/maintenance/${id}/edit`,
       tag: `maintenance-review-${id}`,
     }, undefined, apartment?.organizationId ?? null).catch(console.error);
+
+    // Se la manutenzione di questo appartamento è delegata a un'impresa,
+    // notifica anche i manager dell'impresa (org proprietaria non li copre).
+    if (apartment?.organizationId) {
+      const eng = await prisma.engagement.findFirst({
+        where: {
+          scope: "MAINTENANCE",
+          status: "ACTIVE",
+          organizationId: apartment.organizationId,
+          OR: [
+            { apartments: { none: {} } },
+            { apartments: { some: { apartmentId: ticket.apartmentId } } },
+          ],
+        },
+        select: { companyId: true },
+      });
+      if (eng?.companyId) {
+        const impresaManagers = await prisma.user.findMany({
+          where: { companyId: eng.companyId, role: "MANAGER" },
+          select: { id: true },
+        });
+        for (const m of impresaManagers) {
+          await sendPushToUser(m.id, {
+            title: "🔧 Intervento da verificare",
+            body: `${techName} ha completato "${ticket.title}" presso ${aptName}.`,
+            url: `/dashboard/impresa/manutenzione/${id}`,
+            tag: `maintenance-review-impresa-${id}`,
+          }).catch(console.error);
+        }
+      }
+    }
   }
 
   revalidatePath("/dashboard/maintenance");

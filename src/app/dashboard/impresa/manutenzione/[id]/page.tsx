@@ -34,6 +34,7 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
   const access = await getCompanyAccess();
   if (!access || !access.scopes.includes("MAINTENANCE")) redirect("/dashboard/impresa");
 
+  const userId = c.get("userId")?.value || "";
   const userName = (() => {
     try { return decodeURIComponent(c.get("userName")?.value || ""); } catch { return c.get("userName")?.value || ""; }
   })() || "Impresa";
@@ -101,7 +102,7 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
       {/* Avanzamento / approvazione */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Avanzamento intervento</p>
-        <ImpresaMaintenanceActions ticketId={ticket.id} status={ticket.status} />
+        <ImpresaMaintenanceActions ticketId={ticket.id} status={ticket.status} reviewerId={userId} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">

@@ -2,9 +2,18 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { impresaSetMaintenanceStatus, impresaApproveMaintenance } from "@/src/app/actions/company";
+import { impresaSetMaintenanceStatus } from "@/src/app/actions/company";
+import SupervisorReviewForm from "@/src/components/supervisor-review-form";
 
-export default function ImpresaMaintenanceActions({ ticketId, status }: { ticketId: string; status: string }) {
+export default function ImpresaMaintenanceActions({
+  ticketId,
+  status,
+  reviewerId,
+}: {
+  ticketId: string;
+  status: string;
+  reviewerId: string;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -16,6 +25,18 @@ export default function ImpresaMaintenanceActions({ ticketId, status }: { ticket
       if (r.success) router.refresh();
       else setError(r.error ?? "Errore.");
     });
+  }
+
+  // In attesa di verifica → pannello Approva / Rifiuta con correzioni (come pulizie).
+  if (status === "AWAITING_REVIEW") {
+    return (
+      <SupervisorReviewForm
+        entityId={ticketId}
+        supervisorId={reviewerId}
+        type="maintenance"
+        onDone={() => router.refresh()}
+      />
+    );
   }
 
   return (
@@ -32,18 +53,6 @@ export default function ImpresaMaintenanceActions({ ticketId, status }: { ticket
             className="rounded-full bg-amber-500 px-5 py-2 text-xs font-semibold text-white disabled:opacity-50">
             Invia in verifica
           </button>
-        )}
-        {status === "AWAITING_REVIEW" && (
-          <>
-            <button type="button" disabled={isPending} onClick={() => run(() => impresaApproveMaintenance(ticketId))}
-              className="rounded-full bg-emerald-500 px-5 py-2 text-xs font-semibold text-white disabled:opacity-50">
-              Approva risoluzione
-            </button>
-            <button type="button" disabled={isPending} onClick={() => run(() => impresaSetMaintenanceStatus(ticketId, "IN_PROGRESS"))}
-              className="rounded-full border border-red-200 px-5 py-2 text-xs font-semibold text-red-600 disabled:opacity-50">
-              Rifiuta e riapri
-            </button>
-          </>
         )}
         {status === "APPROVED" && (
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700">
