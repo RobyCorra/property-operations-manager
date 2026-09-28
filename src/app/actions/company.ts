@@ -1064,6 +1064,43 @@ export async function assignCleaning(
   }
 }
 
+// Assegna un ticket di manutenzione a un addetto MAINTENANCE dell'impresa.
+// Company-aware: verifica scope MAINTENANCE, cliente ingaggiato e appartamento assegnato.
+export async function assignMaintenance(
+  ticketId: string,
+  userId: string | null,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("MAINTENANCE")) return { success: false, error: "Manutenzione non delegata a questa impresa." };
+
+    const ticket = await prisma.maintenanceTicket.findUnique({
+      where: { id: ticketId },
+      select: { apartmentId: true, apartment: { select: { organizationId: true } } },
+    });
+    if (!ticket || !ticket.apartment.organizationId || !access.orgIds.includes(ticket.apartment.organizationId)) {
+      return { success: false, error: "Intervento non appartenente ai tuoi clienti." };
+    }
+    const mApts = access.scopeApartments?.MAINTENANCE;
+    if (mApts && !mApts.includes(ticket.apartmentId)) {
+      return { success: false, error: "Appartamento non assegnato alla tua impresa." };
+    }
+
+    if (userId) {
+      const staff = await prisma.user.findFirst({ where: { id: userId, companyId, role: "MAINTENANCE" }, select: { id: true } });
+      if (!staff) return { success: false, error: "Operatore non valido." };
+    }
+
+    await prisma.maintenanceTicket.update({ where: { id: ticketId }, data: { assignedToId: userId } });
+    revalidatePath("/dashboard/impresa");
+    revalidatePath("/dashboard/impresa/manutenzione");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
 // Il manager d'impresa crea una pulizia manuale su un appartamento di un
 // cliente ingaggiato (senza prenotazione). Appartamenti/prenotazioni restano
 // di competenza del proprietario.

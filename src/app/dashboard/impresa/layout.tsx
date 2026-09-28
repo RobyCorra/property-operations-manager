@@ -21,7 +21,7 @@ export default async function ImpresaLayout({ children }: { children: React.Reac
 
   return (
     <ManagerLangProvider initialLang={lang}>
-      <ImpresaShell name={name}>
+      <ImpresaShell name={name} scopes={access?.scopes ?? []}>
         <PendingInviteBanner invites={pendingInvites} />
         {children}
       </ImpresaShell>
