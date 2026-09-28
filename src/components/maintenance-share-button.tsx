@@ -76,7 +76,7 @@ export default function MaintenanceShareButton({ ticketId, existingToken }: Main
           ) : (
             <Link2 className="w-4 h-4" />
           )}
-          {token ? "Rigenera link" : "{t.mshGenerateLink}"}
+          {token ? "Rigenera link" : t.mshGenerateLink}
         </button>
         {token && (
           <button
