@@ -249,6 +249,7 @@ export default async function ImpresaDashboard() {
                 bookings={[]}
                 cleaningTasks={[]}
                 maintenanceTickets={maintTickets as never}
+                maintenanceDetailBase="/dashboard/impresa/manutenzione"
                 serverDate={serverDate}
                 readOnly
               />
@@ -312,6 +313,7 @@ export default async function ImpresaDashboard() {
               bookings={[]}
               cleaningTasks={[]}
               maintenanceTickets={maintTickets as never}
+                maintenanceDetailBase="/dashboard/impresa/manutenzione"
               serverDate={serverDate}
               readOnly
             />

@@ -1093,6 +1093,83 @@ export async function assignMaintenance(
   }
 }
 
+// Guard: il ticket appartiene a un cliente ingaggiato per la MANUTENZIONE e a un
+// appartamento assegnato. Ritorna companyId, userId del manager e il ticket.
+async function assertImpresaMaintenance(ticketId: string) {
+  const c = await cookies();
+  const companyId = c.get("companyId")?.value;
+  const userId = c.get("userId")?.value;
+  if (c.get("role")?.value !== "MANAGER" || !companyId || !userId) throw new Error("Riservato ai manager d'impresa.");
+  const access = await getCompanyAccess();
+  if (!access || !access.scopes.includes("MAINTENANCE")) throw new Error("Manutenzione non delegata a questa impresa.");
+  const ticket = await prisma.maintenanceTicket.findUnique({
+    where: { id: ticketId },
+    select: { id: true, status: true, resolvedAt: true, apartmentId: true, apartment: { select: { organizationId: true } } },
+  });
+  if (!ticket || !ticket.apartment.organizationId || !access.orgIds.includes(ticket.apartment.organizationId)) {
+    throw new Error("Intervento non appartenente ai tuoi clienti.");
+  }
+  const mApts = access.scopeApartments?.MAINTENANCE;
+  if (mApts && !mApts.includes(ticket.apartmentId)) throw new Error("Appartamento non assegnato alla tua impresa.");
+  return { companyId, userId, ticket };
+}
+
+// Transizioni di stato consentite al manager d'impresa.
+const IMPRESA_MAINT_TRANSITIONS: Record<string, string[]> = {
+  PENDING: ["IN_PROGRESS"],
+  IN_PROGRESS: ["AWAITING_REVIEW"],
+  AWAITING_REVIEW: ["IN_PROGRESS"], // "rifiuta / riapri"
+};
+
+export async function impresaSetMaintenanceStatus(
+  ticketId: string,
+  next: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const { ticket } = await assertImpresaMaintenance(ticketId);
+    const allowed = IMPRESA_MAINT_TRANSITIONS[ticket.status] ?? [];
+    if (!allowed.includes(next)) return { success: false, error: "Transizione non consentita." };
+    await prisma.maintenanceTicket.update({
+      where: { id: ticketId },
+      data: {
+        status: next,
+        ...(next === "IN_PROGRESS" && ticket.status === "PENDING" ? { startedAt: new Date() } : {}),
+      },
+    });
+    revalidatePath("/dashboard/impresa");
+    revalidatePath("/dashboard/impresa/manutenzione");
+    revalidatePath(`/dashboard/impresa/manutenzione/${ticketId}`);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// Il manager d'impresa verifica e approva la risoluzione (AWAITING_REVIEW → APPROVED).
+export async function impresaApproveMaintenance(
+  ticketId: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const { userId, ticket } = await assertImpresaMaintenance(ticketId);
+    if (ticket.status !== "AWAITING_REVIEW") return { success: false, error: "Il ticket non è in attesa di verifica." };
+    await prisma.$transaction([
+      prisma.supervisorReview.create({
+        data: { supervisorId: userId, maintenanceTicketId: ticketId, decision: "APPROVED" },
+      }),
+      prisma.maintenanceTicket.update({
+        where: { id: ticketId },
+        data: { status: "APPROVED", resolvedAt: ticket.resolvedAt ?? new Date(), correctionProgress: [] },
+      }),
+    ]);
+    revalidatePath("/dashboard/impresa");
+    revalidatePath("/dashboard/impresa/manutenzione");
+    revalidatePath(`/dashboard/impresa/manutenzione/${ticketId}`);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
 // Il manager d'impresa crea una pulizia manuale su un appartamento di un
 // cliente ingaggiato (senza prenotazione). Appartamenti/prenotazioni restano
 // di competenza del proprietario.

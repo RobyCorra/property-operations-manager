@@ -161,6 +161,8 @@ interface TimelineCalendarProps {
   readOnly?: boolean;
   /** userId del manager loggato: abilita la verifica/approvazione pulizie nel modal. */
   currentUserId?: string;
+  /** Se impostata, il modal manutenzione mostra un link "Apri intervento" a `${base}/${id}`. */
+  maintenanceDetailBase?: string;
 }
 
 type CalendarEvent = {
@@ -208,7 +210,7 @@ function diffLocalDays(start: Date, end: Date) {
   return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId }: TimelineCalendarProps) {
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId, maintenanceDetailBase }: TimelineCalendarProps) {
   const { t, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const toast = useToast();
@@ -1633,6 +1635,17 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                             </>
                         )}
                     </div>
+
+                    {maintenanceDetailBase && selectedEvent.type === 'maintenance' && (
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href={`${maintenanceDetailBase}/${selectedEvent.data.id}`}
+                            className="px-8 py-3.5 bg-violet-600 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-violet-500 transition-all duration-200 shadow-lg hover:shadow-xl"
+                        >
+                            Apri intervento →
+                        </Link>
+                    </div>
+                    )}
 
                     {!readOnly && (
                     <div className="flex items-center gap-4">

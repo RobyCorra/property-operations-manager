@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
 import BackButton from "@/src/components/back-button";
+import ImpresaMaintenanceActions from "@/src/components/impresa-maintenance-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -108,9 +109,10 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
           </div>
         )}
 
-        <p className="text-[11px] text-slate-400 border-t border-gray-100 pt-3">
-          Vista in sola lettura. Puoi assegnare l&apos;intervento al tuo staff dalla lista Manutenzione.
-        </p>
+        <div className="border-t border-gray-100 pt-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Avanzamento intervento</p>
+          <ImpresaMaintenanceActions ticketId={ticket.id} status={ticket.status} />
+        </div>
       </div>
     </main>
   );
