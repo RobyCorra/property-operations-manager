@@ -3,6 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { getT } from "@/src/lib/server-lang";
 import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
+import { getMyCompanyStaff } from "@/src/app/actions/company";
 import { createTicketMessage } from "@/src/app/actions/operational";
 import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import BackButton from "@/src/components/back-button";
@@ -10,6 +11,8 @@ import AutoRefresh from "@/src/components/auto-refresh";
 import MaintenanceShareButton from "@/src/components/maintenance-share-button";
 import TicketConversation from "@/src/components/ticket-conversation";
 import ImpresaMaintenanceActions from "@/src/components/impresa-maintenance-actions";
+import ImpresaMaintenanceAssignControl from "@/src/components/impresa-maintenance-assign-control";
+import ImpresaMaintenanceDateRequest from "@/src/components/impresa-maintenance-date-request";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +46,7 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
       assignedTo: { select: { name: true } },
       attachments: true,
       messages: { orderBy: { createdAt: "asc" }, include: { attachment: true } },
+      dateRequests: { orderBy: { createdAt: "desc" }, take: 5 },
     },
   });
   if (!ticket) notFound();
@@ -62,6 +66,14 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
 
   const tasks = Array.isArray(ticket.maintenanceTasks) ? (ticket.maintenanceTasks as any[]) : [];
   const hasWorkSummary = tasks.some((t: any) => t.completed);
+
+  const staff = await getMyCompanyStaff();
+  const mainteners = staff.filter((s) => s.role === "MAINTENANCE").map((s) => ({ id: s.id, name: s.name }));
+
+  const pendingReq = ticket.dateRequests.find((r) => r.status === "PENDING") ?? null;
+  const rejectedReq = ticket.dateRequests.find((r) => r.status === "REJECTED") ?? null;
+  const toReqView = (r: (typeof ticket.dateRequests)[number] | null) =>
+    r ? { proposedStart: r.proposedStart.toISOString(), proposedEnd: r.proposedEnd?.toISOString() ?? null, reason: r.reason } : null;
 
   return (
     <main className="max-w-7xl mx-auto space-y-6">
@@ -122,13 +134,26 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
             <div className="grid grid-cols-2 gap-3 pt-1 text-sm">
               <div>
                 <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Assegnato a</p>
-                <p className="mt-1 font-semibold text-gray-800">{ticket.assignedTo?.name ?? "Non assegnato"}</p>
+                <div className="mt-1">
+                  <ImpresaMaintenanceAssignControl ticketId={ticket.id} staff={mainteners} assignedToId={ticket.assignedToId} />
+                </div>
               </div>
               <div>
                 <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Indirizzo</p>
                 <p className="mt-1 font-semibold text-gray-800">{ticket.apartment.address ?? "—"}</p>
               </div>
             </div>
+          </div>
+
+          {/* Data intervento: proposta di spostamento (richiede assenso org) */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Data intervento</p>
+            <ImpresaMaintenanceDateRequest
+              ticketId={ticket.id}
+              currentStart={ticket.scheduledStart?.toISOString() ?? null}
+              pending={toReqView(pendingReq)}
+              lastRejected={pendingReq ? null : toReqView(rejectedReq)}
+            />
           </div>
 
           {/* Riepilogo lavori eseguiti dal manutentore */}

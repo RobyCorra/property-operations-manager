@@ -449,13 +449,13 @@ model CheckinTaskMessage {
 }
 
 model MaintenanceTicket {
-  id                              String               @id @default(uuid())
+  id                              String                   @id @default(uuid())
   apartmentId                     String
   title                           String
   description                     String
   status                          String
   priority                        String
-  createdAt                       DateTime             @default(now())
+  createdAt                       DateTime                 @default(now())
   assignedToId                    String?
   scheduledStart                  DateTime?
   scheduledEnd                    DateTime?
@@ -463,14 +463,36 @@ model MaintenanceTicket {
   resolvedAt                      DateTime?
   correctionProgress              Json?
   maintenanceTasks                Json?
-  maintenanceAccessToken          String?              @unique
+  maintenanceAccessToken          String?                  @unique
   maintenanceAccessTokenExpiresAt DateTime?
-  apartment                       Apartment            @relation(fields: [apartmentId], references: [id])
-  assignedTo                      User?                @relation(fields: [assignedToId], references: [id])
+  apartment                       Apartment                @relation(fields: [apartmentId], references: [id])
+  assignedTo                      User?                    @relation(fields: [assignedToId], references: [id])
   attachments                     Attachment[]
   messages                        Message[]
   aiAssistantMessages             AIAssistantMessage[]
   supervisorReviews               SupervisorReview[]
+  dateRequests                    MaintenanceDateRequest[]
+}
+
+// Richiesta (dall'impresa al proprietario) di spostare la data di un intervento.
+// Diventa effettiva solo dopo l'approvazione del manager dell'organizzazione.
+model MaintenanceDateRequest {
+  id                  String            @id @default(uuid())
+  maintenanceTicketId String
+  companyId           String
+  requestedByUserId   String?
+  proposedStart       DateTime
+  proposedEnd         DateTime?
+  reason              String?
+  status              String            @default("PENDING") // PENDING | APPROVED | REJECTED
+  createdAt           DateTime          @default(now())
+  resolvedAt          DateTime?
+  resolvedByUserId    String?
+  maintenanceTicket   MaintenanceTicket @relation(fields: [maintenanceTicketId], references: [id], onDelete: Cascade)
+
+  @@index([maintenanceTicketId])
+  @@index([status])
+  @@index([companyId])
 }
 
 model AIAssistantMessage {

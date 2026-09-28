@@ -119,6 +119,11 @@ export type CheckinTaskMessage = $Result.DefaultSelection<Prisma.$CheckinTaskMes
  */
 export type MaintenanceTicket = $Result.DefaultSelection<Prisma.$MaintenanceTicketPayload>
 /**
+ * Model MaintenanceDateRequest
+ * 
+ */
+export type MaintenanceDateRequest = $Result.DefaultSelection<Prisma.$MaintenanceDateRequestPayload>
+/**
  * Model AIAssistantMessage
  * 
  */
@@ -582,6 +587,16 @@ export class PrismaClient<
     * ```
     */
   get maintenanceTicket(): Prisma.MaintenanceTicketDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.maintenanceDateRequest`: Exposes CRUD operations for the **MaintenanceDateRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MaintenanceDateRequests
+    * const maintenanceDateRequests = await prisma.maintenanceDateRequest.findMany()
+    * ```
+    */
+  get maintenanceDateRequest(): Prisma.MaintenanceDateRequestDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.aIAssistantMessage`: Exposes CRUD operations for the **AIAssistantMessage** model.
@@ -1237,6 +1252,7 @@ export namespace Prisma {
     CheckinTask: 'CheckinTask',
     CheckinTaskMessage: 'CheckinTaskMessage',
     MaintenanceTicket: 'MaintenanceTicket',
+    MaintenanceDateRequest: 'MaintenanceDateRequest',
     AIAssistantMessage: 'AIAssistantMessage',
     Attachment: 'Attachment',
     ApartmentAttachment: 'ApartmentAttachment',
@@ -1272,7 +1288,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "orgCompanyMessage" | "orgStaffMessage" | "companyChatMessage" | "company" | "engagement" | "engagementApartment" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
+      modelProps: "organization" | "property" | "propertyProduct" | "propertyStockMovement" | "unitCategory" | "user" | "orgCompanyMessage" | "orgStaffMessage" | "companyChatMessage" | "company" | "engagement" | "engagementApartment" | "apartment" | "checklistItem" | "notification" | "booking" | "cleaningTask" | "checkinChecklistItem" | "checkinTask" | "checkinTaskMessage" | "maintenanceTicket" | "maintenanceDateRequest" | "aIAssistantMessage" | "attachment" | "apartmentAttachment" | "message" | "cleaningTaskMessage" | "supervisorReview" | "apartmentSupervisor" | "client" | "apartmentOwner" | "managerChatSession" | "managerChatMessage" | "pushSubscription" | "apnsToken" | "fcmToken" | "cleanerLocation" | "superAdminLog" | "apartmentProduct" | "stockMovement" | "warehouseProduct" | "warehouseStockMovement"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2827,6 +2843,80 @@ export namespace Prisma {
           count: {
             args: Prisma.MaintenanceTicketCountArgs<ExtArgs>
             result: $Utils.Optional<MaintenanceTicketCountAggregateOutputType> | number
+          }
+        }
+      }
+      MaintenanceDateRequest: {
+        payload: Prisma.$MaintenanceDateRequestPayload<ExtArgs>
+        fields: Prisma.MaintenanceDateRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MaintenanceDateRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MaintenanceDateRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.MaintenanceDateRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MaintenanceDateRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>
+          }
+          findMany: {
+            args: Prisma.MaintenanceDateRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>[]
+          }
+          create: {
+            args: Prisma.MaintenanceDateRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>
+          }
+          createMany: {
+            args: Prisma.MaintenanceDateRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MaintenanceDateRequestCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>[]
+          }
+          delete: {
+            args: Prisma.MaintenanceDateRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>
+          }
+          update: {
+            args: Prisma.MaintenanceDateRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.MaintenanceDateRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MaintenanceDateRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MaintenanceDateRequestUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>[]
+          }
+          upsert: {
+            args: Prisma.MaintenanceDateRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MaintenanceDateRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.MaintenanceDateRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMaintenanceDateRequest>
+          }
+          groupBy: {
+            args: Prisma.MaintenanceDateRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MaintenanceDateRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MaintenanceDateRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<MaintenanceDateRequestCountAggregateOutputType> | number
           }
         }
       }
@@ -4439,6 +4529,7 @@ export namespace Prisma {
     checkinTask?: CheckinTaskOmit
     checkinTaskMessage?: CheckinTaskMessageOmit
     maintenanceTicket?: MaintenanceTicketOmit
+    maintenanceDateRequest?: MaintenanceDateRequestOmit
     aIAssistantMessage?: AIAssistantMessageOmit
     attachment?: AttachmentOmit
     apartmentAttachment?: ApartmentAttachmentOmit
@@ -5177,6 +5268,7 @@ export namespace Prisma {
     messages: number
     aiAssistantMessages: number
     supervisorReviews: number
+    dateRequests: number
   }
 
   export type MaintenanceTicketCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5184,6 +5276,7 @@ export namespace Prisma {
     messages?: boolean | MaintenanceTicketCountOutputTypeCountMessagesArgs
     aiAssistantMessages?: boolean | MaintenanceTicketCountOutputTypeCountAiAssistantMessagesArgs
     supervisorReviews?: boolean | MaintenanceTicketCountOutputTypeCountSupervisorReviewsArgs
+    dateRequests?: boolean | MaintenanceTicketCountOutputTypeCountDateRequestsArgs
   }
 
   // Custom InputTypes
@@ -5223,6 +5316,13 @@ export namespace Prisma {
    */
   export type MaintenanceTicketCountOutputTypeCountSupervisorReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SupervisorReviewWhereInput
+  }
+
+  /**
+   * MaintenanceTicketCountOutputType without action
+   */
+  export type MaintenanceTicketCountOutputTypeCountDateRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MaintenanceDateRequestWhereInput
   }
 
 
@@ -30942,6 +31042,7 @@ export namespace Prisma {
     messages?: boolean | MaintenanceTicket$messagesArgs<ExtArgs>
     aiAssistantMessages?: boolean | MaintenanceTicket$aiAssistantMessagesArgs<ExtArgs>
     supervisorReviews?: boolean | MaintenanceTicket$supervisorReviewsArgs<ExtArgs>
+    dateRequests?: boolean | MaintenanceTicket$dateRequestsArgs<ExtArgs>
     _count?: boolean | MaintenanceTicketCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["maintenanceTicket"]>
 
@@ -31014,6 +31115,7 @@ export namespace Prisma {
     messages?: boolean | MaintenanceTicket$messagesArgs<ExtArgs>
     aiAssistantMessages?: boolean | MaintenanceTicket$aiAssistantMessagesArgs<ExtArgs>
     supervisorReviews?: boolean | MaintenanceTicket$supervisorReviewsArgs<ExtArgs>
+    dateRequests?: boolean | MaintenanceTicket$dateRequestsArgs<ExtArgs>
     _count?: boolean | MaintenanceTicketCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type MaintenanceTicketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -31034,6 +31136,7 @@ export namespace Prisma {
       messages: Prisma.$MessagePayload<ExtArgs>[]
       aiAssistantMessages: Prisma.$AIAssistantMessagePayload<ExtArgs>[]
       supervisorReviews: Prisma.$SupervisorReviewPayload<ExtArgs>[]
+      dateRequests: Prisma.$MaintenanceDateRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -31452,6 +31555,7 @@ export namespace Prisma {
     messages<T extends MaintenanceTicket$messagesArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicket$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiAssistantMessages<T extends MaintenanceTicket$aiAssistantMessagesArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicket$aiAssistantMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssistantMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     supervisorReviews<T extends MaintenanceTicket$supervisorReviewsArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicket$supervisorReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SupervisorReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    dateRequests<T extends MaintenanceTicket$dateRequestsArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicket$dateRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -32013,6 +32117,30 @@ export namespace Prisma {
   }
 
   /**
+   * MaintenanceTicket.dateRequests
+   */
+  export type MaintenanceTicket$dateRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    where?: MaintenanceDateRequestWhereInput
+    orderBy?: MaintenanceDateRequestOrderByWithRelationInput | MaintenanceDateRequestOrderByWithRelationInput[]
+    cursor?: MaintenanceDateRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MaintenanceDateRequestScalarFieldEnum | MaintenanceDateRequestScalarFieldEnum[]
+  }
+
+  /**
    * MaintenanceTicket without action
    */
   export type MaintenanceTicketDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -32028,6 +32156,1147 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: MaintenanceTicketInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MaintenanceDateRequest
+   */
+
+  export type AggregateMaintenanceDateRequest = {
+    _count: MaintenanceDateRequestCountAggregateOutputType | null
+    _min: MaintenanceDateRequestMinAggregateOutputType | null
+    _max: MaintenanceDateRequestMaxAggregateOutputType | null
+  }
+
+  export type MaintenanceDateRequestMinAggregateOutputType = {
+    id: string | null
+    maintenanceTicketId: string | null
+    companyId: string | null
+    requestedByUserId: string | null
+    proposedStart: Date | null
+    proposedEnd: Date | null
+    reason: string | null
+    status: string | null
+    createdAt: Date | null
+    resolvedAt: Date | null
+    resolvedByUserId: string | null
+  }
+
+  export type MaintenanceDateRequestMaxAggregateOutputType = {
+    id: string | null
+    maintenanceTicketId: string | null
+    companyId: string | null
+    requestedByUserId: string | null
+    proposedStart: Date | null
+    proposedEnd: Date | null
+    reason: string | null
+    status: string | null
+    createdAt: Date | null
+    resolvedAt: Date | null
+    resolvedByUserId: string | null
+  }
+
+  export type MaintenanceDateRequestCountAggregateOutputType = {
+    id: number
+    maintenanceTicketId: number
+    companyId: number
+    requestedByUserId: number
+    proposedStart: number
+    proposedEnd: number
+    reason: number
+    status: number
+    createdAt: number
+    resolvedAt: number
+    resolvedByUserId: number
+    _all: number
+  }
+
+
+  export type MaintenanceDateRequestMinAggregateInputType = {
+    id?: true
+    maintenanceTicketId?: true
+    companyId?: true
+    requestedByUserId?: true
+    proposedStart?: true
+    proposedEnd?: true
+    reason?: true
+    status?: true
+    createdAt?: true
+    resolvedAt?: true
+    resolvedByUserId?: true
+  }
+
+  export type MaintenanceDateRequestMaxAggregateInputType = {
+    id?: true
+    maintenanceTicketId?: true
+    companyId?: true
+    requestedByUserId?: true
+    proposedStart?: true
+    proposedEnd?: true
+    reason?: true
+    status?: true
+    createdAt?: true
+    resolvedAt?: true
+    resolvedByUserId?: true
+  }
+
+  export type MaintenanceDateRequestCountAggregateInputType = {
+    id?: true
+    maintenanceTicketId?: true
+    companyId?: true
+    requestedByUserId?: true
+    proposedStart?: true
+    proposedEnd?: true
+    reason?: true
+    status?: true
+    createdAt?: true
+    resolvedAt?: true
+    resolvedByUserId?: true
+    _all?: true
+  }
+
+  export type MaintenanceDateRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MaintenanceDateRequest to aggregate.
+     */
+    where?: MaintenanceDateRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MaintenanceDateRequests to fetch.
+     */
+    orderBy?: MaintenanceDateRequestOrderByWithRelationInput | MaintenanceDateRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MaintenanceDateRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MaintenanceDateRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MaintenanceDateRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MaintenanceDateRequests
+    **/
+    _count?: true | MaintenanceDateRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MaintenanceDateRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MaintenanceDateRequestMaxAggregateInputType
+  }
+
+  export type GetMaintenanceDateRequestAggregateType<T extends MaintenanceDateRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateMaintenanceDateRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMaintenanceDateRequest[P]>
+      : GetScalarType<T[P], AggregateMaintenanceDateRequest[P]>
+  }
+
+
+
+
+  export type MaintenanceDateRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MaintenanceDateRequestWhereInput
+    orderBy?: MaintenanceDateRequestOrderByWithAggregationInput | MaintenanceDateRequestOrderByWithAggregationInput[]
+    by: MaintenanceDateRequestScalarFieldEnum[] | MaintenanceDateRequestScalarFieldEnum
+    having?: MaintenanceDateRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MaintenanceDateRequestCountAggregateInputType | true
+    _min?: MaintenanceDateRequestMinAggregateInputType
+    _max?: MaintenanceDateRequestMaxAggregateInputType
+  }
+
+  export type MaintenanceDateRequestGroupByOutputType = {
+    id: string
+    maintenanceTicketId: string
+    companyId: string
+    requestedByUserId: string | null
+    proposedStart: Date
+    proposedEnd: Date | null
+    reason: string | null
+    status: string
+    createdAt: Date
+    resolvedAt: Date | null
+    resolvedByUserId: string | null
+    _count: MaintenanceDateRequestCountAggregateOutputType | null
+    _min: MaintenanceDateRequestMinAggregateOutputType | null
+    _max: MaintenanceDateRequestMaxAggregateOutputType | null
+  }
+
+  type GetMaintenanceDateRequestGroupByPayload<T extends MaintenanceDateRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MaintenanceDateRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MaintenanceDateRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MaintenanceDateRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], MaintenanceDateRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MaintenanceDateRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    maintenanceTicketId?: boolean
+    companyId?: boolean
+    requestedByUserId?: boolean
+    proposedStart?: boolean
+    proposedEnd?: boolean
+    reason?: boolean
+    status?: boolean
+    createdAt?: boolean
+    resolvedAt?: boolean
+    resolvedByUserId?: boolean
+    maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["maintenanceDateRequest"]>
+
+  export type MaintenanceDateRequestSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    maintenanceTicketId?: boolean
+    companyId?: boolean
+    requestedByUserId?: boolean
+    proposedStart?: boolean
+    proposedEnd?: boolean
+    reason?: boolean
+    status?: boolean
+    createdAt?: boolean
+    resolvedAt?: boolean
+    resolvedByUserId?: boolean
+    maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["maintenanceDateRequest"]>
+
+  export type MaintenanceDateRequestSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    maintenanceTicketId?: boolean
+    companyId?: boolean
+    requestedByUserId?: boolean
+    proposedStart?: boolean
+    proposedEnd?: boolean
+    reason?: boolean
+    status?: boolean
+    createdAt?: boolean
+    resolvedAt?: boolean
+    resolvedByUserId?: boolean
+    maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["maintenanceDateRequest"]>
+
+  export type MaintenanceDateRequestSelectScalar = {
+    id?: boolean
+    maintenanceTicketId?: boolean
+    companyId?: boolean
+    requestedByUserId?: boolean
+    proposedStart?: boolean
+    proposedEnd?: boolean
+    reason?: boolean
+    status?: boolean
+    createdAt?: boolean
+    resolvedAt?: boolean
+    resolvedByUserId?: boolean
+  }
+
+  export type MaintenanceDateRequestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "maintenanceTicketId" | "companyId" | "requestedByUserId" | "proposedStart" | "proposedEnd" | "reason" | "status" | "createdAt" | "resolvedAt" | "resolvedByUserId", ExtArgs["result"]["maintenanceDateRequest"]>
+  export type MaintenanceDateRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
+  }
+  export type MaintenanceDateRequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
+  }
+  export type MaintenanceDateRequestIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    maintenanceTicket?: boolean | MaintenanceTicketDefaultArgs<ExtArgs>
+  }
+
+  export type $MaintenanceDateRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MaintenanceDateRequest"
+    objects: {
+      maintenanceTicket: Prisma.$MaintenanceTicketPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      maintenanceTicketId: string
+      companyId: string
+      requestedByUserId: string | null
+      proposedStart: Date
+      proposedEnd: Date | null
+      reason: string | null
+      status: string
+      createdAt: Date
+      resolvedAt: Date | null
+      resolvedByUserId: string | null
+    }, ExtArgs["result"]["maintenanceDateRequest"]>
+    composites: {}
+  }
+
+  type MaintenanceDateRequestGetPayload<S extends boolean | null | undefined | MaintenanceDateRequestDefaultArgs> = $Result.GetResult<Prisma.$MaintenanceDateRequestPayload, S>
+
+  type MaintenanceDateRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MaintenanceDateRequestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MaintenanceDateRequestCountAggregateInputType | true
+    }
+
+  export interface MaintenanceDateRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MaintenanceDateRequest'], meta: { name: 'MaintenanceDateRequest' } }
+    /**
+     * Find zero or one MaintenanceDateRequest that matches the filter.
+     * @param {MaintenanceDateRequestFindUniqueArgs} args - Arguments to find a MaintenanceDateRequest
+     * @example
+     * // Get one MaintenanceDateRequest
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MaintenanceDateRequestFindUniqueArgs>(args: SelectSubset<T, MaintenanceDateRequestFindUniqueArgs<ExtArgs>>): Prisma__MaintenanceDateRequestClient<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MaintenanceDateRequest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MaintenanceDateRequestFindUniqueOrThrowArgs} args - Arguments to find a MaintenanceDateRequest
+     * @example
+     * // Get one MaintenanceDateRequest
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MaintenanceDateRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, MaintenanceDateRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MaintenanceDateRequestClient<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MaintenanceDateRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaintenanceDateRequestFindFirstArgs} args - Arguments to find a MaintenanceDateRequest
+     * @example
+     * // Get one MaintenanceDateRequest
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MaintenanceDateRequestFindFirstArgs>(args?: SelectSubset<T, MaintenanceDateRequestFindFirstArgs<ExtArgs>>): Prisma__MaintenanceDateRequestClient<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MaintenanceDateRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaintenanceDateRequestFindFirstOrThrowArgs} args - Arguments to find a MaintenanceDateRequest
+     * @example
+     * // Get one MaintenanceDateRequest
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MaintenanceDateRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, MaintenanceDateRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__MaintenanceDateRequestClient<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MaintenanceDateRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaintenanceDateRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MaintenanceDateRequests
+     * const maintenanceDateRequests = await prisma.maintenanceDateRequest.findMany()
+     * 
+     * // Get first 10 MaintenanceDateRequests
+     * const maintenanceDateRequests = await prisma.maintenanceDateRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const maintenanceDateRequestWithIdOnly = await prisma.maintenanceDateRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MaintenanceDateRequestFindManyArgs>(args?: SelectSubset<T, MaintenanceDateRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MaintenanceDateRequest.
+     * @param {MaintenanceDateRequestCreateArgs} args - Arguments to create a MaintenanceDateRequest.
+     * @example
+     * // Create one MaintenanceDateRequest
+     * const MaintenanceDateRequest = await prisma.maintenanceDateRequest.create({
+     *   data: {
+     *     // ... data to create a MaintenanceDateRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends MaintenanceDateRequestCreateArgs>(args: SelectSubset<T, MaintenanceDateRequestCreateArgs<ExtArgs>>): Prisma__MaintenanceDateRequestClient<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MaintenanceDateRequests.
+     * @param {MaintenanceDateRequestCreateManyArgs} args - Arguments to create many MaintenanceDateRequests.
+     * @example
+     * // Create many MaintenanceDateRequests
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MaintenanceDateRequestCreateManyArgs>(args?: SelectSubset<T, MaintenanceDateRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MaintenanceDateRequests and returns the data saved in the database.
+     * @param {MaintenanceDateRequestCreateManyAndReturnArgs} args - Arguments to create many MaintenanceDateRequests.
+     * @example
+     * // Create many MaintenanceDateRequests
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MaintenanceDateRequests and only return the `id`
+     * const maintenanceDateRequestWithIdOnly = await prisma.maintenanceDateRequest.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MaintenanceDateRequestCreateManyAndReturnArgs>(args?: SelectSubset<T, MaintenanceDateRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MaintenanceDateRequest.
+     * @param {MaintenanceDateRequestDeleteArgs} args - Arguments to delete one MaintenanceDateRequest.
+     * @example
+     * // Delete one MaintenanceDateRequest
+     * const MaintenanceDateRequest = await prisma.maintenanceDateRequest.delete({
+     *   where: {
+     *     // ... filter to delete one MaintenanceDateRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MaintenanceDateRequestDeleteArgs>(args: SelectSubset<T, MaintenanceDateRequestDeleteArgs<ExtArgs>>): Prisma__MaintenanceDateRequestClient<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MaintenanceDateRequest.
+     * @param {MaintenanceDateRequestUpdateArgs} args - Arguments to update one MaintenanceDateRequest.
+     * @example
+     * // Update one MaintenanceDateRequest
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MaintenanceDateRequestUpdateArgs>(args: SelectSubset<T, MaintenanceDateRequestUpdateArgs<ExtArgs>>): Prisma__MaintenanceDateRequestClient<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MaintenanceDateRequests.
+     * @param {MaintenanceDateRequestDeleteManyArgs} args - Arguments to filter MaintenanceDateRequests to delete.
+     * @example
+     * // Delete a few MaintenanceDateRequests
+     * const { count } = await prisma.maintenanceDateRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MaintenanceDateRequestDeleteManyArgs>(args?: SelectSubset<T, MaintenanceDateRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MaintenanceDateRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaintenanceDateRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MaintenanceDateRequests
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MaintenanceDateRequestUpdateManyArgs>(args: SelectSubset<T, MaintenanceDateRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MaintenanceDateRequests and returns the data updated in the database.
+     * @param {MaintenanceDateRequestUpdateManyAndReturnArgs} args - Arguments to update many MaintenanceDateRequests.
+     * @example
+     * // Update many MaintenanceDateRequests
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MaintenanceDateRequests and only return the `id`
+     * const maintenanceDateRequestWithIdOnly = await prisma.maintenanceDateRequest.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MaintenanceDateRequestUpdateManyAndReturnArgs>(args: SelectSubset<T, MaintenanceDateRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MaintenanceDateRequest.
+     * @param {MaintenanceDateRequestUpsertArgs} args - Arguments to update or create a MaintenanceDateRequest.
+     * @example
+     * // Update or create a MaintenanceDateRequest
+     * const maintenanceDateRequest = await prisma.maintenanceDateRequest.upsert({
+     *   create: {
+     *     // ... data to create a MaintenanceDateRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MaintenanceDateRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MaintenanceDateRequestUpsertArgs>(args: SelectSubset<T, MaintenanceDateRequestUpsertArgs<ExtArgs>>): Prisma__MaintenanceDateRequestClient<$Result.GetResult<Prisma.$MaintenanceDateRequestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MaintenanceDateRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaintenanceDateRequestCountArgs} args - Arguments to filter MaintenanceDateRequests to count.
+     * @example
+     * // Count the number of MaintenanceDateRequests
+     * const count = await prisma.maintenanceDateRequest.count({
+     *   where: {
+     *     // ... the filter for the MaintenanceDateRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends MaintenanceDateRequestCountArgs>(
+      args?: Subset<T, MaintenanceDateRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MaintenanceDateRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MaintenanceDateRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaintenanceDateRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MaintenanceDateRequestAggregateArgs>(args: Subset<T, MaintenanceDateRequestAggregateArgs>): Prisma.PrismaPromise<GetMaintenanceDateRequestAggregateType<T>>
+
+    /**
+     * Group by MaintenanceDateRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MaintenanceDateRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MaintenanceDateRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MaintenanceDateRequestGroupByArgs['orderBy'] }
+        : { orderBy?: MaintenanceDateRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MaintenanceDateRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMaintenanceDateRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MaintenanceDateRequest model
+   */
+  readonly fields: MaintenanceDateRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MaintenanceDateRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MaintenanceDateRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    maintenanceTicket<T extends MaintenanceTicketDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MaintenanceTicketDefaultArgs<ExtArgs>>): Prisma__MaintenanceTicketClient<$Result.GetResult<Prisma.$MaintenanceTicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MaintenanceDateRequest model
+   */
+  interface MaintenanceDateRequestFieldRefs {
+    readonly id: FieldRef<"MaintenanceDateRequest", 'String'>
+    readonly maintenanceTicketId: FieldRef<"MaintenanceDateRequest", 'String'>
+    readonly companyId: FieldRef<"MaintenanceDateRequest", 'String'>
+    readonly requestedByUserId: FieldRef<"MaintenanceDateRequest", 'String'>
+    readonly proposedStart: FieldRef<"MaintenanceDateRequest", 'DateTime'>
+    readonly proposedEnd: FieldRef<"MaintenanceDateRequest", 'DateTime'>
+    readonly reason: FieldRef<"MaintenanceDateRequest", 'String'>
+    readonly status: FieldRef<"MaintenanceDateRequest", 'String'>
+    readonly createdAt: FieldRef<"MaintenanceDateRequest", 'DateTime'>
+    readonly resolvedAt: FieldRef<"MaintenanceDateRequest", 'DateTime'>
+    readonly resolvedByUserId: FieldRef<"MaintenanceDateRequest", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MaintenanceDateRequest findUnique
+   */
+  export type MaintenanceDateRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which MaintenanceDateRequest to fetch.
+     */
+    where: MaintenanceDateRequestWhereUniqueInput
+  }
+
+  /**
+   * MaintenanceDateRequest findUniqueOrThrow
+   */
+  export type MaintenanceDateRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which MaintenanceDateRequest to fetch.
+     */
+    where: MaintenanceDateRequestWhereUniqueInput
+  }
+
+  /**
+   * MaintenanceDateRequest findFirst
+   */
+  export type MaintenanceDateRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which MaintenanceDateRequest to fetch.
+     */
+    where?: MaintenanceDateRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MaintenanceDateRequests to fetch.
+     */
+    orderBy?: MaintenanceDateRequestOrderByWithRelationInput | MaintenanceDateRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MaintenanceDateRequests.
+     */
+    cursor?: MaintenanceDateRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MaintenanceDateRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MaintenanceDateRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MaintenanceDateRequests.
+     */
+    distinct?: MaintenanceDateRequestScalarFieldEnum | MaintenanceDateRequestScalarFieldEnum[]
+  }
+
+  /**
+   * MaintenanceDateRequest findFirstOrThrow
+   */
+  export type MaintenanceDateRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which MaintenanceDateRequest to fetch.
+     */
+    where?: MaintenanceDateRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MaintenanceDateRequests to fetch.
+     */
+    orderBy?: MaintenanceDateRequestOrderByWithRelationInput | MaintenanceDateRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MaintenanceDateRequests.
+     */
+    cursor?: MaintenanceDateRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MaintenanceDateRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MaintenanceDateRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MaintenanceDateRequests.
+     */
+    distinct?: MaintenanceDateRequestScalarFieldEnum | MaintenanceDateRequestScalarFieldEnum[]
+  }
+
+  /**
+   * MaintenanceDateRequest findMany
+   */
+  export type MaintenanceDateRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which MaintenanceDateRequests to fetch.
+     */
+    where?: MaintenanceDateRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MaintenanceDateRequests to fetch.
+     */
+    orderBy?: MaintenanceDateRequestOrderByWithRelationInput | MaintenanceDateRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MaintenanceDateRequests.
+     */
+    cursor?: MaintenanceDateRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MaintenanceDateRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MaintenanceDateRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MaintenanceDateRequests.
+     */
+    distinct?: MaintenanceDateRequestScalarFieldEnum | MaintenanceDateRequestScalarFieldEnum[]
+  }
+
+  /**
+   * MaintenanceDateRequest create
+   */
+  export type MaintenanceDateRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MaintenanceDateRequest.
+     */
+    data: XOR<MaintenanceDateRequestCreateInput, MaintenanceDateRequestUncheckedCreateInput>
+  }
+
+  /**
+   * MaintenanceDateRequest createMany
+   */
+  export type MaintenanceDateRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MaintenanceDateRequests.
+     */
+    data: MaintenanceDateRequestCreateManyInput | MaintenanceDateRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MaintenanceDateRequest createManyAndReturn
+   */
+  export type MaintenanceDateRequestCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * The data used to create many MaintenanceDateRequests.
+     */
+    data: MaintenanceDateRequestCreateManyInput | MaintenanceDateRequestCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MaintenanceDateRequest update
+   */
+  export type MaintenanceDateRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MaintenanceDateRequest.
+     */
+    data: XOR<MaintenanceDateRequestUpdateInput, MaintenanceDateRequestUncheckedUpdateInput>
+    /**
+     * Choose, which MaintenanceDateRequest to update.
+     */
+    where: MaintenanceDateRequestWhereUniqueInput
+  }
+
+  /**
+   * MaintenanceDateRequest updateMany
+   */
+  export type MaintenanceDateRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MaintenanceDateRequests.
+     */
+    data: XOR<MaintenanceDateRequestUpdateManyMutationInput, MaintenanceDateRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which MaintenanceDateRequests to update
+     */
+    where?: MaintenanceDateRequestWhereInput
+    /**
+     * Limit how many MaintenanceDateRequests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MaintenanceDateRequest updateManyAndReturn
+   */
+  export type MaintenanceDateRequestUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * The data used to update MaintenanceDateRequests.
+     */
+    data: XOR<MaintenanceDateRequestUpdateManyMutationInput, MaintenanceDateRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which MaintenanceDateRequests to update
+     */
+    where?: MaintenanceDateRequestWhereInput
+    /**
+     * Limit how many MaintenanceDateRequests to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MaintenanceDateRequest upsert
+   */
+  export type MaintenanceDateRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MaintenanceDateRequest to update in case it exists.
+     */
+    where: MaintenanceDateRequestWhereUniqueInput
+    /**
+     * In case the MaintenanceDateRequest found by the `where` argument doesn't exist, create a new MaintenanceDateRequest with this data.
+     */
+    create: XOR<MaintenanceDateRequestCreateInput, MaintenanceDateRequestUncheckedCreateInput>
+    /**
+     * In case the MaintenanceDateRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MaintenanceDateRequestUpdateInput, MaintenanceDateRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * MaintenanceDateRequest delete
+   */
+  export type MaintenanceDateRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
+    /**
+     * Filter which MaintenanceDateRequest to delete.
+     */
+    where: MaintenanceDateRequestWhereUniqueInput
+  }
+
+  /**
+   * MaintenanceDateRequest deleteMany
+   */
+  export type MaintenanceDateRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MaintenanceDateRequests to delete
+     */
+    where?: MaintenanceDateRequestWhereInput
+    /**
+     * Limit how many MaintenanceDateRequests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MaintenanceDateRequest without action
+   */
+  export type MaintenanceDateRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MaintenanceDateRequest
+     */
+    select?: MaintenanceDateRequestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MaintenanceDateRequest
+     */
+    omit?: MaintenanceDateRequestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MaintenanceDateRequestInclude<ExtArgs> | null
   }
 
 
@@ -55178,6 +56447,23 @@ export namespace Prisma {
   export type MaintenanceTicketScalarFieldEnum = (typeof MaintenanceTicketScalarFieldEnum)[keyof typeof MaintenanceTicketScalarFieldEnum]
 
 
+  export const MaintenanceDateRequestScalarFieldEnum: {
+    id: 'id',
+    maintenanceTicketId: 'maintenanceTicketId',
+    companyId: 'companyId',
+    requestedByUserId: 'requestedByUserId',
+    proposedStart: 'proposedStart',
+    proposedEnd: 'proposedEnd',
+    reason: 'reason',
+    status: 'status',
+    createdAt: 'createdAt',
+    resolvedAt: 'resolvedAt',
+    resolvedByUserId: 'resolvedByUserId'
+  };
+
+  export type MaintenanceDateRequestScalarFieldEnum = (typeof MaintenanceDateRequestScalarFieldEnum)[keyof typeof MaintenanceDateRequestScalarFieldEnum]
+
+
   export const AIAssistantMessageScalarFieldEnum: {
     id: 'id',
     role: 'role',
@@ -57685,6 +58971,7 @@ export namespace Prisma {
     messages?: MessageListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
     supervisorReviews?: SupervisorReviewListRelationFilter
+    dateRequests?: MaintenanceDateRequestListRelationFilter
   }
 
   export type MaintenanceTicketOrderByWithRelationInput = {
@@ -57710,6 +58997,7 @@ export namespace Prisma {
     messages?: MessageOrderByRelationAggregateInput
     aiAssistantMessages?: AIAssistantMessageOrderByRelationAggregateInput
     supervisorReviews?: SupervisorReviewOrderByRelationAggregateInput
+    dateRequests?: MaintenanceDateRequestOrderByRelationAggregateInput
   }
 
   export type MaintenanceTicketWhereUniqueInput = Prisma.AtLeast<{
@@ -57738,6 +59026,7 @@ export namespace Prisma {
     messages?: MessageListRelationFilter
     aiAssistantMessages?: AIAssistantMessageListRelationFilter
     supervisorReviews?: SupervisorReviewListRelationFilter
+    dateRequests?: MaintenanceDateRequestListRelationFilter
   }, "id" | "maintenanceAccessToken">
 
   export type MaintenanceTicketOrderByWithAggregationInput = {
@@ -57782,6 +59071,91 @@ export namespace Prisma {
     maintenanceTasks?: JsonNullableWithAggregatesFilter<"MaintenanceTicket">
     maintenanceAccessToken?: StringNullableWithAggregatesFilter<"MaintenanceTicket"> | string | null
     maintenanceAccessTokenExpiresAt?: DateTimeNullableWithAggregatesFilter<"MaintenanceTicket"> | Date | string | null
+  }
+
+  export type MaintenanceDateRequestWhereInput = {
+    AND?: MaintenanceDateRequestWhereInput | MaintenanceDateRequestWhereInput[]
+    OR?: MaintenanceDateRequestWhereInput[]
+    NOT?: MaintenanceDateRequestWhereInput | MaintenanceDateRequestWhereInput[]
+    id?: StringFilter<"MaintenanceDateRequest"> | string
+    maintenanceTicketId?: StringFilter<"MaintenanceDateRequest"> | string
+    companyId?: StringFilter<"MaintenanceDateRequest"> | string
+    requestedByUserId?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+    proposedStart?: DateTimeFilter<"MaintenanceDateRequest"> | Date | string
+    proposedEnd?: DateTimeNullableFilter<"MaintenanceDateRequest"> | Date | string | null
+    reason?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+    status?: StringFilter<"MaintenanceDateRequest"> | string
+    createdAt?: DateTimeFilter<"MaintenanceDateRequest"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"MaintenanceDateRequest"> | Date | string | null
+    resolvedByUserId?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+    maintenanceTicket?: XOR<MaintenanceTicketScalarRelationFilter, MaintenanceTicketWhereInput>
+  }
+
+  export type MaintenanceDateRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    maintenanceTicketId?: SortOrder
+    companyId?: SortOrder
+    requestedByUserId?: SortOrderInput | SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    resolvedByUserId?: SortOrderInput | SortOrder
+    maintenanceTicket?: MaintenanceTicketOrderByWithRelationInput
+  }
+
+  export type MaintenanceDateRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: MaintenanceDateRequestWhereInput | MaintenanceDateRequestWhereInput[]
+    OR?: MaintenanceDateRequestWhereInput[]
+    NOT?: MaintenanceDateRequestWhereInput | MaintenanceDateRequestWhereInput[]
+    maintenanceTicketId?: StringFilter<"MaintenanceDateRequest"> | string
+    companyId?: StringFilter<"MaintenanceDateRequest"> | string
+    requestedByUserId?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+    proposedStart?: DateTimeFilter<"MaintenanceDateRequest"> | Date | string
+    proposedEnd?: DateTimeNullableFilter<"MaintenanceDateRequest"> | Date | string | null
+    reason?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+    status?: StringFilter<"MaintenanceDateRequest"> | string
+    createdAt?: DateTimeFilter<"MaintenanceDateRequest"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"MaintenanceDateRequest"> | Date | string | null
+    resolvedByUserId?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+    maintenanceTicket?: XOR<MaintenanceTicketScalarRelationFilter, MaintenanceTicketWhereInput>
+  }, "id">
+
+  export type MaintenanceDateRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    maintenanceTicketId?: SortOrder
+    companyId?: SortOrder
+    requestedByUserId?: SortOrderInput | SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    resolvedByUserId?: SortOrderInput | SortOrder
+    _count?: MaintenanceDateRequestCountOrderByAggregateInput
+    _max?: MaintenanceDateRequestMaxOrderByAggregateInput
+    _min?: MaintenanceDateRequestMinOrderByAggregateInput
+  }
+
+  export type MaintenanceDateRequestScalarWhereWithAggregatesInput = {
+    AND?: MaintenanceDateRequestScalarWhereWithAggregatesInput | MaintenanceDateRequestScalarWhereWithAggregatesInput[]
+    OR?: MaintenanceDateRequestScalarWhereWithAggregatesInput[]
+    NOT?: MaintenanceDateRequestScalarWhereWithAggregatesInput | MaintenanceDateRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MaintenanceDateRequest"> | string
+    maintenanceTicketId?: StringWithAggregatesFilter<"MaintenanceDateRequest"> | string
+    companyId?: StringWithAggregatesFilter<"MaintenanceDateRequest"> | string
+    requestedByUserId?: StringNullableWithAggregatesFilter<"MaintenanceDateRequest"> | string | null
+    proposedStart?: DateTimeWithAggregatesFilter<"MaintenanceDateRequest"> | Date | string
+    proposedEnd?: DateTimeNullableWithAggregatesFilter<"MaintenanceDateRequest"> | Date | string | null
+    reason?: StringNullableWithAggregatesFilter<"MaintenanceDateRequest"> | string | null
+    status?: StringWithAggregatesFilter<"MaintenanceDateRequest"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"MaintenanceDateRequest"> | Date | string
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"MaintenanceDateRequest"> | Date | string | null
+    resolvedByUserId?: StringNullableWithAggregatesFilter<"MaintenanceDateRequest"> | string | null
   }
 
   export type AIAssistantMessageWhereInput = {
@@ -61592,6 +62966,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateInput = {
@@ -61615,6 +62990,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUpdateInput = {
@@ -61638,6 +63014,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateInput = {
@@ -61661,6 +63038,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketCreateManyInput = {
@@ -61716,6 +63094,103 @@ export namespace Prisma {
     maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
     maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
     maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type MaintenanceDateRequestCreateInput = {
+    id?: string
+    companyId: string
+    requestedByUserId?: string | null
+    proposedStart: Date | string
+    proposedEnd?: Date | string | null
+    reason?: string | null
+    status?: string
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedByUserId?: string | null
+    maintenanceTicket: MaintenanceTicketCreateNestedOneWithoutDateRequestsInput
+  }
+
+  export type MaintenanceDateRequestUncheckedCreateInput = {
+    id?: string
+    maintenanceTicketId: string
+    companyId: string
+    requestedByUserId?: string | null
+    proposedStart: Date | string
+    proposedEnd?: Date | string | null
+    reason?: string | null
+    status?: string
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedByUserId?: string | null
+  }
+
+  export type MaintenanceDateRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    requestedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceTicket?: MaintenanceTicketUpdateOneRequiredWithoutDateRequestsNestedInput
+  }
+
+  export type MaintenanceDateRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    maintenanceTicketId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    requestedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type MaintenanceDateRequestCreateManyInput = {
+    id?: string
+    maintenanceTicketId: string
+    companyId: string
+    requestedByUserId?: string | null
+    proposedStart: Date | string
+    proposedEnd?: Date | string | null
+    reason?: string | null
+    status?: string
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedByUserId?: string | null
+  }
+
+  export type MaintenanceDateRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    requestedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type MaintenanceDateRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    maintenanceTicketId?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    requestedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AIAssistantMessageCreateInput = {
@@ -65010,7 +66485,17 @@ export namespace Prisma {
     none?: MessageWhereInput
   }
 
+  export type MaintenanceDateRequestListRelationFilter = {
+    every?: MaintenanceDateRequestWhereInput
+    some?: MaintenanceDateRequestWhereInput
+    none?: MaintenanceDateRequestWhereInput
+  }
+
   export type MessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MaintenanceDateRequestOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -65065,6 +66550,53 @@ export namespace Prisma {
     resolvedAt?: SortOrder
     maintenanceAccessToken?: SortOrder
     maintenanceAccessTokenExpiresAt?: SortOrder
+  }
+
+  export type MaintenanceTicketScalarRelationFilter = {
+    is?: MaintenanceTicketWhereInput
+    isNot?: MaintenanceTicketWhereInput
+  }
+
+  export type MaintenanceDateRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    maintenanceTicketId?: SortOrder
+    companyId?: SortOrder
+    requestedByUserId?: SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrder
+    resolvedByUserId?: SortOrder
+  }
+
+  export type MaintenanceDateRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    maintenanceTicketId?: SortOrder
+    companyId?: SortOrder
+    requestedByUserId?: SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrder
+    resolvedByUserId?: SortOrder
+  }
+
+  export type MaintenanceDateRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    maintenanceTicketId?: SortOrder
+    companyId?: SortOrder
+    requestedByUserId?: SortOrder
+    proposedStart?: SortOrder
+    proposedEnd?: SortOrder
+    reason?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    resolvedAt?: SortOrder
+    resolvedByUserId?: SortOrder
   }
 
   export type EnumAIAssistantMessageRoleFilter<$PrismaModel = never> = {
@@ -65223,11 +66755,6 @@ export namespace Prisma {
 
   export type ApartmentAttachmentSumOrderByAggregateInput = {
     size?: SortOrder
-  }
-
-  export type MaintenanceTicketScalarRelationFilter = {
-    is?: MaintenanceTicketWhereInput
-    isNot?: MaintenanceTicketWhereInput
   }
 
   export type MessageCountOrderByAggregateInput = {
@@ -68494,6 +70021,13 @@ export namespace Prisma {
     connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
   }
 
+  export type MaintenanceDateRequestCreateNestedManyWithoutMaintenanceTicketInput = {
+    create?: XOR<MaintenanceDateRequestCreateWithoutMaintenanceTicketInput, MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput> | MaintenanceDateRequestCreateWithoutMaintenanceTicketInput[] | MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput[]
+    connectOrCreate?: MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput | MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput[]
+    createMany?: MaintenanceDateRequestCreateManyMaintenanceTicketInputEnvelope
+    connect?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+  }
+
   export type AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput = {
     create?: XOR<AttachmentCreateWithoutMaintenanceTicketInput, AttachmentUncheckedCreateWithoutMaintenanceTicketInput> | AttachmentCreateWithoutMaintenanceTicketInput[] | AttachmentUncheckedCreateWithoutMaintenanceTicketInput[]
     connectOrCreate?: AttachmentCreateOrConnectWithoutMaintenanceTicketInput | AttachmentCreateOrConnectWithoutMaintenanceTicketInput[]
@@ -68520,6 +70054,13 @@ export namespace Prisma {
     connectOrCreate?: SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput | SupervisorReviewCreateOrConnectWithoutMaintenanceTicketInput[]
     createMany?: SupervisorReviewCreateManyMaintenanceTicketInputEnvelope
     connect?: SupervisorReviewWhereUniqueInput | SupervisorReviewWhereUniqueInput[]
+  }
+
+  export type MaintenanceDateRequestUncheckedCreateNestedManyWithoutMaintenanceTicketInput = {
+    create?: XOR<MaintenanceDateRequestCreateWithoutMaintenanceTicketInput, MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput> | MaintenanceDateRequestCreateWithoutMaintenanceTicketInput[] | MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput[]
+    connectOrCreate?: MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput | MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput[]
+    createMany?: MaintenanceDateRequestCreateManyMaintenanceTicketInputEnvelope
+    connect?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
   }
 
   export type ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput = {
@@ -68596,6 +70137,20 @@ export namespace Prisma {
     deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
   }
 
+  export type MaintenanceDateRequestUpdateManyWithoutMaintenanceTicketNestedInput = {
+    create?: XOR<MaintenanceDateRequestCreateWithoutMaintenanceTicketInput, MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput> | MaintenanceDateRequestCreateWithoutMaintenanceTicketInput[] | MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput[]
+    connectOrCreate?: MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput | MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput[]
+    upsert?: MaintenanceDateRequestUpsertWithWhereUniqueWithoutMaintenanceTicketInput | MaintenanceDateRequestUpsertWithWhereUniqueWithoutMaintenanceTicketInput[]
+    createMany?: MaintenanceDateRequestCreateManyMaintenanceTicketInputEnvelope
+    set?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+    disconnect?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+    delete?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+    connect?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+    update?: MaintenanceDateRequestUpdateWithWhereUniqueWithoutMaintenanceTicketInput | MaintenanceDateRequestUpdateWithWhereUniqueWithoutMaintenanceTicketInput[]
+    updateMany?: MaintenanceDateRequestUpdateManyWithWhereWithoutMaintenanceTicketInput | MaintenanceDateRequestUpdateManyWithWhereWithoutMaintenanceTicketInput[]
+    deleteMany?: MaintenanceDateRequestScalarWhereInput | MaintenanceDateRequestScalarWhereInput[]
+  }
+
   export type AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput = {
     create?: XOR<AttachmentCreateWithoutMaintenanceTicketInput, AttachmentUncheckedCreateWithoutMaintenanceTicketInput> | AttachmentCreateWithoutMaintenanceTicketInput[] | AttachmentUncheckedCreateWithoutMaintenanceTicketInput[]
     connectOrCreate?: AttachmentCreateOrConnectWithoutMaintenanceTicketInput | AttachmentCreateOrConnectWithoutMaintenanceTicketInput[]
@@ -68650,6 +70205,34 @@ export namespace Prisma {
     update?: SupervisorReviewUpdateWithWhereUniqueWithoutMaintenanceTicketInput | SupervisorReviewUpdateWithWhereUniqueWithoutMaintenanceTicketInput[]
     updateMany?: SupervisorReviewUpdateManyWithWhereWithoutMaintenanceTicketInput | SupervisorReviewUpdateManyWithWhereWithoutMaintenanceTicketInput[]
     deleteMany?: SupervisorReviewScalarWhereInput | SupervisorReviewScalarWhereInput[]
+  }
+
+  export type MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketNestedInput = {
+    create?: XOR<MaintenanceDateRequestCreateWithoutMaintenanceTicketInput, MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput> | MaintenanceDateRequestCreateWithoutMaintenanceTicketInput[] | MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput[]
+    connectOrCreate?: MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput | MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput[]
+    upsert?: MaintenanceDateRequestUpsertWithWhereUniqueWithoutMaintenanceTicketInput | MaintenanceDateRequestUpsertWithWhereUniqueWithoutMaintenanceTicketInput[]
+    createMany?: MaintenanceDateRequestCreateManyMaintenanceTicketInputEnvelope
+    set?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+    disconnect?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+    delete?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+    connect?: MaintenanceDateRequestWhereUniqueInput | MaintenanceDateRequestWhereUniqueInput[]
+    update?: MaintenanceDateRequestUpdateWithWhereUniqueWithoutMaintenanceTicketInput | MaintenanceDateRequestUpdateWithWhereUniqueWithoutMaintenanceTicketInput[]
+    updateMany?: MaintenanceDateRequestUpdateManyWithWhereWithoutMaintenanceTicketInput | MaintenanceDateRequestUpdateManyWithWhereWithoutMaintenanceTicketInput[]
+    deleteMany?: MaintenanceDateRequestScalarWhereInput | MaintenanceDateRequestScalarWhereInput[]
+  }
+
+  export type MaintenanceTicketCreateNestedOneWithoutDateRequestsInput = {
+    create?: XOR<MaintenanceTicketCreateWithoutDateRequestsInput, MaintenanceTicketUncheckedCreateWithoutDateRequestsInput>
+    connectOrCreate?: MaintenanceTicketCreateOrConnectWithoutDateRequestsInput
+    connect?: MaintenanceTicketWhereUniqueInput
+  }
+
+  export type MaintenanceTicketUpdateOneRequiredWithoutDateRequestsNestedInput = {
+    create?: XOR<MaintenanceTicketCreateWithoutDateRequestsInput, MaintenanceTicketUncheckedCreateWithoutDateRequestsInput>
+    connectOrCreate?: MaintenanceTicketCreateOrConnectWithoutDateRequestsInput
+    upsert?: MaintenanceTicketUpsertWithoutDateRequestsInput
+    connect?: MaintenanceTicketWhereUniqueInput
+    update?: XOR<XOR<MaintenanceTicketUpdateToOneWithWhereWithoutDateRequestsInput, MaintenanceTicketUpdateWithoutDateRequestsInput>, MaintenanceTicketUncheckedUpdateWithoutDateRequestsInput>
   }
 
   export type ApartmentCreateNestedOneWithoutAiAssistantMessagesInput = {
@@ -71213,6 +72796,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutAssignedToInput = {
@@ -71235,6 +72819,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutAssignedToInput = {
@@ -73626,6 +75211,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutApartmentInput = {
@@ -73648,6 +75234,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutApartmentInput = {
@@ -76939,6 +78526,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type MaintenanceDateRequestCreateWithoutMaintenanceTicketInput = {
+    id?: string
+    companyId: string
+    requestedByUserId?: string | null
+    proposedStart: Date | string
+    proposedEnd?: Date | string | null
+    reason?: string | null
+    status?: string
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedByUserId?: string | null
+  }
+
+  export type MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput = {
+    id?: string
+    companyId: string
+    requestedByUserId?: string | null
+    proposedStart: Date | string
+    proposedEnd?: Date | string | null
+    reason?: string | null
+    status?: string
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedByUserId?: string | null
+  }
+
+  export type MaintenanceDateRequestCreateOrConnectWithoutMaintenanceTicketInput = {
+    where: MaintenanceDateRequestWhereUniqueInput
+    create: XOR<MaintenanceDateRequestCreateWithoutMaintenanceTicketInput, MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput>
+  }
+
+  export type MaintenanceDateRequestCreateManyMaintenanceTicketInputEnvelope = {
+    data: MaintenanceDateRequestCreateManyMaintenanceTicketInput | MaintenanceDateRequestCreateManyMaintenanceTicketInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ApartmentUpsertWithoutMaintenanceTicketsInput = {
     update: XOR<ApartmentUpdateWithoutMaintenanceTicketsInput, ApartmentUncheckedUpdateWithoutMaintenanceTicketsInput>
     create: XOR<ApartmentCreateWithoutMaintenanceTicketsInput, ApartmentUncheckedCreateWithoutMaintenanceTicketsInput>
@@ -77180,6 +78803,147 @@ export namespace Prisma {
     data: XOR<SupervisorReviewUpdateManyMutationInput, SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketInput>
   }
 
+  export type MaintenanceDateRequestUpsertWithWhereUniqueWithoutMaintenanceTicketInput = {
+    where: MaintenanceDateRequestWhereUniqueInput
+    update: XOR<MaintenanceDateRequestUpdateWithoutMaintenanceTicketInput, MaintenanceDateRequestUncheckedUpdateWithoutMaintenanceTicketInput>
+    create: XOR<MaintenanceDateRequestCreateWithoutMaintenanceTicketInput, MaintenanceDateRequestUncheckedCreateWithoutMaintenanceTicketInput>
+  }
+
+  export type MaintenanceDateRequestUpdateWithWhereUniqueWithoutMaintenanceTicketInput = {
+    where: MaintenanceDateRequestWhereUniqueInput
+    data: XOR<MaintenanceDateRequestUpdateWithoutMaintenanceTicketInput, MaintenanceDateRequestUncheckedUpdateWithoutMaintenanceTicketInput>
+  }
+
+  export type MaintenanceDateRequestUpdateManyWithWhereWithoutMaintenanceTicketInput = {
+    where: MaintenanceDateRequestScalarWhereInput
+    data: XOR<MaintenanceDateRequestUpdateManyMutationInput, MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketInput>
+  }
+
+  export type MaintenanceDateRequestScalarWhereInput = {
+    AND?: MaintenanceDateRequestScalarWhereInput | MaintenanceDateRequestScalarWhereInput[]
+    OR?: MaintenanceDateRequestScalarWhereInput[]
+    NOT?: MaintenanceDateRequestScalarWhereInput | MaintenanceDateRequestScalarWhereInput[]
+    id?: StringFilter<"MaintenanceDateRequest"> | string
+    maintenanceTicketId?: StringFilter<"MaintenanceDateRequest"> | string
+    companyId?: StringFilter<"MaintenanceDateRequest"> | string
+    requestedByUserId?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+    proposedStart?: DateTimeFilter<"MaintenanceDateRequest"> | Date | string
+    proposedEnd?: DateTimeNullableFilter<"MaintenanceDateRequest"> | Date | string | null
+    reason?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+    status?: StringFilter<"MaintenanceDateRequest"> | string
+    createdAt?: DateTimeFilter<"MaintenanceDateRequest"> | Date | string
+    resolvedAt?: DateTimeNullableFilter<"MaintenanceDateRequest"> | Date | string | null
+    resolvedByUserId?: StringNullableFilter<"MaintenanceDateRequest"> | string | null
+  }
+
+  export type MaintenanceTicketCreateWithoutDateRequestsInput = {
+    id?: string
+    title: string
+    description: string
+    status: string
+    priority: string
+    createdAt?: Date | string
+    scheduledStart?: Date | string | null
+    scheduledEnd?: Date | string | null
+    startedAt?: Date | string | null
+    resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
+    maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
+    apartment: ApartmentCreateNestedOneWithoutMaintenanceTicketsInput
+    assignedTo?: UserCreateNestedOneWithoutMaintenanceTicketsInput
+    attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
+    messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
+    aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
+  }
+
+  export type MaintenanceTicketUncheckedCreateWithoutDateRequestsInput = {
+    id?: string
+    apartmentId: string
+    title: string
+    description: string
+    status: string
+    priority: string
+    createdAt?: Date | string
+    assignedToId?: string | null
+    scheduledStart?: Date | string | null
+    scheduledEnd?: Date | string | null
+    startedAt?: Date | string | null
+    resolvedAt?: Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
+    maintenanceAccessToken?: string | null
+    maintenanceAccessTokenExpiresAt?: Date | string | null
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+  }
+
+  export type MaintenanceTicketCreateOrConnectWithoutDateRequestsInput = {
+    where: MaintenanceTicketWhereUniqueInput
+    create: XOR<MaintenanceTicketCreateWithoutDateRequestsInput, MaintenanceTicketUncheckedCreateWithoutDateRequestsInput>
+  }
+
+  export type MaintenanceTicketUpsertWithoutDateRequestsInput = {
+    update: XOR<MaintenanceTicketUpdateWithoutDateRequestsInput, MaintenanceTicketUncheckedUpdateWithoutDateRequestsInput>
+    create: XOR<MaintenanceTicketCreateWithoutDateRequestsInput, MaintenanceTicketUncheckedCreateWithoutDateRequestsInput>
+    where?: MaintenanceTicketWhereInput
+  }
+
+  export type MaintenanceTicketUpdateToOneWithWhereWithoutDateRequestsInput = {
+    where?: MaintenanceTicketWhereInput
+    data: XOR<MaintenanceTicketUpdateWithoutDateRequestsInput, MaintenanceTicketUncheckedUpdateWithoutDateRequestsInput>
+  }
+
+  export type MaintenanceTicketUpdateWithoutDateRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
+    maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    apartment?: ApartmentUpdateOneRequiredWithoutMaintenanceTicketsNestedInput
+    assignedTo?: UserUpdateOneWithoutMaintenanceTicketsNestedInput
+    attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
+    messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
+    aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
+  }
+
+  export type MaintenanceTicketUncheckedUpdateWithoutDateRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    apartmentId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    priority?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    correctionProgress?: NullableJsonNullValueInput | InputJsonValue
+    maintenanceTasks?: NullableJsonNullValueInput | InputJsonValue
+    maintenanceAccessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    maintenanceAccessTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+  }
+
   export type ApartmentCreateWithoutAiAssistantMessagesInput = {
     id?: string
     name: string
@@ -77338,6 +79102,7 @@ export namespace Prisma {
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutAiAssistantMessagesInput = {
@@ -77360,6 +79125,7 @@ export namespace Prisma {
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutAiAssistantMessagesInput = {
@@ -77548,6 +79314,7 @@ export namespace Prisma {
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutAiAssistantMessagesInput = {
@@ -77570,6 +79337,7 @@ export namespace Prisma {
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketCreateWithoutAttachmentsInput = {
@@ -77592,6 +79360,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutAttachmentsInput = {
@@ -77614,6 +79383,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutAttachmentsInput = {
@@ -77842,6 +79612,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutAttachmentsInput = {
@@ -77864,6 +79635,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type CleaningTaskUpsertWithoutAttachmentsInput = {
@@ -78212,6 +79984,7 @@ export namespace Prisma {
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutMessagesInput = {
@@ -78234,6 +80007,7 @@ export namespace Prisma {
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutMessagesInput = {
@@ -78309,6 +80083,7 @@ export namespace Prisma {
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutMessagesInput = {
@@ -78331,6 +80106,7 @@ export namespace Prisma {
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type AttachmentUpsertWithoutMessagesInput = {
@@ -78714,6 +80490,7 @@ export namespace Prisma {
     attachments?: AttachmentCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketUncheckedCreateWithoutSupervisorReviewsInput = {
@@ -78736,6 +80513,7 @@ export namespace Prisma {
     attachments?: AttachmentUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     messages?: MessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutMaintenanceTicketInput
+    dateRequests?: MaintenanceDateRequestUncheckedCreateNestedManyWithoutMaintenanceTicketInput
   }
 
   export type MaintenanceTicketCreateOrConnectWithoutSupervisorReviewsInput = {
@@ -78908,6 +80686,7 @@ export namespace Prisma {
     attachments?: AttachmentUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutSupervisorReviewsInput = {
@@ -78930,6 +80709,7 @@ export namespace Prisma {
     attachments?: AttachmentUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type ApartmentCreateWithoutSupervisorsInput = {
@@ -82098,6 +83878,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutAssignedToInput = {
@@ -82120,6 +83901,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateManyWithoutAssignedToInput = {
@@ -82968,6 +84750,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateWithoutApartmentInput = {
@@ -82990,6 +84773,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
+    dateRequests?: MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketNestedInput
   }
 
   export type MaintenanceTicketUncheckedUpdateManyWithoutApartmentInput = {
@@ -83605,6 +85389,19 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type MaintenanceDateRequestCreateManyMaintenanceTicketInput = {
+    id?: string
+    companyId: string
+    requestedByUserId?: string | null
+    proposedStart: Date | string
+    proposedEnd?: Date | string | null
+    reason?: string | null
+    status?: string
+    createdAt?: Date | string
+    resolvedAt?: Date | string | null
+    resolvedByUserId?: string | null
+  }
+
   export type AttachmentUpdateWithoutMaintenanceTicketInput = {
     id?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
@@ -83741,6 +85538,45 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     correctionItems?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MaintenanceDateRequestUpdateWithoutMaintenanceTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    requestedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type MaintenanceDateRequestUncheckedUpdateWithoutMaintenanceTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    requestedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type MaintenanceDateRequestUncheckedUpdateManyWithoutMaintenanceTicketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    requestedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    proposedStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    proposedEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageCreateManyAttachmentInput = {

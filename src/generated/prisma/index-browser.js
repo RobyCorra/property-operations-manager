@@ -448,6 +448,20 @@ exports.Prisma.MaintenanceTicketScalarFieldEnum = {
   maintenanceAccessTokenExpiresAt: 'maintenanceAccessTokenExpiresAt'
 };
 
+exports.Prisma.MaintenanceDateRequestScalarFieldEnum = {
+  id: 'id',
+  maintenanceTicketId: 'maintenanceTicketId',
+  companyId: 'companyId',
+  requestedByUserId: 'requestedByUserId',
+  proposedStart: 'proposedStart',
+  proposedEnd: 'proposedEnd',
+  reason: 'reason',
+  status: 'status',
+  createdAt: 'createdAt',
+  resolvedAt: 'resolvedAt',
+  resolvedByUserId: 'resolvedByUserId'
+};
+
 exports.Prisma.AIAssistantMessageScalarFieldEnum = {
   id: 'id',
   role: 'role',
@@ -728,6 +742,7 @@ exports.Prisma.ModelName = {
   CheckinTask: 'CheckinTask',
   CheckinTaskMessage: 'CheckinTaskMessage',
   MaintenanceTicket: 'MaintenanceTicket',
+  MaintenanceDateRequest: 'MaintenanceDateRequest',
   AIAssistantMessage: 'AIAssistantMessage',
   Attachment: 'Attachment',
   ApartmentAttachment: 'ApartmentAttachment',

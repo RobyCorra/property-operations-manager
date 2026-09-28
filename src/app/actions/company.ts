@@ -1145,6 +1145,143 @@ export async function impresaSetMaintenanceStatus(
   }
 }
 
+// Il manager d'impresa propone una nuova data intervento: crea una richiesta
+// PENDING che il proprietario dovrà approvare. Sostituisce eventuali richieste
+// PENDING precedenti per lo stesso ticket.
+export async function impresaRequestMaintenanceDate(input: {
+  ticketId: string;
+  proposedStart: string; // "YYYY-MM-DDTHH:mm"
+  proposedEnd?: string | null;
+  reason?: string | null;
+}): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const { companyId, userId, ticket } = await assertImpresaMaintenance(input.ticketId);
+    const startStr = (input.proposedStart ?? "").trim();
+    if (!startStr) return { success: false, error: "Data proposta obbligatoria." };
+    const [sd, st] = startStr.split("T");
+    const proposedStart = parseRomeDateTime(sd, st || "09:00");
+    let proposedEnd: Date | null = null;
+    if (input.proposedEnd && input.proposedEnd.trim()) {
+      const [ed, et] = input.proposedEnd.trim().split("T");
+      proposedEnd = parseRomeDateTime(ed, et || "10:00");
+    }
+    await prisma.$transaction([
+      prisma.maintenanceDateRequest.deleteMany({ where: { maintenanceTicketId: ticket.id, status: "PENDING" } }),
+      prisma.maintenanceDateRequest.create({
+        data: {
+          id: randomUUID(),
+          maintenanceTicketId: ticket.id,
+          companyId,
+          requestedByUserId: userId,
+          proposedStart,
+          proposedEnd,
+          reason: input.reason?.trim() || null,
+          status: "PENDING",
+        },
+      }),
+    ]);
+    revalidatePath(`/dashboard/impresa/manutenzione/${ticket.id}`);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// ── Lato proprietario: richieste di cambio data ─────────────────────────────
+export type PendingDateRequest = {
+  id: string;
+  ticketId: string;
+  ticketTitle: string;
+  apartmentName: string;
+  companyName: string;
+  proposedStart: string;
+  proposedEnd: string | null;
+  currentStart: string | null;
+  reason: string | null;
+  createdAt: string;
+};
+
+export async function getPendingDateRequests(): Promise<PendingDateRequest[]> {
+  const orgId = await requireOwner();
+  const reqs = await prisma.maintenanceDateRequest.findMany({
+    where: {
+      status: "PENDING",
+      maintenanceTicket: { apartment: { organizationId: orgId } },
+    },
+    include: {
+      maintenanceTicket: { select: { id: true, title: true, scheduledStart: true, apartment: { select: { name: true } } } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  const companyIds = [...new Set(reqs.map((r) => r.companyId))];
+  const companies = companyIds.length
+    ? await prisma.company.findMany({ where: { id: { in: companyIds } }, select: { id: true, name: true } })
+    : [];
+  const companyName = new Map(companies.map((c) => [c.id, c.name]));
+  return reqs.map((r) => ({
+    id: r.id,
+    ticketId: r.maintenanceTicket.id,
+    ticketTitle: r.maintenanceTicket.title,
+    apartmentName: r.maintenanceTicket.apartment.name,
+    companyName: companyName.get(r.companyId) ?? "Impresa",
+    proposedStart: r.proposedStart.toISOString(),
+    proposedEnd: r.proposedEnd?.toISOString() ?? null,
+    currentStart: r.maintenanceTicket.scheduledStart?.toISOString() ?? null,
+    reason: r.reason,
+    createdAt: r.createdAt.toISOString(),
+  }));
+}
+
+async function assertOwnerDateRequest(requestId: string) {
+  const orgId = await requireOwner();
+  const c = await cookies();
+  const userId = c.get("userId")?.value ?? null;
+  const req = await prisma.maintenanceDateRequest.findUnique({
+    where: { id: requestId },
+    include: { maintenanceTicket: { select: { id: true, apartment: { select: { organizationId: true } } } } },
+  });
+  if (!req || req.maintenanceTicket.apartment.organizationId !== orgId) throw new Error("Richiesta non trovata.");
+  return { req, userId };
+}
+
+export async function approveMaintenanceDateRequest(requestId: string): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const { req, userId } = await assertOwnerDateRequest(requestId);
+    if (req.status !== "PENDING") return { success: false, error: "Richiesta già gestita." };
+    await prisma.$transaction([
+      prisma.maintenanceTicket.update({
+        where: { id: req.maintenanceTicketId },
+        data: { scheduledStart: req.proposedStart, scheduledEnd: req.proposedEnd },
+      }),
+      prisma.maintenanceDateRequest.update({
+        where: { id: requestId },
+        data: { status: "APPROVED", resolvedAt: new Date(), resolvedByUserId: userId },
+      }),
+    ]);
+    revalidatePath("/dashboard/manager/maintenance");
+    revalidatePath(`/dashboard/manager/maintenance/${req.maintenanceTicketId}/edit`);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+export async function rejectMaintenanceDateRequest(requestId: string): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const { req, userId } = await assertOwnerDateRequest(requestId);
+    if (req.status !== "PENDING") return { success: false, error: "Richiesta già gestita." };
+    await prisma.maintenanceDateRequest.update({
+      where: { id: requestId },
+      data: { status: "REJECTED", resolvedAt: new Date(), resolvedByUserId: userId },
+    });
+    revalidatePath("/dashboard/manager/maintenance");
+    revalidatePath(`/dashboard/manager/maintenance/${req.maintenanceTicketId}/edit`);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
 // Il manager d'impresa verifica e approva la risoluzione (AWAITING_REVIEW → APPROVED).
 export async function impresaApproveMaintenance(
   ticketId: string,

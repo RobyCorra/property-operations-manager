@@ -13,6 +13,7 @@ import { formatRomeDateTimeDisplay } from "@/src/lib/rome-datetime";
 import MaintenanceShareButton from "@/src/components/maintenance-share-button";
 import AutoRefresh from "@/src/components/auto-refresh";
 import BackButton from "@/src/components/back-button";
+import MaintenanceDateRequestDecision from "@/src/components/maintenance-date-request-decision";
 
 type AttachmentView = {
   id: string;
@@ -78,6 +79,14 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
     notFound();
   }
 
+  const pendingDateReq = await prisma.maintenanceDateRequest.findFirst({
+    where: { maintenanceTicketId: id, status: "PENDING" },
+    orderBy: { createdAt: "desc" },
+  });
+  const reqCompany = pendingDateReq
+    ? await prisma.company.findUnique({ where: { id: pendingDateReq.companyId }, select: { name: true } })
+    : null;
+
   return (
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <AutoRefresh intervalMs={10000} />
@@ -87,6 +96,20 @@ export default async function EditMaintenancePage({ params }: { params: Promise<
           <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{tr.meTicketDetails} #{id.slice(0, 8)}</h1>
           <p className="text-gray-500 mt-1">{tr.meManageReport}</p>
         </div>
+
+        {/* Richiesta di spostamento data dall'impresa */}
+        {pendingDateReq && (
+          <div className="bg-amber-50 rounded-2xl border border-amber-200 shadow-sm p-4 space-y-2">
+            <p className="text-sm font-bold text-amber-800">📅 Richiesta cambio data da {reqCompany?.name ?? "impresa"}</p>
+            <p className="text-sm text-amber-700">
+              Propone di spostare l&apos;intervento a <strong>{formatRomeDateTimeDisplay(pendingDateReq.proposedStart)}</strong>
+              {pendingDateReq.proposedEnd ? ` → ${formatRomeDateTimeDisplay(pendingDateReq.proposedEnd)}` : ""}.
+              {ticket.scheduledStart ? ` (attuale: ${formatRomeDateTimeDisplay(ticket.scheduledStart)})` : ""}
+            </p>
+            {pendingDateReq.reason && <p className="text-xs text-amber-600">Motivo: {pendingDateReq.reason}</p>}
+            <MaintenanceDateRequestDecision requestId={pendingDateReq.id} />
+          </div>
+        )}
 
         {/* Link condivisibile per il manutentore */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-2">
