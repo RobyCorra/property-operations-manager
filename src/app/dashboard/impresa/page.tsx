@@ -31,6 +31,7 @@ export default async function ImpresaDashboard() {
   const now = new Date();
   const serverDate = now.toISOString();
   const hasCleaning = scopes.includes("CLEANING") && orgIds.length > 0;
+  const hasMaintenance = scopes.includes("MAINTENANCE") && orgIds.length > 0;
 
   // Filtro appartamenti: se la delega specifica degli appartamenti, usa quelli
   const cleaningAptFilter = scopeApartments?.CLEANING;
@@ -161,6 +162,55 @@ export default async function ImpresaDashboard() {
 
   const todayBookingsCount = bookings.filter((b) => localDateKey(b.checkInDate) === todayKey).length;
 
+  // ── Manutenzione: calendario per appartamento (solo ticket) ──
+  const maintAptFilter = scopeApartments?.MAINTENANCE;
+  const maintApts = hasMaintenance
+    ? await prisma.apartment.findMany({
+        where: maintAptFilter
+          ? { id: { in: maintAptFilter }, organizationId: { in: orgIds } }
+          : { organizationId: { in: orgIds } },
+        select: {
+          id: true, name: true, address: true, bathrooms: true, bedConfig: true,
+          propertyId: true, unitCategoryId: true, unitNumber: true,
+          property: { select: { name: true } },
+          unitCategory: { select: { name: true } },
+        },
+      })
+    : [];
+
+  const maintTickets = hasMaintenance
+    ? await prisma.maintenanceTicket.findMany({
+        where: maintAptFilter
+          ? { apartmentId: { in: maintAptFilter }, status: { not: "CANCELLED" } }
+          : { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
+        select: {
+          id: true, apartmentId: true, title: true, status: true, priority: true,
+          createdAt: true, scheduledStart: true, scheduledEnd: true,
+          assignedTo: { select: { id: true, name: true } },
+          apartment: { select: { name: true, address: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      })
+    : [];
+
+  const maintApartmentsData = maintApts.map((a) => {
+    const aptTickets = maintTickets.filter((t) => t.apartmentId === a.id);
+    const s = getApartmentOperationalStatus(serverDate, [], [], aptTickets as never, { now });
+    return {
+      id: a.id,
+      name: a.name,
+      address: a.address ?? "",
+      status: s.color,
+      bathrooms: a.bathrooms,
+      bedConfig: a.bedConfig,
+      propertyId: a.propertyId,
+      propertyName: a.property?.name ?? null,
+      unitCategoryId: a.unitCategoryId,
+      categoryName: a.unitCategory?.name ?? null,
+      unitNumber: a.unitNumber,
+    };
+  });
+
   const mobileApts = apartmentsData.map((a) => ({
     id: a.id,
     name: a.name,
@@ -187,10 +237,27 @@ export default async function ImpresaDashboard() {
             checkinsCount={todayBookingsCount}
             serverDate={serverDate}
           />
+        ) : hasMaintenance ? (
+          <div className="px-4 pt-4 space-y-4">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight text-slate-900">Manutenzione</h1>
+              <p className="mt-1 text-sm text-slate-500">Calendario interventi per appartamento.</p>
+            </div>
+            <section className="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm">
+              <TimelineCalendar
+                apartments={maintApartmentsData}
+                bookings={[]}
+                cleaningTasks={[]}
+                maintenanceTickets={maintTickets as never}
+                serverDate={serverDate}
+                readOnly
+              />
+            </section>
+          </div>
         ) : (
           <div className="px-4 pt-4">
             <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-500 shadow-sm">
-              Nessuna funzione di pulizia attiva. Attendi che un proprietario ti deleghi le Pulizie.
+              Nessuna funzione operativa attiva. Attendi che un proprietario ti deleghi un servizio.
             </div>
           </div>
         )}
@@ -206,7 +273,7 @@ export default async function ImpresaDashboard() {
           </p>
         </div>
 
-        {hasCleaning ? (
+        {hasCleaning && (
           <>
             <DashboardKpiCards
               checkinsToday={[]}
@@ -233,15 +300,33 @@ export default async function ImpresaDashboard() {
               />
             </section>
           </>
-        ) : (
+        )}
+
+        {hasMaintenance && (
+          <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
+              <span>🔧</span> Calendario manutenzione <span className="font-normal text-gray-400">· per appartamento, solo interventi (sola lettura)</span>
+            </h2>
+            <TimelineCalendar
+              apartments={maintApartmentsData}
+              bookings={[]}
+              cleaningTasks={[]}
+              maintenanceTickets={maintTickets as never}
+              serverDate={serverDate}
+              readOnly
+            />
+          </section>
+        )}
+
+        {!hasCleaning && !hasMaintenance && (
           <div className="rounded-2xl border border-gray-100 bg-white p-6 text-center text-sm text-gray-500 shadow-sm">
-            Nessuna funzione di pulizia attiva. Attendi che un proprietario ti deleghi le Pulizie.
+            Nessuna funzione operativa attiva. Attendi che un proprietario ti deleghi un servizio.
           </div>
         )}
 
-        {(scopes.includes("MAINTENANCE") || scopes.includes("CHECKIN") || scopes.includes("SUPERVISION")) && (
+        {(scopes.includes("CHECKIN") || scopes.includes("SUPERVISION")) && (
           <div className="rounded-2xl border border-dashed border-gray-200 bg-white/50 p-5 text-center text-xs text-gray-400">
-            {scopes.filter((s) => s !== "CLEANING").map((s) => SCOPE_META[s]?.label).join(" · ")}: vista in arrivo.
+            {scopes.filter((s) => s === "CHECKIN" || s === "SUPERVISION").map((s) => SCOPE_META[s]?.label).join(" · ")}: vista in arrivo.
           </div>
         )}
       </div>

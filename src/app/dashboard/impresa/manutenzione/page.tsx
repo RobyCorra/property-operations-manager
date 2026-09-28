@@ -4,7 +4,6 @@ import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
 import { getMyCompanyStaff } from "@/src/app/actions/company";
 import ImpresaMaintenanceAssign from "@/src/components/impresa-maintenance-assign";
-import ImpresaMaintenanceCalendar from "@/src/components/impresa-maintenance-calendar";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +23,7 @@ export default async function ImpresaManutenzionePage() {
     prisma.maintenanceTicket.findMany({
       where: { ...aptFilter, status: { not: "CANCELLED" } },
       select: {
-        id: true, title: true, status: true, priority: true, createdAt: true, scheduledStart: true, assignedToId: true,
+        id: true, title: true, status: true, priority: true, createdAt: true, assignedToId: true,
         apartment: { select: { name: true, organizationId: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -50,17 +49,6 @@ export default async function ImpresaManutenzionePage() {
     assignedToId: r.assignedToId,
   }));
 
-  const calendarTickets = rows.map((r) => ({
-    id: r.id,
-    title: r.title,
-    apartmentName: r.apartment.name,
-    priority: r.priority,
-    status: r.status,
-    dateISO: (r.scheduledStart ?? r.createdAt).toISOString(),
-    scheduled: !!r.scheduledStart,
-    href: `/dashboard/impresa/manutenzione/${r.id}`,
-  }));
-
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
@@ -73,10 +61,6 @@ export default async function ImpresaManutenzionePage() {
           Non hai ancora operatori di manutenzione. Aggiungili in <strong>Staff</strong> per poter assegnare gli interventi.
         </div>
       )}
-
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <ImpresaMaintenanceCalendar tickets={calendarTickets} />
-      </div>
 
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
         <ImpresaMaintenanceAssign tickets={tickets} staff={mainteners} />
