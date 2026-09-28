@@ -241,6 +241,32 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
   const pendingCount   = pendingPhotos.size;
   const uploadingCount = uploadingIds.size;
 
+  // Riepilogo persistente: le task completate (con foto) restano visibili,
+  // quelle ancora da fare sono evidenziate con bordo rosso.
+  const recap = tasks.length > 0 ? (
+    <div className="mt-6 pt-4 border-t border-slate-100">
+      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Riepilogo task</p>
+      <div className="space-y-2">
+        {tasks.map((tk) => {
+          const url = tk.photoUrl ?? pendingPhotos.get(tk.id)?.localUrl ?? null;
+          return (
+            <div key={tk.id} className={`flex items-center gap-2 rounded-xl px-3 py-2 border ${tk.completed ? "bg-emerald-50 border-emerald-100" : "bg-rose-50 border-2 border-rose-400"}`}>
+              <span className="text-sm shrink-0">{tk.completed ? "✅" : "⬜"}</span>
+              <span className={`flex-1 min-w-0 text-xs font-semibold truncate ${tk.completed ? "text-emerald-800" : "text-rose-700"}`}>{tk.label}</span>
+              {!tk.completed && <span className="text-[9px] font-black uppercase tracking-wider text-rose-500 shrink-0">Da fare</span>}
+              {url && (
+                <a href={url} target="_blank" rel="noreferrer" className="shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={tk.label} className="w-10 h-10 object-cover rounded-lg border border-emerald-200" />
+                </a>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  ) : null;
+
   // ── Schermata completamento ────────────────────────────────────────────────
   if (allDone) {
     const photosWithUrls = tasks.filter((t) => t.photoUrl || pendingPhotos.has(t.id));
@@ -426,6 +452,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
             Avanti <ChevronRight size={13} />
           </button>
         </div>
+        {recap}
       </div>
     );
   }
@@ -521,6 +548,7 @@ export default function MaintenanceChecklistInteractive({ ticketId, initialTasks
           )}
         </button>
       </div>
+      {recap}
     </div>
   );
 }

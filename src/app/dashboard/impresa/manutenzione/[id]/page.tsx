@@ -66,7 +66,6 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
     : null;
 
   const tasks = Array.isArray(ticket.maintenanceTasks) ? (ticket.maintenanceTasks as any[]) : [];
-  const hasWorkSummary = tasks.some((t: any) => t.completed);
 
   const staff = await getMyCompanyStaff();
   const mainteners = staff.filter((s) => s.role === "MAINTENANCE").map((s) => ({ id: s.id, name: s.name }));
@@ -98,6 +97,31 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
         <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">🔗 Link manutentore (accesso senza login)</p>
         <MaintenanceShareButton ticketId={id} existingToken={ticket.maintenanceAccessToken ?? null} />
       </div>
+
+      {/* Riepilogo lavori: task risolte e da risolvere (sopra approva/rifiuta) */}
+      {tasks.length > 0 && (
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">{tr.meWorkSummary}</p>
+          <div className="space-y-3">
+            {tasks.map((task: any, idx: number) => (
+              <div key={task.id ?? idx} className={`flex items-start gap-3 rounded-xl p-3 ${task.completed ? "bg-emerald-50 border border-emerald-100" : "bg-rose-50 border border-rose-200"}`}>
+                <span className="text-base mt-0.5 flex-shrink-0">{task.completed ? "✅" : "⬜"}</span>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-semibold ${task.completed ? "text-emerald-800" : "text-rose-700"}`}>{task.label || `Task ${idx + 1}`}</p>
+                  {!task.completed && <p className="text-[10px] font-bold uppercase tracking-wider text-rose-500 mt-0.5">Da risolvere</p>}
+                  {task.photoRequired && !task.photoUrl && !task.completed && <p className="text-[10px] text-gray-400 mt-0.5">{tr.mePhotoRequired}</p>}
+                </div>
+                {task.photoUrl && (
+                  <a href={task.photoUrl} target="_blank" rel="noreferrer" className="flex-shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={task.photoUrl} alt={tr.meTaskPhoto} className="w-16 h-16 object-cover rounded-lg border border-emerald-200 hover:scale-105 transition-transform" />
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Avanzamento / approvazione */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -156,30 +180,6 @@ export default async function ImpresaMaintenanceDetailPage({ params }: { params:
               lastRejected={pendingReq ? null : toReqView(rejectedReq)}
             />
           </div>
-
-          {/* Riepilogo lavori eseguiti dal manutentore */}
-          {hasWorkSummary && (
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">{tr.meWorkSummary}</p>
-              <div className="space-y-3">
-                {tasks.map((task: any, idx: number) => (
-                  <div key={task.id ?? idx} className={`flex items-start gap-3 rounded-xl p-3 ${task.completed ? "bg-emerald-50 border border-emerald-100" : "bg-gray-50 border border-gray-100"}`}>
-                    <span className="text-base mt-0.5 flex-shrink-0">{task.completed ? "✅" : "⬜"}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-semibold ${task.completed ? "text-emerald-800" : "text-gray-400"}`}>{task.label || `Task ${idx + 1}`}</p>
-                      {task.photoRequired && !task.photoUrl && !task.completed && <p className="text-[10px] text-gray-400 mt-0.5">{tr.mePhotoRequired}</p>}
-                    </div>
-                    {task.photoUrl && (
-                      <a href={task.photoUrl} target="_blank" rel="noreferrer" className="flex-shrink-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={task.photoUrl} alt={tr.meTaskPhoto} className="w-16 h-16 object-cover rounded-lg border border-emerald-200 hover:scale-105 transition-transform" />
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Allegati */}
           {ticket.attachments.length > 0 && (
