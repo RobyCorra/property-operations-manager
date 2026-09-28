@@ -416,6 +416,7 @@ export default async function SuperAdminPage() {
                     CREA_IMPRESA: "text-emerald-400",
                     CREA_MANAGER: "text-sky-400",
                     CREA_MANAGER_IMPRESA: "text-emerald-300",
+                    MODIFICA_SERVIZI_IMPRESA: "text-emerald-300",
                     RESET_PASSWORD: "text-amber-400",
                     ELIMINA_DATI_TEST: "text-red-400",
                     ELIMINA_ORG: "text-red-500",

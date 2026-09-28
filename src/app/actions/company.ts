@@ -132,6 +132,10 @@ export async function delegateFunction(
     if (!COMPANY_SCOPES.includes(scope as CompanyScope)) return { success: false, error: "Funzione non valida." };
 
     if (companyId) {
+      const company = await prisma.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
+      if (!company) return { success: false, error: "Impresa non trovata." };
+      if (!company.scopes.includes(scope)) return { success: false, error: "Questa impresa non offre questo servizio." };
+
       const existing = await prisma.engagement.findFirst({
         where: { organizationId: orgId, companyId, scope, status: { in: ["ACTIVE", "PENDING"] } },
       });
@@ -212,15 +216,9 @@ export async function acceptInvite(token: string): Promise<{ success: boolean; e
     });
     if (existing) return { success: false, error: "Hai già una delega attiva per questa funzione con questa organizzazione." };
 
-    await prisma.$transaction(async (tx) => {
-      await tx.engagement.update({
-        where: { id: eng.id },
-        data: { companyId, status: "ACTIVE", acceptedAt: new Date(), inviteToken: null },
-      });
-      const company = await tx.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
-      if (company && !company.scopes.includes(eng.scope)) {
-        await tx.company.update({ where: { id: companyId }, data: { scopes: { set: [...company.scopes, eng.scope] } } });
-      }
+    await prisma.engagement.update({
+      where: { id: eng.id },
+      data: { companyId, status: "ACTIVE", acceptedAt: new Date(), inviteToken: null },
     });
 
     revalidatePath("/dashboard/manager/imprese");
@@ -278,15 +276,9 @@ export async function acceptEngagement(engagementId: string): Promise<{ success:
     });
     if (existing) return { success: false, error: "Hai già una delega attiva per questa funzione con questa organizzazione." };
 
-    await prisma.$transaction(async (tx) => {
-      await tx.engagement.update({
-        where: { id: eng.id },
-        data: { status: "ACTIVE", acceptedAt: new Date(), inviteToken: null },
-      });
-      const company = await tx.company.findUnique({ where: { id: companyId }, select: { scopes: true } });
-      if (company && !company.scopes.includes(eng.scope)) {
-        await tx.company.update({ where: { id: companyId }, data: { scopes: { set: [...company.scopes, eng.scope] } } });
-      }
+    await prisma.engagement.update({
+      where: { id: eng.id },
+      data: { status: "ACTIVE", acceptedAt: new Date(), inviteToken: null },
     });
 
     revalidatePath("/dashboard/manager/imprese");

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { isSuperAdminAuthenticated, getCompanyDetail } from "@/src/app/actions/superadmin";
 import ResetPasswordForm from "@/src/components/superadmin/reset-password-form";
 import CreateCompanyManagerForm from "@/src/components/superadmin/create-company-manager-form";
+import CompanyScopesEditor from "@/src/components/superadmin/company-scopes-editor";
 import DeleteEntityButton from "@/src/components/superadmin/delete-entity-button";
 import SuperAdminLoginForm from "@/src/components/superadmin/login-form";
 
@@ -129,6 +130,15 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
               ))}
           </div>
         </div>
+      </div>
+
+      {/* Servizi offerti */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-4">
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Servizi offerti</h2>
+          <p className="text-xs text-slate-500 mt-1">Determinano sotto quali funzioni l&apos;impresa è delegabile dalle organizzazioni.</p>
+        </div>
+        <CompanyScopesEditor companyId={companyId} initial={company.scopes} />
       </div>
 
       {/* Fix rapidi */}

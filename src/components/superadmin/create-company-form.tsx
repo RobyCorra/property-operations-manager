@@ -68,6 +68,23 @@ export default function CreateCompanyForm() {
                   />
                 </div>
 
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Servizi offerti</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: "CLEANING", label: "Pulizie" },
+                      { value: "MAINTENANCE", label: "Manutenzione" },
+                      { value: "CHECKIN", label: "Check-in" },
+                      { value: "SUPERVISION", label: "Supervisione" },
+                    ].map((s) => (
+                      <label key={s.value} className="flex items-center gap-2 rounded-xl bg-slate-800 border border-slate-600 px-3 py-2 text-sm text-white cursor-pointer hover:border-emerald-500">
+                        <input type="checkbox" name="scopes" value={s.value} className="accent-emerald-500" />
+                        {s.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="space-y-3">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Manager (primo accesso)</p>
                   <input

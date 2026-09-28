@@ -52,10 +52,13 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
     return map;
   }
 
+  // Imprese che offrono una data funzione (servizi offerti).
+  const companiesFor = (scope: string) => companies.filter((c) => c.scopes.includes(scope));
+
   // ── New delegation ──
   function startAdd(scope: string) {
     setAddingScope(scope);
-    setAddCompanyId(companies[0]?.id ?? "");
+    setAddCompanyId(companiesFor(scope)[0]?.id ?? "");
     setAddAptIds(new Set());
     setEditingEngId(null);
     setInviteLink(null);
@@ -285,19 +288,23 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                   </span>
                   <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-500">Interno</span>
                   <div className="ml-auto">
-                    <button type="button" onClick={() => startAdd(s.key)} disabled={isPending || companies.length === 0} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40">
-                      Delega
-                    </button>
+                    {companiesFor(s.key).length === 0 ? (
+                      <span className="text-[11px] text-gray-400">Nessuna impresa offre questo servizio</span>
+                    ) : (
+                      <button type="button" onClick={() => startAdd(s.key)} disabled={isPending} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40">
+                        Delega
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
 
               {/* "+ Aggiungi altra impresa" button */}
-              {scopeHandlers.length > 0 && !isAdding && (
+              {scopeHandlers.length > 0 && !isAdding && companiesFor(s.key).length > 0 && (
                 <button
                   type="button"
                   onClick={() => startAdd(s.key)}
-                  disabled={isPending || companies.length === 0}
+                  disabled={isPending}
                   className="flex items-center gap-2 rounded-xl border border-dashed border-gray-200 px-3 py-2 text-xs font-semibold text-gray-400 hover:border-violet-400 hover:text-violet-600 hover:bg-violet-50/30 transition-colors disabled:opacity-40 w-full"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -347,7 +354,7 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
                           onChange={(e) => setAddCompanyId(e.target.value)}
                           className="rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-800 focus:outline-none"
                         >
-                          {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                          {companiesFor(s.key).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                       </div>
 

@@ -6,6 +6,11 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/src/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { COMPANY_SCOPES, type CompanyScope } from "@/src/lib/company-scope";
+
+function sanitizeScopes(input: string[]): string[] {
+  return [...new Set(input.filter((s): s is CompanyScope => COMPANY_SCOPES.includes(s as CompanyScope)))];
+}
 
 export async function superAdminLogin(secret: string): Promise<{ error?: string }> {
   const expected = (process.env.SUPERADMIN_SECRET ?? "").trim();
@@ -108,8 +113,13 @@ export async function createCompanyWithManager(prevState: any, formData: FormDat
   const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
 
+  const scopes = sanitizeScopes(formData.getAll("scopes") as string[]);
+
   if (!companyName || !managerName || !email || !password || password.length < 8) {
     return { error: "Tutti i campi sono obbligatori (password min 8 caratteri)." };
+  }
+  if (scopes.length === 0) {
+    return { error: "Seleziona almeno un servizio offerto." };
   }
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return { error: "Email già in uso." };
@@ -120,7 +130,7 @@ export async function createCompanyWithManager(prevState: any, formData: FormDat
   const hashed = await bcrypt.hash(password, 10);
 
   const { company } = await prisma.$transaction(async (tx) => {
-    const company = await tx.company.create({ data: { name: companyName, slug, vatNumber, scopes: [] } });
+    const company = await tx.company.create({ data: { name: companyName, slug, vatNumber, scopes } });
     await tx.user.create({
       data: { name: managerName, email, password: hashed, role: "MANAGER", companyId: company.id },
     });
@@ -148,6 +158,18 @@ export async function createCompanyFirstManager(prevState: any, formData: FormDa
     data: { name, email, password: hashed, role: "MANAGER", companyId },
   });
   await logAction("CREA_MANAGER_IMPRESA", `${name} (${email}) · Impresa: ${company?.name ?? companyId}`);
+  revalidatePath("/superadmin");
+  revalidatePath(`/superadmin/company/${companyId}`);
+  return { success: true };
+}
+
+export async function updateCompanyScopes(companyId: string, scopes: string[]): Promise<{ success: boolean; error?: string }> {
+  const clean = sanitizeScopes(scopes);
+  if (clean.length === 0) return { success: false, error: "Seleziona almeno un servizio offerto." };
+  const company = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } });
+  if (!company) return { success: false, error: "Impresa non trovata." };
+  await prisma.company.update({ where: { id: companyId }, data: { scopes: { set: clean } } });
+  await logAction("MODIFICA_SERVIZI_IMPRESA", `Impresa: ${company.name} · Servizi: ${clean.join(", ")}`);
   revalidatePath("/superadmin");
   revalidatePath(`/superadmin/company/${companyId}`);
   return { success: true };
