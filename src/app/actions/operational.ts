@@ -1220,13 +1220,23 @@ export async function rejectMaintenanceReview(
     photoUrl: null,
   }));
 
+  // I punti da correggere diventano la checklist dell'operatore (li vede nella
+  // vista manutentore e li segna come fatti con foto, poi ri-termina).
+  const correctionTasks = correctionItems.map(item => ({
+    id: item.id,
+    label: item.label,
+    photoRequired: item.requiresPhoto,
+    completed: false,
+    photoUrl: null,
+  }));
+
   await prisma.$transaction([
     prisma.supervisorReview.create({
       data: { supervisorId, maintenanceTicketId, decision: "REJECTED", notes, correctionItems },
     }),
     prisma.maintenanceTicket.update({
       where: { id: maintenanceTicketId },
-      data: { status: "IN_PROGRESS", correctionProgress },
+      data: { status: "IN_PROGRESS", correctionProgress, maintenanceTasks: correctionTasks },
     }),
   ]);
 
@@ -1239,6 +1249,16 @@ export async function rejectMaintenanceReview(
       apartmentId: ticket.apartmentId,
     },
   });
+
+  // Notifica l'operatore assegnato: ci sono correzioni da fare.
+  if (ticket.assignedToId) {
+    await sendPushToUser(ticket.assignedToId, {
+      title: "🔧 Correzioni richieste",
+      body: `L'intervento "${ticket.title}" richiede alcune correzioni.`,
+      url: "/dashboard/maintenance",
+      tag: `maintenance-corrections-${maintenanceTicketId}`,
+    }).catch(console.error);
+  }
 
   revalidatePath("/dashboard/maintenance");
   revalidatePath("/dashboard/supervisor");
