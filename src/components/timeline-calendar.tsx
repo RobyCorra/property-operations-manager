@@ -111,6 +111,8 @@ interface MaintenanceTicket {
   description?: string;
   assignedTo?: { id: string; name: string } | null;
   apartment?: { name: string; address: string };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  maintenanceTasks?: any;
 }
 
 type PrismaMaintenanceTicket = {

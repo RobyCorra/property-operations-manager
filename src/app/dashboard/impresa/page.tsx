@@ -185,7 +185,7 @@ export default async function ImpresaDashboard() {
           : { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
         select: {
           id: true, apartmentId: true, title: true, status: true, priority: true,
-          createdAt: true, scheduledStart: true, scheduledEnd: true,
+          createdAt: true, scheduledStart: true, scheduledEnd: true, maintenanceTasks: true,
           assignedTo: { select: { id: true, name: true } },
           apartment: { select: { name: true, address: true } },
         },
