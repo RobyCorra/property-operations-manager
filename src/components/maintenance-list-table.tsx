@@ -26,6 +26,7 @@ interface MaintenanceTicket {
   status: string;
   priority: string;
   createdAt: Date | string;
+  scheduledStart?: Date | string | null;
   apartment: { id: string; name: string };
   assignedTo: { id: string; name: string } | null;
   attachments: { id: string; url: string }[];
@@ -139,74 +140,76 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
           <table className="w-full text-left text-sm text-slate-600 border-collapse">
             <thead className="bg-white/20 border-b border-white/40">
               <tr>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtTicketDetails}</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.calApartment}</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtPriority}</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.calStatusWord}</th>
-                <th className="px-10 py-6 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtAssigned}</th>
-                <th className="px-10 py-6 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.apColActions}</th>
+                <th className="px-5 py-5 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtTicketDetails}</th>
+                <th className="px-4 py-5 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">Data</th>
+                <th className="px-4 py-5 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.calApartment}</th>
+                <th className="px-4 py-5 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtPriority}</th>
+                <th className="px-4 py-5 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.calStatusWord}</th>
+                <th className="px-4 py-5 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.mtAssigned}</th>
+                <th className="px-4 py-5 text-right text-[10px] font-black uppercase tracking-[0.1em] text-slate-400">{tr.apColActions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
-              {filteredTickets.map((ticket) => (
+              {filteredTickets.map((ticket) => {
+                const dateVal = ticket.scheduledStart ?? ticket.createdAt;
+                const dateObj = new Date(dateVal);
+                const dateStr = dateObj.toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
+                const timeStr = dateObj.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+                return (
                 <tr key={ticket.id} className="hover:bg-white/60 transition-all duration-200 group">
-                  <td className="px-10 py-6">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-slate-400 border border-slate-100 shadow-sm group-hover:scale-110 transition-transform">
-                             <Wrench size={24} />
-                        </div>
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-sm font-semibold text-slate-900 tracking-tight group-hover:text-violet-600 transition-colors uppercase truncate">{ticket.title}</span>
-                          <div className="flex items-center gap-2 mt-0.5">
-                             <Info size={10} className="text-slate-300" />
-                             <span className="text-[10px] font-medium text-slate-400 line-clamp-1 max-w-[200px] tracking-wide uppercase">
-                               {ticket.description || tr.mtNoDescription}
-                             </span>
-                          </div>
-                        </div>
+                  <td className="px-5 py-4">
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-semibold text-slate-900 tracking-tight group-hover:text-violet-600 transition-colors uppercase truncate max-w-[250px]">{ticket.title}</span>
+                      <span className="text-[10px] font-medium text-slate-400 line-clamp-1 max-w-[250px] tracking-wide uppercase mt-0.5">
+                        {ticket.description || tr.mtNoDescription}
+                      </span>
                     </div>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className="flex items-center gap-2">
-                        <Building2 size={14} className="text-slate-300" />
-                        <span className="text-xs font-semibold text-slate-600 tracking-wide uppercase truncate max-w-[150px]">{ticket.apartment.name}</span>
+                  <td className="px-4 py-4">
+                    <div className="flex flex-col text-xs text-slate-600">
+                      <span className="font-semibold">{dateStr}</span>
+                      <span className="text-[10px] text-slate-400">{timeStr}</span>
                     </div>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border w-fit shadow-sm flex items-center gap-2 ${priorityColors[ticket.priority]}`}>
-                      <AlertTriangle size={10} />
+                  <td className="px-4 py-4">
+                    <span className="text-xs font-semibold text-slate-600 tracking-wide uppercase">{ticket.apartment.name}</span>
+                  </td>
+                  <td className="px-4 py-4">
+                    <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border w-fit shadow-sm flex items-center gap-1.5 ${priorityColors[ticket.priority]}`}>
+                      <AlertTriangle size={9} />
                       {ticket.priority}
                     </div>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border w-fit shadow-sm flex items-center gap-2 ${statusColors[ticket.status]}`}>
+                  <td className="px-4 py-4">
+                    <div className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border w-fit shadow-sm flex items-center gap-1.5 ${statusColors[ticket.status]}`}>
                       <div className="w-1.5 h-1.5 rounded-full bg-current" />
                       {ticket.status}
                     </div>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className="flex items-center gap-3 text-xs font-bold text-slate-500 uppercase tracking-tight">
-                      <User size={14} className="text-slate-300" />
+                  <td className="px-4 py-4">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-tight">
+                      <User size={13} className="text-slate-300" />
                       {ticket.assignedTo?.name || tr.mgrUnassignedM}
                     </div>
                   </td>
-                  <td className="px-10 py-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-4 py-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
                         <Link
                         href={`/dashboard/manager/maintenance/${ticket.id}/edit`}
-                        className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
+                        className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all border border-slate-100"
                         title={tr.mgrEdit}
                         >
-                        <Pencil size={16} />
+                        <Pencil size={14} />
                         </Link>
                         <DeleteOperationalButton id={ticket.id} type="MAINTENANCE" />
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {filteredTickets.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-10 py-24 text-center">
+                  <td colSpan={7} className="px-6 py-24 text-center">
                     <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
                         <Wrench size={32} className="text-slate-200" />
                     </div>
@@ -229,20 +232,23 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{tr.mtNoTickets}</p>
           </div>
         ) : (
-          filteredTickets.map((ticket) => (
+          filteredTickets.map((ticket) => {
+            const mDateVal = ticket.scheduledStart ?? ticket.createdAt;
+            const mDateObj = new Date(mDateVal);
+            const mDateStr = mDateObj.toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
+            const mTimeStr = mDateObj.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+            return (
             <div key={ticket.id} className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-sm overflow-hidden">
               <div className="p-4 space-y-3">
                 {/* Header: titolo + priorità */}
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
-                    <Wrench size={16} className="text-slate-500" />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-slate-900 uppercase tracking-tight truncate">{ticket.title}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <Building2 size={10} className="text-slate-400 shrink-0" />
                       <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide truncate">{ticket.apartment.name}</p>
                     </div>
+                    <p className="text-[10px] text-slate-400 mt-0.5">📅 {mDateStr} · {mTimeStr}</p>
                   </div>
                   <div className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border flex items-center gap-1 shrink-0 ${priorityColors[ticket.priority]}`}>
                     <AlertTriangle size={8} />
@@ -289,7 +295,8 @@ export default function MaintenanceListTable({ initialTickets, apartments, colla
                 </div>
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
