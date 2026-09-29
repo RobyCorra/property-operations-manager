@@ -1111,6 +1111,7 @@ export async function impresaCreateMaintenance(input: {
   priority?: string | null;
   start?: string | null; // "YYYY-MM-DDTHH:mm"
   end?: string | null;   // "YYYY-MM-DDTHH:mm"
+  maintenanceTasks?: unknown;
 }): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const companyId = await requireCompanyManager();
@@ -1151,6 +1152,7 @@ export async function impresaCreateMaintenance(input: {
         priority,
         scheduledStart,
         scheduledEnd,
+        maintenanceTasks: Array.isArray(input.maintenanceTasks) ? input.maintenanceTasks : [],
       },
     });
 

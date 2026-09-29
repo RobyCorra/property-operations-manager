@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition, useMemo } from "react";
+import { useState, useTransition, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { assignMaintenance, impresaApproveMaintenance, impresaCreateMaintenance } from "@/src/app/actions/company";
+import MaintenanceTaskEditor, { type MaintenanceTask } from "@/src/components/maintenance-task-editor";
 
 type Staff = { id: string; name: string };
 type Apartment = { id: string; name: string; ownerName: string };
@@ -104,6 +105,7 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
   const [assign, setAssign] = useState<Record<string, string>>(initial);
   const dirty = tickets.some((t) => (assign[t.id] ?? "") !== (t.assignedToId ?? ""));
 
+  const formRef = useRef<HTMLDivElement>(null);
   const [newOpen, setNewOpen] = useState(false);
   const [nApt, setNApt] = useState("");
   const [nTitle, setNTitle] = useState("");
@@ -166,8 +168,11 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
   const onCreate = () => {
     setError(null); setOkMsg(null);
     if (!nApt || !nTitle.trim()) { setError("Appartamento e titolo obbligatori."); return; }
+    const tasksInput = formRef.current?.querySelector<HTMLInputElement>("input[name='maintenanceTasks']");
+    let tasks: unknown = [];
+    if (tasksInput) { try { tasks = JSON.parse(tasksInput.value); } catch { tasks = []; } }
     startTransition(async () => {
-      const r = await impresaCreateMaintenance({ apartmentId: nApt, title: nTitle, description: nDesc, priority: nPriority, start: nStart || null, end: nEnd || null });
+      const r = await impresaCreateMaintenance({ apartmentId: nApt, title: nTitle, description: nDesc, priority: nPriority, start: nStart || null, end: nEnd || null, maintenanceTasks: tasks });
       if (!r.success) setError(r.error);
       else {
         setNewOpen(false); setNApt(""); setNTitle(""); setNPriority("MEDIUM"); setNStart(""); setNEnd(""); setNDesc("");
@@ -190,7 +195,7 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
 
       {/* Form nuova manutenzione */}
       {newOpen && (
-        <div className="rounded-2xl border border-violet-100 bg-violet-50/40 p-4 space-y-4">
+        <div ref={formRef} className="rounded-2xl border border-violet-100 bg-violet-50/40 p-4 space-y-4">
           {/* Appartamento */}
           <div>
             <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Appartamento</label>
@@ -230,6 +235,10 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
           <div>
             <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Descrizione</label>
             <textarea className={inputCls} rows={3} placeholder="Descrizione intervento (facoltativa)" value={nDesc} onChange={(e) => setNDesc(e.target.value)} />
+          </div>
+          {/* Task dell'intervento */}
+          <div className="pt-2 border-t border-violet-100">
+            <MaintenanceTaskEditor initialTasks={[]} />
           </div>
           {/* Warning */}
           <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
