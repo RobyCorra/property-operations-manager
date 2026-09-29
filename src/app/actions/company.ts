@@ -687,9 +687,12 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
 
   const out: DelegatedInterventionThread[] = [];
 
-  if (cleaningAptIds && cleaningAptIds.length > 0) {
+  if (access.scopes.includes("CLEANING")) {
+    const cleaningWhere = cleaningAptIds
+      ? { apartmentId: { in: cleaningAptIds } }
+      : { apartment: { organizationId: { in: access.orgIds } } };
     const tasks = await prisma.cleaningTask.findMany({
-      where: { apartmentId: { in: cleaningAptIds }, status: { not: "CANCELLED" } },
+      where: { ...cleaningWhere, status: { not: "CANCELLED" } },
       orderBy: { date: "desc" },
       include: {
         apartment: { select: { name: true } },
@@ -716,9 +719,12 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
     }
   }
 
-  if (maintenanceAptIds && maintenanceAptIds.length > 0) {
+  if (access.scopes.includes("MAINTENANCE")) {
+    const maintWhere = maintenanceAptIds
+      ? { apartmentId: { in: maintenanceAptIds } }
+      : { apartment: { organizationId: { in: access.orgIds } } };
     const tickets = await prisma.maintenanceTicket.findMany({
-      where: { apartmentId: { in: maintenanceAptIds }, status: { not: "CANCELLED" } },
+      where: { ...maintWhere, status: { not: "CANCELLED" } },
       include: {
         apartment: { select: { name: true } },
         assignedTo: { select: { name: true } },
@@ -735,7 +741,7 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
         apartmentName: t.apartment.name,
         assignedUser: t.assignedTo?.name ?? "Non assegnato",
         title: t.title,
-        date: null,
+        date: (t.scheduledStart ?? t.createdAt).toISOString(),
         status: t.status,
         lastText: last?.text ?? null,
         lastAt: last?.createdAt?.toISOString() ?? null,

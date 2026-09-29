@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   getImpresaThread,
   getImpresaThreads,
@@ -140,6 +140,19 @@ export default function ImpresaChat({
   const orgUnread = orgList.reduce((s, t) => s + t.unread, 0);
   const delUnread = delegatedList.reduce((s, t) => s + t.unread, 0);
 
+  // Ordina: prima gli interventi ancora da approvare (per data, il più imminente
+  // in cima), poi quelli già approvati/completati (sempre per data).
+  const delegatedSorted = useMemo(() => {
+    const isApproved = (s: string) => s === "APPROVED" || s === "COMPLETED" || s === "CLOSED";
+    const ts = (d: string | null) => (d ? new Date(d).getTime() : Number.POSITIVE_INFINITY);
+    return [...delegatedList].sort((a, b) => {
+      const ga = isApproved(a.status) ? 1 : 0;
+      const gb = isApproved(b.status) ? 1 : 0;
+      if (ga !== gb) return ga - gb;
+      return ts(a.date) - ts(b.date);
+    });
+  }, [delegatedList]);
+
   const tabs: { key: Tab; label: string; unread: number }[] = [
     { key: "orgs", label: "Organizzazioni", unread: orgUnread },
     { key: "interventions", label: "Interventi", unread: delUnread },
@@ -212,7 +225,9 @@ export default function ImpresaChat({
             {delegatedList.length === 0 && (
               <p className="p-4 text-center text-sm text-gray-400">Nessun intervento con messaggi.</p>
             )}
-            {delegatedList.map((t) => (
+            {delegatedSorted.map((t) => {
+              const approved = t.status === "APPROVED" || t.status === "COMPLETED" || t.status === "CLOSED";
+              return (
               <button
                 key={`${t.type}-${t.id}`}
                 onClick={() => openDel(t)}
@@ -226,15 +241,23 @@ export default function ImpresaChat({
                   <p className="truncate text-[11px] text-gray-400">
                     {t.apartmentName} · {t.assignedUser}
                   </p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className={`inline-block h-1.5 w-1.5 rounded-full ${t.status === "COMPLETED" || t.status === "APPROVED" || t.status === "CLOSED" ? "bg-green-400" : t.status === "IN_PROGRESS" ? "bg-blue-400" : "bg-gray-300"}`} />
+                  <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                    {t.date && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                        📅 {new Date(t.date).toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" })}
+                      </span>
+                    )}
+                    {t.status === "AWAITING_REVIEW" && (
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">Da approvare</span>
+                    )}
+                    <span className={`inline-block h-1.5 w-1.5 rounded-full ${approved ? "bg-green-400" : t.status === "IN_PROGRESS" ? "bg-blue-400" : "bg-gray-300"}`} />
                     <span className="text-[10px] text-gray-400">{STATUS_LABEL[t.status] ?? t.status}</span>
-                    {t.date && <span className="text-[10px] text-gray-400">· {new Date(t.date).toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" })}</span>}
                   </div>
                 </div>
                 {t.unread > 0 && <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-black text-white animate-pulse">{t.unread}</span>}
               </button>
-            ))}
+              );
+            })}
           </div>
 
           {!selDel ? (
