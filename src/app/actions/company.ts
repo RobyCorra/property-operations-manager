@@ -9,6 +9,8 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import { getCompanyAccess } from "@/src/lib/company-access";
 import { approveCleaningDirectly, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { parseRomeDateTime } from "@/src/lib/rome-datetime";
+import { sendPushToRole } from "@/src/lib/push";
+import type { Role } from "@/src/generated/prisma/client";
 import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
 import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview, type EngagementHandler } from "@/src/lib/company-scope";
 
@@ -724,7 +726,7 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
       ? { apartmentId: { in: maintenanceAptIds } }
       : { apartment: { organizationId: { in: access.orgIds } } };
     const tickets = await prisma.maintenanceTicket.findMany({
-      where: { ...maintWhere, status: { not: "CANCELLED" } },
+      where: { ...maintWhere, status: { notIn: ["CANCELLED", "PROPOSED", "REJECTED"] } },
       include: {
         apartment: { select: { name: true } },
         assignedTo: { select: { name: true } },
@@ -1092,6 +1094,158 @@ export async function assignMaintenance(
 
     await prisma.maintenanceTicket.update({ where: { id: ticketId }, data: { assignedToId: userId } });
     revalidatePath("/dashboard/impresa");
+    revalidatePath("/dashboard/impresa/manutenzione");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// L'impresa PROPONE un nuovo intervento di manutenzione: crea un ticket in stato
+// PROPOSED (non operativo, non nei calendari) e allerta l'organizzazione, che
+// deve approvarlo. Dopo l'approvazione diventa PENDING (operativo + nei calendari).
+export async function impresaCreateMaintenance(input: {
+  apartmentId: string;
+  title: string;
+  description?: string | null;
+  priority?: string | null;
+  start?: string | null; // "YYYY-MM-DDTHH:mm"
+}): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("MAINTENANCE")) return { success: false, error: "Manutenzione non delegata a questa impresa." };
+
+    const apartmentId = (input?.apartmentId ?? "").trim();
+    const title = (input?.title ?? "").trim();
+    if (!apartmentId || !title) return { success: false, error: "Appartamento e titolo obbligatori." };
+
+    const apt = await prisma.apartment.findUnique({ where: { id: apartmentId }, select: { organizationId: true, name: true } });
+    if (!apt || !apt.organizationId || !access.orgIds.includes(apt.organizationId)) {
+      return { success: false, error: "Appartamento non appartenente ai tuoi clienti." };
+    }
+    const mApts = access.scopeApartments?.MAINTENANCE;
+    if (mApts && !mApts.includes(apartmentId)) return { success: false, error: "Appartamento non assegnato alla tua impresa." };
+
+    const priority = ["LOW", "MEDIUM", "HIGH", "URGENT"].includes(input.priority ?? "") ? (input.priority as string) : "MEDIUM";
+    let scheduledStart: Date | null = null;
+    if (input.start && input.start.trim()) {
+      const [d, t] = input.start.trim().split("T");
+      scheduledStart = parseRomeDateTime(d, t || "09:00");
+    }
+
+    const company = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } });
+    await prisma.maintenanceTicket.create({
+      data: {
+        id: randomUUID(),
+        apartmentId,
+        title,
+        description: input.description?.trim() || "",
+        status: "PROPOSED",
+        priority,
+        scheduledStart,
+      },
+    });
+
+    // Allerta l'organizzazione proprietaria.
+    await prisma.notification.create({
+      data: {
+        type: "MAINTENANCE",
+        title: "Nuova manutenzione da approvare",
+        message: `${company?.name ?? "Un'impresa"} propone l'intervento "${title}" presso ${apt.name}. Richiede la tua approvazione.`,
+        apartmentId,
+      },
+    });
+    await sendPushToRole("MANAGER" as Role, {
+      title: "🔧 Manutenzione da approvare",
+      body: `${company?.name ?? "Un'impresa"} propone "${title}" presso ${apt.name}.`,
+      url: "/dashboard/manager/maintenance",
+      tag: `maintenance-proposal-${apartmentId}`,
+    }, undefined, apt.organizationId).catch(console.error);
+
+    revalidatePath("/dashboard/impresa/manutenzione");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+// ── Lato proprietario: proposte di manutenzione dalle imprese ────────────────
+export type MaintenanceProposal = {
+  id: string;
+  title: string;
+  apartmentName: string;
+  companyName: string;
+  priority: string;
+  scheduledStart: string | null;
+  createdAt: string;
+};
+
+export async function getPendingMaintenanceProposals(): Promise<MaintenanceProposal[]> {
+  const orgId = await requireOwner();
+  const tickets = await prisma.maintenanceTicket.findMany({
+    where: { status: "PROPOSED", apartment: { organizationId: orgId } },
+    select: {
+      id: true, title: true, priority: true, scheduledStart: true, createdAt: true, apartmentId: true,
+      apartment: { select: { name: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  // Impresa proponente: cerca l'engagement MAINTENANCE attivo che copre l'appartamento.
+  const engagements = await prisma.engagement.findMany({
+    where: { organizationId: orgId, scope: "MAINTENANCE", status: "ACTIVE" },
+    select: { companyId: true, apartments: { select: { apartmentId: true } } },
+  });
+  const companyIds = [...new Set(engagements.map((e) => e.companyId).filter(Boolean))] as string[];
+  const companies = companyIds.length
+    ? await prisma.company.findMany({ where: { id: { in: companyIds } }, select: { id: true, name: true } })
+    : [];
+  const companyName = new Map(companies.map((c) => [c.id, c.name]));
+  const companyForApt = (aptId: string) => {
+    const eng = engagements.find((e) => e.apartments.length === 0 || e.apartments.some((a) => a.apartmentId === aptId));
+    return eng?.companyId ? companyName.get(eng.companyId) ?? "Impresa" : "Impresa";
+  };
+  return tickets.map((t) => ({
+    id: t.id,
+    title: t.title,
+    apartmentName: t.apartment.name,
+    companyName: companyForApt(t.apartmentId),
+    priority: t.priority,
+    scheduledStart: t.scheduledStart?.toISOString() ?? null,
+    createdAt: t.createdAt.toISOString(),
+  }));
+}
+
+async function assertOwnerMaintenanceProposal(ticketId: string) {
+  const orgId = await requireOwner();
+  const ticket = await prisma.maintenanceTicket.findUnique({
+    where: { id: ticketId },
+    select: { id: true, status: true, apartment: { select: { organizationId: true } } },
+  });
+  if (!ticket || ticket.apartment.organizationId !== orgId) throw new Error("Proposta non trovata.");
+  return ticket;
+}
+
+export async function approveMaintenanceProposal(ticketId: string): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const ticket = await assertOwnerMaintenanceProposal(ticketId);
+    if (ticket.status !== "PROPOSED") return { success: false, error: "Proposta già gestita." };
+    await prisma.maintenanceTicket.update({ where: { id: ticketId }, data: { status: "PENDING" } });
+    revalidatePath("/dashboard/manager/maintenance");
+    revalidatePath("/dashboard/manager");
+    revalidatePath("/dashboard/impresa/manutenzione");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+export async function rejectMaintenanceProposal(ticketId: string): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const ticket = await assertOwnerMaintenanceProposal(ticketId);
+    if (ticket.status !== "PROPOSED") return { success: false, error: "Proposta già gestita." };
+    await prisma.maintenanceTicket.update({ where: { id: ticketId }, data: { status: "REJECTED" } });
+    revalidatePath("/dashboard/manager/maintenance");
     revalidatePath("/dashboard/impresa/manutenzione");
     return { success: true };
   } catch (e) {

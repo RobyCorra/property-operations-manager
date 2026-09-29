@@ -19,11 +19,11 @@ export default async function ImpresaManutenzionePage() {
     ? { apartmentId: { in: maintenanceAptIds } }
     : { apartment: { organizationId: { in: access.orgIds } } };
 
-  const [rows, staff, orgs] = await Promise.all([
+  const [rows, staff, orgs, apts] = await Promise.all([
     prisma.maintenanceTicket.findMany({
-      where: { ...aptFilter, status: { not: "CANCELLED" } },
+      where: { ...aptFilter, status: { notIn: ["CANCELLED", "REJECTED"] } },
       select: {
-        id: true, title: true, status: true, priority: true, createdAt: true, assignedToId: true,
+        id: true, title: true, status: true, priority: true, createdAt: true, scheduledStart: true, assignedToId: true,
         apartment: { select: { name: true, organizationId: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -33,10 +33,16 @@ export default async function ImpresaManutenzionePage() {
     access.orgIds.length
       ? prisma.organization.findMany({ where: { id: { in: access.orgIds } }, select: { id: true, name: true } })
       : Promise.resolve([]),
+    maintenanceAptIds
+      ? prisma.apartment.findMany({ where: { id: { in: maintenanceAptIds } }, select: { id: true, name: true, organizationId: true }, orderBy: { name: "asc" } })
+      : access.orgIds.length
+        ? prisma.apartment.findMany({ where: { organizationId: { in: access.orgIds } }, select: { id: true, name: true, organizationId: true }, orderBy: { name: "asc" } })
+        : Promise.resolve([]),
   ]);
 
   const orgName = new Map(orgs.map((o) => [o.id, o.name]));
   const mainteners = staff.filter((s) => s.role === "MAINTENANCE").map((s) => ({ id: s.id, name: s.name }));
+  const apartments = apts.map((a) => ({ id: a.id, name: a.name, ownerName: orgName.get(a.organizationId ?? "") ?? "—" }));
 
   const tickets = rows.map((r) => ({
     id: r.id,
@@ -45,7 +51,7 @@ export default async function ImpresaManutenzionePage() {
     ownerName: orgName.get(r.apartment.organizationId ?? "") ?? "—",
     priority: r.priority,
     status: r.status,
-    createdISO: r.createdAt.toISOString(),
+    dateISO: (r.scheduledStart ?? r.createdAt).toISOString(),
     assignedToId: r.assignedToId,
   }));
 
@@ -63,7 +69,7 @@ export default async function ImpresaManutenzionePage() {
       )}
 
       <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-        <ImpresaMaintenanceAssign tickets={tickets} staff={mainteners} />
+        <ImpresaMaintenanceAssign tickets={tickets} staff={mainteners} apartments={apartments} />
       </div>
     </div>
   );

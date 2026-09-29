@@ -150,7 +150,7 @@ export default async function ManagerDashboardPage() {
       }
     }),
     prisma.maintenanceTicket.findMany({
-      where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
+      where: { status: { notIn: ["CANCELLED", "PROPOSED", "REJECTED"] }, apartment: { organizationId: orgId } },
       include: { apartment: true, assignedTo: true },
     }),
     prisma.checkinTask.findMany({

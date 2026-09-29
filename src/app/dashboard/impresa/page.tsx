@@ -182,8 +182,8 @@ export default async function ImpresaDashboard() {
   const maintTickets = hasMaintenance
     ? await prisma.maintenanceTicket.findMany({
         where: maintAptFilter
-          ? { apartmentId: { in: maintAptFilter }, status: { not: "CANCELLED" } }
-          : { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
+          ? { apartmentId: { in: maintAptFilter }, status: { notIn: ["CANCELLED", "PROPOSED", "REJECTED"] } }
+          : { apartment: { organizationId: { in: orgIds } }, status: { notIn: ["CANCELLED", "PROPOSED", "REJECTED"] } },
         select: {
           id: true, apartmentId: true, title: true, description: true, status: true, priority: true,
           createdAt: true, scheduledStart: true, scheduledEnd: true, maintenanceTasks: true,

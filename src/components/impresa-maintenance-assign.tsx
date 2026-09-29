@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useTransition, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { assignMaintenance } from "@/src/app/actions/company";
+import { assignMaintenance, impresaApproveMaintenance, impresaCreateMaintenance } from "@/src/app/actions/company";
 
 type Staff = { id: string; name: string };
+type Apartment = { id: string; name: string; ownerName: string };
 type Ticket = {
   id: string;
   title: string;
@@ -12,146 +14,285 @@ type Ticket = {
   ownerName: string;
   priority: string;
   status: string;
-  createdISO: string;
+  dateISO: string;
   assignedToId: string | null;
 };
 
-type Filter = "all" | "unassigned" | "assigned" | "done";
+type Filter = "all" | "unassigned" | "assigned" | "proposed" | "done";
 
 const FILTER_LABELS: Record<Filter, string> = {
   all: "Tutti",
   unassigned: "Da assegnare",
   assigned: "Assegnati",
+  proposed: "In attesa org",
   done: "Risolti",
+};
+const FILTER_COLORS: Record<Filter, string> = {
+  all: "bg-slate-900 text-white",
+  unassigned: "bg-amber-100 text-amber-700",
+  assigned: "bg-blue-100 text-blue-700",
+  proposed: "bg-amber-100 text-amber-700",
+  done: "bg-emerald-100 text-emerald-700",
+};
+const BORDER_COLOR: Record<Filter, string> = {
+  all: "",
+  unassigned: "border-l-amber-400",
+  assigned: "border-l-blue-400",
+  proposed: "border-l-amber-400",
+  done: "border-l-emerald-400",
+};
+
+const STATUS_BADGE: Record<string, { cls: string; label: string }> = {
+  PROPOSED: { cls: "bg-amber-100 text-amber-700", label: "In attesa org" },
+  PENDING_UNASSIGNED: { cls: "bg-amber-100 text-amber-700", label: "Da assegnare" },
+  PENDING_ASSIGNED: { cls: "bg-blue-100 text-blue-700", label: "Assegnata" },
+  IN_PROGRESS: { cls: "bg-blue-100 text-blue-700", label: "In corso" },
+  AWAITING_REVIEW: { cls: "bg-purple-100 text-purple-700", label: "In verifica" },
+  RESOLVED: { cls: "bg-emerald-100 text-emerald-700", label: "Risolta" },
+  COMPLETED: { cls: "bg-emerald-100 text-emerald-700", label: "Completata" },
+  APPROVED: { cls: "bg-emerald-100 text-emerald-700", label: "Approvata" },
+  CLOSED: { cls: "bg-slate-100 text-slate-600", label: "Chiusa" },
 };
 
 function isDone(status: string) {
-  return status === "RESOLVED" || status === "COMPLETED" || status === "CLOSED" || status === "APPROVED";
+  return status === "APPROVED" || status === "COMPLETED" || status === "CLOSED" || status === "RESOLVED";
 }
-
 function ticketCategory(t: Ticket): Filter {
+  if (t.status === "PROPOSED") return "proposed";
   if (isDone(t.status)) return "done";
   if (!t.assignedToId) return "unassigned";
   return "assigned";
 }
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
+function badgeKey(t: Ticket): string {
+  if (t.status === "PENDING") return t.assignedToId ? "PENDING_ASSIGNED" : "PENDING_UNASSIGNED";
+  return t.status;
 }
 
-const STATUS_STYLE: Record<string, string> = {
-  PENDING: "bg-amber-100 text-amber-700",
-  OPEN: "bg-amber-100 text-amber-700",
-  IN_PROGRESS: "bg-blue-100 text-blue-700",
-  AWAITING_REVIEW: "bg-purple-100 text-purple-700",
-  RESOLVED: "bg-emerald-100 text-emerald-700",
-  COMPLETED: "bg-emerald-100 text-emerald-700",
-  APPROVED: "bg-emerald-100 text-emerald-700",
-  CLOSED: "bg-slate-100 text-slate-600",
-};
+function fmtTime(iso: string) {
+  return new Date(iso).toLocaleString("it-IT", { hour: "2-digit", minute: "2-digit" });
+}
+function dateLabel(iso: string): string {
+  const d = new Date(iso);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diff = Math.round((target.getTime() - today.getTime()) / 86400000);
+  if (diff === 0) return "Oggi";
+  if (diff === 1) return "Domani";
+  if (diff === -1) return "Ieri";
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" });
+}
+function dateKey(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function isPast(iso: string): boolean {
+  const d = new Date(iso);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return d < today;
+}
 
-export default function ImpresaMaintenanceAssign({ tickets, staff }: { tickets: Ticket[]; staff: Staff[] }) {
+export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }: { tickets: Ticket[]; staff: Staff[]; apartments: Apartment[] }) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [filter, setFilter] = useState<Filter>("all");
-  const [assign, setAssign] = useState<Record<string, string | null>>(
-    () => Object.fromEntries(tickets.map((t) => [t.id, t.assignedToId])),
-  );
   const [error, setError] = useState<string | null>(null);
-  const [savedId, setSavedId] = useState<string | null>(null);
+  const [okMsg, setOkMsg] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+
+  const initial = Object.fromEntries(tickets.map((t) => [t.id, t.assignedToId ?? ""]));
+  const [assign, setAssign] = useState<Record<string, string>>(initial);
+  const dirty = tickets.some((t) => (assign[t.id] ?? "") !== (t.assignedToId ?? ""));
+
+  const [newOpen, setNewOpen] = useState(false);
+  const [nApt, setNApt] = useState("");
+  const [nTitle, setNTitle] = useState("");
+  const [nPriority, setNPriority] = useState("MEDIUM");
+  const [nStart, setNStart] = useState("");
+  const [nDesc, setNDesc] = useState("");
+
+  const inputCls = "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
+
+  const filtered = useMemo(() => (filter === "all" ? tickets : tickets.filter((t) => ticketCategory(t) === filter)), [tickets, filter]);
+
+  const grouped = useMemo(() => {
+    const map = new Map<string, { label: string; iso: string; items: Ticket[] }>();
+    const sorted = [...filtered].sort((a, b) => {
+      const aP = isPast(a.dateISO), bP = isPast(b.dateISO);
+      if (aP !== bP) return aP ? 1 : -1;
+      if (aP) return new Date(b.dateISO).getTime() - new Date(a.dateISO).getTime();
+      return new Date(a.dateISO).getTime() - new Date(b.dateISO).getTime();
+    });
+    for (const t of sorted) {
+      const key = dateKey(t.dateISO);
+      if (!map.has(key)) map.set(key, { label: dateLabel(t.dateISO), iso: t.dateISO, items: [] });
+      map.get(key)!.items.push(t);
+    }
+    return [...map.values()];
+  }, [filtered]);
 
   const counts = useMemo(() => {
-    const c: Record<Filter, number> = { all: tickets.length, unassigned: 0, assigned: 0, done: 0 };
-    for (const t of tickets) c[ticketCategory(t)]++;
-    return c;
+    const m: Record<Filter, number> = { all: tickets.length, unassigned: 0, assigned: 0, proposed: 0, done: 0 };
+    for (const t of tickets) m[ticketCategory(t)]++;
+    return m;
   }, [tickets]);
 
-  const visible = useMemo(
-    () => (filter === "all" ? tickets : tickets.filter((t) => ticketCategory(t) === filter)),
-    [tickets, filter],
-  );
+  const staffName = useMemo(() => new Map(staff.map((s) => [s.id, s.name])), [staff]);
 
-  function onAssign(id: string, userId: string | null) {
-    setAssign((a) => ({ ...a, [id]: userId }));
-    setError(null);
+  const onSave = () => {
+    setError(null); setOkMsg(null);
+    const changed = tickets.filter((t) => (assign[t.id] ?? "") !== (t.assignedToId ?? ""));
+    if (changed.length === 0) return;
     startTransition(async () => {
-      const r = await assignMaintenance(id, userId);
-      if (!r.success) setError(r.error);
-      else { setSavedId(id); setTimeout(() => setSavedId((s) => (s === id ? null : s)), 1500); }
+      for (const t of changed) {
+        const r = await assignMaintenance(t.id, assign[t.id] || null);
+        if (!r.success) { setError(r.error); return; }
+      }
+      setOkMsg(`Assegnazioni salvate (${changed.length}).`);
+      router.refresh();
     });
-  }
+  };
 
-  const staffName = new Map(staff.map((s) => [s.id, s.name]));
+  const onApprove = (id: string) => {
+    setError(null); setOkMsg(null);
+    startTransition(async () => {
+      const r = await impresaApproveMaintenance(id);
+      if (!r.success) setError(r.error);
+      else { setOkMsg("Intervento approvato."); router.refresh(); }
+    });
+  };
+
+  const onCreate = () => {
+    setError(null); setOkMsg(null);
+    if (!nApt || !nTitle.trim()) { setError("Appartamento e titolo obbligatori."); return; }
+    startTransition(async () => {
+      const r = await impresaCreateMaintenance({ apartmentId: nApt, title: nTitle, description: nDesc, priority: nPriority, start: nStart || null });
+      if (!r.success) setError(r.error);
+      else {
+        setNewOpen(false); setNApt(""); setNTitle(""); setNPriority("MEDIUM"); setNStart(""); setNDesc("");
+        setOkMsg("Richiesta inviata all'organizzazione.");
+        router.refresh();
+      }
+    });
+  };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        {(Object.keys(FILTER_LABELS) as Filter[]).map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setFilter(f)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-              filter === f ? "bg-violet-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {FILTER_LABELS[f]} <span className="opacity-70">{counts[f]}</span>
+    <div className="space-y-3">
+      {/* Barra azioni */}
+      <div className="flex flex-wrap items-center gap-2">
+        <button type="button" onClick={onSave} disabled={isPending || !dirty} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-2 text-sm font-semibold text-white disabled:opacity-40">Salva</button>
+        <button type="button" onClick={() => setNewOpen((v) => !v)} className="rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-600">{newOpen ? "Chiudi" : "+ Nuova manutenzione"}</button>
+        {dirty && <span className="text-xs text-amber-600">Modifiche non salvate</span>}
+        {okMsg && <span className="text-xs font-semibold text-emerald-600">✓ {okMsg}</span>}
+        {error && <span className="text-xs font-semibold text-red-500">{error}</span>}
+      </div>
+
+      {/* Form nuova manutenzione */}
+      {newOpen && (
+        <div className="rounded-xl border border-violet-100 bg-violet-50/40 p-3 space-y-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <select className={inputCls} value={nApt} onChange={(e) => setNApt(e.target.value)}>
+              <option value="">Appartamento…</option>
+              {apartments.map((a) => <option key={a.id} value={a.id}>{a.name} · {a.ownerName}</option>)}
+            </select>
+            <input type="text" className={inputCls} placeholder="Titolo (es. Perdita rubinetto)" value={nTitle} onChange={(e) => setNTitle(e.target.value)} />
+            <select className={inputCls} value={nPriority} onChange={(e) => setNPriority(e.target.value)}>
+              <option value="LOW">Priorità: Bassa</option>
+              <option value="MEDIUM">Priorità: Media</option>
+              <option value="HIGH">Priorità: Alta</option>
+              <option value="URGENT">Priorità: Urgente</option>
+            </select>
+            <input type="datetime-local" className={inputCls} value={nStart} onChange={(e) => setNStart(e.target.value)} />
+          </div>
+          <textarea className={inputCls} rows={2} placeholder="Descrizione (facoltativa)" value={nDesc} onChange={(e) => setNDesc(e.target.value)} />
+          <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
+            <span>⚠️</span>
+            <p className="text-[11px] text-amber-700">L&apos;intervento verrà <strong>inviato all&apos;organizzazione per l&apos;approvazione</strong>; solo dopo l&apos;assenso diventa operativo e compare in entrambi i calendari.</p>
+          </div>
+          <button type="button" onClick={onCreate} disabled={isPending} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40">Invia richiesta all&apos;organizzazione</button>
+        </div>
+      )}
+
+      {/* Filtri */}
+      <div className="flex flex-wrap gap-1.5">
+        {(["all", "unassigned", "assigned", "proposed", "done"] as Filter[]).map((f) => (
+          <button key={f} type="button" onClick={() => setFilter(f)}
+            className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition-all ${filter === f ? FILTER_COLORS[f] : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}>
+            {FILTER_LABELS[f]} ({counts[f]})
           </button>
         ))}
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
-
-      {visible.length === 0 ? (
-        <p className="text-xs text-gray-400">Nessun intervento in questa vista.</p>
+      {/* Lista raggruppata per data */}
+      {filtered.length === 0 ? (
+        <p className="text-xs text-gray-400 py-4 text-center">Nessun intervento trovato.</p>
       ) : (
-        <div className="space-y-2">
-          {visible.map((t) => {
-            const currentAssignee = assign[t.id] ?? null;
-            const highlightUnassigned = !currentAssignee && !isDone(t.status);
+        <div className="space-y-4">
+          {grouped.map((group) => {
+            const past = isPast(group.iso);
             return (
-            <div key={t.id} className={`rounded-xl border px-3 py-2.5 ${highlightUnassigned ? "border-2 border-rose-300 bg-rose-50/70" : "border-gray-100 bg-gray-50/70"}`}>
-              <div className="flex items-start gap-3">
-                <Link href={`/dashboard/impresa/manutenzione/${t.id}`} className="min-w-0 flex-1 group cursor-pointer">
-                  <span className="block truncate text-sm font-semibold text-slate-800 group-hover:text-violet-600">
-                    {t.title}
-                  </span>
-                  <p className="text-[11px] text-gray-400">
-                    {t.apartmentName} · {t.ownerName} · {fmtDate(t.createdISO)}
-                  </p>
-                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_STYLE[t.status] ?? "bg-slate-100 text-slate-600"}`}>
-                      {t.status}
-                    </span>
-                    {t.priority === "URGENT" && (
-                      <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">Urgente</span>
-                    )}
-                    {currentAssignee ? (
-                      <span className="text-[10px] text-gray-500">👤 {staffName.get(currentAssignee) ?? "—"}</span>
-                    ) : !isDone(t.status) ? (
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600">Da assegnare</span>
-                    ) : null}
-                  </div>
-                </Link>
-                <div className="flex shrink-0 flex-col items-end gap-1">
-                  <select
-                    value={assign[t.id] ?? ""}
-                    onChange={(e) => onAssign(t.id, e.target.value || null)}
-                    disabled={isPending || staff.length === 0}
-                    className="rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800 focus:outline-none disabled:opacity-50"
-                  >
-                    <option value="">Non assegnato</option>
-                    {staff.map((s) => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                  </select>
-                  {savedId === t.id && <span className="text-[10px] font-semibold text-emerald-600">Salvato</span>}
+              <div key={group.label}>
+                <div className={`flex items-center gap-2 mb-2 ${past ? "opacity-60" : ""}`}>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{group.label}</span>
+                  <div className="h-px flex-1 bg-gray-200" />
+                  {past && <span className="text-[10px] text-gray-400">passate</span>}
+                </div>
+                <div className="space-y-1.5">
+                  {group.items.map((t) => {
+                    const cat = ticketCategory(t);
+                    const badge = STATUS_BADGE[badgeKey(t)] ?? { cls: "bg-slate-100 text-slate-600", label: t.status };
+                    const pastItem = isPast(t.dateISO);
+                    const proposed = t.status === "PROPOSED";
+                    return (
+                      <div key={t.id}
+                        className={`flex flex-wrap items-center gap-3 rounded-xl border px-3 py-2.5 border-l-[3px] ${BORDER_COLOR[cat]} ${proposed ? "border-dashed border-amber-300 bg-amber-50/40" : "border-gray-100 bg-gray-50/70"} ${pastItem && !proposed ? "opacity-70" : ""}`}>
+                        <div className="min-w-0 flex-1">
+                          {proposed ? (
+                            <span className="truncate text-sm font-semibold text-slate-800">{t.title}
+                              <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-[10px] font-medium text-gray-500">{t.ownerName}</span></span>
+                          ) : (
+                            <Link href={`/dashboard/impresa/manutenzione/${t.id}`} className="truncate text-sm font-semibold text-slate-800 hover:text-violet-600">{t.title}
+                              <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-[10px] font-medium text-gray-500">{t.ownerName}</span></Link>
+                          )}
+                          <p className="text-[11px] text-gray-500">
+                            {t.apartmentName} · {fmtTime(t.dateISO)}
+                            {!proposed && <> · <Link href={`/dashboard/impresa/manutenzione/${t.id}`} className="text-violet-600">apri scheda →</Link></>}
+                            {t.priority === "URGENT" && <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[9px] font-semibold text-red-700">Urgente</span>}
+                          </p>
+                        </div>
+                        <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${badge.cls}`}>{badge.label}</span>
+                        {t.status === "AWAITING_REVIEW" && (
+                          <button type="button" onClick={() => onApprove(t.id)} disabled={isPending} className="rounded-full bg-emerald-500 px-3 py-1.5 text-[11px] font-semibold text-white disabled:opacity-50">Approva</button>
+                        )}
+                        {proposed ? null : t.assignedToId ? (
+                          <span className="flex items-center gap-1 text-[11px] text-gray-500">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                            {staffName.get(t.assignedToId) ?? "—"}
+                          </span>
+                        ) : !isDone(t.status) ? (
+                          <select value={assign[t.id] ?? ""} onChange={(e) => setAssign((m) => ({ ...m, [t.id]: e.target.value }))}
+                            className="rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-800 focus:outline-none">
+                            <option value="">Da assegnare</option>
+                            {staff.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                          </select>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
             );
           })}
         </div>
       )}
+
+      {/* Legenda */}
+      <div className="flex flex-wrap gap-4 pt-2 border-t border-gray-100 text-[11px] text-gray-400">
+        <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-amber-400 mr-1 align-[-1px]" />Non assegnata</span>
+        <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-blue-400 mr-1 align-[-1px]" />Assegnata / in corso</span>
+        <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-purple-400 mr-1 align-[-1px]" />In verifica</span>
+        <span><span className="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-400 mr-1 align-[-1px]" />Approvata</span>
+      </div>
     </div>
   );
 }

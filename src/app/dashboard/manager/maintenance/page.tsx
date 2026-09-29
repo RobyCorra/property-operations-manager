@@ -7,8 +7,9 @@ import Link from "next/link";
 import MaintenanceListTable from "@/src/components/maintenance-list-table";
 import BackButton from "@/src/components/back-button";
 import DbErrorState from "@/src/components/db-error-state";
-import { getPendingDateRequests } from "@/src/app/actions/company";
+import { getPendingDateRequests, getPendingMaintenanceProposals } from "@/src/app/actions/company";
 import MaintenanceDateRequestDecision from "@/src/components/maintenance-date-request-decision";
+import MaintenanceProposalDecision from "@/src/components/maintenance-proposal-decision";
 
 function fmtReqDate(iso: string) {
   return new Date(iso).toLocaleString("it-IT", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -27,7 +28,7 @@ export default async function MaintenanceListPage() {
 
   const data = await Promise.all([
     prisma.maintenanceTicket.findMany({
-      where: { apartment: { organizationId: orgId } },
+      where: { apartment: { organizationId: orgId }, status: { notIn: ["PROPOSED", "REJECTED"] } },
       include: {
         apartment: true,
         assignedTo: true,
@@ -49,7 +50,10 @@ export default async function MaintenanceListPage() {
   }
 
   const [tickets, apartments, collaborators] = data;
-  const dateRequests = await getPendingDateRequests().catch(() => []);
+  const [dateRequests, proposals] = await Promise.all([
+    getPendingDateRequests().catch(() => []),
+    getPendingMaintenanceProposals().catch(() => []),
+  ]);
 
   return (
     <main className="min-h-screen bg-[#faf8ff] p-4 md:p-6 font-sans overflow-x-hidden">
@@ -71,6 +75,33 @@ export default async function MaintenanceListPage() {
             </Link>
           </div>
         </div>
+
+        {/* Nuove manutenzioni proposte dalle imprese */}
+        {proposals.length > 0 && (
+          <div className="rounded-2xl border border-violet-200 bg-violet-50/70 p-5 space-y-3">
+            <h2 className="text-sm font-bold text-violet-800 flex items-center gap-2">
+              🔧 Manutenzioni proposte dalle imprese
+              <span className="rounded-full bg-violet-500 px-2 py-0.5 text-[11px] font-bold text-white">{proposals.length}</span>
+            </h2>
+            <div className="space-y-2">
+              {proposals.map((p) => (
+                <div key={p.id} className="rounded-xl border border-violet-100 bg-white p-3 flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-800">
+                      {p.title}
+                      {p.priority === "URGENT" && <span className="ml-2 rounded-full bg-red-100 px-1.5 py-0.5 text-[9px] font-semibold text-red-700">Urgente</span>}
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      {p.apartmentName} · {p.companyName}
+                      {p.scheduledStart ? ` · proposto per ${fmtReqDate(p.scheduledStart)}` : ""}
+                    </p>
+                  </div>
+                  <MaintenanceProposalDecision ticketId={p.id} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Richieste di cambio data dalle imprese */}
         {dateRequests.length > 0 && (
