@@ -4,8 +4,14 @@ import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
 import { getMyCompanyStaff } from "@/src/app/actions/company";
 import ImpresaMaintenanceAssign from "@/src/components/impresa-maintenance-assign";
+import ImpresaMaintenanceKpi, { type MaintKpiItem } from "@/src/components/impresa-maintenance-kpi";
 
 export const dynamic = "force-dynamic";
+
+function localDateKey(d: Date | string): string {
+  const v = new Date(d);
+  return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, "0")}-${String(v.getDate()).padStart(2, "0")}`;
+}
 
 export default async function ImpresaManutenzionePage() {
   const c = await cookies();
@@ -55,12 +61,43 @@ export default async function ImpresaManutenzionePage() {
     assignedToId: r.assignedToId,
   }));
 
+  // ── KPI ──
+  const now = new Date();
+  const todayKey = localDateKey(now);
+  const DONE_STATUSES = ["RESOLVED", "COMPLETED", "APPROVED", "CLOSED"];
+  const fmtTime = (d: Date | string) => new Date(d).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  const toItem = (r: (typeof rows)[number]): MaintKpiItem => ({
+    id: r.id,
+    label: r.title,
+    sublabel: `${r.apartment.name} · ${r.scheduledStart ? fmtTime(r.scheduledStart) : "—"}`,
+    href: `/dashboard/impresa/manutenzione/${r.id}`,
+  });
+
+  const todayRows = rows.filter((r) => r.scheduledStart && localDateKey(r.scheduledStart) === todayKey);
+  const kpiToday = todayRows.map(toItem);
+  const kpiOpen = rows.filter((r) => !DONE_STATUSES.includes(r.status) && r.status !== "CANCELLED" && r.status !== "PROPOSED" && r.status !== "REJECTED").map(toItem);
+  const kpiLate = todayRows.filter((r) => {
+    if (DONE_STATUSES.includes(r.status) || r.status === "IN_PROGRESS") return false;
+    if (!r.scheduledStart) return false;
+    return now.getTime() > new Date(r.scheduledStart).getTime() + 30 * 60 * 1000;
+  }).map(toItem);
+  const kpiClosed = todayRows.filter((r) => DONE_STATUSES.includes(r.status)).map(toItem);
+  const kpiUnassigned = rows.filter((r) => !r.assignedToId && !DONE_STATUSES.includes(r.status) && r.status !== "CANCELLED" && r.status !== "PROPOSED" && r.status !== "REJECTED").map(toItem);
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Manutenzione</h1>
         <p className="mt-1 text-sm text-slate-500">Tutti gli interventi di manutenzione dei tuoi clienti.</p>
       </div>
+
+      <ImpresaMaintenanceKpi
+        ticketsToday={kpiToday}
+        ticketsOpen={kpiOpen}
+        ticketsLate={kpiLate}
+        ticketsClosed={kpiClosed}
+        ticketsUnassigned={kpiUnassigned}
+      />
 
       {mainteners.length === 0 && (
         <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-4 text-sm text-amber-700">

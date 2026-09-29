@@ -8,6 +8,7 @@ import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import ImpresaMobileDashboard from "@/src/components/impresa-mobile-dashboard";
 import ImpresaMaintenanceCalendarWrapper from "@/src/components/impresa-maintenance-calendar-wrapper";
+import ImpresaMaintenanceKpi, { type MaintKpiItem } from "@/src/components/impresa-maintenance-kpi";
 
 export const dynamic = "force-dynamic";
 
@@ -248,6 +249,28 @@ export default async function ImpresaDashboard() {
     };
   });
 
+  // ── KPI manutenzione impresa ──
+  const maintTodayKey = localDateKey(now);
+  const DONE_STATUSES = ["RESOLVED", "COMPLETED", "APPROVED", "CLOSED"];
+  const fmtTimeMaint = (d: Date | string) => new Date(d).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+  const toMaintItem = (t: (typeof maintTickets)[number]): MaintKpiItem => ({
+    id: t.id,
+    label: t.title,
+    sublabel: `${t.apartment.name} · ${t.scheduledStart ? fmtTimeMaint(t.scheduledStart) : "—"}`,
+    href: `/dashboard/impresa/manutenzione/${t.id}`,
+  });
+
+  const maintTicketsToday = maintTickets.filter((t) => t.scheduledStart && localDateKey(t.scheduledStart) === maintTodayKey);
+  const maintKpiToday = maintTicketsToday.map(toMaintItem);
+  const maintKpiOpen = maintTickets.filter((t) => !DONE_STATUSES.includes(t.status) && t.status !== "CANCELLED" && t.status !== "PROPOSED" && t.status !== "REJECTED").map(toMaintItem);
+  const maintKpiLate = maintTicketsToday.filter((t) => {
+    if (DONE_STATUSES.includes(t.status) || t.status === "IN_PROGRESS") return false;
+    if (!t.scheduledStart) return false;
+    return now.getTime() > new Date(t.scheduledStart).getTime() + 30 * 60 * 1000;
+  }).map(toMaintItem);
+  const maintKpiClosed = maintTicketsToday.filter((t) => DONE_STATUSES.includes(t.status)).map(toMaintItem);
+  const maintKpiUnassigned = maintTickets.filter((t) => !t.assignedTo && !DONE_STATUSES.includes(t.status) && t.status !== "CANCELLED" && t.status !== "PROPOSED" && t.status !== "REJECTED").map(toMaintItem);
+
   const mobileApts = apartmentsData.map((a) => ({
     id: a.id,
     name: a.name,
@@ -280,6 +303,13 @@ export default async function ImpresaDashboard() {
               <h1 className="text-xl font-semibold tracking-tight text-slate-900">Manutenzione</h1>
               <p className="mt-1 text-sm text-slate-500">Calendario interventi per appartamento.</p>
             </div>
+            <ImpresaMaintenanceKpi
+              ticketsToday={maintKpiToday}
+              ticketsOpen={maintKpiOpen}
+              ticketsLate={maintKpiLate}
+              ticketsClosed={maintKpiClosed}
+              ticketsUnassigned={maintKpiUnassigned}
+            />
             <section className="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm">
               <ImpresaMaintenanceCalendarWrapper
                 apartments={maintApartmentsData}
@@ -340,6 +370,14 @@ export default async function ImpresaDashboard() {
         )}
 
         {hasMaintenance && (
+          <>
+          <ImpresaMaintenanceKpi
+            ticketsToday={maintKpiToday}
+            ticketsOpen={maintKpiOpen}
+            ticketsLate={maintKpiLate}
+            ticketsClosed={maintKpiClosed}
+            ticketsUnassigned={maintKpiUnassigned}
+          />
           <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             <ImpresaMaintenanceCalendarWrapper
               apartments={maintApartmentsData}
@@ -350,6 +388,7 @@ export default async function ImpresaDashboard() {
               serverDate={serverDate}
             />
           </section>
+          </>
         )}
 
         {!hasCleaning && !hasMaintenance && (
