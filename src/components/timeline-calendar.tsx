@@ -168,8 +168,8 @@ interface TimelineCalendarProps {
   currentUserId?: string;
   /** Se impostata, il modal manutenzione mostra un link "Vedi intervento" a `${base}/${id}`. */
   maintenanceDetailBase?: string;
-  /** Operatori manutenzione dell'impresa: abilita l'assegnazione dal modal. */
-
+  /** Impedisce l'apertura delle modali per prenotazioni e pulizie (usato nel filtro "Tutto" impresa). */
+  disableBookingCleaningModals?: boolean;
 }
 
 type CalendarEvent = {
@@ -217,7 +217,7 @@ function diffLocalDays(start: Date, end: Date) {
   return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId, maintenanceDetailBase }: TimelineCalendarProps) {
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId, maintenanceDetailBase, disableBookingCleaningModals = false }: TimelineCalendarProps) {
   const { t, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const toast = useToast();
@@ -848,8 +848,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     return (
                       <div
                         key={`${event.type}-${event.id}`}
-                        onClick={() => setSelectedEvent({ type: "booking", data: booking })}
-                        className="absolute top-4 h-8 rounded-full border border-slate-200/80 bg-white/70 backdrop-blur-sm flex items-center gap-1.5 px-3 shadow-sm z-10 transition-all duration-200 hover:scale-[1.03] hover:shadow-md hover:bg-white/90 active:scale-95 cursor-pointer text-[11px] font-semibold tracking-tight overflow-hidden text-slate-700"
+                        onClick={disableBookingCleaningModals ? undefined : () => setSelectedEvent({ type: "booking", data: booking })}
+                        className={`absolute top-4 h-8 rounded-full border border-slate-200/80 bg-white/70 backdrop-blur-sm flex items-center gap-1.5 px-3 shadow-sm z-10 text-[11px] font-semibold tracking-tight overflow-hidden text-slate-700 ${disableBookingCleaningModals ? "opacity-60" : "transition-all duration-200 hover:scale-[1.03] hover:shadow-md hover:bg-white/90 active:scale-95 cursor-pointer"}`}
                         title={tooltipText}
                         style={{ left: getPosition(event.start, true), width: barWidth }}
                       >
@@ -905,8 +905,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     return (
                       <div
                         key={`${event.type}-${event.id}`}
-                        onClick={() => setSelectedEvent({ type: "cleaning", data: cleaning })}
-                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95 shadow-sm flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${cleaningColor} ${cleaningPulse}`}
+                        onClick={disableBookingCleaningModals ? undefined : () => setSelectedEvent({ type: "cleaning", data: cleaning })}
+                        className={`absolute top-14 h-7 px-3 rounded-full border text-[10px] font-semibold z-10 shadow-sm flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${cleaningColor} ${cleaningPulse} ${disableBookingCleaningModals ? "opacity-60" : "cursor-pointer transition-all duration-200 hover:scale-[1.05] hover:shadow-md active:scale-95"}`}
                         title={cleaningLabel ? `${event.title} - ${cleaningLabel.toUpperCase()}` : event.title}
                         style={{
                           left: getPosition(event.start) + 6,

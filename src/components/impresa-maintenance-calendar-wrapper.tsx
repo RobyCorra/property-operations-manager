@@ -49,6 +49,7 @@ export default function ImpresaMaintenanceCalendarWrapper({ apartments, maintena
         maintenanceDetailBase={maintenanceDetailBase}
         serverDate={serverDate}
         readOnly
+        disableBookingCleaningModals={mode === "all"}
       />
     </div>
   );
