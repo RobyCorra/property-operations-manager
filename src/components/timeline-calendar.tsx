@@ -23,6 +23,7 @@ import {
   approveCleaningDirectly,
   approveMaintenanceDirectly,
 } from "@/src/app/actions/operational";
+import { assignMaintenance } from "@/src/app/actions/company";
 
 import { 
   KeyRound, 
@@ -113,6 +114,8 @@ interface MaintenanceTicket {
   apartment?: { name: string; address: string };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   maintenanceTasks?: any;
+  assignedToId?: string | null;
+  attachments?: { id: string; url: string; fileName?: string | null; fileType?: string | null }[] | null;
 }
 
 type PrismaMaintenanceTicket = {
@@ -163,8 +166,10 @@ interface TimelineCalendarProps {
   readOnly?: boolean;
   /** userId del manager loggato: abilita la verifica/approvazione pulizie nel modal. */
   currentUserId?: string;
-  /** Se impostata, il modal manutenzione mostra un link "Apri intervento" a `${base}/${id}`. */
+  /** Se impostata, il modal manutenzione mostra un link "Vedi intervento" a `${base}/${id}`. */
   maintenanceDetailBase?: string;
+  /** Operatori manutenzione dell'impresa: abilita l'assegnazione dal modal. */
+  maintenanceStaff?: { id: string; name: string }[];
 }
 
 type CalendarEvent = {
@@ -212,7 +217,7 @@ function diffLocalDays(start: Date, end: Date) {
   return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId, maintenanceDetailBase }: TimelineCalendarProps) {
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId, maintenanceDetailBase, maintenanceStaff }: TimelineCalendarProps) {
   const { t, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const toast = useToast();
@@ -1318,6 +1323,29 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 <div className="bg-red-500/5 p-6 rounded-2xl border border-red-500/10 text-sm text-slate-700">
                                     {selectedEvent.data.description || "Nessuna descrizione fornita."}
                                 </div>
+
+                                {maintenanceDetailBase && (
+                                <div className="mt-6">
+                                    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Allegati</h4>
+                                    {Array.isArray(selectedEvent.data.attachments) && selectedEvent.data.attachments.length > 0 ? (
+                                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                            {(selectedEvent.data.attachments as any[]).map((att: any) => (
+                                                <a key={att.id} href={att.url} target="_blank" rel="noreferrer"
+                                                    className="group relative h-20 rounded-xl overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center">
+                                                    {att.fileType?.startsWith("image/") ? (
+                                                        // eslint-disable-next-line @next/next/no-img-element
+                                                        <img src={att.url} alt={att.fileName ?? "Allegato"} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                                    ) : (
+                                                        <div className="text-center p-1"><span className="text-xl">📄</span></div>
+                                                    )}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-xs text-slate-400">Nessun allegato.</p>
+                                    )}
+                                </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -1639,12 +1667,28 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     </div>
 
                     {maintenanceDetailBase && selectedEvent.type === 'maintenance' && (
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                        {maintenanceStaff && maintenanceStaff.length > 0 && (
+                            <select
+                                defaultValue={selectedEvent.data.assignedTo?.id ?? selectedEvent.data.assignedToId ?? ""}
+                                disabled={isPending}
+                                onChange={(e) => {
+                                    const val = e.target.value || null;
+                                    handleAction(async () => { await assignMaintenance(selectedEvent.data.id, val); });
+                                }}
+                                className="px-4 py-3 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none disabled:opacity-50"
+                            >
+                                <option value="">👤 Assegna intervento…</option>
+                                {maintenanceStaff.map((s) => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
+                        )}
                         <Link
                             href={`${maintenanceDetailBase}/${selectedEvent.data.id}`}
                             className="px-8 py-3.5 bg-violet-600 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-violet-500 transition-all duration-200 shadow-lg hover:shadow-xl"
                         >
-                            Apri intervento →
+                            Vedi intervento →
                         </Link>
                     </div>
                     )}

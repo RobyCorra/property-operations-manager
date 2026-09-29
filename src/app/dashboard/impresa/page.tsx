@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
+import { getMyCompanyStaff } from "@/src/app/actions/company";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
@@ -184,14 +185,19 @@ export default async function ImpresaDashboard() {
           ? { apartmentId: { in: maintAptFilter }, status: { not: "CANCELLED" } }
           : { apartment: { organizationId: { in: orgIds } }, status: { not: "CANCELLED" } },
         select: {
-          id: true, apartmentId: true, title: true, status: true, priority: true,
+          id: true, apartmentId: true, title: true, description: true, status: true, priority: true,
           createdAt: true, scheduledStart: true, scheduledEnd: true, maintenanceTasks: true,
           assignedTo: { select: { id: true, name: true } },
           apartment: { select: { name: true, address: true } },
+          attachments: { select: { id: true, url: true, fileName: true, fileType: true } },
         },
         orderBy: { createdAt: "desc" },
       })
     : [];
+
+  // Operatori manutenzione dell'impresa (per assegnare dal popup calendario).
+  const impresaStaff = hasMaintenance ? await getMyCompanyStaff() : [];
+  const maintenanceStaff = impresaStaff.filter((s) => s.role === "MAINTENANCE").map((s) => ({ id: s.id, name: s.name }));
 
   const maintApartmentsData = maintApts.map((a) => {
     const aptTickets = maintTickets.filter((t) => t.apartmentId === a.id);
@@ -250,6 +256,7 @@ export default async function ImpresaDashboard() {
                 cleaningTasks={[]}
                 maintenanceTickets={maintTickets as never}
                 maintenanceDetailBase="/dashboard/impresa/manutenzione"
+                maintenanceStaff={maintenanceStaff}
                 serverDate={serverDate}
                 readOnly
               />
@@ -314,6 +321,7 @@ export default async function ImpresaDashboard() {
               cleaningTasks={[]}
               maintenanceTickets={maintTickets as never}
                 maintenanceDetailBase="/dashboard/impresa/manutenzione"
+                maintenanceStaff={maintenanceStaff}
               serverDate={serverDate}
               readOnly
             />
