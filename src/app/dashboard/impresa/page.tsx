@@ -7,6 +7,7 @@ import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import ImpresaMobileDashboard from "@/src/components/impresa-mobile-dashboard";
+import ImpresaMaintenanceCalendarWrapper from "@/src/components/impresa-maintenance-calendar-wrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -196,6 +197,39 @@ export default async function ImpresaDashboard() {
     : [];
 
 
+  // Prenotazioni e pulizie degli appartamenti manutenzione (contesto calendario "Tutto")
+  const maintAptIds = maintApts.map((a) => a.id);
+  const maintBookingsRaw = hasMaintenance && maintAptIds.length > 0
+    ? await prisma.booking.findMany({
+        where: { apartmentId: { in: maintAptIds }, status: { not: "CANCELLED" } },
+        select: {
+          id: true, apartmentId: true, guestName: true, checkInDate: true, checkOutDate: true,
+          totalGuests: true, cullaRequested: true, status: true, source: true, externalId: true,
+          apartment: { select: { name: true, address: true } },
+        },
+      })
+    : [];
+  const maintBookings = maintBookingsRaw.map((b) => ({
+    ...b,
+    guestName: b.guestName ?? "",
+    status: b.status ?? undefined,
+    source: b.source ?? undefined,
+    externalId: b.externalId ?? undefined,
+  }));
+  const maintCleanings = hasMaintenance && maintAptIds.length > 0
+    ? await prisma.cleaningTask.findMany({
+        where: { apartmentId: { in: maintAptIds }, status: { not: "CANCELLED" } },
+        select: {
+          id: true, apartmentId: true, date: true, status: true, notes: true,
+          checklistProgress: true, cullaRequested: true, sofaBedForced: true, totalGuests: true,
+          assignedToId: true,
+          assignedTo: { select: { id: true, name: true } },
+          apartment: { select: { name: true, address: true, organizationId: true } },
+        },
+        orderBy: { date: "asc" },
+      })
+    : [];
+
   const maintApartmentsData = maintApts.map((a) => {
     const aptTickets = maintTickets.filter((t) => t.apartmentId === a.id);
     const s = getApartmentOperationalStatus(serverDate, [], [], aptTickets as never, { now });
@@ -247,14 +281,13 @@ export default async function ImpresaDashboard() {
               <p className="mt-1 text-sm text-slate-500">Calendario interventi per appartamento.</p>
             </div>
             <section className="rounded-2xl border border-gray-100 bg-white p-3 shadow-sm">
-              <TimelineCalendar
+              <ImpresaMaintenanceCalendarWrapper
                 apartments={maintApartmentsData}
-                bookings={[]}
-                cleaningTasks={[]}
                 maintenanceTickets={maintTickets as never}
+                bookings={maintBookings}
+                cleaningTasks={maintCleanings}
                 maintenanceDetailBase="/dashboard/impresa/manutenzione"
                 serverDate={serverDate}
-                readOnly
               />
             </section>
           </div>
@@ -308,17 +341,13 @@ export default async function ImpresaDashboard() {
 
         {hasMaintenance && (
           <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <span>🔧</span> Calendario manutenzione <span className="font-normal text-gray-400">· per appartamento, solo interventi (sola lettura)</span>
-            </h2>
-            <TimelineCalendar
+            <ImpresaMaintenanceCalendarWrapper
               apartments={maintApartmentsData}
-              bookings={[]}
-              cleaningTasks={[]}
               maintenanceTickets={maintTickets as never}
-                maintenanceDetailBase="/dashboard/impresa/manutenzione"
+              bookings={maintBookings}
+              cleaningTasks={maintCleanings}
+              maintenanceDetailBase="/dashboard/impresa/manutenzione"
               serverDate={serverDate}
-              readOnly
             />
           </section>
         )}
