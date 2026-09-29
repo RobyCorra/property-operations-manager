@@ -26,7 +26,7 @@ const FILTER_LABELS: Record<Filter, string> = {
 };
 
 function isDone(status: string) {
-  return status === "RESOLVED" || status === "COMPLETED" || status === "CLOSED";
+  return status === "RESOLVED" || status === "COMPLETED" || status === "CLOSED" || status === "APPROVED";
 }
 
 function ticketCategory(t: Ticket): Filter {
@@ -43,8 +43,10 @@ const STATUS_STYLE: Record<string, string> = {
   PENDING: "bg-amber-100 text-amber-700",
   OPEN: "bg-amber-100 text-amber-700",
   IN_PROGRESS: "bg-blue-100 text-blue-700",
+  AWAITING_REVIEW: "bg-purple-100 text-purple-700",
   RESOLVED: "bg-emerald-100 text-emerald-700",
   COMPLETED: "bg-emerald-100 text-emerald-700",
+  APPROVED: "bg-emerald-100 text-emerald-700",
   CLOSED: "bg-slate-100 text-slate-600",
 };
 
@@ -103,13 +105,16 @@ export default function ImpresaMaintenanceAssign({ tickets, staff }: { tickets: 
         <p className="text-xs text-gray-400">Nessun intervento in questa vista.</p>
       ) : (
         <div className="space-y-2">
-          {visible.map((t) => (
-            <div key={t.id} className="rounded-xl border border-gray-100 bg-gray-50/70 px-3 py-2.5">
+          {visible.map((t) => {
+            const currentAssignee = assign[t.id] ?? null;
+            const highlightUnassigned = !currentAssignee && !isDone(t.status);
+            return (
+            <div key={t.id} className={`rounded-xl border px-3 py-2.5 ${highlightUnassigned ? "border-2 border-rose-300 bg-rose-50/70" : "border-gray-100 bg-gray-50/70"}`}>
               <div className="flex items-start gap-3">
-                <div className="min-w-0 flex-1">
-                  <Link href={`/dashboard/impresa/manutenzione/${t.id}`} className="block truncate text-sm font-semibold text-slate-800 hover:text-violet-600">
+                <Link href={`/dashboard/impresa/manutenzione/${t.id}`} className="min-w-0 flex-1 group cursor-pointer">
+                  <span className="block truncate text-sm font-semibold text-slate-800 group-hover:text-violet-600">
                     {t.title}
-                  </Link>
+                  </span>
                   <p className="text-[11px] text-gray-400">
                     {t.apartmentName} · {t.ownerName} · {fmtDate(t.createdISO)}
                   </p>
@@ -120,11 +125,13 @@ export default function ImpresaMaintenanceAssign({ tickets, staff }: { tickets: 
                     {t.priority === "URGENT" && (
                       <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">Urgente</span>
                     )}
-                    {t.assignedToId && (
-                      <span className="text-[10px] text-gray-500">👤 {staffName.get(t.assignedToId) ?? "—"}</span>
-                    )}
+                    {currentAssignee ? (
+                      <span className="text-[10px] text-gray-500">👤 {staffName.get(currentAssignee) ?? "—"}</span>
+                    ) : !isDone(t.status) ? (
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600">Da assegnare</span>
+                    ) : null}
                   </div>
-                </div>
+                </Link>
                 <div className="flex shrink-0 flex-col items-end gap-1">
                   <select
                     value={assign[t.id] ?? ""}
@@ -141,7 +148,8 @@ export default function ImpresaMaintenanceAssign({ tickets, staff }: { tickets: 
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
