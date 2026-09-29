@@ -24,32 +24,44 @@ export default function ImpresaChatThread({
   const fileRef = useRef<HTMLInputElement>(null);
   const photoRef = useRef<HTMLInputElement>(null);
 
+  // Allegato in attesa di invio (foto / file / vocale): mostrato in anteprima,
+  // inviato SOLO quando si preme Invia.
+  type Pending = { file: File; url: string; kind: "image" | "audio" | "file" };
+  const [pending, setPending] = useState<Pending | null>(null);
+
   // Registrazione vocale
   const [recording, setRecording] = useState(false);
   const recRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+
+  const stageFile = (file: File) => {
+    if (!file) return;
+    if (pending) URL.revokeObjectURL(pending.url);
+    const kind: Pending["kind"] = file.type.startsWith("image/") ? "image" : file.type.startsWith("audio/") ? "audio" : "file";
+    setPending({ file, url: URL.createObjectURL(file), kind });
+    setError(null);
+  };
+
+  const clearPending = () => {
+    if (pending) URL.revokeObjectURL(pending.url);
+    setPending(null);
+  };
 
   const submit = (fd: FormData) => {
     setError(null);
     startBusy(async () => {
       const r = await onSend(fd);
       if (!r.success) setError(r.error || "Errore invio.");
-      else { setText(""); onSent(); }
+      else { setText(""); clearPending(); onSent(); }
     });
   };
 
-  const sendText = () => {
-    if (!text.trim()) return;
-    const fd = new FormData();
-    fd.set("text", text.trim());
-    submit(fd);
-  };
-
-  const sendFile = (file: File) => {
-    if (!file) return;
+  // Invia: testo e/o allegato in attesa.
+  const send = () => {
+    if (!text.trim() && !pending) return;
     const fd = new FormData();
     if (text.trim()) fd.set("text", text.trim());
-    fd.set("file", file);
+    if (pending) fd.set("file", pending.file);
     submit(fd);
   };
 
@@ -66,7 +78,7 @@ export default function ImpresaChatThread({
         const type = rec.mimeType || "audio/webm";
         const ext = type.includes("mp4") ? "m4a" : type.includes("ogg") ? "ogg" : "webm";
         const blob = new Blob(chunksRef.current, { type });
-        if (blob.size > 0) sendFile(new File([blob], `vocale.${ext}`, { type }));
+        if (blob.size > 0) stageFile(new File([blob], `vocale.${ext}`, { type }));
       };
       recRef.current = rec;
       rec.start();
@@ -110,26 +122,41 @@ export default function ImpresaChatThread({
 
       {error && <p className="px-4 pb-1 text-xs text-red-500">{error}</p>}
 
+      {/* Anteprima allegato in attesa: si invia solo con Invia */}
+      {pending && (
+        <div className="mx-2.5 mb-1 flex items-center gap-3 rounded-xl border border-violet-100 bg-violet-50/60 p-2">
+          {pending.kind === "image" ? (
+            <img src={pending.url} alt={pending.file.name} className="h-14 w-14 rounded-lg object-cover" />
+          ) : pending.kind === "audio" ? (
+            <audio controls src={pending.url} className="h-9 flex-1" />
+          ) : (
+            <span className="flex-1 truncate text-xs text-slate-600">📎 {pending.file.name}</span>
+          )}
+          <span className="text-[10px] text-slate-400">pronto — premi Invia</span>
+          <button type="button" onClick={clearPending} disabled={busy} title="Rimuovi" className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-rose-500 hover:bg-rose-50">✕</button>
+        </div>
+      )}
+
       <div className="flex items-center gap-1.5 border-t border-gray-100 p-2.5">
-        <input ref={photoRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => e.target.files?.[0] && sendFile(e.target.files[0])} />
-        <input ref={fileRef} type="file" hidden onChange={(e) => e.target.files?.[0] && sendFile(e.target.files[0])} />
+        <input ref={photoRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => { if (e.target.files?.[0]) stageFile(e.target.files[0]); e.target.value = ""; }} />
+        <input ref={fileRef} type="file" hidden onChange={(e) => { if (e.target.files?.[0]) stageFile(e.target.files[0]); e.target.value = ""; }} />
         <button type="button" onClick={() => photoRef.current?.click()} disabled={busy} title="Foto" className="flex h-9 w-9 items-center justify-center rounded-full text-lg hover:bg-gray-100 disabled:opacity-40">📷</button>
         <button type="button" onClick={() => fileRef.current?.click()} disabled={busy} title="Allegato" className="flex h-9 w-9 items-center justify-center rounded-full text-lg hover:bg-gray-100 disabled:opacity-40">📎</button>
         {recording ? (
-          <button type="button" onClick={stopRec} title="Ferma e invia" className="flex h-9 items-center gap-1 rounded-full bg-rose-500 px-3 text-xs font-semibold text-white">
+          <button type="button" onClick={stopRec} title="Ferma registrazione" className="flex h-9 items-center gap-1 rounded-full bg-rose-500 px-3 text-xs font-semibold text-white">
             <span className="h-2 w-2 animate-pulse rounded-full bg-white" /> Stop
           </button>
         ) : (
-          <button type="button" onClick={startRec} disabled={busy} title="Vocale" className="flex h-9 w-9 items-center justify-center rounded-full text-lg hover:bg-gray-100 disabled:opacity-40">🎤</button>
+          <button type="button" onClick={startRec} disabled={busy || !!pending} title="Vocale" className="flex h-9 w-9 items-center justify-center rounded-full text-lg hover:bg-gray-100 disabled:opacity-40">🎤</button>
         )}
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendText()}
+          onKeyDown={(e) => e.key === "Enter" && send()}
           placeholder="Scrivi un messaggio…"
           className="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
         />
-        <button type="button" onClick={sendText} disabled={busy || !text.trim()} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40">
+        <button type="button" onClick={send} disabled={busy || (!text.trim() && !pending)} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40">
           Invia
         </button>
       </div>
