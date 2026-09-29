@@ -1110,6 +1110,7 @@ export async function impresaCreateMaintenance(input: {
   description?: string | null;
   priority?: string | null;
   start?: string | null; // "YYYY-MM-DDTHH:mm"
+  end?: string | null;   // "YYYY-MM-DDTHH:mm"
 }): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const companyId = await requireCompanyManager();
@@ -1129,9 +1130,14 @@ export async function impresaCreateMaintenance(input: {
 
     const priority = ["LOW", "MEDIUM", "HIGH", "URGENT"].includes(input.priority ?? "") ? (input.priority as string) : "MEDIUM";
     let scheduledStart: Date | null = null;
+    let scheduledEnd: Date | null = null;
     if (input.start && input.start.trim()) {
       const [d, t] = input.start.trim().split("T");
       scheduledStart = parseRomeDateTime(d, t || "09:00");
+    }
+    if (input.end && input.end.trim()) {
+      const [d, t] = input.end.trim().split("T");
+      scheduledEnd = parseRomeDateTime(d, t || "18:00");
     }
 
     const company = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } });
@@ -1144,6 +1150,7 @@ export async function impresaCreateMaintenance(input: {
         status: "PROPOSED",
         priority,
         scheduledStart,
+        scheduledEnd,
       },
     });
 

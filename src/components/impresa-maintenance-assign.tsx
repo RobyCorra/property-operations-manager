@@ -109,6 +109,7 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
   const [nTitle, setNTitle] = useState("");
   const [nPriority, setNPriority] = useState("MEDIUM");
   const [nStart, setNStart] = useState("");
+  const [nEnd, setNEnd] = useState("");
   const [nDesc, setNDesc] = useState("");
 
   const inputCls = "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
@@ -166,10 +167,10 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
     setError(null); setOkMsg(null);
     if (!nApt || !nTitle.trim()) { setError("Appartamento e titolo obbligatori."); return; }
     startTransition(async () => {
-      const r = await impresaCreateMaintenance({ apartmentId: nApt, title: nTitle, description: nDesc, priority: nPriority, start: nStart || null });
+      const r = await impresaCreateMaintenance({ apartmentId: nApt, title: nTitle, description: nDesc, priority: nPriority, start: nStart || null, end: nEnd || null });
       if (!r.success) setError(r.error);
       else {
-        setNewOpen(false); setNApt(""); setNTitle(""); setNPriority("MEDIUM"); setNStart(""); setNDesc("");
+        setNewOpen(false); setNApt(""); setNTitle(""); setNPriority("MEDIUM"); setNStart(""); setNEnd(""); setNDesc("");
         setOkMsg("Richiesta inviata all'organizzazione.");
         router.refresh();
       }
@@ -189,27 +190,54 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
 
       {/* Form nuova manutenzione */}
       {newOpen && (
-        <div className="rounded-xl border border-violet-100 bg-violet-50/40 p-3 space-y-2">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div className="rounded-2xl border border-violet-100 bg-violet-50/40 p-4 space-y-4">
+          {/* Appartamento */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Appartamento</label>
             <select className={inputCls} value={nApt} onChange={(e) => setNApt(e.target.value)}>
-              <option value="">Appartamento…</option>
+              <option value="">Seleziona appartamento…</option>
               {apartments.map((a) => <option key={a.id} value={a.id}>{a.name} · {a.ownerName}</option>)}
             </select>
-            <input type="text" className={inputCls} placeholder="Titolo (es. Perdita rubinetto)" value={nTitle} onChange={(e) => setNTitle(e.target.value)} />
-            <select className={inputCls} value={nPriority} onChange={(e) => setNPriority(e.target.value)}>
-              <option value="LOW">Priorità: Bassa</option>
-              <option value="MEDIUM">Priorità: Media</option>
-              <option value="HIGH">Priorità: Alta</option>
-              <option value="URGENT">Priorità: Urgente</option>
-            </select>
-            <input type="datetime-local" className={inputCls} value={nStart} onChange={(e) => setNStart(e.target.value)} />
           </div>
-          <textarea className={inputCls} rows={2} placeholder="Descrizione (facoltativa)" value={nDesc} onChange={(e) => setNDesc(e.target.value)} />
-          <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
+          {/* Titolo + Priorità */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Titolo</label>
+              <input type="text" className={inputCls} placeholder="es. Perdita rubinetto" value={nTitle} onChange={(e) => setNTitle(e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Priorità</label>
+              <select className={inputCls} value={nPriority} onChange={(e) => setNPriority(e.target.value)}>
+                <option value="LOW">Bassa</option>
+                <option value="MEDIUM">Media</option>
+                <option value="HIGH">Alta</option>
+                <option value="URGENT">Urgente</option>
+              </select>
+            </div>
+          </div>
+          {/* Data inizio + Data fine */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Data / ora inizio</label>
+              <input type="datetime-local" className={inputCls} value={nStart} onChange={(e) => setNStart(e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Data / ora fine</label>
+              <input type="datetime-local" className={inputCls} value={nEnd} onChange={(e) => setNEnd(e.target.value)} />
+            </div>
+          </div>
+          {/* Descrizione */}
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Descrizione</label>
+            <textarea className={inputCls} rows={3} placeholder="Descrizione intervento (facoltativa)" value={nDesc} onChange={(e) => setNDesc(e.target.value)} />
+          </div>
+          {/* Warning */}
+          <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
             <span>⚠️</span>
             <p className="text-[11px] text-amber-700">L&apos;intervento verrà <strong>inviato all&apos;organizzazione per l&apos;approvazione</strong>; solo dopo l&apos;assenso diventa operativo e compare in entrambi i calendari.</p>
           </div>
-          <button type="button" onClick={onCreate} disabled={isPending} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40">Invia richiesta all&apos;organizzazione</button>
+          {/* Submit */}
+          <button type="button" onClick={onCreate} disabled={isPending} className="w-full sm:w-auto rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-40 transition-all active:scale-95">Invia richiesta all&apos;organizzazione</button>
         </div>
       )}
 
