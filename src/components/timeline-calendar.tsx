@@ -23,7 +23,7 @@ import {
   approveCleaningDirectly,
   approveMaintenanceDirectly,
 } from "@/src/app/actions/operational";
-import { assignMaintenance } from "@/src/app/actions/company";
+
 
 import { 
   KeyRound, 
@@ -169,7 +169,7 @@ interface TimelineCalendarProps {
   /** Se impostata, il modal manutenzione mostra un link "Vedi intervento" a `${base}/${id}`. */
   maintenanceDetailBase?: string;
   /** Operatori manutenzione dell'impresa: abilita l'assegnazione dal modal. */
-  maintenanceStaff?: { id: string; name: string }[];
+
 }
 
 type CalendarEvent = {
@@ -217,7 +217,7 @@ function diffLocalDays(start: Date, end: Date) {
   return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId, maintenanceDetailBase, maintenanceStaff }: TimelineCalendarProps) {
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId, maintenanceDetailBase }: TimelineCalendarProps) {
   const { t, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const toast = useToast();
@@ -1668,22 +1668,6 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
 
                     {maintenanceDetailBase && selectedEvent.type === 'maintenance' && (
                     <div className="flex flex-wrap items-center gap-3">
-                        {maintenanceStaff && maintenanceStaff.length > 0 && (
-                            <select
-                                defaultValue={selectedEvent.data.assignedTo?.id ?? selectedEvent.data.assignedToId ?? ""}
-                                disabled={isPending}
-                                onChange={(e) => {
-                                    const val = e.target.value || null;
-                                    handleAction(async () => { await assignMaintenance(selectedEvent.data.id, val); });
-                                }}
-                                className="px-4 py-3 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-700 focus:outline-none disabled:opacity-50"
-                            >
-                                <option value="">👤 Assegna intervento…</option>
-                                {maintenanceStaff.map((s) => (
-                                    <option key={s.id} value={s.id}>{s.name}</option>
-                                ))}
-                            </select>
-                        )}
                         <Link
                             href={`${maintenanceDetailBase}/${selectedEvent.data.id}`}
                             className="px-8 py-3.5 bg-violet-600 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-violet-500 transition-all duration-200 shadow-lg hover:shadow-xl"

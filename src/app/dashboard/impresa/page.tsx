@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
-import { getMyCompanyStaff } from "@/src/app/actions/company";
+
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
@@ -195,9 +195,6 @@ export default async function ImpresaDashboard() {
       })
     : [];
 
-  // Operatori manutenzione dell'impresa (per assegnare dal popup calendario).
-  const impresaStaff = hasMaintenance ? await getMyCompanyStaff() : [];
-  const maintenanceStaff = impresaStaff.filter((s) => s.role === "MAINTENANCE").map((s) => ({ id: s.id, name: s.name }));
 
   const maintApartmentsData = maintApts.map((a) => {
     const aptTickets = maintTickets.filter((t) => t.apartmentId === a.id);
@@ -256,7 +253,6 @@ export default async function ImpresaDashboard() {
                 cleaningTasks={[]}
                 maintenanceTickets={maintTickets as never}
                 maintenanceDetailBase="/dashboard/impresa/manutenzione"
-                maintenanceStaff={maintenanceStaff}
                 serverDate={serverDate}
                 readOnly
               />
@@ -321,7 +317,6 @@ export default async function ImpresaDashboard() {
               cleaningTasks={[]}
               maintenanceTickets={maintTickets as never}
                 maintenanceDetailBase="/dashboard/impresa/manutenzione"
-                maintenanceStaff={maintenanceStaff}
               serverDate={serverDate}
               readOnly
             />
