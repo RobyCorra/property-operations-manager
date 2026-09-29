@@ -67,7 +67,7 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
     }),
     prisma.apartment.findMany({
       where: { organizationId: orgId },
-      select: { id: true, name: true },
+      select: { id: true, name: true, propertyId: true, property: { select: { name: true } } },
       orderBy: { name: "asc" },
     }),
   ]);
@@ -93,7 +93,7 @@ export async function getImpreseOverview(): Promise<ImpreseOverview> {
       scopes: c.scopes,
       managers: c.users,
     })),
-    apartments: apartments.map((a) => ({ id: a.id, name: a.name })),
+    apartments: apartments.map((a) => ({ id: a.id, name: a.name, propertyId: a.propertyId, propertyName: a.property?.name ?? null })),
     handlers,
   };
 }

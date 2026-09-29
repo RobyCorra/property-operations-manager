@@ -139,31 +139,81 @@ export default function ImpreseManager({ initial }: { initial: ImpreseOverview }
     onToggle: (id: string) => void;
     taken: Map<string, string>;
   }) {
+    // Raggruppa per struttura (propertyId). Appartamenti senza struttura vanno in un gruppo "standalone".
+    const groups: { propertyId: string | null; propertyName: string | null; apts: typeof apartments }[] = [];
+    const byProperty = new Map<string | null, typeof apartments>();
+    for (const apt of apartments) {
+      const key = apt.propertyId;
+      if (!byProperty.has(key)) byProperty.set(key, []);
+      byProperty.get(key)!.push(apt);
+    }
+    for (const [propId, apts] of byProperty) {
+      groups.push({ propertyId: propId, propertyName: apts[0]?.propertyName ?? null, apts });
+    }
+
+    function toggleGroup(groupApts: typeof apartments) {
+      const available = groupApts.filter((a) => !taken.has(a.id));
+      const allSelected = available.every((a) => selectedIds.has(a.id));
+      for (const a of available) {
+        if (allSelected) {
+          if (selectedIds.has(a.id)) onToggle(a.id);
+        } else {
+          if (!selectedIds.has(a.id)) onToggle(a.id);
+        }
+      }
+    }
+
     return (
       <div className="mt-3">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Seleziona appartamenti</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mb-3">
-          {apartments.map((apt) => {
-            const takenBy = taken.get(apt.id);
-            const checked = selectedIds.has(apt.id);
-            const disabled = !!takenBy;
+        <div className="space-y-3 mb-3">
+          {groups.map((g) => {
+            const isStructure = g.propertyId && g.apts.length > 1;
+            const available = g.apts.filter((a) => !taken.has(a.id));
+            const allSelected = available.length > 0 && available.every((a) => selectedIds.has(a.id));
+            const someSelected = available.some((a) => selectedIds.has(a.id));
+
             return (
-              <label
-                key={apt.id}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                  disabled ? "opacity-50 cursor-not-allowed" : checked ? "bg-violet-50" : "hover:bg-gray-50"
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={checked || disabled}
-                  disabled={disabled}
-                  onChange={() => !disabled && onToggle(apt.id)}
-                  className="rounded border-gray-300 text-violet-600 focus:ring-violet-500 w-4 h-4"
-                />
-                <span className={`text-sm font-medium ${disabled ? "text-gray-400" : "text-slate-800"}`}>{apt.name}</span>
-                {disabled && <span className="text-[10px] text-gray-400 ml-auto">{takenBy}</span>}
-              </label>
+              <div key={g.propertyId ?? "standalone"}>
+                {isStructure && (
+                  <label className="flex items-center gap-2 px-3 py-1.5 mb-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      ref={(el) => { if (el) el.indeterminate = someSelected && !allSelected; }}
+                      onChange={() => toggleGroup(g.apts)}
+                      className="rounded border-gray-300 text-violet-600 focus:ring-violet-500 w-4 h-4"
+                    />
+                    <span className="text-xs font-bold text-violet-700">🏨 {g.propertyName ?? "Struttura"}</span>
+                    <span className="text-[10px] text-gray-400">({g.apts.length} unità)</span>
+                  </label>
+                )}
+                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-1.5 ${isStructure ? "ml-4" : ""}`}>
+                  {g.apts.map((apt) => {
+                    const takenBy = taken.get(apt.id);
+                    const checked = selectedIds.has(apt.id);
+                    const disabled = !!takenBy;
+                    return (
+                      <label
+                        key={apt.id}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                          disabled ? "opacity-50 cursor-not-allowed" : checked ? "bg-violet-50" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked || disabled}
+                          disabled={disabled}
+                          onChange={() => !disabled && onToggle(apt.id)}
+                          className="rounded border-gray-300 text-violet-600 focus:ring-violet-500 w-4 h-4"
+                        />
+                        <span className={`text-sm font-medium ${disabled ? "text-gray-400" : "text-slate-800"}`}>{apt.name}</span>
+                        {disabled && <span className="text-[10px] text-gray-400 ml-auto">{takenBy}</span>}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
         </div>

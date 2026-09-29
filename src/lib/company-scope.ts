@@ -23,7 +23,7 @@ export type ImpreseOverview = {
     scopes: string[];
     managers: CompanyManager[];
   }[];
-  apartments: { id: string; name: string }[];
+  apartments: { id: string; name: string; propertyId: string | null; propertyName: string | null }[];
   // per ogni scope: lista delle deleghe attive (vuota = interno)
   handlers: Record<string, EngagementHandler[]>;
 };
