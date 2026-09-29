@@ -38,13 +38,14 @@ const NAV_ITEMS: NavItem[] = [
 
 interface ManagerNavbarProps {
   unreadCount?: number;
+  maintenanceProposalCount?: number;
   collapsed: boolean;
   onToggle: () => void;
   items?: NavItem[];
   homeHref?: string;
 }
 
-export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle, items = NAV_ITEMS, homeHref = "/dashboard/manager" }: ManagerNavbarProps) {
+export default function ManagerNavbar({ unreadCount = 0, maintenanceProposalCount = 0, collapsed, onToggle, items = NAV_ITEMS, homeHref = "/dashboard/manager" }: ManagerNavbarProps) {
   const pathname = usePathname();
   const { t } = useLang();
 
@@ -96,6 +97,8 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle, it
             (item.href !== homeHref && pathname?.startsWith(item.href));
           const label = (t as unknown as Record<string, string>)[item.key];
           const isMessages = item.key === "navMessages";
+          const isMaintenance = item.key === "navMaintenance";
+          const badgeCount = isMessages ? unreadCount : isMaintenance ? maintenanceProposalCount : 0;
           const Icon = item.icon;
 
           return (
@@ -121,9 +124,9 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle, it
                   size={20}
                   className={isActive ? "text-violet-600" : "text-slate-400 group-hover:text-slate-900"}
                 />
-                {collapsed && isMessages && unreadCount > 0 && (
+                {collapsed && badgeCount > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 w-[14px] h-[14px] bg-rose-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white leading-none">
-                    {unreadCount > 9 ? "9+" : unreadCount}
+                    {badgeCount > 9 ? "9+" : badgeCount}
                   </span>
                 )}
               </div>
@@ -131,10 +134,10 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle, it
               {/* Label (expanded only) */}
               {!collapsed && <span>{label}</span>}
 
-              {/* Unread badge (expanded only) */}
-              {!collapsed && isMessages && unreadCount > 0 && (
+              {/* Badge (expanded only) */}
+              {!collapsed && badgeCount > 0 && (
                 <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full shadow-md shadow-rose-200">
-                  {unreadCount}
+                  {badgeCount}
                 </span>
               )}
 
@@ -142,9 +145,9 @@ export default function ManagerNavbar({ unreadCount = 0, collapsed, onToggle, it
               {collapsed && (
                 <span className="pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 shadow-xl">
                   {label}
-                  {isMessages && unreadCount > 0 && (
+                  {badgeCount > 0 && (
                     <span className="ml-1.5 bg-rose-500 text-white text-[9px] px-1.5 py-0.5 rounded-full">
-                      {unreadCount}
+                      {badgeCount}
                     </span>
                   )}
                   {/* tooltip arrow */}

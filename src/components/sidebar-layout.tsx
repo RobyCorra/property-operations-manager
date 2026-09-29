@@ -16,6 +16,7 @@ const SettingsDrawer = dynamic(() => import("./settings-drawer"), { ssr: false }
 interface SidebarLayoutProps {
   children: React.ReactNode;
   unreadCount: number;
+  maintenanceProposalCount?: number;
   orgName?: string;
   orgLogo?: string | null;
   // Variante scoped (es. dashboard impresa): menu ridotto + link propri.
@@ -26,7 +27,7 @@ interface SidebarLayoutProps {
   settingsMode?: "org" | "impresa";
 }
 
-export default function SidebarLayout({ children, unreadCount, orgName, orgLogo, navItems, mobileItems, homeHref, hideAssistant, settingsMode = "org" }: SidebarLayoutProps) {
+export default function SidebarLayout({ children, unreadCount, maintenanceProposalCount = 0, orgName, orgLogo, navItems, mobileItems, homeHref, hideAssistant, settingsMode = "org" }: SidebarLayoutProps) {
   const { t } = useLang();
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -74,7 +75,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo,
 
       {/* Sidebar — nascosta su mobile */}
       <div className="hidden md:block">
-        <ManagerNavbar unreadCount={unreadCount} collapsed={mounted && collapsed} onToggle={toggle} items={navItems} homeHref={homeHref} />
+        <ManagerNavbar unreadCount={unreadCount} maintenanceProposalCount={maintenanceProposalCount} collapsed={mounted && collapsed} onToggle={toggle} items={navItems} homeHref={homeHref} />
       </div>
 
       <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${sidebarWidth}`}>
@@ -137,7 +138,7 @@ export default function SidebarLayout({ children, unreadCount, orgName, orgLogo,
         </header>
 
         {/* Mobile Header — shrink-0 dentro la gabbia h-screen, sostituisce il vecchio menu basso */}
-        <MobileHeader unreadCount={unreadCount} onOpenSettings={() => setSettingsOpen(true)} onCloseSettings={() => setSettingsOpen(false)} orgName={orgName} customItems={mobileItems} homeHref={homeHref} />
+        <MobileHeader unreadCount={unreadCount} maintenanceProposalCount={maintenanceProposalCount} onOpenSettings={() => setSettingsOpen(true)} onCloseSettings={() => setSettingsOpen(false)} orgName={orgName} customItems={mobileItems} homeHref={homeHref} />
 
         {/* Dashboard Main View */}
         <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden">{children}</div>

@@ -5,14 +5,15 @@ import PushPermissionRequest from "@/src/components/push-permission";
 import ApnsRegister from "@/src/components/apns-register";
 import ImpersonateBanner from "@/src/components/superadmin/impersonate-banner";
 import { getUnreadMessagesCount, getOrgStaffUnread } from "../../actions/messages";
-import { getOrgCompanyUnread } from "../../actions/company";
+import { getOrgCompanyUnread, getPendingMaintenanceProposals } from "../../actions/company";
 import { prisma } from "@/src/lib/prisma";
 import { ManagerLangProvider } from "@/src/components/lang-context";
 import { getServerLang } from "@/src/lib/server-lang";
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
-  const [taskUnread, companyUnread, staffUnread] = await Promise.all([getUnreadMessagesCount(), getOrgCompanyUnread(), getOrgStaffUnread().catch(() => 0)]);
+  const [taskUnread, companyUnread, staffUnread, proposals] = await Promise.all([getUnreadMessagesCount(), getOrgCompanyUnread(), getOrgStaffUnread().catch(() => 0), getPendingMaintenanceProposals().catch(() => [])]);
   const unreadCount = taskUnread + companyUnread + staffUnread;
+  const maintenanceProposalCount = proposals.length;
   const lang = await getServerLang();
   const cookieStore = await cookies();
   const impersonatingOrgId = cookieStore.get("impersonating")?.value;
@@ -46,7 +47,7 @@ export default async function ManagerLayout({ children }: { children: React.Reac
 
   return (
     <ManagerLangProvider initialLang={lang}>
-      <SidebarLayout unreadCount={unreadCount} orgName={orgName} orgLogo={orgLogo}>
+      <SidebarLayout unreadCount={unreadCount} maintenanceProposalCount={maintenanceProposalCount} orgName={orgName} orgLogo={orgLogo}>
         {impersonatingOrgName && <ImpersonateBanner orgName={impersonatingOrgName} />}
         <div className={impersonatingOrgName ? "pt-9" : ""}>
           {children}

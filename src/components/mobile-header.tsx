@@ -8,10 +8,10 @@ import { logoutAction } from "@/src/app/actions/auth";
 
 interface MobileHeaderProps {
   unreadCount?: number;
+  maintenanceProposalCount?: number;
   onOpenSettings: () => void;
   onCloseSettings?: () => void;
   orgName?: string;
-  // Variante con menu ridotto e navigazione semplice (es. dashboard impresa).
   customItems?: { key: string; label: string; icon: React.ReactNode; href: string }[];
   homeHref?: string;
 }
@@ -19,7 +19,7 @@ interface MobileHeaderProps {
 // Azioni gestite dalla dashboard manager (sheet interni, niente navigazione vera).
 const DASHBOARD_ACTIONS = new Set(["home", "calendar", "cleanings", "tickets", "map"]);
 
-export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseSettings, orgName, customItems, homeHref }: MobileHeaderProps) {
+export default function MobileHeader({ unreadCount = 0, maintenanceProposalCount = 0, onOpenSettings, onCloseSettings, orgName, customItems, homeHref }: MobileHeaderProps) {
   const { t, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const router = useRouter();
@@ -134,6 +134,8 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
             <div className="grid grid-cols-4 gap-3">
               {renderItems.map(item => {
                 const isMsg = item.key === "messages";
+                const isMaint = item.key === "tickets";
+                const badge = isMsg ? unreadCount : isMaint ? maintenanceProposalCount : 0;
                 return (
                   <button
                     key={item.key}
@@ -142,13 +144,13 @@ export default function MobileHeader({ unreadCount = 0, onOpenSettings, onCloseS
                   >
                     <span className="relative text-violet-600">
                       {item.icon}
-                      {isMsg && unreadCount > 0 && (
+                      {badge > 0 && (
                         <span className="absolute -top-1 -right-1.5 min-w-[16px] h-[16px] bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1 animate-pulse">
-                          {unreadCount > 9 ? "9+" : unreadCount}
+                          {badge > 9 ? "9+" : badge}
                         </span>
                       )}
                     </span>
-                    <span className={`text-[10px] font-bold ${isMsg && unreadCount > 0 ? "text-rose-600" : "text-slate-700"}`}>{item.label}</span>
+                    <span className={`text-[10px] font-bold ${badge > 0 ? "text-rose-600" : "text-slate-700"}`}>{item.label}</span>
                   </button>
                 );
               })}
