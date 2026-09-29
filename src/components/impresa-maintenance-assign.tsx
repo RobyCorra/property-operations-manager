@@ -3,7 +3,7 @@
 import { useState, useTransition, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { assignMaintenance, impresaApproveMaintenance, impresaCreateMaintenance } from "@/src/app/actions/company";
+import { assignMaintenance, impresaApproveMaintenance, impresaCreateMaintenance, impresaUploadMaintenanceFiles } from "@/src/app/actions/company";
 import MaintenanceTaskEditor, { type MaintenanceTask } from "@/src/components/maintenance-task-editor";
 
 type Staff = { id: string; name: string };
@@ -106,7 +106,9 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
   const dirty = tickets.some((t) => (assign[t.id] ?? "") !== (t.assignedToId ?? ""));
 
   const formRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [newOpen, setNewOpen] = useState(false);
+  const [nFiles, setNFiles] = useState<File[]>([]);
   const [nApt, setNApt] = useState("");
   const [nTitle, setNTitle] = useState("");
   const [nPriority, setNPriority] = useState("MEDIUM");
@@ -173,12 +175,17 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
     if (tasksInput) { try { tasks = JSON.parse(tasksInput.value); } catch { tasks = []; } }
     startTransition(async () => {
       const r = await impresaCreateMaintenance({ apartmentId: nApt, title: nTitle, description: nDesc, priority: nPriority, start: nStart || null, end: nEnd || null, maintenanceTasks: tasks });
-      if (!r.success) setError(r.error);
-      else {
-        setNewOpen(false); setNApt(""); setNTitle(""); setNPriority("MEDIUM"); setNStart(""); setNEnd(""); setNDesc("");
-        setOkMsg("Richiesta inviata all'organizzazione.");
-        router.refresh();
+      if (!r.success) { setError(r.error); return; }
+      if (nFiles.length > 0) {
+        const fd = new FormData();
+        for (const f of nFiles) fd.append("files", f);
+        const u = await impresaUploadMaintenanceFiles(r.ticketId, fd);
+        if (!u.success) { setOkMsg("Ticket creato, ma errore upload allegati: " + u.error); }
       }
+      setNewOpen(false); setNApt(""); setNTitle(""); setNPriority("MEDIUM"); setNStart(""); setNEnd(""); setNDesc(""); setNFiles([]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      setOkMsg("Richiesta inviata all'organizzazione.");
+      router.refresh();
     });
   };
 
@@ -239,6 +246,42 @@ export default function ImpresaMaintenanceAssign({ tickets, staff, apartments }:
           {/* Task dell'intervento */}
           <div className="pt-2 border-t border-violet-100">
             <MaintenanceTaskEditor initialTasks={[]} />
+          </div>
+          {/* Allegati */}
+          <div className="pt-2 border-t border-violet-100">
+            <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Allegati</label>
+            <div className="flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all">
+                <div className="flex flex-col items-center justify-center pt-4 pb-4">
+                  <span className="text-2xl mb-1">📁</span>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Trascina o clicca per allegare</p>
+                  <p className="text-[9px] text-gray-400 mt-0.5">Foto, documenti, PDF</p>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  className="hidden"
+                  accept="image/*,video/*,application/pdf,.doc,.docx"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? []);
+                    if (files.length) setNFiles((prev) => [...prev, ...files]);
+                  }}
+                />
+              </label>
+            </div>
+            {nFiles.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {nFiles.map((f, i) => (
+                  <div key={i} className="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-1.5 text-[11px] font-semibold text-blue-700">
+                    <span>{f.type.startsWith("image/") ? "🖼" : "📎"}</span>
+                    <span className="truncate flex-1">{f.name}</span>
+                    <span className="text-[9px] text-blue-400">{(f.size / 1024).toFixed(0)} KB</span>
+                    <button type="button" onClick={() => setNFiles((prev) => prev.filter((_, j) => j !== i))} className="hover:opacity-70">✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           {/* Warning */}
           <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">

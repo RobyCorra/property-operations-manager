@@ -1112,7 +1112,7 @@ export async function impresaCreateMaintenance(input: {
   start?: string | null; // "YYYY-MM-DDTHH:mm"
   end?: string | null;   // "YYYY-MM-DDTHH:mm"
   maintenanceTasks?: unknown;
-}): Promise<{ success: true } | { success: false; error: string }> {
+}): Promise<{ success: true; ticketId: string } | { success: false; error: string }> {
   try {
     const companyId = await requireCompanyManager();
     const access = await getCompanyAccess();
@@ -1142,9 +1142,10 @@ export async function impresaCreateMaintenance(input: {
     }
 
     const company = await prisma.company.findUnique({ where: { id: companyId }, select: { name: true } });
+    const ticketId = randomUUID();
     await prisma.maintenanceTicket.create({
       data: {
-        id: randomUUID(),
+        id: ticketId,
         apartmentId,
         title,
         description: input.description?.trim() || "",
@@ -1173,9 +1174,27 @@ export async function impresaCreateMaintenance(input: {
     }, undefined, apt.organizationId).catch(console.error);
 
     revalidatePath("/dashboard/impresa/manutenzione");
-    return { success: true };
+    return { success: true, ticketId };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+export async function impresaUploadMaintenanceFiles(ticketId: string, formData: FormData): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("MAINTENANCE")) return { success: false, error: "Manutenzione non delegata." };
+    const ticket = await prisma.maintenanceTicket.findUnique({ where: { id: ticketId }, select: { apartmentId: true, apartment: { select: { organizationId: true } } } });
+    if (!ticket || !ticket.apartment.organizationId || !access.orgIds.includes(ticket.apartment.organizationId)) {
+      return { success: false, error: "Ticket non trovato." };
+    }
+    const { uploadMaintenanceAttachment } = await import("./upload");
+    const result = await uploadMaintenanceAttachment(ticketId, formData);
+    if (!result.success) return { success: false, error: result.error || "Errore upload." };
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore upload." };
   }
 }
 
