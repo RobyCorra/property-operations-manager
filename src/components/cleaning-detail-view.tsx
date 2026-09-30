@@ -78,9 +78,10 @@ interface Props {
   cleaners: Option[];
   messages: Message[];
   userName: string;
+  hideAiAssistant?: boolean;
 }
 
-export default function CleaningDetailView({ task, apartments, cleaners, messages, userName }: Props) {
+export default function CleaningDetailView({ task, apartments, cleaners, messages, userName, hideAiAssistant = false }: Props) {
   const { t } = useLang();
   const statusConfig: Record<string, { label: string; dot: string; badge: string }> = {
     PENDING:         { label: t.staPending,    dot: "bg-slate-400",                badge: "bg-slate-100 text-slate-600" },
@@ -690,13 +691,15 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             />
           </div>
 
-          <AIAssistant
-            role="MANAGER"
-            type="cleaning"
-            apartmentId={task.apartmentId}
-            cleaningTaskId={task.id}
-            initialMessages={task.aiAssistantMessages}
-          />
+          {!hideAiAssistant && (
+            <AIAssistant
+              role="MANAGER"
+              type="cleaning"
+              apartmentId={task.apartmentId}
+              cleaningTaskId={task.id}
+              initialMessages={task.aiAssistantMessages}
+            />
+          )}
         </div>
       )}
     </div>

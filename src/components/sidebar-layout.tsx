@@ -70,7 +70,7 @@ export default function SidebarLayout({ children, unreadCount, maintenancePropos
     <div className="relative h-screen bg-[#faf8ff] flex w-full max-w-[100vw] overflow-hidden">
       {/* FloatingManagerChat fuori dall'header per evitare problemi di stacking context
           causati da backdrop-filter: blur sull'header sticky */}
-      <FloatingManagerChat externalOpen={aiOpen} onExternalClose={() => setAiOpen(false)} />
+      {!hideAssistant && <FloatingManagerChat externalOpen={aiOpen} onExternalClose={() => setAiOpen(false)} />}
       <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} mode={settingsMode} />
 
       {/* Sidebar — nascosta su mobile */}

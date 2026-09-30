@@ -53,6 +53,7 @@ export default async function ImpresaCleaningDetailPage({ params }: { params: Pr
         cleaners={cleaners}
         messages={messages as never}
         userName={userName}
+        hideAiAssistant
       />
     </main>
   );
