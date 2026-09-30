@@ -1010,6 +1010,7 @@ export async function createMyStaff(
   role: string,
   phone?: string,
   address?: string,
+  extra?: { isExternal?: boolean; companyName?: string; vatNumber?: string; iban?: string },
 ): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const companyId = await requireCompanyManager();
@@ -1036,6 +1037,10 @@ export async function createMyStaff(
         organizationId: null,
         phone: phone?.trim() || null,
         address: address?.trim() || null,
+        isExternal: extra?.isExternal ?? false,
+        companyName: extra?.isExternal ? (extra.companyName?.trim() || null) : null,
+        vatNumber: extra?.isExternal ? (extra.vatNumber?.trim() || null) : null,
+        iban: extra?.isExternal ? (extra.iban?.trim() || null) : null,
       },
     });
     revalidatePath("/dashboard/impresa/staff");
