@@ -386,7 +386,9 @@ exports.Prisma.CleaningTaskScalarFieldEnum = {
   cleaningAccessTokenExpiresAt: 'cleaningAccessTokenExpiresAt',
   cullaRequested: 'cullaRequested',
   sofaBedForced: 'sofaBedForced',
-  totalGuests: 'totalGuests'
+  totalGuests: 'totalGuests',
+  hideChecklist: 'hideChecklist',
+  manualTasks: 'manualTasks'
 };
 
 exports.Prisma.CheckinChecklistItemScalarFieldEnum = {

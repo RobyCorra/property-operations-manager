@@ -4,6 +4,7 @@ import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { assignCleaning, approveCleaningByImpresa, createImpresaCleaning } from "@/src/app/actions/company";
+import CleaningTaskEditor, { type CleaningManualTask } from "@/src/components/cleaning-task-editor";
 
 type Staff = { id: string; name: string };
 type Apartment = { id: string; name: string; ownerName: string };
@@ -117,6 +118,8 @@ export default function ImpresaCleaningAssign({
   const [nAssign, setNAssign] = useState("");
   const [nGuests, setNGuests] = useState("");
   const [nSkipProducts, setNSkipProducts] = useState(false);
+  const [nHideChecklist, setNHideChecklist] = useState(false);
+  const [nManualTasks, setNManualTasks] = useState<CleaningManualTask[]>([]);
 
   const inputCls =
     "w-full rounded-lg border-gray-300 border px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all";
@@ -188,11 +191,14 @@ export default function ImpresaCleaningAssign({
         assignedToId: nAssign || undefined,
         totalGuests: nGuests ? parseInt(nGuests, 10) : null,
         skipProductConsumption: nSkipProducts,
+        hideChecklist: nHideChecklist,
+        manualTasks: nManualTasks.length > 0 ? nManualTasks : undefined,
       });
       if (!r.success) setError(r.error);
       else {
         setNewOpen(false); setNApt(""); setNDate(""); setNTime("10:00");
         setNNotes(""); setNAssign(""); setNGuests(""); setNSkipProducts(false);
+        setNHideChecklist(false); setNManualTasks([]);
         setOkMsg("Pulizia creata."); router.refresh();
       }
     });
@@ -306,11 +312,36 @@ export default function ImpresaCleaningAssign({
             </button>
           </div>
 
+          {/* Toggle: Nascondi checklist standard */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setNHideChecklist((v) => !v)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${nHideChecklist ? "bg-violet-50 border-violet-200" : "bg-gray-50 border-gray-200"}`}
+            >
+              <div className="flex items-center gap-3 text-left">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${nHideChecklist ? "bg-violet-100" : "bg-gray-100"}`}>
+                  <span className="text-sm">📋</span>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold ${nHideChecklist ? "text-violet-800" : "text-gray-700"}`}>Nascondi checklist standard</p>
+                  <p className={`text-xs ${nHideChecklist ? "text-violet-600" : "text-gray-400"}`}>L&apos;addetto non vedrà la checklist dell&apos;appartamento</p>
+                </div>
+              </div>
+              <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${nHideChecklist ? "bg-violet-500" : "bg-gray-300"}`}>
+                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${nHideChecklist ? "translate-x-5" : "translate-x-0.5"}`} />
+              </div>
+            </button>
+          </div>
+
+          {/* Task manuali */}
+          <CleaningTaskEditor tasks={nManualTasks} onChange={setNManualTasks} />
+
           {/* Actions */}
           <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-100">
             <button
               type="button"
-              onClick={() => { setNewOpen(false); setNApt(""); setNDate(""); setNTime("10:00"); setNNotes(""); setNAssign(""); setNGuests(""); setNSkipProducts(false); }}
+              onClick={() => { setNewOpen(false); setNApt(""); setNDate(""); setNTime("10:00"); setNNotes(""); setNAssign(""); setNGuests(""); setNSkipProducts(false); setNHideChecklist(false); setNManualTasks([]); }}
               className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
             >
               Annulla

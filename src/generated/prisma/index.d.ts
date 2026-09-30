@@ -25829,6 +25829,7 @@ export namespace Prisma {
     cullaRequested: boolean | null
     sofaBedForced: boolean | null
     totalGuests: number | null
+    hideChecklist: boolean | null
   }
 
   export type CleaningTaskMaxAggregateOutputType = {
@@ -25849,6 +25850,7 @@ export namespace Prisma {
     cullaRequested: boolean | null
     sofaBedForced: boolean | null
     totalGuests: number | null
+    hideChecklist: boolean | null
   }
 
   export type CleaningTaskCountAggregateOutputType = {
@@ -25871,6 +25873,8 @@ export namespace Prisma {
     cullaRequested: number
     sofaBedForced: number
     totalGuests: number
+    hideChecklist: number
+    manualTasks: number
     _all: number
   }
 
@@ -25901,6 +25905,7 @@ export namespace Prisma {
     cullaRequested?: true
     sofaBedForced?: true
     totalGuests?: true
+    hideChecklist?: true
   }
 
   export type CleaningTaskMaxAggregateInputType = {
@@ -25921,6 +25926,7 @@ export namespace Prisma {
     cullaRequested?: true
     sofaBedForced?: true
     totalGuests?: true
+    hideChecklist?: true
   }
 
   export type CleaningTaskCountAggregateInputType = {
@@ -25943,6 +25949,8 @@ export namespace Prisma {
     cullaRequested?: true
     sofaBedForced?: true
     totalGuests?: true
+    hideChecklist?: true
+    manualTasks?: true
     _all?: true
   }
 
@@ -26052,6 +26060,8 @@ export namespace Prisma {
     cullaRequested: boolean
     sofaBedForced: boolean
     totalGuests: number | null
+    hideChecklist: boolean
+    manualTasks: JsonValue | null
     _count: CleaningTaskCountAggregateOutputType | null
     _avg: CleaningTaskAvgAggregateOutputType | null
     _sum: CleaningTaskSumAggregateOutputType | null
@@ -26093,6 +26103,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: boolean
+    hideChecklist?: boolean
+    manualTasks?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -26123,6 +26135,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: boolean
+    hideChecklist?: boolean
+    manualTasks?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -26148,6 +26162,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: boolean
+    hideChecklist?: boolean
+    manualTasks?: boolean
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
     assignedTo?: boolean | CleaningTask$assignedToArgs<ExtArgs>
@@ -26173,9 +26189,11 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: boolean
+    hideChecklist?: boolean
+    manualTasks?: boolean
   }
 
-  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "productsConsumedAt" | "skipProductConsumption" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken" | "cleaningAccessTokenExpiresAt" | "cullaRequested" | "sofaBedForced" | "totalGuests", ExtArgs["result"]["cleaningTask"]>
+  export type CleaningTaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "apartmentId" | "date" | "status" | "createdAt" | "startedAt" | "completedAt" | "productsConsumedAt" | "skipProductConsumption" | "assignedToId" | "notes" | "bookingId" | "checklistProgress" | "correctionProgress" | "cleaningAccessToken" | "cleaningAccessTokenExpiresAt" | "cullaRequested" | "sofaBedForced" | "totalGuests" | "hideChecklist" | "manualTasks", ExtArgs["result"]["cleaningTask"]>
   export type CleaningTaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | CleaningTask$bookingArgs<ExtArgs>
     apartment?: boolean | ApartmentDefaultArgs<ExtArgs>
@@ -26228,6 +26246,8 @@ export namespace Prisma {
       cullaRequested: boolean
       sofaBedForced: boolean
       totalGuests: number | null
+      hideChecklist: boolean
+      manualTasks: Prisma.JsonValue | null
     }, ExtArgs["result"]["cleaningTask"]>
     composites: {}
   }
@@ -26677,6 +26697,8 @@ export namespace Prisma {
     readonly cullaRequested: FieldRef<"CleaningTask", 'Boolean'>
     readonly sofaBedForced: FieldRef<"CleaningTask", 'Boolean'>
     readonly totalGuests: FieldRef<"CleaningTask", 'Int'>
+    readonly hideChecklist: FieldRef<"CleaningTask", 'Boolean'>
+    readonly manualTasks: FieldRef<"CleaningTask", 'Json'>
   }
     
 
@@ -56370,7 +56392,9 @@ export namespace Prisma {
     cleaningAccessTokenExpiresAt: 'cleaningAccessTokenExpiresAt',
     cullaRequested: 'cullaRequested',
     sofaBedForced: 'sofaBedForced',
-    totalGuests: 'totalGuests'
+    totalGuests: 'totalGuests',
+    hideChecklist: 'hideChecklist',
+    manualTasks: 'manualTasks'
   };
 
   export type CleaningTaskScalarFieldEnum = (typeof CleaningTaskScalarFieldEnum)[keyof typeof CleaningTaskScalarFieldEnum]
@@ -58561,6 +58585,8 @@ export namespace Prisma {
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
     totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
+    hideChecklist?: BoolFilter<"CleaningTask"> | boolean
+    manualTasks?: JsonNullableFilter<"CleaningTask">
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -58590,6 +58616,8 @@ export namespace Prisma {
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrderInput | SortOrder
+    hideChecklist?: SortOrder
+    manualTasks?: SortOrderInput | SortOrder
     booking?: BookingOrderByWithRelationInput
     apartment?: ApartmentOrderByWithRelationInput
     assignedTo?: UserOrderByWithRelationInput
@@ -58622,6 +58650,8 @@ export namespace Prisma {
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
     totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
+    hideChecklist?: BoolFilter<"CleaningTask"> | boolean
+    manualTasks?: JsonNullableFilter<"CleaningTask">
     booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
     apartment?: XOR<ApartmentScalarRelationFilter, ApartmentWhereInput>
     assignedTo?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -58651,6 +58681,8 @@ export namespace Prisma {
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrderInput | SortOrder
+    hideChecklist?: SortOrder
+    manualTasks?: SortOrderInput | SortOrder
     _count?: CleaningTaskCountOrderByAggregateInput
     _avg?: CleaningTaskAvgOrderByAggregateInput
     _max?: CleaningTaskMaxOrderByAggregateInput
@@ -58681,6 +58713,8 @@ export namespace Prisma {
     cullaRequested?: BoolWithAggregatesFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolWithAggregatesFilter<"CleaningTask"> | boolean
     totalGuests?: IntNullableWithAggregatesFilter<"CleaningTask"> | number | null
+    hideChecklist?: BoolWithAggregatesFilter<"CleaningTask"> | boolean
+    manualTasks?: JsonNullableWithAggregatesFilter<"CleaningTask">
   }
 
   export type CheckinChecklistItemWhereInput = {
@@ -62513,6 +62547,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -62542,6 +62578,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -62565,6 +62603,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -62594,6 +62634,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -62620,6 +62662,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CleaningTaskUpdateManyMutationInput = {
@@ -62639,6 +62683,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CleaningTaskUncheckedUpdateManyInput = {
@@ -62661,6 +62707,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CheckinChecklistItemCreateInput = {
@@ -66269,6 +66317,8 @@ export namespace Prisma {
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrder
+    hideChecklist?: SortOrder
+    manualTasks?: SortOrder
   }
 
   export type CleaningTaskAvgOrderByAggregateInput = {
@@ -66293,6 +66343,7 @@ export namespace Prisma {
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrder
+    hideChecklist?: SortOrder
   }
 
   export type CleaningTaskMinOrderByAggregateInput = {
@@ -66313,6 +66364,7 @@ export namespace Prisma {
     cullaRequested?: SortOrder
     sofaBedForced?: SortOrder
     totalGuests?: SortOrder
+    hideChecklist?: SortOrder
   }
 
   export type CleaningTaskSumOrderByAggregateInput = {
@@ -72733,6 +72785,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -72760,6 +72814,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -73240,6 +73296,8 @@ export namespace Prisma {
     cullaRequested?: BoolFilter<"CleaningTask"> | boolean
     sofaBedForced?: BoolFilter<"CleaningTask"> | boolean
     totalGuests?: IntNullableFilter<"CleaningTask"> | number | null
+    hideChecklist?: BoolFilter<"CleaningTask"> | boolean
+    manualTasks?: JsonNullableFilter<"CleaningTask">
   }
 
   export type MaintenanceTicketUpsertWithWhereUniqueWithoutAssignedToInput = {
@@ -75148,6 +75206,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -75175,6 +75235,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -76499,6 +76561,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
     messages?: CleaningTaskMessageCreateNestedManyWithoutCleaningTaskInput
@@ -76526,6 +76590,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -76693,6 +76759,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -76720,6 +76788,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -79044,6 +79114,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -79072,6 +79144,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -79250,6 +79324,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -79278,6 +79354,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -79408,6 +79486,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -79436,6 +79516,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -79666,6 +79748,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -79694,6 +79778,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -80169,6 +80255,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -80197,6 +80285,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     supervisorReviews?: SupervisorReviewUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -80272,6 +80362,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -80300,6 +80392,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     supervisorReviews?: SupervisorReviewUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -80432,6 +80526,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingCreateNestedOneWithoutCleaningTaskInput
     apartment: ApartmentCreateNestedOneWithoutCleaningTasksInput
     assignedTo?: UserCreateNestedOneWithoutCleaningTasksInput
@@ -80460,6 +80556,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutCleaningTaskInput
     aiAssistantMessages?: AIAssistantMessageUncheckedCreateNestedManyWithoutCleaningTaskInput
@@ -80622,6 +80720,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
@@ -80650,6 +80750,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -83700,6 +83802,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketCreateManyAssignedToInput = {
@@ -83804,6 +83908,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     apartment?: ApartmentUpdateOneRequiredWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -83831,6 +83937,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -83856,6 +83964,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketUpdateWithoutAssignedToInput = {
@@ -84464,6 +84574,8 @@ export namespace Prisma {
     cullaRequested?: boolean
     sofaBedForced?: boolean
     totalGuests?: number | null
+    hideChecklist?: boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketCreateManyApartmentInput = {
@@ -84676,6 +84788,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     booking?: BookingUpdateOneWithoutCleaningTaskNestedInput
     assignedTo?: UserUpdateOneWithoutCleaningTasksNestedInput
     messages?: CleaningTaskMessageUpdateManyWithoutCleaningTaskNestedInput
@@ -84703,6 +84817,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
     messages?: CleaningTaskMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutCleaningTaskNestedInput
     aiAssistantMessages?: AIAssistantMessageUncheckedUpdateManyWithoutCleaningTaskNestedInput
@@ -84728,6 +84844,8 @@ export namespace Prisma {
     cullaRequested?: BoolFieldUpdateOperationsInput | boolean
     sofaBedForced?: BoolFieldUpdateOperationsInput | boolean
     totalGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    hideChecklist?: BoolFieldUpdateOperationsInput | boolean
+    manualTasks?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type MaintenanceTicketUpdateWithoutApartmentInput = {

@@ -1529,6 +1529,8 @@ export async function createImpresaCleaning(input: {
   notes?: string;
   assignedToId?: string;
   skipProductConsumption?: boolean;
+  hideChecklist?: boolean;
+  manualTasks?: { id: string; label: string; photoRequired: boolean; completed: boolean; photoUrl: string | null }[];
 }): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const companyId = await requireCompanyManager();
@@ -1557,6 +1559,8 @@ export async function createImpresaCleaning(input: {
     const checklistProgress = await computeChecklistSnapshot(prisma, apartmentId, taskDate);
     const totalGuests = input.totalGuests && !isNaN(input.totalGuests) ? input.totalGuests : null;
 
+    const manualTasks = input.manualTasks?.filter((t) => t.label.trim()) ?? null;
+
     await prisma.cleaningTask.create({
       data: {
         apartmentId,
@@ -1567,6 +1571,8 @@ export async function createImpresaCleaning(input: {
         notes: input.notes?.trim() || null,
         assignedToId: input.assignedToId || null,
         skipProductConsumption: input.skipProductConsumption ?? false,
+        hideChecklist: input.hideChecklist ?? false,
+        manualTasks: manualTasks && manualTasks.length > 0 ? manualTasks : undefined,
       },
     });
     revalidatePath("/dashboard/impresa/pulizie");
