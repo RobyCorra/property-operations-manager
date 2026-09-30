@@ -67,6 +67,7 @@ export default async function ImpresaDashboard() {
         select: {
           id: true, apartmentId: true, date: true, status: true, notes: true,
           checklistProgress: true, cullaRequested: true, sofaBedForced: true, totalGuests: true,
+          hideChecklist: true, manualTasks: true, bookingId: true,
           assignedToId: true,
           assignedTo: { select: { id: true, name: true } },
           apartment: { select: { name: true, address: true, organizationId: true } },
@@ -223,6 +224,7 @@ export default async function ImpresaDashboard() {
         select: {
           id: true, apartmentId: true, date: true, status: true, notes: true,
           checklistProgress: true, cullaRequested: true, sofaBedForced: true, totalGuests: true,
+          hideChecklist: true, manualTasks: true, bookingId: true,
           assignedToId: true,
           assignedTo: { select: { id: true, name: true } },
           apartment: { select: { name: true, address: true, organizationId: true } },
@@ -355,7 +357,7 @@ export default async function ImpresaDashboard() {
 
             <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
               <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900">
-                <span>🗓️</span> Calendario operativo <span className="font-normal text-gray-400">· pulizie e prenotazioni (sola lettura)</span>
+                <span>🗓️</span> Calendario operativo <span className="font-normal text-gray-400">· pulizie e prenotazioni</span>
               </h2>
               <TimelineCalendar
                 apartments={apartmentsData}
@@ -363,7 +365,7 @@ export default async function ImpresaDashboard() {
                 cleaningTasks={cleanings}
                 maintenanceTickets={[]}
                 serverDate={serverDate}
-                readOnly
+                impresaMode
               />
             </section>
           </>

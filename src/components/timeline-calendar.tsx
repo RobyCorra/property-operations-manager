@@ -23,6 +23,11 @@ import {
   approveCleaningDirectly,
   approveMaintenanceDirectly,
 } from "@/src/app/actions/operational";
+import {
+  impresaSetCleaningStatus,
+  approveCleaningByImpresa,
+  impresaDeleteCleaning,
+} from "@/src/app/actions/company";
 
 
 import { 
@@ -71,6 +76,7 @@ interface CleaningTask {
   cullaRequested?: boolean | null;
   sofaBedForced?: boolean | null;
   totalGuests?: number | null;
+  bookingId?: string | null;
 }
 
 type PrismaBooking = {
@@ -166,6 +172,8 @@ interface TimelineCalendarProps {
   checkinTasks?: CheckinTaskCal[];
   serverDate: string;
   readOnly?: boolean;
+  /** Modalità impresa: mostra pulsanti azione impresa (avvia/modifica/elimina) invece di quelli org. */
+  impresaMode?: boolean;
   /** userId del manager loggato: abilita la verifica/approvazione pulizie nel modal. */
   currentUserId?: string;
   /** Se impostata, il modal manutenzione mostra un link "Vedi intervento" a `${base}/${id}`. */
@@ -219,7 +227,7 @@ function diffLocalDays(start: Date, end: Date) {
   return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, currentUserId, maintenanceDetailBase, disableBookingCleaningModals = false }: TimelineCalendarProps) {
+export default function TimelineCalendar({ apartments, bookings, cleaningTasks, maintenanceTickets, checkinTasks = [], serverDate, readOnly = false, impresaMode = false, currentUserId, maintenanceDetailBase, disableBookingCleaningModals = false }: TimelineCalendarProps) {
   const { t, lang } = useLang();
   const dateLocale = lang === "en" ? "en-GB" : lang === "es" ? "es-ES" : "it-IT";
   const toast = useToast();
@@ -404,7 +412,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
         status: item.status,
         assignedToId: item.assignedTo?.id ?? null,
         notes: item.notes ?? null,
-        bookingId: null,
+        bookingId: (item as any).bookingId ?? null,
         checklistProgress: item.checklistProgress ?? null,
         correctionProgress: (item as PrismaCleaningTask).correctionProgress ?? null,
         hideChecklist: (item as any).hideChecklist ?? false,
@@ -1603,10 +1611,10 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                 {/* Footer Modal */}
                 <div className="p-10 bg-white border-t border-slate-100 flex items-center justify-between mt-auto">
                     <div className="flex items-center gap-4">
-                        {!readOnly && selectedEvent.type === 'cleaning' && (
+                        {!readOnly && !impresaMode && selectedEvent.type === 'cleaning' && (
                             <>
                                 {selectedEvent.data.status === 'PENDING' && (
-                                    <button 
+                                    <button
                                         disabled={isPending}
                                         onClick={() => handleAction(() => updateCleaningStatus(selectedEvent.data.id, 'IN_PROGRESS'))}
                                         className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
@@ -1625,7 +1633,6 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 )}
                                 {selectedEvent.data.status === 'AWAITING_REVIEW' && (
                                     <div className="flex items-center gap-3">
-                                        {/* Approva diretto solo come fallback: se manca la verifica in-modal (currentUserId) */}
                                         {!currentUserId && (
                                             <button
                                                 disabled={isPending}
@@ -1644,6 +1651,79 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                     <span className="px-8 py-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold uppercase tracking-wide rounded-full">
                                         {t.msgApprovedDone}
                                     </span>
+                                )}
+                            </>
+                        )}
+                        {impresaMode && selectedEvent.type === 'cleaning' && (
+                            <>
+                                {selectedEvent.data.status === 'PENDING' && (
+                                    <button
+                                        disabled={isPending}
+                                        onClick={() => handleAction(async () => { const r = await impresaSetCleaningStatus(selectedEvent.data.id, 'IN_PROGRESS'); if (!r.success) throw new Error(r.error); })}
+                                        className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
+                                    >
+                                        ▶ {t.msgStartCleaning}
+                                    </button>
+                                )}
+                                {selectedEvent.data.status === 'IN_PROGRESS' && (
+                                    <button
+                                        disabled={isPending}
+                                        onClick={() => handleAction(async () => { const r = await impresaSetCleaningStatus(selectedEvent.data.id, 'AWAITING_REVIEW'); if (!r.success) throw new Error(r.error); })}
+                                        className="px-8 py-3.5 bg-amber-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-amber-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                    >
+                                        {t.msgSendForReview}
+                                    </button>
+                                )}
+                                {selectedEvent.data.status === 'AWAITING_REVIEW' && (
+                                    <button
+                                        disabled={isPending}
+                                        onClick={() => handleAction(async () => { const r = await approveCleaningByImpresa(selectedEvent.data.id); if (!r.success) throw new Error(r.error); })}
+                                        className="px-8 py-3.5 bg-emerald-500 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-emerald-400 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                    >
+                                        {t.msgApprove}
+                                    </button>
+                                )}
+                                {(selectedEvent.data.status === 'APPROVED' || selectedEvent.data.status === 'COMPLETED') && (
+                                    <span className="px-8 py-3.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold uppercase tracking-wide rounded-full">
+                                        {t.msgApprovedDone}
+                                    </span>
+                                )}
+                                {!selectedEvent.data.bookingId && selectedEvent.data.status === 'PENDING' && (
+                                    <>
+                                        <Link
+                                            href={`/dashboard/impresa/pulizie/${selectedEvent.data.id}/edit`}
+                                            className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md"
+                                        >
+                                            {t.cdvModifyCleaning}
+                                        </Link>
+                                        {showDeleteConfirm ? (
+                                            <div className="flex items-center gap-4 bg-red-500/10 p-3 pl-6 rounded-full border border-red-500/20 shadow-lg shadow-red-200/50">
+                                                <span className="text-xs font-semibold uppercase tracking-wide text-red-600">{t.tcDeleteConfirm}</span>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => setShowDeleteConfirm(false)}
+                                                        className="px-4 py-2 bg-white/80 text-slate-500 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-white transition-all duration-200"
+                                                    >
+                                                        {t.mgrCancel}
+                                                    </button>
+                                                    <button
+                                                        disabled={isPending}
+                                                        onClick={() => handleAction(async () => { const r = await impresaDeleteCleaning(selectedEvent.data.id); if (!r.success) throw new Error(r.error); })}
+                                                        className="px-4 py-2 bg-red-600 text-white text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-red-500 transition-all duration-200 disabled:opacity-50"
+                                                    >
+                                                        {isPending ? t.tcDeleting : t.mgrDelete}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => setShowDeleteConfirm(true)}
+                                                className="px-8 py-3.5 bg-white text-red-500 border border-red-200 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
+                                            >
+                                                {t.mgrDelete}
+                                            </button>
+                                        )}
+                                    </>
                                 )}
                             </>
                         )}

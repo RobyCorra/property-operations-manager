@@ -44,6 +44,7 @@ export default async function ImpresaAppartamentoPage({ params }: { params: Prom
       select: {
         id: true, apartmentId: true, date: true, status: true, notes: true,
         checklistProgress: true, cullaRequested: true, sofaBedForced: true, totalGuests: true,
+        hideChecklist: true, manualTasks: true, bookingId: true,
         assignedToId: true,
         assignedTo: { select: { id: true, name: true } },
         apartment: { select: { name: true, address: true, organizationId: true } },
@@ -183,7 +184,7 @@ export default async function ImpresaAppartamentoPage({ params }: { params: Prom
             cleaningTasks={cleanings}
             maintenanceTickets={tickets}
             serverDate={serverDate}
-            readOnly
+            impresaMode
           />
         </section>
 
