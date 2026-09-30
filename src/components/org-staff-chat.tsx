@@ -29,7 +29,7 @@ function beep() {
   } catch {}
 }
 
-export default function OrgStaffChat({ threads: initial }: { threads: OrgStaffThreadSummary[] }) {
+export default function OrgStaffChat({ threads: initial, hideHeader }: { threads: OrgStaffThreadSummary[]; hideHeader?: boolean }) {
   const [threads, setThreads] = useState(initial);
   const [selected, setSelected] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -81,6 +81,69 @@ export default function OrgStaffChat({ threads: initial }: { threads: OrgStaffTh
 
   if (threads.length === 0) return null;
 
+  const threadList = (
+    <div className={`${selected ? "hidden md:block" : ""} w-full md:w-[260px] border-r border-slate-50 overflow-y-auto`}>
+      {threads.map((t) => (
+        <button
+          key={t.staffUserId}
+          type="button"
+          onClick={() => openThread(t.staffUserId)}
+          className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b border-slate-50 ${
+            selected === t.staffUserId ? "bg-indigo-50" : "hover:bg-slate-50"
+          }`}
+        >
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+            selected === t.staffUserId ? "bg-indigo-500" : "bg-slate-100"
+          }`}>
+            <User size={15} className={selected === t.staffUserId ? "text-white" : "text-slate-500"} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <span className={`text-sm truncate ${t.unread ? "font-black" : "font-semibold"} text-slate-800`}>{t.name}</span>
+              {t.unread > 0 && (
+                <span className="w-5 h-5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shrink-0">{t.unread}</span>
+              )}
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium">{ROLE_LABEL[t.role] ?? t.role}</p>
+            {t.lastText && <p className="text-xs text-slate-400 truncate mt-0.5">{t.lastText}</p>}
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+
+  const chatArea = (
+    <div className={`${!selected ? "hidden md:flex" : "flex"} flex-1 flex-col min-w-0`}>
+      {selected ? (
+        <>
+          <div className="md:hidden flex items-center gap-2 px-3 py-2 border-b border-slate-100">
+            <button type="button" onClick={() => setSelected(null)} className="text-sm font-semibold text-indigo-600">← Team</button>
+          </div>
+          <ImpresaChatThread
+            messages={messages}
+            headerName={headerName}
+            onSend={handleSend}
+            onSent={handleSent}
+            loading={isLoading}
+          />
+        </>
+      ) : (
+        <div className="flex items-center justify-center flex-1 text-slate-300 text-sm font-medium py-12">
+          Seleziona un membro del team
+        </div>
+      )}
+    </div>
+  );
+
+  if (hideHeader) {
+    return (
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-[260px_1fr]">
+        <div className="rounded-2xl border border-gray-100 bg-white p-2 shadow-sm">{threadList}</div>
+        {chatArea}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
       {/* Header */}
@@ -104,58 +167,8 @@ export default function OrgStaffChat({ threads: initial }: { threads: OrgStaffTh
 
       {expanded && (
         <div className="flex border-t border-slate-100" style={{ minHeight: selected ? 420 : undefined }}>
-          {/* Thread list */}
-          <div className={`${selected ? "hidden md:block" : ""} w-full md:w-[260px] border-r border-slate-50 overflow-y-auto`}>
-            {threads.map((t) => (
-              <button
-                key={t.staffUserId}
-                type="button"
-                onClick={() => openThread(t.staffUserId)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-b border-slate-50 ${
-                  selected === t.staffUserId ? "bg-indigo-50" : "hover:bg-slate-50"
-                }`}
-              >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                  selected === t.staffUserId ? "bg-indigo-500" : "bg-slate-100"
-                }`}>
-                  <User size={15} className={selected === t.staffUserId ? "text-white" : "text-slate-500"} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className={`text-sm truncate ${t.unread ? "font-black" : "font-semibold"} text-slate-800`}>{t.name}</span>
-                    {t.unread > 0 && (
-                      <span className="w-5 h-5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shrink-0">{t.unread}</span>
-                    )}
-                  </div>
-                  <p className="text-[10px] text-slate-400 font-medium">{ROLE_LABEL[t.role] ?? t.role}</p>
-                  {t.lastText && <p className="text-xs text-slate-400 truncate mt-0.5">{t.lastText}</p>}
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Chat area */}
-          <div className={`${!selected ? "hidden md:flex" : "flex"} flex-1 flex-col min-w-0`}>
-            {selected ? (
-              <>
-                {/* Mobile back */}
-                <div className="md:hidden flex items-center gap-2 px-3 py-2 border-b border-slate-100">
-                  <button type="button" onClick={() => setSelected(null)} className="text-sm font-semibold text-indigo-600">← Team</button>
-                </div>
-                <ImpresaChatThread
-                  messages={messages}
-                  headerName={headerName}
-                  onSend={handleSend}
-                  onSent={handleSent}
-                  loading={isLoading}
-                />
-              </>
-            ) : (
-              <div className="flex items-center justify-center flex-1 text-slate-300 text-sm font-medium py-12">
-                Seleziona un membro del team
-              </div>
-            )}
-          </div>
+          {threadList}
+          {chatArea}
         </div>
       )}
     </div>

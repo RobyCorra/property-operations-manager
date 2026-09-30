@@ -2,17 +2,13 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
-import TicketConversation from "@/src/components/ticket-conversation";
 import { createTicketMessage, createCleaningTaskMessage } from "@/src/app/actions/operational";
 import { createCheckinTaskMessage } from "@/src/app/actions/checkin";
 import MarkReadTrigger from "@/src/components/mark-read-trigger";
-import MessagesDashboard from "@/src/components/messages-dashboard";
-import BackButton from "@/src/components/back-button";
 import { getT } from "@/src/lib/server-lang";
 import { getOrgCompanyThreads } from "@/src/app/actions/company";
-import OrgCompanyChat from "@/src/components/org-company-chat";
 import { getOrgStaffThreads } from "@/src/app/actions/messages";
-import OrgStaffChat from "@/src/components/org-staff-chat";
+import OrgMessagesTabbed from "@/src/components/org-messages-tabbed";
 
 export default async function ManagerMessagesPage({
   searchParams,
@@ -156,38 +152,31 @@ export default async function ManagerMessagesPage({
   const selectedThread = threads.find((t) => t.id === sp.id && t.type === sp.type);
 
   return (
-    <main className="min-h-screen bg-gray-50/20">
-      <div className="hidden md:block p-4">
-        <BackButton />
+    <main className="max-w-4xl mx-auto space-y-6 py-4 px-4 md:px-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Messaggi</h1>
+        <p className="mt-1 text-sm text-slate-500">Chat con imprese, interventi e staff.</p>
       </div>
-      {companyThreads.length > 0 && (
-        <div className="px-4 md:px-6 pb-2">
-          <OrgCompanyChat threads={companyThreads} />
-        </div>
-      )}
-      {staffThreads.length > 0 && (
-        <div className="px-4 md:px-6 pb-2">
-          <OrgStaffChat threads={staffThreads} />
-        </div>
-      )}
       {selectedThread && (
         <MarkReadTrigger id={selectedThread.id} type={selectedThread.type} />
       )}
-      <MessagesDashboard
-        threads={threads as any}
-        apartments={apartments}
-        selectedId={sp.id}
-        selectedType={sp.type}
-        serverDate={new Date().toISOString()}
-        userName={userName}
-        delegatedScopes={delegatedScopes}
-        submitAction={
-          selectedThread?.type === "MAINTENANCE"
+      <OrgMessagesTabbed
+        companyThreads={companyThreads}
+        staffThreads={staffThreads}
+        interventionProps={{
+          threads: threads as any,
+          apartments,
+          selectedId: sp.id,
+          selectedType: sp.type,
+          serverDate: new Date().toISOString(),
+          userName,
+          submitAction: selectedThread?.type === "MAINTENANCE"
             ? createTicketMessage
             : selectedThread?.type === "CHECKIN"
             ? createCheckinTaskMessage
-            : createCleaningTaskMessage
-        }
+            : createCleaningTaskMessage,
+          delegatedScopes,
+        }}
       />
     </main>
   );

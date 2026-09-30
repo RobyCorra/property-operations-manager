@@ -24,7 +24,7 @@ function beep() {
   } catch {}
 }
 
-export default function OrgCompanyChat({ threads: initialThreads }: { threads: OrgCompanyThreadSummary[] }) {
+export default function OrgCompanyChat({ threads: initialThreads, hideTitle }: { threads: OrgCompanyThreadSummary[]; hideTitle?: boolean }) {
   const [threads, setThreads] = useState(initialThreads);
   const [sel, setSel] = useState<OrgCompanyThreadSummary | null>(null);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -62,7 +62,7 @@ export default function OrgCompanyChat({ threads: initialThreads }: { threads: O
 
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-slate-900">Imprese delegate</h2>
+      {!hideTitle && <h2 className="text-lg font-semibold text-slate-900">Imprese delegate</h2>}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-[260px_1fr]">
         <div className="rounded-2xl border border-gray-100 bg-white p-2 shadow-sm">
           {threads.map((t) => (
