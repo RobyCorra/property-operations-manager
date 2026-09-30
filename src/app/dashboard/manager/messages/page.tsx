@@ -152,7 +152,7 @@ export default async function ManagerMessagesPage({
   const selectedThread = threads.find((t) => t.id === sp.id && t.type === sp.type);
 
   return (
-    <main className="max-w-4xl mx-auto space-y-6 py-4 px-4 md:px-6">
+    <main className="max-w-6xl mx-auto space-y-6 py-4 px-4 md:px-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Messaggi</h1>
         <p className="mt-1 text-sm text-slate-500">Chat con imprese, interventi e staff.</p>

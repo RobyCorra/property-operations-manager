@@ -522,50 +522,63 @@ export default function TicketConversation({
                 )}
               </div>
             )}
-            <div className="flex items-center gap-1.5">
-              {/* Attachment generico */}
-              <button type="button" onClick={() => fileInputRef.current?.click()}
-                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
-                title={t.tcvAttachFile}>
-                <span className="text-lg">📎</span>
-                <input ref={fileInputRef} type="file" name="files" className="hidden" onChange={handleFileChange} />
-              </button>
-              {/* Foto / fotocamera */}
-              <button type="button" onClick={() => imageInputRef.current?.click()}
-                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors shrink-0"
-                title="Invia foto">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                  <circle cx="12" cy="13" r="4"/>
-                </svg>
-                <input ref={imageInputRef} type="file" name="imageFile" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
-              </button>
-              {/* Text input */}
-              <input autoComplete="off" type="text" name="text"
+            {/* Textarea full-width + toolbar integrata sotto */}
+            <div className="border border-gray-200 rounded-2xl bg-gray-50/50 overflow-hidden focus-within:ring-2 focus-within:ring-black focus-within:border-transparent transition-all">
+              <textarea autoComplete="off" name="text"
                 placeholder={t.chatPlaceholder}
-                className="flex-1 min-w-0 bg-gray-50 border-none rounded-2xl px-3 py-2 text-sm focus:ring-2 focus:ring-black transition-all outline-none" />
-              {/* Mic button */}
-              <button type="button" onClick={startRecording}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
-                title={t.tcvVoiceMessage}>
-                <svg width="16" height="16" fill="none" stroke="#475569" stroke-width="1.8" viewBox="0 0 24 24">
-                  <rect x="9" y="2" width="6" height="11" rx="3"/>
-                  <path d="M5 10a7 7 0 0 0 14 0"/>
-                  <line x1="12" y1="19" x2="12" y2="22"/>
-                  <line x1="8" y1="22" x2="16" y2="22"/>
-                </svg>
-              </button>
-              {/* Send */}
-              <button type="submit" disabled={isPending || isUploading}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white hover:bg-gray-800 active:scale-95 transition-all shadow-md shadow-gray-200 disabled:opacity-50 shrink-0">
-                {isPending || isUploading ? (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 translate-x-px">
-                    <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
-                  </svg>
-                )}
-              </button>
+                rows={1}
+                onInput={(e) => {
+                  const el = e.currentTarget;
+                  el.style.height = "auto";
+                  el.style.height = Math.min(el.scrollHeight, 120) + "px";
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    formRef.current?.requestSubmit();
+                  }
+                }}
+                className="w-full bg-transparent border-none px-3.5 py-2.5 text-sm resize-none outline-none min-h-[38px] max-h-[120px] placeholder:text-gray-400" />
+              {/* Toolbar row */}
+              <div className="flex items-center justify-between px-2 py-1.5 border-t border-gray-100 bg-gray-50/80">
+                <div className="flex items-center gap-0.5">
+                  <button type="button" onClick={() => fileInputRef.current?.click()}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 transition-colors"
+                    title={t.tcvAttachFile}>
+                    <span className="text-base">📎</span>
+                    <input ref={fileInputRef} type="file" name="files" className="hidden" onChange={handleFileChange} />
+                  </button>
+                  <button type="button" onClick={() => imageInputRef.current?.click()}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 transition-colors"
+                    title="Invia foto">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                      <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                    <input ref={imageInputRef} type="file" name="imageFile" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
+                  </button>
+                  <button type="button" onClick={startRecording}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 transition-colors"
+                    title={t.tcvVoiceMessage}>
+                    <svg width="15" height="15" fill="none" stroke="#6b7280" strokeWidth="1.8" viewBox="0 0 24 24">
+                      <rect x="9" y="2" width="6" height="11" rx="3"/>
+                      <path d="M5 10a7 7 0 0 0 14 0"/>
+                      <line x1="12" y1="19" x2="12" y2="22"/>
+                      <line x1="8" y1="22" x2="16" y2="22"/>
+                    </svg>
+                  </button>
+                </div>
+                <button type="submit" disabled={isPending || isUploading}
+                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-black text-white hover:bg-gray-800 active:scale-95 transition-all shadow-sm disabled:opacity-50 shrink-0">
+                  {isPending || isUploading ? (
+                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4.5 h-4.5 translate-x-px">
+                      <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </form>
         )}

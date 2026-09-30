@@ -428,6 +428,7 @@ export default function MessagesDashboard({
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("ALL");
   const [showInfoSheet, setShowInfoSheet] = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(true);
 
   const handleAction = useCallback((fn: () => Promise<void>) => {
     startTransition(async () => {
@@ -464,7 +465,7 @@ export default function MessagesDashboard({
 
       {/* ── COL 1: Thread list ─────────────────────────────── */}
       {/* Mobile: hidden when a thread is selected; Desktop: always visible */}
-      <div className={`${selectedThread ? "hidden md:flex" : "flex"} w-full md:w-[300px] min-w-0 overflow-x-hidden flex-col border-r border-slate-100 md:shrink-0`}>
+      <div className={`${selectedThread ? "hidden md:flex" : "flex"} w-full md:w-[260px] min-w-0 overflow-x-hidden flex-col border-r border-slate-100 md:shrink-0`}>
 
         {/* Header */}
         <div className="px-4 pt-5 pb-3 border-b border-slate-100">
@@ -673,13 +674,21 @@ export default function MessagesDashboard({
                 </p>
               </div>
 
-              {/* Info button — mobile only (apre il bottom sheet espanso) */}
+              {/* Info button — mobile: apre bottom sheet / desktop: toggle panel */}
               <button
                 type="button"
                 onClick={() => setShowInfoSheet(true)}
                 className="md:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
               >
                 <Info size={16} className="text-slate-600" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowInfoPanel((v) => !v)}
+                className={`hidden md:flex items-center justify-center w-9 h-9 rounded-xl transition-colors shrink-0 ${showInfoPanel ? "bg-violet-100 hover:bg-violet-200" : "hover:bg-slate-100"}`}
+                title="Dettagli intervento"
+              >
+                <Info size={16} className={showInfoPanel ? "text-violet-600" : "text-slate-400"} />
               </button>
             </div>
 
@@ -792,8 +801,8 @@ export default function MessagesDashboard({
         )}
       </div>
 
-      {/* ── COL 3: Info panel — desktop only ───────────────── */}
-      <div className="hidden md:flex w-[280px] flex-col border-l border-slate-100 bg-white shrink-0">
+      {/* ── COL 3: Info panel — desktop only, toggleable ───── */}
+      <div className={`${showInfoPanel ? "hidden md:flex" : "hidden"} w-[240px] flex-col border-l border-slate-100 bg-white shrink-0 transition-all`}>
         {selectedThread ? (
           <InfoPanelContent thread={selectedThread} isActing={isActing} onAction={handleAction} />
         ) : (
