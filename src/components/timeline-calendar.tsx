@@ -1691,7 +1691,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                 {!selectedEvent.data.bookingId && selectedEvent.data.status === 'PENDING' && (
                                     <>
                                         <Link
-                                            href={`/dashboard/impresa/pulizie/${selectedEvent.data.id}/edit`}
+                                            href={`/dashboard/impresa/pulizie/${selectedEvent.data.id}`}
                                             className="px-8 py-3.5 bg-slate-100 border border-slate-200 text-slate-900 text-xs font-semibold uppercase tracking-wide rounded-full hover:bg-slate-200 transition-all duration-200 shadow-sm hover:shadow-md"
                                         >
                                             {t.cdvModifyCleaning}
