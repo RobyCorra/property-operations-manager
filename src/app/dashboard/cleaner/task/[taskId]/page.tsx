@@ -62,6 +62,9 @@ export default async function CleanerTaskPage({
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(task.apartment.address)}`;
   const dateLabel = formatDateFull(task.date as Date);
 
+  const hideChecklist = !!(task as any).hideChecklist;
+  const rawManualTasks = (task as any).manualTasks as { id: string; label: string; photoRequired: boolean; completed: boolean; photoUrl: string | null }[] | null;
+
   // Build checklist items merging master config with saved progress
   const checklistItems = (() => {
     const master = task.apartment.checklistItems;
@@ -128,6 +131,8 @@ export default async function CleanerTaskPage({
           canComplete={canComplete}
           isWaiting={isWaiting}
           isDone={isDone}
+          hideChecklist={hideChecklist}
+          manualTasks={rawManualTasks ?? undefined}
           showChat={true}
           initialMessages={messages}
           currentUserRole="CLEANER"

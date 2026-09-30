@@ -47,7 +47,10 @@ export default async function EditCleaningPage({ params }: { params: Promise<{ i
     select: { cleaningAccessToken: true },
   });
 
-  const enrichedTask = await enrichCleaningTaskWithNextBooking(task);
+  const enrichedTask = Object.assign(
+    await enrichCleaningTaskWithNextBooking(task),
+    { hideChecklist: (task as any).hideChecklist ?? false, manualTasks: (task as any).manualTasks ?? null },
+  );
 
   return (
     <main className="min-h-screen bg-gray-50/50 p-4 md:p-6 font-sans overflow-x-hidden">

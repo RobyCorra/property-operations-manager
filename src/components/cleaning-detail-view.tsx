@@ -35,6 +35,14 @@ interface NextBooking {
   cullaRequested?: boolean | null;
 }
 
+interface ManualTask {
+  id: string;
+  label: string;
+  photoRequired: boolean;
+  completed: boolean;
+  photoUrl: string | null;
+}
+
 interface CleaningTask {
   id: string;
   apartmentId: string;
@@ -48,6 +56,8 @@ interface CleaningTask {
   correctionProgress: unknown;
   cullaRequested?: boolean | null;
   sofaBedForced?: boolean | null;
+  hideChecklist?: boolean;
+  manualTasks?: ManualTask[] | null;
   nextBooking?: NextBooking | null;
   apartment: { name: string; address: string; bathrooms?: number; bedConfig?: unknown };
   assignedTo?: { name: string } | null;
@@ -411,6 +421,37 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Manual tasks (impresa) */}
+            {task.manualTasks && task.manualTasks.length > 0 && (
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Task manuali</p>
+                <div className="rounded-xl border border-gray-100 bg-white divide-y divide-gray-50 overflow-hidden">
+                  {task.manualTasks.map((mt, idx) => (
+                    <div key={mt.id} className="flex items-center gap-2.5 px-4 py-3">
+                      <span className={`text-base leading-none shrink-0 ${mt.completed ? "opacity-100" : "opacity-25"}`}>
+                        {mt.completed ? "☑" : "○"}
+                      </span>
+                      <p className={`text-xs font-semibold leading-snug break-words flex-1 ${mt.completed ? "text-gray-800" : "text-gray-400"}`}>
+                        {idx + 1}. {mt.label}
+                      </p>
+                      {mt.photoRequired && (
+                        <span className="text-[9px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-100 text-violet-600 shrink-0">
+                          Foto
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* HideChecklist badge */}
+            {task.hideChecklist && (
+              <div className="rounded-xl bg-amber-50 border border-amber-100 px-4 py-3">
+                <p className="text-xs font-bold text-amber-700">Checklist appartamento nascosta al cleaner</p>
               </div>
             )}
 

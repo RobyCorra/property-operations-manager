@@ -12,6 +12,7 @@ import PublicStatusPoller from "@/src/components/public-status-poller";
 import LinenSection from "@/src/components/linen-section";
 import TicketConversation from "@/src/components/ticket-conversation";
 import { createCleaningTaskMessage } from "@/src/app/actions/operational";
+import ManualTasksChecklist from "@/src/components/manual-tasks-checklist";
 import { useState, useEffect, useRef } from "react";
 
 interface ChecklistItem {
@@ -54,6 +55,8 @@ interface Props {
   nextGuestCount?: number | null;
   linen?: LinenResult | null;
   cullaLinen?: LinenResult | null;
+  hideChecklist?: boolean;
+  manualTasks?: { id: string; label: string; photoRequired: boolean; completed: boolean; photoUrl: string | null }[];
   // Chat (solo versione login)
   showChat?: boolean;
   initialMessages?: any[];
@@ -120,6 +123,8 @@ function CleaningContent({
   nextGuestCount,
   linen,
   cullaLinen,
+  hideChecklist,
+  manualTasks,
   showChat,
   initialMessages,
   currentUserRole,
@@ -224,8 +229,13 @@ function CleaningContent({
           </>
         )}
 
-        {/* Checklist (solo IN_PROGRESS, se non ci sono correzioni da fare) */}
-        {canComplete && !hasCorrections && checklistItems.length > 0 && (
+        {/* Manual tasks (when hideChecklist is on, these replace the standard checklist) */}
+        {canComplete && !hasCorrections && manualTasks && manualTasks.length > 0 && (
+          <ManualTasksChecklist taskId={taskId} initialTasks={manualTasks} />
+        )}
+
+        {/* Checklist (solo IN_PROGRESS, se non ci sono correzioni da fare e non è nascosta) */}
+        {canComplete && !hasCorrections && !hideChecklist && checklistItems.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
               <p className="font-semibold text-slate-800 text-sm">{t.checklistTitle}</p>

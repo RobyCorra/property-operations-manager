@@ -164,8 +164,29 @@ export default function ActivityDetailModal({ id, type, currentUserRole, current
                   </div>
                 )}
 
-                {/* Checklist (Cleaning Only) */}
-                {type === 'CLEANING' && checklist.length > 0 && (
+                {/* Manual Tasks (Cleaning) */}
+                {type === 'CLEANING' && Array.isArray((data as any)?.manualTasks) && ((data as any).manualTasks as any[]).length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Task Manuali</h3>
+                    <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                      <div className="divide-y divide-gray-50 text-sm">
+                        {((data as any).manualTasks as any[]).map((mt: any, idx: number) => (
+                          <div key={mt.id} className="px-6 py-4 flex items-center justify-between">
+                            <span className={`font-medium ${mt.completed ? 'text-gray-900' : 'text-gray-400'}`}>{idx + 1}. {mt.label}</span>
+                            {mt.completed ? (
+                              <span className="text-emerald-500 font-bold">✓ Fatto</span>
+                            ) : (
+                              <span className="text-gray-300">Non eseguito</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Checklist (Cleaning Only — hidden when hideChecklist) */}
+                {type === 'CLEANING' && !(data as any)?.hideChecklist && checklist.length > 0 && (
                   <div>
                     <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Esito Checklist</h3>
                     <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">

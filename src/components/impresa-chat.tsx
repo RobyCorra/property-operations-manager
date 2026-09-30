@@ -226,8 +226,28 @@ function ImpresaInfoPanel({
               )}
             </div>
 
-            {/* Checklist bar — cleaning */}
-            {thread.type === "CLEANING" && thread.checklistProgress && thread.checklistProgress.length > 0 && (() => {
+            {/* Manual tasks — cleaning */}
+            {thread.type === "CLEANING" && thread.manualTasks && thread.manualTasks.length > 0 && (() => {
+              const mt = thread.manualTasks!;
+              const mtDone = mt.filter(t => t.completed).length;
+              return (
+                <div className="pt-3 border-t border-slate-100">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Task Manuali</p>
+                  <div className="space-y-1.5">
+                    {mt.map((task, idx) => (
+                      <div key={task.id} className="flex items-center gap-2 text-xs">
+                        <span className={task.completed ? "text-emerald-500" : "text-slate-300"}>{task.completed ? "☑" : "○"}</span>
+                        <span className={`font-medium ${task.completed ? "text-slate-500 line-through" : "text-slate-700"}`}>{idx + 1}. {task.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-2">{mtDone}/{mt.length} completate</p>
+                </div>
+              );
+            })()}
+
+            {/* Checklist bar — cleaning (hidden when hideChecklist) */}
+            {thread.type === "CLEANING" && !thread.hideChecklist && thread.checklistProgress && thread.checklistProgress.length > 0 && (() => {
               const items = thread.checklistProgress!;
               const total = items.length;
               const completed = items.filter((i) => i.completed).length;
@@ -679,7 +699,17 @@ export default function ImpresaChat({
                         </span>
                       </div>
                     )}
-                    {selDel.checklistProgress && selDel.checklistProgress.length > 0 && (() => {
+                    {selDel.manualTasks && selDel.manualTasks.length > 0 && (() => {
+                      const total = selDel.manualTasks!.length;
+                      const done = selDel.manualTasks!.filter(i => i.completed).length;
+                      return (
+                        <div className="flex flex-col items-center bg-slate-50 rounded-xl px-3 py-1.5 flex-1">
+                          <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Task</span>
+                          <span className="text-[11px] font-black text-slate-700">{done}/{total}</span>
+                        </div>
+                      );
+                    })()}
+                    {!selDel.hideChecklist && selDel.checklistProgress && selDel.checklistProgress.length > 0 && (() => {
                       const total = selDel.checklistProgress!.length;
                       const done = selDel.checklistProgress!.filter(i => i.completed).length;
                       return (

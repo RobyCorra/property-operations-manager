@@ -1464,6 +1464,18 @@ export async function createCleaningTaskMessage(taskId: string, prevState: any, 
   }
 }
 
+export async function updateManualTaskProgress(
+  taskId: string,
+  tasks: { id: string; label: string; photoRequired: boolean; completed: boolean; photoUrl: string | null }[],
+) {
+  "use server";
+  await prisma.cleaningTask.update({
+    where: { id: taskId },
+    data: { manualTasks: tasks as any },
+  });
+  revalidatePath(`/dashboard/cleaner/task/${taskId}`);
+}
+
 export async function getCleaningTaskMessages(taskId: string) {
   return await prisma.cleaningTaskMessage.findMany({
     where: { cleaningTaskId: taskId },

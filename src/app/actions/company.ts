@@ -680,6 +680,8 @@ export type DelegatedInterventionThread = {
   priority: string | null;
   status: string;
   checklistProgress: { completed: boolean }[] | null;
+  hideChecklist: boolean;
+  manualTasks: { id: string; label: string; photoRequired: boolean; completed: boolean; photoUrl: string | null }[] | null;
   lastText: string | null;
   lastAt: string | null;
   unread: number;
@@ -726,6 +728,8 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
         priority: null,
         status: t.status,
         checklistProgress: t.checklistProgress as { completed: boolean }[] | null,
+        hideChecklist: !!(t as any).hideChecklist,
+        manualTasks: (t as any).manualTasks as any ?? null,
         lastText: last?.text ?? null,
         lastAt: last?.createdAt?.toISOString() ?? null,
         unread,
@@ -763,6 +767,8 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
         priority: t.priority,
         status: t.status,
         checklistProgress: null,
+        hideChecklist: false,
+        manualTasks: null,
         lastText: last?.text ?? null,
         lastAt: last?.createdAt?.toISOString() ?? null,
         unread,

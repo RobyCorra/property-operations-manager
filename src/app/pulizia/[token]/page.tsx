@@ -107,6 +107,8 @@ export default async function PublicCleaningPage({
       nextGuestCount={nextGuests > 0 ? nextGuests : null}
       linen={linenCalc?.adults ?? null}
       cullaLinen={linenCalc?.culla ?? null}
+      hideChecklist={!!(task as any).hideChecklist}
+      manualTasks={(task as any).manualTasks as any ?? undefined}
     />
   );
 }

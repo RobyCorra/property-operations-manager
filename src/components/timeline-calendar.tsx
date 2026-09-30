@@ -95,6 +95,8 @@ type PrismaCleaningTask = {
   notes: string | null;
   checklistProgress: unknown;
   correctionProgress?: unknown;
+  hideChecklist?: boolean;
+  manualTasks?: unknown;
   totalGuests?: number | null;
   createdAt: Date;
   assignedToId: string | null;
@@ -405,6 +407,8 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
         bookingId: null,
         checklistProgress: item.checklistProgress ?? null,
         correctionProgress: (item as PrismaCleaningTask).correctionProgress ?? null,
+        hideChecklist: (item as any).hideChecklist ?? false,
+        manualTasks: (item as any).manualTasks ?? null,
         totalGuests: (item as PrismaCleaningTask).totalGuests ?? null,
       } as PrismaCleaningTask);
     }
@@ -1366,7 +1370,22 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                                             {selectedEvent.data.status || 'ATTIVO'}
                                         </span>
                                     </div>
-                                    {selectedEvent.data.checklistProgress && (
+                                    {/* Manual tasks */}
+                                    {Array.isArray((selectedEvent.data as any).manualTasks) && ((selectedEvent.data as any).manualTasks as any[]).length > 0 && (
+                                        <div className="pt-6 border-t border-slate-100">
+                                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Task Manuali</p>
+                                            <div className="space-y-2">
+                                                {((selectedEvent.data as any).manualTasks as any[]).map((mt: any, idx: number) => (
+                                                    <div key={mt.id} className="flex items-center gap-2 text-sm">
+                                                        <span className={mt.completed ? "text-emerald-500" : "text-slate-300"}>{mt.completed ? "☑" : "○"}</span>
+                                                        <span className={`font-medium ${mt.completed ? "text-slate-500 line-through" : "text-slate-700"}`}>{idx + 1}. {mt.label}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/* Checklist (hidden when hideChecklist) */}
+                                    {!(selectedEvent.data as any).hideChecklist && selectedEvent.data.checklistProgress && (
                                         <div className="pt-6 border-t border-slate-100">
                                             {(() => {
                                                 const items = (selectedEvent.data.checklistProgress as any[]);
