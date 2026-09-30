@@ -456,7 +456,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             )}
 
             {/* Checklist progress */}
-            {total > 0 && (
+            {!task.hideChecklist && total > 0 && (
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">{t.tcQualityChecklist}</p>
                 <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-3">
@@ -482,7 +482,7 @@ export default function CleaningDetailView({ task, apartments, cleaners, message
             )}
 
             {/* Foto checklist accordion */}
-            {checklist.length > 0 && (
+            {!task.hideChecklist && checklist.length > 0 && (
               <div>
                 <button
                   type="button"
