@@ -670,10 +670,16 @@ export type DelegatedInterventionThread = {
   id: string;
   type: "CLEANING" | "MAINTENANCE";
   apartmentName: string;
+  apartmentAddress: string;
   assignedUser: string;
   title: string;
+  description: string;
   date: string | null;
+  scheduledStart: string | null;
+  scheduledEnd: string | null;
+  priority: string | null;
   status: string;
+  checklistProgress: { completed: boolean }[] | null;
   lastText: string | null;
   lastAt: string | null;
   unread: number;
@@ -697,7 +703,7 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
       where: { ...cleaningWhere, status: { not: "CANCELLED" } },
       orderBy: { date: "desc" },
       include: {
-        apartment: { select: { name: true } },
+        apartment: { select: { name: true, address: true } },
         assignedTo: { select: { name: true } },
         messages: { orderBy: { createdAt: "desc" }, take: 1 },
       },
@@ -710,10 +716,16 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
       out.push({
         id: t.id, type: "CLEANING",
         apartmentName: t.apartment.name,
+        apartmentAddress: t.apartment.address ?? "",
         assignedUser: t.assignedTo?.name ?? "Non assegnato",
         title: "Pulizia",
+        description: t.notes ?? "",
         date: t.date.toISOString(),
+        scheduledStart: null,
+        scheduledEnd: null,
+        priority: null,
         status: t.status,
+        checklistProgress: t.checklistProgress as { completed: boolean }[] | null,
         lastText: last?.text ?? null,
         lastAt: last?.createdAt?.toISOString() ?? null,
         unread,
@@ -728,7 +740,7 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
     const tickets = await prisma.maintenanceTicket.findMany({
       where: { ...maintWhere, status: { notIn: ["CANCELLED", "PROPOSED", "REJECTED"] } },
       include: {
-        apartment: { select: { name: true } },
+        apartment: { select: { name: true, address: true } },
         assignedTo: { select: { name: true } },
         messages: { orderBy: { createdAt: "desc" }, take: 1 },
       },
@@ -741,10 +753,16 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
       out.push({
         id: t.id, type: "MAINTENANCE",
         apartmentName: t.apartment.name,
+        apartmentAddress: t.apartment.address ?? "",
         assignedUser: t.assignedTo?.name ?? "Non assegnato",
         title: t.title,
+        description: t.description,
         date: (t.scheduledStart ?? t.createdAt).toISOString(),
+        scheduledStart: t.scheduledStart?.toISOString() ?? null,
+        scheduledEnd: t.scheduledEnd?.toISOString() ?? null,
+        priority: t.priority,
         status: t.status,
+        checklistProgress: null,
         lastText: last?.text ?? null,
         lastAt: last?.createdAt?.toISOString() ?? null,
         unread,
