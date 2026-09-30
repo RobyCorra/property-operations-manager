@@ -1776,7 +1776,7 @@ export default function TimelineCalendar({ apartments, bookings, cleaningTasks, 
                     </div>
                     )}
 
-                    {!readOnly && (
+                    {!readOnly && !impresaMode && (
                     <div className="flex items-center gap-4">
                         {/* Edit Buttons */}
                         {selectedEvent.type === 'booking' && (
