@@ -1526,9 +1526,12 @@ export async function createImpresaCleaning(input: {
   date: string;
   time?: string;
   totalGuests?: number | null;
+  notes?: string;
+  assignedToId?: string;
+  skipProductConsumption?: boolean;
 }): Promise<{ success: true } | { success: false; error: string }> {
   try {
-    await requireCompanyManager();
+    const companyId = await requireCompanyManager();
     const access = await getCompanyAccess();
     if (!access || !access.scopes.includes("CLEANING")) return { success: false, error: "Pulizie non delegate a questa impresa." };
 
@@ -1545,12 +1548,26 @@ export async function createImpresaCleaning(input: {
       return { success: false, error: "Appartamento non assegnato alla tua impresa." };
     }
 
+    if (input.assignedToId) {
+      const staff = await prisma.user.findFirst({ where: { id: input.assignedToId, companyId, role: "CLEANER" }, select: { id: true } });
+      if (!staff) return { success: false, error: "Operatore non valido." };
+    }
+
     const taskDate = parseRomeDateTime(dateStr, input.time || "10:00");
     const checklistProgress = await computeChecklistSnapshot(prisma, apartmentId, taskDate);
     const totalGuests = input.totalGuests && !isNaN(input.totalGuests) ? input.totalGuests : null;
 
     await prisma.cleaningTask.create({
-      data: { apartmentId, date: taskDate, status: "PENDING", checklistProgress, totalGuests },
+      data: {
+        apartmentId,
+        date: taskDate,
+        status: "PENDING",
+        checklistProgress,
+        totalGuests,
+        notes: input.notes?.trim() || null,
+        assignedToId: input.assignedToId || null,
+        skipProductConsumption: input.skipProductConsumption ?? false,
+      },
     });
     revalidatePath("/dashboard/impresa/pulizie");
     revalidatePath("/dashboard/impresa");

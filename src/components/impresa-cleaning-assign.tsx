@@ -113,9 +113,13 @@ export default function ImpresaCleaningAssign({
   const [nApt, setNApt] = useState("");
   const [nDate, setNDate] = useState("");
   const [nTime, setNTime] = useState("10:00");
+  const [nNotes, setNNotes] = useState("");
+  const [nAssign, setNAssign] = useState("");
+  const [nGuests, setNGuests] = useState("");
+  const [nSkipProducts, setNSkipProducts] = useState(false);
 
   const inputCls =
-    "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
+    "w-full rounded-lg border-gray-300 border px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all";
 
   const filtered = useMemo(() => {
     if (filter === "all") return cleanings;
@@ -176,9 +180,21 @@ export default function ImpresaCleaningAssign({
     setError(null); setOkMsg(null);
     if (!nApt || !nDate) { setError("Appartamento e data obbligatori."); return; }
     startTransition(async () => {
-      const r = await createImpresaCleaning({ apartmentId: nApt, date: nDate, time: nTime });
+      const r = await createImpresaCleaning({
+        apartmentId: nApt,
+        date: nDate,
+        time: nTime,
+        notes: nNotes || undefined,
+        assignedToId: nAssign || undefined,
+        totalGuests: nGuests ? parseInt(nGuests, 10) : null,
+        skipProductConsumption: nSkipProducts,
+      });
       if (!r.success) setError(r.error);
-      else { setNewOpen(false); setNApt(""); setNDate(""); setNTime("10:00"); setOkMsg("Pulizia creata."); router.refresh(); }
+      else {
+        setNewOpen(false); setNApt(""); setNDate(""); setNTime("10:00");
+        setNNotes(""); setNAssign(""); setNGuests(""); setNSkipProducts(false);
+        setOkMsg("Pulizia creata."); router.refresh();
+      }
     });
   };
 
@@ -194,32 +210,120 @@ export default function ImpresaCleaningAssign({
         >
           Salva
         </button>
-        <button
-          type="button"
-          onClick={() => setNewOpen((v) => !v)}
-          className="rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-600"
-        >
-          {newOpen ? "Chiudi" : "+ Nuova pulizia"}
-        </button>
+        {!newOpen && (
+          <button
+            type="button"
+            onClick={() => setNewOpen(true)}
+            className="rounded-full border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-600"
+          >
+            + Nuova pulizia
+          </button>
+        )}
         {dirty && <span className="text-xs text-amber-600">Modifiche non salvate</span>}
         {okMsg && <span className="text-xs font-semibold text-emerald-600">✓ {okMsg}</span>}
         {error && <span className="text-xs font-semibold text-red-500">{error}</span>}
       </div>
 
-      {/* Form nuova pulizia */}
+      {/* Form nuova pulizia — stile org */}
       {newOpen && (
-        <div className="grid grid-cols-1 gap-2 rounded-xl border border-violet-100 bg-violet-50/40 p-3 sm:grid-cols-4">
-          <select className={inputCls} value={nApt} onChange={(e) => setNApt(e.target.value)}>
-            <option value="">Appartamento…</option>
-            {apartments.map((a) => (
-              <option key={a.id} value={a.id}>{a.name} · {a.ownerName}</option>
-            ))}
-          </select>
-          <input type="date" className={inputCls} value={nDate} onChange={(e) => setNDate(e.target.value)} />
-          <input type="time" className={inputCls} value={nTime} onChange={(e) => setNTime(e.target.value)} />
-          <button type="button" onClick={onCreate} disabled={isPending} className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40">
-            Crea pulizia
-          </button>
+        <div className="rounded-2xl bg-white border border-gray-100 overflow-hidden p-6 space-y-5">
+          {/* Appartamento / Assegna a */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Appartamento *</label>
+              <select className={inputCls} value={nApt} onChange={(e) => setNApt(e.target.value)}>
+                <option value="">Seleziona...</option>
+                {apartments.map((a) => (
+                  <option key={a.id} value={a.id}>{a.name} · {a.ownerName}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Assegna a</label>
+              <select className={inputCls} value={nAssign} onChange={(e) => setNAssign(e.target.value)}>
+                <option value="">Nessun assegnatario</option>
+                {staff.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Data / Ora / Note */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Data Intervento *</label>
+              <input type="date" className={inputCls} value={nDate} onChange={(e) => setNDate(e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ora Intervento *</label>
+              <input type="time" className={inputCls} value={nTime} onChange={(e) => setNTime(e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Note / Istruzioni</label>
+              <input
+                type="text"
+                className={inputCls}
+                placeholder="Es. Pulizia profonda, cambio lenzuola"
+                value={nNotes}
+                onChange={(e) => setNNotes(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Numero ospiti */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Numero ospiti (per calcolo biancheria)</label>
+            <input
+              type="number"
+              min={0}
+              className={inputCls}
+              placeholder="Es. 2"
+              value={nGuests}
+              onChange={(e) => setNGuests(e.target.value)}
+            />
+          </div>
+
+          {/* Skip products toggle */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setNSkipProducts((v) => !v)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${nSkipProducts ? "bg-amber-50 border-amber-200" : "bg-gray-50 border-gray-200"}`}
+            >
+              <div className="flex items-center gap-3 text-left">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${nSkipProducts ? "bg-amber-100" : "bg-gray-100"}`}>
+                  <span className="text-sm">📦</span>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold ${nSkipProducts ? "text-amber-800" : "text-gray-700"}`}>Non scalare i prodotti</p>
+                  <p className={`text-xs ${nSkipProducts ? "text-amber-600" : "text-gray-400"}`}>Questa pulizia non toglie prodotti dalle scorte</p>
+                </div>
+              </div>
+              <div className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${nSkipProducts ? "bg-amber-500" : "bg-gray-300"}`}>
+                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${nSkipProducts ? "translate-x-5" : "translate-x-0.5"}`} />
+              </div>
+            </button>
+          </div>
+
+          {/* Actions */}
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => { setNewOpen(false); setNApt(""); setNDate(""); setNTime("10:00"); setNNotes(""); setNAssign(""); setNGuests(""); setNSkipProducts(false); }}
+              className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Annulla
+            </button>
+            <button
+              type="button"
+              onClick={onCreate}
+              disabled={isPending}
+              className="rounded-full bg-black px-8 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:bg-gray-400"
+            >
+              Pianifica Pulizia
+            </button>
+          </div>
         </div>
       )}
 
