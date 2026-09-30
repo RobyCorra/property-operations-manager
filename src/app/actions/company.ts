@@ -682,6 +682,7 @@ export type DelegatedInterventionThread = {
   checklistProgress: { completed: boolean }[] | null;
   hideChecklist: boolean;
   manualTasks: { id: string; label: string; photoRequired: boolean; completed: boolean; photoUrl: string | null }[] | null;
+  bookingId: string | null;
   lastText: string | null;
   lastAt: string | null;
   unread: number;
@@ -730,6 +731,7 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
         checklistProgress: t.checklistProgress as { completed: boolean }[] | null,
         hideChecklist: !!(t as any).hideChecklist,
         manualTasks: (t as any).manualTasks as any ?? null,
+        bookingId: (t as any).bookingId ?? null,
         lastText: last?.text ?? null,
         lastAt: last?.createdAt?.toISOString() ?? null,
         unread,
@@ -769,6 +771,7 @@ export async function getImpresaDelegatedThreads(): Promise<DelegatedInterventio
         checklistProgress: null,
         hideChecklist: false,
         manualTasks: null,
+        bookingId: null,
         lastText: last?.text ?? null,
         lastAt: last?.createdAt?.toISOString() ?? null,
         unread,
@@ -1617,6 +1620,115 @@ export async function approveCleaningByImpresa(
 
     await approveCleaningDirectly(cleaningTaskId);
     revalidatePath("/dashboard/impresa/pulizie");
+    revalidatePath("/dashboard/impresa");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+export async function impresaSetCleaningStatus(
+  cleaningTaskId: string,
+  nextStatus: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("CLEANING")) return { success: false, error: "Pulizie non delegate." };
+
+    const task = await prisma.cleaningTask.findUnique({
+      where: { id: cleaningTaskId },
+      select: { status: true, apartmentId: true, apartment: { select: { organizationId: true } } },
+    });
+    if (!task || !task.apartment.organizationId || !access.orgIds.includes(task.apartment.organizationId)) {
+      return { success: false, error: "Pulizia non trovata." };
+    }
+
+    const allowed: Record<string, string[]> = {
+      PENDING: ["IN_PROGRESS"],
+      IN_PROGRESS: ["AWAITING_REVIEW"],
+    };
+    if (!allowed[task.status]?.includes(nextStatus)) {
+      return { success: false, error: `Transizione ${task.status} → ${nextStatus} non valida.` };
+    }
+
+    const data: Record<string, unknown> = { status: nextStatus };
+    if (nextStatus === "IN_PROGRESS" && task.status === "PENDING") data.startedAt = new Date();
+    if (nextStatus === "AWAITING_REVIEW") data.completedAt = new Date();
+
+    await prisma.cleaningTask.update({ where: { id: cleaningTaskId }, data });
+    revalidatePath("/dashboard/impresa");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+export async function impresaUpdateCleaning(
+  cleaningTaskId: string,
+  input: {
+    date?: string;
+    time?: string;
+    notes?: string;
+    assignedToId?: string | null;
+    totalGuests?: number | null;
+  },
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const companyId = await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("CLEANING")) return { success: false, error: "Pulizie non delegate." };
+
+    const task = await prisma.cleaningTask.findUnique({
+      where: { id: cleaningTaskId },
+      select: { status: true, apartmentId: true, bookingId: true, apartment: { select: { organizationId: true } } },
+    });
+    if (!task || !task.apartment.organizationId || !access.orgIds.includes(task.apartment.organizationId)) {
+      return { success: false, error: "Pulizia non trovata." };
+    }
+    if (task.bookingId) return { success: false, error: "Non puoi modificare pulizie generate da prenotazioni." };
+    if (task.status !== "PENDING") return { success: false, error: "Puoi modificare solo pulizie in attesa." };
+
+    if (input.assignedToId) {
+      const staff = await prisma.user.findFirst({ where: { id: input.assignedToId, companyId, role: "CLEANER" }, select: { id: true } });
+      if (!staff) return { success: false, error: "Operatore non valido." };
+    }
+
+    const data: Record<string, unknown> = {};
+    if (input.date) data.date = parseRomeDateTime(input.date, input.time || "10:00");
+    if (input.notes !== undefined) data.notes = input.notes?.trim() || null;
+    if (input.assignedToId !== undefined) data.assignedToId = input.assignedToId || null;
+    if (input.totalGuests !== undefined) data.totalGuests = input.totalGuests;
+
+    await prisma.cleaningTask.update({ where: { id: cleaningTaskId }, data });
+    revalidatePath("/dashboard/impresa");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Errore." };
+  }
+}
+
+export async function impresaDeleteCleaning(
+  cleaningTaskId: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    await requireCompanyManager();
+    const access = await getCompanyAccess();
+    if (!access || !access.scopes.includes("CLEANING")) return { success: false, error: "Pulizie non delegate." };
+
+    const task = await prisma.cleaningTask.findUnique({
+      where: { id: cleaningTaskId },
+      select: { status: true, apartmentId: true, bookingId: true, apartment: { select: { organizationId: true } } },
+    });
+    if (!task || !task.apartment.organizationId || !access.orgIds.includes(task.apartment.organizationId)) {
+      return { success: false, error: "Pulizia non trovata." };
+    }
+    if (task.bookingId) return { success: false, error: "Non puoi eliminare pulizie generate da prenotazioni." };
+
+    await prisma.cleaningTask.update({
+      where: { id: cleaningTaskId },
+      data: { status: "CANCELLED" },
+    });
     revalidatePath("/dashboard/impresa");
     return { success: true };
   } catch (e) {

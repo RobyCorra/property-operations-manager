@@ -13,6 +13,9 @@ import {
   sendImpresaDelegatedMessage,
   impresaSetMaintenanceStatus,
   impresaApproveMaintenance,
+  impresaSetCleaningStatus,
+  approveCleaningByImpresa,
+  impresaDeleteCleaning,
   type ImpresaThreadSummary,
   type OrgCompanyThreadSummary,
   type DelegatedInterventionThread,
@@ -31,6 +34,8 @@ import {
   MessageSquare,
   Building2,
   ArrowRight,
+  Pencil,
+  Trash2,
 } from "./icons";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -97,10 +102,14 @@ function ImpresaInfoPanel({
   thread,
   isActing,
   onAction,
+  onDelete,
+  onEdit,
 }: {
   thread: DelegatedInterventionThread;
   isActing: boolean;
   onAction: (fn: () => Promise<void>) => void;
+  onDelete?: () => void;
+  onEdit?: () => void;
 }) {
   return (
     <div className="flex flex-col">
@@ -344,15 +353,69 @@ function ImpresaInfoPanel({
           </>
         )}
 
-        {/* Cleaning — read only status */}
+        {/* Cleaning actions */}
         {thread.type === "CLEANING" && (
-          <div className={`w-full py-3 border text-[11px] font-black uppercase tracking-widest rounded-2xl text-center ${
-            thread.status === "APPROVED" || thread.status === "COMPLETED"
-              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-              : "bg-slate-50 border-slate-200 text-slate-500"
-          }`}>
-            {STATUS_LABEL[thread.status] ?? thread.status}
-          </div>
+          <>
+            {thread.status === "PENDING" && (
+              <button
+                type="button"
+                disabled={isActing}
+                onClick={() => onAction(async () => { await impresaSetCleaningStatus(thread.id, "IN_PROGRESS"); })}
+                className="w-full py-3 flex items-center justify-center gap-2 bg-slate-100 border border-slate-200 text-slate-900 text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-all active:scale-95 disabled:opacity-50"
+              >
+                ▶ Avvia pulizia
+              </button>
+            )}
+            {thread.status === "IN_PROGRESS" && (
+              <button
+                type="button"
+                disabled={isActing}
+                onClick={() => onAction(async () => { await impresaSetCleaningStatus(thread.id, "AWAITING_REVIEW"); })}
+                className="w-full py-3 bg-amber-500 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-amber-400 transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-amber-200"
+              >
+                Invia per revisione
+              </button>
+            )}
+            {thread.status === "AWAITING_REVIEW" && (
+              <button
+                type="button"
+                disabled={isActing}
+                onClick={() => onAction(async () => { await approveCleaningByImpresa(thread.id); })}
+                className="w-full py-3 bg-emerald-500 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-400 transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-emerald-200"
+              >
+                Approva pulizia
+              </button>
+            )}
+            {(thread.status === "APPROVED" || thread.status === "COMPLETED") && (
+              <div className="w-full py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black uppercase tracking-widest rounded-2xl text-center">
+                {thread.status === "APPROVED" ? "Approvata" : "Completata"}
+              </div>
+            )}
+            {/* Modifica + Elimina — only for impresa-created cleanings (no bookingId) */}
+            {!thread.bookingId && thread.status === "PENDING" && (
+              <div className="flex gap-2">
+                {onEdit && (
+                  <button
+                    type="button"
+                    onClick={onEdit}
+                    className="flex-1 py-3 flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all active:scale-95"
+                  >
+                    <Pencil size={12} /> Modifica pulizia
+                  </button>
+                )}
+                {onDelete && (
+                  <button
+                    type="button"
+                    disabled={isActing}
+                    onClick={onDelete}
+                    className="py-3 px-5 flex items-center justify-center gap-2 bg-white border border-rose-200 text-rose-500 text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-rose-50 transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    <Trash2 size={12} /> Elimina
+                  </button>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -464,6 +527,17 @@ export default function ImpresaChat({
     fn().then(() => {
       if (selDel) loadDel(selDel.id, selDel.type);
     }).finally(() => setIsActing(false));
+  };
+
+  const handleDeleteCleaning = () => {
+    if (!selDel || selDel.type !== "CLEANING") return;
+    if (!confirm("Eliminare questa pulizia?")) return;
+    handleAction(async () => {
+      await impresaDeleteCleaning(selDel.id);
+      setSelDel(null);
+      const dl = await getImpresaDelegatedThreads();
+      setDelegatedList(dl);
+    });
   };
 
   const staffUnread = staffList.reduce((s, t) => s + t.unread, 0);
@@ -752,7 +826,7 @@ export default function ImpresaChat({
           {/* COL 3: Info panel — desktop only, toggleable */}
           <div className={`${showInfoPanel && selDel ? "hidden md:flex" : "hidden"} w-[240px] flex-col border-l border-slate-100 bg-white shrink-0 overflow-y-auto`}>
             {selDel ? (
-              <ImpresaInfoPanel thread={selDel} isActing={isActing} onAction={handleAction} />
+              <ImpresaInfoPanel thread={selDel} isActing={isActing} onAction={handleAction} onDelete={handleDeleteCleaning} />
             ) : (
               <div className="flex-1 flex items-center justify-center px-5">
                 <div className="text-center">
@@ -786,7 +860,7 @@ export default function ImpresaChat({
                   </button>
                 </div>
                 <div className="overflow-y-auto flex-1 pb-24">
-                  <ImpresaInfoPanel thread={selDel} isActing={isActing} onAction={handleAction} />
+                  <ImpresaInfoPanel thread={selDel} isActing={isActing} onAction={handleAction} onDelete={handleDeleteCleaning} />
                 </div>
                 <div className="shrink-0 px-5 pb-6 pt-3 border-t border-slate-100">
                   <button
