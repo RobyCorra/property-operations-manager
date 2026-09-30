@@ -75,7 +75,7 @@ export default async function ImpresaManutenzionePage() {
 
   const todayRows = rows.filter((r) => r.scheduledStart && localDateKey(r.scheduledStart) === todayKey);
   const kpiToday = todayRows.map(toItem);
-  const kpiOpen = rows.filter((r) => !DONE_STATUSES.includes(r.status) && r.status !== "CANCELLED" && r.status !== "PROPOSED" && r.status !== "REJECTED").map(toItem);
+  const kpiOpen = rows.filter((r) => r.status === "IN_PROGRESS").map(toItem);
   const kpiLate = todayRows.filter((r) => {
     if (DONE_STATUSES.includes(r.status) || r.status === "IN_PROGRESS") return false;
     if (!r.scheduledStart) return false;

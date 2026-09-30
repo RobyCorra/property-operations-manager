@@ -262,7 +262,7 @@ export default async function ImpresaDashboard() {
 
   const maintTicketsToday = maintTickets.filter((t) => t.scheduledStart && localDateKey(t.scheduledStart) === maintTodayKey);
   const maintKpiToday = maintTicketsToday.map(toMaintItem);
-  const maintKpiOpen = maintTickets.filter((t) => !DONE_STATUSES.includes(t.status) && t.status !== "CANCELLED" && t.status !== "PROPOSED" && t.status !== "REJECTED").map(toMaintItem);
+  const maintKpiOpen = maintTickets.filter((t) => t.status === "IN_PROGRESS").map(toMaintItem);
   const maintKpiLate = maintTicketsToday.filter((t) => {
     if (DONE_STATUSES.includes(t.status) || t.status === "IN_PROGRESS") return false;
     if (!t.scheduledStart) return false;

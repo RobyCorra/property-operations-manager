@@ -28,7 +28,7 @@ type PopupKey = "today" | "open" | "late" | "closed" | "unassigned" | null;
 
 const POPUP_CONFIG: Record<NonNullable<PopupKey>, { title: string; emptyMsg: string }> = {
   today:      { title: "Ticket oggi",         emptyMsg: "Nessun ticket programmato per oggi." },
-  open:       { title: "Ticket aperti",        emptyMsg: "Nessun ticket aperto." },
+  open:       { title: "Ticket aperti",        emptyMsg: "Nessun ticket in corso." },
   late:       { title: "Ticket in ritardo",    emptyMsg: "Nessun ticket in ritardo." },
   closed:     { title: "Ticket chiusi oggi",   emptyMsg: "Nessun ticket chiuso oggi." },
   unassigned: { title: "Ticket non assegnati", emptyMsg: "Tutti i ticket sono assegnati." },
@@ -91,7 +91,7 @@ export default function ImpresaMaintenanceKpi({
           </div>
           <div>
             <p className="text-2xl font-semibold text-slate-900 tracking-tight">{ticketsOpen.length}</p>
-            <p className="text-sm text-slate-500 mt-1">Da gestire</p>
+            <p className="text-sm text-slate-500 mt-1">In corso</p>
           </div>
           <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-2 group-hover:text-violet-500 transition-colors">
             <span>→</span> Vedi lista
