@@ -22,6 +22,7 @@ import {
 } from "@/src/components/icons";
 import { ScrollText, Wrench } from "lucide-react";
 import TaskMessagePoller from "@/src/components/task-message-poller";
+import CleanerMessagesButton from "@/src/components/cleaner-messages-button";
 
 type AttachmentLink = {
   id: string;
@@ -102,6 +103,16 @@ export default async function MaintenanceDashboardPage({
     redirect("/login");
   }
 
+  const companyId = cookieStore.get("companyId")?.value;
+  const orgId = cookieStore.get("organizationId")?.value;
+  const chatUnread = companyId
+    ? await prisma.companyChatMessage.count({ where: { companyId, staffUserId: userId, senderIsManager: true, readByStaffAt: null } }).catch(() => 0)
+    : orgId
+      ? await prisma.orgStaffMessage.count({ where: { organizationId: orgId, staffUserId: userId, senderIsManager: true, readByStaffAt: null } }).catch(() => 0)
+      : 0;
+  const chatHref = companyId ? "/dashboard/messaggi" : "/dashboard/messaggi-org";
+  const chatSource = companyId ? "impresa" as const : "org" as const;
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -161,6 +172,7 @@ export default async function MaintenanceDashboardPage({
           </div>
           {/* Desktop-only nav buttons */}
           <div className="hidden md:flex items-center gap-4">
+            <CleanerMessagesButton initialUnread={chatUnread} variant="desktop" href={chatHref} source={chatSource} />
             <Link
               href={isHistoryView ? "/dashboard/maintenance" : "/dashboard/maintenance?view=history"}
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
@@ -443,6 +455,7 @@ export default async function MaintenanceDashboardPage({
           <Wrench size={20} />
           <span className="text-[9px] font-black uppercase tracking-widest">{tr.mntTabOpen}</span>
         </Link>
+        <CleanerMessagesButton initialUnread={chatUnread} variant="mobile" href={chatHref} source={chatSource} />
         <Link
           href="/dashboard/maintenance?view=history"
           className={`flex flex-1 flex-col items-center justify-center gap-1 py-3 ${isHistoryView ? "text-violet-600" : "text-slate-400 hover:text-slate-700"}`}
