@@ -962,13 +962,13 @@ export async function getMyStaffMember(id: string) {
   const companyId = await requireCompanyManager();
   return prisma.user.findFirst({
     where: { id, companyId },
-    select: { id: true, name: true, email: true, role: true, phone: true, address: true },
+    select: { id: true, name: true, email: true, role: true, phone: true, address: true, isExternal: true, companyName: true, vatNumber: true, iban: true },
   });
 }
 
 export async function updateMyStaff(
   id: string,
-  data: { name: string; phone?: string; address?: string; role: string; password?: string },
+  data: { name: string; phone?: string; address?: string; role: string; password?: string; isExternal?: boolean; companyName?: string; vatNumber?: string; iban?: string },
 ): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const companyId = await requireCompanyManager();
@@ -987,6 +987,10 @@ export async function updateMyStaff(
         role: data.role as never,
         phone: data.phone?.trim() || null,
         address: data.address?.trim() || null,
+        isExternal: data.isExternal ?? false,
+        companyName: data.isExternal ? (data.companyName?.trim() || null) : null,
+        vatNumber: data.isExternal ? (data.vatNumber?.trim() || null) : null,
+        iban: data.isExternal ? (data.iban?.trim() || null) : null,
         ...(data.password ? { password: await bcrypt.hash(data.password, 10) } : {}),
       },
     });

@@ -12,7 +12,7 @@ const ROLE_LABEL: Record<string, string> = {
   MANAGER: "Manager",
 };
 
-type Member = { id: string; name: string; email: string; role: string; phone: string | null; address: string | null };
+type Member = { id: string; name: string; email: string; role: string; phone: string | null; address: string | null; isExternal: boolean | null; companyName: string | null; vatNumber: string | null; iban: string | null };
 
 export default function ImpresaStaffEdit({ member, roles }: { member: Member; roles: string[] }) {
   const router = useRouter();
@@ -24,6 +24,10 @@ export default function ImpresaStaffEdit({ member, roles }: { member: Member; ro
   const [address, setAddress] = useState(member.address ?? "");
   const [role, setRole] = useState(member.role);
   const [password, setPassword] = useState("");
+  const [isExternal, setIsExternal] = useState(member.isExternal ?? false);
+  const [companyName, setCompanyName] = useState(member.companyName ?? "");
+  const [vatNumber, setVatNumber] = useState(member.vatNumber ?? "");
+  const [iban, setIban] = useState(member.iban ?? "");
 
   const inputCls =
     "w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
@@ -33,7 +37,7 @@ export default function ImpresaStaffEdit({ member, roles }: { member: Member; ro
     setError(null); setOk(false);
     if (!name.trim()) { setError("Nome obbligatorio."); return; }
     startTransition(async () => {
-      const r = await updateMyStaff(member.id, { name, phone, address, role, password: password || undefined });
+      const r = await updateMyStaff(member.id, { name, phone, address, role, password: password || undefined, isExternal, companyName, vatNumber, iban });
       if (!r.success) setError(r.error);
       else { setOk(true); setPassword(""); router.refresh(); }
     });
@@ -56,6 +60,38 @@ export default function ImpresaStaffEdit({ member, roles }: { member: Member; ro
         </div>
         <div><label className={labelCls}>Nuova password (opzionale)</label><input className={inputCls} placeholder="lascia vuoto per non cambiare" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
       </div>
+
+      {/* Tipo collaboratore */}
+      <div>
+        <label className={labelCls}>Tipo collaboratore</label>
+        <div className="flex gap-3 mt-1">
+          <button
+            type="button"
+            onClick={() => setIsExternal(false)}
+            className={`flex-1 py-2.5 rounded-full text-sm font-medium border transition-all ${!isExternal ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
+          >
+            Interno
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsExternal(true)}
+            className={`flex-1 py-2.5 rounded-full text-sm font-medium border transition-all ${isExternal ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}
+          >
+            Esterno / Fornitore
+          </button>
+        </div>
+      </div>
+
+      {isExternal && (
+        <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-3">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Dati Azienda / Fornitore</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div><label className={labelCls}>Nome ditta</label><input className={inputCls} placeholder="Es. Pulizie Rossi Srl" value={companyName} onChange={(e) => setCompanyName(e.target.value)} /></div>
+            <div><label className={labelCls}>Partita IVA</label><input className={inputCls} placeholder="IT12345678901" value={vatNumber} onChange={(e) => setVatNumber(e.target.value)} /></div>
+            <div className="sm:col-span-2"><label className={labelCls}>IBAN</label><input className={`${inputCls} font-mono`} placeholder="IT60 X054 2811 1010 0000 0123 456" value={iban} onChange={(e) => setIban(e.target.value)} /></div>
+          </div>
+        </div>
+      )}
 
       {error && <p className="text-sm text-red-500">{error}</p>}
       {ok && <p className="text-sm font-semibold text-emerald-600">✓ Modifiche salvate.</p>}
