@@ -23,6 +23,7 @@ model Organization {
   email                     String?
   pec                       String?
   sdiCode                   String?
+  iban                      String?
   aiMonthlyTokenLimit       Int          @default(1800000)
   aiTokensUsed              Int          @default(0)
   aiTokensResetAt           DateTime?

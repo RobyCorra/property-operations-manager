@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { getCompanyAccess } from "@/src/lib/company-access";
 
@@ -54,7 +55,7 @@ export default async function ImpresaClientiPage() {
       ) : (
         <div className="space-y-2">
           {clients.map((cl) => (
-            <div key={cl.id} className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            <Link key={cl.id} href={`/dashboard/impresa/clienti/${cl.id}`} className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm hover:bg-slate-50 transition-colors">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-lg">🏠</div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-slate-900">{cl.name}</p>
@@ -62,7 +63,8 @@ export default async function ImpresaClientiPage() {
                   {cl.apartments} appartament{cl.apartments === 1 ? "o" : "i"} · {cl.scopes.map((s) => SCOPE_LABEL[s] ?? s).join(", ")}
                 </p>
               </div>
-            </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><polyline points="9 6 15 12 9 18"/></svg>
+            </Link>
           ))}
         </div>
       )}
