@@ -6,7 +6,6 @@ import { updateMaintenanceStatus, markMaintenanceMessagesReadByWorker } from "@/
 import MarkMessagesRead from "@/src/components/mark-messages-read";
 import StatusUpdateButton from "@/src/components/status-update-button";
 import { prisma } from "@/src/lib/prisma";
-import AIAssistant from "@/src/components/ai-assistant";
 import MaintenanceChecklistInteractive from "@/src/components/maintenance-checklist-interactive";
 import MaintenanceNoteForm from "@/src/components/maintenance-note-form";
 import type { MaintenanceTaskItem } from "@/src/app/actions/maintenance-token";
@@ -382,17 +381,6 @@ export default async function MaintenanceDashboardPage({
                         );
                       })()}
 
-                      {/* AI Assistant */}
-                      {!isHistoryView && (
-                        <AIAssistant
-                          role="MAINTENANCE"
-                          type="maintenance"
-                          apartmentId={ticket.apartmentId}
-                          maintenanceTicketId={ticket.id}
-                          initialMessages={ticket.aiAssistantMessages}
-                          compact
-                        />
-                      )}
 
                       {/* Allegati */}
                       <div className="rounded-3xl border border-slate-100 bg-white/70 p-5 shadow-sm">
