@@ -9,20 +9,7 @@ import {
   type ChatMsg,
 } from "@/src/app/actions/company";
 import ImpresaChatThread from "@/src/components/impresa-chat-thread";
-
-function beep() {
-  try {
-    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
-    if (!Ctx) return;
-    const ctx = new Ctx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = "sine"; o.frequency.value = 880; g.gain.value = 0.12;
-    o.start();
-    setTimeout(() => { try { o.stop(); ctx.close(); } catch {} }, 200);
-  } catch {}
-}
+import { playMessageBeep, setupNotificationAudio } from "@/src/lib/notification-sound";
 
 export default function OrgCompanyChat({ threads: initialThreads, hideTitle }: { threads: OrgCompanyThreadSummary[]; hideTitle?: boolean }) {
   const [threads, setThreads] = useState(initialThreads);
@@ -31,13 +18,15 @@ export default function OrgCompanyChat({ threads: initialThreads, hideTitle }: {
   const [loading, startLoad] = useTransition();
   const prevRef = useRef(initialThreads.reduce((s, t) => s + t.unread, 0));
 
+  useEffect(() => { setupNotificationAudio(); }, []);
+
   useEffect(() => {
     let alive = true;
     const tick = async () => {
       const list = await getOrgCompanyThreads();
       if (!alive) return;
       const total = list.reduce((s, t) => s + t.unread, 0);
-      if (total > prevRef.current) beep();
+      if (total > prevRef.current) playMessageBeep();
       prevRef.current = total;
       setThreads(list);
     };

@@ -7,6 +7,7 @@ import ImpresaChatThread from "./impresa-chat-thread";
 import type { ChatMsg } from "@/src/app/actions/company";
 import type { OrgStaffThreadSummary } from "@/src/app/actions/messages";
 import { getOrgStaffThreads, getOrgStaffThread, sendOrgStaffMessage } from "@/src/app/actions/messages";
+import { playMessageBeep, setupNotificationAudio } from "@/src/lib/notification-sound";
 
 const ROLE_LABEL: Record<string, string> = {
   CLEANER: "Pulizie",
@@ -14,20 +15,6 @@ const ROLE_LABEL: Record<string, string> = {
   CHECKIN: "Check-in",
   SUPERVISOR: "Supervisor",
 };
-
-function beep() {
-  try {
-    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
-    if (!Ctx) return;
-    const ctx = new Ctx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = "sine"; o.frequency.value = 880; g.gain.value = 0.12;
-    o.start();
-    setTimeout(() => { try { o.stop(); ctx.close(); } catch {} }, 200);
-  } catch {}
-}
 
 export default function OrgStaffChat({ threads: initial, hideHeader }: { threads: OrgStaffThreadSummary[]; hideHeader?: boolean }) {
   const [threads, setThreads] = useState(initial);
@@ -40,6 +27,8 @@ export default function OrgStaffChat({ threads: initial, hideHeader }: { threads
 
   const totalUnread = threads.reduce((s, t) => s + t.unread, 0);
 
+  useEffect(() => { setupNotificationAudio(); }, []);
+
   useEffect(() => {
     let alive = true;
     const tick = async () => {
@@ -47,7 +36,7 @@ export default function OrgStaffChat({ threads: initial, hideHeader }: { threads
         const fresh = await getOrgStaffThreads();
         if (!alive) return;
         const newTotal = fresh.reduce((s, t) => s + t.unread, 0);
-        if (newTotal > prevUnread.current) beep();
+        if (newTotal > prevUnread.current) playMessageBeep();
         prevUnread.current = newTotal;
         setThreads(fresh);
       } catch {}

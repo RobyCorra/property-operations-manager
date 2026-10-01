@@ -3,31 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { getMyOrgStaffUnread } from "@/src/app/actions/messages";
-
-function beep() {
-  try {
-    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
-    if (!Ctx) return;
-    const ctx = new Ctx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = "sine"; o.frequency.value = 880; g.gain.value = 0.12;
-    o.start();
-    setTimeout(() => { try { o.stop(); ctx.close(); } catch {} }, 200);
-  } catch {}
-}
+import { playMessageBeep, setupNotificationAudio } from "@/src/lib/notification-sound";
 
 export default function OrgStaffMessagesButton({ initialUnread, variant }: { initialUnread: number; variant: "desktop" | "mobile" }) {
   const [unread, setUnread] = useState(initialUnread);
   const prev = useRef(initialUnread);
+
+  useEffect(() => { setupNotificationAudio(); }, []);
 
   useEffect(() => {
     let alive = true;
     const check = async () => {
       const n = await getMyOrgStaffUnread();
       if (!alive) return;
-      if (n > prev.current) beep();
+      if (n > prev.current) playMessageBeep();
       prev.current = n;
       setUnread(n);
     };

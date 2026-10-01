@@ -6,26 +6,13 @@ import { type NavItem } from "@/src/components/manager-navbar";
 import { useLang } from "@/src/components/lang-context";
 import { LayoutDashboard, Brush, Wrench, UserCircle, Users, Package, MessageSquare } from "./icons";
 import { getImpresaThreads, getImpresaOrgUnread, getImpresaDelegatedUnread } from "@/src/app/actions/company";
+import { playMessageBeep, setupNotificationAudio } from "@/src/lib/notification-sound";
 
 const HOME = "/dashboard/impresa";
 
 const svg = (d: React.ReactNode) => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">{d}</svg>
 );
-
-function beep() {
-  try {
-    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
-    if (!Ctx) return;
-    const ctx = new Ctx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = "sine"; o.frequency.value = 880; g.gain.value = 0.12;
-    o.start();
-    setTimeout(() => { try { o.stop(); ctx.close(); } catch {} }, 200);
-  } catch {}
-}
 
 export default function ImpresaShell({ name, scopes = [], children }: { name: string; scopes?: string[]; children: React.ReactNode }) {
   const { t } = useLang();
@@ -44,6 +31,8 @@ export default function ImpresaShell({ name, scopes = [], children }: { name: st
   const [unread, setUnread] = useState(0);
   const prevRef = useRef(0);
 
+  useEffect(() => { setupNotificationAudio(); }, []);
+
   useEffect(() => {
     let alive = true;
     const tick = async () => {
@@ -51,7 +40,7 @@ export default function ImpresaShell({ name, scopes = [], children }: { name: st
         const [list, orgUn, delUn] = await Promise.all([getImpresaThreads(), getImpresaOrgUnread(), getImpresaDelegatedUnread()]);
         if (!alive) return;
         const total = list.reduce((s, t) => s + t.unread, 0) + orgUn + delUn;
-        if (total > prevRef.current) beep();
+        if (total > prevRef.current) playMessageBeep();
         prevRef.current = total;
         setUnread(total);
       } catch {}

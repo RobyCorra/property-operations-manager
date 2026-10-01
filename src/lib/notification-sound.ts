@@ -49,7 +49,7 @@ export function setupNotificationAudio() {
   window.addEventListener("keydown",    unlock, { capture: true, passive: true });
 }
 
-function doPing(c: AudioContext, startTime: number, freq: number, vol = 0.18) {
+function doPing(c: AudioContext, startTime: number, freq: number, vol = 0.45, duration = 0.35) {
   const osc  = c.createOscillator();
   const gain = c.createGain();
   osc.connect(gain);
@@ -58,9 +58,9 @@ function doPing(c: AudioContext, startTime: number, freq: number, vol = 0.18) {
   osc.frequency.value = freq;
   gain.gain.setValueAtTime(0, startTime);
   gain.gain.linearRampToValueAtTime(vol, startTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.5);
+  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
   osc.start(startTime);
-  osc.stop(startTime + 0.5);
+  osc.stop(startTime + duration);
 }
 
 /** Suona un triplo ping crescente — usato per le push notification in arrivo. */
@@ -71,9 +71,9 @@ export function playPushAlertSound() {
 
     const play = () => {
       const t = c.currentTime;
-      doPing(c, t,        660, 0.15);
-      doPing(c, t + 0.13, 880, 0.18);
-      doPing(c, t + 0.26, 1100, 0.22);
+      doPing(c, t,        660, 0.5,  0.3);
+      doPing(c, t + 0.15, 880, 0.6,  0.3);
+      doPing(c, t + 0.30, 1100, 0.7, 0.4);
     };
 
     if (c.state === "suspended") {
@@ -86,7 +86,7 @@ export function playPushAlertSound() {
   }
 }
 
-/** Suona un doppio ping. Funziona dopo il primo gesto utente sulla pagina. */
+/** Suono forte per nuovo messaggio — triplo beep incisivo. */
 export function playNotificationSound() {
   try {
     const c = getOrCreateCtx();
@@ -94,8 +94,32 @@ export function playNotificationSound() {
 
     const play = () => {
       const t = c.currentTime;
-      doPing(c, t,        880);
-      doPing(c, t + 0.14, 1320);
+      doPing(c, t,        1000, 0.55, 0.25);
+      doPing(c, t + 0.18, 1200, 0.6,  0.25);
+      doPing(c, t + 0.36, 1400, 0.65, 0.35);
+    };
+
+    if (c.state === "suspended") {
+      c.resume().then(play).catch(() => {});
+    } else {
+      play();
+    }
+  } catch {
+    // Fail silenzioso
+  }
+}
+
+/** Beep singolo per polling messaggi — usato dai componenti chat/button. */
+export function playMessageBeep() {
+  try {
+    const c = getOrCreateCtx();
+    if (!c) return;
+
+    const play = () => {
+      const t = c.currentTime;
+      doPing(c, t,        880, 0.5,  0.2);
+      doPing(c, t + 0.12, 1100, 0.55, 0.2);
+      doPing(c, t + 0.24, 1320, 0.6,  0.3);
     };
 
     if (c.state === "suspended") {

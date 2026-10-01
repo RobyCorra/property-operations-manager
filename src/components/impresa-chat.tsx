@@ -81,19 +81,7 @@ const PRIORITY_LABEL: Record<string, string> = {
   URGENT: "Urgente",
 };
 
-function beep() {
-  try {
-    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
-    if (!Ctx) return;
-    const ctx = new Ctx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = "sine"; o.frequency.value = 880; g.gain.value = 0.12;
-    o.start();
-    setTimeout(() => { try { o.stop(); ctx.close(); } catch {} }, 200);
-  } catch {}
-}
+import { playMessageBeep, setupNotificationAudio } from "@/src/lib/notification-sound";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // InfoPanel — detail panel for delegated intervention (impresa side)
@@ -465,13 +453,15 @@ export default function ImpresaChat({
     initialDelegated.reduce((s, t) => s + t.unread, 0),
   );
 
+  useEffect(() => { setupNotificationAudio(); }, []);
+
   useEffect(() => {
     let alive = true;
     const tick = async () => {
       const [sl, ol, dl] = await Promise.all([getImpresaThreads(), getImpresaOrgThreads(), getImpresaDelegatedThreads()]);
       if (!alive) return;
       const total = sl.reduce((s, t) => s + t.unread, 0) + ol.reduce((s, t) => s + t.unread, 0) + dl.reduce((s, t) => s + t.unread, 0);
-      if (total > prevUnreadRef.current) beep();
+      if (total > prevUnreadRef.current) playMessageBeep();
       prevUnreadRef.current = total;
       setStaffList(sl);
       setOrgList(ol);
