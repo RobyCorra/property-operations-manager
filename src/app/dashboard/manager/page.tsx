@@ -6,8 +6,8 @@ import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import { getNotifications } from "@/src/app/actions/notification";
 
-import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
-import type { OperationalEvent } from "@/src/components/operational-event-card";
+
+
 import NotificationBell from "@/src/components/notification-bell";
 import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
@@ -215,60 +215,6 @@ export default async function ManagerDashboardPage() {
       scheduledTime: new Date(c.date).toLocaleTimeString("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hour12: false }),
       href: `/dashboard/manager/checkins/${c.id}`,
     }));
-
-  // Data Normalization for Timeline
-  const allEvents: OperationalEvent[] = [];
-  cleanings.forEach((c: CleaningView) => {
-    allEvents.push({
-      id: `clean-${c.id}`,
-      type: "CLEANING",
-      date: new Date(c.date),
-      apartmentName: c.apartment.name,
-      subject: tr.evCleaningJob,
-      status: c.status,
-      statusLabel: c.status === "PENDING" ? tr.stCleaningTodo : c.status === "IN_PROGRESS" ? tr.stInProgressM : tr.stCleaningDone,
-      actorName: c.assignedTo?.name || tr.mgrUnassignedM,
-      isLateCleaning: lateCleaningIds.has(c.id)
-    });
-  });
-
-  tickets.forEach((t: TicketView) => {
-    if (t.scheduledStart) {
-      allEvents.push({
-        id: `maint-${t.id}`,
-        type: "MAINTENANCE",
-        date: new Date(t.scheduledStart),
-        apartmentName: t.apartment.name,
-        subject: t.title,
-        status: t.status,
-        statusLabel: t.status === "PENDING" ? tr.stTicketWaiting : t.status === "IN_PROGRESS" ? tr.stTicketInCharge : tr.stTicketResolved,
-        actorName: t.assignedTo?.name || tr.mgrUnassignedM
-      });
-    }
-  });
-
-  bookings.forEach((b: BookingView) => {
-    allEvents.push({
-      id: `in-${b.id}`,
-      type: "CHECKIN",
-      date: new Date(b.checkInDate),
-      apartmentName: b.apartment.name,
-      subject: tr.evArrivalOf(b.guestName ?? ""),
-      status: b.status || "ACTIVE",
-      actorName: b.guestName ?? undefined
-    });
-    allEvents.push({
-      id: `out-${b.id}`,
-      type: "CHECKOUT",
-      date: new Date(b.checkOutDate),
-      apartmentName: b.apartment.name,
-      subject: tr.evDepartureOf(b.guestName ?? ""),
-      status: b.status || "ACTIVE",
-      actorName: b.guestName ?? undefined
-    });
-  });
-
-  allEvents.sort((a, b) => a.date.getTime() - b.date.getTime());
 
   const apartmentsData = apartments.map((apartment: ApartmentView) => {
     const aptBookings = bookings.filter((b: BookingView) => b.apartmentId === apartment.id);
@@ -626,7 +572,6 @@ export default async function ManagerDashboardPage() {
         {/* 4. ACTION BUTTONS / TOPBAR */}
         <div className="w-full flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <UpcomingEventsPanel events={allEvents} serverDate={serverDate} />
           </div>
 
           <div className="flex justify-center">
