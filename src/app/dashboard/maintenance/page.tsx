@@ -21,6 +21,7 @@ import {
   CircleCheck
 } from "@/src/components/icons";
 import { ScrollText, Wrench } from "lucide-react";
+import TaskMessagePoller from "@/src/components/task-message-poller";
 
 type AttachmentLink = {
   id: string;
@@ -144,6 +145,7 @@ export default async function MaintenanceDashboardPage({
 
   return (
     <>
+    <TaskMessagePoller />
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-6xl mx-auto space-y-12">
 

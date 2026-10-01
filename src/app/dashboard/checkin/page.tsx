@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { logoutAction } from "@/src/app/actions/auth";
+import TaskMessagePoller from "@/src/components/task-message-poller";
 import CheckinStartButton from "@/src/components/checkin-start-button";
 import CheckinCardChat from "@/src/components/checkin-card-chat";
 import { isCheckinBlockedByCleaning } from "@/src/app/actions/checkin";
@@ -60,6 +61,8 @@ export default async function CheckinDashboardPage() {
     : 0;
 
   return (
+    <>
+    <TaskMessagePoller />
     <main className="min-h-screen bg-[#faf8ff] pb-24 md:pb-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
       <header className="px-5 pt-5 pb-3 flex items-center justify-between">
         <div>
@@ -173,5 +176,6 @@ export default async function CheckinDashboardPage() {
         </nav>
       )}
     </main>
+    </>
   );
 }

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/src/lib/prisma";
 import { logoutAction } from "@/src/app/actions/auth";
+import TaskMessagePoller from "@/src/components/task-message-poller";
 import { formatRomeDateDisplay } from "@/src/lib/rome-datetime";
 import { LogOut, ClipboardList, Wrench, Home, Clock, Building2 } from "lucide-react";
 import PushPermissionRequest from "@/src/components/push-permission";
@@ -83,6 +84,7 @@ export default async function SupervisorDashboardPage() {
 
   return (
     <>
+    <TaskMessagePoller />
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-4xl mx-auto space-y-10">
 

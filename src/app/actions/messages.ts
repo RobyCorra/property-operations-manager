@@ -280,3 +280,33 @@ export async function sendMyOrgStaffMessage(formData: FormData): Promise<{ succe
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
   }
 }
+
+export async function getMyTaskUnreadCount(): Promise<number> {
+  try {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+    const role = cookieStore.get("role")?.value;
+    if (!userId || !role) return 0;
+
+    const counts = await Promise.all([
+      (role === "CLEANER" || role === "SUPERVISOR")
+        ? prisma.cleaningTaskMessage.count({
+            where: { role: "MANAGER", readByWorkerAt: null, cleaningTask: { assignedToId: userId } },
+          })
+        : 0,
+      role === "MAINTENANCE"
+        ? prisma.message.count({
+            where: { role: "MANAGER", readByWorkerAt: null, maintenanceTicket: { assignedToId: userId } },
+          })
+        : 0,
+      role === "CHECKIN"
+        ? prisma.checkinTaskMessage.count({
+            where: { role: "MANAGER", readByWorkerAt: null, checkinTask: { assignedToId: userId } },
+          })
+        : 0,
+    ]);
+    return counts[0] + counts[1] + counts[2];
+  } catch {
+    return 0;
+  }
+}

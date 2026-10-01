@@ -21,6 +21,7 @@ import PushPermissionRequest from "@/src/components/push-permission";
 import ApnsRegister from "@/src/components/apns-register";
 import { LogOut, CalendarDays, MapPin } from "@/src/components/icons";
 import CleanerMessagesButton from "@/src/components/cleaner-messages-button";
+import TaskMessagePoller from "@/src/components/task-message-poller";
 import { ScrollText, Sparkles, ClipboardList } from "lucide-react";
 import CleaningCorrectionPanel, { type CorrectionItem } from "@/src/components/cleaning-correction-panel";
 import CleanerLinenSection from "@/src/components/cleaner-linen-section";
@@ -166,6 +167,7 @@ export default async function CleanerDashboardPage() {
     <CleanerLangGate>
     <LocationTracker />
     <PhotoQueueUploader />
+    <TaskMessagePoller />
     <main className="min-h-screen bg-[#faf8ff] p-6 pb-28 font-sans text-slate-900 lg:p-10 lg:pb-10">
       <div className="max-w-5xl mx-auto space-y-12">
 
