@@ -335,7 +335,7 @@ async function requireCompanyStaff(): Promise<{ companyId: string; userId: strin
   return { companyId, userId };
 }
 
-export type CompanyStaff = { id: string; name: string; email: string; role: string };
+export type CompanyStaff = { id: string; name: string; email: string; role: string; createdAt: Date };
 export type ChatMsg = {
   id: string;
   text: string;
@@ -943,7 +943,7 @@ export async function getMyCompanyStaff(): Promise<CompanyStaff[]> {
   const companyId = await requireCompanyManager();
   const users = await prisma.user.findMany({
     where: { companyId },
-    select: { id: true, name: true, email: true, role: true },
+    select: { id: true, name: true, email: true, role: true, createdAt: true },
     orderBy: [{ role: "asc" }, { name: "asc" }],
   });
   return users;

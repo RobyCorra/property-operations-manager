@@ -21,11 +21,11 @@ const ROLE_SHORT: Record<string, string> = {
   MANAGER: "Manager",
 };
 
-export default function ImpresaStaffManager({ staff, roles }: { staff: CompanyStaff[]; roles: string[] }) {
+export default function ImpresaStaffManager({ staff, roles, autoOpen = false }: { staff: CompanyStaff[]; roles: string[]; autoOpen?: boolean }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(autoOpen);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -67,8 +67,12 @@ export default function ImpresaStaffManager({ staff, roles }: { staff: CompanySt
       if (!r.success) setError(r.error);
       else {
         reset();
-        setOpen(false);
-        router.refresh();
+        if (autoOpen) {
+          router.push("/dashboard/impresa/staff");
+        } else {
+          setOpen(false);
+          router.refresh();
+        }
       }
     });
   };
