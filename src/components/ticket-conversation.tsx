@@ -130,11 +130,15 @@ export default function TicketConversation({
   useEffect(() => { setupNotificationAudio(); }, []);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const el = scrollRef.current;
+    const hasNewMessages = initialMessages.length > prevMsgCount.current;
+    if (el && hasNewMessages) {
+      const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 150;
+      if (isNearBottom || prevMsgCount.current === 0) {
+        el.scrollTop = el.scrollHeight;
+      }
     }
-    // Suona se arrivano messaggi nuovi dall'altra parte (non dal ruolo corrente)
-    if (initialMessages.length > prevMsgCount.current) {
+    if (hasNewMessages) {
       const newOnes = initialMessages.slice(prevMsgCount.current);
       const hasOtherParty = newOnes.some(m => m.role !== currentUserRole && m.role !== "SYSTEM");
       if (hasOtherParty) playNotificationSound();
