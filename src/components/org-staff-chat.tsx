@@ -24,6 +24,7 @@ export default function OrgStaffChat({ threads: initial, hideHeader }: { threads
   const [isLoading, startTransition] = useTransition();
   const [expanded, setExpanded] = useState(true);
   const prevUnread = useRef(0);
+  const selectedRef = useRef<string | null>(null);
 
   const totalUnread = threads.reduce((s, t) => s + t.unread, 0);
 
@@ -39,14 +40,22 @@ export default function OrgStaffChat({ threads: initial, hideHeader }: { threads
         if (newTotal > prevUnread.current) playMessageBeep();
         prevUnread.current = newTotal;
         setThreads(fresh);
+        if (selectedRef.current) {
+          const data = await getOrgStaffThread(selectedRef.current);
+          if (!alive) return;
+          if (data) setMessages(data.messages as ChatMsg[]);
+        }
       } catch {}
     };
-    const id = setInterval(tick, 15000);
-    return () => { alive = false; clearInterval(id); };
+    const id = setInterval(tick, 5000);
+    const onFocus = () => tick();
+    window.addEventListener("focus", onFocus);
+    return () => { alive = false; clearInterval(id); window.removeEventListener("focus", onFocus); };
   }, []);
 
   const openThread = useCallback((staffUserId: string) => {
     setSelected(staffUserId);
+    selectedRef.current = staffUserId;
     startTransition(async () => {
       const data = await getOrgStaffThread(staffUserId);
       if (data) { setMessages(data.messages as ChatMsg[]); setHeaderName(data.name); }
@@ -106,7 +115,7 @@ export default function OrgStaffChat({ threads: initial, hideHeader }: { threads
       {selected ? (
         <>
           <div className="md:hidden flex items-center gap-2 px-3 py-2 border-b border-slate-100">
-            <button type="button" onClick={() => setSelected(null)} className="text-sm font-semibold text-indigo-600">← Team</button>
+            <button type="button" onClick={() => { setSelected(null); selectedRef.current = null; }} className="text-sm font-semibold text-indigo-600">← Team</button>
           </div>
           <ImpresaChatThread
             messages={messages}

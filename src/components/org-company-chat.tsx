@@ -17,20 +17,28 @@ export default function OrgCompanyChat({ threads: initialThreads, hideTitle }: {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [loading, startLoad] = useTransition();
   const prevRef = useRef(initialThreads.reduce((s, t) => s + t.unread, 0));
+  const selRef = useRef<string | null>(null);
 
   useEffect(() => { setupNotificationAudio(); }, []);
 
   useEffect(() => {
     let alive = true;
     const tick = async () => {
-      const list = await getOrgCompanyThreads();
-      if (!alive) return;
-      const total = list.reduce((s, t) => s + t.unread, 0);
-      if (total > prevRef.current) playMessageBeep();
-      prevRef.current = total;
-      setThreads(list);
+      try {
+        const list = await getOrgCompanyThreads();
+        if (!alive) return;
+        const total = list.reduce((s, t) => s + t.unread, 0);
+        if (total > prevRef.current) playMessageBeep();
+        prevRef.current = total;
+        setThreads(list);
+        if (selRef.current) {
+          const r = await getOrgCompanyThread(selRef.current);
+          if (!alive) return;
+          if (r) setMessages(r.messages);
+        }
+      } catch {}
     };
-    const id = setInterval(tick, 15000);
+    const id = setInterval(tick, 5000);
     const onFocus = () => tick();
     window.addEventListener("focus", onFocus);
     return () => { alive = false; clearInterval(id); window.removeEventListener("focus", onFocus); };
@@ -45,7 +53,7 @@ export default function OrgCompanyChat({ threads: initialThreads, hideTitle }: {
       setThreads(list);
     });
   };
-  const open = (t: OrgCompanyThreadSummary) => { setSel(t); setMessages([]); load(t.companyId); };
+  const open = (t: OrgCompanyThreadSummary) => { setSel(t); selRef.current = t.companyId; setMessages([]); load(t.companyId); };
 
   if (threads.length === 0) return null;
 

@@ -12,6 +12,9 @@ const allowedMimeTypes = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
+  "image/heic",
+  "image/heif",
+  "image/gif",
   "text/plain",
   // Audio (vocali chat)
   "audio/webm",
