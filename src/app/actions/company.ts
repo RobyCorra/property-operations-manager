@@ -1193,13 +1193,12 @@ export async function impresaCreateMaintenance(input: {
       },
     });
 
-    // Allerta l'organizzazione proprietaria.
-    await prisma.notification.create({
+    await prisma.message.create({
       data: {
-        type: "MAINTENANCE",
-        title: "Nuova manutenzione da approvare",
-        message: `${company?.name ?? "Un'impresa"} propone l'intervento "${title}" presso ${apt.name}. Richiede la tua approvazione.`,
-        apartmentId,
+        maintenanceTicketId: ticketId,
+        role: "SYSTEM",
+        senderName: "Sistema",
+        text: `🔧 ${company?.name ?? "Un'impresa"} propone l'intervento "${title}" presso ${apt.name}. Richiede la tua approvazione.`,
       },
     });
     await sendPushToRole("MANAGER" as Role, {

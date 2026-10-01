@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/src/components/lang-context";
 import { usePathname, useRouter } from "next/navigation";
-import NotificationBell from "@/src/components/notification-bell";
+import Link from "next/link";
 import { logoutAction } from "@/src/app/actions/auth";
 
 interface MobileHeaderProps {
@@ -110,9 +110,19 @@ export default function MobileHeader({ unreadCount = 0, maintenanceProposalCount
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </button>
-          <div className="w-[48px] h-[48px] flex items-center justify-center shrink-0">
-            <NotificationBell initialNotifications={[]} serverDate={nowDate.toISOString()} unreadMessagesCount={unreadCount} />
-          </div>
+          <Link
+            href="/dashboard/manager/messages"
+            className="w-[48px] h-[48px] flex items-center justify-center rounded-full bg-[#f8f7ff] border border-[#ede9fe] text-violet-700 shrink-0 relative"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border border-white leading-none">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </Link>
           <button
             onClick={() => setMenuOpen(true)}
             aria-label={t.navMenu}

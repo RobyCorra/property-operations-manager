@@ -716,12 +716,13 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       }
     }
 
-    await prisma.notification.create({
+    await prisma.cleaningTaskMessage.create({
       data: {
-        type: "CLEANING",
-        title: "🧹 Pulizia avviata",
-        message: `${cleanerName} ha iniziato la pulizia presso ${aptName}.`,
-        apartmentId: task.apartmentId,
+        cleaningTaskId: id,
+        role: "SYSTEM",
+        senderName: "Sistema",
+        text: `🧹 ${cleanerName} ha iniziato la pulizia presso ${aptName}.`,
+        readByManagerAt: null,
       },
     });
     await sendPushToRole("MANAGER" as Role, {
@@ -738,25 +739,15 @@ export async function updateCleaningStatus(id: string, nextStatus: string) {
       where: { id: task.apartmentId },
       select: { name: true, organizationId: true },
     });
-    await prisma.$transaction([
-      prisma.notification.create({
-        data: {
-          type: "CLEANING",
-          title: "🔔 Pulizia da verificare",
-          message: `${task.assignedTo?.name ?? "Il cleaner"} ha completato la pulizia presso ${apartment?.name || "un appartamento"}. Richiede verifica da supervisor o manager.`,
-          apartmentId: task.apartmentId,
-        },
-      }),
-      prisma.cleaningTaskMessage.create({
-        data: {
-          cleaningTaskId: id,
-          role: "SYSTEM",
-          senderName: task.assignedTo?.name ?? "Cleaner",
-          text: `⏳ ${task.assignedTo?.name ?? "Il cleaner"} ha completato la pulizia e la quality checklist. In attesa di verifica da supervisor o manager.`,
-          readByManagerAt: null,
-        },
-      }),
-    ]);
+    await prisma.cleaningTaskMessage.create({
+      data: {
+        cleaningTaskId: id,
+        role: "SYSTEM",
+        senderName: "Sistema",
+        text: `🔔 ${task.assignedTo?.name ?? "Il cleaner"} ha completato la pulizia e la quality checklist presso ${apartment?.name || "un appartamento"}. In attesa di verifica da supervisor o manager.`,
+        readByManagerAt: null,
+      },
+    });
     // Push a manager e supervisor
     const cleanerName = task.assignedTo?.name ?? "Il cleaner";
     const aptName = apartment?.name ?? "un appartamento";
@@ -794,22 +785,13 @@ export async function submitCleaningForReview(id: string) {
       where: { id },
       data: { status: "AWAITING_REVIEW" },
     }),
-    // Auto-message in chat to notify manager
     prisma.cleaningTaskMessage.create({
       data: {
         cleaningTaskId: id,
         role: "SYSTEM",
-        senderName: task.assignedTo?.name ?? "Cleaner",
-        text: `⏳ Pulizia completata e inviata per revisione — in attesa di approvazione del manager o del supervisor.`,
+        senderName: "Sistema",
+        text: `⏳ Pulizia presso ${apartment?.name || "un appartamento"} completata e inviata per revisione — in attesa di approvazione del manager o del supervisor.`,
         readByManagerAt: null,
-      },
-    }),
-    prisma.notification.create({
-      data: {
-        type: "CLEANING",
-        title: "Pulizia in attesa di revisione",
-        message: `La pulizia presso ${apartment?.name || "un appartamento"} è pronta per la revisione.`,
-        apartmentId: task.apartmentId,
       },
     }),
   ]);
@@ -835,12 +817,13 @@ export async function approveCleaningDirectly(cleaningTaskId: string) {
   await consumeProductsOnCleaningApproved(cleaningTaskId).catch(console.error);
 
   const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true } });
-  await prisma.notification.create({
+  await prisma.cleaningTaskMessage.create({
     data: {
-      type: "CLEANING",
-      title: "Pulizia approvata",
-      message: `La pulizia presso ${apartment?.name || "un appartamento"} è stata approvata dal manager.`,
-      apartmentId: task.apartmentId,
+      cleaningTaskId,
+      role: "SYSTEM",
+      senderName: "Sistema",
+      text: `✅ La pulizia presso ${apartment?.name || "un appartamento"} è stata approvata dal manager.`,
+      readByManagerAt: null,
     },
   });
 
@@ -878,12 +861,13 @@ export async function approveCleaningReview(cleaningTaskId: string, supervisorId
   await consumeProductsOnCleaningApproved(cleaningTaskId).catch(console.error);
 
   const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true, organizationId: true } });
-  await prisma.notification.create({
+  await prisma.cleaningTaskMessage.create({
     data: {
-      type: "CLEANING",
-      title: "Pulizia approvata",
-      message: `La pulizia presso ${apartment?.name || "un appartamento"} è stata approvata.`,
-      apartmentId: task.apartmentId,
+      cleaningTaskId,
+      role: "SYSTEM",
+      senderName: "Sistema",
+      text: `✅ La pulizia presso ${apartment?.name || "un appartamento"} è stata approvata dal supervisor.`,
+      readByManagerAt: null,
     },
   });
 
@@ -936,12 +920,13 @@ export async function rejectCleaningReview(
   ]);
 
   const apartment = await prisma.apartment.findUnique({ where: { id: task.apartmentId }, select: { name: true, organizationId: true } });
-  await prisma.notification.create({
+  await prisma.cleaningTaskMessage.create({
     data: {
-      type: "CLEANING",
-      title: "Pulizia rifiutata",
-      message: `La pulizia presso ${apartment?.name || "un appartamento"} richiede correzioni.`,
-      apartmentId: task.apartmentId,
+      cleaningTaskId,
+      role: "SYSTEM",
+      senderName: "Sistema",
+      text: `⚠️ La pulizia presso ${apartment?.name || "un appartamento"} è stata rifiutata e richiede correzioni.`,
+      readByManagerAt: null,
     },
   });
 
@@ -1054,24 +1039,14 @@ export async function updateMaintenanceStatus(id: string, nextStatus: string) {
       where: { id: ticket.apartmentId },
       select: { name: true, organizationId: true },
     });
-    await prisma.$transaction([
-      prisma.notification.create({
-        data: {
-          type: "MAINTENANCE",
-          title: "🔔 Manutenzione da verificare",
-          message: `${ticket.assignedTo?.name ?? "Il tecnico"} ha completato l'intervento "${ticket.title}" presso ${apartment?.name || "un appartamento"}. Richiede verifica da supervisor o manager.`,
-          apartmentId: ticket.apartmentId,
-        },
-      }),
-      prisma.message.create({
-        data: {
-          maintenanceTicketId: id,
-          role: "SYSTEM",
-          senderName: ticket.assignedTo?.name ?? "Tecnico",
-          text: `⏳ ${ticket.assignedTo?.name ?? "Il tecnico"} ha completato l'intervento "${ticket.title}". In attesa di verifica da supervisor o manager.`,
-        },
-      }),
-    ]);
+    await prisma.message.create({
+      data: {
+        maintenanceTicketId: id,
+        role: "SYSTEM",
+        senderName: "Sistema",
+        text: `🔔 ${ticket.assignedTo?.name ?? "Il tecnico"} ha completato l'intervento "${ticket.title}" presso ${apartment?.name || "un appartamento"}. In attesa di verifica da supervisor o manager.`,
+      },
+    });
     // Push a manager e supervisor
     const techName = ticket.assignedTo?.name ?? "Il tecnico";
     const aptName = apartment?.name ?? "un appartamento";
@@ -1132,12 +1107,12 @@ export async function submitMaintenanceForReview(id: string) {
   });
 
   const apartment = await prisma.apartment.findUnique({ where: { id: ticket.apartmentId }, select: { name: true } });
-  await prisma.notification.create({
+  await prisma.message.create({
     data: {
-      type: "MAINTENANCE",
-      title: "Manutenzione in attesa di revisione",
-      message: `Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è pronto per la revisione.`,
-      apartmentId: ticket.apartmentId,
+      maintenanceTicketId: id,
+      role: "SYSTEM",
+      senderName: "Sistema",
+      text: `⏳ Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è stato inviato per revisione.`,
     },
   });
 
@@ -1158,12 +1133,12 @@ export async function approveMaintenanceDirectly(maintenanceTicketId: string) {
   });
 
   const apartment = await prisma.apartment.findUnique({ where: { id: ticket.apartmentId }, select: { name: true } });
-  await prisma.notification.create({
+  await prisma.message.create({
     data: {
-      type: "MAINTENANCE",
-      title: "Manutenzione approvata",
-      message: `Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è stato approvato dal manager.`,
-      apartmentId: ticket.apartmentId,
+      maintenanceTicketId,
+      role: "SYSTEM",
+      senderName: "Sistema",
+      text: `✅ Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è stato approvato dal manager.`,
     },
   });
 
@@ -1189,12 +1164,12 @@ export async function approveMaintenanceReview(maintenanceTicketId: string, supe
   ]);
 
   const apartment = await prisma.apartment.findUnique({ where: { id: ticket.apartmentId }, select: { name: true } });
-  await prisma.notification.create({
+  await prisma.message.create({
     data: {
-      type: "MAINTENANCE",
-      title: "Manutenzione approvata",
-      message: `Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è stato approvato.`,
-      apartmentId: ticket.apartmentId,
+      maintenanceTicketId,
+      role: "SYSTEM",
+      senderName: "Sistema",
+      text: `✅ Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è stato approvato dal supervisor.`,
     },
   });
 
@@ -1241,16 +1216,15 @@ export async function rejectMaintenanceReview(
   ]);
 
   const apartment = await prisma.apartment.findUnique({ where: { id: ticket.apartmentId }, select: { name: true } });
-  await prisma.notification.create({
+  await prisma.message.create({
     data: {
-      type: "MAINTENANCE",
-      title: "Manutenzione rifiutata",
-      message: `Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} richiede correzioni.`,
-      apartmentId: ticket.apartmentId,
+      maintenanceTicketId,
+      role: "SYSTEM",
+      senderName: "Sistema",
+      text: `⚠️ Il ticket "${ticket.title}" presso ${apartment?.name || "un appartamento"} è stato rifiutato e richiede correzioni.`,
     },
   });
 
-  // Notifica l'operatore assegnato: ci sono correzioni da fare.
   if (ticket.assignedToId) {
     await sendPushToUser(ticket.assignedToId, {
       title: "🔧 Correzioni richieste",

@@ -4,13 +4,11 @@ import { getT } from "@/src/lib/server-lang";
 import { prisma } from "@/src/lib/prisma";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import Link from "next/link";
-import { getNotifications } from "@/src/app/actions/notification";
 
 import ApartmentMapWrapper from "@/src/components/apartment-map-wrapper";
 import { APARTMENT_STATUS_META } from "@/src/lib/apartment-status";
 import UpcomingEventsPanel from "@/src/components/upcoming-events-panel";
 import type { OperationalEvent } from "@/src/components/operational-event-card";
-import NotificationBell from "@/src/components/notification-bell";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import {
   Brush,
@@ -93,7 +91,7 @@ export default async function CalendarioOperativoPage() {
 
   const orgId = await getCurrentOrg();
 
-  const [apartments, bookings, cleanings, tickets, calendarTickets, initialNotifications] = await Promise.all([
+  const [apartments, bookings, cleanings, tickets, calendarTickets] = await Promise.all([
     prisma.apartment.findMany({ where: { organizationId: orgId } }),
     prisma.booking.findMany({
       where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId } },
@@ -121,7 +119,6 @@ export default async function CalendarioOperativoPage() {
       include: { apartment: true, assignedTo: true },
       orderBy: { createdAt: "desc" },
     }),
-    getNotifications(),
   ]);
 
   const now = new Date();
@@ -234,7 +231,15 @@ export default async function CalendarioOperativoPage() {
             <UpcomingEventsPanel events={allEvents} serverDate={serverDate} />
           </div>
           <div className="flex justify-center">
-            <NotificationBell initialNotifications={initialNotifications} serverDate={serverDate} />
+            <Link
+              href="/dashboard/manager/messages"
+              className="flex items-center gap-2 px-3 py-3 bg-white/80 backdrop-blur-sm border border-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all hover:bg-white hover:shadow-md"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              {tr.navMessages}
+            </Link>
           </div>
           <div className="flex items-center gap-2">
             <Link

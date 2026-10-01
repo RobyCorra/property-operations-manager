@@ -232,14 +232,6 @@ async function applyConsumption(params: {
   }
 
   if (alerts.length > 0 && apartment) {
-    await prisma.notification.create({
-      data: {
-        type: "PRODUCT_LOW_STOCK",
-        title: `⚠️ Scorta bassa — ${apartment.name}`,
-        message: `${alerts.length} prodotto/i sotto la scorta minima:\n${alerts.join("\n")}`,
-        apartmentId,
-      },
-    });
     await sendPushToRole("MANAGER" as Role, {
       title: `🔴 Scorta bassa — ${apartment.name}`,
       body: `${alerts.length} prodotto/i sotto la scorta minima dopo la pulizia.`,
@@ -461,4 +453,19 @@ export async function getApartmentProductCostTotals(apartmentId: string): Promis
     console.error("getApartmentProductCostTotals error:", error);
     return {};
   }
+}
+
+export async function getLowStockAlerts(orgId: string) {
+  const allProducts = await prisma.apartmentProduct.findMany({
+    where: { apartment: { organizationId: orgId } },
+    include: { apartment: { select: { id: true, name: true } } },
+  });
+  const low = allProducts.filter(p => p.stock <= p.minStock);
+  const byApt = new Map<string, { aptName: string; aptId: string; items: { name: string; emoji: string; stock: number; unit: string; minStock: number }[] }>();
+  for (const p of low) {
+    const entry = byApt.get(p.apartmentId) ?? { aptName: p.apartment.name, aptId: p.apartment.id, items: [] };
+    entry.items.push({ name: p.name, emoji: p.emoji, stock: p.stock, unit: p.unit, minStock: p.minStock });
+    byApt.set(p.apartmentId, entry);
+  }
+  return [...byApt.values()];
 }

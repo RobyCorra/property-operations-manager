@@ -3,10 +3,6 @@ import { prisma } from "@/src/lib/prisma";
 import { sendPushToRole } from "@/src/lib/push";
 import type { Role } from "@/src/generated/prisma/client";
 
-// GET /api/cron/late-checkin-check
-// Trova i check-in PENDING non avviati oltre 30 min dall'orario impostato e
-// invia una notifica push ai manager (a dashboard chiusa). Deduplica per
-// non ripetere l'avviso dello stesso check-in a ogni esecuzione.
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -14,8 +10,8 @@ export async function GET(req: NextRequest) {
   }
 
   const now = Date.now();
-  const lateThreshold = new Date(now - 30 * 60 * 1000); // orario <= 30 min fa
-  const oldestRelevant = new Date(now - 24 * 60 * 60 * 1000); // solo ultimi 24h
+  const lateThreshold = new Date(now - 30 * 60 * 1000);
+  const oldestRelevant = new Date(now - 24 * 60 * 60 * 1000);
 
   const lateCheckins = await prisma.checkinTask.findMany({
     where: {
@@ -31,12 +27,11 @@ export async function GET(req: NextRequest) {
     const apt = task.apartment;
     if (!apt) continue;
 
-    // Dedup: salta se esiste già un avviso per questo check-in nelle ultime 2h.
-    const recent = await prisma.notification.findFirst({
+    const recent = await prisma.checkinTaskMessage.findFirst({
       where: {
-        apartmentId: apt.id,
-        type: "CHECKIN_LATE",
-        message: { contains: task.id },
+        checkinTaskId: task.id,
+        role: "SYSTEM",
+        text: { contains: "in ritardo" },
         createdAt: { gte: new Date(now - 2 * 60 * 60 * 1000) },
       },
     });
@@ -49,12 +44,13 @@ export async function GET(req: NextRequest) {
       hour12: false,
     });
 
-    await prisma.notification.create({
+    await prisma.checkinTaskMessage.create({
       data: {
-        type: "CHECKIN_LATE",
-        title: `⚠️ Check-in in ritardo — ${apt.name}`,
-        message: `Il check-in delle ${scheduled} non è stato avviato. [${task.id}]`,
-        apartmentId: apt.id,
+        checkinTaskId: task.id,
+        role: "SYSTEM",
+        senderName: "Sistema",
+        text: `⚠️ Check-in in ritardo — ${apt.name}. Il check-in delle ${scheduled} non è stato avviato.`,
+        readByManagerAt: null,
       },
     });
 
@@ -63,7 +59,7 @@ export async function GET(req: NextRequest) {
       {
         title: `⚠️ Check-in in ritardo — ${apt.name}`,
         body: `Il check-in delle ${scheduled} non è stato avviato.`,
-        url: `/dashboard/manager/checkins/${task.id}`,
+        url: `/dashboard/manager/messages`,
         tag: `checkin-late-${task.id}`,
       },
       "checkinLate",

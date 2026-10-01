@@ -7,7 +7,6 @@ import type { T } from "@/src/lib/i18n";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import NotificationBell from "@/src/components/notification-bell";
 import { hapticLight } from "@/src/lib/haptics";
 import { ApartmentStatus, getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import { logoutAction } from "@/src/app/actions/auth";
@@ -106,15 +105,6 @@ export type MobileUrgentTicketItem = {
   isAssigned: boolean;
   status: string;
   href: string;
-};
-
-type NotificationItem = {
-  id: string;
-  type: string;
-  title: string;
-  message: string;
-  isRead: boolean;
-  createdAt: Date | string;
 };
 
 // ── Calendar API types ─────────────────────────────────────────────
@@ -278,7 +268,6 @@ type Props = {
   ticketsTodayItems: MobileUrgentTicketItem[];
   ticketsTodayCount: number;
   ticketsDoneCount: number;
-  initialNotifications: NotificationItem[];
   serverDate: string;
   dateLabel: string;
   calendarDataByApt: Record<string, CalendarData>;
@@ -370,7 +359,6 @@ export default function MobileDashboard({
   ticketsTodayItems,
   ticketsTodayCount,
   ticketsDoneCount,
-  initialNotifications,
   serverDate,
   dateLabel,
   calendarDataByApt,

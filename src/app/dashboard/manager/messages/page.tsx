@@ -9,6 +9,8 @@ import { getT } from "@/src/lib/server-lang";
 import { getOrgCompanyThreads } from "@/src/app/actions/company";
 import { getOrgStaffThreads } from "@/src/app/actions/messages";
 import OrgMessagesTabbed from "@/src/components/org-messages-tabbed";
+import LowStockBanner from "@/src/components/low-stock-banner";
+import { getLowStockAlerts } from "@/src/app/actions/product";
 
 export default async function ManagerMessagesPage({
   searchParams,
@@ -27,9 +29,10 @@ export default async function ManagerMessagesPage({
   const tr = await getT();
   const orgId = await getCurrentOrg();
 
-  const [companyThreads, staffThreads] = await Promise.all([
+  const [companyThreads, staffThreads, lowStockAlerts] = await Promise.all([
     getOrgCompanyThreads(),
     getOrgStaffThreads().catch(() => []),
+    getLowStockAlerts(orgId!),
   ]);
 
   // Appartamenti delegati per scope: l'org NON vede i thread intervento per questi
@@ -157,6 +160,7 @@ export default async function ManagerMessagesPage({
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Messaggi</h1>
         <p className="mt-1 text-sm text-slate-500">Chat con imprese, interventi e staff.</p>
       </div>
+      <LowStockBanner alerts={lowStockAlerts} />
       {selectedThread && (
         <MarkReadTrigger id={selectedThread.id} type={selectedThread.type} />
       )}

@@ -4,15 +4,14 @@ import { getT, getServerLang } from "@/src/lib/server-lang";
 import { getCurrentOrg } from "@/src/lib/tenant";
 import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
-import { getNotifications } from "@/src/app/actions/notification";
 
 
 
-import NotificationBell from "@/src/components/notification-bell";
 import TimelineCalendar from "@/src/components/timeline-calendar";
 import DashboardKpiCards, { type KpiPopupItem } from "@/src/components/dashboard-kpi-cards";
 import { getApartmentOperationalStatus } from "@/src/lib/apartment-status";
 import MobileDashboard from "@/src/components/mobile-dashboard";
+import { getUnreadMessagesCount } from "@/src/app/actions/messages";
 import DbErrorState from "@/src/components/db-error-state";
 import type {
   MobileApartmentData,
@@ -34,7 +33,6 @@ import {
   Ticket,
   KeyRound,
 } from "@/src/components/icons";
-import { getUnreadMessagesCount } from "@/src/app/actions/messages";
 
 const isMaintenanceActive = (ticket: { status: string }) => {
   return !["RESOLVED", "CANCELLED", "APPROVED"].includes(ticket.status);
@@ -159,8 +157,6 @@ export default async function ManagerDashboardPage() {
       where: { status: { not: "CANCELLED" }, apartment: { organizationId: orgId, autoCheckin: false } },
       include: { apartment: true, assignedTo: true, booking: { select: { guestName: true, totalGuests: true } } },
     }),
-    getNotifications(),
-    getUnreadMessagesCount(),
   ]).catch((error) => {
     console.error("Dashboard manager: impossibile caricare i dati dal DB", error);
     return null;
@@ -170,7 +166,7 @@ export default async function ManagerDashboardPage() {
     return <DbErrorState />;
   }
 
-  const [org, apartments, bookings, cleanings, tickets, checkins, initialNotifications, unreadMessagesCount] = data;
+  const [org, apartments, bookings, cleanings, tickets, checkins] = data;
 
   // Nomi struttura/categoria per il raggruppamento delle unità nel calendario.
   const [propertyRows, categoryRows] = await Promise.all([
@@ -179,6 +175,8 @@ export default async function ManagerDashboardPage() {
   ]);
   const propertyNameById = new Map(propertyRows.map((p) => [p.id, p.name]));
   const categoryNameById = new Map(categoryRows.map((c) => [c.id, c.name]));
+
+  const unreadMessagesCount = await getUnreadMessagesCount().catch(() => 0);
 
   const now = new Date();
   const serverDate = now.toISOString();
@@ -547,7 +545,6 @@ export default async function ManagerDashboardPage() {
         ticketsTodayItems={mobileTicketsTodayItems}
         ticketsTodayCount={ticketsTodayCount}
         ticketsDoneCount={ticketsDoneCount}
-        initialNotifications={initialNotifications}
         serverDate={serverDate}
         dateLabel={mobileDateLabel}
         calendarDataByApt={mobileCalendarByApt}
@@ -575,7 +572,6 @@ export default async function ManagerDashboardPage() {
           </div>
 
           <div className="flex justify-center">
-            <NotificationBell initialNotifications={initialNotifications} serverDate={serverDate} unreadMessagesCount={unreadMessagesCount} />
           </div>
 
           <div className="flex items-center gap-2">
