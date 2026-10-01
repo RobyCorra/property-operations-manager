@@ -102,9 +102,14 @@ export default async function CleanerDashboardPage() {
     redirect("/login");
   }
 
-  const impresaUnread = companyId
+  const orgId = cookieStore.get("organizationId")?.value;
+  const chatUnread = companyId
     ? await prisma.companyChatMessage.count({ where: { companyId, staffUserId: userId, senderIsManager: true, readByStaffAt: null } })
-    : 0;
+    : orgId
+      ? await prisma.orgStaffMessage.count({ where: { organizationId: orgId, staffUserId: userId, senderIsManager: true, readByStaffAt: null } }).catch(() => 0)
+      : 0;
+  const chatHref = companyId ? "/dashboard/messaggi" : "/dashboard/messaggi-org";
+  const chatSource = companyId ? "impresa" as const : "org" as const;
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -174,7 +179,7 @@ export default async function CleanerDashboardPage() {
           </div>
           {/* Desktop-only nav buttons */}
           <div className="hidden md:flex items-center gap-4">
-            {companyId && <CleanerMessagesButton initialUnread={impresaUnread} variant="desktop" />}
+            <CleanerMessagesButton initialUnread={chatUnread} variant="desktop" href={chatHref} source={chatSource} />
             <Link
               href="/dashboard/history"
               className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95"
@@ -346,7 +351,7 @@ export default async function CleanerDashboardPage() {
           <ClipboardList size={20} />
           <span className="text-[9px] font-black uppercase tracking-widest">{tr.clnNavCleanings}</span>
         </Link>
-        {companyId && <CleanerMessagesButton initialUnread={impresaUnread} variant="mobile" />}
+        <CleanerMessagesButton initialUnread={chatUnread} variant="mobile" href={chatHref} source={chatSource} />
         <Link
           href="/dashboard/history"
           className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-slate-400 hover:text-slate-700"
