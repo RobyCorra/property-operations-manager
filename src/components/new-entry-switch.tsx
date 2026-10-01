@@ -17,53 +17,56 @@ export default function NewEntrySwitch({ createApartment, createStructure }: Pro
   const { t } = useLang();
   const [choice, setChoice] = useState<null | "single" | "structure">(null);
 
-  if (choice === "single") {
-    return (
-      <div className="space-y-4">
-        <button type="button" onClick={() => setChoice(null)} className="text-sm font-medium text-gray-500">
-          ← {t.stChangeType}
-        </button>
-        <ApartmentCreateWizard action={createApartment} />
-      </div>
-    );
-  }
-
-  if (choice === "structure") {
-    return (
-      <div className="space-y-4">
-        <button type="button" onClick={() => setChoice(null)} className="text-sm font-medium text-gray-500">
-          ← {t.stChangeType}
-        </button>
-        <StructureCreateWizard action={createStructure} />
-      </div>
-    );
-  }
+  const title = choice === "structure" ? t.awPageTitleStructure : t.awPageTitle;
 
   return (
-    <div className="space-y-3">
-      <p className="text-sm font-medium text-gray-500">{t.stAddWhat}</p>
-      <button
-        type="button"
-        onClick={() => setChoice("single")}
-        className="flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 text-left transition hover:border-violet-300 hover:shadow-sm"
-      >
-        <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-2xl">🏠</span>
-        <span>
-          <span className="block text-base font-semibold text-gray-900">{t.stSingleApt}</span>
-          <span className="block text-sm text-gray-500">{t.stSingleAptSub}</span>
-        </span>
-      </button>
-      <button
-        type="button"
-        onClick={() => setChoice("structure")}
-        className="flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 text-left transition hover:border-violet-300 hover:shadow-sm"
-      >
-        <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-2xl">🏨</span>
-        <span>
-          <span className="block text-base font-semibold text-gray-900">{t.stStructure}</span>
-          <span className="block text-sm text-gray-500">{t.stStructureSub}</span>
-        </span>
-      </button>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{title}</h1>
+        <p className="text-gray-500 mt-1">{t.awPageSub}</p>
+      </div>
+
+      {choice === "single" ? (
+        <div className="space-y-4">
+          <button type="button" onClick={() => setChoice(null)} className="text-sm font-medium text-gray-500">
+            ← {t.stChangeType}
+          </button>
+          <ApartmentCreateWizard action={createApartment} />
+        </div>
+      ) : choice === "structure" ? (
+        <div className="space-y-4">
+          <button type="button" onClick={() => setChoice(null)} className="text-sm font-medium text-gray-500">
+            ← {t.stChangeType}
+          </button>
+          <StructureCreateWizard action={createStructure} />
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-gray-500">{t.stAddWhat}</p>
+          <button
+            type="button"
+            onClick={() => setChoice("single")}
+            className="flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 text-left transition hover:border-violet-300 hover:shadow-sm"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-2xl">🏠</span>
+            <span>
+              <span className="block text-base font-semibold text-gray-900">{t.stSingleApt}</span>
+              <span className="block text-sm text-gray-500">{t.stSingleAptSub}</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setChoice("structure")}
+            className="flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 text-left transition hover:border-violet-300 hover:shadow-sm"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-2xl">🏨</span>
+            <span>
+              <span className="block text-base font-semibold text-gray-900">{t.stStructure}</span>
+              <span className="block text-sm text-gray-500">{t.stStructureSub}</span>
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

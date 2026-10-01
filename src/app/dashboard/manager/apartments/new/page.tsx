@@ -1,13 +1,10 @@
 import { cookies } from "next/headers";
-import { getT } from "@/src/lib/server-lang";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createApartment } from "@/src/app/actions/apartment";
 import { createStructure } from "@/src/app/actions/structure";
 import NewEntrySwitch from "@/src/components/new-entry-switch";
 import BackButton from "@/src/components/back-button";
 export default async function NewApartmentPage() {
-  const tr = await getT();
   const cookieStore = await cookies();
   const role = cookieStore.get("role")?.value;
 
@@ -19,12 +16,7 @@ export default async function NewApartmentPage() {
     <main className="min-h-screen bg-gray-50/50 p-6 font-sans">
       <div className="max-w-3xl mx-auto space-y-8">
         
-        {/* Header */}
-        <div>
-          <BackButton />
-          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{tr.awPageTitle}</h1>
-          <p className="text-gray-500 mt-1">{tr.awPageSub}</p>
-        </div>
+        <BackButton />
 
         <NewEntrySwitch createApartment={createApartment} createStructure={createStructure} />
 

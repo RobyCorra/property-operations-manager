@@ -182,25 +182,6 @@ export default function StructureCreateWizard({ action }: Props) {
             <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="Residence Sole" />
           </div>
           <div>
-            <label className={labelCls}>{t.stType}</label>
-            <div className="flex gap-2">
-              {(["RESIDENCE", "HOTEL"] as const).map((ty) => (
-                <button
-                  key={ty}
-                  type="button"
-                  onClick={() => setType(ty)}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium ${
-                    type === ty
-                      ? "border-violet-400 bg-violet-50 text-violet-700"
-                      : "border-gray-200 bg-white text-gray-600"
-                  }`}
-                >
-                  {ty === "RESIDENCE" ? t.stResidence : t.stHotel}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
             <label className={labelCls}>{t.stAddressUnique}</label>
             <input className={inputCls} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Via Roma 10, Roma" />
           </div>
@@ -321,7 +302,7 @@ export default function StructureCreateWizard({ action }: Props) {
         <div className="space-y-4">
           <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
             <p className="text-lg font-semibold text-gray-900">{name}</p>
-            <p className="text-sm text-gray-500">{type === "HOTEL" ? t.stHotel : t.stResidence} · {address}</p>
+            <p className="text-sm text-gray-500">{address}</p>
             <div className="mt-4 space-y-3">
               {categories.map((c) => {
                 const nums = parseNumbers(c.numbersText);
