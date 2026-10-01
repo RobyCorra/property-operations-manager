@@ -1871,6 +1871,23 @@ export default function MobileDashboard({
                 </div>
               </div>
 
+              <div
+                onClick={() => { closeSidebar(); requestAnimationFrame(() => router.push("/dashboard/manager/imprese")); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
+                    <rect x="2" y="6" width="20" height="14" rx="2" />
+                    <path d="M2 10h20" />
+                    <path d="M6 6V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-700">{tr.navCompanies}</p>
+                  <p className="text-[10px] text-slate-400">{tr.mdDelegations}</p>
+                </div>
+              </div>
+
               {/* Divider */}
               <div className="my-3 h-px bg-slate-100 mx-2" />
               <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-4 mb-2">{tr.mdCreateNew}</p>
