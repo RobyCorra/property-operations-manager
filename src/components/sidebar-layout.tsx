@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import ManagerNavbar, { type NavItem } from "./manager-navbar";
 import { logoutAction } from "@/src/app/actions/auth";
 import MobileHeader from "./mobile-header";
 import { useLang } from "@/src/components/lang-context";
+import { getUnreadMessagesCount, getOrgStaffUnread } from "@/src/app/actions/messages";
+import { getOrgCompanyUnread } from "@/src/app/actions/company";
+import { playMessageBeep, setupNotificationAudio } from "@/src/lib/notification-sound";
 
 // Lazy: react-markdown (chat AI) e il drawer impostazioni non servono al primo
 // paint. Caricati on-demand → bundle iniziale più leggero, main thread Android
@@ -33,11 +36,37 @@ export default function SidebarLayout({ children, unreadCount, maintenancePropos
   const [mounted, setMounted] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [liveUnread, setLiveUnread] = useState(unreadCount);
+  const prevUnread = useRef(unreadCount);
 
   useEffect(() => {
     const saved = localStorage.getItem("sidebar-collapsed");
     if (saved === "true") setCollapsed(true);
     setMounted(true);
+  }, []);
+
+  useEffect(() => { setupNotificationAudio(); }, []);
+
+  useEffect(() => {
+    let alive = true;
+    const poll = async () => {
+      try {
+        const [task, company, staff] = await Promise.all([
+          getUnreadMessagesCount().catch(() => 0),
+          getOrgCompanyUnread().catch(() => 0),
+          getOrgStaffUnread().catch(() => 0),
+        ]);
+        if (!alive) return;
+        const total = task + company + staff;
+        if (total > prevUnread.current) playMessageBeep();
+        prevUnread.current = total;
+        setLiveUnread(total);
+      } catch {}
+    };
+    const id = setInterval(poll, 15000);
+    const onFocus = () => poll();
+    window.addEventListener("focus", onFocus);
+    return () => { alive = false; clearInterval(id); window.removeEventListener("focus", onFocus); };
   }, []);
 
   // Blocca lo scroll del DOCUMENTO (html/body) mentre la sezione manager è montata.
@@ -75,7 +104,7 @@ export default function SidebarLayout({ children, unreadCount, maintenancePropos
 
       {/* Sidebar — nascosta su mobile */}
       <div className="hidden md:block">
-        <ManagerNavbar unreadCount={unreadCount} maintenanceProposalCount={maintenanceProposalCount} collapsed={mounted && collapsed} onToggle={toggle} items={navItems} homeHref={homeHref} />
+        <ManagerNavbar unreadCount={liveUnread} maintenanceProposalCount={maintenanceProposalCount} collapsed={mounted && collapsed} onToggle={toggle} items={navItems} homeHref={homeHref} />
       </div>
 
       <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${sidebarWidth}`}>
@@ -138,7 +167,7 @@ export default function SidebarLayout({ children, unreadCount, maintenancePropos
         </header>
 
         {/* Mobile Header — shrink-0 dentro la gabbia h-screen, sostituisce il vecchio menu basso */}
-        <MobileHeader unreadCount={unreadCount} maintenanceProposalCount={maintenanceProposalCount} onOpenSettings={() => setSettingsOpen(true)} onCloseSettings={() => setSettingsOpen(false)} orgName={orgName} customItems={mobileItems} homeHref={homeHref} />
+        <MobileHeader unreadCount={liveUnread} maintenanceProposalCount={maintenanceProposalCount} onOpenSettings={() => setSettingsOpen(true)} onCloseSettings={() => setSettingsOpen(false)} orgName={orgName} customItems={mobileItems} homeHref={homeHref} />
 
         {/* Dashboard Main View */}
         <div className="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden">{children}</div>
