@@ -110,16 +110,7 @@ export default function SidebarLayout({ children, unreadCount, maintenancePropos
       <div className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${sidebarWidth}`}>
         {/* Top Bar — nascosta su mobile */}
         <header className="hidden md:flex sticky top-0 z-40 w-full h-20 bg-white/60 backdrop-blur-xl border-b border-white/40 items-center justify-between px-10 shadow-sm">
-          <div className="flex-1 max-w-xl relative group">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-600 transition-colors">
-              🔍
-            </span>
-            <input
-              type="text"
-              placeholder={t.navSearch}
-              className="w-full bg-slate-100/50 border-none rounded-2xl py-2.5 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-violet-600/10 transition-all outline-none text-slate-600 placeholder:text-slate-400"
-            />
-          </div>
+          <div className="flex-1" />
 
           <div className="flex items-center gap-6">
             {!hideAssistant && (
