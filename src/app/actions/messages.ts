@@ -6,6 +6,8 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
 import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
+import { sendPushToUser, sendPushToRole } from "@/src/lib/push";
+import type { Role } from "@/src/generated/prisma/client";
 
 export const getUnreadMessagesCount = async () => {
   try {
@@ -200,6 +202,11 @@ export async function sendOrgStaffMessage(staffUserId: string, formData: FormDat
       },
     });
     revalidatePath("/dashboard/manager/messages");
+    sendPushToUser(staffUserId, {
+      title: "Nuovo messaggio",
+      body: text ? (text.length > 80 ? text.slice(0, 80) + "…" : text) : "📎 Allegato",
+      url: "/dashboard/messaggi-org",
+    }).catch(console.error);
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
@@ -275,6 +282,14 @@ export async function sendMyOrgStaffMessage(formData: FormData): Promise<{ succe
     });
     revalidatePath("/dashboard/manager/messages");
     revalidatePath("/dashboard/messaggi-org");
+    const org = await prisma.organization.findUnique({ where: { id: orgId }, select: { id: true } });
+    if (org) {
+      sendPushToRole("MANAGER" as Role, {
+        title: `Messaggio da ${userName}`,
+        body: text ? (text.length > 80 ? text.slice(0, 80) + "…" : text) : "📎 Allegato",
+        url: "/dashboard/manager/messages",
+      }, undefined, orgId).catch(console.error);
+    }
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };

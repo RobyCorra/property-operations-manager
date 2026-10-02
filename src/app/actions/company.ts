@@ -9,7 +9,7 @@ import { getCurrentOrg } from "@/src/lib/tenant";
 import { getCompanyAccess } from "@/src/lib/company-access";
 import { approveCleaningDirectly, computeChecklistSnapshot } from "@/src/app/actions/operational";
 import { parseRomeDateTime } from "@/src/lib/rome-datetime";
-import { sendPushToRole } from "@/src/lib/push";
+import { sendPushToRole, sendPushToUser } from "@/src/lib/push";
 import type { Role } from "@/src/generated/prisma/client";
 import { storeAttachmentFile } from "@/src/lib/server/attachment-storage";
 import { COMPANY_SCOPES, type CompanyScope, type ImpreseOverview, type EngagementHandler } from "@/src/lib/company-scope";
@@ -422,6 +422,11 @@ export async function sendImpresaMessage(staffUserId: string, formData: FormData
       },
     });
     revalidatePath("/dashboard/impresa/messaggi");
+    sendPushToUser(staffUserId, {
+      title: "Nuovo messaggio",
+      body: m.text ? (m.text.length > 80 ? m.text.slice(0, 80) + "…" : m.text) : "📎 Allegato",
+      url: "/dashboard/messaggi",
+    }).catch(console.error);
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
@@ -469,6 +474,17 @@ export async function sendMyImpresaMessage(formData: FormData): Promise<{ succes
     });
     revalidatePath("/dashboard/impresa/messaggi");
     revalidatePath("/dashboard/messaggi");
+    const companyManagers = await prisma.user.findMany({
+      where: { companyId, role: "MANAGER" },
+      select: { id: true },
+    });
+    for (const mgr of companyManagers) {
+      sendPushToUser(mgr.id, {
+        title: "Messaggio dallo staff",
+        body: m.text ? (m.text.length > 80 ? m.text.slice(0, 80) + "…" : m.text) : "📎 Allegato",
+        url: "/dashboard/impresa/messaggi",
+      }).catch(console.error);
+    }
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
@@ -561,6 +577,17 @@ export async function sendOrgCompanyMessage(companyId: string, formData: FormDat
       },
     });
     revalidatePath("/dashboard/manager/messages");
+    const companyManagers = await prisma.user.findMany({
+      where: { companyId, role: "MANAGER" },
+      select: { id: true },
+    });
+    for (const mgr of companyManagers) {
+      sendPushToUser(mgr.id, {
+        title: "Messaggio dall'organizzazione",
+        body: m.text ? (m.text.length > 80 ? m.text.slice(0, 80) + "…" : m.text) : "📎 Allegato",
+        url: "/dashboard/impresa/messaggi",
+      }).catch(console.error);
+    }
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
@@ -648,6 +675,11 @@ export async function sendImpresaOrgMessage(organizationId: string, formData: Fo
       },
     });
     revalidatePath("/dashboard/impresa/messaggi");
+    sendPushToRole("MANAGER" as Role, {
+      title: "Messaggio dall'impresa",
+      body: m.text ? (m.text.length > 80 ? m.text.slice(0, 80) + "…" : m.text) : "📎 Allegato",
+      url: "/dashboard/manager/messages",
+    }, undefined, organizationId).catch(console.error);
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Errore." };
@@ -868,7 +900,7 @@ export async function sendImpresaDelegatedMessage(
       const aptIds = access.scopeApartments?.CLEANING;
       const task = await prisma.cleaningTask.findFirst({
         where: { id, ...(aptIds ? { apartmentId: { in: aptIds } } : {}) },
-        select: { id: true },
+        select: { id: true, assignedToId: true },
       });
       if (!task) return { success: false, error: "Intervento non trovato." };
 
@@ -886,11 +918,18 @@ export async function sendImpresaDelegatedMessage(
           ...(attachmentId ? { attachmentId } : {}),
         },
       });
+      if (task.assignedToId) {
+        sendPushToUser(task.assignedToId, {
+          title: "Messaggio intervento",
+          body: m.text ? (m.text.length > 80 ? m.text.slice(0, 80) + "…" : m.text) : "📎 Allegato",
+          url: `/dashboard/cleaner`,
+        }).catch(console.error);
+      }
     } else {
       const aptIds = access.scopeApartments?.MAINTENANCE;
       const ticket = await prisma.maintenanceTicket.findFirst({
         where: { id, ...(aptIds ? { apartmentId: { in: aptIds } } : {}) },
-        select: { id: true },
+        select: { id: true, assignedToId: true },
       });
       if (!ticket) return { success: false, error: "Intervento non trovato." };
 
@@ -908,6 +947,13 @@ export async function sendImpresaDelegatedMessage(
           ...(attachmentId ? { attachmentId } : {}),
         },
       });
+      if (ticket.assignedToId) {
+        sendPushToUser(ticket.assignedToId, {
+          title: "Messaggio intervento",
+          body: m.text ? (m.text.length > 80 ? m.text.slice(0, 80) + "…" : m.text) : "📎 Allegato",
+          url: `/dashboard/maintenance`,
+        }).catch(console.error);
+      }
     }
 
     revalidatePath("/dashboard/impresa/messaggi");
