@@ -36,8 +36,7 @@ export async function sendPushToUser(
     prisma.fcmToken.findMany({ where: { userId }, select: { token: true } }),
   ]);
   console.log(`[Push] sendPushToUser userId=${userId} — ${subs.length} web sub(s), ${apnsTokens.length} APNs token(s), ${fcmTokens.length} FCM token(s)`);
-  // Badge = notifiche non lette (la nuova è già salvata nel DB prima di questo punto)
-  const badge = await prisma.notification.count({ where: { userId, isRead: false } }).catch(() => 1);
+  const badge = await computeUserBadge(userId);
   const payloadWithBadge = { ...payload, badge };
 
   const [, , fcmResult] = await Promise.all([
@@ -84,6 +83,66 @@ export async function sendPushToRoles(roles: Role[], payload: PushPayload, prefK
     sendApns(apnsTokens, payload).catch(console.error),
     sendFcm(fcmTokens, payload).catch(console.error),
   ]);
+}
+
+// ─── Badge count ─────────────────────────────────────────────────────────────
+
+async function computeUserBadge(userId: string): Promise<number> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true, organizationId: true, companyId: true },
+    });
+    if (!user) return 1;
+
+    if (user.role === "MANAGER") {
+      const orgId = user.organizationId;
+      if (!orgId) return 0;
+      const [taskMsg, companyMsg, staffMsg] = await Promise.all([
+        prisma.cleaningTaskMessage.count({
+          where: { role: { not: "MANAGER" }, readByManagerAt: null, cleaningTask: { apartment: { organizationId: orgId } } },
+        }).catch(() => 0),
+        prisma.orgCompanyMessage.count({
+          where: { organizationId: orgId, senderIsOrg: false, readByOrgAt: null },
+        }).catch(() => 0),
+        prisma.orgStaffMessage.count({
+          where: { organizationId: orgId, senderIsManager: false, readByManagerAt: null },
+        }).catch(() => 0),
+      ]);
+      return taskMsg + companyMsg + staffMsg;
+    }
+
+    // Worker: task messages + generic chat
+    const counts = await Promise.all([
+      (user.role === "CLEANER" || user.role === "SUPERVISOR")
+        ? prisma.cleaningTaskMessage.count({
+            where: { role: "MANAGER", readByWorkerAt: null, cleaningTask: { assignedToId: userId } },
+          }).catch(() => 0)
+        : 0,
+      user.role === "MAINTENANCE"
+        ? prisma.message.count({
+            where: { role: "MANAGER", readByWorkerAt: null, maintenanceTicket: { assignedToId: userId } },
+          }).catch(() => 0)
+        : 0,
+      user.role === "CHECKIN"
+        ? prisma.checkinTaskMessage.count({
+            where: { role: "MANAGER", readByWorkerAt: null, checkinTask: { assignedToId: userId } },
+          }).catch(() => 0)
+        : 0,
+      user.companyId
+        ? prisma.companyChatMessage.count({
+            where: { companyId: user.companyId, staffUserId: userId, senderIsManager: true, readByStaffAt: null },
+          }).catch(() => 0)
+        : user.organizationId
+          ? prisma.orgStaffMessage.count({
+              where: { organizationId: user.organizationId, staffUserId: userId, senderIsManager: true, readByStaffAt: null },
+            }).catch(() => 0)
+          : 0,
+    ]);
+    return counts.reduce((a, b) => a + b, 0);
+  } catch {
+    return 1;
+  }
 }
 
 // ─── Pref check ───────────────────────────────────────────────────────────────
