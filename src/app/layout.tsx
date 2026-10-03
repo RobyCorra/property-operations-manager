@@ -5,13 +5,13 @@ import FastTap from "@/src/components/fast-tap";
 import { ToastProvider } from "@/src/components/toast-provider";
 
 export const metadata: Metadata = {
-  title: "Property Operations Manager",
-  description: "Gestione operativa appartamenti — pulizie, manutenzioni, prenotazioni",
+  title: "OpStays",
+  description: "Gestione operativa appartamenti e strutture ricettive",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "PropOps",
+    title: "OpStays",
   },
   formatDetection: { telephone: false },
   icons: {

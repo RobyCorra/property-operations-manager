@@ -256,7 +256,7 @@ export default function TicketConversation({
       }, 120);
     } catch (e) {
       if (e instanceof MicPermissionError) {
-        setError("Permesso microfono negato. Abilitalo nelle impostazioni del dispositivo per PropOps.");
+        setError("Permesso microfono negato. Abilitalo nelle impostazioni del dispositivo per OpStays.");
       } else {
         setError(e instanceof Error ? e.message : "Microfono non accessibile. Verifica il permesso del microfono.");
       }
