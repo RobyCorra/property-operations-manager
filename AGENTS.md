@@ -1,23 +1,87 @@
-# AGENTS.md — Property Operations Manager
+# AGENTS.md — Property Operations Manager (OpStays)
 
 ## Obiettivo progetto
-Web app per gestione operativa appartamenti turistici:
-- appartamenti
-- prenotazioni
-- pulizie
-- manutenzioni
-- calendario
-- dashboard manager
-- ruoli manager / cleaner / maintenance
+Web app + app nativa (iOS/Android) per gestione operativa appartamenti turistici e strutture ricettive (hotel, residence).
+Dominio di produzione: `app.opstays.com`
+
+### Moduli principali
+- Appartamenti e strutture (hotel/residence con unità raggruppate per categoria)
+- Prenotazioni (manuali + import iCal/Airbnb)
+- Pulizie (checklist, assegnazione, supervisione, approvazione)
+- Check-in (assistente check-in con checklist dedicata)
+- Manutenzioni (ticket con priorità, assegnazione, chat)
+- Calendario operativo e mappa
+- Prodotti e scorte (magazzino organizzazione + scorte per appartamento, consumo al check-in)
+- Chat per intervento + chat generica org↔staff e org↔impresa
+- Assistente AI (ChatGPT + Perplexity) con azioni operative
+- Dashboard superadmin (log attività, impersonazione, analytics piattaforma)
+- Analytics pulizie/manutenzioni/check-in per appartamento e per persona
+- Imprese delegate (aziende esterne con scope pulizie/manutenzione/check-in/supervisione)
+- Messaggistica con push notification (web VAPID, APNs iOS, FCM Android)
+- i18n trilingue (IT/EN/ES)
+
+### Ruoli utente
+- **MANAGER** — gestione completa dell’organizzazione
+- **CLEANER** — esegue pulizie, compila checklist, invia foto
+- **SUPERVISOR** — revisiona e approva pulizie completate
+- **MAINTENANCE** — gestisce ticket manutenzione
+- **CHECKIN** — assistente check-in con checklist dedicata
+- **OWNER** — proprietario appartamento (vista limitata)
+- **Superadmin** — gestione multi-organizzazione (route separata `/superadmin`)
+- **Manager impresa** — gestisce staff dell’impresa delegata
 
 ## Stack
-- Next.js App Router
-- React
+- Next.js App Router (server components + server actions)
+- React 19
 - TypeScript
-- Prisma
-- PostgreSQL
+- Prisma con PostgreSQL (produzione: Prisma Postgres; preview: Neon)
 - Tailwind CSS
-- server actions
+- Capacitor (app nativa iOS/Android che carica il deploy Vercel)
+- OpenAI API (assistente AI)
+- Perplexity API (ricerca web nell’assistente)
+- Web Push (VAPID), APNs (iOS nativo), FCM (Android)
+- Vercel (hosting + cron jobs)
+- Vercel Blob (storage allegati e foto)
+
+## Struttura principale
+```
+src/
+├── app/
+│   ├── dashboard/          # viste per ruolo
+│   │   ├── manager/        # dashboard manager completa
+│   │   ├── cleaner/        # vista cleaner
+│   │   ├── supervisor/     # revisione pulizie
+│   │   ├── maintenance/    # vista manutentore
+│   │   ├── checkin/        # vista assistente check-in
+│   │   ├── impresa/        # dashboard impresa delegata
+│   │   ├── owner/          # vista proprietario
+│   │   ├── messaggi/       # chat task (worker)
+│   │   └── messaggi-org/   # chat generica org↔staff (worker)
+│   ├── superadmin/         # gestione multi-org
+│   ├── api/                # API routes
+│   │   ├── cron/           # ical-sync, late-checkin-check, low-stock-check
+│   │   ├── push/           # web push subscription
+│   │   ├── apns-token/     # registrazione token APNs
+│   │   ├── fcm-token/      # registrazione token FCM
+│   │   └── ...
+│   └── actions/            # server actions
+│       ├── ai.ts           # assistente AI (contesto + ChatGPT + azioni)
+│       ├── messages.ts     # chat task + chat org↔staff
+│       ├── company.ts      # chat org↔impresa + impresa↔staff
+│       ├── cleanings.ts    # gestione pulizie
+│       ├── maintenance.ts  # gestione ticket
+│       └── ...
+├── components/             # componenti React
+├── lib/
+│   ├── push.ts             # sendPushToUser, sendPushToRole
+│   ├── apns.ts             # invio push APNs nativo
+│   ├── fcm.ts              # invio push FCM
+│   ├── perplexity.ts       # ricerca web Perplexity
+│   ├── prisma.ts           # client Prisma
+│   ├── tenant.ts           # getCurrentOrg (multi-tenant)
+│   └── ...
+└── generated/prisma/       # client Prisma generato
+```
 
 ## Regola principale
 Lavora sempre in modo incrementale.
@@ -41,6 +105,13 @@ Aggiorna checklistProgress solo quando:
 - mancano campi obbligatori
 Preserva sempre le spunte già completate.
 
+## Strutture hotel/residence
+Le unità (Apartment) possono essere raggruppate per categoria-master (UnitCategory).
+I prodotti della struttura hanno stock unico + consumi per categoria.
+Il calendario e le liste sono raggruppati per struttura (web + mobile).
+Il check-in automatico avviene sul master della struttura.
+L’assegnazione resta per-task (non per struttura).
+
 ## Stato appartamenti / colori
 Regole obbligatorie:
 1. Se esiste pulizia pending/in_progress prima del check-in oppure ticket urgente OPEN/IN_PROGRESS, appartamento non pronto.
@@ -62,10 +133,50 @@ Il completamento checklist deve:
 - mantenere stato dopo refresh
 - non rigenerare snapshot cancellando i valori
 
+La checklist cleaner è a lista (non griglia).
+Le foto hanno robustezza rete (upload sincrono con spinner, retry, timeout).
+Il supervisor può correggere la checklist.
+Il numero ospiti per la pulizia usa effectiveGuests (regola ospiti manuale).
+
 ## Manutenzioni
 Il bottone “Avvia intervento” deve:
 - cambiare stato da OPEN a IN_PROGRESS
 - non rompere chat, allegati o ticket esistenti
+
+## Messaggistica
+- Chat per-intervento (pulizia, manutenzione, check-in): messaggi nel thread del task
+- Chat generica org↔staff: manager parla con i propri operatori diretti
+- Chat org↔impresa: manager-to-manager tra organizzazione e impresa delegata
+- Gli addetti vedono solo i messaggi dei task a loro assegnati
+- Nessuna chat generica broadcast — ogni conversazione ha un contesto
+
+## Push notification
+Tre canali: web (VAPID), APNs (iOS nativo), FCM (Android).
+Il token viene registrato per upsert (stesso token → riassegnato all’ultimo utente loggato).
+Badge calcolato con computeUserBadge in push.ts (messaggi non letti per ruolo).
+
+## Prodotti e scorte
+Consumo automatico al check-in.
+Storico movimenti per prodotto.
+Magazzino a livello organizzazione (3 modalità) + scorte per appartamento.
+Prezzo netto + IVA e calcolo costi.
+Alert scorta bassa via cron job + push ai manager.
+
+## i18n
+Tre lingue: IT, EN, ES.
+Sistema basato su cookie `app_lang`, helper `getT` (server) e `useLang` (client).
+Prefissi chiavi per evitare collisioni. La variabile di traduzione si chiama `tr` (non `t` per anti-collisione).
+
+## App nativa
+Capacitor carica l’URL Vercel live (non build statico).
+Deploy = push su main (Vercel auto-deploy).
+Gotcha: Lightning CSS non supporta `backdrop-filter: none` — usare `backdrop-filter: blur(0px)`.
+Attenzione a status-bar e back-button nativi.
+
+## Database
+- Produzione: Prisma Postgres “orange” (db.prisma.io) — NON Neon
+- Preview/staging: Neon PostgreSQL
+- Le migrazioni in produzione vanno applicate manualmente (il DATABASE_URL prod non è in .env locale)
 
 ## UI
 Mantieni stile dashboard:
@@ -74,6 +185,7 @@ Mantieni stile dashboard:
 - Tailwind
 - icone lucide-react
 - layout responsive
+- header mobile sticky con pattern `h-screen` + `sticky top-0` (no `fixed` su iOS)
 
 ## Prima di consegnare
 Esegui sempre, se possibile:
