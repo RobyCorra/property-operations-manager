@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.propops.app',
-  appName: 'PropOps',
+  appName: 'OpStays',
   webDir: 'out',
   server: {
     // Punta direttamente al deployment Vercel
