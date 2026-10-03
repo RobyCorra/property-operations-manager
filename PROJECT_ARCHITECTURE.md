@@ -4,17 +4,26 @@ Questo documento descrive la struttura dell'applicazione Property Operations Man
 
 ## 1. Visione generale
 
-Property Operations Manager e' una web app per gestire appartamenti turistici e il lavoro operativo collegato:
+Property Operations Manager (OpStays) e' una web app + app nativa (iOS/Android) per gestire appartamenti turistici, strutture ricettive (hotel/residence) e il lavoro operativo collegato:
 
-- appartamenti e relative schede tecniche;
-- prenotazioni;
-- pulizie;
-- manutenzioni;
-- calendario operativo;
-- dashboard per manager, cleaner e maintenance;
-- assistente AI con contesto sugli appartamenti e sulle operazioni.
+- appartamenti e strutture (unità raggruppate per categoria);
+- prenotazioni (manuali + import iCal/Airbnb);
+- pulizie (checklist, supervisione, approvazione);
+- check-in (assistente con checklist dedicata);
+- manutenzioni (ticket con priorità e chat);
+- calendario operativo e mappa;
+- prodotti e scorte (magazzino + consumo al check-in);
+- chat per intervento + chat generica org↔staff e org↔impresa;
+- push notification (web VAPID, APNs iOS, FCM Android);
+- assistente AI (ChatGPT + Perplexity) con azioni operative;
+- imprese delegate (aziende esterne con scope);
+- dashboard superadmin multi-organizzazione;
+- analytics pulizie/manutenzioni/check-in;
+- i18n trilingue (IT/EN/ES);
+- dashboard per manager, cleaner, supervisor, maintenance, checkin, owner, impresa.
 
-L'app usa Next.js App Router. Le pagine leggono i dati dal database tramite Prisma e delegano le modifiche a server actions. L'interfaccia e' costruita con componenti React e Tailwind CSS.
+Dominio di produzione: `app.opstays.com`.
+L'app usa Next.js App Router. Le pagine leggono i dati dal database tramite Prisma e delegano le modifiche a server actions. L'interfaccia e' costruita con componenti React e Tailwind CSS. L'app nativa (Capacitor) carica l'URL Vercel live.
 
 ## 2. Stack tecnico
 
@@ -22,12 +31,16 @@ L'app usa Next.js App Router. Le pagine leggono i dati dal database tramite Pris
 - React 19: componenti UI.
 - TypeScript: tipizzazione del codice.
 - Prisma 7: accesso al database PostgreSQL.
-- PostgreSQL: database applicativo (Prisma Postgres "orange" in produzione).
+- PostgreSQL: database applicativo (Prisma Postgres "orange" in produzione, Neon in preview/staging).
 - Tailwind CSS 4: stile e layout.
 - Server actions: funzioni server per creare, aggiornare e cancellare dati.
-- Capacitor: wrapper nativo iOS e Android.
-- OpenAI: assistente AI.
+- Capacitor: wrapper nativo iOS e Android (carica URL Vercel live, non build statico).
+- OpenAI: assistente AI con azioni operative.
 - Perplexity: ricerche esterne dall'assistente AI.
+- Web Push (VAPID): push notification browser.
+- APNs: push notification iOS nativo.
+- FCM: push notification Android.
+- Vercel: hosting, deploy automatico e cron jobs.
 - Vercel Blob: storage allegati e file caricati dagli utenti.
 - node-ical: sincronizzazione calendario iCal/Airbnb.
 - lucide-react: icone UI.
@@ -56,6 +69,15 @@ property-operations-manager/
     │   │   ├── actions/
     │   │   ├── api/
     │   │   ├── dashboard/
+    │   │   │   ├── manager/        ← dashboard manager completa
+    │   │   │   ├── cleaner/        ← vista cleaner
+    │   │   │   ├── supervisor/     ← revisione pulizie
+    │   │   │   ├── maintenance/    ← vista manutentore
+    │   │   │   ├── checkin/        ← vista assistente check-in
+    │   │   │   ├── impresa/        ← dashboard impresa delegata
+    │   │   │   ├── owner/          ← vista proprietario
+    │   │   │   ├── messaggi/       ← chat task (worker)
+    │   │   │   └── messaggi-org/   ← chat generica org↔staff (worker)
     │   │   ├── login/
     │   │   ├── register/
     │   │   ├── superadmin/
@@ -122,19 +144,44 @@ Nel file `prisma/schema.prisma` sono definiti i dati centrali:
 
 | Modello | Significato operativo |
 | --- | --- |
-| `User` | Utenti dell'app con ruolo `MANAGER`, `CLEANER`, `MAINTENANCE`, `SUPERVISOR` o `OWNER`. Campi aggiuntivi: `phone`, `address`, `isExternal`, `companyName`, `vatNumber`, `iban`. |
-| `Apartment` | Appartamenti, indirizzi, coordinate, capienza, camere, bagni, istruzioni accesso, iCal e scheda tecnica. |
+| `Organization` | Organizzazione (tenant). Ogni org e' isolata. |
+| `User` | Utenti dell'app con ruolo `MANAGER`, `CLEANER`, `MAINTENANCE`, `SUPERVISOR`, `OWNER` o `CHECKIN`. Possono appartenere a un'organizzazione diretta o a un'impresa (Company). |
+| `Company` | Impresa delegata collegata a un'organizzazione. Ha proprio staff e scope di lavoro. |
+| `Engagement` | Ingaggio tra organizzazione e impresa: definisce scope (CLEANING, MAINTENANCE, CHECKIN, SUPERVISION) e appartamenti delegati. |
+| `EngagementApartment` | Collegamento tra engagement e appartamenti specifici. |
+| `Property` | Struttura ricettiva (hotel/residence) che raggruppa piu' appartamenti. |
+| `UnitCategory` | Categoria di unita' dentro una struttura (es. "Camera doppia", "Suite"). |
+| `Apartment` | Appartamenti, indirizzi, coordinate, capienza, camere, bagni, istruzioni accesso, iCal e scheda tecnica. Possono appartenere a una UnitCategory. |
+| `ChecklistItem` | Checklist master per appartamento, con supporto a formule statiche o dinamiche. |
 | `Booking` | Prenotazioni collegate a un appartamento. Possono arrivare da inserimento manuale o da fonte esterna. |
 | `CleaningTask` | Interventi di pulizia, con stato, assegnatario, eventuale booking collegato e checklist progressiva. |
-| `ChecklistItem` | Checklist master per appartamento, con supporto a formule statiche o dinamiche. |
+| `CheckinTask` | Task check-in con checklist dedicata, assegnabile a un assistente CHECKIN. |
+| `CheckinChecklistItem` | Elementi della checklist check-in. |
+| `CheckinTaskMessage` | Messaggi nella chat del check-in. |
 | `MaintenanceTicket` | Ticket di manutenzione, priorita', stato, pianificazione, assegnatario e allegati. |
-| `Notification` | Notifiche manager. |
+| `MaintenanceDateRequest` | Richiesta di data alternativa da parte del manutentore. |
 | `Message` | Messaggi su ticket manutenzione. |
 | `CleaningTaskMessage` | Messaggi su pulizie. |
+| `OrgStaffMessage` | Chat generica tra organizzazione e operatore diretto. |
+| `OrgCompanyMessage` | Chat generica tra organizzazione e impresa delegata. |
+| `CompanyChatMessage` | Chat tra manager impresa e proprio staff. |
 | `Attachment` | Allegati collegati a manutenzioni, pulizie o messaggi. |
 | `ApartmentAttachment` | Allegati/documenti specifici dell'appartamento, utili anche per il contesto AI. |
 | `AIAssistantMessage` | Storico messaggi con assistente AI collegato ad appartamento, pulizia o ticket. |
-| `SuperAdminLog` | Log attività superadmin: azioni tracciate come LOGIN, IMPERSONA, CREA_ORG, CREA_MANAGER, RESET_PASSWORD, ELIMINA_DATI_TEST. Campi: `id`, `action`, `detail`, `orgId`, `orgName`, `ip`, `createdAt`. |
+| `ManagerChatSession` / `ManagerChatMessage` | Sessioni e messaggi della chat AI manager (floating chat). |
+| `ApartmentProduct` | Prodotti in scorta per appartamento (quantita', prezzo, IVA, consumo al check-in). |
+| `StockMovement` | Storico movimenti scorta per appartamento. |
+| `PropertyProduct` / `PropertyStockMovement` | Prodotti e movimenti a livello di struttura. |
+| `PushSubscription` | Sottoscrizione push web (VAPID). |
+| `ApnsToken` | Token push APNs (iOS nativo). |
+| `FcmToken` | Token push FCM (Android). |
+| `SupervisorReview` | Revisione e approvazione pulizia da parte del supervisor. |
+| `ApartmentSupervisor` | Associazione supervisor↔appartamento. |
+| `Client` | Clienti/ospiti dell'organizzazione. |
+| `ApartmentOwner` | Associazione proprietario↔appartamento. |
+| `CleanerLocation` | Posizione GPS dell'operatore per la mappa. |
+| `Notification` | Notifiche manager (legacy, non piu' utilizzato attivamente — sostituito da messaggi SYSTEM nelle chat). |
+| `SuperAdminLog` | Log attività superadmin: azioni tracciate come LOGIN, IMPERSONA, CREA_ORG, CREA_MANAGER, RESET_PASSWORD, ELIMINA_DATI_TEST. |
 
 ## 6. Architettura generale dell'app
 
@@ -180,7 +227,6 @@ Componenti principali usati:
 
 - `src/components/timeline-calendar.tsx`
 - `src/components/upcoming-events-panel.tsx`
-- `src/components/notification-bell.tsx`
 - `src/components/apartment-map-wrapper.tsx`
 - `src/components/manager-ai-chat.tsx`
 
@@ -196,8 +242,7 @@ Legge da Prisma:
   - prenotazioni
   - pulizie
   - ticket manutenzione
-  - notifiche
-  - messaggi recenti
+  - messaggi non letti
   ↓
 Calcola riepiloghi e stato operativo
   ↓
@@ -244,6 +289,38 @@ Il cleaner puo':
 ```
 
 Regola importante: una checklist gia' iniziata non deve perdere le spunte completate.
+
+### Dashboard supervisor
+
+File principale:
+
+- `src/app/dashboard/supervisor/page.tsx`
+
+Flusso: il supervisor vede le pulizie completate da revisionare e puo' approvare o rifiutare con note. Associato ad appartamenti specifici tramite `ApartmentSupervisor`.
+
+### Dashboard checkin
+
+File principale:
+
+- `src/app/dashboard/checkin/page.tsx`
+
+Flusso: l'assistente check-in vede i task assegnati (CheckinTask), compila la checklist check-in e comunica tramite chat dedicata (CheckinTaskMessage).
+
+### Dashboard impresa
+
+File principale:
+
+- `src/app/dashboard/impresa/page.tsx`
+
+Flusso: il manager dell'impresa delegata vede i task assegnati tramite engagement, gestisce il proprio staff e comunica con l'organizzazione e con i propri operatori.
+
+### Dashboard owner
+
+File principale:
+
+- `src/app/dashboard/owner/page.tsx`
+
+Flusso: il proprietario vede gli appartamenti di propria pertinenza (tramite ApartmentOwner), le prenotazioni e lo stato operativo.
 
 ### Dashboard maintenance
 
@@ -476,13 +553,22 @@ Regola operativa: gli eventi importati sono da trattare con cautela e non devono
 | API iCal sync | `src/app/api/ical/sync/route.ts` |
 | Dashboard manager | `src/app/dashboard/manager/page.tsx` |
 | Dashboard cleaner | `src/app/dashboard/cleaner/page.tsx` |
+| Dashboard supervisor | `src/app/dashboard/supervisor/page.tsx` |
 | Dashboard maintenance | `src/app/dashboard/maintenance/page.tsx` |
+| Dashboard checkin | `src/app/dashboard/checkin/page.tsx` |
+| Dashboard impresa | `src/app/dashboard/impresa/page.tsx` |
+| Dashboard owner | `src/app/dashboard/owner/page.tsx` |
 | Booking UI | `src/components/booking-form.tsx`, `src/components/bookings-list-table.tsx` |
 | Pulizie UI | `src/components/cleanings-list-table.tsx`, `src/components/checklist-interactive.tsx` |
 | Manutenzioni UI | `src/components/maintenance-list-table.tsx`, `src/components/maintenance-resolution-form.tsx` |
-| Messaggi/chat operative | `src/components/ticket-conversation.tsx` |
-| Notifiche | `src/app/actions/notification.ts`, `src/components/notification-bell.tsx` |
-| Upload/allegati | `src/app/actions/upload.ts`, `public/uploads/` |
+| Chat per intervento | `src/components/ticket-conversation.tsx` |
+| Chat generica org↔staff | `src/app/dashboard/messaggi-org/`, `src/app/actions/messages.ts` |
+| Chat org↔impresa | `src/app/actions/company.ts` |
+| Push notification | `src/lib/push.ts`, `src/lib/apns.ts`, `src/lib/fcm.ts` |
+| Prodotti e scorte | `src/app/actions/product.ts`, `src/app/actions/warehouse.ts` |
+| i18n | `src/lib/i18n.ts` |
+| Strutture | `src/app/actions/structure.ts` |
+| Upload/allegati | `src/app/actions/upload.ts` |
 
 ## 10. Server actions principali
 
@@ -491,14 +577,23 @@ Regola operativa: gli eventi importati sono da trattare con cautela e non devono
 | `src/app/actions/auth.ts` | Login/logout e gestione ruolo utente. |
 | `src/app/actions/booking.ts` | Creazione, modifica, cancellazione e lettura prenotazioni. |
 | `src/app/actions/operational.ts` | Pulizie, manutenzioni, stati operativi, messaggi e checklist snapshot. |
+| `src/app/actions/cleanings.ts` | Gestione pulizie aggiuntiva (assegnazione, supervisione). |
 | `src/app/actions/checklist.ts` | Checklist master appartamento e salvataggio checklist delle pulizie. |
+| `src/app/actions/checkin.ts` | Task check-in, checklist check-in e messaggi check-in. |
 | `src/app/actions/apartment.ts` | CRUD appartamenti, scheda tecnica e allegati appartamento. |
-| `src/app/actions/notification.ts` | Lettura e aggiornamento notifiche. |
-| `src/app/actions/ai.ts` | Costruzione contesto AI e chiamate assistente. |
-| `src/app/actions/messages.ts` | Messaggistica dashboard, se usata dalle viste manager. |
-| `src/app/actions/upload.ts` | Gestione caricamento file. |
+| `src/app/actions/ai.ts` | Costruzione contesto AI, chiamate assistente e azioni operative AI. |
+| `src/app/actions/messages.ts` | Chat per intervento (pulizia/manutenzione) + chat generica org↔staff. |
+| `src/app/actions/company.ts` | Imprese delegate, engagement, chat org↔impresa e impresa↔staff. |
+| `src/app/actions/product.ts` | Prodotti per appartamento e struttura. |
+| `src/app/actions/warehouse.ts` | Magazzino organizzazione e movimenti scorta. |
+| `src/app/actions/structure.ts` | Strutture ricettive (Property) e categorie unita'. |
+| `src/app/actions/settings.ts` | Impostazioni organizzazione. |
+| `src/app/actions/upload.ts` | Gestione caricamento file (Vercel Blob). |
+| `src/app/actions/analytics.ts` | Dati analytics pulizie/manutenzioni/check-in. |
 | `src/app/actions/activity.ts` | Storico attivita'. |
 | `src/app/actions/user.ts` | Gestione utenti. |
+| `src/app/actions/register.ts` | Registrazione nuova organizzazione con primo manager. |
+| `src/app/actions/superadmin.ts` | Azioni superadmin (log, KPI piattaforma, gestione org). |
 
 ## 11. Componenti UI importanti
 
@@ -519,7 +614,8 @@ Regola operativa: gli eventi importati sono da trattare con cautela e non devono
 | `src/components/manager-ai-chat.tsx` | Chat AI manager. |
 | `src/components/apartment-map.tsx` | Mappa appartamenti. |
 | `src/components/apartment-map-wrapper.tsx` | Wrapper client/server per mappa. |
-| `src/components/notification-bell.tsx` | Campanella notifiche. |
+| `src/components/lang-context.tsx` | Provider i18n con hook `useLang`. |
+| `src/components/impresa-*.tsx` | Componenti dashboard impresa delegata. |
 | `src/components/*-list-table.tsx` | Tabelle manager per appartamenti, booking, pulizie, manutenzioni e storico. |
 
 ## 12. File critici da non modificare senza attenzione
@@ -670,34 +766,124 @@ Ruoli disponibili:
 - `SUPERVISOR`: supervisione operativa e revisione lavori;
 - `OWNER`: visibilita' sugli appartamenti di propria pertinenza;
 - `CLEANER`: vede pulizie assegnate;
-- `MAINTENANCE`: vede ticket manutenzione assegnati.
+- `MAINTENANCE`: vede ticket manutenzione assegnati;
+- `CHECKIN`: assistente check-in con checklist dedicata.
+
+Oltre ai ruoli diretti:
+- **Superadmin**: gestione multi-organizzazione (route separata `/superadmin`);
+- **Manager impresa**: gestisce staff dell'impresa delegata (ruolo MANAGER con companyId).
 
 Le dashboard fanno redirect a `/login` se il ruolo non corrisponde.
 
-Per le specifiche dettagliate dei ruoli Supervisor e Owner vedere `docs/SUPERVISOR_OWNER_SPEC.md`.
-
-## 19. Upload, allegati e messaggi
+## 19. Upload e allegati
 
 File principali:
 
 - `src/app/actions/upload.ts`
 - `src/components/ticket-conversation.tsx`
-- `src/app/actions/operational.ts`
-- `public/uploads/`
 
-Gli allegati possono essere collegati a:
+Gli allegati sono salvati su Vercel Blob e possono essere collegati a:
 
 - ticket manutenzione;
 - pulizie;
 - messaggi;
 - appartamenti.
 
-I messaggi operativi sono separati:
+## 20. Messaggistica e chat
 
-- `Message` per manutenzioni;
-- `CleaningTaskMessage` per pulizie.
+Modelli e tipi di chat:
 
-## 20. Script e utilita'
+- `Message` — messaggi su ticket manutenzione;
+- `CleaningTaskMessage` — messaggi su pulizie;
+- `CheckinTaskMessage` — messaggi su task check-in;
+- `OrgStaffMessage` — chat generica tra organizzazione e operatore diretto;
+- `OrgCompanyMessage` — chat generica tra organizzazione e impresa delegata;
+- `CompanyChatMessage` — chat tra manager impresa e proprio staff.
+
+I messaggi di tipo SYSTEM (notifiche automatiche come late check-in, scorta bassa, ecc.) vengono inseriti direttamente nelle chat dei task, non come notifiche separate.
+
+Dashboard messaggi:
+
+- `/dashboard/messaggi/` — chat task per worker (cleaner, maintenance, checkin);
+- `/dashboard/messaggi-org/` — chat generica org↔staff per worker.
+
+## 21. Push notification
+
+File principali:
+
+- `src/lib/push.ts` — `sendPushToUser`, `sendPushToRole`, `sendPushToRoles`, `computeUserBadge`
+- `src/lib/apns.ts` — invio push APNs iOS nativo
+- `src/lib/fcm.ts` — invio push FCM Android
+- `src/app/api/push/subscribe/route.ts` — registrazione sottoscrizione web VAPID
+- `src/app/api/apns-token/route.ts` — registrazione token APNs
+- `src/app/api/fcm-token/route.ts` — registrazione token FCM
+
+Tre canali: web (VAPID), APNs (iOS nativo), FCM (Android).
+Il token viene registrato per upsert (stesso token → riassegnato all'ultimo utente loggato).
+Badge calcolato con `computeUserBadge` (messaggi non letti per ruolo).
+
+## 22. Prodotti e scorte
+
+File principali:
+
+- `src/app/actions/product.ts`
+- `src/app/actions/warehouse.ts`
+- `src/app/dashboard/manager/products/`
+- `src/app/dashboard/manager/warehouse/`
+
+Funzionalita':
+
+- Scorte per appartamento (`ApartmentProduct`) con quantita', prezzo netto, IVA;
+- Consumo automatico al check-in (decremento scorta + creazione StockMovement);
+- Magazzino organizzazione (`WarehouseProduct`) con tre modalita' (diretto, struttura, appartamento);
+- Storico movimenti (`StockMovement`, `PropertyStockMovement`);
+- Prodotti per struttura (`PropertyProduct`);
+- Alert scorta bassa via cron job (`/api/cron/low-stock-check`) + push ai manager.
+
+## 23. i18n (internazionalizzazione)
+
+File principale:
+
+- `src/lib/i18n.ts`
+- `src/components/lang-context.tsx`
+
+Tre lingue: IT, EN, ES. Sistema basato su:
+
+- Cookie `app_lang` per persistere la scelta;
+- `getT(lang)` helper server per ottenere le traduzioni;
+- `useLang()` hook client con provider `LangProvider`;
+- La variabile di traduzione si chiama `tr` (non `t` per anti-collisione);
+- Prefissi chiavi per evitare collisioni tra moduli.
+
+## 24. Imprese delegate
+
+File principali:
+
+- `src/app/actions/company.ts`
+- `src/app/dashboard/impresa/page.tsx`
+- `src/components/impresa-*.tsx`
+
+Modelli: `Company`, `Engagement`, `EngagementApartment`.
+
+Un'impresa delegata e' un'azienda esterna collegata a un'organizzazione. Gli engagement definiscono:
+
+- scope (CLEANING, MAINTENANCE, CHECKIN, SUPERVISION);
+- appartamenti delegati specifici.
+
+Il manager dell'impresa gestisce il proprio staff e comunica con l'organizzazione via chat dedicata.
+
+## 25. Strutture ricettive
+
+File principali:
+
+- `src/app/actions/structure.ts`
+- `src/app/dashboard/manager/structures/`
+
+Modelli: `Property`, `UnitCategory`.
+
+Una struttura (hotel/residence) raggruppa piu' appartamenti. Le unita' possono essere organizzate per categoria (es. "Camera doppia", "Suite"). Il calendario e le liste sono raggruppati per struttura. I prodotti della struttura hanno stock unico con consumi per categoria. Il check-in automatico avviene sul master della struttura.
+
+## 26. Script e utilita'
 
 | File | Uso |
 | --- | --- |
@@ -709,7 +895,7 @@ I messaggi operativi sono separati:
 
 Questi file non fanno parte del flusso UI quotidiano, ma possono essere utili per manutenzione dati o debug.
 
-## 21. Regole pratiche per modifiche future
+## 27. Regole pratiche per modifiche future
 
 Per modifiche UI:
 
@@ -734,7 +920,7 @@ Per modifiche a pulizie e booking:
 - non usare booking importati in modo distruttivo;
 - non cancellare spunte checklist gia' fatte.
 
-## 22. Registrazione pubblica
+## 28. Registrazione pubblica
 
 File principali:
 
@@ -755,7 +941,7 @@ Redirect a /dashboard/manager
 
 Ogni organizzazione e' isolata: i dati di un'org non sono visibili ad altre org.
 
-## 23. Modulo Superadmin
+## 29. Modulo Superadmin
 
 File principali:
 
@@ -797,7 +983,7 @@ Layout manager legge cookie impersonating e mostra ImpersonateBanner
 POST /api/superadmin/stop-impersonate cancella tutti i cookie, redirect a /superadmin
 ```
 
-## 24. Modulo Analytics
+## 30. Modulo Analytics
 
 File principali:
 
@@ -818,7 +1004,7 @@ Note tecniche:
 - Nessun filtro status: conta tutte le pulizie/ticket nel periodo
 - Visibile nella navbar manager con icona BarChart2
 
-## 25. Comandi utili
+## 31. Comandi utili
 
 ```bash
 npm run dev
@@ -828,7 +1014,7 @@ npm run build
 
 Nota: `npm run build` puo' richiedere accesso rete se Next.js deve scaricare font remoti. Se fallisce per download font o rete, non e' necessariamente un errore del codice applicativo.
 
-## 26. Sintesi finale
+## 32. Sintesi finale
 
 Il progetto e' strutturato in modo abbastanza chiaro:
 

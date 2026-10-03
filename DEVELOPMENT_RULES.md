@@ -19,6 +19,11 @@ Questi file contengono logica core del sistema:
 - src/app/actions/superadmin.ts
 - src/components/timeline-calendar.tsx
 - src/lib/perplexity.ts
+- src/lib/push.ts
+- src/lib/apns.ts
+- src/lib/fcm.ts
+- src/lib/tenant.ts
+- src/lib/i18n.ts
 
 Regola:
 Non modificare questi file a meno che non sia esplicitamente richiesto nel prompt.
@@ -29,12 +34,18 @@ Non modificare questi file a meno che non sia esplicitamente richiesto nel promp
 - src/app/actions/apartment.ts
 - src/app/actions/analytics.ts
 - src/app/actions/register.ts
+- src/app/actions/company.ts
+- src/app/actions/messages.ts
+- src/app/actions/product.ts
+- src/app/actions/warehouse.ts
+- src/app/actions/structure.ts
 - src/app/dashboard/*
 - src/app/superadmin/*
 - src/app/api/auth/*
 - src/app/api/superadmin/*
 - src/components/manager-ai-chat.tsx
 - src/components/superadmin/*
+- src/components/impresa-*.tsx
 
 Regole:
 - non cambiare la logica esistente
@@ -100,7 +111,7 @@ Quando si lavora su dati tecnici o appartamenti:
 - non rimuovere dati dal DOM se servono al contesto
 - non cambiare nomi o struttura dei campi usati dalla IA
 
-## REGOLE PER BOOKING, PULIZIE E MANUTENZIONI
+## REGOLE PER BOOKING, PULIZIE, MANUTENZIONI E CHECK-IN
 
 Non modificare senza richiesta esplicita:
 
@@ -108,10 +119,50 @@ Non modificare senza richiesta esplicita:
 - validazione sovrapposizioni
 - status pulizie
 - checklist pulizie
+- checklist check-in
 - ticket manutenzione
 - priorità ticket
 - status engine appartamento
 - calendario operativo
+- consumo prodotti al check-in
+- assegnazione task a imprese delegate
+
+## REGOLE PER MESSAGGISTICA E PUSH
+
+Non modificare senza richiesta esplicita:
+
+- logica push notification (push.ts, apns.ts, fcm.ts)
+- registrazione token (apns-token, fcm-token, push/subscribe)
+- calcolo badge (computeUserBadge)
+- chat per intervento (ticket-conversation)
+- chat generica org↔staff e org↔impresa
+- polling messaggi non letti
+
+## REGOLE PER I18N
+
+Il sistema i18n usa cookie `app_lang`, helper `getT` (server) e `useLang` (client).
+La variabile di traduzione si chiama `tr` (non `t` per anti-collisione con altri nomi).
+Non rinominare chiavi di traduzione esistenti.
+Non cambiare il pattern dei prefissi chiave senza verificare tutte le lingue.
+
+## REGOLE PER IMPRESE DELEGATE
+
+Non modificare senza richiesta esplicita:
+
+- modello Engagement e EngagementApartment
+- scope delegati (CLEANING, MAINTENANCE, CHECKIN, SUPERVISION)
+- isolamento dati tra organizzazione e impresa
+- chat org↔impresa e impresa↔staff
+
+## REGOLE PER PRODOTTI E SCORTE
+
+Non modificare senza richiesta esplicita:
+
+- consumo automatico al check-in
+- storico movimenti (StockMovement)
+- magazzino organizzazione (WarehouseProduct)
+- scorte per appartamento (ApartmentProduct)
+- alert scorta bassa (cron low-stock-check)
 
 ## REGOLE PER SUPERADMIN
 
@@ -128,7 +179,7 @@ Qualsiasi azione con redirect + side effect DB deve usare API route, non server 
 
 ## REGOLE PER RUOLI
 
-I ruoli disponibili sono: `MANAGER`, `SUPERVISOR`, `OWNER`, `CLEANER`, `MAINTENANCE`.
+I ruoli disponibili sono: `MANAGER`, `SUPERVISOR`, `OWNER`, `CLEANER`, `MAINTENANCE`, `CHECKIN`.
 
 Non modificare senza richiesta esplicita:
 
