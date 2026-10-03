@@ -1,7 +1,7 @@
 {
-  "name": "Property Operations Manager",
-  "short_name": "PropOps",
-  "description": "Gestione operativa appartamenti — pulizie, manutenzioni, prenotazioni",
+  "name": "OpStays",
+  "short_name": "OpStays",
+  "description": "Gestione operativa appartamenti e strutture ricettive",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -34,6 +34,12 @@
       "name": "Dashboard Manutenzione",
       "short_name": "Manutenzione",
       "url": "/dashboard/maintenance",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard Check-in",
+      "short_name": "Check-in",
+      "url": "/dashboard/checkin",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
