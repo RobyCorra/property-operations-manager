@@ -1,6 +1,6 @@
 # DEPLOYMENT.md
 
-Guida al deploy e alla distribuzione dell'app PropOps.
+Guida al deploy e alla distribuzione dell'app OpStays (Property Operations Manager).
 
 ---
 
@@ -31,6 +31,14 @@ Configurare su Vercel → Settings → Environment Variables:
 | `BLOB_READ_WRITE_TOKEN` | Token Vercel Blob per upload allegati |
 | `GOOGLE_MAPS_API_KEY` | Chiave API Google Maps per la mappa appartamenti |
 | `SUPERADMIN_SECRET` | Password superadmin (usata anche come cookie token) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Chiave pubblica VAPID per push notification web |
+| `VAPID_PRIVATE_KEY` | Chiave privata VAPID |
+| `APNS_KEY_ID` | Key ID per push notification APNs (iOS nativo) |
+| `APNS_TEAM_ID` | Team ID Apple per APNs |
+| `APNS_PRIVATE_KEY` | Chiave privata APNs (formato .p8) |
+| `FCM_PROJECT_ID` | Project ID Firebase per push FCM (Android) |
+| `FCM_CLIENT_EMAIL` | Service account email Firebase |
+| `FCM_PRIVATE_KEY` | Chiave privata service account Firebase |
 
 Per l'ambiente locale copiare `.env.example` in `.env.local` e compilare i valori.
 
@@ -57,7 +65,7 @@ Vercel rileva il push e fa il deploy automaticamente.
 Capacitor è configurato in `capacitor.config.ts`:
 
 - **App ID:** `com.propops.app`
-- **App Name:** `PropOps`
+- **App Name:** `OpStays`
 - **webDir:** `out`
 - **server.url:** punta all'URL Vercel in produzione
 

@@ -1,6 +1,8 @@
-# PropOps — Product Overview
+# OpStays — Product Overview
 
 Documento di presentazione del prodotto per partner, investitori e consulenti esterni.
+
+Dominio di produzione: `app.opstays.com`
 
 ---
 
@@ -14,9 +16,9 @@ La maggior parte delle aziende del settore gestisce queste operazioni con WhatsA
 
 ## 2. La soluzione
 
-**PropOps** è un'app mobile per la gestione operativa di appartamenti turistici. Centralizza tutto il lavoro operativo in un'unica piattaforma: ogni ruolo ha la propria dashboard, vede solo quello che gli serve e sa esattamente cosa fare.
+**OpStays** è un'app web + nativa (iOS/Android) per la gestione operativa di appartamenti turistici e strutture ricettive (hotel, residence). Centralizza tutto il lavoro operativo in un'unica piattaforma: ogni ruolo ha la propria dashboard, vede solo quello che gli serve e sa esattamente cosa fare.
 
-Il manager vede lo stato di tutti gli appartamenti in tempo reale. Il cleaner riceve la pulizia sul telefono con checklist e istruzioni. Il manutentore gestisce i ticket. Il supervisore approva i lavori. Il proprietario segue il calendario in sola lettura.
+Il manager vede lo stato di tutti gli appartamenti in tempo reale. Il cleaner riceve la pulizia sul telefono con checklist e istruzioni. Il manutentore gestisce i ticket. Il supervisore approva i lavori. L'assistente check-in gestisce arrivi con checklist dedicata. Il proprietario segue il calendario in sola lettura. Le imprese delegate operano con il proprio staff su scope definiti.
 
 ---
 
@@ -25,13 +27,19 @@ Il manager vede lo stato di tutti gli appartamenti in tempo reale. Il cleaner ri
 - **Calendario operativo** — stato di tutti gli appartamenti in tempo reale: pronto, in pulizia, occupato, in manutenzione
 - **Gestione pulizie** — assegnazione, checklist personalizzabile, foto, avanzamento, revisione e approvazione
 - **Gestione manutenzioni** — ticket con priorità, messaggi, allegati, ciclo di revisione
+- **Gestione check-in** — assistente check-in con checklist dedicata e chat
 - **Import prenotazioni** — sincronizzazione automatica da Airbnb, Booking.com e qualsiasi fonte iCal
-- **Assistente AI** — supporto operativo contestuale e ricerca web esterna con citazione delle fonti
+- **Strutture ricettive** — gestione hotel/residence con unità raggruppate per categoria
+- **Assistente AI** — supporto operativo contestuale, ricerca web esterna e azioni operative (crea/modifica booking, pulizie, ticket)
 - **Gestione biancheria** — calcolo automatico di lenzuola, federe e copripiumino in base al tipo di letto e al numero di ospiti
 - **Gestione prodotti e forniture** — catalogo personalizzabile per appartamento con scorte, soglie minime e consumo automatico al check-in
-- **Multilingua** — interfaccia disponibile in più lingue per team internazionali
-- **Notifiche push** — aggiornamenti in tempo reale su iOS e Android
-- **Analytics** — statistiche su pulizie e manutenzioni per appartamento e per operatore
+- **Imprese delegate** — delega operativa a imprese esterne con scope pulizie/manutenzione/check-in/supervisione
+- **Chat per intervento** — messaggistica contestuale su ogni task (pulizia, manutenzione, check-in)
+- **Chat generica** — comunicazione diretta org↔staff e org↔impresa
+- **Multilingua** — interfaccia disponibile in IT, EN, ES per team internazionali
+- **Notifiche push** — aggiornamenti in tempo reale su web, iOS nativo e Android
+- **Analytics** — statistiche su pulizie, manutenzioni e check-in per appartamento e per operatore
+- **Mappa operatori** — posizione GPS degli operatori sul campo
 
 ---
 
@@ -43,7 +51,9 @@ Il manager vede lo stato di tutti gli appartamenti in tempo reale. Il cleaner ri
 | **Supervisor** | Controlla e approva i lavori del team |
 | **Cleaner** | Addetto alle pulizie — lavora da mobile |
 | **Maintenance** | Manutentore — gestisce i ticket di intervento |
+| **Checkin** | Assistente check-in — gestisce arrivi con checklist dedicata |
 | **Owner** | Proprietario — visibilità read-only sul proprio immobile |
+| **Manager impresa** | Gestisce lo staff dell'impresa delegata |
 
 ---
 
@@ -131,10 +141,12 @@ Al momento del check-in le scorte vengono scalate automaticamente. Se un prodott
 
 - **App nativa mobile-first** — progettata per chi lavora sul campo, non davanti a un computer
 - **Ciclo di revisione integrato** — il supervisore può approvare, rifiutare e richiedere correzioni con foto direttamente nell'app
-- **Assistente AI contestuale** — conosce gli appartamenti, le prenotazioni e la storia operativa
+- **Assistente AI con azioni operative** — conosce il contesto e può creare/modificare booking, pulizie e ticket su richiesta
 - **Gestione biancheria e scorte automatica** — nessun calcolo manuale, tutto si aggiorna in base agli ospiti
+- **Imprese delegate** — delega operativa a imprese esterne con gestione staff e chat dedicata
+- **Strutture ricettive** — gestione hotel/residence con unità per categoria
 - **Architettura multi-organizzazione** — ogni cliente ha il proprio ambiente isolato, pronto per il white label
-- **Nessuna dipendenza da WhatsApp** — tutta la comunicazione operativa avviene dentro la piattaforma
+- **Nessuna dipendenza da WhatsApp** — tutta la comunicazione operativa avviene dentro la piattaforma con push notification native
 
 ---
 

@@ -8,10 +8,11 @@ Guida alla gestione del database in produzione e in locale.
 
 | Ambiente | Provider | Note |
 |----------|----------|-------|
-| Produzione | Prisma Postgres "orange" | Usare SEMPRE questo in produzione |
+| Produzione | Prisma Postgres "orange" (db.prisma.io) | Usare SEMPRE questo in produzione |
+| Preview/staging | Neon PostgreSQL | DB separato per branch di preview |
 | Locale | PostgreSQL via Docker | `docker-compose.yml` nella root di `app/` |
 
-**Attenzione:** non confondere Prisma Postgres "orange" con Neon o altri provider. La `DATABASE_URL` di produzione punta esclusivamente a Prisma Postgres "orange".
+**Attenzione:** non confondere Prisma Postgres "orange" con Neon o altri provider. La `DATABASE_URL` di produzione punta esclusivamente a Prisma Postgres "orange". Il DB Neon e' usato solo per gli ambienti di preview.
 
 ---
 
@@ -62,21 +63,43 @@ Modelli principali:
 
 | Modello | Descrizione |
 |---------|-------------|
-| `User` | Utenti con ruolo, organizzazione, dati contatto e dati aziendali |
-| `Organization` | Organizzazione tenant — ogni org è isolata |
+| `Organization` | Organizzazione tenant — ogni org e' isolata |
+| `User` | Utenti con ruolo (MANAGER/CLEANER/MAINTENANCE/SUPERVISOR/OWNER/CHECKIN), organizzazione o impresa |
+| `Company` | Impresa delegata collegata a un'organizzazione |
+| `Engagement` / `EngagementApartment` | Ingaggi tra org e impresa con scope e appartamenti delegati |
+| `Property` | Struttura ricettiva (hotel/residence) |
+| `UnitCategory` | Categoria unita' dentro una struttura |
 | `Apartment` | Appartamenti con scheda tecnica, iCal, coordinate |
 | `Booking` | Prenotazioni manuali e importate da iCal |
-| `CleaningTask` | Pulizie con stato, checklist, correction items |
-| `MaintenanceTicket` | Ticket manutenzione con priorità, stato, correction items |
 | `ChecklistItem` | Checklist master appartamento |
+| `CleaningTask` | Pulizie con stato, checklist, correction items |
+| `CheckinTask` | Task check-in con checklist dedicata |
+| `CheckinChecklistItem` | Elementi checklist check-in |
+| `MaintenanceTicket` | Ticket manutenzione con priorita', stato, correction items |
+| `MaintenanceDateRequest` | Richiesta data alternativa dal manutentore |
 | `SupervisorReview` | Revisioni supervisore con decision e correction items |
 | `ApartmentSupervisor` | Assegnazione supervisor→appartamento |
 | `ApartmentOwner` | Assegnazione owner→appartamento |
-| `SuperAdminLog` | Log attività superadmin |
-| `AIAssistantMessage` | Storico messaggi AI |
+| `Message` | Messaggi su ticket manutenzione |
+| `CleaningTaskMessage` | Messaggi su pulizie |
+| `CheckinTaskMessage` | Messaggi su task check-in |
+| `OrgStaffMessage` | Chat generica org↔operatore |
+| `OrgCompanyMessage` | Chat generica org↔impresa |
+| `CompanyChatMessage` | Chat impresa↔staff |
 | `Attachment` | Allegati a manutenzioni, pulizie, messaggi |
 | `ApartmentAttachment` | Documenti appartamento |
-| `Notification` | Notifiche per i manager |
+| `AIAssistantMessage` | Storico messaggi AI per contesto |
+| `ManagerChatSession` / `ManagerChatMessage` | Chat AI manager (floating) |
+| `ApartmentProduct` | Prodotti in scorta per appartamento |
+| `StockMovement` | Storico movimenti scorta appartamento |
+| `PropertyProduct` / `PropertyStockMovement` | Prodotti e movimenti a livello struttura |
+| `PushSubscription` | Sottoscrizione push web (VAPID) |
+| `ApnsToken` | Token push APNs (iOS) |
+| `FcmToken` | Token push FCM (Android) |
+| `Client` | Clienti/ospiti dell'organizzazione |
+| `CleanerLocation` | Posizione GPS operatore |
+| `SuperAdminLog` | Log attivita' superadmin |
+| `Notification` | Legacy — non piu' utilizzato attivamente (sostituito da messaggi SYSTEM nelle chat) |
 
 ---
 

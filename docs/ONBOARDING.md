@@ -49,6 +49,10 @@ Aprire `.env.local` e compilare i valori:
 | `BLOB_READ_WRITE_TOKEN` | Da Vercel → Storage → Blob |
 | `GOOGLE_MAPS_API_KEY` | Da Google Cloud Console |
 | `SUPERADMIN_SECRET` | Stringa libera — usata come password superadmin |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Generare con `web-push generate-vapid-keys` |
+| `VAPID_PRIVATE_KEY` | Generare insieme alla chiave pubblica |
+| `APNS_KEY_ID` / `APNS_TEAM_ID` / `APNS_PRIVATE_KEY` | Da Apple Developer → Keys (per push iOS nativo) |
+| `FCM_PROJECT_ID` / `FCM_CLIENT_EMAIL` / `FCM_PRIVATE_KEY` | Da Firebase Console → Service Account (per push Android) |
 
 ---
 
