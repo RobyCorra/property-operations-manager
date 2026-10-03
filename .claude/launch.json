@@ -6,27 +6,6 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
-    },
-    {
-      "name": "render-mobile",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "."],
-      "port": 4321,
-      "autoPort": false
-    },
-    {
-      "name": "legend-render",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "."],
-      "port": 4322,
-      "autoPort": false
-    },
-    {
-      "name": "card-mockup",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["/tmp/serve_mockup.py"],
-      "port": 4399,
-      "autoPort": false
     }
   ]
 }
